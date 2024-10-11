@@ -9,11 +9,13 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ApplicationTest {
+    public static final String MAGMA_EXTENSION = "mgs";
+    public static final String EXTENSION_SEPARATOR = ".";
     public static final Path SOURCE = resolve("java");
-    public static final Path TARGET = resolve("mgs");
+    public static final Path TARGET = resolve(MAGMA_EXTENSION);
 
     private static Path resolve(String extension) {
-        return Paths.get(".", "ApplicationTest." + extension);
+        return Paths.get(".", "ApplicationTest" + EXTENSION_SEPARATOR + extension);
     }
 
     private static void runMaybeFail() {
@@ -25,9 +27,16 @@ public class ApplicationTest {
     }
 
     private static void run() throws IOException {
-        if (Files.exists(SOURCE)) {
-            Files.createFile(TARGET);
-        }
+        if (!Files.exists(SOURCE)) return;
+
+        final var fileName = SOURCE.getFileName().toString();
+        final var separator = fileName.indexOf('.');
+        if (separator == -1) return;
+
+        final var applicationTest = fileName.substring(0, separator);
+        final var targetName = applicationTest + EXTENSION_SEPARATOR + MAGMA_EXTENSION;
+        final var target = SOURCE.resolveSibling(targetName);
+        Files.createFile(target);
     }
 
     @AfterEach
