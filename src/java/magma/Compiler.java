@@ -6,13 +6,16 @@ import java.util.List;
 public record Compiler(String input) {
     public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
     public static final String STATEMENT_END = ";";
+    public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
 
-    private static String compileRootMember(String input) {
+    private static String compileRootMember(String input) throws CompileException {
         if (input.startsWith(PACKAGE_KEYWORD_WITH_SPACE) && input.endsWith(STATEMENT_END)) {
             return "";
+        } else if (input.startsWith(IMPORT_KEYWORD_WITH_SPACE) && input.endsWith(STATEMENT_END)) {
+            return input;
+        } else {
+            throw new CompileException();
         }
-
-        return input;
     }
 
     private static State splitAtChar(State state, char c) {
@@ -24,7 +27,7 @@ public record Compiler(String input) {
         }
     }
 
-    String compile() {
+    String compile() throws CompileException {
         final var segments = split();
         var buffer = new StringBuilder();
         for (String segment : segments) {

@@ -17,7 +17,6 @@ public class ApplicationTest {
     public static final String EXTENSION_SEPARATOR = ".";
     public static final Path SOURCE = resolve("java");
     public static final Path TARGET = resolve(MAGMA_EXTENSION);
-    public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
 
     private static Path resolve(String extension) {
         return Paths.get(".", "ApplicationTest" + EXTENSION_SEPARATOR + extension);
@@ -26,15 +25,16 @@ public class ApplicationTest {
     private static void runMaybeFail() {
         try {
             run();
-        } catch (IOException e) {
+        } catch (ApplicationException e) {
             fail(e);
         }
     }
 
-    private static void run() throws IOException {
+    private static void run() throws ApplicationException {
         if (!Files.exists(SOURCE)) return;
 
-        final var input = Files.readString(SOURCE);
+        final var input = readSafe();
+        final var output = new Compiler(input).compile();
 
         final var fileName = SOURCE.getFileName().toString();
         final var separator = fileName.indexOf('.');
@@ -43,7 +43,23 @@ public class ApplicationTest {
         final var applicationTest = fileName.substring(0, separator);
         final var targetName = applicationTest + EXTENSION_SEPARATOR + MAGMA_EXTENSION;
         final var target = SOURCE.resolveSibling(targetName);
-        Files.writeString(target, new Compiler(input).compile());
+        writeSafe(target, output);
+    }
+
+    private static void writeSafe(Path target, String output) throws ApplicationException {
+        try {
+            Files.writeString(target, output);
+        } catch (IOException e) {
+            throw new ApplicationException(e);
+        }
+    }
+
+    private static String readSafe() throws ApplicationException {
+        try {
+            return Files.readString(SOURCE);
+        } catch (IOException e) {
+            throw new ApplicationException(e);
+        }
     }
 
     private static String renderNamespaceStatement(String prefix, String namespace) {
@@ -77,7 +93,7 @@ public class ApplicationTest {
     @Test
     void packageAndImport() {
         final var packageStatement = renderNamespaceStatement(Compiler.PACKAGE_KEYWORD_WITH_SPACE, "namespace");
-        final var importStatement = renderNamespaceStatement(IMPORT_KEYWORD_WITH_SPACE, "test");
+        final var importStatement = renderNamespaceStatement(Compiler.IMPORT_KEYWORD_WITH_SPACE, "test");
         assertRun(packageStatement + importStatement, importStatement);
     }
 
@@ -90,7 +106,7 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void importStatement(String namespace) {
-        final var content = renderNamespaceStatement(IMPORT_KEYWORD_WITH_SPACE, namespace);
+        final var content = renderNamespaceStatement(Compiler.IMPORT_KEYWORD_WITH_SPACE, namespace);
         assertRun(content, content);
     }
 
