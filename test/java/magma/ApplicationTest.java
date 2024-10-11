@@ -17,8 +17,6 @@ public class ApplicationTest {
     public static final String EXTENSION_SEPARATOR = ".";
     public static final Path SOURCE = resolve("java");
     public static final Path TARGET = resolve(MAGMA_EXTENSION);
-    public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
-    public static final String STATEMENT_END = ";";
     public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
 
     private static Path resolve(String extension) {
@@ -45,19 +43,11 @@ public class ApplicationTest {
         final var applicationTest = fileName.substring(0, separator);
         final var targetName = applicationTest + EXTENSION_SEPARATOR + MAGMA_EXTENSION;
         final var target = SOURCE.resolveSibling(targetName);
-        Files.writeString(target, compile(input));
-    }
-
-    private static String compile(String input) {
-        if (input.startsWith(PACKAGE_KEYWORD_WITH_SPACE) && input.endsWith(STATEMENT_END)) {
-            return "";
-        }
-
-        return input;
+        Files.writeString(target, new Compiler(input).compile());
     }
 
     private static String renderNamespaceStatement(String prefix, String namespace) {
-        return prefix + namespace + STATEMENT_END;
+        return prefix + namespace + Compiler.STATEMENT_END;
     }
 
     private static void runWithInput(String input) {
@@ -84,10 +74,17 @@ public class ApplicationTest {
         }
     }
 
+    @Test
+    void packageAndImport() {
+        final var packageStatement = renderNamespaceStatement(Compiler.PACKAGE_KEYWORD_WITH_SPACE, "namespace");
+        final var importStatement = renderNamespaceStatement(IMPORT_KEYWORD_WITH_SPACE, "test");
+        assertRun(packageStatement + importStatement, importStatement);
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void packageStatement(String namespace) {
-        assertRun(renderNamespaceStatement(PACKAGE_KEYWORD_WITH_SPACE, namespace), "");
+        assertRun(renderNamespaceStatement(Compiler.PACKAGE_KEYWORD_WITH_SPACE, namespace), "");
     }
 
     @ParameterizedTest
