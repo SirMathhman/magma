@@ -32,6 +32,8 @@ public class ApplicationTest {
     private static void run() throws IOException {
         if (!Files.exists(SOURCE)) return;
 
+        final var input = Files.readString(SOURCE);
+
         final var fileName = SOURCE.getFileName().toString();
         final var separator = fileName.indexOf('.');
         if (separator == -1) return;
@@ -39,7 +41,7 @@ public class ApplicationTest {
         final var applicationTest = fileName.substring(0, separator);
         final var targetName = applicationTest + EXTENSION_SEPARATOR + MAGMA_EXTENSION;
         final var target = SOURCE.resolveSibling(targetName);
-        Files.createFile(target);
+        Files.writeString(target, input);
     }
 
     private static void runWithInput(String input) {
