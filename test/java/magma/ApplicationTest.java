@@ -19,6 +19,7 @@ public class ApplicationTest {
     public static final Path TARGET = resolve(MAGMA_EXTENSION);
     public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
     public static final String STATEMENT_END = ";";
+    public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
 
     private static Path resolve(String extension) {
         return Paths.get(".", "ApplicationTest" + EXTENSION_SEPARATOR + extension);
@@ -51,11 +52,12 @@ public class ApplicationTest {
         if (input.startsWith(PACKAGE_KEYWORD_WITH_SPACE) && input.endsWith(STATEMENT_END)) {
             return "";
         }
+
         return input;
     }
 
-    private static String renderPackageStatement(String namespace) {
-        return PACKAGE_KEYWORD_WITH_SPACE + namespace + STATEMENT_END;
+    private static String renderNamespaceStatement(String prefix, String namespace) {
+        return prefix + namespace + STATEMENT_END;
     }
 
     private static void runWithInput(String input) {
@@ -85,12 +87,13 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void packageStatement(String namespace) {
-        assertRun(renderPackageStatement(namespace), "");
+        assertRun(renderNamespaceStatement(PACKAGE_KEYWORD_WITH_SPACE, namespace), "");
     }
 
-    @Test
-    void importStatement() {
-        final var content = "import org.junit.jupiter.api.AfterEach;";
+    @ParameterizedTest
+    @ValueSource(strings = {"first", "second"})
+    void importStatement(String namespace) {
+        final var content = renderNamespaceStatement(IMPORT_KEYWORD_WITH_SPACE, namespace);
         assertRun(content, content);
     }
 
