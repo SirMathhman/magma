@@ -15,6 +15,7 @@ public class ApplicationTest {
     public static final String EXTENSION_SEPARATOR = ".";
     public static final Path SOURCE = resolve("java");
     public static final Path TARGET = resolve(MAGMA_EXTENSION);
+    public static final String expected = "import org.junit.jupiter.api.AfterEach;";
 
     private static Path resolve(String extension) {
         return Paths.get(".", "ApplicationTest" + EXTENSION_SEPARATOR + extension);
@@ -41,6 +42,28 @@ public class ApplicationTest {
         Files.createFile(target);
     }
 
+    private static void runWithInput(String input) {
+        try {
+            Files.writeString(SOURCE, input);
+        } catch (IOException e) {
+            fail(e);
+        }
+
+        runMaybeFail();
+    }
+
+    @Test
+    void importStatement() {
+        runWithInput(expected);
+
+        try {
+            final var actual = Files.readString(TARGET);
+            assertEquals(expected, actual);
+        } catch (IOException e) {
+            fail(e);
+        }
+    }
+
     @AfterEach
     void tearDown() throws IOException {
         Files.deleteIfExists(TARGET);
@@ -55,13 +78,7 @@ public class ApplicationTest {
 
     @Test
     void generatesTarget() {
-        try {
-            Files.createFile(SOURCE);
-        } catch (IOException e) {
-            fail(e);
-        }
-
-        runMaybeFail();
+        runWithInput("");
         assertTrue(Files.exists(TARGET));
     }
 }
