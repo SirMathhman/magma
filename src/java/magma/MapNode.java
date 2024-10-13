@@ -37,8 +37,8 @@ public final class MapNode implements Node {
     }
 
     @Override
-    public Properties<List<Node>> nodes() {
-        return null;
+    public Properties<List<Node>> nodeLists() {
+        return nodeLists;
     }
 
     @Override
@@ -74,6 +74,11 @@ public final class MapNode implements Node {
         @Override
         public Optional<T> find(String propertyKey) {
             return Optional.ofNullable(strings.get(propertyKey));
+        }
+
+        @Override
+        public Optional<Node> map(String propertyKey, Function<T, T> mapper) {
+            return find(propertyKey).map(mapper).map(value -> with(propertyKey, value));
         }
     }
 }
