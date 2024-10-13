@@ -13,7 +13,7 @@ class CompilerTest {
     void recordStatement(String name) {
         try {
             final var node = new MapNode().withString(CommonLang.NAME, name);
-            final var actual = new Compiler(JavaLang.RECORD.generate(node).orElseThrow()).compile();
+            final var actual = new Compiler(JavaLang.RECORD_RULE.generate(node).orElseThrow()).compile();
             assertEquals(MagmaLang.FUNCTION_RULE.generate(node).orElse(""), actual);
         } catch (CompileException e) {
             fail(e);

@@ -4,20 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record Compiler(String input) {
-    private static String compileRootMember(String input) throws CompileException {
-        final var parsed = JavaLang.PACKAGE_RULE.parse(input);
-
-        if (input.startsWith("package ") && input.endsWith(CommonLang.STATEMENT_END)) {
-            return "";
-        }
-
-        return CommonLang.IMPORT.parse(input)
-                .flatMap(CommonLang.IMPORT::generate)
-                .or(() -> JavaLang.RECORD.parse(input)
-                        .flatMap(MagmaLang.FUNCTION_RULE::generate))
-                .orElseThrow(CompileException::new);
-    }
-
     private static State splitAtChar(State state, char c) {
         final var appended = state.append(c);
         if (c == ';') {
@@ -31,7 +17,7 @@ public record Compiler(String input) {
         final var segments = split();
         var buffer = new StringBuilder();
         for (String segment : segments) {
-            buffer.append(compileRootMember(segment));
+            buffer.append(JavaLang.JAVA_ROOT_MEMBER.parse(segment).flatMap(MagmaLang.MAGMA_ROOT_MEMBER::generate).orElse(""));
         }
         return buffer.toString();
     }
