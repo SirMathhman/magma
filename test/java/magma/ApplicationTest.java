@@ -63,7 +63,7 @@ public class ApplicationTest {
     }
 
     private static String renderNamespaceStatement(String prefix, String namespace) {
-        return prefix + namespace + Compiler.STATEMENT_END;
+        return prefix + namespace + CommonLang.STATEMENT_END;
     }
 
     private static void runWithInput(String input) {
@@ -92,21 +92,21 @@ public class ApplicationTest {
 
     @Test
     void packageAndImport() {
-        final var packageStatement = renderNamespaceStatement(Compiler.PACKAGE_KEYWORD_WITH_SPACE, "namespace");
-        final var importStatement = renderNamespaceStatement(Compiler.IMPORT_KEYWORD_WITH_SPACE, "test");
+        final var packageStatement = renderNamespaceStatement("package ", "namespace");
+        final var importStatement = renderNamespaceStatement("import ", "test");
         assertRun(packageStatement + importStatement, importStatement);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void packageStatement(String namespace) {
-        assertRun(renderNamespaceStatement(Compiler.PACKAGE_KEYWORD_WITH_SPACE, namespace), "");
+        assertRun(renderNamespaceStatement("package ", namespace), "");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void importStatement(String namespace) {
-        final var content = renderNamespaceStatement(Compiler.IMPORT_KEYWORD_WITH_SPACE, namespace);
+        final var content = renderNamespaceStatement("import ", namespace);
         assertRun(content, content);
     }
 
