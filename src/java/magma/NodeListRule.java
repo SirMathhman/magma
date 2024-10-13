@@ -1,5 +1,8 @@
 package magma;
 
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
 import magma.rule.Rule;
 
 import java.util.ArrayList;
@@ -28,12 +31,11 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
         return state.advance().segments;
     }
 
-    @Override
-    public Optional<Node> parse(String input) {
+    private Optional<Node> parse0(String input) {
         final var segments = split(input);
         var children = new ArrayList<Node>();
         for (String segment : segments) {
-            final var parsed = childRule.parse(segment);
+            final var parsed = childRule.parse(segment).findValue();
             if (parsed.isEmpty()) return Optional.empty();
             children.add(parsed.get());
         }
@@ -42,20 +44,33 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
         return Optional.of(node);
     }
 
-    @Override
-    public Optional<String> generate(Node node) {
+    private Optional<String> generate0(Node node) {
         var buffer = new StringBuilder();
 
         final var propertyValues = node.nodeLists().find(propertyKey());
         if (propertyValues.isEmpty()) return Optional.empty();
 
         for (var value : propertyValues.get()) {
-            final var generate = childRule().generate(value);
+            final var generate = this.childRule().generate(value).findValue();
             if (generate.isEmpty()) return Optional.empty();
             buffer.append(generate.get());
         }
 
         return Optional.of(buffer.toString());
+    }
+
+    @Override
+    public Result<Node, ParseException> parse(String input) {
+        return parse0(input)
+                .<Result<Node, ParseException>>map(Ok::new)
+                .orElseGet(() -> new Err<Node, ParseException>(new ParseException("Unknown input", input)));
+    }
+
+    @Override
+    public Result<String, GenerateException> generate(Node node) {
+        return generate0(node)
+                .<Result<String, GenerateException>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new GenerateException("Unknown node", node)));
     }
 
     static class State {

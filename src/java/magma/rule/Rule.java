@@ -1,11 +1,12 @@
 package magma.rule;
 
+import magma.GenerateException;
 import magma.Node;
-
-import java.util.Optional;
+import magma.ParseException;
+import magma.result.Result;
 
 public interface Rule {
-    Optional<Node> parse(String input);
+    Result<Node, ParseException> parse(String input);
 
-    Optional<String> generate(Node node);
+    Result<String, GenerateException> generate(Node node);
 }

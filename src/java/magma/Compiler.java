@@ -19,14 +19,12 @@ public record Compiler(String input) {
     }
 
     String compile() throws CompileException {
-        final var node = JavaLang.JAVA_ROOT_RULE
-                .parse(input)
+        final var node = JavaLang.JAVA_ROOT_RULE.parse(input).findValue()
                 .orElseThrow(CompileException::new);
 
         final var passed = pass(node);
 
-        return MagmaLang.MAGMA_ROOT_RULE
-                .generate(passed)
+        return MagmaLang.MAGMA_ROOT_RULE.generate(passed).findValue()
                 .orElseThrow(CompileException::new);
     }
 }

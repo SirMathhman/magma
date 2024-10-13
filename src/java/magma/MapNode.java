@@ -42,6 +42,15 @@ public final class MapNode implements Node {
     }
 
     @Override
+    public String toString() {
+        return "MapNode{" +
+                "type=" + type +
+                ", strings=" + strings +
+                ", nodeLists=" + nodeLists +
+                '}';
+    }
+
+    @Override
     public Node retype(String type) {
         return new MapNode(Optional.of(type), strings, nodeLists);
     }
@@ -51,7 +60,7 @@ public final class MapNode implements Node {
         return this.type.filter(inner -> inner.equals(type)).isPresent();
     }
 
-    private static class MapProperties<T> implements Properties<T> {
+    private class MapProperties<T> implements Properties<T> {
         private final Map<String, T> strings;
         private final Function<Properties<T>, Node> clone;
 
