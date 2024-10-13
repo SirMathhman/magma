@@ -7,20 +7,22 @@ public record Compiler(String input) {
     public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
     public static final String STATEMENT_END = ";";
     public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
+    public static final PrefixRule IMPORT = new PrefixRule(IMPORT_KEYWORD_WITH_SPACE, new SuffixRule(STATEMENT_END, new ExtractRule()));
     public static final String RECORD_KEYWORD_WITH_SPACE = "record ";
     public static final String RECORD_SUFFIX = "(){}";
+    public static final PrefixRule RECORD = new PrefixRule(RECORD_KEYWORD_WITH_SPACE, new SuffixRule(RECORD_SUFFIX, new ExtractRule()));
+    public static final String FUNCTION_PREFIX = "class def ";
+    public static final String FUNCTION_SUFFIX = "() => {}";
+    public static final SuffixRule FUNCTION = new SuffixRule(FUNCTION_SUFFIX, new PrefixRule(FUNCTION_PREFIX, new ExtractRule()));
 
     private static String compileRootMember(String input) throws CompileException {
         if (input.startsWith(PACKAGE_KEYWORD_WITH_SPACE) && input.endsWith(STATEMENT_END)) {
             return "";
-        } else if (input.startsWith(IMPORT_KEYWORD_WITH_SPACE) && input.endsWith(STATEMENT_END)) {
-            return input;
-        } else if (input.startsWith(RECORD_KEYWORD_WITH_SPACE) && input.endsWith(RECORD_SUFFIX)) {
-            final var name = input.substring(RECORD_KEYWORD_WITH_SPACE.length(), input.length() - RECORD_SUFFIX.length());
-            return renderFunction(name);
-        } else {
-            throw new CompileException();
         }
+
+        return IMPORT.parse(input).flatMap(IMPORT::generate)
+                .or(() -> RECORD.parse(input).flatMap(FUNCTION::generate))
+                .orElseThrow(CompileException::new);
     }
 
     private static State splitAtChar(State state, char c) {
@@ -30,10 +32,6 @@ public record Compiler(String input) {
         } else {
             return appended;
         }
-    }
-
-    static String renderFunction(String name) {
-        return "class def " + name + "() => {}";
     }
 
     String compile() throws CompileException {
