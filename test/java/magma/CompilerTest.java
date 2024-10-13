@@ -12,7 +12,8 @@ class CompilerTest {
     @ValueSource(strings = {"First", "Second"})
     void recordStatement(String name) {
         try {
-            final var node = new MapNode().withString(CommonLang.NAME, name);
+            Node node1 = new MapNode();
+            final var node = node1.strings().with(CommonLang.NAME, name);
             final var actual = new Compiler(JavaLang.RECORD_RULE.generate(node).orElseThrow()).compile();
             assertEquals(MagmaLang.FUNCTION_RULE.generate(node).orElse(""), actual);
         } catch (CompileException e) {

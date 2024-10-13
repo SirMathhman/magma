@@ -1,11 +1,13 @@
 package magma;
 
-import java.util.Optional;
+import magma.rule.Properties;
+
+import java.util.List;
 
 public interface Node {
-    Node withString(String propertyKey, String propertyValue);
+    Properties<String> strings();
 
-    Optional<String> findString(String propertyKey);
+    Properties<List<Node>> nodes();
 
     Node retype(String type);
 
