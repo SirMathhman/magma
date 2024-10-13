@@ -7,13 +7,14 @@ public record Compiler(String input) {
     public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
     public static final String STATEMENT_END = ";";
     public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
-    public static final PrefixRule IMPORT = new PrefixRule(IMPORT_KEYWORD_WITH_SPACE, new SuffixRule(STATEMENT_END, new ExtractRule()));
+    public static final String NAME = "name";
+    public static final PrefixRule IMPORT = new PrefixRule(IMPORT_KEYWORD_WITH_SPACE, new SuffixRule(STATEMENT_END, new ExtractRule(NAME)));
     public static final String RECORD_KEYWORD_WITH_SPACE = "record ";
     public static final String RECORD_SUFFIX = "(){}";
-    public static final PrefixRule RECORD = new PrefixRule(RECORD_KEYWORD_WITH_SPACE, new SuffixRule(RECORD_SUFFIX, new ExtractRule()));
+    public static final PrefixRule RECORD = new PrefixRule(RECORD_KEYWORD_WITH_SPACE, new SuffixRule(RECORD_SUFFIX, new ExtractRule(NAME)));
     public static final String FUNCTION_PREFIX = "class def ";
     public static final String FUNCTION_SUFFIX = "() => {}";
-    public static final SuffixRule FUNCTION = new SuffixRule(FUNCTION_SUFFIX, new PrefixRule(FUNCTION_PREFIX, new ExtractRule()));
+    public static final SuffixRule FUNCTION = new SuffixRule(FUNCTION_SUFFIX, new PrefixRule(FUNCTION_PREFIX, new ExtractRule(NAME)));
 
     private static String compileRootMember(String input) throws CompileException {
         if (input.startsWith(PACKAGE_KEYWORD_WITH_SPACE) && input.endsWith(STATEMENT_END)) {
