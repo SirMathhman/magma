@@ -9,6 +9,7 @@ import magma.app.compile.Node;
 import magma.app.compile.ParseException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
@@ -33,13 +34,12 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
         return state.advance().segments;
     }
 
-    @Override
-    public Result<Node, ParseException> parse(String input) {
+    private Result<Node, ParseException> parse1(String input) {
         final var segments = split(input);
 
         Result<List<Node>, ParseException> children = new Ok<>(new ArrayList<>());
         for (String segment : segments) {
-            children = children.and(() -> childRule.parse(segment)).mapValue(tuple -> {
+            children = children.and(() -> childRule.parse(segment).first().orElseThrow()).mapValue(tuple -> {
                 final var copy = new ArrayList<>(tuple.left());
                 copy.add(tuple.right());
                 return copy;
@@ -49,8 +49,7 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
         return children.mapValue(list -> new MapNode().withNodeList(propertyKey, list));
     }
 
-    @Override
-    public Result<String, GenerateException> generate(Node node) {
+    private Result<String, GenerateException> generate1(Node node) {
 
         final var propertyValues = node.findNodeList(this.propertyKey());
         if (propertyValues.isEmpty())
@@ -58,13 +57,23 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
 
         Result<StringBuilder, GenerateException> buffer = new Ok<>(new StringBuilder());
         for (var value : propertyValues.get()) {
-            buffer = buffer.and(() -> this.childRule().generate(value)).mapValue(tuple -> {
+            buffer = buffer.and(() -> this.childRule().generate(value).first().orElseThrow()).mapValue(tuple -> {
                 tuple.left().append(tuple.right());
                 return tuple.left();
             });
         }
 
         return buffer.mapValue(StringBuilder::toString);
+    }
+
+    @Override
+    public RuleResult<Node, ParseException> parse(String input) {
+        return new RuleResult<>(Collections.singletonList(parse1(input)));
+    }
+
+    @Override
+    public RuleResult<String, GenerateException> generate(Node node) {
+        return new RuleResult<>(Collections.singletonList(generate1(node)));
     }
 
     static class State {
