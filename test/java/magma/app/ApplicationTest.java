@@ -23,7 +23,7 @@ public class ApplicationTest {
 
     private static void runMaybeFail() {
         try {
-            new Application(SOURCE).run();
+            new Application(new SingleSourceSet(SOURCE)).run();
         } catch (ApplicationException e) {
             fail(e);
         }
