@@ -1,7 +1,7 @@
-package magma.compile.lang;
+package magma.app.compile.lang;
 
-import magma.compile.rule.NodeListRule;
-import magma.compile.rule.*;
+import magma.app.compile.rule.NodeListRule;
+import magma.app.compile.rule.*;
 
 import java.util.List;
 

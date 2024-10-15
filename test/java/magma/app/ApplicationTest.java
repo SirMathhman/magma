@@ -1,7 +1,6 @@
-package magma;
+package magma.app;
 
-import magma.compile.Compiler;
-import magma.compile.lang.CommonLang;
+import magma.app.compile.lang.CommonLang;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,52 +14,18 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ApplicationTest {
-    public static final String MAGMA_EXTENSION = "mgs";
-    public static final String EXTENSION_SEPARATOR = ".";
     public static final Path SOURCE = resolve("java");
-    public static final Path TARGET = resolve(MAGMA_EXTENSION);
+    public static final Path TARGET = resolve(Application.MAGMA_EXTENSION);
 
     private static Path resolve(String extension) {
-        return Paths.get(".", "ApplicationTest" + EXTENSION_SEPARATOR + extension);
+        return Paths.get(".", "ApplicationTest" + Application.EXTENSION_SEPARATOR + extension);
     }
 
     private static void runMaybeFail() {
         try {
-            run();
+            new Application(SOURCE).run();
         } catch (ApplicationException e) {
             fail(e);
-        }
-    }
-
-    private static void run() throws ApplicationException {
-        if (!Files.exists(SOURCE)) return;
-
-        final var input = readSafe();
-        final var output = new Compiler(input).compile();
-
-        final var fileName = SOURCE.getFileName().toString();
-        final var separator = fileName.indexOf('.');
-        if (separator == -1) return;
-
-        final var applicationTest = fileName.substring(0, separator);
-        final var targetName = applicationTest + EXTENSION_SEPARATOR + MAGMA_EXTENSION;
-        final var target = SOURCE.resolveSibling(targetName);
-        writeSafe(target, output);
-    }
-
-    private static void writeSafe(Path target, String output) throws ApplicationException {
-        try {
-            Files.writeString(target, output);
-        } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
-    }
-
-    private static String readSafe() throws ApplicationException {
-        try {
-            return Files.readString(SOURCE);
-        } catch (IOException e) {
-            throw new ApplicationException(e);
         }
     }
 

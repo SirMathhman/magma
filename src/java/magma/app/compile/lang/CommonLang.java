@@ -1,6 +1,6 @@
-package magma.compile.lang;
+package magma.app.compile.lang;
 
-import magma.compile.rule.*;
+import magma.app.compile.rule.*;
 
 public class CommonLang {
     public static final String NAME = "name";

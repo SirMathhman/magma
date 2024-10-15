@@ -1,18 +1,22 @@
-package magma.compile;
+package magma.app.compile;
 
-import magma.compile.lang.CommonLang;
-import magma.compile.lang.JavaLang;
-import magma.compile.lang.MagmaLang;
-import magma.result.Results;
+import magma.app.compile.lang.CommonLang;
+import magma.app.compile.lang.JavaLang;
+import magma.app.compile.lang.MagmaLang;
+import magma.api.result.Results;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static magma.compile.lang.JavaLang.RECORD;
-import static magma.compile.lang.MagmaLang.FUNCTION;
+import static magma.app.compile.lang.JavaLang.RECORD;
+import static magma.app.compile.lang.MagmaLang.FUNCTION;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CompilerTest {
+    @Test
+    void importStatic() {
+
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"First", "Second"})

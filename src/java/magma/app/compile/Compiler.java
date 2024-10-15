@@ -1,13 +1,13 @@
-package magma.compile;
+package magma.app.compile;
 
-import magma.compile.lang.JavaLang;
-import magma.compile.lang.MagmaLang;
+import magma.app.compile.lang.JavaLang;
+import magma.app.compile.lang.MagmaLang;
 
 import java.util.List;
 
-import static magma.compile.lang.CommonLang.CHILDREN;
-import static magma.compile.lang.JavaLang.RECORD;
-import static magma.compile.lang.MagmaLang.FUNCTION;
+import static magma.app.compile.lang.CommonLang.CHILDREN;
+import static magma.app.compile.lang.JavaLang.RECORD;
+import static magma.app.compile.lang.MagmaLang.FUNCTION;
 
 public record Compiler(String input) {
     private static Node pass(Node node) {

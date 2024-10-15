@@ -1,30 +1,22 @@
-package magma.compile.rule;
+package magma.app.compile.rule;
 
-import magma.compile.GenerateException;
-import magma.compile.Node;
-import magma.compile.ParseException;
-import magma.result.Err;
-import magma.result.Ok;
-import magma.result.Result;
+import magma.app.compile.GenerateException;
+import magma.app.compile.MapNode;
+import magma.app.compile.Node;
+import magma.app.compile.ParseException;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
 
-import java.util.List;
 import java.util.Optional;
 
-public record OrRule(List<Rule> rules) implements Rule {
+public record ExtractRule(String propertyKey) implements Rule {
     private Optional<Node> parse0(String input) {
-        for (Rule rule : rules) {
-            final var parsed = rule.parse(input).findValue();
-            if (parsed.isPresent()) return parsed;
-        }
-        return Optional.empty();
+        return Optional.of(new MapNode().withString(propertyKey, input));
     }
 
     private Optional<String> generate0(Node node) {
-        for (Rule rule : rules) {
-            final var generated = rule.generate(node).findValue();
-            if (generated.isPresent()) return generated;
-        }
-        return Optional.empty();
+        return Optional.of(node.findString(propertyKey).orElse(""));
     }
 
     @Override

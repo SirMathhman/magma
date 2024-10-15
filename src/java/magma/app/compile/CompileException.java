@@ -1,6 +1,6 @@
-package magma.compile;
+package magma.app.compile;
 
-import magma.ApplicationException;
+import magma.app.ApplicationException;
 
 public class CompileException extends ApplicationException {
     public CompileException() {
