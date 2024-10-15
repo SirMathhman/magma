@@ -1,10 +1,13 @@
-package magma;
+package magma.compile;
+
+import magma.compile.lang.JavaLang;
+import magma.compile.lang.MagmaLang;
 
 import java.util.List;
 
-import static magma.CommonLang.CHILDREN;
-import static magma.JavaLang.RECORD;
-import static magma.MagmaLang.FUNCTION;
+import static magma.compile.lang.CommonLang.CHILDREN;
+import static magma.compile.lang.JavaLang.RECORD;
+import static magma.compile.lang.MagmaLang.FUNCTION;
 
 public record Compiler(String input) {
     private static Node pass(Node node) {
@@ -18,7 +21,7 @@ public record Compiler(String input) {
                 .toList();
     }
 
-    String compile() throws CompileException {
+    public String compile() throws CompileException {
         final var node = JavaLang.JAVA_ROOT_RULE.parse(input).findValue()
                 .orElseThrow(CompileException::new);
 

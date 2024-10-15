@@ -1,5 +1,7 @@
 package magma;
 
+import magma.compile.Compiler;
+import magma.compile.lang.CommonLang;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

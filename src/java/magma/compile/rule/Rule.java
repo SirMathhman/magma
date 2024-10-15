@@ -1,8 +1,8 @@
-package magma.rule;
+package magma.compile.rule;
 
-import magma.GenerateException;
-import magma.Node;
-import magma.ParseException;
+import magma.compile.GenerateException;
+import magma.compile.Node;
+import magma.compile.ParseException;
 import magma.result.Result;
 
 public interface Rule {

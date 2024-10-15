@@ -1,12 +1,15 @@
-package magma;
+package magma.compile;
 
+import magma.compile.lang.CommonLang;
+import magma.compile.lang.JavaLang;
+import magma.compile.lang.MagmaLang;
 import magma.result.Results;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static magma.JavaLang.RECORD;
-import static magma.MagmaLang.FUNCTION;
+import static magma.compile.lang.JavaLang.RECORD;
+import static magma.compile.lang.MagmaLang.FUNCTION;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CompilerTest {

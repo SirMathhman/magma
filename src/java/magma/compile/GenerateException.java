@@ -1,4 +1,4 @@
-package magma;
+package magma.compile;
 
 public class GenerateException extends CompileException {
     public GenerateException(String message, Node context) {

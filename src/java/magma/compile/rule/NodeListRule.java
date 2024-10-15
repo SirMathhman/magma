@@ -1,9 +1,12 @@
-package magma;
+package magma.compile.rule;
 
+import magma.compile.GenerateException;
+import magma.compile.MapNode;
+import magma.compile.Node;
+import magma.compile.ParseException;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
-import magma.rule.Rule;
 
 import java.util.ArrayList;
 import java.util.List;

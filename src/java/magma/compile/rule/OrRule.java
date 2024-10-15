@@ -1,22 +1,30 @@
-package magma.rule;
+package magma.compile.rule;
 
-import magma.GenerateException;
-import magma.Node;
-import magma.ParseException;
+import magma.compile.GenerateException;
+import magma.compile.Node;
+import magma.compile.ParseException;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
 
+import java.util.List;
 import java.util.Optional;
 
-public record PrefixRule(String prefix, Rule childRule) implements Rule {
+public record OrRule(List<Rule> rules) implements Rule {
     private Optional<Node> parse0(String input) {
-        if (!input.startsWith(prefix)) return Optional.empty();
-        return childRule.parse(input.substring(prefix.length())).findValue();
+        for (Rule rule : rules) {
+            final var parsed = rule.parse(input).findValue();
+            if (parsed.isPresent()) return parsed;
+        }
+        return Optional.empty();
     }
 
     private Optional<String> generate0(Node node) {
-        return childRule.generate(node).findValue().map(value -> prefix + value);
+        for (Rule rule : rules) {
+            final var generated = rule.generate(node).findValue();
+            if (generated.isPresent()) return generated;
+        }
+        return Optional.empty();
     }
 
     @Override

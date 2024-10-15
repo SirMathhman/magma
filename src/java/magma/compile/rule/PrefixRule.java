@@ -1,22 +1,22 @@
-package magma.rule;
+package magma.compile.rule;
 
-import magma.GenerateException;
-import magma.MapNode;
-import magma.Node;
-import magma.ParseException;
+import magma.compile.GenerateException;
+import magma.compile.Node;
+import magma.compile.ParseException;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
 
 import java.util.Optional;
 
-public record ExtractRule(String propertyKey) implements Rule {
+public record PrefixRule(String prefix, Rule childRule) implements Rule {
     private Optional<Node> parse0(String input) {
-        return Optional.of(new MapNode().withString(propertyKey, input));
+        if (!input.startsWith(prefix)) return Optional.empty();
+        return childRule.parse(input.substring(prefix.length())).findValue();
     }
 
     private Optional<String> generate0(Node node) {
-        return Optional.of(node.findString(propertyKey).orElse(""));
+        return childRule.generate(node).findValue().map(value -> prefix + value);
     }
 
     @Override
