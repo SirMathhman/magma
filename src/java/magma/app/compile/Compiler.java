@@ -1,5 +1,6 @@
 package magma.app.compile;
 
+import magma.api.result.Results;
 import magma.app.compile.lang.JavaLang;
 import magma.app.compile.lang.MagmaLang;
 
@@ -22,12 +23,8 @@ public record Compiler(String input) {
     }
 
     public String compile() throws CompileException {
-        final var node = JavaLang.JAVA_ROOT_RULE.parse(input).findValue()
-                .orElseThrow(CompileException::new);
-
+        final var node = Results.unwrap(JavaLang.JAVA_ROOT_RULE.parse(input));
         final var passed = pass(node);
-
-        return MagmaLang.MAGMA_ROOT_RULE.generate(passed).findValue()
-                .orElseThrow(CompileException::new);
+        return Results.unwrap(MagmaLang.MAGMA_ROOT_RULE.generate(passed));
     }
 }
