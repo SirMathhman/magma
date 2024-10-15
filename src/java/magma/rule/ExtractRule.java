@@ -12,12 +12,11 @@ import java.util.Optional;
 
 public record ExtractRule(String propertyKey) implements Rule {
     private Optional<Node> parse0(String input) {
-        Node node = new MapNode();
-        return Optional.of(node.strings().with(propertyKey, input));
+        return Optional.of(new MapNode().withString(propertyKey, input));
     }
 
     private Optional<String> generate0(Node node) {
-        return Optional.of(node.strings().find(propertyKey).orElse(""));
+        return Optional.of(node.findString(propertyKey).orElse(""));
     }
 
     @Override

@@ -40,14 +40,14 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
             children.add(parsed.get());
         }
 
-        var node = new MapNode().nodeLists().with(propertyKey, children);
+        var node = new MapNode().withNodeList(propertyKey, children);
         return Optional.of(node);
     }
 
     private Optional<String> generate0(Node node) {
         var buffer = new StringBuilder();
 
-        final var propertyValues = node.nodeLists().find(propertyKey());
+        final var propertyValues = node.findNodeList(propertyKey());
         if (propertyValues.isEmpty()) return Optional.empty();
 
         for (var value : propertyValues.get()) {

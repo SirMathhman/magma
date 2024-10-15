@@ -1,15 +1,22 @@
 package magma;
 
-import magma.rule.Properties;
-
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 public interface Node {
-    Properties<String> strings();
-
-    Properties<List<Node>> nodeLists();
-
     Node retype(String type);
 
     boolean is(String type);
+
+    Node withString(String propertyKey, String propertyValue);
+
+    Optional<String> findString(String propertyKey);
+
+    Optional<Node> mapNodeList(String propertyKey, Function<List<Node>, List<Node>> mapper);
+
+    Optional<List<Node>> findNodeList(String propertyKey);
+
+    Node withNodeList(String propertyKey, List<Node> values);
 }

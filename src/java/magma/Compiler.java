@@ -8,7 +8,7 @@ import static magma.MagmaLang.FUNCTION;
 
 public record Compiler(String input) {
     private static Node pass(Node node) {
-        return node.nodeLists().map(CHILDREN, Compiler::passChildren).orElse(node);
+        return node.mapNodeList(CHILDREN, Compiler::passChildren).orElse(node);
     }
 
     private static List<Node> passChildren(List<Node> children) {
