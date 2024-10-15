@@ -1,7 +1,10 @@
 package magma.api.result;
 
+import magma.api.Tuple;
+
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Err<T, E> implements Result<T, E> {
     private final E error;
@@ -23,5 +26,20 @@ public class Err<T, E> implements Result<T, E> {
     @Override
     public <R> Result<R, E> mapValue(Function<T, R> mapper) {
         return new Err<>(error);
+    }
+
+    @Override
+    public boolean isErr() {
+        return true;
+    }
+
+    @Override
+    public <R> Result<Tuple<T, R>, E> and(Supplier<Result<R, E>> supplier) {
+        return new Err<>(error);
+    }
+
+    @Override
+    public boolean isOk() {
+        return false;
     }
 }

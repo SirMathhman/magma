@@ -1,16 +1,15 @@
 package magma.app.compile.rule;
 
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
 import magma.app.compile.GenerateException;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.ParseException;
-import magma.api.result.Err;
-import magma.api.result.Ok;
-import magma.api.result.Result;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
     static State splitAtChar(State state, char c) {
@@ -34,46 +33,38 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
         return state.advance().segments;
     }
 
-    private Optional<Node> parse0(String input) {
-        final var segments = split(input);
-        var children = new ArrayList<Node>();
-        for (String segment : segments) {
-            final var parsed = childRule.parse(segment).findValue();
-            if (parsed.isEmpty()) return Optional.empty();
-            children.add(parsed.get());
-        }
-
-        var node = new MapNode().withNodeList(propertyKey, children);
-        return Optional.of(node);
-    }
-
-    private Optional<String> generate0(Node node) {
-        var buffer = new StringBuilder();
-
-        final var propertyValues = node.findNodeList(propertyKey());
-        if (propertyValues.isEmpty()) return Optional.empty();
-
-        for (var value : propertyValues.get()) {
-            final var generate = this.childRule().generate(value).findValue();
-            if (generate.isEmpty()) return Optional.empty();
-            buffer.append(generate.get());
-        }
-
-        return Optional.of(buffer.toString());
-    }
-
     @Override
     public Result<Node, ParseException> parse(String input) {
-        return parse0(input)
-                .<Result<Node, ParseException>>map(Ok::new)
-                .orElseGet(() -> new Err<Node, ParseException>(new ParseException("Unknown input", input)));
+        final var segments = split(input);
+
+        Result<List<Node>, ParseException> children = new Ok<>(new ArrayList<>());
+        for (String segment : segments) {
+            children = children.and(() -> childRule.parse(segment)).mapValue(tuple -> {
+                final var copy = new ArrayList<>(tuple.left());
+                copy.add(tuple.right());
+                return copy;
+            });
+        }
+
+        return children.mapValue(list -> new MapNode().withNodeList(propertyKey, list));
     }
 
     @Override
     public Result<String, GenerateException> generate(Node node) {
-        return generate0(node)
-                .<Result<String, GenerateException>>map(Ok::new)
-                .orElseGet(() -> new Err<>(new GenerateException("Unknown node", node)));
+
+        final var propertyValues = node.findNodeList(this.propertyKey());
+        if (propertyValues.isEmpty())
+            return new Err<>(new GenerateException("Node list property '" + propertyKey + "' not present", node));
+
+        Result<StringBuilder, GenerateException> buffer = new Ok<>(new StringBuilder());
+        for (var value : propertyValues.get()) {
+            buffer = buffer.and(() -> this.childRule().generate(value)).mapValue(tuple -> {
+                tuple.left().append(tuple.right());
+                return tuple.left();
+            });
+        }
+
+        return buffer.mapValue(StringBuilder::toString);
     }
 
     static class State {
