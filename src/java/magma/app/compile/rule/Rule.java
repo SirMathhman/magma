@@ -3,9 +3,10 @@ package magma.app.compile.rule;
 import magma.app.compile.GenerateException;
 import magma.app.compile.Node;
 import magma.app.compile.ParseException;
+import magma.api.result.Result;
 
 public interface Rule {
-    RuleResult<Node, ParseException> parse(String input);
+    Result<Node, ParseException> parse(String input);
 
-    RuleResult<String, GenerateException> generate(Node node);
+    Result<String, GenerateException> generate(Node node);
 }

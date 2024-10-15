@@ -23,8 +23,8 @@ public record Compiler(String input) {
     }
 
     public String compile() throws CompileException {
-        final var node = Results.unwrap(JavaLang.JAVA_ROOT_RULE.parse(input).first().orElseThrow());
+        final var node = Results.unwrap(JavaLang.JAVA_ROOT_RULE.parse(input));
         final var passed = pass(node);
-        return Results.unwrap(MagmaLang.MAGMA_ROOT_RULE.generate(passed).first().orElseThrow());
+        return Results.unwrap(MagmaLang.MAGMA_ROOT_RULE.generate(passed));
     }
 }
