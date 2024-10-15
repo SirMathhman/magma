@@ -27,8 +27,8 @@ class CompilerTest {
                     .withString(CommonLang.NAME, name);
             final var targetNode = sourceNode.retype(FUNCTION);
 
-            final var actual = new Compiler(Results.unwrap(JavaLang.RECORD_RULE.generate(sourceNode))).compile();
-            assertEquals(Results.unwrap(MagmaLang.FUNCTION_RULE.generate(targetNode)), actual);
+            final var actual = new Compiler(Results.unwrap(JavaLang.RECORD_RULE.generate(sourceNode).first().orElseThrow())).compile();
+            assertEquals(Results.unwrap(MagmaLang.FUNCTION_RULE.generate(targetNode).first().orElseThrow()), actual);
         } catch (CompileException e) {
             fail(e);
         }
