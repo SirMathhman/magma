@@ -1,37 +1,34 @@
 package magma.app.compile.rule;
 
 import magma.api.result.Err;
-import magma.api.result.Result;
 import magma.app.compile.GenerateException;
 import magma.app.compile.Node;
 import magma.app.compile.ParseException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public record OrRule(List<Rule> rules) implements Rule {
-    private Result<Node, ParseException> parse2(String input) {
-        for (Rule rule : rules) {
-            final var parsed = rule.parse(input).unwrap();
-            if (parsed.isOk()) return parsed;
-        }
-        return new Err<>(new ParseException("Invalid input", input));
-    }
-
-    private Result<String, GenerateException> generate2(Node node) {
-        for (Rule rule : rules) {
-            final var generated = rule.generate(node).unwrap();
-            if (generated.isOk()) return generated;
-        }
-        return new Err<>(new GenerateException("Invalid input", node));
-    }
-
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        return new RuleResult<>(parse2(input));
+        var list = new ArrayList<RuleResult<Node, ParseException>>();
+        for (Rule rule : rules) {
+            final var parsed = rule.parse(input);
+            if (parsed.isValid()) return parsed;
+            list.add(parsed);
+        }
+
+        return new RuleResult<>(new Err<>(new ParseException("No valid rule", input)), list);
     }
 
     @Override
     public RuleResult<String, GenerateException> generate(Node node) {
-        return new RuleResult<>(generate2(node));
+        var list = new ArrayList<RuleResult<String, GenerateException>>();
+        for (Rule rule : rules) {
+            final var generated = rule.generate(node);
+            if (generated.isValid()) return generated;
+            list.add(generated);
+        }
+        return new RuleResult<>(new Err<>(new GenerateException("No valid rule", node)), list);
     }
 }
