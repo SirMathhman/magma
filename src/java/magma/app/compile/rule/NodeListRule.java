@@ -33,13 +33,12 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
         return state.advance().segments;
     }
 
-    @Override
-    public Result<Node, ParseException> parse(String input) {
+    private Result<Node, ParseException> parse2(String input) {
         final var segments = split(input);
 
         Result<List<Node>, ParseException> children = new Ok<>(new ArrayList<>());
         for (String segment : segments) {
-            children = children.and(() -> childRule.parse(segment)).mapValue(tuple -> {
+            children = children.and(() -> childRule.parse(segment).unwrap()).mapValue(tuple -> {
                 final var copy = new ArrayList<>(tuple.left());
                 copy.add(tuple.right());
                 return copy;
@@ -49,8 +48,7 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
         return children.mapValue(list -> new MapNode().withNodeList(propertyKey, list));
     }
 
-    @Override
-    public Result<String, GenerateException> generate(Node node) {
+    private Result<String, GenerateException> generate2(Node node) {
 
         final var propertyValues = node.findNodeList(this.propertyKey());
         if (propertyValues.isEmpty())
@@ -58,13 +56,23 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
 
         Result<StringBuilder, GenerateException> buffer = new Ok<>(new StringBuilder());
         for (var value : propertyValues.get()) {
-            buffer = buffer.and(() -> this.childRule().generate(value)).mapValue(tuple -> {
+            buffer = buffer.and(() -> this.childRule().generate(value).unwrap()).mapValue(tuple -> {
                 tuple.left().append(tuple.right());
                 return tuple.left();
             });
         }
 
         return buffer.mapValue(StringBuilder::toString);
+    }
+
+    @Override
+    public RuleResult<Node, ParseException> parse(String input) {
+        return new RuleResult<>(parse2(input));
+    }
+
+    @Override
+    public RuleResult<String, GenerateException> generate(Node node) {
+        return new RuleResult<>(generate2(node));
     }
 
     static class State {
