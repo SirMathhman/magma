@@ -4,6 +4,7 @@ import magma.api.result.Result;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public record RuleResult<T, E>(Result<T, E> result, List<RuleResult<T, E>> children) {
     public RuleResult(Result<T, E> result) {
@@ -17,5 +18,9 @@ public record RuleResult<T, E>(Result<T, E> result, List<RuleResult<T, E>> child
 
     public boolean isValid() {
         return result.isOk();
+    }
+
+    public RuleResult<T, E> mapValue(Function<T, T> mapper) {
+        return new RuleResult<>(result.mapValue(mapper), children);
     }
 }
