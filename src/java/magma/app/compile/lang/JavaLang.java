@@ -22,7 +22,7 @@ public class JavaLang {
     public static final NodeListRule JAVA_ROOT_RULE = new NodeListRule(CHILDREN, new StripRule(JAVA_ROOT_MEMBER));
 
     private static TypeRule createInterfaceRule() {
-        final var modifiers = new ExtractRule("modifiers");
+        final var modifiers = new StringListRule("modifiers", " ");
         final var memberRule = new OrRule(List.of(
                 createMethodRule()
         ));

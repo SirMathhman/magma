@@ -7,18 +7,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public record MapNode(Optional<String> type,
-                      Map<String, String> strings,
-                      Map<String, Node> nodes, Map<String, List<Node>> nodeLists) implements Node {
+public record MapNode(
+        Optional<String> type,
+        Map<String, String> strings,
+
+        Map<String, List<String>> stringLists, Map<String, Node> nodes, Map<String,
+        List<Node>> nodeLists) implements Node {
     public MapNode() {
-        this(Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+        this(Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
     }
 
     private static String formatLine(int depth, String key, String value) {
         return "\n" + " ".repeat(depth) + "\"" + key + "\": " + value;
     }
 
-    private static String formatArray(int depth, List<Node> values) {
+    private static String formatNodeList(int depth, List<Node> values) {
         return values.stream()
                 .map(node -> node.format(depth + 1))
                 .collect(Collectors.joining(", ", "[", "]"));
@@ -26,7 +29,7 @@ public record MapNode(Optional<String> type,
 
     @Override
     public Node retype(String type) {
-        return new MapNode(Optional.of(type), strings, nodes, nodeLists);
+        return new MapNode(Optional.of(type), strings, stringLists, nodes, nodeLists);
     }
 
     @Override
@@ -38,7 +41,7 @@ public record MapNode(Optional<String> type,
     public Node withString(String propertyKey, String propertyValue) {
         final var copy = new HashMap<>(strings);
         copy.put(propertyKey, propertyValue);
-        return new MapNode(type, copy, nodes, nodeLists);
+        return new MapNode(type, copy, stringLists, nodes, nodeLists);
     }
 
     @Override
@@ -60,7 +63,7 @@ public record MapNode(Optional<String> type,
     public Node withNode(String propertyKey, Node propertyValue) {
         final var copy = new HashMap<>(nodes);
         copy.put(propertyKey, propertyValue);
-        return new MapNode(type, strings, copy, nodeLists);
+        return new MapNode(type, strings, stringLists, copy, nodeLists);
     }
 
     @Override
@@ -79,6 +82,18 @@ public record MapNode(Optional<String> type,
     }
 
     @Override
+    public Node withStringList(String propertyKey, List<String> propertyValues) {
+        final var copy = new HashMap<>(stringLists);
+        copy.put(propertyKey, propertyValues);
+        return new MapNode(type, strings, copy, nodes, nodeLists);
+    }
+
+    @Override
+    public Optional<List<String>> findStringList(String propertyKey) {
+        return Optional.ofNullable(stringLists.get(propertyKey));
+    }
+
+    @Override
     public Stream<Tuple<String, String>> streamStrings() {
         return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
     }
@@ -92,7 +107,7 @@ public record MapNode(Optional<String> type,
     public Node withNodeList(String propertyKey, List<Node> values) {
         final var copy = new HashMap<>(nodeLists);
         copy.put(propertyKey, values);
-        return new MapNode(type, strings, nodes, copy);
+        return new MapNode(type, strings, stringLists, nodes, copy);
     }
 
     @Override
@@ -105,16 +120,26 @@ public record MapNode(Optional<String> type,
         final var typeString = type.map(value -> value + " ").orElse("");
 
         final var joinedStrings = formatMap(depth, strings, value -> "\"" + value + "\"");
+        final var joinedStringLists = formatMap(depth, stringLists, this::formatStringList);
         final var joinedNodes = formatMap(depth, nodes, value -> value.format(depth + 1));
-        final var joinedNodeLists = formatMap(depth, nodeLists, values -> formatArray(depth, values));
-        
+        final var joinedNodeLists = formatMap(depth, nodeLists, values -> formatNodeList(depth, values));
+
         final List<String> list = new ArrayList<>();
+
         if (!joinedStrings.isEmpty()) list.add(joinedStrings);
+        if (!joinedStringLists.isEmpty()) list.add(joinedStringLists);
+
         if (!joinedNodes.isEmpty()) list.add(joinedNodes);
         if (!joinedNodeLists.isEmpty()) list.add(joinedNodeLists);
 
         final var joined = String.join(",", list);
         return typeString + "{" + joined + "\n" + " ".repeat(depth) + "}";
+    }
+
+    private String formatStringList(List<String> list) {
+        return list.stream()
+                .map(inner -> "\"" + inner + "\"")
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     private <T> String formatMap(int depth, Map<String, T> set, Function<T, String> format) {
@@ -125,9 +150,19 @@ public record MapNode(Optional<String> type,
     }
 
     @Override
+    public Stream<Tuple<String, List<String>>> streamStringLists() {
+        return stringLists.entrySet()
+                .stream()
+                .map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));
+    }
+
+    @Override
     public Node merge(Node other) {
         final var stringsCopy = new HashMap<>(strings);
         other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));
+
+        final var stringListCopy = new HashMap<>(stringLists);
+        other.streamStringLists().forEach(tuple -> stringListCopy.put(tuple.left(), tuple.right()));
 
         final var nodesCopy = new HashMap<>(nodes);
         other.streamNodes().forEach(tuple -> nodesCopy.put(tuple.left(), tuple.right()));
@@ -135,6 +170,6 @@ public record MapNode(Optional<String> type,
         final var nodeListCopy = new HashMap<>(nodeLists);
         other.streamNodeLists().forEach(tuple -> nodeListCopy.put(tuple.left(), tuple.right()));
 
-        return new MapNode(type, stringsCopy, nodesCopy, nodeListCopy);
+        return new MapNode(type, stringsCopy, stringListCopy, nodesCopy, nodeListCopy);
     }
 }

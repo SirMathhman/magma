@@ -37,4 +37,10 @@ public interface Node {
     Stream<Tuple<String, Node>> streamNodes();
 
     boolean hasNode(String node);
+
+    Node withStringList(String propertyKey, List<String> propertyValues);
+
+    Optional<List<String>> findStringList(String propertyKey);
+
+    Stream<Tuple<String, List<String>>> streamStringLists();
 }
