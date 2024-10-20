@@ -13,7 +13,7 @@ public final class SuffixRule implements Rule {
     private final String suffix;
     private final Rule childRule;
 
-    public SuffixRule(String suffix, Rule childRule) {
+    public SuffixRule(Rule childRule, String suffix) {
         this.suffix = suffix;
         this.childRule = childRule;
     }
