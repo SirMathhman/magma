@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public record SingleSourceSet(Path source) implements SourceSet {
-
     @Override
     public Result<Set<Path>, IOException> collect() {
         var sources = new HashSet<Path>();

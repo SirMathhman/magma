@@ -5,15 +5,26 @@ import magma.app.compile.GenerateException;
 import magma.app.compile.Node;
 import magma.app.compile.ParseException;
 
-public record FirstRule(Rule leftRule, String slice, Rule rightRule) implements Rule {
+public final class LocatingRule implements Rule {
+    private final Rule leftRule;
+    private final Rule rightRule;
+    private final Locator locator;
+
+    public LocatingRule(Rule leftRule, Locator locator, Rule rightRule) {
+        this.leftRule = leftRule;
+        this.rightRule = rightRule;
+        this.locator = locator;
+    }
+
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        final var index = input.indexOf(slice);
-        if (index == -1)
-            return new RuleResult<>(new Err<>(new ParseException("Slice '" + slice + "' not present", input)));
+        final var optional = locator.locate(input);
+        if (optional.isEmpty())
+            return new RuleResult<>(new Err<>(new ParseException("Slice '" + locator.slice() + "' not present", input)));
 
+        final int index = optional.get();
         final var left = input.substring(0, index);
-        final var right = input.substring(index + slice.length());
+        final var right = input.substring(index + locator.slice().length());
 
         final var leftResult = leftRule.parse(left);
         if (leftResult.isError()) return leftResult.wrapErr(new ParseException("Invalid left", left));
@@ -24,6 +35,7 @@ public record FirstRule(Rule leftRule, String slice, Rule rightRule) implements 
         return new RuleResult<>(leftResult.result().and(rightResult::result).mapValue(tuple -> tuple.left().merge(tuple.right())));
     }
 
+
     @Override
     public RuleResult<String, GenerateException> generate(Node node) {
         final var leftResult = leftRule.generate(node);
@@ -32,6 +44,6 @@ public record FirstRule(Rule leftRule, String slice, Rule rightRule) implements 
         final var rightResult = rightRule.generate(node);
         if (rightResult.isError()) return rightResult.wrapErr(new GenerateException("Invalid right", node));
 
-        return new RuleResult<>(leftResult.result().and(rightResult::result).mapValue(tuple -> tuple.left() + slice + tuple.right()));
+        return new RuleResult<>(leftResult.result().and(rightResult::result).mapValue(tuple -> tuple.left() + locator.slice() + tuple.right()));
     }
 }

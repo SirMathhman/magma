@@ -9,32 +9,22 @@ import magma.app.compile.ParseException;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
 
-public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
-    static State splitAtChar(State state, char c) {
-        final var appended = state.append(c);
-        if (c == ';' && state.isLevel()) return appended.advance();
-        if (c == '{') return appended.enter();
-        if (c == '}') return appended.exit();
-        return appended;
-    }
+public final class NodeListRule implements Rule {
+    private final String propertyKey;
+    private final Rule childRule;
+    private final Splitter splitter;
 
-    static List<String> split(String input) {
-        final var length = input.length();
-        var state = new State();
-
-        for (int i = 0; i < length; i++) {
-            final var c = input.charAt(i);
-            state = splitAtChar(state, c);
-        }
-
-        return state.advance().segments;
+    public NodeListRule(Splitter splitter, String propertyKey, Rule childRule) {
+        this.propertyKey = propertyKey;
+        this.childRule = childRule;
+        this.splitter = splitter;
     }
 
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        final var segments = split(input);
+        final var segments = splitter.split(input);
 
         var children = new ArrayList<Node>();
         for (var segment : segments) {
@@ -71,43 +61,34 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
         return new RuleResult<>(new Ok<>(buffer.toString()));
     }
 
-    static class State {
-        private final List<String> segments;
-        private final StringBuilder buffer;
-        private final int depth;
-
-        private State() {
-            this(new ArrayList<>(), new StringBuilder(), 0);
-        }
-
-        private State(List<String> segments, StringBuilder buffer, int depth) {
-            this.buffer = buffer;
-            this.segments = segments;
-            this.depth = depth;
-        }
-
-        private State append(char c) {
-            return new State(segments, buffer.append(c), depth);
-        }
-
-        private State advance() {
-            if (buffer.toString().trim().isEmpty()) return this;
-
-            final var copy = new ArrayList<>(segments);
-            copy.add(buffer.toString());
-            return new State(copy, new StringBuilder(), depth);
-        }
-
-        public boolean isLevel() {
-            return depth == 0;
-        }
-
-        public State enter() {
-            return new State(segments, buffer, depth + 1);
-        }
-
-        public State exit() {
-            return new State(segments, buffer, depth - 1);
-        }
+    public String propertyKey() {
+        return propertyKey;
     }
+
+    public Rule childRule() {
+        return childRule;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (NodeListRule) obj;
+        return Objects.equals(this.propertyKey, that.propertyKey) &&
+                Objects.equals(this.childRule, that.childRule);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(propertyKey, childRule);
+    }
+
+    @Override
+    public String toString() {
+        return "NodeListRule[" +
+                "propertyKey=" + propertyKey + ", " +
+                "childRule=" + childRule + ']';
+    }
+
+
 }
