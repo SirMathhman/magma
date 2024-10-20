@@ -28,8 +28,12 @@ public record RuleResult<T, E>(Result<T, E> result, List<RuleResult<T, E>> child
         return new RuleResult<>(result.mapValue(mapper), children);
     }
 
-    public RuleResult<T, E> wrapErr(Supplier<E> error) {
+    public RuleResult<T, E> wrapErr(E error) {
         var list = singletonList(this);
-        return new RuleResult<>(new Err<>(error.get()), list);
+        return new RuleResult<>(new Err<>(error), list);
+    }
+
+    public boolean isError() {
+        return result.isErr();
     }
 }

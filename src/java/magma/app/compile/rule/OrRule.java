@@ -18,7 +18,7 @@ public record OrRule(List<Rule> rules) implements Rule {
             list.add(parsed);
         }
 
-        return new RuleResult<>(new Err<>(new ParseException("No valid rule", input)), list);
+        return new RuleResult<>(new Err<>(new ParseException("No valid rule in disjunction", input)), list);
     }
 
     @Override
@@ -29,6 +29,6 @@ public record OrRule(List<Rule> rules) implements Rule {
             if (generated.isValid()) return generated;
             list.add(generated);
         }
-        return new RuleResult<>(new Err<>(new GenerateException("No valid rule", node)), list);
+        return new RuleResult<>(new Err<>(new GenerateException("No valid rule in disjunction", node)), list);
     }
 }

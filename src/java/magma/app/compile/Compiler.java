@@ -27,34 +27,33 @@ public record Compiler(String input) {
     }
 
     public String compile() throws CompileException {
-        final var node = Results.unwrap(write());
+        final var node = Results.unwrap(write(JavaLang.JAVA_ROOT_RULE.parse(input)));
         final var passed = pass(node);
-        return Results.unwrap(MagmaLang.MAGMA_ROOT_RULE.generate(passed).unwrap());
+        return Results.unwrap(write(MagmaLang.MAGMA_ROOT_RULE.generate(passed)));
     }
 
-    private Result<Node, ParseException> write() {
-        final var result = JavaLang.JAVA_ROOT_RULE.parse(input);
+    private <T, E extends Exception> Result<T, CompileException> write(RuleResult<T, E> result) {
         if (result.isValid()) {
             return new Ok<>(result.result().findValue().orElseThrow());
         } else {
             writeResult(result, 0, 0);
-            return new Err<>(new ParseException("Failed to parse input", input));
+            return new Err<>(new CompileException("Failed to parse input", input));
         }
     }
 
-    private void writeResult(RuleResult<Node, ParseException> result, int depth, int index) {
+    private <T, E extends Exception> void writeResult(RuleResult<T, E> result, int depth, int index) {
         final var error = result.result().findError();
         if (error.isPresent()) {
             final var repeat = " ".repeat(depth);
             final var s = (index + 1) + ") ";
             final var rawMessage = error.get().getMessage();
-            final var message = rawMessage.replaceAll("\r\n",  "\r\n" + repeat + " ".repeat(s.length()));
+            final var message = rawMessage.replaceAll("\r\n", "\r\n" + repeat + " ".repeat(s.length()));
             System.out.println(repeat + s + message);
         }
 
-        List<RuleResult<Node, ParseException>> children = result.children();
+        List<RuleResult<T, E>> children = result.children();
         for (int i = 0; i < children.size(); i++) {
-            RuleResult<Node, ParseException> child = children.get(i);
+            RuleResult<T, E> child = children.get(i);
             writeResult(child, depth + 1, i);
         }
     }

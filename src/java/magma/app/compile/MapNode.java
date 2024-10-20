@@ -1,7 +1,10 @@
 package magma.app.compile;
 
+import magma.api.Tuple;
+
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public record MapNode(Optional<String> type, Map<String, String> strings,
                       Map<String, List<Node>> nodeLists) implements Node {
@@ -37,6 +40,16 @@ public record MapNode(Optional<String> type, Map<String, String> strings,
     }
 
     @Override
+    public Stream<Tuple<String, List<Node>>> streamNodeLists() {
+        return nodeLists.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
+    }
+
+    @Override
+    public Stream<Tuple<String, String>> streamStrings() {
+        return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
+    }
+
+    @Override
     public Optional<List<Node>> findNodeList(String propertyKey) {
         return Optional.ofNullable(nodeLists.get(propertyKey));
     }
@@ -46,5 +59,16 @@ public record MapNode(Optional<String> type, Map<String, String> strings,
         final var copy = new HashMap<>(nodeLists);
         copy.put(propertyKey, values);
         return new MapNode(type, strings, copy);
+    }
+
+    @Override
+    public Node merge(Node other) {
+        final var stringsCopy = new HashMap<>(strings);
+        other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));
+
+        final var nodeListCopy = new HashMap<>(nodeLists);
+        other.streamNodeLists().forEach(tuple -> nodeListCopy.put(tuple.left(), tuple.right()));
+
+        return new MapNode(type, stringsCopy, nodeListCopy);
     }
 }

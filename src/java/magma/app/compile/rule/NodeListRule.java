@@ -2,7 +2,6 @@ package magma.app.compile.rule;
 
 import magma.api.result.Err;
 import magma.api.result.Ok;
-import magma.api.result.Result;
 import magma.app.compile.GenerateException;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
@@ -34,23 +33,6 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
         return state.advance().segments;
     }
 
-    private Result<String, GenerateException> generate2(Node node) {
-
-        final var propertyValues = node.findNodeList(this.propertyKey());
-        if (propertyValues.isEmpty())
-            return new Err<>(new GenerateException("Node list property '" + propertyKey + "' not present", node));
-
-        Result<StringBuilder, GenerateException> buffer = new Ok<>(new StringBuilder());
-        for (var value : propertyValues.get()) {
-            buffer = buffer.and(() -> this.childRule().generate(value).unwrap()).mapValue(tuple -> {
-                tuple.left().append(tuple.right());
-                return tuple.left();
-            });
-        }
-
-        return buffer.mapValue(StringBuilder::toString);
-    }
-
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         final var segments = split(input);
@@ -71,7 +53,23 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
 
     @Override
     public RuleResult<String, GenerateException> generate(Node node) {
-        return new RuleResult<>(generate2(node));
+        final var propertyValues = node.findNodeList(this.propertyKey());
+        if (propertyValues.isEmpty())
+            return new RuleResult<>(new Err<>(new GenerateException("Node list property '" + propertyKey + "' not present", node)));
+
+        var buffer = new StringBuilder();
+        for (var value : propertyValues.get()) {
+            final var result = this.childRule().generate(value);
+            final var inner = result.result();
+            if (inner.isErr()) {
+                return new RuleResult<>(new Err<>(new GenerateException("Invalid child", value)), Collections.singletonList(result));
+            }
+
+            final var str = inner.findValue().orElseThrow();
+            buffer.append(str);
+        }
+
+        return new RuleResult<>(new Ok<>(buffer.toString()));
     }
 
     static class State {
