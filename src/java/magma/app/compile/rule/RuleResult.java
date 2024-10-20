@@ -6,7 +6,6 @@ import magma.api.result.Result;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static java.util.Collections.singletonList;
 
@@ -29,6 +28,8 @@ public record RuleResult<T, E>(Result<T, E> result, List<RuleResult<T, E>> child
     }
 
     public RuleResult<T, E> wrapErr(E error) {
+        if (!isError()) return this;
+
         var list = singletonList(this);
         return new RuleResult<>(new Err<>(error), list);
     }

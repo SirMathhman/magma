@@ -8,7 +8,9 @@ import magma.app.compile.ParseException;
 public record TypeRule(String type, Rule rule) implements Rule {
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        return rule.parse(input).mapValue(node -> node.retype(type));
+        return rule.parse(input)
+                .mapValue(node -> node.retype(type))
+                .wrapErr(new ParseException("Failed to assign type '" + type + "'", input));
     }
 
     @Override
