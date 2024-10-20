@@ -63,6 +63,11 @@ public record MapNode(Optional<String> type,
     }
 
     @Override
+    public Stream<Tuple<String, Node>> streamNodes() {
+        return nodes.entrySet().stream().map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));
+    }
+
+    @Override
     public Stream<Tuple<String, String>> streamStrings() {
         return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
     }
@@ -122,9 +127,12 @@ public record MapNode(Optional<String> type,
         final var stringsCopy = new HashMap<>(strings);
         other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));
 
+        final var nodesCopy = new HashMap<>(nodes);
+        other.streamNodes().forEach(tuple -> nodesCopy.put(tuple.left(), tuple.right()));
+
         final var nodeListCopy = new HashMap<>(nodeLists);
         other.streamNodeLists().forEach(tuple -> nodeListCopy.put(tuple.left(), tuple.right()));
 
-        return new MapNode(type, stringsCopy, nodes, nodeListCopy);
+        return new MapNode(type, stringsCopy, nodesCopy, nodeListCopy);
     }
 }

@@ -33,4 +33,6 @@ public interface Node {
     Node withNode(String propertyKey, Node propertyValue);
 
     Optional<Node> findNode(String propertyKey);
+
+    Stream<Tuple<String, Node>> streamNodes();
 }

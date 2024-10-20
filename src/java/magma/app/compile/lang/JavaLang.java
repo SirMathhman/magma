@@ -45,6 +45,17 @@ public class JavaLang {
     }
 
     private static Rule createTypeRule() {
-        return new TypeRule("content", new ExtractRule("type"));
+        final var type = new LazyRule();
+        type.setChildRule(new OrRule(List.of(
+                createGenericRule(type),
+                new TypeRule("symbol", new ExtractRule("type"))
+        )));
+        return type;
+    }
+
+    private static TypeRule createGenericRule(LazyRule type) {
+        final var base = new NodeRule("base", type);
+        final var child = new NodeRule("child", type);
+        return new TypeRule("generic", new StripRule(new FirstRule(base, "<", new SuffixRule(child, ">"))));
     }
 }
