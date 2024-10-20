@@ -1,5 +1,6 @@
 package magma.app;
 
+import magma.api.result.Results;
 import magma.app.compile.Compiler;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ public final class Application {
 
     private Set<Path> collectSources() throws ApplicationException {
         try {
-            return sourceSet.collect();
+            return Results.unwrap(sourceSet.collect());
         } catch (IOException e) {
             throw new ApplicationException(e);
         }
