@@ -37,7 +37,7 @@ public record Compiler(String input) {
             return new Ok<>(result.result().findValue().orElseThrow());
         } else {
             writeResult(result, 0, 0);
-            return new Err<>(new CompileException("Failed to parse input", input));
+            return new Err<>(new CompileException());
         }
     }
 

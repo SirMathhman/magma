@@ -91,7 +91,7 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
         }
 
         private State advance() {
-            if (buffer.isEmpty()) return this;
+            if (buffer.toString().trim().isEmpty()) return this;
 
             final var copy = new ArrayList<>(segments);
             copy.add(buffer.toString());

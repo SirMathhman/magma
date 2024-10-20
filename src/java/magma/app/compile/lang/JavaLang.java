@@ -24,10 +24,25 @@ public class JavaLang {
     private static TypeRule createInterfaceRule() {
         final var modifiers = new ExtractRule("modifiers");
         final var memberRule = new OrRule(List.of(
-                new ExtractRule("content")
+                createMethodRule()
         ));
 
         final var content = new SuffixRule(new NodeListRule("content", new StripRule(memberRule)), "}");
-        return new TypeRule("interface", new FirstRule(modifiers, "interface", new FirstRule(new ExtractRule("name"), "{", new StripRule(content))));
+        return new TypeRule("interface", new FirstRule(modifiers, "interface", new FirstRule(new StripRule(new ExtractRule("name")), "{", new StripRule(content))));
+    }
+
+    private static TypeRule createMethodRule() {
+        final var type = createTypeRule();
+        final var name = new ExtractRule("name");
+        final var beforeParams = new FirstRule(type, " ", name);
+        final var params = new ExtractRule("params");
+        final var throwing = new StripRule(new PrefixRule("throws ", new SuffixRule(new ExtractRule("throws"), ";")));
+        final var withParams = new FirstRule(params, ")", throwing);
+
+        return new TypeRule("method", new FirstRule(beforeParams, "(", withParams));
+    }
+
+    private static ExtractRule createTypeRule() {
+        return new ExtractRule("type");
     }
 }
