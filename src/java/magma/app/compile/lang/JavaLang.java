@@ -18,5 +18,5 @@ public class JavaLang {
             RECORD_RULE
     ));
 
-    public static final NodeListRule JAVA_ROOT_RULE = new NodeListRule(CommonLang.CHILDREN, JAVA_ROOT_MEMBER);
+    public static final NodeListRule JAVA_ROOT_RULE = new NodeListRule(CommonLang.CHILDREN, new StripRule(JAVA_ROOT_MEMBER));
 }
