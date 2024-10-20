@@ -37,7 +37,7 @@ public class JavaLang {
         final var returns = new NodeRule("returns", type);
 
         final var beforeParams = new FirstRule(returns, " ", name);
-        final var params = new ExtractRule("params");
+        final var params = new OptionalNodeRule("params", new NodeRule("params", new TypeRule("content", new ExtractRule("params"))), new EmptyRule());
         final var throwing = new StripRule(new PrefixRule("throws ", new SuffixRule(new NodeRule("throws", type), ";")));
         final var withParams = new FirstRule(params, ")", throwing);
 

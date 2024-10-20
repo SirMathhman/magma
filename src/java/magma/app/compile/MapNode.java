@@ -68,6 +68,11 @@ public record MapNode(Optional<String> type,
     }
 
     @Override
+    public boolean hasNode(String node) {
+        return nodes.containsKey(node);
+    }
+
+    @Override
     public Stream<Tuple<String, String>> streamStrings() {
         return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
     }

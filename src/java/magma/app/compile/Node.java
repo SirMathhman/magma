@@ -35,4 +35,6 @@ public interface Node {
     Optional<Node> findNode(String propertyKey);
 
     Stream<Tuple<String, Node>> streamNodes();
+
+    boolean hasNode(String node);
 }
