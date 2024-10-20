@@ -29,4 +29,8 @@ public interface Node {
     Stream<Tuple<String, String>> streamStrings();
 
     Stream<Tuple<String, List<Node>>> streamNodeLists();
+
+    Node withNode(String propertyKey, Node propertyValue);
+
+    Optional<Node> findNode(String propertyKey);
 }

@@ -34,15 +34,17 @@ public class JavaLang {
     private static TypeRule createMethodRule() {
         final var type = createTypeRule();
         final var name = new ExtractRule("name");
-        final var beforeParams = new FirstRule(type, " ", name);
+        final var returns = new NodeRule("returns", type);
+
+        final var beforeParams = new FirstRule(returns, " ", name);
         final var params = new ExtractRule("params");
-        final var throwing = new StripRule(new PrefixRule("throws ", new SuffixRule(new ExtractRule("throws"), ";")));
+        final var throwing = new StripRule(new PrefixRule("throws ", new SuffixRule(new NodeRule("throws", type), ";")));
         final var withParams = new FirstRule(params, ")", throwing);
 
         return new TypeRule("method", new FirstRule(beforeParams, "(", withParams));
     }
 
-    private static ExtractRule createTypeRule() {
-        return new ExtractRule("type");
+    private static Rule createTypeRule() {
+        return new TypeRule("content", new ExtractRule("type"));
     }
 }
