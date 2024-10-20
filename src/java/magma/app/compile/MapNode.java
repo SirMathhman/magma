@@ -18,6 +18,12 @@ public record MapNode(Optional<String> type,
         return "\n" + " ".repeat(depth) + "\"" + key + "\": " + value;
     }
 
+    private static String formatArray(int depth, List<Node> values) {
+        return values.stream()
+                .map(node -> node.format(depth + 1))
+                .collect(Collectors.joining(", ", "[", "]"));
+    }
+
     @Override
     public Node retype(String type) {
         return new MapNode(Optional.of(type), strings, nodes, nodeLists);
@@ -97,27 +103,11 @@ public record MapNode(Optional<String> type,
     @Override
     public String format(int depth) {
         final var typeString = type.map(value -> value + " ").orElse("");
-        final var joinedStrings = strings.entrySet()
-                .stream()
-                .map(entry -> formatLine(depth, entry.getKey(), "\"" + entry.getValue() + "\""))
-                .collect(Collectors.joining(","));
 
-        final var joinedNodes = nodes.entrySet()
-                .stream()
-                .map(entry -> formatLine(depth, entry.getKey(), entry.getValue().format(depth + 1)))
-                .collect(Collectors.joining(","));
-
-        final var joinedNodeLists = nodeLists.entrySet()
-                .stream()
-                .map(entry -> {
-                    final var value = entry.getValue().stream()
-                            .map(node -> node.format(depth + 1))
-                            .collect(Collectors.joining(", ", "[", "]"));
-
-                    return formatLine(depth, entry.getKey(), value);
-                })
-                .collect(Collectors.joining());
-
+        final var joinedStrings = formatMap(depth, strings, value -> "\"" + value + "\"");
+        final var joinedNodes = formatMap(depth, nodes, value -> value.format(depth + 1));
+        final var joinedNodeLists = formatMap(depth, nodeLists, values -> formatArray(depth, values));
+        
         final List<String> list = new ArrayList<>();
         if (!joinedStrings.isEmpty()) list.add(joinedStrings);
         if (!joinedNodes.isEmpty()) list.add(joinedNodes);
@@ -125,6 +115,13 @@ public record MapNode(Optional<String> type,
 
         final var joined = String.join(",", list);
         return typeString + "{" + joined + "\n" + " ".repeat(depth) + "}";
+    }
+
+    private <T> String formatMap(int depth, Map<String, T> set, Function<T, String> format) {
+        return set.entrySet()
+                .stream()
+                .map(entry -> formatLine(depth, entry.getKey(), format.apply(entry.getValue())))
+                .collect(Collectors.joining(","));
     }
 
     @Override
