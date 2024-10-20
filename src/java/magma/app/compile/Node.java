@@ -22,6 +22,8 @@ public interface Node {
 
     Node withNodeList(String propertyKey, List<Node> values);
 
+    String format(int depth);
+
     Node merge(Node other);
 
     Stream<Tuple<String, String>> streamStrings();

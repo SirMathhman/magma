@@ -4,6 +4,7 @@ import magma.api.Tuple;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public record MapNode(Optional<String> type, Map<String, String> strings,
@@ -59,6 +60,38 @@ public record MapNode(Optional<String> type, Map<String, String> strings,
         final var copy = new HashMap<>(nodeLists);
         copy.put(propertyKey, values);
         return new MapNode(type, strings, copy);
+    }
+
+    @Override
+    public String toString() {
+        return format(0);
+    }
+
+    @Override
+    public String format(int depth) {
+        final var typeString = type.map(value -> value + " ").orElse("");
+        final var joinedStrings = strings.entrySet()
+                .stream()
+                .map(entry -> "\n" + " ".repeat(depth) + "\"" + entry.getKey() + "\": \"" + entry.getValue() + "\"")
+                .collect(Collectors.joining(","));
+        final var joinedNodeLists = nodeLists.entrySet()
+                .stream()
+                .map(entry -> {
+                    final var value = entry.getValue().stream()
+                            .map(node -> node.format(depth + 1))
+                            .collect(Collectors.joining(", ", "[", "]"));
+
+                    final var s = " ".repeat(depth);
+                    return "\n" + s + "\"" + entry.getKey() + "\": \"" + value + "\"";
+                })
+                .collect(Collectors.joining());
+
+        final List<String> list = new ArrayList<>();
+        if(!joinedStrings.isEmpty()) list.add(joinedStrings);
+        if(!joinedNodeLists.isEmpty()) list.add(joinedNodeLists);
+
+        final var joined = String.join(",", list);
+        return typeString + "{" + joined + "\n" + " ".repeat(depth) + "}";
     }
 
     @Override
