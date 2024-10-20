@@ -9,8 +9,8 @@ import magma.app.compile.lang.MagmaLang;
 import magma.app.compile.rule.RuleResult;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static magma.app.compile.lang.CommonLang.CHILDREN;
 import static magma.app.compile.lang.JavaLang.*;
@@ -28,17 +28,36 @@ public record Compiler(String input) {
                 .toList();
     }
 
-    private static Node passRootChild(Node child) {
-        if (child.is(RECORD)) return child.retype(FUNCTION);
-        if (child.is(INTERFACE)) {
-            final var node = child.mapStringList(MODIFIERS, modifiers -> {
-                var newList = new ArrayList<String>();
-                if (modifiers.contains("public")) newList.add("export");
-                return newList;
-            }).orElse(child);
+    private static Node passRootChild(Node node) {
+        return passRecord(node)
+                .or(() -> passInterface(node))
+                .orElse(node);
+    }
 
-            return node.retype(MagmaLang.TRAIT);
-        }
+    private static Optional<Node> passRecord(Node node) {
+        return node.is(RECORD) ? Optional.of(node.retype(FUNCTION)) : Optional.empty();
+    }
+
+    private static Optional<Node> passInterface(Node node) {
+        if (!node.is(INTERFACE)) return Optional.empty();
+
+        final var retype = node.retype(MagmaLang.TRAIT);
+        
+        final var withModifiers = retype.mapStringList(MODIFIERS, modifiers -> {
+            var newList = new ArrayList<String>();
+            if (modifiers.contains("public")) newList.add("export");
+            return newList;
+        }).orElse(retype);
+
+        final var withChildren = withModifiers.mapNodeList(CHILDREN, children -> children.stream()
+                .map(Compiler::passClassMember)
+                .toList()).orElse(withModifiers);
+
+        return Optional.of(withChildren);
+    }
+
+    private static Node passClassMember(Node child) {
+        if (child.is(METHOD)) return child.retype(FUNCTION);
         return child;
     }
 

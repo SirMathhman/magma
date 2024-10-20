@@ -22,6 +22,7 @@ public class JavaLang {
     public static final NodeListRule JAVA_ROOT_RULE = new NodeListRule(CHILDREN, new StripRule(JAVA_ROOT_MEMBER));
     public static final String INTERFACE = "interface";
     public static final String MODIFIERS = "modifiers";
+    public static final String METHOD = "method";
 
     private static TypeRule createInterfaceRule() {
         final var modifiers = new StringListRule(MODIFIERS, " ");
@@ -43,7 +44,7 @@ public class JavaLang {
         final var throwing = new StripRule(new PrefixRule("throws ", new SuffixRule(new NodeRule("throws", type), ";")));
         final var withParams = new FirstRule(params, ")", throwing);
 
-        return new TypeRule("method", new FirstRule(beforeParams, "(", withParams));
+        return new TypeRule(METHOD, new FirstRule(beforeParams, "(", withParams));
     }
 
     private static Rule createTypeRule() {
