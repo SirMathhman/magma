@@ -157,6 +157,11 @@ public record MapNode(
     }
 
     @Override
+    public Optional<Node> mapStringList(String propertyKey, Function<List<String>, List<String>> mapper) {
+        return findStringList(propertyKey).map(mapper).map(list -> withStringList(propertyKey, list));
+    }
+
+    @Override
     public Node merge(Node other) {
         final var stringsCopy = new HashMap<>(strings);
         other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));

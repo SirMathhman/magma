@@ -8,10 +8,12 @@ import magma.app.compile.lang.JavaLang;
 import magma.app.compile.lang.MagmaLang;
 import magma.app.compile.rule.RuleResult;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static magma.app.compile.lang.CommonLang.CHILDREN;
-import static magma.app.compile.lang.JavaLang.RECORD;
+import static magma.app.compile.lang.JavaLang.*;
 import static magma.app.compile.lang.MagmaLang.FUNCTION;
 
 public record Compiler(String input) {
@@ -22,8 +24,22 @@ public record Compiler(String input) {
     private static List<Node> passChildren(List<Node> children) {
         return children.stream()
                 .filter(child -> !child.is(JavaLang.PACKAGE))
-                .map(child -> child.is(RECORD) ? child.retype(FUNCTION) : child)
+                .map(Compiler::passRootChild)
                 .toList();
+    }
+
+    private static Node passRootChild(Node child) {
+        if (child.is(RECORD)) return child.retype(FUNCTION);
+        if (child.is(INTERFACE)) {
+            final var node = child.mapStringList(MODIFIERS, modifiers -> {
+                var newList = new ArrayList<String>();
+                if (modifiers.contains("public")) newList.add("export");
+                return newList;
+            }).orElse(child);
+
+            return node.retype(MagmaLang.TRAIT);
+        }
+        return child;
     }
 
     public String compile() throws CompileException {

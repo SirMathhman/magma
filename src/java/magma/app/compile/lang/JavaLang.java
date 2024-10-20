@@ -20,15 +20,17 @@ public class JavaLang {
             createInterfaceRule()
     ));
     public static final NodeListRule JAVA_ROOT_RULE = new NodeListRule(CHILDREN, new StripRule(JAVA_ROOT_MEMBER));
+    public static final String INTERFACE = "interface";
+    public static final String MODIFIERS = "modifiers";
 
     private static TypeRule createInterfaceRule() {
-        final var modifiers = new StringListRule("modifiers", " ");
+        final var modifiers = new StringListRule(MODIFIERS, " ");
         final var memberRule = new OrRule(List.of(
                 createMethodRule()
         ));
 
         final var content = new SuffixRule(new NodeListRule("content", new StripRule(memberRule)), "}");
-        return new TypeRule("interface", new FirstRule(modifiers, "interface", new FirstRule(new StripRule(new ExtractRule("name")), "{", new StripRule(content))));
+        return new TypeRule(INTERFACE, new FirstRule(modifiers, "interface", new FirstRule(new StripRule(new ExtractRule("name")), "{", new StripRule(content))));
     }
 
     private static TypeRule createMethodRule() {
