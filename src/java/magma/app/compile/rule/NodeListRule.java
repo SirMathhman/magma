@@ -9,6 +9,7 @@ import magma.app.compile.Node;
 import magma.app.compile.ParseException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
@@ -33,21 +34,6 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
         return state.advance().segments;
     }
 
-    private Result<Node, ParseException> parse2(String input) {
-        final var segments = split(input);
-
-        Result<List<Node>, ParseException> children = new Ok<>(new ArrayList<>());
-        for (String segment : segments) {
-            children = children.and(() -> childRule.parse(segment).unwrap()).mapValue(tuple -> {
-                final var copy = new ArrayList<>(tuple.left());
-                copy.add(tuple.right());
-                return copy;
-            });
-        }
-
-        return children.mapValue(list -> new MapNode().withNodeList(propertyKey, list));
-    }
-
     private Result<String, GenerateException> generate2(Node node) {
 
         final var propertyValues = node.findNodeList(this.propertyKey());
@@ -67,7 +53,20 @@ public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
 
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        return new RuleResult<>(parse2(input));
+        final var segments = split(input);
+
+        var children = new ArrayList<Node>();
+        for (var segment : segments) {
+            final var result = childRule.parse(segment);
+            final var inner = result.result();
+            if (inner.isErr()) {
+                return new RuleResult<>(new Err<>(new ParseException("Invalid child", segment)), Collections.singletonList(result));
+            }
+
+            children.add(inner.findValue().orElseThrow());
+        }
+
+        return new RuleResult<>(new Ok<>(new MapNode().withNodeList("children", children)));
     }
 
     @Override

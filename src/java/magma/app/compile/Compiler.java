@@ -1,8 +1,12 @@
 package magma.app.compile;
 
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
 import magma.api.result.Results;
 import magma.app.compile.lang.JavaLang;
 import magma.app.compile.lang.MagmaLang;
+import magma.app.compile.rule.RuleResult;
 
 import java.util.List;
 
@@ -23,8 +27,35 @@ public record Compiler(String input) {
     }
 
     public String compile() throws CompileException {
-        final var node = Results.unwrap(JavaLang.JAVA_ROOT_RULE.parse(input).unwrap());
+        final var node = Results.unwrap(write());
         final var passed = pass(node);
         return Results.unwrap(MagmaLang.MAGMA_ROOT_RULE.generate(passed).unwrap());
+    }
+
+    private Result<Node, ParseException> write() {
+        final var result = JavaLang.JAVA_ROOT_RULE.parse(input);
+        if (result.isValid()) {
+            return new Ok<>(result.result().findValue().orElseThrow());
+        } else {
+            writeResult(result, 0, 0);
+            return new Err<>(new ParseException("Failed to parse input", input));
+        }
+    }
+
+    private void writeResult(RuleResult<Node, ParseException> result, int depth, int index) {
+        final var error = result.result().findError();
+        if (error.isPresent()) {
+            final var repeat = " ".repeat(depth);
+            final var s = (index + 1) + ") ";
+            final var rawMessage = error.get().getMessage();
+            final var message = rawMessage.replaceAll("\r\n",  "\r\n" + repeat + " ".repeat(s.length()));
+            System.out.println(repeat + s + message);
+        }
+
+        List<RuleResult<Node, ParseException>> children = result.children();
+        for (int i = 0; i < children.size(); i++) {
+            RuleResult<Node, ParseException> child = children.get(i);
+            writeResult(child, depth + 1, i);
+        }
     }
 }
