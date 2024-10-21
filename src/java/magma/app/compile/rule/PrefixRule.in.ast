@@ -11,7 +11,7 @@
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, record {
  "name": "PrefixRule",
- "body": " implements Rule {
+ "body": "
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         if (!input.startsWith(prefix))
@@ -24,11 +24,14 @@
     public RuleResult<String, GenerateException> generate(Node node) {
         return childRule.generate(node).mapValue(value -> prefix + value);
     }
-}",
+",
  "modifiers": ["public"],
+ "interface": symbol {
+  "type": "Rule"
+  },
  "params": [definition {
   "type": "String",
-  "name": "prefix,"
+  "name": "prefix"
   }, definition {
   "type": " Rule",
   "name": "childRule"

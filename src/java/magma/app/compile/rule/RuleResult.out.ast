@@ -6,6 +6,8 @@
  }, import {
  "namespace": ["java", "util", "Collections"]
  }, import {
+ "namespace": ["java", "util", "Comparator"]
+ }, import {
  "namespace": ["java", "util", "List"]
  }, import {
  "namespace": ["java", "util", "function", "Function"]
@@ -13,7 +15,7 @@
  "namespace": ["static java", "util", "Collections", "singletonList"]
  }, function {
  "name": "RuleResult",
- "body": " {
+ "body": "
     public RuleResult(Result<T, E> result) {
         this(result, Collections.emptyList());
     }
@@ -41,16 +43,29 @@
     public boolean isError() {
         return result.isErr();
     }
-}",
+
+    public int depth() {
+        return 1 + children.stream()
+                .map(RuleResult::depth)
+                .max(Integer::compare)
+                .orElse(0);
+    }
+
+    public List<RuleResult<T, E>> sortedChildren() {
+        return children.stream()
+                .sorted(Comparator.comparingInt(RuleResult::depth))
+                .toList();
+    }
+",
  "modifiers": ["public"],
  "type-params": [symbol {
-  "type": "T,"
+  "type": "T"
   }, symbol {
   "type": "E"
   }],
  "params": [definition {
   "type": "Result<T, E>",
-  "name": "result,"
+  "name": "result"
   }, definition {
   "type": " List<RuleResult<T, E>>",
   "name": "children"

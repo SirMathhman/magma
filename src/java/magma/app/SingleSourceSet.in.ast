@@ -17,15 +17,18 @@
  "namespace": ["java", "util", "Set"]
  }, record {
  "name": "SingleSourceSet",
- "body": " implements SourceSet {
+ "body": "
     @Override
     public Result<Set<Path>, IOException> collect() {
         var sources = new HashSet<Path>();
         if(Files.exists(this.source())) sources.add(this.source());
         return new Ok<>(sources);
     }
-}",
+",
  "modifiers": ["public"],
+ "interface": symbol {
+  "type": "SourceSet"
+  },
  "params": [definition {
   "type": "Path",
   "name": "source"

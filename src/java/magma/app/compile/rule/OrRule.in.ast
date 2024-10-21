@@ -15,7 +15,7 @@
  "namespace": ["java", "util", "List"]
  }, record {
  "name": "OrRule",
- "body": " implements Rule {
+ "body": "
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         var list = new ArrayList<RuleResult<Node, ParseException>>();
@@ -38,8 +38,11 @@
         }
         return new RuleResult<>(new Err<>(new GenerateException("No valid rule in disjunction", node)), list);
     }
-}",
+",
  "modifiers": ["public"],
+ "interface": symbol {
+  "type": "Rule"
+  },
  "params": [definition {
   "type": "List<Rule>",
   "name": "rules"

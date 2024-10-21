@@ -16,8 +16,13 @@
    "base": symbol {
     "type": "Result"
     },
-   "children": [symbol {
-    "type": "Set<Path>,"
+   "children": [generic {
+    "base": symbol {
+     "type": "Set"
+     },
+    "children": [symbol {
+     "type": "Path"
+     }]
     }, symbol {
     "type": "IOException"
     }]

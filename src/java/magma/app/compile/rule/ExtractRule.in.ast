@@ -15,7 +15,7 @@
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, record {
  "name": "ExtractRule",
- "body": " implements Rule {
+ "body": "
 
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
@@ -30,8 +30,11 @@
                 .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String '" + propertyKey + "' not present", node))));
 
     }
-}",
+",
  "modifiers": ["public"],
+ "interface": symbol {
+  "type": "Rule"
+  },
  "params": [definition {
   "type": "String",
   "name": "propertyKey"

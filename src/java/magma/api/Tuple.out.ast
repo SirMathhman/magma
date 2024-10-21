@@ -1,17 +1,17 @@
 {
 "children": [function {
  "name": "Tuple",
- "body": " {
-}",
+ "body": "
+",
  "modifiers": ["public"],
  "type-params": [symbol {
-  "type": "A,"
+  "type": "A"
   }, symbol {
   "type": "B"
   }],
  "params": [definition {
   "type": "A",
-  "name": "left,"
+  "name": "left"
   }, definition {
   "type": " B",
   "name": "right"

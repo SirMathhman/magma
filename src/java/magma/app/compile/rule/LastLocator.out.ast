@@ -3,14 +3,17 @@
  "namespace": ["java", "util", "Optional"]
  }, function {
  "name": "LastLocator",
- "body": " implements Locator {
+ "body": "
     @Override
     public Optional<Integer> locate(String input) {
         final var index = input.lastIndexOf(slice);
         return index == -1 ? Optional.empty() : Optional.of(index);
     }
-}",
+",
  "modifiers": ["public"],
+ "interface": symbol {
+  "type": "Locator"
+  },
  "params": [definition {
   "type": "String",
   "name": "slice"

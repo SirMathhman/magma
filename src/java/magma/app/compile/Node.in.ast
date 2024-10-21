@@ -117,7 +117,7 @@
      "type": "Tuple"
      },
     "children": [symbol {
-     "type": "String,"
+     "type": "String"
      }, symbol {
      "type": "String"
      }]
@@ -134,7 +134,7 @@
      "type": "Tuple"
      },
     "children": [symbol {
-     "type": "String,"
+     "type": "String"
      }, generic {
      "base": symbol {
       "type": "List"
@@ -177,7 +177,7 @@
      "type": "Tuple"
      },
     "children": [symbol {
-     "type": "String,"
+     "type": "String"
      }, symbol {
      "type": "Node"
      }]
@@ -228,7 +228,7 @@
      "type": "Tuple"
      },
     "children": [symbol {
-     "type": "String,"
+     "type": "String"
      }, generic {
      "base": symbol {
       "type": "List"

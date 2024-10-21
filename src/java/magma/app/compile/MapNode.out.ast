@@ -11,7 +11,7 @@
  "namespace": ["java", "util", "stream", "Stream"]
  }, function {
  "name": "MapNode",
- "body": " implements Node {
+ "body": "
     public MapNode() {
         this(Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
     }
@@ -176,24 +176,27 @@
 
         return new MapNode(type, stringsCopy, stringListCopy, nodesCopy, nodeListCopy);
     }
-}",
+",
  "modifiers": ["public"],
+ "interface": symbol {
+  "type": "Node"
+  },
  "params": [definition {
   "type": "
         Optional<String>",
-  "name": "type,"
+  "name": "type"
   }, definition {
   "type": "
         Map<String, String>",
-  "name": "strings,"
+  "name": "strings"
   }, definition {
   "type": "
 
         Map<String, List<String>>",
-  "name": "stringLists,"
+  "name": "stringLists"
   }, definition {
   "type": " Map<String, Node>",
-  "name": "nodes,"
+  "name": "nodes"
   }, definition {
   "type": " Map<String,
         List<Node>>",

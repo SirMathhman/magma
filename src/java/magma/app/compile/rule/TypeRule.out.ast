@@ -9,7 +9,7 @@
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, function {
  "name": "TypeRule",
- "body": " implements Rule {
+ "body": "
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         return rule.parse(input)
@@ -23,11 +23,14 @@
             return new RuleResult<>(new Err<>(new GenerateException("Expected a type of '" + type + "'", node)));
         return rule.generate(node);
     }
-}",
+",
  "modifiers": ["public"],
+ "interface": symbol {
+  "type": "Rule"
+  },
  "params": [definition {
   "type": "String",
-  "name": "type,"
+  "name": "type"
   }, definition {
   "type": " Rule",
   "name": "rule"

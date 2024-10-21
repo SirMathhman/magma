@@ -17,13 +17,13 @@ public class ValueSplitter implements Splitter {
         var depth = 0;
         for (int i = 0; i < input.length(); i++) {
             var c = input.charAt(i);
-            buffer.append(c);
             if (c == ',' && depth == 0) {
                 advance(buffer, lines);
                 buffer = new StringBuilder();
             } else {
                 if (c == '<') depth++;
                 if (c == '>') depth--;
+                buffer.append(c);
             }
         }
         advance(buffer, lines);

@@ -1,15 +1,15 @@
 {
 "children": [function {
  "name": "CompileResult",
- "body": " {
-}",
+ "body": "
+",
  "modifiers": ["public"],
  "params": [definition {
   "type": "Node",
-  "name": "beforePass,"
+  "name": "beforePass"
   }, definition {
   "type": " Node",
-  "name": "afterPass,"
+  "name": "afterPass"
   }, definition {
   "type": " String",
   "name": "output"
