@@ -25,13 +25,16 @@
   }],
  "children": [method {
   "name": "parse",
-  "content": "    public RuleResult<Node, ParseException>",
+  "content": "RuleResult<Node, ParseException>",
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
   "params": [definition {
    "name": "input",
    "content": "String"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
    }],
   "children": [symbol {
    "content": "var list = new ArrayList<RuleResult<Node, ParseException>>();"
@@ -57,13 +60,16 @@
    }]
   }, method {
   "name": "generate",
-  "content": "    public RuleResult<String, GenerateException>",
+  "content": "RuleResult<String, GenerateException>",
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
   "params": [definition {
    "name": "node",
    "content": "Node"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
    }],
   "children": [symbol {
    "content": "var list = new ArrayList<RuleResult<String, GenerateException>>();"

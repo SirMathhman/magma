@@ -38,7 +38,7 @@
    "content": "String"
    }, definition {
    "name": "propertyValue",
-   "content": " String"
+   "content": "String"
    }]
   }, method {
   "name": "findString",
@@ -55,7 +55,7 @@
    "content": "String"
    }, definition {
    "name": "mapper",
-   "content": " Function<List<Node>, List<Node>>"
+   "content": "Function<List<Node>, List<Node>>"
    }]
   }, method {
   "name": "findNodeList",
@@ -72,7 +72,7 @@
    "content": "String"
    }, definition {
    "name": "values",
-   "content": " List<Node>"
+   "content": "List<Node>"
    }]
   }, method {
   "name": "format",
@@ -104,7 +104,7 @@
    "content": "String"
    }, definition {
    "name": "propertyValue",
-   "content": " Node"
+   "content": "Node"
    }]
   }, method {
   "name": "findNode",
@@ -132,7 +132,7 @@
    "content": "String"
    }, definition {
    "name": "propertyValues",
-   "content": " List<String>"
+   "content": "List<String>"
    }]
   }, method {
   "name": "findStringList",
@@ -153,7 +153,7 @@
    "content": "String"
    }, definition {
    "name": "mapper",
-   "content": " Function<List<String>, List<String>>"
+   "content": "Function<List<String>, List<String>>"
    }]
   }]
  }]

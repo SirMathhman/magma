@@ -35,11 +35,14 @@
   }],
  "children": [method {
   "name": "findValue",
-  "content": "    public Optional<T>",
-  "params": [],
+  "content": "Optional<T>",
   "annotations": [annotation {
    "value": "Override"
    }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -53,11 +56,14 @@
    }]
   }, method {
   "name": "findError",
-  "content": "    public Optional<E>",
-  "params": [],
+  "content": "Optional<E>",
   "annotations": [annotation {
    "value": "Override"
    }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -73,13 +79,16 @@
    }]
   }, method {
   "name": "mapValue",
-  "content": "    public <R> Result<R, E>",
+  "content": "<R> Result<R, E>",
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
   "params": [definition {
    "name": "mapper",
    "content": "Function<T, R>"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
    }],
   "children": [return {
    "value": invocation {
@@ -93,11 +102,14 @@
    }]
   }, method {
   "name": "isErr",
-  "content": "    public boolean",
-  "params": [],
+  "content": "boolean",
   "annotations": [annotation {
    "value": "Override"
    }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [],
   "children": [return {
    "value": symbol {
     "content": "true"
@@ -105,13 +117,16 @@
    }]
   }, method {
   "name": "and",
-  "content": "    public <R> Result<Tuple<T, R>, E>",
+  "content": "<R> Result<Tuple<T, R>, E>",
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
   "params": [definition {
    "name": "supplier",
    "content": "Supplier<Result<R, E>>"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
    }],
   "children": [return {
    "value": invocation {
@@ -125,11 +140,14 @@
    }]
   }, method {
   "name": "isOk",
-  "content": "    public boolean",
-  "params": [],
+  "content": "boolean",
   "annotations": [annotation {
    "value": "Override"
    }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [],
   "children": [return {
    "value": symbol {
     "content": "false"
@@ -137,13 +155,16 @@
    }]
   }, method {
   "name": "flatMapValue",
-  "content": "    public <R> Result<R, E>",
+  "content": "<R> Result<R, E>",
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
   "params": [definition {
    "name": "mapper",
    "content": "Function<T, Result<R, E>>"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
    }],
   "children": [return {
    "value": invocation {

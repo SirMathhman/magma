@@ -28,7 +28,7 @@
   "content": "Result<T, E>"
   }, definition {
   "name": "children",
-  "content": " List<RuleResult<T, E>>"
+  "content": "List<RuleResult<T, E>>"
   }],
  "children": [method {
   "name": "RuleResult",
@@ -42,11 +42,14 @@
    }]
   }, method {
   "name": "unwrap",
-  "content": "    public Result<T, E>",
-  "params": [],
+  "content": "Result<T, E>",
   "annotations": [annotation {
    "value": "Deprecated"
    }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [],
   "children": [return {
    "value": symbol {
     "content": "result"
@@ -54,7 +57,11 @@
    }]
   }, method {
   "name": "isValid",
-  "content": "public boolean",
+  "content": "boolean",
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -65,11 +72,17 @@
      },
     "arguments": []
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "mapValue",
-  "content": "public RuleResult<T, E>",
+  "content": "RuleResult<T, E>",
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "mapper",
+   "content": "Function<T, T>"
+   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -89,14 +102,17 @@
      "content": " children"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "mapper",
-   "content": "Function<T, T>"
    }]
   }, method {
   "name": "wrapErr",
-  "content": "public RuleResult<T, E>",
+  "content": "RuleResult<T, E>",
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "error",
+   "content": "E"
+   }],
   "children": [symbol {
    "content": "if (!isError()) return this;"
    }, symbol {
@@ -117,14 +133,14 @@
      "content": " list"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "error",
-   "content": "E"
    }]
   }, method {
   "name": "isError",
-  "content": "public boolean",
+  "content": "boolean",
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -135,11 +151,14 @@
      },
     "arguments": []
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "depth",
-  "content": "public int",
+  "content": "int",
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -164,11 +183,14 @@
       }
      }]
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "sortedChildren",
-  "content": "public List<RuleResult<T, E>>",
+  "content": "List<RuleResult<T, E>>",
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -192,8 +214,7 @@
       }
      }]
     }
-   }],
-  "params": []
+   }]
   }]
  }]
 }

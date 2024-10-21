@@ -42,13 +42,16 @@
    }]
   }, method {
   "name": "locate",
-  "content": "    public Stream<Integer>",
+  "content": "Stream<Integer>",
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
   "params": [definition {
    "name": "input",
    "content": "String"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
    }],
   "children": [return {
    "value": invocation {

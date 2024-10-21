@@ -21,11 +21,14 @@
   }],
  "children": [method {
   "name": "slice",
-  "content": "    public String",
-  "params": [],
+  "content": "String",
   "annotations": [annotation {
    "value": "Override"
    }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [],
   "children": [return {
    "value": symbol {
     "content": "delimiter"
@@ -33,13 +36,16 @@
    }]
   }, method {
   "name": "locate",
-  "content": "    public Stream<Integer>",
+  "content": "Stream<Integer>",
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
   "params": [definition {
    "name": "input",
    "content": "String"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
    }],
   "children": [symbol {
    "content": "List<Integer> indices = new ArrayList<>();"

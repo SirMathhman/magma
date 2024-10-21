@@ -43,16 +43,17 @@
     }
 
     private static TypeRule createDefinitionRule() {
-        final var content = new ExtractRule("content");
-        
+        final var content1 = new ExtractRule("content");
+
+        final var withModifiers = new ContextRule("With modifiers.", new LocatingRule(createModifiersRule(), new ForwardsLocator(" "), content1));
+        final var maybeModifiers = new StripRule(new OptionalNodeRule("modifiers", withModifiers, content1), "", "");
+
         final var annotation = new TypeRule("annotation", new StripRule(new PrefixRule("@", new ExtractRule("value")), "", ""));
         final var annotations = new NodeListRule(new SimpleSplitter("\n"), "annotations", annotation);
+        final var withAnnotations = new ContextRule("With annotations.", new LocatingRule(annotations, new LastLocator("\n"), maybeModifiers));
+        final var maybeAnnotations = new OptionalNodeRule("annotations", withAnnotations, maybeModifiers);
 
-        final var withAnnotations = new ContextRule("With annotations.", new LocatingRule(annotations, new LastLocator("\n"), content));
-
-        final var beforeName = new OptionalNodeRule("annotations", withAnnotations, content);
-
-        return new TypeRule("definition", new LocatingRule(beforeName, new LastLocator(" "), new ExtractRule("name")));
+        return new TypeRule("definition", new LocatingRule(maybeAnnotations, new LastLocator(" "), new ExtractRule("name")));
     }
 
     private static OrRule createRootMemberRule() {

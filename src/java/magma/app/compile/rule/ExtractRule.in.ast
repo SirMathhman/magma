@@ -27,13 +27,16 @@
   }],
  "children": [method {
   "name": "parse",
-  "content": "    public RuleResult<Node, ParseException>",
+  "content": "RuleResult<Node, ParseException>",
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
   "params": [definition {
    "name": "input",
    "content": "String"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
    }],
   "children": [symbol {
    "content": "if (input.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("Input is empty", input)));"
@@ -59,13 +62,16 @@
    }]
   }, method {
   "name": "generate",
-  "content": "    public RuleResult<String, GenerateException>",
+  "content": "RuleResult<String, GenerateException>",
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
   "params": [definition {
    "name": "node",
    "content": "Node"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
    }],
   "children": [return {
    "value": invocation {

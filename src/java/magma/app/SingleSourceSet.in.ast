@@ -29,11 +29,14 @@
   }],
  "children": [method {
   "name": "collect",
-  "content": "    public Result<Set<Path>, IOException>",
-  "params": [],
+  "content": "Result<Set<Path>, IOException>",
   "annotations": [annotation {
    "value": "Override"
    }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [],
   "children": [symbol {
    "content": "var sources = new HashSet<Path>();"
    }, symbol {

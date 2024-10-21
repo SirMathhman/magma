@@ -223,7 +223,11 @@
    }]
   }, method {
   "name": "compile",
-  "content": "public Result<CompileResult, CompileException>",
+  "content": "Result<CompileResult, CompileException>",
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [],
   "children": [symbol {
    "content": "final var parsed = createRootRule().parse(input);"
    }, symbol {
@@ -234,8 +238,7 @@
         }"
    }, symbol {
    "content": ");"
-   }],
-  "params": []
+   }]
   }, method {
   "name": "write",
   "content": "private <T, E extends Exception> Result<T, CompileException>",
@@ -283,10 +286,10 @@
    "content": "RuleResult<T, E>"
    }, definition {
    "name": "depth",
-   "content": " int"
+   "content": "int"
    }, definition {
    "name": "index",
-   "content": " int"
+   "content": "int"
    }]
   }]
  }]

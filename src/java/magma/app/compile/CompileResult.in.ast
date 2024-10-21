@@ -11,10 +11,10 @@
   "content": "Node"
   }, definition {
   "name": "afterPass",
-  "content": " Node"
+  "content": "Node"
   }, definition {
   "name": "output",
-  "content": " String"
+  "content": "String"
   }],
  "children": []
  }]

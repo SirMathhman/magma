@@ -17,13 +17,16 @@
   }],
  "children": [method {
   "name": "filter",
-  "content": "    public boolean",
+  "content": "boolean",
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
   "params": [definition {
    "name": "input",
    "content": "String"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
    }],
   "children": [return {
    "value": invocation {
