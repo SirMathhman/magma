@@ -8,14 +8,9 @@
  }, import {
  "namespace": ["java", "util", "function", "Supplier"]
  }, function {
- "name": "Err<T, E> implements Result<T, E> ",
- "body": "
-    private final E error;
-
-    public Err(E error) {
-        this.error = error;
-    }
-
+ "modifiers": "public ",
+ "name": "Err<T, E>",
+ "params-and-body": "E error) implements Result<T, E> {
     @Override
     public Optional<T> findValue() {
         return Optional.empty();
@@ -45,7 +40,6 @@
     public boolean isOk() {
         return false;
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

@@ -6,13 +6,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class Err<T, E> implements Result<T, E> {
-    private final E error;
-
-    public Err(E error) {
-        this.error = error;
-    }
-
+public record Err<T, E>(E error) implements Result<T, E> {
     @Override
     public Optional<T> findValue() {
         return Optional.empty();
