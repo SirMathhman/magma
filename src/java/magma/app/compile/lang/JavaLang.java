@@ -28,7 +28,11 @@ public class JavaLang {
         final var name = new OptionalNodeRule("type-params", new LocatingRule(simpleName, new FirstLocator("<"), new SuffixRule(typeParams, ">")), simpleName);
 
         final var params = new NodeListRule(new ValueSplitter(), "params", createDefinitionRule());
-        final var afterKeyword = new LocatingRule(name, new FirstLocator("("), new LocatingRule(params, new FirstLocator(")"), new ExtractRule("body")));
+        final var content = new ExtractRule("body");
+
+        final var implementsPresent = new PrefixRule("implements", new LocatingRule(new ExtractRule("interface"), new FirstLocator("{"), new SuffixRule(content, "}")));
+        final var afterParams = new OptionalNodeRule("super", implementsPresent, new PrefixRule("{", new SuffixRule(content, "}")));
+        final var afterKeyword = new LocatingRule(name, new FirstLocator("("), new LocatingRule(params, new FirstLocator(")"), afterParams));
         return new TypeRule(RECORD, new LocatingRule(createModifiersRule(), new FirstLocator("record "), afterKeyword));
     }
 

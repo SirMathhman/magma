@@ -96,7 +96,7 @@ public record Compiler(String input) {
             System.out.println(repeat + s + message);
         }
 
-        List<RuleResult<T, E>> children = result.children();
+        List<RuleResult<T, E>> children = result.sortedChildren();
         for (int i = 0; i < children.size(); i++) {
             RuleResult<T, E> child = children.get(i);
             writeResult(child, depth + 1, i);

@@ -4,6 +4,7 @@ import magma.api.result.Err;
 import magma.api.result.Result;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 
@@ -36,5 +37,18 @@ public record RuleResult<T, E>(Result<T, E> result, List<RuleResult<T, E>> child
 
     public boolean isError() {
         return result.isErr();
+    }
+
+    public int depth() {
+        return 1 + children.stream()
+                .map(RuleResult::depth)
+                .max(Integer::compare)
+                .orElse(0);
+    }
+
+    public List<RuleResult<T, E>> sortedChildren() {
+        return children.stream()
+                .sorted(Comparator.comparingInt(RuleResult::depth))
+                .toList();
     }
 }
