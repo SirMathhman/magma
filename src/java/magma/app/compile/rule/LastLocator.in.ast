@@ -5,17 +5,19 @@
  "namespace": ["java", "util", "Optional"]
  }, record {
  "name": "LastLocator",
- "body": "
+ "modifiers": ["public"],
+ "interface": symbol {
+  "type": "Locator"
+  },
+ "children": [any {
+  "content": "
     @Override
     public Optional<Integer> locate(String input) {
         final var index = input.lastIndexOf(slice);
         return index == -1 ? Optional.empty() : Optional.of(index);
     }
-",
- "modifiers": ["public"],
- "interface": symbol {
-  "type": "Locator"
-  },
+"
+  }],
  "params": [definition {
   "type": "String",
   "name": "slice"

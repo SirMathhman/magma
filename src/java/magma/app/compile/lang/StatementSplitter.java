@@ -8,7 +8,8 @@ import java.util.List;
 public class StatementSplitter implements Splitter {
     static State splitAtChar(State state, char c) {
         final var appended = state.append(c);
-        if (c == ';' && state.isLevel()) return appended.advance();
+        if (c == ';' && appended.isLevel()) return appended.advance();
+        if (c == '}' && appended.isShallow()) return appended.exit().advance();
         if (c == '{') return appended.enter();
         if (c == '}') return appended.exit();
         return appended;
@@ -64,6 +65,10 @@ public class StatementSplitter implements Splitter {
 
         public State exit() {
             return new State(segments, buffer, depth - 1);
+        }
+
+        public boolean isShallow() {
+            return depth == 1;
         }
     }
 }

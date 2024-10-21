@@ -3,9 +3,8 @@
  "namespace": ["magma", "app", "compile"]
  }, record {
  "name": "CompileResult",
- "body": "
-",
  "modifiers": ["public"],
+ "children": [],
  "params": [definition {
   "type": "Node",
   "name": "beforePass"

@@ -9,37 +9,6 @@
  "namespace": ["java", "util", "function", "Supplier"]
  }, function {
  "name": "Err",
- "body": "
-    @Override
-    public Optional<T> findValue() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<E> findError() {
-        return Optional.of(error);
-    }
-
-    @Override
-    public <R> Result<R, E> mapValue(Function<T, R> mapper) {
-        return new Err<>(error);
-    }
-
-    @Override
-    public boolean isErr() {
-        return true;
-    }
-
-    @Override
-    public <R> Result<Tuple<T, R>, E> and(Supplier<Result<R, E>> supplier) {
-        return new Err<>(error);
-    }
-
-    @Override
-    public boolean isOk() {
-        return false;
-    }
-",
  "modifiers": ["public"],
  "interface": generic {
   "base": symbol {
@@ -51,6 +20,48 @@
    "type": "E"
    }]
   },
+ "children": [any {
+  "content": "
+    @Override
+    public Optional<T> findValue() {
+        return Optional.empty();
+    }"
+  }, any {
+  "content": "
+
+    @Override
+    public Optional<E> findError() {
+        return Optional.of(error);
+    }"
+  }, any {
+  "content": "
+
+    @Override
+    public <R> Result<R, E> mapValue(Function<T, R> mapper) {
+        return new Err<>(error);
+    }"
+  }, any {
+  "content": "
+
+    @Override
+    public boolean isErr() {
+        return true;
+    }"
+  }, any {
+  "content": "
+
+    @Override
+    public <R> Result<Tuple<T, R>, E> and(Supplier<Result<R, E>> supplier) {
+        return new Err<>(error);
+    }"
+  }, any {
+  "content": "
+
+    @Override
+    public boolean isOk() {
+        return false;
+    }"
+  }],
  "type-params": [symbol {
   "type": "T"
   }, symbol {

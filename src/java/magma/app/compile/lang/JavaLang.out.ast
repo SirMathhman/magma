@@ -10,33 +10,89 @@
     }
 
     private static TypeRule createDefinitionRule",
- "body": "
-        return new TypeRule("definition", new LocatingRule(new ExtractRule("type"), new LastLocator(" "), new ExtractRule("name")));
-    }
+ "modifiers": ["public", "class", "JavaLang", "{
+", "", "", "", "public", "static", "final", "String", "PACKAGE", "=", ""package";
+", "", "", "", "public", "static", "final", "String", "RECORD", "=", ""record";
+", "", "", "", "public", "static", "final", "String", "CLASS", "=", ""class";
+", "", "", "", "public", "static", "final", "String", "INTERFACE", "=", ""interface";
+", "", "", "", "public", "static", "final", "String", "MODIFIERS", "=", ""modifiers";
+", "", "", "", "public", "static", "final", "String", "METHOD", "=", ""method";
 
-    private static OrRule createRootMemberRule() {
+", "", "", "", "public", "static", "TypeRule", "createPackageRule()", "{
+", "", "", "", "", "", "", "", "return", "new", "TypeRule(PACKAGE,", "new", "PrefixRule("package", "",", "new", "SuffixRule(createNamespaceRule(),", "STATEMENT_END)));
+", "", "", "", "}
+
+", "", "", "", "public", "static", "NodeListRule", "createRootRule()", "{
+", "", "", "", "", "", "", "", "return", "new", "NodeListRule(new", "StatementSplitter(),", "CHILDREN,", "new", "StripRule(createRootMemberRule(),", """,", """));
+", "", "", "", "}
+
+", "", "", "", "public", "static", "TypeRule", "createRecordRule()", "{
+", "", "", "", "", "", "", "", "final", "var", "simpleName", "=", "new", "ExtractRule(NAME);
+", "", "", "", "", "", "", "", "final", "var", "typeParams", "=", "new", "NodeListRule(new", "ValueSplitter(),", ""type-params",", "createTypeRule());
+", "", "", "", "", "", "", "", "final", "var", "name", "=", "new", "OptionalNodeRule("type-params",", "new", "LocatingRule(simpleName,", "new", "FirstLocator("<"),", "new", "SuffixRule(typeParams,", "">")),", "simpleName);
+
+", "", "", "", "", "", "", "", "final", "var", "params", "=", "new", "NodeListRule(new", "ValueSplitter(),", ""params",", "createDefinitionRule());
+", "", "", "", "", "", "", "", "final", "var", "content", "=", "new", "NodeListRule(new", "StatementSplitter(),", ""children",", "createClassMemberRule());
+
+", "", "", "", "", "", "", "", "final", "var", "anInterface", "=", "new", "NodeRule("interface",", "createTypeRule());
+", "", "", "", "", "", "", "", "final", "var", "implementsPresent", "=", "new", "StripRule(new", "PrefixRule("implements",", "new", "LocatingRule(anInterface,", "new", "FirstLocator("{"),", "new", "SuffixRule(content,", ""}"))),", """,", """);
+", "", "", "", "", "", "", "", "final", "var", "implementsEmpty", "=", "new", "StripRule(new", "PrefixRule("{",", "new", "SuffixRule(content,", ""}")),", """,", """);
+", "", "", "", "", "", "", "", "final", "var", "afterParams", "=", "new", "OptionalNodeRule("super",", "implementsPresent,", "implementsEmpty);
+", "", "", "", "", "", "", "", "final", "var", "afterKeyword", "=", "new", "LocatingRule(name,", "new", "FirstLocator("("),", "new", "LocatingRule(params,", "new", "FirstLocator(")"),", "afterParams));
+", "", "", "", "", "", "", "", "return", "new", "TypeRule(RECORD,", "new", "LocatingRule(createModifiersRule(),", "new", "FirstLocator(""],
+ "children": [method {
+  "name": "TypeRule",
+  "params": content {
+   "params": ""definition", new LocatingRule(new ExtractRule("type"), new LastLocator(" "), new ExtractRule("name"))"
+   },
+  "returns": symbol {
+   "type": "return new"
+   }
+  }, method {
+  "name": "createRootMemberRule",
+  "params": content {
+   "params": ") {
         return new OrRule(List.of(
                 createPackageRule(),
                 createImportRule(),
                 createRecordRule(),
                 createInterfaceRule(),
                 createClassRule()
-        ));
-    }
+        )"
+   },
+  "returns": symbol {
+   "type": "}
 
-    private static TypeRule createClassRule() {
+    private static OrRule"
+   }
+  }, method {
+  "name": "createClassRule",
+  "params": content {
+   "params": ") {
         final var afterKeyword = new LocatingRule(new ExtractRule("name"), new FirstLocator("{"), new ExtractRule("body"));
         return new TypeRule(CLASS, new LocatingRule(new ExtractRule("before-keyword"), new FirstLocator("class "), afterKeyword));
     }
 
     private static TypeRule createInterfaceRule() {
-        final var memberRule = new OrRule(List.of(
-                createMethodRule()
-        ));
+        final var memberRule = createClassMemberRule();
+        final var content = new SuffixRule(new NodeListRule(new StatementSplitter(), "content", new StripRule(memberRule, "", "")), "}""
+   },
+  "returns": symbol {
+   "type": "}
 
-        final var content = new SuffixRule(new NodeListRule(new StatementSplitter(), "content", new StripRule(memberRule, "", "")), "}");
+    private static TypeRule"
+   }
+  }, any {
+  "content": "
         final var name = new LocatingRule(new StripRule(new ExtractRule("name"), "", ""), new FirstLocator("{"), new StripRule(content, "", ""));
         return new TypeRule(INTERFACE, new LocatingRule(createModifiersRule(), new FirstLocator("interface"), name));
+    }
+
+    private static OrRule createClassMemberRule() {
+        return new OrRule(List.of(
+                createMethodRule(),
+                new TypeRule("any", new ExtractRule("content"))
+        ));
     }
 
     private static StringListRule createModifiersRule() {
@@ -70,37 +126,8 @@
 
         return new TypeRule("generic", new StripRule(new LocatingRule(base, new FirstLocator("<"), new SuffixRule(child, ">")), "", ""));
     }
-",
- "modifiers": ["public", "class", "JavaLang", "{
-", "", "", "", "public", "static", "final", "String", "PACKAGE", "=", ""package";
-", "", "", "", "public", "static", "final", "String", "RECORD", "=", ""record";
-", "", "", "", "public", "static", "final", "String", "CLASS", "=", ""class";
-", "", "", "", "public", "static", "final", "String", "INTERFACE", "=", ""interface";
-", "", "", "", "public", "static", "final", "String", "MODIFIERS", "=", ""modifiers";
-", "", "", "", "public", "static", "final", "String", "METHOD", "=", ""method";
-
-", "", "", "", "public", "static", "TypeRule", "createPackageRule()", "{
-", "", "", "", "", "", "", "", "return", "new", "TypeRule(PACKAGE,", "new", "PrefixRule("package", "",", "new", "SuffixRule(createNamespaceRule(),", "STATEMENT_END)));
-", "", "", "", "}
-
-", "", "", "", "public", "static", "NodeListRule", "createRootRule()", "{
-", "", "", "", "", "", "", "", "return", "new", "NodeListRule(new", "StatementSplitter(),", "CHILDREN,", "new", "StripRule(createRootMemberRule(),", """,", """));
-", "", "", "", "}
-
-", "", "", "", "public", "static", "TypeRule", "createRecordRule()", "{
-", "", "", "", "", "", "", "", "final", "var", "simpleName", "=", "new", "ExtractRule(NAME);
-", "", "", "", "", "", "", "", "final", "var", "typeParams", "=", "new", "NodeListRule(new", "ValueSplitter(),", ""type-params",", "createTypeRule());
-", "", "", "", "", "", "", "", "final", "var", "name", "=", "new", "OptionalNodeRule("type-params",", "new", "LocatingRule(simpleName,", "new", "FirstLocator("<"),", "new", "SuffixRule(typeParams,", "">")),", "simpleName);
-
-", "", "", "", "", "", "", "", "final", "var", "params", "=", "new", "NodeListRule(new", "ValueSplitter(),", ""params",", "createDefinitionRule());
-", "", "", "", "", "", "", "", "final", "var", "content", "=", "new", "ExtractRule("body");
-
-", "", "", "", "", "", "", "", "final", "var", "anInterface", "=", "new", "NodeRule("interface",", "createTypeRule());
-", "", "", "", "", "", "", "", "final", "var", "implementsPresent", "=", "new", "StripRule(new", "PrefixRule("implements",", "new", "LocatingRule(anInterface,", "new", "FirstLocator("{"),", "new", "SuffixRule(content,", ""}"))),", """,", """);
-", "", "", "", "", "", "", "", "final", "var", "implementsEmpty", "=", "new", "StripRule(new", "PrefixRule("{",", "new", "SuffixRule(content,", ""}")),", """,", """);
-", "", "", "", "", "", "", "", "final", "var", "afterParams", "=", "new", "OptionalNodeRule("super",", "implementsPresent,", "implementsEmpty);
-", "", "", "", "", "", "", "", "final", "var", "afterKeyword", "=", "new", "LocatingRule(name,", "new", "FirstLocator("("),", "new", "LocatingRule(params,", "new", "FirstLocator(")"),", "afterParams));
-", "", "", "", "", "", "", "", "return", "new", "TypeRule(RECORD,", "new", "LocatingRule(createModifiersRule(),", "new", "FirstLocator(""],
+"
+  }],
  "params": []
  }]
 }

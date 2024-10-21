@@ -1,9 +1,8 @@
 {
 "children": [function {
  "name": "CompileResult",
- "body": "
-",
  "modifiers": ["public"],
+ "children": [],
  "params": [definition {
   "type": "Node",
   "name": "beforePass"

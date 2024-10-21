@@ -17,49 +17,64 @@
  "namespace": ["static java", "util", "Collections", "singletonList"]
  }, record {
  "name": "RuleResult",
- "body": "
+ "modifiers": ["public"],
+ "children": [any {
+  "content": "
     public RuleResult(Result<T, E> result) {
         this(result, Collections.emptyList());
-    }
+    }"
+  }, any {
+  "content": "
 
     @Deprecated
     public Result<T, E> unwrap() {
         return result;
-    }
+    }"
+  }, any {
+  "content": "
 
     public boolean isValid() {
         return result.isOk();
-    }
+    }"
+  }, any {
+  "content": "
 
     public RuleResult<T, E> mapValue(Function<T, T> mapper) {
         return new RuleResult<>(result.mapValue(mapper), children);
-    }
+    }"
+  }, any {
+  "content": "
 
     public RuleResult<T, E> wrapErr(E error) {
         if (!isError()) return this;
 
         var list = singletonList(this);
         return new RuleResult<>(new Err<>(error), list);
-    }
+    }"
+  }, any {
+  "content": "
 
     public boolean isError() {
         return result.isErr();
-    }
+    }"
+  }, any {
+  "content": "
 
     public int depth() {
         return 1 + children.stream()
                 .map(RuleResult::depth)
                 .max(Integer::compare)
                 .orElse(0);
-    }
+    }"
+  }, any {
+  "content": "
 
     public List<RuleResult<T, E>> sortedChildren() {
         return children.stream()
                 .sorted(Comparator.comparingInt(RuleResult::depth))
                 .toList();
-    }
-",
- "modifiers": ["public"],
+    }"
+  }],
  "type-params": [symbol {
   "type": "T"
   }, symbol {

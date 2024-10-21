@@ -13,7 +13,12 @@
  "namespace": ["java", "util", "stream", "Stream"]
  }, record {
  "name": "MapNode",
- "body": "
+ "modifiers": ["public"],
+ "interface": symbol {
+  "type": "Node"
+  },
+ "children": [any {
+  "content": "
     public MapNode() {
         this(Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
     }
@@ -178,11 +183,8 @@
 
         return new MapNode(type, stringsCopy, stringListCopy, nodesCopy, nodeListCopy);
     }
-",
- "modifiers": ["public"],
- "interface": symbol {
-  "type": "Node"
-  },
+"
+  }],
  "params": [definition {
   "type": "
         Optional<String>",

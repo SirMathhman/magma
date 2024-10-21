@@ -3,9 +3,8 @@
  "namespace": ["magma", "api"]
  }, record {
  "name": "Tuple",
- "body": "
-",
  "modifiers": ["public"],
+ "children": [],
  "type-params": [symbol {
   "type": "A"
   }, symbol {

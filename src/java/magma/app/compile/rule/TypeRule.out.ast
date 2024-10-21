@@ -9,25 +9,28 @@
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, function {
  "name": "TypeRule",
- "body": "
+ "modifiers": ["public"],
+ "interface": symbol {
+  "type": "Rule"
+  },
+ "children": [any {
+  "content": "
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         return rule.parse(input)
                 .mapValue(node -> node.retype(type))
                 .wrapErr(new ParseException("Failed to assign type '" + type + "'", input));
-    }
+    }"
+  }, any {
+  "content": "
 
     @Override
     public RuleResult<String, GenerateException> generate(Node node) {
         if (!node.is(type))
             return new RuleResult<>(new Err<>(new GenerateException("Expected a type of '" + type + "'", node)));
         return rule.generate(node);
-    }
-",
- "modifiers": ["public"],
- "interface": symbol {
-  "type": "Rule"
-  },
+    }"
+  }],
  "params": [definition {
   "type": "String",
   "name": "type"

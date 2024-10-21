@@ -27,24 +27,32 @@
  "namespace": ["static magma", "app", "compile", "lang", "MagmaLang", "FUNCTION"]
  }, function {
  "name": "Compiler",
- "body": "
+ "modifiers": ["public"],
+ "children": [any {
+  "content": "
     private static Node pass(Node node) {
         return node.mapNodeList(CHILDREN, Compiler::passChildren).orElse(node);
-    }
+    }"
+  }, any {
+  "content": "
 
     private static List<Node> passChildren(List<Node> children) {
         return children.stream()
                 .filter(child -> !child.is(JavaLang.PACKAGE))
                 .map(Compiler::passRootChild)
                 .toList();
-    }
+    }"
+  }, any {
+  "content": "
 
     private static Node passRootChild(Node node) {
         return passRecord(node)
                 .or(() -> passInterface(node))
                 .or(() -> passClass(node))
                 .orElse(node);
-    }
+    }"
+  }, any {
+  "content": "
 
     private static Optional<? extends Node> passClass(Node node) {
         if (node.is(CLASS)) {
@@ -52,11 +60,15 @@
         } else {
             return Optional.empty();
         }
-    }
+    }"
+  }, any {
+  "content": "
 
     private static Optional<Node> passRecord(Node node) {
         return node.is(RECORD) ? Optional.of(node.retype(FUNCTION)) : Optional.empty();
-    }
+    }"
+  }, any {
+  "content": "
 
     private static Optional<Node> passInterface(Node node) {
         if (!node.is(INTERFACE)) return Optional.empty();
@@ -74,19 +86,25 @@
                 .toList()).orElse(withModifiers);
 
         return Optional.of(withChildren);
-    }
+    }"
+  }, any {
+  "content": "
 
     private static Node passClassMember(Node child) {
         if (child.is(METHOD)) return child.retype(FUNCTION);
         return child;
-    }
+    }"
+  }, any {
+  "content": "
 
     public CompileResult compile() throws CompileException {
         final var beforePass = Results.unwrap(write(createRootRule().parse(input)));
         final var afterPass = pass(beforePass);
         final var output = Results.unwrap(write(MagmaLang.createRootRule().generate(afterPass)));
         return new CompileResult(beforePass, afterPass, output);
-    }
+    }"
+  }, any {
+  "content": "
 
     private <T, E extends Exception> Result<T, CompileException> write(RuleResult<T, E> result) {
         if (result.isValid()) {
@@ -95,7 +113,9 @@
             writeResult(result, 0, 0);
             return new Err<>(new CompileException());
         }
-    }
+    }"
+  }, any {
+  "content": "
 
     private <T, E extends Exception> void writeResult(RuleResult<T, E> result, int depth, int index) {
         final var error = result.result().findError();
@@ -112,9 +132,8 @@
             RuleResult<T, E> child = children.get(i);
             writeResult(child, depth + 1, i);
         }
-    }
-",
- "modifiers": ["public"],
+    }"
+  }],
  "params": [definition {
   "type": "String",
   "name": "input"

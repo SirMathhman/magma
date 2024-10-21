@@ -28,7 +28,7 @@ public class JavaLang {
         final var name = new OptionalNodeRule("type-params", new LocatingRule(simpleName, new FirstLocator("<"), new SuffixRule(typeParams, ">")), simpleName);
 
         final var params = new NodeListRule(new ValueSplitter(), "params", createDefinitionRule());
-        final var content = new ExtractRule("body");
+        final var content = new NodeListRule(new StatementSplitter(), "children", createClassMemberRule());
 
         final var anInterface = new NodeRule("interface", createTypeRule());
         final var implementsPresent = new StripRule(new PrefixRule("implements", new LocatingRule(anInterface, new FirstLocator("{"), new SuffixRule(content, "}"))), "", "");
@@ -58,13 +58,17 @@ public class JavaLang {
     }
 
     private static TypeRule createInterfaceRule() {
-        final var memberRule = new OrRule(List.of(
-                createMethodRule()
-        ));
-
+        final var memberRule = createClassMemberRule();
         final var content = new SuffixRule(new NodeListRule(new StatementSplitter(), "content", new StripRule(memberRule, "", "")), "}");
         final var name = new LocatingRule(new StripRule(new ExtractRule("name"), "", ""), new FirstLocator("{"), new StripRule(content, "", ""));
         return new TypeRule(INTERFACE, new LocatingRule(createModifiersRule(), new FirstLocator("interface"), name));
+    }
+
+    private static OrRule createClassMemberRule() {
+        return new OrRule(List.of(
+                createMethodRule(),
+                new TypeRule("any", new ExtractRule("content"))
+        ));
     }
 
     private static StringListRule createModifiersRule() {
