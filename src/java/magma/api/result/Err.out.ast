@@ -8,7 +8,6 @@
  }, import {
  "namespace": ["java", "util", "function", "Supplier"]
  }, function {
- "modifiers": "public ",
  "name": "Err<T, E>",
  "params-and-body": "E error) implements Result<T, E> {
     @Override
@@ -40,6 +39,7 @@
     public boolean isOk() {
         return false;
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

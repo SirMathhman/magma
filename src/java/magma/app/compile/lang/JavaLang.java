@@ -23,7 +23,7 @@ public class JavaLang {
     }
 
     public static TypeRule createRecordRule() {
-        return new TypeRule(RECORD, new LocatingRule(new ExtractRule("modifiers"), new FirstLocator("record "), new LocatingRule(new ExtractRule(NAME), new FirstLocator("("), new ExtractRule("params-and-body"))));
+        return new TypeRule(RECORD, new LocatingRule(createModifiersRule(), new FirstLocator("record "), new LocatingRule(new ExtractRule(NAME), new FirstLocator("("), new ExtractRule("params-and-body"))));
     }
 
     private static OrRule createRootMemberRule() {
@@ -42,14 +42,17 @@ public class JavaLang {
     }
 
     private static TypeRule createInterfaceRule() {
-        final var modifiers = new StringListRule(MODIFIERS, " ");
         final var memberRule = new OrRule(List.of(
                 createMethodRule()
         ));
 
         final var content = new SuffixRule(new NodeListRule(new StatementSplitter(), "content", new StripRule(memberRule, "", "")), "}");
         final var name = new LocatingRule(new StripRule(new ExtractRule("name"), "", ""), new FirstLocator("{"), new StripRule(content, "", ""));
-        return new TypeRule(INTERFACE, new LocatingRule(modifiers, new FirstLocator("interface"), name));
+        return new TypeRule(INTERFACE, new LocatingRule(createModifiersRule(), new FirstLocator("interface"), name));
+    }
+
+    private static StringListRule createModifiersRule() {
+        return new StringListRule(MODIFIERS, " ");
     }
 
     private static TypeRule createMethodRule() {

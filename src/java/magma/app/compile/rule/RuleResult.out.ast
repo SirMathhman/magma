@@ -12,7 +12,6 @@
  }, import {
  "namespace": ["static java", "util", "Collections", "singletonList"]
  }, function {
- "modifiers": "public ",
  "name": "RuleResult<T, E>",
  "params-and-body": "Result<T, E> result, List<RuleResult<T, E>> children) {
     public RuleResult(Result<T, E> result) {
@@ -42,6 +41,7 @@
     public boolean isError() {
         return result.isErr();
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

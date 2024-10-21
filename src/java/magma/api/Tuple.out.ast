@@ -1,8 +1,8 @@
 {
 "children": [function {
- "modifiers": "public ",
  "name": "Tuple<A, B>",
  "params-and-body": "A left, B right) {
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

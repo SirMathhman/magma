@@ -26,7 +26,6 @@
  }, import {
  "namespace": ["static magma", "app", "compile", "lang", "MagmaLang", "FUNCTION"]
  }, function {
- "modifiers": "public ",
  "name": "Compiler",
  "params-and-body": "String input) {
     private static Node pass(Node node) {
@@ -114,6 +113,7 @@
             writeResult(child, depth + 1, i);
         }
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

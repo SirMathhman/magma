@@ -10,7 +10,6 @@
  }, import {
  "namespace": ["java", "util", "stream", "Stream"]
  }, function {
- "modifiers": "public ",
  "name": "MapNode",
  "params-and-body": "
         Optional<String> type,
@@ -182,6 +181,7 @@
 
         return new MapNode(type, stringsCopy, stringListCopy, nodesCopy, nodeListCopy);
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

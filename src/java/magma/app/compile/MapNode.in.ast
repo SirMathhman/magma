@@ -12,7 +12,6 @@
  }, import {
  "namespace": ["java", "util", "stream", "Stream"]
  }, record {
- "modifiers": "public ",
  "name": "MapNode",
  "params-and-body": "
         Optional<String> type,
@@ -184,6 +183,7 @@
 
         return new MapNode(type, stringsCopy, stringListCopy, nodesCopy, nodeListCopy);
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

@@ -8,7 +8,6 @@
  }, import {
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, function {
- "modifiers": "public ",
  "name": "TypeRule",
  "params-and-body": "String type, Rule rule) implements Rule {
     @Override
@@ -24,6 +23,7 @@
             return new RuleResult<>(new Err<>(new GenerateException("Expected a type of '" + type + "'", node)));
         return rule.generate(node);
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

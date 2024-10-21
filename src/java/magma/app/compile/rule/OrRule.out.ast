@@ -12,7 +12,6 @@
  }, import {
  "namespace": ["java", "util", "List"]
  }, function {
- "modifiers": "public ",
  "name": "OrRule",
  "params-and-body": "List<Rule> rules) implements Rule {
     @Override
@@ -37,6 +36,7 @@
         }
         return new RuleResult<>(new Err<>(new GenerateException("No valid rule in disjunction", node)), list);
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

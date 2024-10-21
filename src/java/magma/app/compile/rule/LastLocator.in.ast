@@ -4,7 +4,6 @@
  }, import {
  "namespace": ["java", "util", "Optional"]
  }, record {
- "modifiers": "public ",
  "name": "LastLocator",
  "params-and-body": "String slice) implements Locator {
     @Override
@@ -12,6 +11,7 @@
         final var index = input.lastIndexOf(slice);
         return index == -1 ? Optional.empty() : Optional.of(index);
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

@@ -14,7 +14,6 @@
  }, import {
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, record {
- "modifiers": "public ",
  "name": "ExtractRule",
  "params-and-body": "String propertyKey) implements Rule {
 
@@ -31,6 +30,7 @@
                 .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String '" + propertyKey + "' not present", node))));
 
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

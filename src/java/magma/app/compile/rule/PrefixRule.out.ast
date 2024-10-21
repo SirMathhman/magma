@@ -8,7 +8,6 @@
  }, import {
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, function {
- "modifiers": "public ",
  "name": "PrefixRule",
  "params-and-body": "String prefix, Rule childRule) implements Rule {
     @Override
@@ -23,6 +22,7 @@
     public RuleResult<String, GenerateException> generate(Node node) {
         return childRule.generate(node).mapValue(value -> prefix + value);
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

@@ -14,7 +14,6 @@
  }, import {
  "namespace": ["java", "util", "Arrays"]
  }, function {
- "modifiers": "public ",
  "name": "StringListRule",
  "params-and-body": "String propertyKey, String delimiter) implements Rule {
     @Override
@@ -34,6 +33,7 @@
         final var joined = String.join(delimiter, list.get());
         return new RuleResult<>(new Ok<>(joined));
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

@@ -14,7 +14,6 @@
  }, import {
  "namespace": ["java", "util", "Set"]
  }, function {
- "modifiers": "public ",
  "name": "SingleSourceSet",
  "params-and-body": "Path source) implements SourceSet {
     @Override
@@ -23,6 +22,7 @@
         if(Files.exists(this.source())) sources.add(this.source());
         return new Ok<>(sources);
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

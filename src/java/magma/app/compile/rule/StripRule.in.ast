@@ -8,7 +8,6 @@
  }, import {
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, record {
- "modifiers": "public ",
  "name": "StripRule",
  "params-and-body": "Rule childRule, String leftPaddingKey, String rightPaddingKey) implements Rule {
     @Override
@@ -22,6 +21,7 @@
         final var rightPadding = node.findString(rightPaddingKey).orElse("");
         return childRule.generate(node).mapValue(inner -> leftPadding + inner + rightPadding);
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

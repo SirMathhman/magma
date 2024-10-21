@@ -16,7 +16,6 @@
  }, import {
  "namespace": ["java", "util", "stream", "Collectors"]
  }, function {
- "modifiers": "public ",
  "name": "DirectorySourceSet",
  "params-and-body": "Path root) implements SourceSet {
     private Set<Path> collect0() throws IOException {
@@ -35,6 +34,7 @@
             return new Err<>(e);
         }
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

@@ -10,7 +10,6 @@
  }, import {
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, function {
- "modifiers": "public ",
  "name": "NodeRule",
  "params-and-body": "String propertyKey, Rule propertyRule) implements Rule {
     @Override
@@ -27,6 +26,7 @@
         final var node1 = optional.get();
         return propertyRule.generate(node1);
     }
-}"
+}",
+ "modifiers": ["public"]
  }]
 }

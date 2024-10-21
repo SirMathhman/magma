@@ -6,24 +6,6 @@
  }, import {
  "namespace": ["static magma", "app", "compile", "lang", "CommonLang", "*"]
  }, function {
- "modifiers": "public class JavaLang {
-    public static final String PACKAGE = "package";
-    public static final String RECORD = "record";
-    public static final String CLASS = "class";
-    public static final String INTERFACE = "interface";
-    public static final String MODIFIERS = "modifiers";
-    public static final String METHOD = "method";
-
-    public static TypeRule createPackageRule() {
-        return new TypeRule(PACKAGE, new PrefixRule("package ", new SuffixRule(createNamespaceRule(), STATEMENT_END)));
-    }
-
-    public static NodeListRule createRootRule() {
-        return new NodeListRule(new StatementSplitter(), CHILDREN, new StripRule(createRootMemberRule(), "", ""));
-    }
-
-    public static TypeRule createRecordRule() {
-        return new TypeRule(RECORD, new LocatingRule(new ExtractRule("modifiers"), new FirstLocator("",
  "name": ""), new LocatingRule",
  "params-and-body": "new ExtractRule(NAME), new FirstLocator("("), new ExtractRule("params-and-body"))));
     }
@@ -44,14 +26,17 @@
     }
 
     private static TypeRule createInterfaceRule() {
-        final var modifiers = new StringListRule(MODIFIERS, " ");
         final var memberRule = new OrRule(List.of(
                 createMethodRule()
         ));
 
         final var content = new SuffixRule(new NodeListRule(new StatementSplitter(), "content", new StripRule(memberRule, "", "")), "}");
         final var name = new LocatingRule(new StripRule(new ExtractRule("name"), "", ""), new FirstLocator("{"), new StripRule(content, "", ""));
-        return new TypeRule(INTERFACE, new LocatingRule(modifiers, new FirstLocator("interface"), name));
+        return new TypeRule(INTERFACE, new LocatingRule(createModifiersRule(), new FirstLocator("interface"), name));
+    }
+
+    private static StringListRule createModifiersRule() {
+        return new StringListRule(MODIFIERS, " ");
     }
 
     private static TypeRule createMethodRule() {
@@ -81,6 +66,24 @@
 
         return new TypeRule("generic", new StripRule(new LocatingRule(base, new FirstLocator("<"), new SuffixRule(child, ">")), "", ""));
     }
-}"
+}",
+ "modifiers": ["public", "class", "JavaLang", "{
+", "", "", "", "public", "static", "final", "String", "PACKAGE", "=", ""package";
+", "", "", "", "public", "static", "final", "String", "RECORD", "=", ""record";
+", "", "", "", "public", "static", "final", "String", "CLASS", "=", ""class";
+", "", "", "", "public", "static", "final", "String", "INTERFACE", "=", ""interface";
+", "", "", "", "public", "static", "final", "String", "MODIFIERS", "=", ""modifiers";
+", "", "", "", "public", "static", "final", "String", "METHOD", "=", ""method";
+
+", "", "", "", "public", "static", "TypeRule", "createPackageRule()", "{
+", "", "", "", "", "", "", "", "return", "new", "TypeRule(PACKAGE,", "new", "PrefixRule("package", "",", "new", "SuffixRule(createNamespaceRule(),", "STATEMENT_END)));
+", "", "", "", "}
+
+", "", "", "", "public", "static", "NodeListRule", "createRootRule()", "{
+", "", "", "", "", "", "", "", "return", "new", "NodeListRule(new", "StatementSplitter(),", "CHILDREN,", "new", "StripRule(createRootMemberRule(),", """,", """));
+", "", "", "", "}
+
+", "", "", "", "public", "static", "TypeRule", "createRecordRule()", "{
+", "", "", "", "", "", "", "", "return", "new", "TypeRule(RECORD,", "new", "LocatingRule(createModifiersRule(),", "new", "FirstLocator(""]
  }]
 }

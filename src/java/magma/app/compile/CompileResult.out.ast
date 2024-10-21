@@ -1,8 +1,8 @@
 {
 "children": [function {
- "modifiers": "public ",
  "name": "CompileResult",
  "params-and-body": "Node beforePass, Node afterPass, String output) {
-}"
+}",
+ "modifiers": ["public"]
  }]
 }
