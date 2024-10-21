@@ -42,7 +42,16 @@ public class JavaLang {
     }
 
     private static TypeRule createDefinitionRule() {
-        return new TypeRule("definition", new LocatingRule(new ExtractRule("before-name"), new LastLocator(" "), new ExtractRule("name")));
+        final var content = new ExtractRule("content");
+
+        final var annotation = new TypeRule("annotation", new StripRule(new PrefixRule("@", new ExtractRule("value")), "", ""));
+        final var annotations = new NodeListRule(new SimpleSplitter("\n"), "annotations", annotation);
+
+        final var withAnnotations = new ContextRule("With annotations.", new LocatingRule(annotations, new LastLocator("\n"), content));
+
+        final var beforeName = new OptionalNodeRule("annotations", withAnnotations, content);
+
+        return new TypeRule("definition", new LocatingRule(beforeName, new LastLocator(" "), new ExtractRule("name")));
     }
 
     private static OrRule createRootMemberRule() {

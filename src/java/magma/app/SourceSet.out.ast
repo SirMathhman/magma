@@ -14,7 +14,7 @@
   }],
  "content": [method {
   "name": "collect",
-  "before-name": "Result<Set<Path>, IOException>",
+  "content": "Result<Set<Path>, IOException>",
   "params": []
   }]
  }]

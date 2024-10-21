@@ -6,13 +6,13 @@
   }],
  "params": [definition {
   "name": "beforePass",
-  "before-name": "Node"
+  "content": "Node"
   }, definition {
   "name": "afterPass",
-  "before-name": " Node"
+  "content": " Node"
   }, definition {
   "name": "output",
-  "before-name": " String"
+  "content": " String"
   }],
  "children": []
  }]

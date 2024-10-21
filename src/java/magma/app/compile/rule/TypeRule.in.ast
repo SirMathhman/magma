@@ -19,15 +19,21 @@
   }],
  "params": [definition {
   "name": "type",
-  "before-name": "String"
+  "content": "String"
   }, definition {
   "name": "rule",
-  "before-name": " Rule"
+  "content": " Rule"
   }],
  "children": [method {
   "name": "parse",
-  "before-name": "@Override
-    public RuleResult<Node, ParseException>",
+  "content": "    public RuleResult<Node, ParseException>",
+  "params": [definition {
+   "name": "input",
+   "content": "String"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -56,15 +62,17 @@
       }]
      }]
     }
-   }],
-  "params": [definition {
-   "name": "input",
-   "before-name": "String"
    }]
   }, method {
   "name": "generate",
-  "before-name": "@Override
-    public RuleResult<String, GenerateException>",
+  "content": "    public RuleResult<String, GenerateException>",
+  "params": [definition {
+   "name": "node",
+   "content": "Node"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "if (!node.is(type))
             return new RuleResult<>(new Err<>(new GenerateException("Expected a type of ' type + "'node)));"
@@ -80,10 +88,6 @@
      "content": "node"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "node",
-   "before-name": "Node"
    }]
   }]
  }]

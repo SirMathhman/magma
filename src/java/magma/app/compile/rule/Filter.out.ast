@@ -6,10 +6,10 @@
   }],
  "content": [method {
   "name": "filter",
-  "before-name": "boolean",
+  "content": "boolean",
   "params": [definition {
    "name": "input",
-   "before-name": "String"
+   "content": "String"
    }]
   }]
  }]

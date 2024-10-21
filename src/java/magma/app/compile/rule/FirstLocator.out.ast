@@ -13,11 +13,11 @@
   }],
  "params": [definition {
   "name": "slice",
-  "before-name": "String"
+  "content": "String"
   }],
  "children": [method {
   "name": "locate0",
-  "before-name": "private Optional<Integer>",
+  "content": "private Optional<Integer>",
   "children": [symbol {
    "content": "final var index = input.indexOf(slice);"
    }, return {
@@ -38,12 +38,18 @@
    }],
   "params": [definition {
    "name": "input",
-   "before-name": "String"
+   "content": "String"
    }]
   }, method {
   "name": "locate",
-  "before-name": "@Override
-    public Stream<Integer>",
+  "content": "    public Stream<Integer>",
+  "params": [definition {
+   "name": "input",
+   "content": "String"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -56,10 +62,6 @@
       }
      }]
     }
-   }],
-  "params": [definition {
-   "name": "input",
-   "before-name": "String"
    }]
   }]
  }]

@@ -30,11 +30,11 @@
   }],
  "params": [definition {
   "name": "input",
-  "before-name": "String"
+  "content": "String"
   }],
  "children": [method {
   "name": "pass",
-  "before-name": "private static Node",
+  "content": "private static Node",
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -55,11 +55,11 @@
    }],
   "params": [definition {
    "name": "node",
-   "before-name": "Node"
+   "content": "Node"
    }]
   }, method {
   "name": "passChildren",
-  "before-name": "private static List<Node>",
+  "content": "private static List<Node>",
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -93,11 +93,11 @@
    }],
   "params": [definition {
    "name": "children",
-   "before-name": "List<Node>"
+   "content": "List<Node>"
    }]
   }, method {
   "name": "passRootChild",
-  "before-name": "private static Node",
+  "content": "private static Node",
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -122,11 +122,11 @@
    }],
   "params": [definition {
    "name": "node",
-   "before-name": "Node"
+   "content": "Node"
    }]
   }, method {
   "name": "passClass",
-  "before-name": "private static Optional<Node>",
+  "content": "private static Optional<Node>",
   "children": [symbol {
    "content": "if (node.is(CLASS)) {
             return Optional.of(node.retype(FUNCTION));
@@ -138,11 +138,11 @@
    }],
   "params": [definition {
    "name": "node",
-   "before-name": "Node"
+   "content": "Node"
    }]
   }, method {
   "name": "passRecord",
-  "before-name": "private static Optional<Node>",
+  "content": "private static Optional<Node>",
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -167,11 +167,11 @@
    }],
   "params": [definition {
    "name": "node",
-   "before-name": "Node"
+   "content": "Node"
    }]
   }, method {
   "name": "passInterface",
-  "before-name": "private static Optional<Node>",
+  "content": "private static Optional<Node>",
   "children": [symbol {
    "content": "if (!node.is(INTERFACE)) return Optional.empty();"
    }, symbol {
@@ -203,11 +203,11 @@
    }],
   "params": [definition {
    "name": "node",
-   "before-name": "Node"
+   "content": "Node"
    }]
   }, method {
   "name": "passClassMember",
-  "before-name": "private static Node",
+  "content": "private static Node",
   "children": [symbol {
    "content": "if (child.is(METHOD)) return child.retype(FUNCTION);"
    }, return {
@@ -217,11 +217,11 @@
    }],
   "params": [definition {
    "name": "child",
-   "before-name": "Node"
+   "content": "Node"
    }]
   }, method {
   "name": "compile",
-  "before-name": "public Result<CompileResult, CompileException>",
+  "content": "public Result<CompileResult, CompileException>",
   "children": [symbol {
    "content": "final var parsed = createRootRule().parse(input);"
    }, symbol {
@@ -236,7 +236,7 @@
   "params": []
   }, method {
   "name": "write",
-  "before-name": "private <T, E extends Exception> Result<T, CompileException>",
+  "content": "private <T, E extends Exception> Result<T, CompileException>",
   "children": [symbol {
    "content": "if (result.isValid()) {
             return new Ok<>(result.result().findValue().orElseThrow());
@@ -249,11 +249,11 @@
    }],
   "params": [definition {
    "name": "result",
-   "before-name": "RuleResult<T, E>"
+   "content": "RuleResult<T, E>"
    }]
   }, method {
   "name": "writeResult",
-  "before-name": "private <T, E extends Exception> void",
+  "content": "private <T, E extends Exception> void",
   "children": [symbol {
    "content": "final var error = result.result().findError();"
    }, symbol {
@@ -278,13 +278,13 @@
    }],
   "params": [definition {
    "name": "result",
-   "before-name": "RuleResult<T, E>"
+   "content": "RuleResult<T, E>"
    }, definition {
    "name": "depth",
-   "before-name": " int"
+   "content": " int"
    }, definition {
    "name": "index",
-   "before-name": " int"
+   "content": " int"
    }]
   }]
  }]

@@ -23,15 +23,21 @@
   }],
  "params": [definition {
   "name": "propertyKey",
-  "before-name": "String"
+  "content": "String"
   }, definition {
   "name": "delimiter",
-  "before-name": " String"
+  "content": " String"
   }],
  "children": [method {
   "name": "parse",
-  "before-name": "@Override
-    public RuleResult<Node, ParseException>",
+  "content": "    public RuleResult<Node, ParseException>",
+  "params": [definition {
+   "name": "input",
+   "content": "String"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "final var args = Arrays.stream(input.split(delimiter))
                 .filter(value -> !value.isEmpty())
@@ -57,15 +63,17 @@
      "content": " args))"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "input",
-   "before-name": "String"
    }]
   }, method {
   "name": "generate",
-  "before-name": "@Override
-    public RuleResult<String, GenerateException>",
+  "content": "    public RuleResult<String, GenerateException>",
+  "params": [definition {
+   "name": "node",
+   "content": "Node"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "final var list = node.findStringList(propertyKey);"
    }, symbol {
@@ -87,10 +95,6 @@
       }]
      }]
     }
-   }],
-  "params": [definition {
-   "name": "node",
-   "before-name": "Node"
    }]
   }]
  }]

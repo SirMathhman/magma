@@ -10,14 +10,14 @@
   }],
  "content": [method {
   "name": "locate",
-  "before-name": "Stream<Integer>",
+  "content": "Stream<Integer>",
   "params": [definition {
    "name": "input",
-   "before-name": "String"
+   "content": "String"
    }]
   }, method {
   "name": "slice",
-  "before-name": "String",
+  "content": "String",
   "params": []
   }]
  }]

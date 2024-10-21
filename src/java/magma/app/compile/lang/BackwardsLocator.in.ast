@@ -19,22 +19,30 @@
   }],
  "params": [definition {
   "name": "delimiter",
-  "before-name": "String"
+  "content": "String"
   }],
  "children": [method {
   "name": "slice",
-  "before-name": "@Override
-    public String",
+  "content": "    public String",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": symbol {
     "content": "delimiter"
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "locate",
-  "before-name": "@Override
-    public Stream<Integer>",
+  "content": "    public Stream<Integer>",
+  "params": [definition {
+   "name": "input",
+   "content": "String"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "List<Integer> indices = new ArrayList<>();"
    }, symbol {
@@ -54,10 +62,6 @@
      },
     "arguments": []
     }
-   }],
-  "params": [definition {
-   "name": "input",
-   "before-name": "String"
    }]
   }]
  }]

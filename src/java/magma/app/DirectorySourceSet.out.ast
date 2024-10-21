@@ -25,12 +25,15 @@
   }],
  "params": [definition {
   "name": "root",
-  "before-name": "Path"
+  "content": "Path"
   }],
  "children": [method {
   "name": "collect",
-  "before-name": "@Override
-    public Result<Set<Path>, IOException>",
+  "content": "    public Result<Set<Path>, IOException>",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "try (var stream = Files.walk(root)) {
             return new Ok<>(stream
@@ -41,8 +44,7 @@
    "content": "catch (IOException e) {
             return new Err<>(e);
         }"
-   }],
-  "params": []
+   }]
   }]
  }]
 }

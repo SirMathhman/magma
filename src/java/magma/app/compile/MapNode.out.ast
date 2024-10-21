@@ -19,35 +19,35 @@
   }],
  "params": [definition {
   "name": "type",
-  "before-name": "
+  "content": "
         Optional<String>"
   }, definition {
   "name": "strings",
-  "before-name": "
+  "content": "
         Map<String, String>"
   }, definition {
   "name": "stringLists",
-  "before-name": "
+  "content": "
 
         Map<String, List<String>>"
   }, definition {
   "name": "nodes",
-  "before-name": " Map<String, Node>"
+  "content": " Map<String, Node>"
   }, definition {
   "name": "nodeLists",
-  "before-name": " Map<String,
+  "content": " Map<String,
         List<Node>>"
   }],
  "children": [method {
   "name": "MapNode",
-  "before-name": "public",
+  "content": "public",
   "children": [symbol {
    "content": "this(Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());"
    }],
   "params": []
   }, method {
   "name": "formatLine",
-  "before-name": "private static String",
+  "content": "private static String",
   "children": [return {
    "value": access {
     "name": "repeat(depth) + "\"" + key + "\": " + value",
@@ -58,17 +58,17 @@
    }],
   "params": [definition {
    "name": "depth",
-   "before-name": "int"
+   "content": "int"
    }, definition {
    "name": "key",
-   "before-name": " String"
+   "content": " String"
    }, definition {
    "name": "value",
-   "before-name": " String"
+   "content": " String"
    }]
   }, method {
   "name": "formatNodeList",
-  "before-name": "private static String",
+  "content": "private static String",
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -103,15 +103,21 @@
    }],
   "params": [definition {
    "name": "depth",
-   "before-name": "int"
+   "content": "int"
    }, definition {
    "name": "values",
-   "before-name": " List<Node>"
+   "content": " List<Node>"
    }]
   }, method {
   "name": "retype",
-  "before-name": "@Override
-    public Node",
+  "content": "    public Node",
+  "params": [definition {
+   "name": "type",
+   "content": "String"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -137,15 +143,17 @@
      "content": " nodeLists"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "type",
-   "before-name": "String"
    }]
   }, method {
   "name": "is",
-  "before-name": "@Override
-    public boolean",
+  "content": "    public boolean",
+  "params": [definition {
+   "name": "type",
+   "content": "String"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -172,15 +180,20 @@
       }
      }]
     }
-   }],
-  "params": [definition {
-   "name": "type",
-   "before-name": "String"
    }]
   }, method {
   "name": "withString",
-  "before-name": "@Override
-    public Node",
+  "content": "    public Node",
+  "params": [definition {
+   "name": "propertyKey",
+   "content": "String"
+   }, definition {
+   "name": "propertyValue",
+   "content": " String"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "final var copy = new HashMap<>(strings);"
    }, symbol {
@@ -202,18 +215,17 @@
      "content": " nodeLists"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "before-name": "String"
-   }, definition {
-   "name": "propertyValue",
-   "before-name": " String"
    }]
   }, method {
   "name": "findString",
-  "before-name": "@Override
-    public Optional<String>",
+  "content": "    public Optional<String>",
+  "params": [definition {
+   "name": "propertyKey",
+   "content": "String"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -234,15 +246,20 @@
       }]
      }]
     }
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "before-name": "String"
    }]
   }, method {
   "name": "mapNodeList",
-  "before-name": "@Override
-    public Optional<Node>",
+  "content": "    public Optional<Node>",
+  "params": [definition {
+   "name": "propertyKey",
+   "content": "String"
+   }, definition {
+   "name": "mapper",
+   "content": " Function<List<Node>, List<Node>>"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -263,18 +280,14 @@
       }]
      }]
     }
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "before-name": "String"
-   }, definition {
-   "name": "mapper",
-   "before-name": " Function<List<Node>, List<Node>>"
    }]
   }, method {
   "name": "streamNodeLists",
-  "before-name": "@Override
-    public Stream<Tuple<String, List<Node>>>",
+  "content": "    public Stream<Tuple<String, List<Node>>>",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -309,12 +322,20 @@
       }]
      }]
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "withNode",
-  "before-name": "@Override
-    public Node",
+  "content": "    public Node",
+  "params": [definition {
+   "name": "propertyKey",
+   "content": "String"
+   }, definition {
+   "name": "propertyValue",
+   "content": " Node"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "final var copy = new HashMap<>(nodes);"
    }, symbol {
@@ -336,18 +357,17 @@
      "content": " nodeLists"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "before-name": "String"
-   }, definition {
-   "name": "propertyValue",
-   "before-name": " Node"
    }]
   }, method {
   "name": "findNode",
-  "before-name": "@Override
-    public Optional<Node>",
+  "content": "    public Optional<Node>",
+  "params": [definition {
+   "name": "propertyKey",
+   "content": "String"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -368,15 +388,14 @@
       }]
      }]
     }
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "before-name": "String"
    }]
   }, method {
   "name": "streamNodes",
-  "before-name": "@Override
-    public Stream<Tuple<String, Node>>",
+  "content": "    public Stream<Tuple<String, Node>>",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -411,12 +430,17 @@
       }]
      }]
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "hasNode",
-  "before-name": "@Override
-    public boolean",
+  "content": "    public boolean",
+  "params": [definition {
+   "name": "node",
+   "content": "String"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -429,15 +453,20 @@
      "content": "node"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "node",
-   "before-name": "String"
    }]
   }, method {
   "name": "withStringList",
-  "before-name": "@Override
-    public Node",
+  "content": "    public Node",
+  "params": [definition {
+   "name": "propertyKey",
+   "content": "String"
+   }, definition {
+   "name": "propertyValues",
+   "content": " List<String>"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "final var copy = new HashMap<>(stringLists);"
    }, symbol {
@@ -459,18 +488,17 @@
      "content": " nodeLists"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "before-name": "String"
-   }, definition {
-   "name": "propertyValues",
-   "before-name": " List<String>"
    }]
   }, method {
   "name": "findStringList",
-  "before-name": "@Override
-    public Optional<List<String>>",
+  "content": "    public Optional<List<String>>",
+  "params": [definition {
+   "name": "propertyKey",
+   "content": "String"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -491,15 +519,14 @@
       }]
      }]
     }
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "before-name": "String"
    }]
   }, method {
   "name": "streamStrings",
-  "before-name": "@Override
-    public Stream<Tuple<String, String>>",
+  "content": "    public Stream<Tuple<String, String>>",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -534,12 +561,17 @@
       }]
      }]
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "findNodeList",
-  "before-name": "@Override
-    public Optional<List<Node>>",
+  "content": "    public Optional<List<Node>>",
+  "params": [definition {
+   "name": "propertyKey",
+   "content": "String"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -560,15 +592,20 @@
       }]
      }]
     }
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "before-name": "String"
    }]
   }, method {
   "name": "withNodeList",
-  "before-name": "@Override
-    public Node",
+  "content": "    public Node",
+  "params": [definition {
+   "name": "propertyKey",
+   "content": "String"
+   }, definition {
+   "name": "values",
+   "content": " List<Node>"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "final var copy = new HashMap<>(nodeLists);"
    }, symbol {
@@ -590,18 +627,14 @@
      "content": " copy"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "before-name": "String"
-   }, definition {
-   "name": "values",
-   "before-name": " List<Node>"
    }]
   }, method {
   "name": "toString",
-  "before-name": "@Override
-    public String",
+  "content": "    public String",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -611,12 +644,17 @@
      "content": "0"
      }]
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "format",
-  "before-name": "@Override
-    public String",
+  "content": "    public String",
+  "params": [definition {
+   "name": "depth",
+   "content": "int"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "final var typeString = type.map(value -> value + " ").orElse("");"
    }, symbol {
@@ -643,14 +681,10 @@
    "content": "return typeString + "{" + joined + "\n" + " ".repeat(depth) + "}"
    }, symbol {
    "content": "";"
-   }],
-  "params": [definition {
-   "name": "depth",
-   "before-name": "int"
    }]
   }, method {
   "name": "formatStringList",
-  "before-name": "private String",
+  "content": "private String",
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -682,11 +716,11 @@
    }],
   "params": [definition {
    "name": "list",
-   "before-name": "List<String>"
+   "content": "List<String>"
    }]
   }, method {
   "name": "formatMap",
-  "before-name": "private <T> String",
+  "content": "private <T> String",
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -731,18 +765,21 @@
    }],
   "params": [definition {
    "name": "depth",
-   "before-name": "int"
+   "content": "int"
    }, definition {
    "name": "set",
-   "before-name": " Map<String, T>"
+   "content": " Map<String, T>"
    }, definition {
    "name": "format",
-   "before-name": " Function<T, String>"
+   "content": " Function<T, String>"
    }]
   }, method {
   "name": "streamStringLists",
-  "before-name": "@Override
-    public Stream<Tuple<String, List<String>>>",
+  "content": "    public Stream<Tuple<String, List<String>>>",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -779,12 +816,20 @@
       }]
      }]
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "mapStringList",
-  "before-name": "@Override
-    public Optional<Node>",
+  "content": "    public Optional<Node>",
+  "params": [definition {
+   "name": "propertyKey",
+   "content": "String"
+   }, definition {
+   "name": "mapper",
+   "content": " Function<List<String>, List<String>>"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -805,18 +850,17 @@
       }]
      }]
     }
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "before-name": "String"
-   }, definition {
-   "name": "mapper",
-   "before-name": " Function<List<String>, List<String>>"
    }]
   }, method {
   "name": "merge",
-  "before-name": "@Override
-    public Node",
+  "content": "    public Node",
+  "params": [definition {
+   "name": "other",
+   "content": "Node"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "final var stringsCopy = new HashMap<>(strings);"
    }, symbol {
@@ -850,10 +894,6 @@
      "content": " nodeListCopy"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "other",
-   "before-name": "Node"
    }]
   }]
  }]

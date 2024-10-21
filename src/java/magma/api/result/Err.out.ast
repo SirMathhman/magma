@@ -29,12 +29,15 @@
   }],
  "params": [definition {
   "name": "error",
-  "before-name": "E"
+  "content": "E"
   }],
  "children": [method {
   "name": "findValue",
-  "before-name": "@Override
-    public Optional<T>",
+  "content": "    public Optional<T>",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -45,12 +48,14 @@
      },
     "arguments": []
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "findError",
-  "before-name": "@Override
-    public Optional<E>",
+  "content": "    public Optional<E>",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -63,12 +68,17 @@
      "content": "error"
      }]
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "mapValue",
-  "before-name": "@Override
-    public <R> Result<R, E>",
+  "content": "    public <R> Result<R, E>",
+  "params": [definition {
+   "name": "mapper",
+   "content": "Function<T, R>"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -78,25 +88,29 @@
      "content": "error"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "mapper",
-   "before-name": "Function<T, R>"
    }]
   }, method {
   "name": "isErr",
-  "before-name": "@Override
-    public boolean",
+  "content": "    public boolean",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": symbol {
     "content": "true"
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "and",
-  "before-name": "@Override
-    public <R> Result<Tuple<T, R>, E>",
+  "content": "    public <R> Result<Tuple<T, R>, E>",
+  "params": [definition {
+   "name": "supplier",
+   "content": "Supplier<Result<R, E>>"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -106,25 +120,29 @@
      "content": "error"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "supplier",
-   "before-name": "Supplier<Result<R, E>>"
    }]
   }, method {
   "name": "isOk",
-  "before-name": "@Override
-    public boolean",
+  "content": "    public boolean",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": symbol {
     "content": "false"
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "flatMapValue",
-  "before-name": "@Override
-    public <R> Result<R, E>",
+  "content": "    public <R> Result<R, E>",
+  "params": [definition {
+   "name": "mapper",
+   "content": "Function<T, Result<R, E>>"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -134,10 +152,6 @@
      "content": "error"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "mapper",
-   "before-name": "Function<T, Result<R, E>>"
    }]
   }]
  }]

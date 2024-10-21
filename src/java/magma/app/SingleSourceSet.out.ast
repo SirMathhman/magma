@@ -23,12 +23,15 @@
   }],
  "params": [definition {
   "name": "source",
-  "before-name": "Path"
+  "content": "Path"
   }],
  "children": [method {
   "name": "collect",
-  "before-name": "@Override
-    public Result<Set<Path>, IOException>",
+  "content": "    public Result<Set<Path>, IOException>",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "var sources = new HashSet<Path>();"
    }, symbol {
@@ -42,8 +45,7 @@
      "content": "sources"
      }]
     }
-   }],
-  "params": []
+   }]
   }]
  }]
 }

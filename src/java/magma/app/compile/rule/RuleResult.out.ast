@@ -25,34 +25,36 @@
   }],
  "params": [definition {
   "name": "result",
-  "before-name": "Result<T, E>"
+  "content": "Result<T, E>"
   }, definition {
   "name": "children",
-  "before-name": " List<RuleResult<T, E>>"
+  "content": " List<RuleResult<T, E>>"
   }],
  "children": [method {
   "name": "RuleResult",
-  "before-name": "public",
+  "content": "public",
   "children": [symbol {
    "content": "this(result, Collections.emptyList());"
    }],
   "params": [definition {
    "name": "result",
-   "before-name": "Result<T, E>"
+   "content": "Result<T, E>"
    }]
   }, method {
   "name": "unwrap",
-  "before-name": "@Deprecated
-    public Result<T, E>",
+  "content": "    public Result<T, E>",
+  "params": [],
+  "annotations": [annotation {
+   "value": "Deprecated"
+   }],
   "children": [return {
    "value": symbol {
     "content": "result"
     }
-   }],
-  "params": []
+   }]
   }, method {
   "name": "isValid",
-  "before-name": "public boolean",
+  "content": "public boolean",
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -67,7 +69,7 @@
   "params": []
   }, method {
   "name": "mapValue",
-  "before-name": "public RuleResult<T, E>",
+  "content": "public RuleResult<T, E>",
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -90,11 +92,11 @@
    }],
   "params": [definition {
    "name": "mapper",
-   "before-name": "Function<T, T>"
+   "content": "Function<T, T>"
    }]
   }, method {
   "name": "wrapErr",
-  "before-name": "public RuleResult<T, E>",
+  "content": "public RuleResult<T, E>",
   "children": [symbol {
    "content": "if (!isError()) return this;"
    }, symbol {
@@ -118,11 +120,11 @@
    }],
   "params": [definition {
    "name": "error",
-   "before-name": "E"
+   "content": "E"
    }]
   }, method {
   "name": "isError",
-  "before-name": "public boolean",
+  "content": "public boolean",
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -137,7 +139,7 @@
   "params": []
   }, method {
   "name": "depth",
-  "before-name": "public int",
+  "content": "public int",
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -166,7 +168,7 @@
   "params": []
   }, method {
   "name": "sortedChildren",
-  "before-name": "public List<RuleResult<T, E>>",
+  "content": "public List<RuleResult<T, E>>",
   "children": [return {
    "value": invocation {
     "caller": access {

@@ -16,40 +16,40 @@
   }],
  "content": [method {
   "name": "findValue",
-  "before-name": "Optional<T>",
+  "content": "Optional<T>",
   "params": []
   }, method {
   "name": "findError",
-  "before-name": "Optional<E>",
+  "content": "Optional<E>",
   "params": []
   }, method {
   "name": "mapValue",
-  "before-name": "<R> Result<R, E>",
+  "content": "<R> Result<R, E>",
   "params": [definition {
    "name": "mapper",
-   "before-name": "Function<T, R>"
+   "content": "Function<T, R>"
    }]
   }, method {
   "name": "isErr",
-  "before-name": "boolean",
+  "content": "boolean",
   "params": []
   }, method {
   "name": "and",
-  "before-name": "<R> Result<Tuple<T, R>, E>",
+  "content": "<R> Result<Tuple<T, R>, E>",
   "params": [definition {
    "name": "supplier",
-   "before-name": "Supplier<Result<R, E>>"
+   "content": "Supplier<Result<R, E>>"
    }]
   }, method {
   "name": "isOk",
-  "before-name": "boolean",
+  "content": "boolean",
   "params": []
   }, method {
   "name": "flatMapValue",
-  "before-name": "<R> Result<R, E>",
+  "content": "<R> Result<R, E>",
   "params": [definition {
    "name": "mapper",
-   "before-name": "Function<T, Result<R, E>>"
+   "content": "Function<T, Result<R, E>>"
    }]
   }]
  }]

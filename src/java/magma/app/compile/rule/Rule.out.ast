@@ -12,17 +12,17 @@
   }],
  "content": [method {
   "name": "parse",
-  "before-name": "RuleResult<Node, ParseException>",
+  "content": "RuleResult<Node, ParseException>",
   "params": [definition {
    "name": "input",
-   "before-name": "String"
+   "content": "String"
    }]
   }, method {
   "name": "generate",
-  "before-name": "RuleResult<String, GenerateException>",
+  "content": "RuleResult<String, GenerateException>",
   "params": [definition {
    "name": "node",
-   "before-name": "Node"
+   "content": "Node"
    }]
   }]
  }]

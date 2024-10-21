@@ -18,142 +18,142 @@
   }],
  "content": [method {
   "name": "retype",
-  "before-name": "Node",
+  "content": "Node",
   "params": [definition {
    "name": "type",
-   "before-name": "String"
+   "content": "String"
    }]
   }, method {
   "name": "is",
-  "before-name": "boolean",
+  "content": "boolean",
   "params": [definition {
    "name": "type",
-   "before-name": "String"
+   "content": "String"
    }]
   }, method {
   "name": "withString",
-  "before-name": "Node",
+  "content": "Node",
   "params": [definition {
    "name": "propertyKey",
-   "before-name": "String"
+   "content": "String"
    }, definition {
    "name": "propertyValue",
-   "before-name": " String"
+   "content": " String"
    }]
   }, method {
   "name": "findString",
-  "before-name": "Optional<String>",
+  "content": "Optional<String>",
   "params": [definition {
    "name": "propertyKey",
-   "before-name": "String"
+   "content": "String"
    }]
   }, method {
   "name": "mapNodeList",
-  "before-name": "Optional<Node>",
+  "content": "Optional<Node>",
   "params": [definition {
    "name": "propertyKey",
-   "before-name": "String"
+   "content": "String"
    }, definition {
    "name": "mapper",
-   "before-name": " Function<List<Node>, List<Node>>"
+   "content": " Function<List<Node>, List<Node>>"
    }]
   }, method {
   "name": "findNodeList",
-  "before-name": "Optional<List<Node>>",
+  "content": "Optional<List<Node>>",
   "params": [definition {
    "name": "propertyKey",
-   "before-name": "String"
+   "content": "String"
    }]
   }, method {
   "name": "withNodeList",
-  "before-name": "Node",
+  "content": "Node",
   "params": [definition {
    "name": "propertyKey",
-   "before-name": "String"
+   "content": "String"
    }, definition {
    "name": "values",
-   "before-name": " List<Node>"
+   "content": " List<Node>"
    }]
   }, method {
   "name": "format",
-  "before-name": "String",
+  "content": "String",
   "params": [definition {
    "name": "depth",
-   "before-name": "int"
+   "content": "int"
    }]
   }, method {
   "name": "merge",
-  "before-name": "Node",
+  "content": "Node",
   "params": [definition {
    "name": "other",
-   "before-name": "Node"
+   "content": "Node"
    }]
   }, method {
   "name": "streamStrings",
-  "before-name": "Stream<Tuple<String, String>>",
+  "content": "Stream<Tuple<String, String>>",
   "params": []
   }, method {
   "name": "streamNodeLists",
-  "before-name": "Stream<Tuple<String, List<Node>>>",
+  "content": "Stream<Tuple<String, List<Node>>>",
   "params": []
   }, method {
   "name": "withNode",
-  "before-name": "Node",
+  "content": "Node",
   "params": [definition {
    "name": "propertyKey",
-   "before-name": "String"
+   "content": "String"
    }, definition {
    "name": "propertyValue",
-   "before-name": " Node"
+   "content": " Node"
    }]
   }, method {
   "name": "findNode",
-  "before-name": "Optional<Node>",
+  "content": "Optional<Node>",
   "params": [definition {
    "name": "propertyKey",
-   "before-name": "String"
+   "content": "String"
    }]
   }, method {
   "name": "streamNodes",
-  "before-name": "Stream<Tuple<String, Node>>",
+  "content": "Stream<Tuple<String, Node>>",
   "params": []
   }, method {
   "name": "hasNode",
-  "before-name": "boolean",
+  "content": "boolean",
   "params": [definition {
    "name": "node",
-   "before-name": "String"
+   "content": "String"
    }]
   }, method {
   "name": "withStringList",
-  "before-name": "Node",
+  "content": "Node",
   "params": [definition {
    "name": "propertyKey",
-   "before-name": "String"
+   "content": "String"
    }, definition {
    "name": "propertyValues",
-   "before-name": " List<String>"
+   "content": " List<String>"
    }]
   }, method {
   "name": "findStringList",
-  "before-name": "Optional<List<String>>",
+  "content": "Optional<List<String>>",
   "params": [definition {
    "name": "propertyKey",
-   "before-name": "String"
+   "content": "String"
    }]
   }, method {
   "name": "streamStringLists",
-  "before-name": "Stream<Tuple<String, List<String>>>",
+  "content": "Stream<Tuple<String, List<String>>>",
   "params": []
   }, method {
   "name": "mapStringList",
-  "before-name": "Optional<Node>",
+  "content": "Optional<Node>",
   "params": [definition {
    "name": "propertyKey",
-   "before-name": "String"
+   "content": "String"
    }, definition {
    "name": "mapper",
-   "before-name": " Function<List<String>, List<String>>"
+   "content": " Function<List<String>, List<String>>"
    }]
   }]
  }]

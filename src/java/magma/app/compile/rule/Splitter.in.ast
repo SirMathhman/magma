@@ -10,10 +10,10 @@
   }],
  "content": [method {
   "name": "split",
-  "before-name": "List<String>",
+  "content": "List<String>",
   "params": [definition {
    "name": "input",
-   "before-name": "String"
+   "content": "String"
    }]
   }]
  }]

@@ -13,10 +13,10 @@
   }],
  "params": [definition {
   "name": "left",
-  "before-name": "A"
+  "content": "A"
   }, definition {
   "name": "right",
-  "before-name": " B"
+  "content": " B"
   }],
  "children": []
  }]
