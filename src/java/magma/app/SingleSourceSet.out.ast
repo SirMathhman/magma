@@ -50,12 +50,28 @@
   "annotations": [annotation {
    "value": "Override"
    }],
-  "children": [symbol {
-   "content": "var sources = new HashSet<Path>();"
-   }, symbol {
-   "content": "if(Files.exists(this.source())) sources.add(this.source());"
-   }, symbol {
-   "content": "return new Ok<>(sources);"
+  "children": [declaration {
+   "name": "sources",
+   "returns": symbol {
+    "value": "var"
+    },
+   "caller": symbol {
+    "content": "HashSet"
+    },
+   "type-arguments": [symbol {
+    "value": "Path"
+    }]
+   }, if {
+   "content": "(Files.exists(this.source())) sources.add(this.source());"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "Ok"
+     },
+    "arguments": [symbol {
+     "content": "sources"
+     }]
+    }
    }]
   }]
  }]

@@ -1,7 +1,5 @@
 {
 "children": [import {
- "namespace": ["magma", "api", "result", "Err"]
- }, import {
  "namespace": ["magma", "app", "compile", "GenerateException"]
  }, import {
  "namespace": ["magma", "app", "compile", "Node"]
@@ -17,7 +15,7 @@
     private final Rule ifEmpty;
     private final OrRule maybe;
 
-    public OptionalNodeRule(String propertyKey, Rule ifPresent, Rule ifEmpty) {
+    public OptionalNodeRule(String propertyKey, Rule ifEmpty, Rule ifPresent) {
         this.propertyKey = propertyKey;
         this.ifPresent = ifPresent;
         this.ifEmpty = ifEmpty;

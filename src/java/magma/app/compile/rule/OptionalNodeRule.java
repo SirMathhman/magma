@@ -1,6 +1,5 @@
 package magma.app.compile.rule;
 
-import magma.api.result.Err;
 import magma.app.compile.GenerateException;
 import magma.app.compile.Node;
 import magma.app.compile.ParseException;
@@ -13,7 +12,7 @@ public final class OptionalNodeRule implements Rule {
     private final Rule ifEmpty;
     private final OrRule maybe;
 
-    public OptionalNodeRule(String propertyKey, Rule ifPresent, Rule ifEmpty) {
+    public OptionalNodeRule(String propertyKey, Rule ifEmpty, Rule ifPresent) {
         this.propertyKey = propertyKey;
         this.ifPresent = ifPresent;
         this.ifEmpty = ifEmpty;
