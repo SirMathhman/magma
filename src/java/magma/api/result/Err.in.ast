@@ -31,11 +31,20 @@
   }],
  "params": [definition {
   "name": "error",
-  "content": "E"
+  "returns": symbol {
+   "value": "E"
+   }
   }],
  "children": [method {
   "name": "findValue",
-  "content": "Optional<T>",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "T"
+    }]
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -56,7 +65,14 @@
    }]
   }, method {
   "name": "findError",
-  "content": "Optional<E>",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "E"
+    }]
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -79,7 +95,17 @@
    }]
   }, method {
   "name": "mapValue",
-  "content": "<R> Result<R, E>",
+  "type-params": "R",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [symbol {
+    "value": "R"
+    }, symbol {
+    "value": "E"
+    }]
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -88,7 +114,16 @@
    }],
   "params": [definition {
    "name": "mapper",
-   "content": "Function<T, R>"
+   "returns": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "R"
+     }]
+    }
    }],
   "children": [return {
    "value": invocation {
@@ -102,7 +137,9 @@
    }]
   }, method {
   "name": "isErr",
-  "content": "boolean",
+  "returns": symbol {
+   "value": "boolean"
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -117,7 +154,24 @@
    }]
   }, method {
   "name": "and",
-  "content": "<R> Result<Tuple<T, R>, E>",
+  "type-params": "R",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "Tuple"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "R"
+     }]
+    }, symbol {
+    "value": "E"
+    }]
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -126,7 +180,21 @@
    }],
   "params": [definition {
    "name": "supplier",
-   "content": "Supplier<Result<R, E>>"
+   "returns": generic {
+    "base": symbol {
+     "value": "Supplier"
+     },
+    "children": [generic {
+     "base": symbol {
+      "value": "Result"
+      },
+     "children": [symbol {
+      "value": "R"
+      }, symbol {
+      "value": "E"
+      }]
+     }]
+    }
    }],
   "children": [return {
    "value": invocation {
@@ -140,7 +208,9 @@
    }]
   }, method {
   "name": "isOk",
-  "content": "boolean",
+  "returns": symbol {
+   "value": "boolean"
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -155,7 +225,17 @@
    }]
   }, method {
   "name": "flatMapValue",
-  "content": "<R> Result<R, E>",
+  "type-params": "R",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [symbol {
+    "value": "R"
+    }, symbol {
+    "value": "E"
+    }]
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -164,7 +244,23 @@
    }],
   "params": [definition {
    "name": "mapper",
-   "content": "Function<T, Result<R, E>>"
+   "returns": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, generic {
+     "base": symbol {
+      "value": "Result"
+      },
+     "children": [symbol {
+      "value": "R"
+      }, symbol {
+      "value": "E"
+      }]
+     }]
+    }
    }],
   "children": [return {
    "value": invocation {

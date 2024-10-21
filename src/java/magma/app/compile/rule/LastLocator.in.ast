@@ -15,11 +15,29 @@
   }],
  "params": [definition {
   "name": "slice",
-  "content": "String"
+  "returns": symbol {
+   "value": "String"
+   }
   }],
  "children": [method {
   "name": "locate0",
-  "content": "private Optional<Integer>",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "Integer"
+    }]
+   },
+  "modifiers": [modifier {
+   "content": "private"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
+   }],
   "children": [symbol {
    "content": "final var index = input.lastIndexOf(slice);"
    }, return {
@@ -37,14 +55,17 @@
       }
      }]
     }
-   }],
-  "params": [definition {
-   "name": "input",
-   "content": "String"
    }]
   }, method {
   "name": "locate",
-  "content": "Stream<Integer>",
+  "returns": generic {
+   "base": symbol {
+    "value": "Stream"
+    },
+   "children": [symbol {
+    "value": "Integer"
+    }]
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -53,7 +74,9 @@
    }],
   "params": [definition {
    "name": "input",
-   "content": "String"
+   "returns": symbol {
+    "value": "String"
+    }
    }],
   "children": [return {
    "value": invocation {

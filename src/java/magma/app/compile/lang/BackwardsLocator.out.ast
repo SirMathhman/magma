@@ -17,11 +17,15 @@
   }],
  "params": [definition {
   "name": "delimiter",
-  "content": "String"
+  "returns": symbol {
+   "value": "String"
+   }
   }],
  "children": [method {
   "name": "slice",
-  "content": "String",
+  "returns": symbol {
+   "value": "String"
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -36,7 +40,14 @@
    }]
   }, method {
   "name": "locate",
-  "content": "Stream<Integer>",
+  "returns": generic {
+   "base": symbol {
+    "value": "Stream"
+    },
+   "children": [symbol {
+    "value": "Integer"
+    }]
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -45,7 +56,9 @@
    }],
   "params": [definition {
    "name": "input",
-   "content": "String"
+   "returns": symbol {
+    "value": "String"
+    }
    }],
   "children": [symbol {
    "content": "List<Integer> indices = new ArrayList<>();"

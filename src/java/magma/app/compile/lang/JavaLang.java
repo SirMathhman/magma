@@ -14,7 +14,9 @@ public class JavaLang {
     public static final String MODIFIERS = "modifiers";
     public static final String METHOD = "method";
     public static final List<String> MODIFIERS_LIST = List.of(
-            "public"
+            "public",
+            "private",
+            "static"
     );
 
     public static TypeRule createPackageRule() {
@@ -42,10 +44,13 @@ public class JavaLang {
     }
 
     private static TypeRule createDefinitionRule() {
-        final var content1 = new ExtractRule("content");
+        final var content = new NodeRule("returns", createTypeRule());
+        final var typeParams = new StripRule(new PrefixRule("<", new SuffixRule(new ExtractRule("type-params"), ">")), "", "");
+        final var withTypeParams = new ContextRule("With type params.", new LocatingRule(typeParams, new ForwardsLocator(" "), content));
+        final var maybeTypeParams = new OptionalNodeRule("type-params", withTypeParams, content);
 
-        final var withModifiers = new ContextRule("With modifiers.", new LocatingRule(createModifiersRule(), new ForwardsLocator(" "), content1));
-        final var maybeModifiers = new StripRule(new OptionalNodeRule("modifiers", withModifiers, content1), "", "");
+        final var withModifiers = new ContextRule("With modifiers.", new LocatingRule(createModifiersRule(), new ForwardsLocator(" "), maybeTypeParams));
+        final var maybeModifiers = new StripRule(new OptionalNodeRule("modifiers", withModifiers, maybeTypeParams), "", "");
 
         final var annotation = new TypeRule("annotation", new StripRule(new PrefixRule("@", new ExtractRule("value")), "", ""));
         final var annotations = new NodeListRule(new SimpleSplitter("\n"), "annotations", annotation);

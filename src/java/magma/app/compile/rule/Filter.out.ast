@@ -6,10 +6,14 @@
   }],
  "content": [method {
   "name": "filter",
-  "content": "boolean",
+  "returns": symbol {
+   "value": "boolean"
+   },
   "params": [definition {
    "name": "input",
-   "content": "String"
+   "returns": symbol {
+    "value": "String"
+    }
    }]
   }]
  }]

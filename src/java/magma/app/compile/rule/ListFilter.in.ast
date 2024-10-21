@@ -13,11 +13,20 @@
   }],
  "params": [definition {
   "name": "values",
-  "content": "List<String>"
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [symbol {
+    "value": "String"
+    }]
+   }
   }],
  "children": [method {
   "name": "filter",
-  "content": "boolean",
+  "returns": symbol {
+   "value": "boolean"
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -26,7 +35,9 @@
    }],
   "params": [definition {
    "name": "input",
-   "content": "String"
+   "returns": symbol {
+    "value": "String"
+    }
    }],
   "children": [return {
    "value": invocation {

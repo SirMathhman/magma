@@ -30,11 +30,26 @@
   }],
  "params": [definition {
   "name": "input",
-  "content": "String"
+  "returns": symbol {
+   "value": "String"
+   }
   }],
  "children": [method {
   "name": "pass",
-  "content": "private static Node",
+  "returns": symbol {
+   "value": "Node"
+   },
+  "modifiers": [modifier {
+   "content": "private"
+   }, modifier {
+   "content": "static"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -52,14 +67,33 @@
       }
      }]
     }
-   }],
-  "params": [definition {
-   "name": "node",
-   "content": "Node"
    }]
   }, method {
   "name": "passChildren",
-  "content": "private static List<Node>",
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }]
+   },
+  "modifiers": [modifier {
+   "content": "private"
+   }, modifier {
+   "content": "static"
+   }],
+  "params": [definition {
+   "name": "children",
+   "returns": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "Node"
+     }]
+    }
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -90,14 +124,23 @@
       }
      }]
     }
-   }],
-  "params": [definition {
-   "name": "children",
-   "content": "List<Node>"
    }]
   }, method {
   "name": "passRootChild",
-  "content": "private static Node",
+  "returns": symbol {
+   "value": "Node"
+   },
+  "modifiers": [modifier {
+   "content": "private"
+   }, modifier {
+   "content": "static"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -119,14 +162,28 @@
       }
      }]
     }
-   }],
-  "params": [definition {
-   "name": "node",
-   "content": "Node"
    }]
   }, method {
   "name": "passClass",
-  "content": "private static Optional<Node>",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }]
+   },
+  "modifiers": [modifier {
+   "content": "private"
+   }, modifier {
+   "content": "static"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }],
   "children": [symbol {
    "content": "if (node.is(CLASS)) {
             return Optional.of(node.retype(FUNCTION));
@@ -135,14 +192,28 @@
    "content": "else {
             return Optional.empty();
         }"
-   }],
-  "params": [definition {
-   "name": "node",
-   "content": "Node"
    }]
   }, method {
   "name": "passRecord",
-  "content": "private static Optional<Node>",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }]
+   },
+  "modifiers": [modifier {
+   "content": "private"
+   }, modifier {
+   "content": "static"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -164,14 +235,28 @@
       }
      }]
     }
-   }],
-  "params": [definition {
-   "name": "node",
-   "content": "Node"
    }]
   }, method {
   "name": "passInterface",
-  "content": "private static Optional<Node>",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }]
+   },
+  "modifiers": [modifier {
+   "content": "private"
+   }, modifier {
+   "content": "static"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }],
   "children": [symbol {
    "content": "if (!node.is(INTERFACE)) return Optional.empty();"
    }, symbol {
@@ -200,28 +285,42 @@
      "content": "withChildren"
      }]
     }
-   }],
-  "params": [definition {
-   "name": "node",
-   "content": "Node"
    }]
   }, method {
   "name": "passClassMember",
-  "content": "private static Node",
+  "returns": symbol {
+   "value": "Node"
+   },
+  "modifiers": [modifier {
+   "content": "private"
+   }, modifier {
+   "content": "static"
+   }],
+  "params": [definition {
+   "name": "child",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }],
   "children": [symbol {
    "content": "if (child.is(METHOD)) return child.retype(FUNCTION);"
    }, return {
    "value": symbol {
     "content": "child"
     }
-   }],
-  "params": [definition {
-   "name": "child",
-   "content": "Node"
    }]
   }, method {
   "name": "compile",
-  "content": "Result<CompileResult, CompileException>",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [symbol {
+    "value": "CompileResult"
+    }, symbol {
+    "value": "CompileException"
+    }]
+   },
   "modifiers": [modifier {
    "content": "public"
    }],
@@ -239,7 +338,33 @@
    }]
   }, method {
   "name": "write",
-  "content": "private <T, E extends Exception> Result<T, CompileException>",
+  "type-params": "T, E extends Exception",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [symbol {
+    "value": "T"
+    }, symbol {
+    "value": "CompileException"
+    }]
+   },
+  "modifiers": [modifier {
+   "content": "private"
+   }],
+  "params": [definition {
+   "name": "result",
+   "returns": generic {
+    "base": symbol {
+     "value": "RuleResult"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "E"
+     }]
+    }
+   }],
   "children": [symbol {
    "content": "if (result.isValid()) {
             return new Ok<>(result.result().findValue().orElseThrow());
@@ -249,14 +374,39 @@
             writeResult(result, 0, 0);
             return new Err<>(new CompileException());
         }"
-   }],
-  "params": [definition {
-   "name": "result",
-   "content": "RuleResult<T, E>"
    }]
   }, method {
   "name": "writeResult",
-  "content": "private <T, E extends Exception> void",
+  "type-params": "T, E extends Exception",
+  "returns": symbol {
+   "value": "void"
+   },
+  "modifiers": [modifier {
+   "content": "private"
+   }],
+  "params": [definition {
+   "name": "result",
+   "returns": generic {
+    "base": symbol {
+     "value": "RuleResult"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "E"
+     }]
+    }
+   }, definition {
+   "name": "depth",
+   "returns": symbol {
+    "value": "int"
+    }
+   }, definition {
+   "name": "index",
+   "returns": symbol {
+    "value": "int"
+    }
+   }],
   "children": [symbol {
    "content": "final var error = result.result().findError();"
    }, symbol {
@@ -278,16 +428,6 @@
             RuleResult<T, E> child = children.get(i);
             writeResult(child, depth + 1, i);
         }"
-   }],
-  "params": [definition {
-   "name": "result",
-   "content": "RuleResult<T, E>"
-   }, definition {
-   "name": "depth",
-   "content": "int"
-   }, definition {
-   "name": "index",
-   "content": "int"
    }]
   }]
  }]

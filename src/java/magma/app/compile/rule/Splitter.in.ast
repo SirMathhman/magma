@@ -10,10 +10,19 @@
   }],
  "content": [method {
   "name": "split",
-  "content": "List<String>",
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [symbol {
+    "value": "String"
+    }]
+   },
   "params": [definition {
    "name": "input",
-   "content": "String"
+   "returns": symbol {
+    "value": "String"
+    }
    }]
   }]
  }]

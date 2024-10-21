@@ -11,10 +11,14 @@
   }],
  "params": [definition {
   "name": "left",
-  "content": "A"
+  "returns": symbol {
+   "value": "A"
+   }
   }, definition {
   "name": "right",
-  "content": "B"
+  "returns": symbol {
+   "value": "B"
+   }
   }],
  "children": []
  }]

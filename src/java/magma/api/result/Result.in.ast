@@ -16,40 +16,134 @@
   }],
  "content": [method {
   "name": "findValue",
-  "content": "Optional<T>",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "T"
+    }]
+   },
   "params": []
   }, method {
   "name": "findError",
-  "content": "Optional<E>",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "E"
+    }]
+   },
   "params": []
   }, method {
   "name": "mapValue",
-  "content": "<R> Result<R, E>",
+  "type-params": "R",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [symbol {
+    "value": "R"
+    }, symbol {
+    "value": "E"
+    }]
+   },
   "params": [definition {
    "name": "mapper",
-   "content": "Function<T, R>"
+   "returns": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "R"
+     }]
+    }
    }]
   }, method {
   "name": "isErr",
-  "content": "boolean",
+  "returns": symbol {
+   "value": "boolean"
+   },
   "params": []
   }, method {
   "name": "and",
-  "content": "<R> Result<Tuple<T, R>, E>",
+  "type-params": "R",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "Tuple"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "R"
+     }]
+    }, symbol {
+    "value": "E"
+    }]
+   },
   "params": [definition {
    "name": "supplier",
-   "content": "Supplier<Result<R, E>>"
+   "returns": generic {
+    "base": symbol {
+     "value": "Supplier"
+     },
+    "children": [generic {
+     "base": symbol {
+      "value": "Result"
+      },
+     "children": [symbol {
+      "value": "R"
+      }, symbol {
+      "value": "E"
+      }]
+     }]
+    }
    }]
   }, method {
   "name": "isOk",
-  "content": "boolean",
+  "returns": symbol {
+   "value": "boolean"
+   },
   "params": []
   }, method {
   "name": "flatMapValue",
-  "content": "<R> Result<R, E>",
+  "type-params": "R",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [symbol {
+    "value": "R"
+    }, symbol {
+    "value": "E"
+    }]
+   },
   "params": [definition {
    "name": "mapper",
-   "content": "Function<T, Result<R, E>>"
+   "returns": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, generic {
+     "base": symbol {
+      "value": "Result"
+      },
+     "children": [symbol {
+      "value": "R"
+      }, symbol {
+      "value": "E"
+      }]
+     }]
+    }
    }]
   }]
  }]

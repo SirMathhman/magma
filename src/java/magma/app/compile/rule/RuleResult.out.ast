@@ -25,24 +25,67 @@
   }],
  "params": [definition {
   "name": "result",
-  "content": "Result<T, E>"
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [symbol {
+    "value": "T"
+    }, symbol {
+    "value": "E"
+    }]
+   }
   }, definition {
   "name": "children",
-  "content": "List<RuleResult<T, E>>"
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "RuleResult"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "E"
+     }]
+    }]
+   }
   }],
  "children": [method {
   "name": "RuleResult",
-  "content": "public",
+  "returns": symbol {
+   "value": "public"
+   },
   "children": [symbol {
    "content": "this(result, Collections.emptyList());"
    }],
   "params": [definition {
    "name": "result",
-   "content": "Result<T, E>"
+   "returns": generic {
+    "base": symbol {
+     "value": "Result"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "E"
+     }]
+    }
    }]
   }, method {
   "name": "unwrap",
-  "content": "Result<T, E>",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [symbol {
+    "value": "T"
+    }, symbol {
+    "value": "E"
+    }]
+   },
   "annotations": [annotation {
    "value": "Deprecated"
    }],
@@ -57,7 +100,9 @@
    }]
   }, method {
   "name": "isValid",
-  "content": "boolean",
+  "returns": symbol {
+   "value": "boolean"
+   },
   "modifiers": [modifier {
    "content": "public"
    }],
@@ -75,13 +120,31 @@
    }]
   }, method {
   "name": "mapValue",
-  "content": "RuleResult<T, E>",
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "T"
+    }, symbol {
+    "value": "E"
+    }]
+   },
   "modifiers": [modifier {
    "content": "public"
    }],
   "params": [definition {
    "name": "mapper",
-   "content": "Function<T, T>"
+   "returns": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "T"
+     }]
+    }
    }],
   "children": [return {
    "value": invocation {
@@ -105,13 +168,24 @@
    }]
   }, method {
   "name": "wrapErr",
-  "content": "RuleResult<T, E>",
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "T"
+    }, symbol {
+    "value": "E"
+    }]
+   },
   "modifiers": [modifier {
    "content": "public"
    }],
   "params": [definition {
    "name": "error",
-   "content": "E"
+   "returns": symbol {
+    "value": "E"
+    }
    }],
   "children": [symbol {
    "content": "if (!isError()) return this;"
@@ -136,7 +210,9 @@
    }]
   }, method {
   "name": "isError",
-  "content": "boolean",
+  "returns": symbol {
+   "value": "boolean"
+   },
   "modifiers": [modifier {
    "content": "public"
    }],
@@ -154,7 +230,9 @@
    }]
   }, method {
   "name": "depth",
-  "content": "int",
+  "returns": symbol {
+   "value": "int"
+   },
   "modifiers": [modifier {
    "content": "public"
    }],
@@ -186,7 +264,21 @@
    }]
   }, method {
   "name": "sortedChildren",
-  "content": "List<RuleResult<T, E>>",
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "RuleResult"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "E"
+     }]
+    }]
+   },
   "modifiers": [modifier {
    "content": "public"
    }],

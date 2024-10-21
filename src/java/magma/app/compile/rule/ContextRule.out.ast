@@ -15,14 +15,27 @@
   }],
  "params": [definition {
   "name": "message",
-  "content": "String"
+  "returns": symbol {
+   "value": "String"
+   }
   }, definition {
   "name": "childRule",
-  "content": "Rule"
+  "returns": symbol {
+   "value": "Rule"
+   }
   }],
  "children": [method {
   "name": "parse",
-  "content": "RuleResult<Node, ParseException>",
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }, symbol {
+    "value": "ParseException"
+    }]
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -31,7 +44,9 @@
    }],
   "params": [definition {
    "name": "input",
-   "content": "String"
+   "returns": symbol {
+    "value": "String"
+    }
    }],
   "children": [return {
    "value": invocation {
@@ -53,7 +68,16 @@
    }]
   }, method {
   "name": "generate",
-  "content": "RuleResult<String, GenerateException>",
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "String"
+    }, symbol {
+    "value": "GenerateException"
+    }]
+   },
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -62,7 +86,9 @@
    }],
   "params": [definition {
    "name": "node",
-   "content": "Node"
+   "returns": symbol {
+    "value": "Node"
+    }
    }],
   "children": [return {
    "value": invocation {
