@@ -114,11 +114,12 @@ public class JavaLang {
 
     private static Rule createValueRule() {
         final var value = new LazyRule();
-        value.setChildRule(new OrRule(List.of(
+        value.setChildRule(new ContextRule("Value failed", new OrRule(List.of(
+                createConstructionRule(value),
                 createInvocationRule(value),
                 createAccessRule(value),
                 createSymbolRule()
-        )));
+        ))));
         return value;
     }
 
@@ -132,11 +133,23 @@ public class JavaLang {
         return new TypeRule("access", new LocatingRule(parent, new LastLocator("."), child));
     }
 
+    private static TypeRule createConstructionRule(Rule value) {
+        final var caller = new NodeRule("caller", value);
+        final var withTypeArguments = new SuffixRule(caller, "<>");
+
+        final var beforeParams = new PrefixRule("new ", new OptionalNodeRule("type-arguments", withTypeArguments, caller));
+        final var arguments = createArgumentsRule(value);
+        return new TypeRule("construction", new LocatingRule(beforeParams, new FirstLocator("("), new SuffixRule(arguments, ")")));
+    }
+
     private static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
-        final var arguments = new OptionalNodeListRule("arguments", new NodeListRule(new ValueSplitter(), "arguments", value), new EmptyRule());
-
+        final var arguments = createArgumentsRule(value);
         return new TypeRule("invocation", new LocatingRule(caller, new FirstLocator("("), new SuffixRule(arguments, ")")));
+    }
+
+    private static OptionalNodeListRule createArgumentsRule(Rule value) {
+        return new OptionalNodeListRule("arguments", new EmptyRule(), new NodeListRule(new ValueSplitter(), "arguments", value));
     }
 
     private static Rule createTypeRule() {
