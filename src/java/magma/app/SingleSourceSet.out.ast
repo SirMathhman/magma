@@ -26,8 +26,7 @@
         var sources = new HashSet<Path>();
         if(Files.exists(this.source())) sources.add(this.source());
         return new Ok<>(sources);
-    }
-"
+    }"
   }],
  "params": [definition {
   "type": "Path",

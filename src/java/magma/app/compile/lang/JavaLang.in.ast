@@ -67,39 +67,44 @@
 
     private static OrRule"
    }
-  }, method {
-  "name": "createClassRule",
-  "params": content {
-   "params": ") {
+  }, any {
+  "content": "
+    }
+
+    private static TypeRule createClassRule() {
         final var afterKeyword = new LocatingRule(new ExtractRule("name"), new FirstLocator("{"), new ExtractRule("body"));
         return new TypeRule(CLASS, new LocatingRule(new ExtractRule("before-keyword"), new FirstLocator("class "), afterKeyword));
-    }
+    }"
+  }, any {
+  "content": "
 
     private static TypeRule createInterfaceRule() {
         final var memberRule = createClassMemberRule();
-        final var content = new SuffixRule(new NodeListRule(new StatementSplitter(), "content", new StripRule(memberRule, "", "")), "}""
-   },
-  "returns": symbol {
-   "type": "}
-
-    private static TypeRule"
-   }
+        final var content = new SuffixRule(new NodeListRule(new StatementSplitter(), "content", new StripRule(memberRule, "", "")), "}"
+  }, any {
+  "content": "");"
   }, any {
   "content": "
         final var name = new LocatingRule(new StripRule(new ExtractRule("name"), "", ""), new FirstLocator("{"), new StripRule(content, "", ""));
         return new TypeRule(INTERFACE, new LocatingRule(createModifiersRule(), new FirstLocator("interface"), name));
-    }
+    }"
+  }, any {
+  "content": "
 
     private static OrRule createClassMemberRule() {
         return new OrRule(List.of(
                 createMethodRule(),
                 new TypeRule("any", new ExtractRule("content"))
         ));
-    }
+    }"
+  }, any {
+  "content": "
 
     private static StringListRule createModifiersRule() {
         return new StringListRule(MODIFIERS, " ");
-    }
+    }"
+  }, any {
+  "content": "
 
     private static TypeRule createMethodRule() {
         final var type = createTypeRule();
@@ -111,7 +116,9 @@
         final var withParams = new SuffixRule(params, ");");
 
         return new TypeRule(METHOD, new LocatingRule(beforeParams, new FirstLocator("("), withParams));
-    }
+    }"
+  }, any {
+  "content": "
 
     private static Rule createTypeRule() {
         final var type = new LazyRule();
@@ -120,15 +127,16 @@
                 new TypeRule("symbol", new StripRule(new ExtractRule("type"), "", ""))
         )));
         return type;
-    }
+    }"
+  }, any {
+  "content": "
 
     private static TypeRule createGenericRule(LazyRule type) {
         final var base = new NodeRule("base", type);
         final var child = new NodeListRule(new ValueSplitter(), "children", type);
 
         return new TypeRule("generic", new StripRule(new LocatingRule(base, new FirstLocator("<"), new SuffixRule(child, ">")), "", ""));
-    }
-"
+    }"
   }],
  "params": []
  }]

@@ -26,16 +26,17 @@
     public RuleResult<Node, ParseException> parse(String input) {
         if (input.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("Input is empty", input)));
         return new RuleResult<>(new Ok<>(new MapNode().withString(propertyKey, input)));
-    }
+    }"
+  }, any {
+  "content": "
 
     @Override
     public RuleResult<String, GenerateException> generate(Node node) {
         return node.findString(propertyKey)
                 .<RuleResult<String, GenerateException>>map(s -> new RuleResult<>(new Ok<>(s)))
-                .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String '" + propertyKey + "' not present", node))));
+                .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String '+ propertyKey + "'ot present", node))));
 
-    }
-"
+    }"
   }],
  "params": [definition {
   "type": "String",

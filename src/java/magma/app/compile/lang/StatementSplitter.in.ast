@@ -6,15 +6,38 @@
  }, import {
  "namespace": ["java", "util", "ArrayList"]
  }, import {
+ "namespace": ["java", "util", "Deque"]
+ }, import {
+ "namespace": ["java", "util", "LinkedList"]
+ }, import {
  "namespace": ["java", "util", "List"]
+ }, import {
+ "namespace": ["java", "util", "stream", "Collectors"]
+ }, import {
+ "namespace": ["java", "util", "stream", "IntStream"]
  }, class {
  "name": "StatementSplitter implements Splitter ",
  "body": "
-    static State splitAtChar(State state, char c) {
+    static State splitAtChar(State state, char c, Deque<Character> queue) {
         final var appended = state.append(c);
-        if (c == ';' && state.isLevel()) return appended.advance();
-        if (c == '{') return appended.enter();
-        if (c == '}') return appended.exit();
+        if (c == '\'') {
+            final var next = queue.pop();
+            final State escaped;
+            if (next == '\\') {
+                final var escapedValue = queue.pop();
+                escaped = appended.append('\\').append(escapedValue);
+            } else {
+                escaped = appended;
+            }
+
+            final var closing = queue.pop();
+            return escaped.append(closing);
+        }
+
+        if (c == '' && appended.isLevel()) return appended.advance();
+        if (c == '' && appended.isShallow()) return appended.exit().advance();
+        if (c == '') return appended.enter();
+        if (c == '') return appended.exit();
         return appended;
     }
 
@@ -23,9 +46,13 @@
         final var length = input.length();
         var state = new State();
 
-        for (int i = 0; i < length; i++) {
-            final var c = input.charAt(i);
-            state = splitAtChar(state, c);
+        final var queue = IntStream.range(0, input.length())
+                .mapToObj(input::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        while (!queue.isEmpty()) {
+            final var c = queue.pop();
+            state = splitAtChar(state, c, queue);
         }
 
         return state.advance().segments;
@@ -68,6 +95,10 @@
 
         public State exit() {
             return new State(segments, buffer, depth - 1);
+        }
+
+        public boolean isShallow() {
+            return depth == 1;
         }
     }
 }",

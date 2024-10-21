@@ -3,11 +3,29 @@ package magma.app.compile.lang;
 import magma.app.compile.rule.Splitter;
 
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class StatementSplitter implements Splitter {
-    static State splitAtChar(State state, char c) {
+    static State splitAtChar(State state, char c, Deque<Character> queue) {
         final var appended = state.append(c);
+        if (c == '\'') {
+            final var next = queue.pop();
+            final State escaped;
+            if (next == '\\') {
+                final var escapedValue = queue.pop();
+                escaped = appended.append('\\').append(escapedValue);
+            } else {
+                escaped = appended;
+            }
+
+            final var closing = queue.pop();
+            return escaped.append(closing);
+        }
+
         if (c == ';' && appended.isLevel()) return appended.advance();
         if (c == '}' && appended.isShallow()) return appended.exit().advance();
         if (c == '{') return appended.enter();
@@ -20,9 +38,13 @@ public class StatementSplitter implements Splitter {
         final var length = input.length();
         var state = new State();
 
-        for (int i = 0; i < length; i++) {
-            final var c = input.charAt(i);
-            state = splitAtChar(state, c);
+        final var queue = IntStream.range(0, input.length())
+                .mapToObj(input::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        while (!queue.isEmpty()) {
+            final var c = queue.pop();
+            state = splitAtChar(state, c, queue);
         }
 
         return state.advance().segments;

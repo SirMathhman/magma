@@ -52,7 +52,7 @@
     public RuleResult<String, GenerateException> generate(Node node) {
         final var propertyValues = node.findNodeList(propertyKey);
         if (propertyValues.isEmpty())
-            return new RuleResult<>(new Err<>(new GenerateException("Node list property '" + propertyKey + "' not present", node)));
+            return new RuleResult<>(new Err<>(new GenerateException("Node list property ' + propertyKey + "'not present", node)));
 
         var buffer = new StringBuilder();
         for (var value : propertyValues.get()) {
