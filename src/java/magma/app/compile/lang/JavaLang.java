@@ -48,17 +48,20 @@ public class JavaLang {
         final var content = new NodeRule("returns", createTypeRule());
         final var typeParams = new StripRule(new PrefixRule("<", new SuffixRule(new ExtractRule("type-params"), ">")), "", "");
         final var withTypeParams = new ContextRule("With type params.", new LocatingRule(typeParams, new ForwardsLocator(" "), content));
-        final var maybeTypeParams = new OptionalNodeRule("type-params", withTypeParams, content);
+        final var withoutTypeParams = new ContextRule("Without type params.", content);
+        final var maybeTypeParams = new OptionalNodeRule("type-params", withTypeParams, withoutTypeParams);
 
         final var withModifiers = new ContextRule("With modifiers.", new LocatingRule(createModifiersRule(), new ForwardsLocator(" "), maybeTypeParams));
-        final var maybeModifiers = new StripRule(new OptionalNodeRule("modifiers", withModifiers, maybeTypeParams), "", "");
+        final var withoutModifiers = new ContextRule("Without modifiers.", maybeTypeParams);
+        final var maybeModifiers = new StripRule(new OptionalNodeRule("modifiers", withModifiers, withoutModifiers), "", "");
 
         final var annotation = new TypeRule("annotation", new StripRule(new PrefixRule("@", new ExtractRule("value")), "", ""));
         final var annotations = new NodeListRule(new SimpleSplitter("\n"), "annotations", annotation);
         final var withAnnotations = new ContextRule("With annotations.", new LocatingRule(annotations, new LastLocator("\n"), maybeModifiers));
-        final var maybeAnnotations = new OptionalNodeRule("annotations", withAnnotations, maybeModifiers);
+        final var withoutAnnotations = new ContextRule("Without annotations.", maybeModifiers);
+        final var maybeAnnotations = new OptionalNodeRule("annotations", withAnnotations, withoutAnnotations);
 
-        return new TypeRule("definition", new LocatingRule(maybeAnnotations, new LastLocator(" "), new ExtractRule("name")));
+        return new TypeRule("definition", new StripRule(new LocatingRule(maybeAnnotations, new LastLocator(" "), new ExtractRule("name")), "", ""));
     }
 
     private static OrRule createRootMemberRule() {
@@ -108,8 +111,10 @@ public class JavaLang {
         final var valueRule = createValueRule();
         return new OrRule(List.of(
                 new TypeRule("return", new PrefixRule("return ", new SuffixRule(new NodeRule("value", valueRule), ";"))),
-                new TypeRule("invocation", new SuffixRule(createInvocationRule(valueRule), ";")
-                )));
+                new TypeRule("invocation", new SuffixRule(createInvocationRule(valueRule), ";")),
+                new TypeRule("if", new PrefixRule("if", new ExtractRule("content"))),
+                new TypeRule("declaration", new LocatingRule(createDefinitionRule(), new FirstLocator("="), new SuffixRule(valueRule, ";")))
+        ));
     }
 
     private static Rule createValueRule() {
