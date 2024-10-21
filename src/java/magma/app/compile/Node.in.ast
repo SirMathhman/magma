@@ -13,57 +13,47 @@
  "namespace": ["java", "util", "stream", "Stream"]
  }, interface {
  "name": "Node",
- "modifiers": ["public"],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
  "content": [method {
+  "modifiers": "Node",
   "name": "retype",
   "params": definition {
    "name": "type",
    "type": symbol {
     "type": "String"
     }
-   },
-  "returns": symbol {
-   "type": "Node"
    }
   }, method {
+  "modifiers": "boolean",
   "name": "is",
   "params": definition {
    "name": "type",
    "type": symbol {
     "type": "String"
     }
-   },
-  "returns": symbol {
-   "type": "boolean"
    }
   }, method {
+  "modifiers": "Node",
   "name": "withString",
   "params": definition {
    "name": "propertyValue",
    "type": symbol {
     "type": "String propertyKey, String"
     }
-   },
-  "returns": symbol {
-   "type": "Node"
    }
   }, method {
+  "modifiers": "Optional<String>",
   "name": "findString",
   "params": definition {
    "name": "propertyKey",
    "type": symbol {
     "type": "String"
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [symbol {
-    "type": "String"
-    }]
    }
   }, method {
+  "modifiers": "Optional<Node>",
   "name": "mapNodeList",
   "params": definition {
    "name": "mapper",
@@ -87,37 +77,18 @@
       }]
      }]
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }]
    }
   }, method {
+  "modifiers": "Optional<List<Node>>",
   "name": "findNodeList",
   "params": definition {
    "name": "propertyKey",
    "type": symbol {
     "type": "String"
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [generic {
-    "base": symbol {
-     "type": "List"
-     },
-    "children": [symbol {
-     "type": "Node"
-     }]
-    }]
    }
   }, method {
+  "modifiers": "Node",
   "name": "withNodeList",
   "params": definition {
    "name": "values",
@@ -129,94 +100,63 @@
      "type": "Node"
      }]
     }
-   },
-  "returns": symbol {
-   "type": "Node"
    }
   }, method {
+  "modifiers": "String",
   "name": "format",
   "params": definition {
    "name": "depth",
    "type": symbol {
     "type": "int"
     }
-   },
-  "returns": symbol {
-   "type": "String"
    }
   }, method {
+  "modifiers": "Node",
   "name": "merge",
   "params": definition {
    "name": "other",
    "type": symbol {
     "type": "Node"
     }
-   },
-  "returns": symbol {
-   "type": "Node"
    }
   }, method {
-  "name": "streamStrings",
-  "modifiers": ["Stream<Tuple<String,"],
-  "returns": symbol {
-   "type": "String>>"
-   }
+  "modifiers": "Stream<Tuple<String, String>>",
+  "name": "streamStrings"
   }, method {
-  "name": "streamNodeLists",
-  "modifiers": ["Stream<Tuple<String,"],
-  "returns": generic {
-   "base": symbol {
-    "type": "List"
-    },
-   "children": [symbol {
-    "type": "Node>>"
-    }]
-   }
+  "modifiers": "Stream<Tuple<String, List<Node>>>",
+  "name": "streamNodeLists"
   }, method {
+  "modifiers": "Node",
   "name": "withNode",
   "params": definition {
    "name": "propertyValue",
    "type": symbol {
     "type": "String propertyKey, Node"
     }
-   },
-  "returns": symbol {
-   "type": "Node"
    }
   }, method {
+  "modifiers": "Optional<Node>",
   "name": "findNode",
   "params": definition {
    "name": "propertyKey",
    "type": symbol {
     "type": "String"
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }]
    }
   }, method {
-  "name": "streamNodes",
-  "modifiers": ["Stream<Tuple<String,"],
-  "returns": symbol {
-   "type": "Node>>"
-   }
+  "modifiers": "Stream<Tuple<String, Node>>",
+  "name": "streamNodes"
   }, method {
+  "modifiers": "boolean",
   "name": "hasNode",
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "String"
     }
-   },
-  "returns": symbol {
-   "type": "boolean"
    }
   }, method {
+  "modifiers": "Node",
   "name": "withStringList",
   "params": definition {
    "name": "propertyValues",
@@ -228,43 +168,21 @@
      "type": "String"
      }]
     }
-   },
-  "returns": symbol {
-   "type": "Node"
    }
   }, method {
+  "modifiers": "Optional<List<String>>",
   "name": "findStringList",
   "params": definition {
    "name": "propertyKey",
    "type": symbol {
     "type": "String"
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [generic {
-    "base": symbol {
-     "type": "List"
-     },
-    "children": [symbol {
-     "type": "String"
-     }]
-    }]
    }
   }, method {
-  "name": "streamStringLists",
-  "modifiers": ["Stream<Tuple<String,"],
-  "returns": generic {
-   "base": symbol {
-    "type": "List"
-    },
-   "children": [symbol {
-    "type": "String>>"
-    }]
-   }
+  "modifiers": "Stream<Tuple<String, List<String>>>",
+  "name": "streamStringLists"
   }, method {
+  "modifiers": "Optional<Node>",
   "name": "mapStringList",
   "params": definition {
    "name": "mapper",
@@ -288,14 +206,6 @@
       }]
      }]
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }]
    }
   }]
  }]

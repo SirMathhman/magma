@@ -9,25 +9,38 @@
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, record {
  "name": "StripRule",
- "modifiers": ["public"],
  "interface": symbol {
   "type": "Rule"
   },
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "childRule",
+  "type": symbol {
+   "type": "Rule"
+   }
+  }, definition {
+  "name": "leftPaddingKey",
+  "type": symbol {
+   "type": "String"
+   }
+  }, definition {
+  "name": "rightPaddingKey",
+  "type": symbol {
+   "type": "String"
+   }
+  }],
  "children": [method {
+  "modifiers": "@Override
+    public RuleResult<Node, ParseException>",
   "name": "parse",
-  "modifiers": ["public", "RuleResult<Node,"],
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
    },
-  "returns": symbol {
-   "type": "ParseException>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -48,20 +61,15 @@
     }
    }]
   }, method {
+  "modifiers": "@Override
+    public RuleResult<String, GenerateException>",
   "name": "generate",
-  "modifiers": ["public", "RuleResult<String,"],
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "Node"
     }
    },
-  "returns": symbol {
-   "type": "GenerateException>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [symbol {
    "content": "final var leftPadding = node.findString(leftPaddingKey).orElse("");"
    }, symbol {
@@ -82,22 +90,6 @@
      }]
     }
    }]
-  }],
- "params": [definition {
-  "name": "childRule",
-  "type": symbol {
-   "type": "Rule"
-   }
-  }, definition {
-  "name": "leftPaddingKey",
-  "type": symbol {
-   "type": "String"
-   }
-  }, definition {
-  "name": "rightPaddingKey",
-  "type": symbol {
-   "type": "String"
-   }
   }]
  }]
 }

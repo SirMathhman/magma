@@ -1,6 +1,5 @@
 package magma.app.compile.lang;
 
-import magma.app.compile.Node;
 import magma.app.compile.rule.*;
 
 import java.util.List;
@@ -14,6 +13,9 @@ public class JavaLang {
     public static final String INTERFACE = "interface";
     public static final String MODIFIERS = "modifiers";
     public static final String METHOD = "method";
+    public static final List<String> MODIFIERS_LIST = List.of(
+            "public"
+    );
 
     public static TypeRule createPackageRule() {
         return new TypeRule(PACKAGE, new PrefixRule("package ", new SuffixRule(createNamespaceRule(), STATEMENT_END)));
@@ -72,8 +74,9 @@ public class JavaLang {
         ));
     }
 
-    private static StringListRule createModifiersRule() {
-        return new StringListRule(MODIFIERS, " ");
+    private static Rule createModifiersRule() {
+        final var modifier = new TypeRule("modifier", new FilterRule(MODIFIERS_LIST, new ExtractRule("content")));
+        return new NodeListRule(new SimpleSplitter(" "), MODIFIERS, modifier);
     }
 
     private static TypeRule createMethodRule() {
@@ -81,14 +84,9 @@ public class JavaLang {
         final var name = new ExtractRule("name");
         final var returns = new NodeRule("returns", type);
 
-        final var withModifiers = new LocatingRule(createModifiersRule(), new LastLocator(" "), returns);
-        final var maybeModifiers = new OptionalNodeRule("modifiers", withModifiers, returns);
+        final var maybeModifiers = new LocatingRule(createModifiersRule(), new BackwardsLocator(" "), returns);
 
-        final var annotation = new StripRule(new PrefixRule("@", new ExtractRule("annotation")), "", "");
-        final var withAnnotations = new LocatingRule(new NodeListRule(new SimpleSplitter(" "), "annotations", annotation), new LastLocator("\n"), maybeModifiers);
-        final var maybeAnnotations = new OptionalNodeRule("annotations", withAnnotations, maybeModifiers);
-
-        final var beforeParams = new LocatingRule(maybeAnnotations, new LastLocator(" "), name);
+        final var beforeParams = new LocatingRule(new ExtractRule("modifiers"), new LastLocator(" "), name);
         final var params = new OptionalNodeRule("params", new NodeRule("params", createDefinitionRule()), new EmptyRule());
 
         final var children = new StripRule(new PrefixRule("{", new SuffixRule(new NodeListRule(new StatementSplitter(), "children", new StripRule(createStatementRule(), "", "")), "}")), "", "");

@@ -9,30 +9,18 @@
  "namespace": ["java", "util", "function", "Supplier"]
  }, trait {
  "name": "Result<T, E>",
- "modifiers": ["export"],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
  "content": [method {
-  "name": "findValue",
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [symbol {
-    "type": "T"
-    }]
-   }
+  "modifiers": "Optional<T>",
+  "name": "findValue"
   }, method {
-  "name": "findError",
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [symbol {
-    "type": "E"
-    }]
-   }
+  "modifiers": "Optional<E>",
+  "name": "findError"
   }, method {
+  "modifiers": "<R> Result<R, E>",
   "name": "mapValue",
-  "modifiers": ["<R>", "Result<R,"],
   "params": definition {
    "name": "mapper",
    "type": generic {
@@ -45,18 +33,13 @@
      "type": "R"
      }]
     }
-   },
-  "returns": symbol {
-   "type": "E>"
    }
   }, method {
-  "name": "isErr",
-  "returns": symbol {
-   "type": "boolean"
-   }
+  "modifiers": "boolean",
+  "name": "isErr"
   }, method {
+  "modifiers": "<R> Result<Tuple<T, R>, E>",
   "name": "and",
-  "modifiers": ["<R>", "Result<Tuple<T,", "R>,"],
   "params": definition {
    "name": "supplier",
    "type": generic {
@@ -74,18 +57,13 @@
       }]
      }]
     }
-   },
-  "returns": symbol {
-   "type": "E>"
    }
   }, method {
-  "name": "isOk",
-  "returns": symbol {
-   "type": "boolean"
-   }
+  "modifiers": "boolean",
+  "name": "isOk"
   }, method {
+  "modifiers": "<R> Result<R, E>",
   "name": "flatMapValue",
-  "modifiers": ["<R>", "Result<R,"],
   "params": definition {
    "name": "mapper",
    "type": generic {
@@ -105,9 +83,6 @@
       }]
      }]
     }
-   },
-  "returns": symbol {
-   "type": "E>"
    }
   }]
  }]

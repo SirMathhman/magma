@@ -9,13 +9,12 @@
  "namespace": ["java", "util", "Set"]
  }, trait {
  "name": "SourceSet",
- "modifiers": ["export"],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
  "content": [method {
-  "name": "collect",
-  "modifiers": ["Result<Set<Path>,"],
-  "returns": symbol {
-   "type": "IOException>"
-   }
+  "modifiers": "Result<Set<Path>, IOException>",
+  "name": "collect"
   }]
  }]
 }

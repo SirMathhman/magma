@@ -19,19 +19,22 @@
  "namespace": ["java", "util", "stream", "Collectors"]
  }, record {
  "name": "DirectorySourceSet",
- "modifiers": ["public"],
  "interface": symbol {
   "type": "SourceSet"
   },
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "root",
+  "type": symbol {
+   "type": "Path"
+   }
+  }],
  "children": [method {
+  "modifiers": "@Override
+    public Result<Set<Path>, IOException>",
   "name": "collect",
-  "modifiers": ["public", "Result<Set<Path>,"],
-  "returns": symbol {
-   "type": "IOException>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [symbol {
    "content": "try (var stream = Files.walk(root)) {
             return new Ok<>(stream
@@ -43,12 +46,6 @@
             return new Err<>(e);
         }"
    }]
-  }],
- "params": [definition {
-  "name": "root",
-  "type": symbol {
-   "type": "Path"
-   }
   }]
  }]
 }

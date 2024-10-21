@@ -15,25 +15,28 @@
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, record {
  "name": "ExtractRule",
- "modifiers": ["public"],
  "interface": symbol {
   "type": "Rule"
   },
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "propertyKey",
+  "type": symbol {
+   "type": "String"
+   }
+  }],
  "children": [method {
+  "modifiers": "@Override
+    public RuleResult<Node, ParseException>",
   "name": "parse",
-  "modifiers": ["public", "RuleResult<Node,"],
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
    },
-  "returns": symbol {
-   "type": "ParseException>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [symbol {
    "content": "if (input.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("Input is empty", input)));"
    }, return {
@@ -57,20 +60,15 @@
     }
    }]
   }, method {
+  "modifiers": "@Override
+    public RuleResult<String, GenerateException>",
   "name": "generate",
-  "modifiers": ["public", "RuleResult<String,"],
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "Node"
     }
    },
-  "returns": symbol {
-   "type": "GenerateException>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -107,12 +105,6 @@
      }]
     }
    }]
-  }],
- "params": [definition {
-  "name": "propertyKey",
-  "type": symbol {
-   "type": "String"
-   }
   }]
  }]
 }

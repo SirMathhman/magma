@@ -17,214 +17,13 @@
  "namespace": ["static java", "util", "Collections", "singletonList"]
  }, record {
  "name": "RuleResult",
- "modifiers": ["public"],
- "children": [method {
-  "name": "RuleResult",
-  "params": definition {
-   "name": "result",
-   "type": generic {
-    "base": symbol {
-     "type": "Result"
-     },
-    "children": [symbol {
-     "type": "T"
-     }, symbol {
-     "type": "E"
-     }]
-    }
-   },
-  "returns": symbol {
-   "type": "public"
-   },
-  "children": [symbol {
-   "content": "this(result, Collections.emptyList());"
-   }]
-  }, method {
-  "name": "unwrap",
-  "modifiers": ["public", "Result<T,"],
-  "returns": symbol {
-   "type": "E>"
-   },
-  "annotations": [{
-   "annotation": "Deprecated"
-   }],
-  "children": [return {
-   "value": symbol {
-    "content": "result"
-    }
-   }]
-  }, method {
-  "name": "isValid",
-  "modifiers": ["public"],
-  "returns": symbol {
-   "type": "boolean"
-   },
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "name": "isOk",
-     "parent": symbol {
-      "content": "result"
-      }
-     },
-    "arguments": []
-    }
-   }]
-  }, method {
-  "name": "mapValue",
-  "modifiers": ["public", "RuleResult<T,"],
-  "params": definition {
-   "name": "mapper",
-   "type": generic {
-    "base": symbol {
-     "type": "Function"
-     },
-    "children": [symbol {
-     "type": "T"
-     }, symbol {
-     "type": "T"
-     }]
-    }
-   },
-  "returns": symbol {
-   "type": "E>"
-   },
-  "children": [return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new RuleResult<>"
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "name": "mapValue",
-      "parent": symbol {
-       "content": "result"
-       }
-      },
-     "arguments": [symbol {
-      "content": "mapper"
-      }]
-     }, symbol {
-     "content": " children"
-     }]
-    }
-   }]
-  }, method {
-  "name": "wrapErr",
-  "modifiers": ["public", "RuleResult<T,"],
-  "params": definition {
-   "name": "error",
-   "type": symbol {
-    "type": "E"
-    }
-   },
-  "returns": symbol {
-   "type": "E>"
-   },
-  "children": [symbol {
-   "content": "if (!isError()) return this;"
-   }, symbol {
-   "content": "var list = singletonList(this);"
-   }, return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new RuleResult<>"
-     },
-    "arguments": [invocation {
-     "caller": symbol {
-      "content": "new Err<>"
-      },
-     "arguments": [symbol {
-      "content": "error"
-      }]
-     }, symbol {
-     "content": " list"
-     }]
-    }
-   }]
-  }, method {
-  "name": "isError",
-  "modifiers": ["public"],
-  "returns": symbol {
-   "type": "boolean"
-   },
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "name": "isErr",
-     "parent": symbol {
-      "content": "result"
-      }
-     },
-    "arguments": []
-    }
-   }]
-  }, method {
-  "name": "depth",
-  "modifiers": ["public"],
-  "returns": symbol {
-   "type": "int"
-   },
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "name": "stream",
-     "parent": symbol {
-      "content": "1 + children"
-      }
-     },
-    "arguments": [access {
-     "name": "orElse(0",
-     "parent": access {
-      "name": "max(Integer::compare)
-                ",
-      "parent": access {
-       "name": "map(RuleResult::depth)
-                ",
-       "parent": symbol {
-        "content": ")
-                "
-        }
-       }
-      }
-     }]
-    }
-   }]
-  }, method {
-  "name": "sortedChildren",
-  "modifiers": ["public", "List<RuleResult<T,"],
-  "returns": symbol {
-   "type": "E>>"
-   },
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "name": "stream",
-     "parent": symbol {
-      "content": "children"
-      }
-     },
-    "arguments": [access {
-     "name": "toList(",
-     "parent": access {
-      "name": "comparingInt(RuleResult::depth))
-                ",
-      "parent": access {
-       "name": "sorted(Comparator",
-       "parent": symbol {
-        "content": ")
-                "
-        }
-       }
-      }
-     }]
-    }
-   }]
-  }],
  "type-params": [symbol {
   "type": "T"
   }, symbol {
   "type": "E"
+  }],
+ "modifiers": [modifier {
+  "content": "public"
   }],
  "params": [definition {
   "name": "result",
@@ -255,6 +54,184 @@
      }]
     }]
    }
+  }],
+ "children": [method {
+  "modifiers": "public",
+  "name": "RuleResult",
+  "params": definition {
+   "name": "result",
+   "type": generic {
+    "base": symbol {
+     "type": "Result"
+     },
+    "children": [symbol {
+     "type": "T"
+     }, symbol {
+     "type": "E"
+     }]
+    }
+   },
+  "children": [symbol {
+   "content": "this(result, Collections.emptyList());"
+   }]
+  }, method {
+  "modifiers": "@Deprecated
+    public Result<T, E>",
+  "name": "unwrap",
+  "children": [return {
+   "value": symbol {
+    "content": "result"
+    }
+   }]
+  }, method {
+  "modifiers": "public boolean",
+  "name": "isValid",
+  "children": [return {
+   "value": invocation {
+    "caller": access {
+     "name": "isOk",
+     "parent": symbol {
+      "content": "result"
+      }
+     },
+    "arguments": []
+    }
+   }]
+  }, method {
+  "modifiers": "public RuleResult<T, E>",
+  "name": "mapValue",
+  "params": definition {
+   "name": "mapper",
+   "type": generic {
+    "base": symbol {
+     "type": "Function"
+     },
+    "children": [symbol {
+     "type": "T"
+     }, symbol {
+     "type": "T"
+     }]
+    }
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": symbol {
+     "content": "new RuleResult<>"
+     },
+    "arguments": [invocation {
+     "caller": access {
+      "name": "mapValue",
+      "parent": symbol {
+       "content": "result"
+       }
+      },
+     "arguments": [symbol {
+      "content": "mapper"
+      }]
+     }, symbol {
+     "content": " children"
+     }]
+    }
+   }]
+  }, method {
+  "modifiers": "public RuleResult<T, E>",
+  "name": "wrapErr",
+  "params": definition {
+   "name": "error",
+   "type": symbol {
+    "type": "E"
+    }
+   },
+  "children": [symbol {
+   "content": "if (!isError()) return this;"
+   }, symbol {
+   "content": "var list = singletonList(this);"
+   }, return {
+   "value": invocation {
+    "caller": symbol {
+     "content": "new RuleResult<>"
+     },
+    "arguments": [invocation {
+     "caller": symbol {
+      "content": "new Err<>"
+      },
+     "arguments": [symbol {
+      "content": "error"
+      }]
+     }, symbol {
+     "content": " list"
+     }]
+    }
+   }]
+  }, method {
+  "modifiers": "public boolean",
+  "name": "isError",
+  "children": [return {
+   "value": invocation {
+    "caller": access {
+     "name": "isErr",
+     "parent": symbol {
+      "content": "result"
+      }
+     },
+    "arguments": []
+    }
+   }]
+  }, method {
+  "modifiers": "public int",
+  "name": "depth",
+  "children": [return {
+   "value": invocation {
+    "caller": access {
+     "name": "stream",
+     "parent": symbol {
+      "content": "1 + children"
+      }
+     },
+    "arguments": [access {
+     "name": "orElse(0",
+     "parent": access {
+      "name": "max(Integer::compare)
+                ",
+      "parent": access {
+       "name": "map(RuleResult::depth)
+                ",
+       "parent": symbol {
+        "content": ")
+                "
+        }
+       }
+      }
+     }]
+    }
+   }]
+  }, method {
+  "modifiers": "public List<RuleResult<T, E>>",
+  "name": "sortedChildren",
+  "children": [return {
+   "value": invocation {
+    "caller": access {
+     "name": "stream",
+     "parent": symbol {
+      "content": "children"
+      }
+     },
+    "arguments": [access {
+     "name": "toList(",
+     "parent": access {
+      "name": "comparingInt(RuleResult::depth))
+                ",
+      "parent": access {
+       "name": "sorted(Comparator",
+       "parent": symbol {
+        "content": ")
+                "
+        }
+       }
+      }
+     }]
+    }
+   }]
   }]
  }]
 }

@@ -27,18 +27,23 @@
  "namespace": ["static magma", "app", "compile", "lang", "MagmaLang", "FUNCTION"]
  }, record {
  "name": "Compiler",
- "modifiers": ["public"],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "input",
+  "type": symbol {
+   "type": "String"
+   }
+  }],
  "children": [method {
+  "modifiers": "private static Node",
   "name": "pass",
-  "modifiers": ["private", "static"],
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "Node"
     }
-   },
-  "returns": symbol {
-   "type": "Node"
    },
   "children": [return {
    "value": invocation {
@@ -59,8 +64,8 @@
     }
    }]
   }, method {
+  "modifiers": "private static List<Node>",
   "name": "passChildren",
-  "modifiers": ["private", "static"],
   "params": definition {
    "name": "children",
    "type": generic {
@@ -71,14 +76,6 @@
      "type": "Node"
      }]
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "List"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }]
    },
   "children": [return {
    "value": invocation {
@@ -112,16 +109,13 @@
     }
    }]
   }, method {
+  "modifiers": "private static Node",
   "name": "passRootChild",
-  "modifiers": ["private", "static"],
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "Node"
     }
-   },
-  "returns": symbol {
-   "type": "Node"
    },
   "children": [return {
    "value": invocation {
@@ -146,16 +140,13 @@
     }
    }]
   }, method {
+  "modifiers": "private static Optional<? extends Node>",
   "name": "passClass",
-  "modifiers": ["private", "static", "Optional<?", "extends"],
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "Node"
     }
-   },
-  "returns": symbol {
-   "type": "Node>"
    },
   "children": [symbol {
    "content": "if (node.is(CLASS)) {
@@ -167,21 +158,13 @@
         }"
    }]
   }, method {
+  "modifiers": "private static Optional<Node>",
   "name": "passRecord",
-  "modifiers": ["private", "static"],
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "Node"
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }]
    },
   "children": [return {
    "value": invocation {
@@ -206,21 +189,13 @@
     }
    }]
   }, method {
+  "modifiers": "private static Optional<Node>",
   "name": "passInterface",
-  "modifiers": ["private", "static"],
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "Node"
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }]
    },
   "children": [symbol {
    "content": "if (!node.is(INTERFACE)) return Optional.empty();"
@@ -252,16 +227,13 @@
     }
    }]
   }, method {
+  "modifiers": "private static Node",
   "name": "passClassMember",
-  "modifiers": ["private", "static"],
   "params": definition {
    "name": "child",
    "type": symbol {
     "type": "Node"
     }
-   },
-  "returns": symbol {
-   "type": "Node"
    },
   "children": [symbol {
    "content": "if (child.is(METHOD)) return child.retype(FUNCTION);"
@@ -271,11 +243,8 @@
     }
    }]
   }, method {
+  "modifiers": "public Result<CompileResult, CompileException>",
   "name": "compile",
-  "modifiers": ["public", "Result<CompileResult,"],
-  "returns": symbol {
-   "type": "CompileException>"
-   },
   "children": [symbol {
    "content": "final var parsed = createRootRule().parse(input);"
    }, symbol {
@@ -288,8 +257,8 @@
    "content": ");"
    }]
   }, method {
+  "modifiers": "private <T, E extends Exception> Result<T, CompileException>",
   "name": "write",
-  "modifiers": ["private", "<T,", "E", "extends", "Exception>", "Result<T,"],
   "params": definition {
    "name": "result",
    "type": generic {
@@ -303,9 +272,6 @@
      }]
     }
    },
-  "returns": symbol {
-   "type": "CompileException>"
-   },
   "children": [symbol {
    "content": "if (result.isValid()) {
             return new Ok<>(result.result().findValue().orElseThrow());
@@ -317,16 +283,13 @@
         }"
    }]
   }, method {
+  "modifiers": "private <T, E extends Exception> void",
   "name": "writeResult",
-  "modifiers": ["private", "<T,", "E", "extends", "Exception>"],
   "params": definition {
    "name": "index",
    "type": symbol {
     "type": "RuleResult<T, E> result, int depth, int"
     }
-   },
-  "returns": symbol {
-   "type": "void"
    },
   "children": [symbol {
    "content": "final var error = result.result().findError();"
@@ -350,12 +313,6 @@
             writeResult(child, depth + 1, i);
         }"
    }]
-  }],
- "params": [definition {
-  "name": "input",
-  "type": symbol {
-   "type": "String"
-   }
   }]
  }]
 }

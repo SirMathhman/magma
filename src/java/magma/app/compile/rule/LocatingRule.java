@@ -5,6 +5,8 @@ import magma.app.compile.GenerateException;
 import magma.app.compile.Node;
 import magma.app.compile.ParseException;
 
+import java.util.ArrayList;
+
 public final class LocatingRule implements Rule {
     private final Rule leftRule;
     private final Rule rightRule;
@@ -18,11 +20,21 @@ public final class LocatingRule implements Rule {
 
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        final var optional = locator.locate(input);
-        if (optional.isEmpty())
-            return new RuleResult<>(new Err<>(new ParseException("Slice '" + locator.slice() + "' not present", input)));
+        final var occurrences = locator.locate(input).toList();
+        var errors = new ArrayList<RuleResult<Node, ParseException>>();
+        for (Integer occurrence : occurrences) {
+            var result = getNodeParseExceptionRuleResult(input, occurrence);
+            if (result.isValid()) {
+                return result;
+            } else {
+                errors.add(result);
+            }
+        }
 
-        final int index = optional.get();
+        return new RuleResult<>(new Err<>(new ParseException("Failed to find a valid combination", input)), errors);
+    }
+
+    private RuleResult<Node, ParseException> getNodeParseExceptionRuleResult(String input, int index) {
         final var left = input.substring(0, index);
         final var right = input.substring(index + locator.slice().length());
 

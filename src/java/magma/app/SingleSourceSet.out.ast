@@ -15,19 +15,22 @@
  "namespace": ["java", "util", "Set"]
  }, function {
  "name": "SingleSourceSet",
- "modifiers": ["public"],
  "interface": symbol {
   "type": "SourceSet"
   },
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "source",
+  "type": symbol {
+   "type": "Path"
+   }
+  }],
  "children": [method {
+  "modifiers": "@Override
+    public Result<Set<Path>, IOException>",
   "name": "collect",
-  "modifiers": ["public", "Result<Set<Path>,"],
-  "returns": symbol {
-   "type": "IOException>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [symbol {
    "content": "var sources = new HashSet<Path>();"
    }, symbol {
@@ -42,12 +45,6 @@
      }]
     }
    }]
-  }],
- "params": [definition {
-  "name": "source",
-  "type": symbol {
-   "type": "Path"
-   }
   }]
  }]
 }

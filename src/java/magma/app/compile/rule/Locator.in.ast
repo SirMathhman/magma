@@ -2,31 +2,24 @@
 "children": [package {
  "namespace": ["magma", "app", "compile", "rule"]
  }, import {
- "namespace": ["java", "util", "Optional"]
+ "namespace": ["java", "util", "stream", "Stream"]
  }, interface {
  "name": "Locator",
- "modifiers": ["public"],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
  "content": [method {
+  "modifiers": "Stream<Integer>",
   "name": "locate",
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [symbol {
-    "type": "Integer"
-    }]
    }
   }, method {
-  "name": "slice",
-  "returns": symbol {
-   "type": "String"
-   }
+  "modifiers": "String",
+  "name": "slice"
   }]
  }]
 }

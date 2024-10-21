@@ -9,25 +9,33 @@
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, function {
  "name": "TypeRule",
- "modifiers": ["public"],
  "interface": symbol {
   "type": "Rule"
   },
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "type",
+  "type": symbol {
+   "type": "String"
+   }
+  }, definition {
+  "name": "rule",
+  "type": symbol {
+   "type": "Rule"
+   }
+  }],
  "children": [method {
+  "modifiers": "@Override
+    public RuleResult<Node, ParseException>",
   "name": "parse",
-  "modifiers": ["public", "RuleResult<Node,"],
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
    },
-  "returns": symbol {
-   "type": "ParseException>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -58,20 +66,15 @@
     }
    }]
   }, method {
+  "modifiers": "@Override
+    public RuleResult<String, GenerateException>",
   "name": "generate",
-  "modifiers": ["public", "RuleResult<String,"],
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "Node"
     }
    },
-  "returns": symbol {
-   "type": "GenerateException>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [symbol {
    "content": "if (!node.is(type))
             return new RuleResult<>(new Err<>(new GenerateException("Expected a type of ' type + "'node)));"
@@ -88,17 +91,6 @@
      }]
     }
    }]
-  }],
- "params": [definition {
-  "name": "type",
-  "type": symbol {
-   "type": "String"
-   }
-  }, definition {
-  "name": "rule",
-  "type": symbol {
-   "type": "Rule"
-   }
   }]
  }]
 }

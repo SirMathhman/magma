@@ -9,30 +9,26 @@
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, interface {
  "name": "Rule",
- "modifiers": ["public"],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
  "content": [method {
+  "modifiers": "RuleResult<Node, ParseException>",
   "name": "parse",
-  "modifiers": ["RuleResult<Node,"],
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
-   },
-  "returns": symbol {
-   "type": "ParseException>"
    }
   }, method {
+  "modifiers": "RuleResult<String, GenerateException>",
   "name": "generate",
-  "modifiers": ["RuleResult<String,"],
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "Node"
     }
-   },
-  "returns": symbol {
-   "type": "GenerateException>"
    }
   }]
  }]

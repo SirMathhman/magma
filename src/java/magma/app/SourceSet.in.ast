@@ -11,13 +11,12 @@
  "namespace": ["java", "util", "Set"]
  }, interface {
  "name": "SourceSet",
- "modifiers": ["public"],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
  "content": [method {
-  "name": "collect",
-  "modifiers": ["Result<Set<Path>,"],
-  "returns": symbol {
-   "type": "IOException>"
-   }
+  "modifiers": "Result<Set<Path>, IOException>",
+  "name": "collect"
   }]
  }]
 }

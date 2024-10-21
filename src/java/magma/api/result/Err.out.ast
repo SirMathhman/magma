@@ -9,7 +9,6 @@
  "namespace": ["java", "util", "function", "Supplier"]
  }, function {
  "name": "Err",
- "modifiers": ["public"],
  "interface": generic {
   "base": symbol {
    "type": "Result"
@@ -20,20 +19,24 @@
    "type": "E"
    }]
   },
+ "type-params": [symbol {
+  "type": "T"
+  }, symbol {
+  "type": "E"
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "error",
+  "type": symbol {
+   "type": "E"
+   }
+  }],
  "children": [method {
+  "modifiers": "@Override
+    public Optional<T>",
   "name": "findValue",
-  "modifiers": ["public"],
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [symbol {
-    "type": "T"
-    }]
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -46,19 +49,9 @@
     }
    }]
   }, method {
+  "modifiers": "@Override
+    public Optional<E>",
   "name": "findError",
-  "modifiers": ["public"],
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [symbol {
-    "type": "E"
-    }]
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -73,8 +66,9 @@
     }
    }]
   }, method {
+  "modifiers": "@Override
+    public <R> Result<R, E>",
   "name": "mapValue",
-  "modifiers": ["public", "<R>", "Result<R,"],
   "params": definition {
    "name": "mapper",
    "type": generic {
@@ -88,12 +82,6 @@
      }]
     }
    },
-  "returns": symbol {
-   "type": "E>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -105,22 +93,18 @@
     }
    }]
   }, method {
+  "modifiers": "@Override
+    public boolean",
   "name": "isErr",
-  "modifiers": ["public"],
-  "returns": symbol {
-   "type": "boolean"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [return {
    "value": symbol {
     "content": "true"
     }
    }]
   }, method {
+  "modifiers": "@Override
+    public <R> Result<Tuple<T, R>, E>",
   "name": "and",
-  "modifiers": ["public", "<R>", "Result<Tuple<T,", "R>,"],
   "params": definition {
    "name": "supplier",
    "type": generic {
@@ -139,12 +123,6 @@
      }]
     }
    },
-  "returns": symbol {
-   "type": "E>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -156,22 +134,18 @@
     }
    }]
   }, method {
+  "modifiers": "@Override
+    public boolean",
   "name": "isOk",
-  "modifiers": ["public"],
-  "returns": symbol {
-   "type": "boolean"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [return {
    "value": symbol {
     "content": "false"
     }
    }]
   }, method {
+  "modifiers": "@Override
+    public <R> Result<R, E>",
   "name": "flatMapValue",
-  "modifiers": ["public", "<R>", "Result<R,"],
   "params": definition {
    "name": "mapper",
    "type": generic {
@@ -192,12 +166,6 @@
      }]
     }
    },
-  "returns": symbol {
-   "type": "E>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -208,17 +176,6 @@
      }]
     }
    }]
-  }],
- "type-params": [symbol {
-  "type": "T"
-  }, symbol {
-  "type": "E"
-  }],
- "params": [definition {
-  "name": "error",
-  "type": symbol {
-   "type": "E"
-   }
   }]
  }]
 }

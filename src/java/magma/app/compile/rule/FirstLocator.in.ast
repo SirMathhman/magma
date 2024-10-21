@@ -3,32 +3,31 @@
  "namespace": ["magma", "app", "compile", "rule"]
  }, import {
  "namespace": ["java", "util", "Optional"]
+ }, import {
+ "namespace": ["java", "util", "stream", "Stream"]
  }, record {
  "name": "FirstLocator",
- "modifiers": ["public"],
  "interface": symbol {
   "type": "Locator"
   },
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "slice",
+  "type": symbol {
+   "type": "String"
+   }
+  }],
  "children": [method {
-  "name": "locate",
-  "modifiers": ["public"],
+  "modifiers": "private Optional<Integer>",
+  "name": "locate0",
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "Optional"
-    },
-   "children": [symbol {
-    "type": "Integer"
-    }]
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [symbol {
    "content": "final var index = input.indexOf(slice);"
    }, return {
@@ -47,12 +46,29 @@
      }]
     }
    }]
-  }],
- "params": [definition {
-  "name": "slice",
-  "type": symbol {
-   "type": "String"
-   }
+  }, method {
+  "modifiers": "@Override
+    public Stream<Integer>",
+  "name": "locate",
+  "params": definition {
+   "name": "input",
+   "type": symbol {
+    "type": "String"
+    }
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": symbol {
+     "content": "locate0"
+     },
+    "arguments": [access {
+     "name": "stream(",
+     "parent": symbol {
+      "content": "input)"
+      }
+     }]
+    }
+   }]
   }]
  }]
 }

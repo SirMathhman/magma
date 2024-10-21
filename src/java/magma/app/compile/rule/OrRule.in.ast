@@ -15,25 +15,33 @@
  "namespace": ["java", "util", "List"]
  }, record {
  "name": "OrRule",
- "modifiers": ["public"],
  "interface": symbol {
   "type": "Rule"
   },
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "rules",
+  "type": generic {
+   "base": symbol {
+    "type": "List"
+    },
+   "children": [symbol {
+    "type": "Rule"
+    }]
+   }
+  }],
  "children": [method {
+  "modifiers": "@Override
+    public RuleResult<Node, ParseException>",
   "name": "parse",
-  "modifiers": ["public", "RuleResult<Node,"],
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
    },
-  "returns": symbol {
-   "type": "ParseException>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [symbol {
    "content": "var list = new ArrayList<RuleResult<Node, ParseException>>();"
    }, symbol {
@@ -57,20 +65,15 @@
     }
    }]
   }, method {
+  "modifiers": "@Override
+    public RuleResult<String, GenerateException>",
   "name": "generate",
-  "modifiers": ["public", "RuleResult<String,"],
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "Node"
     }
    },
-  "returns": symbol {
-   "type": "GenerateException>"
-   },
-  "annotations": [{
-   "annotation": "Override"
-   }],
   "children": [symbol {
    "content": "var list = new ArrayList<RuleResult<String, GenerateException>>();"
    }, symbol {
@@ -93,17 +96,6 @@
      }]
     }
    }]
-  }],
- "params": [definition {
-  "name": "rules",
-  "type": generic {
-   "base": symbol {
-    "type": "List"
-    },
-   "children": [symbol {
-    "type": "Rule"
-    }]
-   }
   }]
  }]
 }
