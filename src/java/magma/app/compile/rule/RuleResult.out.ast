@@ -13,7 +13,7 @@
  "namespace": ["static java", "util", "Collections", "singletonList"]
  }, function {
  "name": "RuleResult",
- "params-and-body": "Result<T, E> result, List<RuleResult<T, E>> children) {
+ "body": " {
     public RuleResult(Result<T, E> result) {
         this(result, Collections.emptyList());
     }
@@ -43,10 +43,17 @@
     }
 }",
  "modifiers": ["public"],
- "children": [symbol {
-  "type": "T"
+ "type-params": [symbol {
+  "type": "T,"
   }, symbol {
   "type": "E"
+  }],
+ "params": [definition {
+  "type": "Result<T, E>",
+  "name": "result,"
+  }, definition {
+  "type": " List<RuleResult<T, E>>",
+  "name": "children"
   }]
  }]
 }

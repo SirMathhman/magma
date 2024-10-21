@@ -17,7 +17,7 @@
  "namespace": ["java", "util", "stream", "Collectors"]
  }, function {
  "name": "DirectorySourceSet",
- "params-and-body": "Path root) implements SourceSet {
+ "body": " implements SourceSet {
     private Set<Path> collect0() throws IOException {
         try (var stream = Files.walk(root)) {
             return stream
@@ -35,6 +35,10 @@
         }
     }
 }",
- "modifiers": ["public"]
+ "modifiers": ["public"],
+ "params": [definition {
+  "type": "Path",
+  "name": "root"
+  }]
  }]
 }

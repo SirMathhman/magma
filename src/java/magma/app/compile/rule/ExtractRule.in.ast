@@ -15,7 +15,7 @@
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, record {
  "name": "ExtractRule",
- "params-and-body": "String propertyKey) implements Rule {
+ "body": " implements Rule {
 
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
@@ -31,6 +31,10 @@
 
     }
 }",
- "modifiers": ["public"]
+ "modifiers": ["public"],
+ "params": [definition {
+  "type": "String",
+  "name": "propertyKey"
+  }]
  }]
 }

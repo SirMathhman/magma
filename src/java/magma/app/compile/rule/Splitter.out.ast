@@ -4,7 +4,7 @@
  }, trait {
  "name": "Splitter",
  "modifiers": ["export"],
- "children": [function {
+ "content": [method {
   "name": "split",
   "params": content {
    "params": "String input"

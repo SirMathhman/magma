@@ -1,13 +1,20 @@
 {
 "children": [function {
  "name": "Tuple",
- "params-and-body": "A left, B right) {
+ "body": " {
 }",
  "modifiers": ["public"],
- "children": [symbol {
-  "type": "A"
+ "type-params": [symbol {
+  "type": "A,"
   }, symbol {
   "type": "B"
+  }],
+ "params": [definition {
+  "type": "A",
+  "name": "left,"
+  }, definition {
+  "type": " B",
+  "name": "right"
   }]
  }]
 }

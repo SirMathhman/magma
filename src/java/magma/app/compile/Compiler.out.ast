@@ -27,7 +27,7 @@
  "namespace": ["static magma", "app", "compile", "lang", "MagmaLang", "FUNCTION"]
  }, function {
  "name": "Compiler",
- "params-and-body": "String input) {
+ "body": " {
     private static Node pass(Node node) {
         return node.mapNodeList(CHILDREN, Compiler::passChildren).orElse(node);
     }
@@ -114,6 +114,10 @@
         }
     }
 }",
- "modifiers": ["public"]
+ "modifiers": ["public"],
+ "params": [definition {
+  "type": "String",
+  "name": "input"
+  }]
  }]
 }

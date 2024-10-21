@@ -6,7 +6,7 @@
  }, interface {
  "name": "Locator",
  "modifiers": ["public"],
- "children": [method {
+ "content": [method {
   "name": "locate",
   "params": content {
    "params": "String input"

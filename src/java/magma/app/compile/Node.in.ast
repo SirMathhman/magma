@@ -14,7 +14,7 @@
  }, interface {
  "name": "Node",
  "modifiers": ["public"],
- "children": [method {
+ "content": [method {
   "name": "retype",
   "params": content {
    "params": "String type"
@@ -112,10 +112,15 @@
    "base": symbol {
     "type": "Stream"
     },
-   "children": [symbol {
-    "type": "Tuple<String"
-    }, symbol {
-    "type": "String>"
+   "children": [generic {
+    "base": symbol {
+     "type": "Tuple"
+     },
+    "children": [symbol {
+     "type": "String,"
+     }, symbol {
+     "type": "String"
+     }]
     }]
    }
   }, method {
@@ -124,14 +129,19 @@
    "base": symbol {
     "type": "Stream"
     },
-   "children": [symbol {
-    "type": "Tuple<String"
-    }, generic {
+   "children": [generic {
     "base": symbol {
-     "type": "List"
+     "type": "Tuple"
      },
     "children": [symbol {
-     "type": "Node>"
+     "type": "String,"
+     }, generic {
+     "base": symbol {
+      "type": "List"
+      },
+     "children": [symbol {
+      "type": "Node"
+      }]
      }]
     }]
    }
@@ -162,10 +172,15 @@
    "base": symbol {
     "type": "Stream"
     },
-   "children": [symbol {
-    "type": "Tuple<String"
-    }, symbol {
-    "type": "Node>"
+   "children": [generic {
+    "base": symbol {
+     "type": "Tuple"
+     },
+    "children": [symbol {
+     "type": "String,"
+     }, symbol {
+     "type": "Node"
+     }]
     }]
    }
   }, method {
@@ -208,14 +223,19 @@
    "base": symbol {
     "type": "Stream"
     },
-   "children": [symbol {
-    "type": "Tuple<String"
-    }, generic {
+   "children": [generic {
     "base": symbol {
-     "type": "List"
+     "type": "Tuple"
      },
     "children": [symbol {
-     "type": "String>"
+     "type": "String,"
+     }, generic {
+     "base": symbol {
+      "type": "List"
+      },
+     "children": [symbol {
+      "type": "String"
+      }]
      }]
     }]
    }

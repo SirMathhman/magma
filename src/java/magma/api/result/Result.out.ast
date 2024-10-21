@@ -10,7 +10,7 @@
  }, trait {
  "name": "Result<T, E>",
  "modifiers": ["export"],
- "children": [function {
+ "content": [method {
   "name": "findValue",
   "returns": generic {
    "base": symbol {
@@ -20,7 +20,7 @@
     "type": "T"
     }]
    }
-  }, function {
+  }, method {
   "name": "findError",
   "returns": generic {
    "base": symbol {
@@ -30,7 +30,7 @@
     "type": "E"
     }]
    }
-  }, function {
+  }, method {
   "name": "mapValue",
   "params": content {
    "params": "Function<T, R> mapper"
@@ -38,12 +38,12 @@
   "returns": symbol {
    "type": "<R> Result<R, E>"
    }
-  }, function {
+  }, method {
   "name": "isErr",
   "returns": symbol {
    "type": "boolean"
    }
-  }, function {
+  }, method {
   "name": "and",
   "params": content {
    "params": "Supplier<Result<R, E>> supplier"
@@ -51,7 +51,7 @@
   "returns": symbol {
    "type": "<R> Result<Tuple<T, R>, E>"
    }
-  }, function {
+  }, method {
   "name": "isOk",
   "returns": symbol {
    "type": "boolean"

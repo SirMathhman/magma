@@ -15,7 +15,7 @@
  "namespace": ["java", "util", "Set"]
  }, function {
  "name": "SingleSourceSet",
- "params-and-body": "Path source) implements SourceSet {
+ "body": " implements SourceSet {
     @Override
     public Result<Set<Path>, IOException> collect() {
         var sources = new HashSet<Path>();
@@ -23,6 +23,10 @@
         return new Ok<>(sources);
     }
 }",
- "modifiers": ["public"]
+ "modifiers": ["public"],
+ "params": [definition {
+  "type": "Path",
+  "name": "source"
+  }]
  }]
 }

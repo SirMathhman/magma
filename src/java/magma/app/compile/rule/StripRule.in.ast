@@ -9,7 +9,7 @@
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, record {
  "name": "StripRule",
- "params-and-body": "Rule childRule, String leftPaddingKey, String rightPaddingKey) implements Rule {
+ "body": " implements Rule {
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         return childRule.parse(input.strip());
@@ -22,6 +22,16 @@
         return childRule.generate(node).mapValue(inner -> leftPadding + inner + rightPadding);
     }
 }",
- "modifiers": ["public"]
+ "modifiers": ["public"],
+ "params": [definition {
+  "type": "Rule",
+  "name": "childRule,"
+  }, definition {
+  "type": " String",
+  "name": "leftPaddingKey,"
+  }, definition {
+  "type": " String",
+  "name": "rightPaddingKey"
+  }]
  }]
 }

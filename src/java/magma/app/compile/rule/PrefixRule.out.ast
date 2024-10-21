@@ -9,7 +9,7 @@
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, function {
  "name": "PrefixRule",
- "params-and-body": "String prefix, Rule childRule) implements Rule {
+ "body": " implements Rule {
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         if (!input.startsWith(prefix))
@@ -23,6 +23,13 @@
         return childRule.generate(node).mapValue(value -> prefix + value);
     }
 }",
- "modifiers": ["public"]
+ "modifiers": ["public"],
+ "params": [definition {
+  "type": "String",
+  "name": "prefix,"
+  }, definition {
+  "type": " Rule",
+  "name": "childRule"
+  }]
  }]
 }

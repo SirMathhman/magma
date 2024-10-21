@@ -4,7 +4,7 @@
  }, trait {
  "name": "Locator",
  "modifiers": ["export"],
- "children": [function {
+ "content": [method {
   "name": "locate",
   "params": content {
    "params": "String input"
@@ -17,7 +17,7 @@
     "type": "Integer"
     }]
    }
-  }, function {
+  }, method {
   "name": "slice",
   "returns": symbol {
    "type": "String"

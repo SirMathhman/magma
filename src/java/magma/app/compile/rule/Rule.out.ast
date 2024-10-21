@@ -8,7 +8,7 @@
  }, trait {
  "name": "Rule",
  "modifiers": ["export"],
- "children": [function {
+ "content": [method {
   "name": "parse",
   "params": content {
    "params": "String input"
@@ -18,12 +18,12 @@
     "type": "RuleResult"
     },
    "children": [symbol {
-    "type": "Node"
+    "type": "Node,"
     }, symbol {
     "type": "ParseException"
     }]
    }
-  }, function {
+  }, method {
   "name": "generate",
   "params": content {
    "params": "Node node"
@@ -33,7 +33,7 @@
     "type": "RuleResult"
     },
    "children": [symbol {
-    "type": "String"
+    "type": "String,"
     }, symbol {
     "type": "GenerateException"
     }]

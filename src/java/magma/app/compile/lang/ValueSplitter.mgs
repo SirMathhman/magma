@@ -1,1 +1,1 @@
-import magma\.app\.compile\.rule\.Splitter;import java\.util\.Arrays;import java\.util\.List;class def ValueSplitter implements Splitter () => {}
+import magma\.app\.compile\.rule\.Splitter;import java\.util\.ArrayList;import java\.util\.List;class def ValueSplitter implements Splitter () => {}

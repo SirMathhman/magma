@@ -11,7 +11,7 @@
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, function {
  "name": "NodeRule",
- "params-and-body": "String propertyKey, Rule propertyRule) implements Rule {
+ "body": " implements Rule {
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         return propertyRule.parse(input).mapValue(node -> new MapNode().withNode(propertyKey, node));
@@ -27,6 +27,13 @@
         return propertyRule.generate(node1);
     }
 }",
- "modifiers": ["public"]
+ "modifiers": ["public"],
+ "params": [definition {
+  "type": "String",
+  "name": "propertyKey,"
+  }, definition {
+  "type": " Rule",
+  "name": "propertyRule"
+  }]
  }]
 }

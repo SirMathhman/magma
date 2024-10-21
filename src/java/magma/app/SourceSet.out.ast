@@ -10,19 +10,14 @@
  }, trait {
  "name": "SourceSet",
  "modifiers": ["export"],
- "children": [function {
+ "content": [method {
   "name": "collect",
   "returns": generic {
    "base": symbol {
     "type": "Result"
     },
-   "children": [generic {
-    "base": symbol {
-     "type": "Set"
-     },
-    "children": [symbol {
-     "type": "Path"
-     }]
+   "children": [symbol {
+    "type": "Set<Path>,"
     }, symbol {
     "type": "IOException"
     }]

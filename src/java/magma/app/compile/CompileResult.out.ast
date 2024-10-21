@@ -1,8 +1,18 @@
 {
 "children": [function {
  "name": "CompileResult",
- "params-and-body": "Node beforePass, Node afterPass, String output) {
+ "body": " {
 }",
- "modifiers": ["public"]
+ "modifiers": ["public"],
+ "params": [definition {
+  "type": "Node",
+  "name": "beforePass,"
+  }, definition {
+  "type": " Node",
+  "name": "afterPass,"
+  }, definition {
+  "type": " String",
+  "name": "output"
+  }]
  }]
 }

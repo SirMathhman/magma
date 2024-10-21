@@ -3,13 +3,17 @@
  "namespace": ["java", "util", "Optional"]
  }, function {
  "name": "FirstLocator",
- "params-and-body": "String slice) implements Locator {
+ "body": " implements Locator {
     @Override
     public Optional<Integer> locate(String input) {
         final var index = input.indexOf(slice);
         return index == -1 ? Optional.empty() : Optional.of(index);
     }
 }",
- "modifiers": ["public"]
+ "modifiers": ["public"],
+ "params": [definition {
+  "type": "String",
+  "name": "slice"
+  }]
  }]
 }

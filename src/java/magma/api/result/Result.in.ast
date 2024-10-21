@@ -12,7 +12,7 @@
  }, interface {
  "name": "Result<T, E>",
  "modifiers": ["public"],
- "children": [method {
+ "content": [method {
   "name": "findValue",
   "returns": generic {
    "base": symbol {

@@ -9,7 +9,7 @@
  "namespace": ["java", "util", "function", "Supplier"]
  }, function {
  "name": "Err",
- "params-and-body": "E error) implements Result<T, E> {
+ "body": " implements Result<T, E> {
     @Override
     public Optional<T> findValue() {
         return Optional.empty();
@@ -41,10 +41,14 @@
     }
 }",
  "modifiers": ["public"],
- "children": [symbol {
-  "type": "T"
+ "type-params": [symbol {
+  "type": "T,"
   }, symbol {
   "type": "E"
+  }],
+ "params": [definition {
+  "type": "E",
+  "name": "error"
   }]
  }]
 }

@@ -6,7 +6,7 @@
  }, interface {
  "name": "Splitter",
  "modifiers": ["public"],
- "children": [method {
+ "content": [method {
   "name": "split",
   "params": content {
    "params": "String input"
