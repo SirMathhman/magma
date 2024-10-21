@@ -52,8 +52,39 @@
     "value": "String"
     }
    }],
-  "children": [symbol {
-   "content": "return propertyRule.parse(input).mapValue(node -> new MapNode().withNode(propertyKey, node));"
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "mapValue",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "parse",
+       "parent": symbol {
+        "content": "propertyRule"
+        }
+       },
+      "arguments": [symbol {
+       "content": "input"
+       }]
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "withNode",
+      "parent": invocation {
+       "caller": lambda {
+        "after-arrow": " new MapNode",
+        "before-arrow": "node "
+        }
+       }
+      },
+     "arguments": [symbol {
+      "content": "propertyKey"
+      }, symbol {
+      "content": "node"
+      }]
+     }]
+    }
    }]
   }, method {
   "name": "generate",
@@ -79,15 +110,52 @@
     "value": "Node"
     }
    }],
-  "children": [symbol {
-   "content": "final var optional = node.findNode(propertyKey);"
-   }, symbol {
-   "content": "if (optional.isEmpty())
+  "children": [declaration {
+   "name": "optional",
+   "returns": symbol {
+    "value": "var"
+    },
+   "caller": property-access {
+    "child": "findNode",
+    "parent": symbol {
+     "content": "node"
+     }
+    },
+   "modifiers": [modifier {
+    "content": "final"
+    }],
+   "arguments": [symbol {
+    "content": "propertyKey"
+    }]
+   }, if {
+   "content": " (optional.isEmpty())
             return new RuleResult<>(new Err<>(new GenerateException("Node ' propertyKey + "'es not exist.", node)));"
-   }, symbol {
-   "content": "final var node1 = optional.get();"
-   }, symbol {
-   "content": "return propertyRule.generate(node1);"
+   }, declaration {
+   "name": "node1",
+   "returns": symbol {
+    "value": "var"
+    },
+   "caller": property-access {
+    "child": "get",
+    "parent": symbol {
+     "content": "optional"
+     }
+    },
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "generate",
+     "parent": symbol {
+      "content": "propertyRule"
+      }
+     },
+    "arguments": [symbol {
+     "content": "node1"
+     }]
+    }
    }]
   }]
  }]
