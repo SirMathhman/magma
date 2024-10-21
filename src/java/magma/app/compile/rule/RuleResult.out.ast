@@ -18,8 +18,9 @@
  "modifiers": ["public"],
  "children": [method {
   "name": "RuleResult",
-  "params": content {
-   "params": "Result<T, E> result"
+  "params": definition {
+   "type": "Result<T, E>",
+   "name": "result"
    },
   "returns": symbol {
    "type": "public"
@@ -61,8 +62,9 @@
   }, method {
   "name": "mapValue",
   "modifiers": ["public", "RuleResult<T,"],
-  "params": content {
-   "params": "Function<T, T> mapper"
+  "params": definition {
+   "type": "Function<T, T>",
+   "name": "mapper"
    },
   "returns": symbol {
    "type": "E>"
@@ -90,8 +92,9 @@
   }, method {
   "name": "wrapErr",
   "modifiers": ["public", "RuleResult<T,"],
-  "params": content {
-   "params": "E error"
+  "params": definition {
+   "type": "E",
+   "name": "error"
    },
   "returns": symbol {
    "type": "E>"

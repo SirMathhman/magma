@@ -12,8 +12,9 @@
  "children": [method {
   "name": "locate",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String input"
+  "params": definition {
+   "type": "String",
+   "name": "input"
    },
   "returns": generic {
    "base": symbol {

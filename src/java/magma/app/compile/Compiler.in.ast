@@ -31,8 +31,9 @@
  "children": [method {
   "name": "pass",
   "modifiers": ["private", "static"],
-  "params": content {
-   "params": "Node node"
+  "params": definition {
+   "type": "Node",
+   "name": "node"
    },
   "returns": symbol {
    "type": "Node"
@@ -58,8 +59,9 @@
   }, method {
   "name": "passChildren",
   "modifiers": ["private", "static"],
-  "params": content {
-   "params": "List<Node> children"
+  "params": definition {
+   "type": "List<Node>",
+   "name": "children"
    },
   "returns": generic {
    "base": symbol {
@@ -103,8 +105,9 @@
   }, method {
   "name": "passRootChild",
   "modifiers": ["private", "static"],
-  "params": content {
-   "params": "Node node"
+  "params": definition {
+   "type": "Node",
+   "name": "node"
    },
   "returns": symbol {
    "type": "Node"
@@ -134,8 +137,9 @@
   }, method {
   "name": "passClass",
   "modifiers": ["private", "static", "Optional<?", "extends"],
-  "params": content {
-   "params": "Node node"
+  "params": definition {
+   "type": "Node",
+   "name": "node"
    },
   "returns": symbol {
    "type": "Node>"
@@ -152,8 +156,9 @@
   }, method {
   "name": "passRecord",
   "modifiers": ["private", "static"],
-  "params": content {
-   "params": "Node node"
+  "params": definition {
+   "type": "Node",
+   "name": "node"
    },
   "returns": generic {
    "base": symbol {
@@ -188,8 +193,9 @@
   }, method {
   "name": "passInterface",
   "modifiers": ["private", "static"],
-  "params": content {
-   "params": "Node node"
+  "params": definition {
+   "type": "Node",
+   "name": "node"
    },
   "returns": generic {
    "base": symbol {
@@ -231,8 +237,9 @@
   }, method {
   "name": "passClassMember",
   "modifiers": ["private", "static"],
-  "params": content {
-   "params": "Node child"
+  "params": definition {
+   "type": "Node",
+   "name": "child"
    },
   "returns": symbol {
    "type": "Node"
@@ -264,8 +271,9 @@
   }, method {
   "name": "write",
   "modifiers": ["private", "<T,", "E", "extends", "Exception>", "Result<T,"],
-  "params": content {
-   "params": "RuleResult<T, E> result"
+  "params": definition {
+   "type": "RuleResult<T, E>",
+   "name": "result"
    },
   "returns": symbol {
    "type": "CompileException>"
@@ -283,8 +291,9 @@
   }, method {
   "name": "writeResult",
   "modifiers": ["private", "<T,", "E", "extends", "Exception>"],
-  "params": content {
-   "params": "RuleResult<T, E> result, int depth, int index"
+  "params": definition {
+   "type": "RuleResult<T, E> result, int depth, int",
+   "name": "index"
    },
   "returns": symbol {
    "type": "void"

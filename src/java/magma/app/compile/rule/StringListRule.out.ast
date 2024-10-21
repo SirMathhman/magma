@@ -22,8 +22,9 @@
  "children": [method {
   "name": "parse",
   "modifiers": ["public", "RuleResult<Node,"],
-  "params": content {
-   "params": "String input"
+  "params": definition {
+   "type": "String",
+   "name": "input"
    },
   "returns": symbol {
    "type": "ParseException>"
@@ -60,8 +61,9 @@
   }, method {
   "name": "generate",
   "modifiers": ["public", "RuleResult<String,"],
-  "params": content {
-   "params": "Node node"
+  "params": definition {
+   "type": "Node",
+   "name": "node"
    },
   "returns": symbol {
    "type": "GenerateException>"

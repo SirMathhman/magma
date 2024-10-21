@@ -88,7 +88,7 @@
         final var maybeAnnotations = new OptionalNodeRule("annotations", withAnnotations, maybeModifiers);
 
         final var beforeParams = new LocatingRule(maybeAnnotations, new LastLocator(" "), name);
-        final var params = new OptionalNodeRule("params", new NodeRule("params", new TypeRule("content", new ExtractRule("params"))), new EmptyRule());
+        final var params = new OptionalNodeRule("params", new NodeRule("params", createDefinitionRule()), new EmptyRule());
 
         final var children = new StripRule(new PrefixRule("{", new SuffixRule(new NodeListRule(new StatementSplitter(), "children", new StripRule(createStatementRule(), "", "")), "}")), "", "");
         final var maybeChildren = new OptionalNodeRule("children", children, new SuffixRule(new EmptyRule(), ";"));

@@ -14,32 +14,36 @@
  "modifiers": ["export"],
  "content": [method {
   "name": "retype",
-  "params": content {
-   "params": "String type"
+  "params": definition {
+   "type": "String",
+   "name": "type"
    },
   "returns": symbol {
    "type": "Node"
    }
   }, method {
   "name": "is",
-  "params": content {
-   "params": "String type"
+  "params": definition {
+   "type": "String",
+   "name": "type"
    },
   "returns": symbol {
    "type": "boolean"
    }
   }, method {
   "name": "withString",
-  "params": content {
-   "params": "String propertyKey, String propertyValue"
+  "params": definition {
+   "type": "String propertyKey, String",
+   "name": "propertyValue"
    },
   "returns": symbol {
    "type": "Node"
    }
   }, method {
   "name": "findString",
-  "params": content {
-   "params": "String propertyKey"
+  "params": definition {
+   "type": "String",
+   "name": "propertyKey"
    },
   "returns": generic {
    "base": symbol {
@@ -51,8 +55,9 @@
    }
   }, method {
   "name": "mapNodeList",
-  "params": content {
-   "params": "String propertyKey, Function<List<Node>, List<Node>> mapper"
+  "params": definition {
+   "type": "String propertyKey, Function<List<Node>, List<Node>>",
+   "name": "mapper"
    },
   "returns": generic {
    "base": symbol {
@@ -64,8 +69,9 @@
    }
   }, method {
   "name": "findNodeList",
-  "params": content {
-   "params": "String propertyKey"
+  "params": definition {
+   "type": "String",
+   "name": "propertyKey"
    },
   "returns": generic {
    "base": symbol {
@@ -82,24 +88,27 @@
    }
   }, method {
   "name": "withNodeList",
-  "params": content {
-   "params": "String propertyKey, List<Node> values"
+  "params": definition {
+   "type": "String propertyKey, List<Node>",
+   "name": "values"
    },
   "returns": symbol {
    "type": "Node"
    }
   }, method {
   "name": "format",
-  "params": content {
-   "params": "int depth"
+  "params": definition {
+   "type": "int",
+   "name": "depth"
    },
   "returns": symbol {
    "type": "String"
    }
   }, method {
   "name": "merge",
-  "params": content {
-   "params": "Node other"
+  "params": definition {
+   "type": "Node",
+   "name": "other"
    },
   "returns": symbol {
    "type": "Node"
@@ -123,16 +132,18 @@
    }
   }, method {
   "name": "withNode",
-  "params": content {
-   "params": "String propertyKey, Node propertyValue"
+  "params": definition {
+   "type": "String propertyKey, Node",
+   "name": "propertyValue"
    },
   "returns": symbol {
    "type": "Node"
    }
   }, method {
   "name": "findNode",
-  "params": content {
-   "params": "String propertyKey"
+  "params": definition {
+   "type": "String",
+   "name": "propertyKey"
    },
   "returns": generic {
    "base": symbol {
@@ -150,24 +161,27 @@
    }
   }, method {
   "name": "hasNode",
-  "params": content {
-   "params": "String node"
+  "params": definition {
+   "type": "String",
+   "name": "node"
    },
   "returns": symbol {
    "type": "boolean"
    }
   }, method {
   "name": "withStringList",
-  "params": content {
-   "params": "String propertyKey, List<String> propertyValues"
+  "params": definition {
+   "type": "String propertyKey, List<String>",
+   "name": "propertyValues"
    },
   "returns": symbol {
    "type": "Node"
    }
   }, method {
   "name": "findStringList",
-  "params": content {
-   "params": "String propertyKey"
+  "params": definition {
+   "type": "String",
+   "name": "propertyKey"
    },
   "returns": generic {
    "base": symbol {
@@ -195,8 +209,9 @@
    }
   }, method {
   "name": "mapStringList",
-  "params": content {
-   "params": "String propertyKey, Function<List<String>, List<String>> mapper"
+  "params": definition {
+   "type": "String propertyKey, Function<List<String>, List<String>>",
+   "name": "mapper"
    },
   "returns": generic {
    "base": symbol {

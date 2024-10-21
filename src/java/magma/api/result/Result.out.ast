@@ -33,8 +33,9 @@
   }, method {
   "name": "mapValue",
   "modifiers": ["<R>", "Result<R,"],
-  "params": content {
-   "params": "Function<T, R> mapper"
+  "params": definition {
+   "type": "Function<T, R>",
+   "name": "mapper"
    },
   "returns": symbol {
    "type": "E>"
@@ -47,8 +48,9 @@
   }, method {
   "name": "and",
   "modifiers": ["<R>", "Result<Tuple<T,", "R>,"],
-  "params": content {
-   "params": "Supplier<Result<R, E>> supplier"
+  "params": definition {
+   "type": "Supplier<Result<R, E>>",
+   "name": "supplier"
    },
   "returns": symbol {
    "type": "E>"
@@ -61,8 +63,9 @@
   }, method {
   "name": "flatMapValue",
   "modifiers": ["<R>", "Result<R,"],
-  "params": content {
-   "params": "Function<T, Result<R, E>> mapper"
+  "params": definition {
+   "type": "Function<T, Result<R, E>>",
+   "name": "mapper"
    },
   "returns": symbol {
    "type": "E>"

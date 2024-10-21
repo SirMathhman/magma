@@ -26,8 +26,9 @@
   }, method {
   "name": "formatLine",
   "modifiers": ["private", "static"],
-  "params": content {
-   "params": "int depth, String key, String value"
+  "params": definition {
+   "type": "int depth, String key, String",
+   "name": "value"
    },
   "returns": symbol {
    "type": "String"
@@ -43,8 +44,9 @@
   }, method {
   "name": "formatNodeList",
   "modifiers": ["private", "static"],
-  "params": content {
-   "params": "int depth, List<Node> values"
+  "params": definition {
+   "type": "int depth, List<Node>",
+   "name": "values"
    },
   "returns": symbol {
    "type": "String"
@@ -84,8 +86,9 @@
   }, method {
   "name": "retype",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String type"
+  "params": definition {
+   "type": "String",
+   "name": "type"
    },
   "returns": symbol {
    "type": "Node"
@@ -122,8 +125,9 @@
   }, method {
   "name": "is",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String type"
+  "params": definition {
+   "type": "String",
+   "name": "type"
    },
   "returns": symbol {
    "type": "boolean"
@@ -161,8 +165,9 @@
   }, method {
   "name": "withString",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String propertyKey, String propertyValue"
+  "params": definition {
+   "type": "String propertyKey, String",
+   "name": "propertyValue"
    },
   "returns": symbol {
    "type": "Node"
@@ -195,8 +200,9 @@
   }, method {
   "name": "findString",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String propertyKey"
+  "params": definition {
+   "type": "String",
+   "name": "propertyKey"
    },
   "returns": generic {
    "base": symbol {
@@ -233,8 +239,9 @@
   }, method {
   "name": "mapNodeList",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String propertyKey, Function<List<Node>, List<Node>> mapper"
+  "params": definition {
+   "type": "String propertyKey, Function<List<Node>, List<Node>>",
+   "name": "mapper"
    },
   "returns": generic {
    "base": symbol {
@@ -320,8 +327,9 @@
   }, method {
   "name": "withNode",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String propertyKey, Node propertyValue"
+  "params": definition {
+   "type": "String propertyKey, Node",
+   "name": "propertyValue"
    },
   "returns": symbol {
    "type": "Node"
@@ -354,8 +362,9 @@
   }, method {
   "name": "findNode",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String propertyKey"
+  "params": definition {
+   "type": "String",
+   "name": "propertyKey"
    },
   "returns": generic {
    "base": symbol {
@@ -436,8 +445,9 @@
   }, method {
   "name": "hasNode",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String node"
+  "params": definition {
+   "type": "String",
+   "name": "node"
    },
   "returns": symbol {
    "type": "boolean"
@@ -461,8 +471,9 @@
   }, method {
   "name": "withStringList",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String propertyKey, List<String> propertyValues"
+  "params": definition {
+   "type": "String propertyKey, List<String>",
+   "name": "propertyValues"
    },
   "returns": symbol {
    "type": "Node"
@@ -495,8 +506,9 @@
   }, method {
   "name": "findStringList",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String propertyKey"
+  "params": definition {
+   "type": "String",
+   "name": "propertyKey"
    },
   "returns": generic {
    "base": symbol {
@@ -582,8 +594,9 @@
   }, method {
   "name": "findNodeList",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String propertyKey"
+  "params": definition {
+   "type": "String",
+   "name": "propertyKey"
    },
   "returns": generic {
    "base": symbol {
@@ -625,8 +638,9 @@
   }, method {
   "name": "withNodeList",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String propertyKey, List<Node> values"
+  "params": definition {
+   "type": "String propertyKey, List<Node>",
+   "name": "values"
    },
   "returns": symbol {
    "type": "Node"
@@ -678,8 +692,9 @@
   }, method {
   "name": "format",
   "modifiers": ["public"],
-  "params": content {
-   "params": "int depth"
+  "params": definition {
+   "type": "int",
+   "name": "depth"
    },
   "returns": symbol {
    "type": "String"
@@ -717,8 +732,9 @@
   }, method {
   "name": "formatStringList",
   "modifiers": ["private"],
-  "params": content {
-   "params": "List<String> list"
+  "params": definition {
+   "type": "List<String>",
+   "name": "list"
    },
   "returns": symbol {
    "type": "String"
@@ -755,8 +771,9 @@
   }, method {
   "name": "formatMap",
   "modifiers": ["private", "<T>"],
-  "params": content {
-   "params": "int depth, Map<String, T> set, Function<T, String> format"
+  "params": definition {
+   "type": "int depth, Map<String, T> set, Function<T, String>",
+   "name": "format"
    },
   "returns": symbol {
    "type": "String"
@@ -857,8 +874,9 @@
   }, method {
   "name": "mapStringList",
   "modifiers": ["public"],
-  "params": content {
-   "params": "String propertyKey, Function<List<String>, List<String>> mapper"
+  "params": definition {
+   "type": "String propertyKey, Function<List<String>, List<String>>",
+   "name": "mapper"
    },
   "returns": generic {
    "base": symbol {
@@ -895,8 +913,9 @@
   }, method {
   "name": "merge",
   "modifiers": ["public"],
-  "params": content {
-   "params": "Node other"
+  "params": definition {
+   "type": "Node",
+   "name": "other"
    },
   "returns": symbol {
    "type": "Node"
