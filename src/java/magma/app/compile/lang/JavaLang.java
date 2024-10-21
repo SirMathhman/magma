@@ -127,7 +127,8 @@ public class JavaLang {
                 createNumberRule(),
                 createAdditionRule(value),
                 createAccessRule(value, "property-access", "."),
-                createAccessRule(value, "method-access", "::")
+                createAccessRule(value, "method-access", "::"),
+                new TypeRule("lambda", new LocatingRule(new ExtractRule("before-arrow"), new FirstLocator("->"), new ExtractRule("after-arrow")))
         )));
         return value;
     }
