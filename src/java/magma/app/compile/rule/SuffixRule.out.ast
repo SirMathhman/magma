@@ -1,0 +1,36 @@
+{
+"children": [import {
+ "namespace": "magma.api.result.Err"
+ }, import {
+ "namespace": "magma.app.compile.GenerateException"
+ }, import {
+ "namespace": "magma.app.compile.Node"
+ }, import {
+ "namespace": "magma.app.compile.ParseException"
+ }, function {
+ "name": "SuffixRule implements Rule ",
+ "body": "
+    private final String suffix;
+    private final Rule childRule;
+
+    public SuffixRule(Rule childRule, String suffix) {
+        this.suffix = suffix;
+        this.childRule = childRule;
+    }
+
+    @Override
+    public RuleResult<Node, ParseException> parse(String input) {
+        if (!input.endsWith(suffix))
+            return new RuleResult<>(new Err<>(new ParseException("Suffix '" + suffix + "' not present", input)));
+        final var slice = input.substring(0, input.length() - suffix.length());
+        return childRule.parse(slice);
+    }
+
+    @Override
+    public RuleResult<String, GenerateException> generate(Node node) {
+        return childRule.generate(node).mapValue(value -> value + suffix);
+    }
+}",
+ "before-keyword": "public final "
+ }]
+}

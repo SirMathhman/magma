@@ -1,0 +1,43 @@
+{
+"children": [import {
+ "namespace": "magma.api.result.Err"
+ }, import {
+ "namespace": "magma.app.compile.GenerateException"
+ }, import {
+ "namespace": "magma.app.compile.Node"
+ }, import {
+ "namespace": "magma.app.compile.ParseException"
+ }, import {
+ "namespace": "java.util.List"
+ }, function {
+ "name": "OptionalNodeRule implements Rule ",
+ "body": "
+    private final String propertyKey;
+    private final Rule ifPresent;
+    private final Rule ifEmpty;
+    private final OrRule maybe;
+
+    public OptionalNodeRule(String propertyKey, Rule ifPresent, Rule ifEmpty) {
+        this.propertyKey = propertyKey;
+        this.ifPresent = ifPresent;
+        this.ifEmpty = ifEmpty;
+        maybe = new OrRule(List.of(ifPresent, ifEmpty));
+    }
+
+    @Override
+    public RuleResult<Node, ParseException> parse(String input) {
+        return maybe.parse(input);
+    }
+
+    @Override
+    public RuleResult<String, GenerateException> generate(Node node) {
+        if (node.hasNode(propertyKey)) {
+            return ifPresent.generate(node);
+        } else {
+            return ifEmpty.generate(node);
+        }
+    }
+}",
+ "before-keyword": "public final "
+ }]
+}

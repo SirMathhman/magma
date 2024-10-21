@@ -1,14 +1,19 @@
-package magma.app;
-
-import magma.api.result.Results;
-import magma.app.compile.Compiler;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Set;
-
-public final class Application {
+{
+"children": [import {
+ "namespace": "magma.api.result.Results"
+ }, import {
+ "namespace": "magma.app.compile.Compiler"
+ }, import {
+ "namespace": "java.io.IOException"
+ }, import {
+ "namespace": "java.nio.file.Files"
+ }, import {
+ "namespace": "java.nio.file.Path"
+ }, import {
+ "namespace": "java.util.Set"
+ }, function {
+ "name": "Application ",
+ "body": "
     public static final String MAGMA_EXTENSION = "mgs";
     public static final String EXTENSION_SEPARATOR = ".";
     private final SourceSet sourceSet;
@@ -69,4 +74,7 @@ public final class Application {
         writeDebug(source, result.beforePass().toString(), fileNameWithoutExtension, "in.ast");
         writeDebug(source, result.afterPass().toString(), fileNameWithoutExtension, "out.ast");
     }
+}",
+ "before-keyword": "public final "
+ }]
 }

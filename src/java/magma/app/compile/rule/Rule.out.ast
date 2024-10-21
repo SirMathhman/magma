@@ -1,0 +1,43 @@
+{
+"children": [import {
+ "namespace": "magma.app.compile.GenerateException"
+ }, import {
+ "namespace": "magma.app.compile.Node"
+ }, import {
+ "namespace": "magma.app.compile.ParseException"
+ }, trait {
+ "name": "Rule",
+ "modifiers": ["export"],
+ "children": [function {
+  "name": "parse",
+  "params": content {
+   "params": "String input"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "RuleResult"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }, symbol {
+    "type": "ParseException"
+    }]
+   }
+  }, function {
+  "name": "generate",
+  "params": content {
+   "params": "Node node"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "RuleResult"
+    },
+   "children": [symbol {
+    "type": "String"
+    }, symbol {
+    "type": "GenerateException"
+    }]
+   }
+  }]
+ }]
+}

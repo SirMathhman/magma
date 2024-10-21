@@ -1,0 +1,18 @@
+{
+"children": [package {
+ "namespace": "magma.app.compile"
+ }, import {
+ "namespace": "magma.app.ApplicationException"
+ }, class {
+ "name": "CompileException extends ApplicationException ",
+ "body": "
+    public CompileException() {
+    }
+
+    public CompileException(String message, String context) {
+        super(message + ": " + context);
+    }
+}",
+ "before-keyword": "public "
+ }]
+}

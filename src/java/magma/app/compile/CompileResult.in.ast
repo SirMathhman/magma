@@ -1,0 +1,10 @@
+{
+"children": [package {
+ "namespace": "magma.app.compile"
+ }, record {
+ "modifiers": "public ",
+ "name": "CompileResult",
+ "params-and-body": "Node beforePass, Node afterPass, String output) {
+}"
+ }]
+}

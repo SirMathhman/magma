@@ -1,0 +1,47 @@
+{
+"children": [import {
+ "namespace": "magma.api.result.Err"
+ }, import {
+ "namespace": "magma.api.result.Result"
+ }, import {
+ "namespace": "java.util.Collections"
+ }, import {
+ "namespace": "java.util.List"
+ }, import {
+ "namespace": "java.util.function.Function"
+ }, import {
+ "namespace": "static java.util.Collections.singletonList"
+ }, function {
+ "modifiers": "public ",
+ "name": "RuleResult<T, E>",
+ "params-and-body": "Result<T, E> result, List<RuleResult<T, E>> children) {
+    public RuleResult(Result<T, E> result) {
+        this(result, Collections.emptyList());
+    }
+
+    @Deprecated
+    public Result<T, E> unwrap() {
+        return result;
+    }
+
+    public boolean isValid() {
+        return result.isOk();
+    }
+
+    public RuleResult<T, E> mapValue(Function<T, T> mapper) {
+        return new RuleResult<>(result.mapValue(mapper), children);
+    }
+
+    public RuleResult<T, E> wrapErr(E error) {
+        if (!isError()) return this;
+
+        var list = singletonList(this);
+        return new RuleResult<>(new Err<>(error), list);
+    }
+
+    public boolean isError() {
+        return result.isErr();
+    }
+}"
+ }]
+}

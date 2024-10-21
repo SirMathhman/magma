@@ -28,7 +28,8 @@ class CompilerTest {
                     .withString(CommonLang.NAME, name);
             final var targetNode = sourceNode.retype(FUNCTION);
 
-            final var actual = new Compiler(Results.unwrap(((Rule) JavaLang.createRecordRule()).generate(sourceNode).unwrap())).compile();
+            Compiler compiler = new Compiler(Results.unwrap(((Rule) JavaLang.createRecordRule()).generate(sourceNode).unwrap()));
+            final var actual = compiler.compile().output();
             assertEquals(Results.unwrap(((Rule) MagmaLang.createFunctionRule()).generate(targetNode).unwrap()), actual);
         } catch (CompileException e) {
             fail(e);
@@ -37,6 +38,6 @@ class CompilerTest {
 
     @Test
     void invalid() {
-        assertThrows(CompileException.class, () -> new Compiler("test").compile());
+        assertThrows(CompileException.class, () -> new Compiler("test").compile().output());
     }
 }

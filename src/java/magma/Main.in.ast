@@ -1,0 +1,28 @@
+{
+"children": [package {
+ "namespace": "magma"
+ }, import {
+ "namespace": "magma.app.Application"
+ }, import {
+ "namespace": "magma.app.ApplicationException"
+ }, import {
+ "namespace": "magma.app.DirectorySourceSet"
+ }, import {
+ "namespace": "java.nio.file.Paths"
+ }, class {
+ "name": "Main ",
+ "body": "
+    public static void main(String[] args) {
+        try {
+            final var source = Paths.get(".", "src", "java");
+            final var sourceSet = new DirectorySourceSet(source);
+            new Application(sourceSet).run();
+        } catch (ApplicationException e) {
+            //noinspection CallToPrintStackTrace
+            e.printStackTrace();
+        }
+    }
+}",
+ "before-keyword": "public "
+ }]
+}

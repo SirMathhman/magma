@@ -1,10 +1,16 @@
-package magma.app.compile.rule;
-
-import magma.app.compile.GenerateException;
-import magma.app.compile.Node;
-import magma.app.compile.ParseException;
-
-public record StripRule(Rule childRule, String leftPaddingKey, String rightPaddingKey) implements Rule {
+{
+"children": [package {
+ "namespace": "magma.app.compile.rule"
+ }, import {
+ "namespace": "magma.app.compile.GenerateException"
+ }, import {
+ "namespace": "magma.app.compile.Node"
+ }, import {
+ "namespace": "magma.app.compile.ParseException"
+ }, record {
+ "modifiers": "public ",
+ "name": "StripRule",
+ "params-and-body": "Rule childRule, String leftPaddingKey, String rightPaddingKey) implements Rule {
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         return childRule.parse(input.strip());
@@ -16,4 +22,6 @@ public record StripRule(Rule childRule, String leftPaddingKey, String rightPaddi
         final var rightPadding = node.findString(rightPaddingKey).orElse("");
         return childRule.generate(node).mapValue(inner -> leftPadding + inner + rightPadding);
     }
+}"
+ }]
 }

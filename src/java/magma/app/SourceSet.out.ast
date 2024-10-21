@@ -1,0 +1,32 @@
+{
+"children": [import {
+ "namespace": "magma.api.result.Result"
+ }, import {
+ "namespace": "java.io.IOException"
+ }, import {
+ "namespace": "java.nio.file.Path"
+ }, import {
+ "namespace": "java.util.Set"
+ }, trait {
+ "name": "SourceSet",
+ "modifiers": ["export"],
+ "children": [function {
+  "name": "collect",
+  "returns": generic {
+   "base": symbol {
+    "type": "Result"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Set"
+     },
+    "children": [symbol {
+     "type": "Path"
+     }]
+    }, symbol {
+    "type": "IOException"
+    }]
+   }
+  }]
+ }]
+}

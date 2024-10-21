@@ -1,22 +1,36 @@
-package magma.app.compile;
-
-import magma.api.result.Err;
-import magma.api.result.Ok;
-import magma.api.result.Result;
-import magma.api.result.Results;
-import magma.app.compile.lang.JavaLang;
-import magma.app.compile.lang.MagmaLang;
-import magma.app.compile.rule.RuleResult;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static magma.app.compile.lang.CommonLang.CHILDREN;
-import static magma.app.compile.lang.JavaLang.*;
-import static magma.app.compile.lang.MagmaLang.FUNCTION;
-
-public record Compiler(String input) {
+{
+"children": [package {
+ "namespace": "magma.app.compile"
+ }, import {
+ "namespace": "magma.api.result.Err"
+ }, import {
+ "namespace": "magma.api.result.Ok"
+ }, import {
+ "namespace": "magma.api.result.Result"
+ }, import {
+ "namespace": "magma.api.result.Results"
+ }, import {
+ "namespace": "magma.app.compile.lang.JavaLang"
+ }, import {
+ "namespace": "magma.app.compile.lang.MagmaLang"
+ }, import {
+ "namespace": "magma.app.compile.rule.RuleResult"
+ }, import {
+ "namespace": "java.util.ArrayList"
+ }, import {
+ "namespace": "java.util.List"
+ }, import {
+ "namespace": "java.util.Optional"
+ }, import {
+ "namespace": "static magma.app.compile.lang.CommonLang.CHILDREN"
+ }, import {
+ "namespace": "static magma.app.compile.lang.JavaLang.*"
+ }, import {
+ "namespace": "static magma.app.compile.lang.MagmaLang.FUNCTION"
+ }, record {
+ "modifiers": "public ",
+ "name": "Compiler",
+ "params-and-body": "String input) {
     private static Node pass(Node node) {
         return node.mapNodeList(CHILDREN, Compiler::passChildren).orElse(node);
     }
@@ -102,4 +116,6 @@ public record Compiler(String input) {
             writeResult(child, depth + 1, i);
         }
     }
+}"
+ }]
 }

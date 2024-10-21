@@ -1,0 +1,29 @@
+{
+"children": [package {
+ "namespace": "magma.app.compile.rule"
+ }, import {
+ "namespace": "java.util.Optional"
+ }, interface {
+ "name": "Locator",
+ "modifiers": ["public"],
+ "children": [method {
+  "name": "locate",
+  "params": content {
+   "params": "String input"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [symbol {
+    "type": "Integer"
+    }]
+   }
+  }, method {
+  "name": "slice",
+  "returns": symbol {
+   "type": "String"
+   }
+  }]
+ }]
+}

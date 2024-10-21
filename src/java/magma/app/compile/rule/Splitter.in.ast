@@ -1,0 +1,24 @@
+{
+"children": [package {
+ "namespace": "magma.app.compile.rule"
+ }, import {
+ "namespace": "java.util.List"
+ }, interface {
+ "name": "Splitter",
+ "modifiers": ["public"],
+ "children": [method {
+  "name": "split",
+  "params": content {
+   "params": "String input"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "List"
+    },
+   "children": [symbol {
+    "type": "String"
+    }]
+   }
+  }]
+ }]
+}

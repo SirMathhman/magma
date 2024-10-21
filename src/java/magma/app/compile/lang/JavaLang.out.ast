@@ -1,12 +1,12 @@
-package magma.app.compile.lang;
-
-import magma.app.compile.rule.*;
-
-import java.util.List;
-
-import static magma.app.compile.lang.CommonLang.*;
-
-public class JavaLang {
+{
+"children": [import {
+ "namespace": "magma.app.compile.rule.*"
+ }, import {
+ "namespace": "java.util.List"
+ }, import {
+ "namespace": "static magma.app.compile.lang.CommonLang.*"
+ }, function {
+ "modifiers": "public class JavaLang {
     public static final String PACKAGE = "package";
     public static final String RECORD = "record";
     public static final String CLASS = "class";
@@ -23,7 +23,9 @@ public class JavaLang {
     }
 
     public static TypeRule createRecordRule() {
-        return new TypeRule(RECORD, new LocatingRule(new ExtractRule("modifiers"), new FirstLocator("record "), new LocatingRule(new ExtractRule(NAME), new FirstLocator("("), new ExtractRule("params-and-body"))));
+        return new TypeRule(RECORD, new LocatingRule(new ExtractRule("modifiers"), new FirstLocator("",
+ "name": ""), new LocatingRule",
+ "params-and-body": "new ExtractRule(NAME), new FirstLocator("("), new ExtractRule("params-and-body"))));
     }
 
     private static OrRule createRootMemberRule() {
@@ -79,4 +81,6 @@ public class JavaLang {
 
         return new TypeRule("generic", new StripRule(new LocatingRule(base, new FirstLocator("<"), new SuffixRule(child, ">")), "", ""));
     }
+}"
+ }]
 }

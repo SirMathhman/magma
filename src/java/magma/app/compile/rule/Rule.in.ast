@@ -1,0 +1,45 @@
+{
+"children": [package {
+ "namespace": "magma.app.compile.rule"
+ }, import {
+ "namespace": "magma.app.compile.GenerateException"
+ }, import {
+ "namespace": "magma.app.compile.Node"
+ }, import {
+ "namespace": "magma.app.compile.ParseException"
+ }, interface {
+ "name": "Rule",
+ "modifiers": ["public"],
+ "children": [method {
+  "name": "parse",
+  "params": content {
+   "params": "String input"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "RuleResult"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }, symbol {
+    "type": "ParseException"
+    }]
+   }
+  }, method {
+  "name": "generate",
+  "params": content {
+   "params": "Node node"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "RuleResult"
+    },
+   "children": [symbol {
+    "type": "String"
+    }, symbol {
+    "type": "GenerateException"
+    }]
+   }
+  }]
+ }]
+}

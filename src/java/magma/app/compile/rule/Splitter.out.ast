@@ -1,0 +1,22 @@
+{
+"children": [import {
+ "namespace": "java.util.List"
+ }, trait {
+ "name": "Splitter",
+ "modifiers": ["export"],
+ "children": [function {
+  "name": "split",
+  "params": content {
+   "params": "String input"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "List"
+    },
+   "children": [symbol {
+    "type": "String"
+    }]
+   }
+  }]
+ }]
+}

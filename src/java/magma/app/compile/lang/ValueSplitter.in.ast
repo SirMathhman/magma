@@ -1,0 +1,20 @@
+{
+"children": [package {
+ "namespace": "magma.app.compile.lang"
+ }, import {
+ "namespace": "magma.app.compile.rule.Splitter"
+ }, import {
+ "namespace": "java.util.Arrays"
+ }, import {
+ "namespace": "java.util.List"
+ }, class {
+ "name": "ValueSplitter implements Splitter ",
+ "body": "
+    @Override
+    public List<String> split(String input) {
+        return Arrays.asList(input.split(","));
+    }
+}",
+ "before-keyword": "public "
+ }]
+}

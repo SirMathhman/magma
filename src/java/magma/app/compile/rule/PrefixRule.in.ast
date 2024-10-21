@@ -1,0 +1,30 @@
+{
+"children": [package {
+ "namespace": "magma.app.compile.rule"
+ }, import {
+ "namespace": "magma.api.result.Err"
+ }, import {
+ "namespace": "magma.app.compile.GenerateException"
+ }, import {
+ "namespace": "magma.app.compile.Node"
+ }, import {
+ "namespace": "magma.app.compile.ParseException"
+ }, record {
+ "modifiers": "public ",
+ "name": "PrefixRule",
+ "params-and-body": "String prefix, Rule childRule) implements Rule {
+    @Override
+    public RuleResult<Node, ParseException> parse(String input) {
+        if (!input.startsWith(prefix))
+            return new RuleResult<>(new Err<>(new ParseException("Prefix '" + prefix + "' not present", input)));
+
+        return childRule.parse(input.substring(prefix.length()));
+    }
+
+    @Override
+    public RuleResult<String, GenerateException> generate(Node node) {
+        return childRule.generate(node).mapValue(value -> prefix + value);
+    }
+}"
+ }]
+}

@@ -1,0 +1,15 @@
+{
+"children": [import {
+ "namespace": "java.util.Optional"
+ }, function {
+ "modifiers": "public ",
+ "name": "FirstLocator",
+ "params-and-body": "String slice) implements Locator {
+    @Override
+    public Optional<Integer> locate(String input) {
+        final var index = input.indexOf(slice);
+        return index == -1 ? Optional.empty() : Optional.of(index);
+    }
+}"
+ }]
+}

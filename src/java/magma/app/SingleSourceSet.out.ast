@@ -1,0 +1,28 @@
+{
+"children": [import {
+ "namespace": "magma.api.result.Ok"
+ }, import {
+ "namespace": "magma.api.result.Result"
+ }, import {
+ "namespace": "java.io.IOException"
+ }, import {
+ "namespace": "java.nio.file.Files"
+ }, import {
+ "namespace": "java.nio.file.Path"
+ }, import {
+ "namespace": "java.util.HashSet"
+ }, import {
+ "namespace": "java.util.Set"
+ }, function {
+ "modifiers": "public ",
+ "name": "SingleSourceSet",
+ "params-and-body": "Path source) implements SourceSet {
+    @Override
+    public Result<Set<Path>, IOException> collect() {
+        var sources = new HashSet<Path>();
+        if(Files.exists(this.source())) sources.add(this.source());
+        return new Ok<>(sources);
+    }
+}"
+ }]
+}

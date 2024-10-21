@@ -1,0 +1,235 @@
+{
+"children": [import {
+ "namespace": "magma.api.Tuple"
+ }, import {
+ "namespace": "java.util.List"
+ }, import {
+ "namespace": "java.util.Optional"
+ }, import {
+ "namespace": "java.util.function.Function"
+ }, import {
+ "namespace": "java.util.stream.Stream"
+ }, trait {
+ "name": "Node",
+ "modifiers": ["export"],
+ "children": [function {
+  "name": "retype",
+  "params": content {
+   "params": "String type"
+   },
+  "returns": symbol {
+   "type": "Node"
+   }
+  }, function {
+  "name": "is",
+  "params": content {
+   "params": "String type"
+   },
+  "returns": symbol {
+   "type": "boolean"
+   }
+  }, function {
+  "name": "withString",
+  "params": content {
+   "params": "String propertyKey, String propertyValue"
+   },
+  "returns": symbol {
+   "type": "Node"
+   }
+  }, function {
+  "name": "findString",
+  "params": content {
+   "params": "String propertyKey"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [symbol {
+    "type": "String"
+    }]
+   }
+  }, function {
+  "name": "mapNodeList",
+  "params": content {
+   "params": "String propertyKey, Function<List<Node>, List<Node>> mapper"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
+   }
+  }, function {
+  "name": "findNodeList",
+  "params": content {
+   "params": "String propertyKey"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "List"
+     },
+    "children": [symbol {
+     "type": "Node"
+     }]
+    }]
+   }
+  }, function {
+  "name": "withNodeList",
+  "params": content {
+   "params": "String propertyKey, List<Node> values"
+   },
+  "returns": symbol {
+   "type": "Node"
+   }
+  }, function {
+  "name": "format",
+  "params": content {
+   "params": "int depth"
+   },
+  "returns": symbol {
+   "type": "String"
+   }
+  }, function {
+  "name": "merge",
+  "params": content {
+   "params": "Node other"
+   },
+  "returns": symbol {
+   "type": "Node"
+   }
+  }, function {
+  "name": "streamStrings",
+  "returns": generic {
+   "base": symbol {
+    "type": "Stream"
+    },
+   "children": [symbol {
+    "type": "Tuple<String"
+    }, symbol {
+    "type": "String>"
+    }]
+   }
+  }, function {
+  "name": "streamNodeLists",
+  "returns": generic {
+   "base": symbol {
+    "type": "Stream"
+    },
+   "children": [symbol {
+    "type": "Tuple<String"
+    }, generic {
+    "base": symbol {
+     "type": "List"
+     },
+    "children": [symbol {
+     "type": "Node>"
+     }]
+    }]
+   }
+  }, function {
+  "name": "withNode",
+  "params": content {
+   "params": "String propertyKey, Node propertyValue"
+   },
+  "returns": symbol {
+   "type": "Node"
+   }
+  }, function {
+  "name": "findNode",
+  "params": content {
+   "params": "String propertyKey"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
+   }
+  }, function {
+  "name": "streamNodes",
+  "returns": generic {
+   "base": symbol {
+    "type": "Stream"
+    },
+   "children": [symbol {
+    "type": "Tuple<String"
+    }, symbol {
+    "type": "Node>"
+    }]
+   }
+  }, function {
+  "name": "hasNode",
+  "params": content {
+   "params": "String node"
+   },
+  "returns": symbol {
+   "type": "boolean"
+   }
+  }, function {
+  "name": "withStringList",
+  "params": content {
+   "params": "String propertyKey, List<String> propertyValues"
+   },
+  "returns": symbol {
+   "type": "Node"
+   }
+  }, function {
+  "name": "findStringList",
+  "params": content {
+   "params": "String propertyKey"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "List"
+     },
+    "children": [symbol {
+     "type": "String"
+     }]
+    }]
+   }
+  }, function {
+  "name": "streamStringLists",
+  "returns": generic {
+   "base": symbol {
+    "type": "Stream"
+    },
+   "children": [symbol {
+    "type": "Tuple<String"
+    }, generic {
+    "base": symbol {
+     "type": "List"
+     },
+    "children": [symbol {
+     "type": "String>"
+     }]
+    }]
+   }
+  }, function {
+  "name": "mapStringList",
+  "params": content {
+   "params": "String propertyKey, Function<List<String>, List<String>> mapper"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
+   }
+  }]
+ }]
+}

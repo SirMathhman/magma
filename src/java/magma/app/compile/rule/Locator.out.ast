@@ -1,0 +1,27 @@
+{
+"children": [import {
+ "namespace": "java.util.Optional"
+ }, trait {
+ "name": "Locator",
+ "modifiers": ["export"],
+ "children": [function {
+  "name": "locate",
+  "params": content {
+   "params": "String input"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [symbol {
+    "type": "Integer"
+    }]
+   }
+  }, function {
+  "name": "slice",
+  "returns": symbol {
+   "type": "String"
+   }
+  }]
+ }]
+}

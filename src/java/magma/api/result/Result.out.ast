@@ -1,0 +1,61 @@
+{
+"children": [import {
+ "namespace": "magma.api.Tuple"
+ }, import {
+ "namespace": "java.util.Optional"
+ }, import {
+ "namespace": "java.util.function.Function"
+ }, import {
+ "namespace": "java.util.function.Supplier"
+ }, trait {
+ "name": "Result<T, E>",
+ "modifiers": ["export"],
+ "children": [function {
+  "name": "findValue",
+  "returns": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [symbol {
+    "type": "T"
+    }]
+   }
+  }, function {
+  "name": "findError",
+  "returns": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [symbol {
+    "type": "E"
+    }]
+   }
+  }, function {
+  "name": "mapValue",
+  "params": content {
+   "params": "Function<T, R> mapper"
+   },
+  "returns": symbol {
+   "type": "<R> Result<R, E>"
+   }
+  }, function {
+  "name": "isErr",
+  "returns": symbol {
+   "type": "boolean"
+   }
+  }, function {
+  "name": "and",
+  "params": content {
+   "params": "Supplier<Result<R, E>> supplier"
+   },
+  "returns": symbol {
+   "type": "<R> Result<Tuple<T, R>, E>"
+   }
+  }, function {
+  "name": "isOk",
+  "returns": symbol {
+   "type": "boolean"
+   }
+  }]
+ }]
+}

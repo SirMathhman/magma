@@ -1,0 +1,20 @@
+{
+"children": [package {
+ "namespace": "magma.app"
+ }, class {
+ "name": "ApplicationException extends Exception ",
+ "body": "
+    public ApplicationException(Exception cause) {
+        super(cause);
+    }
+
+    public ApplicationException() {
+    }
+
+    public ApplicationException(String message) {
+        super(message);
+    }
+}",
+ "before-keyword": "public "
+ }]
+}

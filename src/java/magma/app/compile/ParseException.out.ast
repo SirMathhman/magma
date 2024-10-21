@@ -1,0 +1,11 @@
+{
+"children": [function {
+ "name": "ParseException extends CompileException ",
+ "body": "
+    public ParseException(String message, String context) {
+        super(message, context);
+    }
+}",
+ "before-keyword": "public "
+ }]
+}

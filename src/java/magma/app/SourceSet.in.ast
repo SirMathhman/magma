@@ -1,0 +1,34 @@
+{
+"children": [package {
+ "namespace": "magma.app"
+ }, import {
+ "namespace": "magma.api.result.Result"
+ }, import {
+ "namespace": "java.io.IOException"
+ }, import {
+ "namespace": "java.nio.file.Path"
+ }, import {
+ "namespace": "java.util.Set"
+ }, interface {
+ "name": "SourceSet",
+ "modifiers": ["public"],
+ "children": [method {
+  "name": "collect",
+  "returns": generic {
+   "base": symbol {
+    "type": "Result"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Set"
+     },
+    "children": [symbol {
+     "type": "Path"
+     }]
+    }, symbol {
+    "type": "IOException"
+    }]
+   }
+  }]
+ }]
+}
