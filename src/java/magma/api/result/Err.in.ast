@@ -24,8 +24,7 @@
   },
  "children": [method {
   "name": "findValue",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "returns": generic {
    "base": symbol {
     "type": "Optional"
@@ -34,6 +33,9 @@
     "type": "T"
     }]
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "Optional.empty()"
@@ -41,8 +43,7 @@
    }]
   }, method {
   "name": "findError",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "returns": generic {
    "base": symbol {
     "type": "Optional"
@@ -51,6 +52,9 @@
     "type": "E"
     }]
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "Optional.of(error)"
@@ -58,14 +62,16 @@
    }]
   }, method {
   "name": "mapValue",
-  "modifiers": ["@Override
-", "public", "<R>", "Result<R,"],
+  "modifiers": ["public", "<R>", "Result<R,"],
   "params": content {
    "params": "Function<T, R> mapper"
    },
   "returns": symbol {
    "type": "E>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "new Err<>(error)"
@@ -73,11 +79,13 @@
    }]
   }, method {
   "name": "isErr",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "returns": symbol {
    "type": "boolean"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "true"
@@ -85,14 +93,16 @@
    }]
   }, method {
   "name": "and",
-  "modifiers": ["@Override
-", "public", "<R>", "Result<Tuple<T,", "R>,"],
+  "modifiers": ["public", "<R>", "Result<Tuple<T,", "R>,"],
   "params": content {
    "params": "Supplier<Result<R, E>> supplier"
    },
   "returns": symbol {
    "type": "E>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "new Err<>(error)"
@@ -100,11 +110,13 @@
    }]
   }, method {
   "name": "isOk",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "returns": symbol {
    "type": "boolean"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "false"
@@ -112,14 +124,16 @@
    }]
   }, method {
   "name": "flatMapValue",
-  "modifiers": ["@Override
-", "public", "<R>", "Result<R,"],
+  "modifiers": ["public", "<R>", "Result<R,"],
   "params": content {
    "params": "Function<T, Result<R, E>> mapper"
    },
   "returns": symbol {
    "type": "E>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "new Err<>(error)"

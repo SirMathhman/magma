@@ -23,11 +23,13 @@
   },
  "children": [method {
   "name": "collect",
-  "modifiers": ["@Override
-", "public", "Result<Set<Path>,"],
+  "modifiers": ["public", "Result<Set<Path>,"],
   "returns": symbol {
    "type": "IOException>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "try (var stream = Files.walk(root)) {
             return new Ok<>(stream

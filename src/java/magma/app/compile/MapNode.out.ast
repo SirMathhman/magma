@@ -55,14 +55,16 @@
    }]
   }, method {
   "name": "retype",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String type"
    },
   "returns": symbol {
    "type": "Node"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "new MapNode(Optional.of(type), strings, stringLists, nodes, nodeLists)"
@@ -70,14 +72,16 @@
    }]
   }, method {
   "name": "is",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String type"
    },
   "returns": symbol {
    "type": "boolean"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "this.type.filter(value -> value.equals(type)).isPresent()"
@@ -85,14 +89,16 @@
    }]
   }, method {
   "name": "withString",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String propertyKey, String propertyValue"
    },
   "returns": symbol {
    "type": "Node"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "final var copy = new HashMap<>(strings);"
    }, any {
@@ -104,8 +110,7 @@
    }]
   }, method {
   "name": "findString",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String propertyKey"
    },
@@ -117,6 +122,9 @@
     "type": "String"
     }]
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "Optional.ofNullable(strings.get(propertyKey))"
@@ -124,8 +132,7 @@
    }]
   }, method {
   "name": "mapNodeList",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String propertyKey, Function<List<Node>, List<Node>> mapper"
    },
@@ -137,6 +144,9 @@
     "type": "Node"
     }]
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "findNodeList(propertyKey).map(mapper).map(value -> withNodeList(propertyKey, value))"
@@ -144,8 +154,7 @@
    }]
   }, method {
   "name": "streamNodeLists",
-  "modifiers": ["@Override
-", "public", "Stream<Tuple<String,"],
+  "modifiers": ["public", "Stream<Tuple<String,"],
   "returns": generic {
    "base": symbol {
     "type": "List"
@@ -154,6 +163,9 @@
     "type": "Node>>"
     }]
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "nodeLists.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()))"
@@ -161,14 +173,16 @@
    }]
   }, method {
   "name": "withNode",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String propertyKey, Node propertyValue"
    },
   "returns": symbol {
    "type": "Node"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "final var copy = new HashMap<>(nodes);"
    }, any {
@@ -180,8 +194,7 @@
    }]
   }, method {
   "name": "findNode",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String propertyKey"
    },
@@ -193,6 +206,9 @@
     "type": "Node"
     }]
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "Optional.ofNullable(nodes.get(propertyKey))"
@@ -200,11 +216,13 @@
    }]
   }, method {
   "name": "streamNodes",
-  "modifiers": ["@Override
-", "public", "Stream<Tuple<String,"],
+  "modifiers": ["public", "Stream<Tuple<String,"],
   "returns": symbol {
    "type": "Node>>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "nodes.entrySet().stream().map(entry -> new Tuple<>(entry.getKey(), entry.getValue()))"
@@ -212,14 +230,16 @@
    }]
   }, method {
   "name": "hasNode",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String node"
    },
   "returns": symbol {
    "type": "boolean"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "nodes.containsKey(node)"
@@ -227,14 +247,16 @@
    }]
   }, method {
   "name": "withStringList",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String propertyKey, List<String> propertyValues"
    },
   "returns": symbol {
    "type": "Node"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "final var copy = new HashMap<>(stringLists);"
    }, any {
@@ -246,8 +268,7 @@
    }]
   }, method {
   "name": "findStringList",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String propertyKey"
    },
@@ -264,6 +285,9 @@
      }]
     }]
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "Optional.ofNullable(stringLists.get(propertyKey))"
@@ -271,11 +295,13 @@
    }]
   }, method {
   "name": "streamStrings",
-  "modifiers": ["@Override
-", "public", "Stream<Tuple<String,"],
+  "modifiers": ["public", "Stream<Tuple<String,"],
   "returns": symbol {
    "type": "String>>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()))"
@@ -283,8 +309,7 @@
    }]
   }, method {
   "name": "findNodeList",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String propertyKey"
    },
@@ -301,6 +326,9 @@
      }]
     }]
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "Optional.ofNullable(nodeLists.get(propertyKey))"
@@ -308,14 +336,16 @@
    }]
   }, method {
   "name": "withNodeList",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String propertyKey, List<Node> values"
    },
   "returns": symbol {
    "type": "Node"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "final var copy = new HashMap<>(nodeLists);"
    }, any {
@@ -327,11 +357,13 @@
    }]
   }, method {
   "name": "toString",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "returns": symbol {
    "type": "String"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "format(0)"
@@ -339,14 +371,16 @@
    }]
   }, method {
   "name": "format",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "int depth"
    },
   "returns": symbol {
    "type": "String"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "final var typeString = type.map(value -> value + " ").orElse("");"
    }, any {
@@ -409,8 +443,7 @@
    }]
   }, method {
   "name": "streamStringLists",
-  "modifiers": ["@Override
-", "public", "Stream<Tuple<String,"],
+  "modifiers": ["public", "Stream<Tuple<String,"],
   "returns": generic {
    "base": symbol {
     "type": "List"
@@ -419,6 +452,9 @@
     "type": "String>>"
     }]
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "stringLists.entrySet()
@@ -428,8 +464,7 @@
    }]
   }, method {
   "name": "mapStringList",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String propertyKey, Function<List<String>, List<String>> mapper"
    },
@@ -441,6 +476,9 @@
     "type": "Node"
     }]
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "findStringList(propertyKey).map(mapper).map(list -> withStringList(propertyKey, list))"
@@ -448,14 +486,16 @@
    }]
   }, method {
   "name": "merge",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "Node other"
    },
   "returns": symbol {
    "type": "Node"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "final var stringsCopy = new HashMap<>(strings);"
    }, any {

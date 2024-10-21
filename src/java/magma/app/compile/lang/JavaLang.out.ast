@@ -82,7 +82,12 @@
 
         final var withModifiers = new LocatingRule(createModifiersRule(), new LastLocator(" "), returns);
         final var maybeModifiers = new OptionalNodeRule("modifiers", withModifiers, returns);
-        final var beforeParams = new LocatingRule(maybeModifiers, new LastLocator(" "), name);
+
+       fin var annotation = new StripRule(new PrefixRule("@", new ExtractRule("annotation")), "", "");
+        final var withAnnotations = new LocatingRule(new NodeListRule(new SimpleSplitter(" "), "annotations", annotation), new LastLocator("\n"), maybeModifiers);
+        final var maybeAnnotations = new OptionalNodeRule("annotations", withAnnotations, maybeModifiers);
+
+        final var beforeParams = new LocatingRule(maybeAnnotations, new LastLocator(" "), name);
         final var params = new OptionalNodeRule("params", new NodeRule("params", new TypeRule("content", new ExtractRule("params"))), new EmptyRule());
 
         final var children = new StripRule(new PrefixRule("{", new SuffixRule(new NodeListRule(new StatementSplitter(), "children", new StripRule(createStatementRule(), "", "")), "}")), "", "");

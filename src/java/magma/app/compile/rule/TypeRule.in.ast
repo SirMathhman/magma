@@ -17,14 +17,16 @@
   },
  "children": [method {
   "name": "parse",
-  "modifiers": ["@Override
-", "public", "RuleResult<Node,"],
+  "modifiers": ["public", "RuleResult<Node,"],
   "params": content {
    "params": "String input"
    },
   "returns": symbol {
    "type": "ParseException>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "rule.parse(input)
@@ -34,14 +36,16 @@
    }]
   }, method {
   "name": "generate",
-  "modifiers": ["@Override
-", "public", "RuleResult<String,"],
+  "modifiers": ["public", "RuleResult<String,"],
   "params": content {
    "params": "Node node"
    },
   "returns": symbol {
    "type": "GenerateException>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "if (!node.is(type))
             return new RuleResult<>(new Err<>(new GenerateException("Expected a type of ' type + "'node)));"

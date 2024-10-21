@@ -9,8 +9,7 @@
   },
  "children": [method {
   "name": "locate",
-  "modifiers": ["@Override
-", "public"],
+  "modifiers": ["public"],
   "params": content {
    "params": "String input"
    },
@@ -22,6 +21,9 @@
     "type": "Integer"
     }]
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "final var index = input.indexOf(slice);"
    }, return {

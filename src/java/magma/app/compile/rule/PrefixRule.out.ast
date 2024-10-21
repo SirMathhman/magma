@@ -15,14 +15,16 @@
   },
  "children": [method {
   "name": "parse",
-  "modifiers": ["@Override
-", "public", "RuleResult<Node,"],
+  "modifiers": ["public", "RuleResult<Node,"],
   "params": content {
    "params": "String input"
    },
   "returns": symbol {
    "type": "ParseException>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "if (!input.startsWith(prefix))
             return new RuleResult<>(new Err<>(new ParseException("Prefix ' prefix + "'t present", input)));"
@@ -33,14 +35,16 @@
    }]
   }, method {
   "name": "generate",
-  "modifiers": ["@Override
-", "public", "RuleResult<String,"],
+  "modifiers": ["public", "RuleResult<String,"],
   "params": content {
    "params": "Node node"
    },
   "returns": symbol {
    "type": "GenerateException>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [return {
    "value": any {
     "content": "childRule.generate(node).mapValue(value -> prefix + value)"

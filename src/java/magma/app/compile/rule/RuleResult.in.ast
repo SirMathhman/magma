@@ -31,11 +31,13 @@
    }]
   }, method {
   "name": "unwrap",
-  "modifiers": ["@Deprecated
-", "public", "Result<T,"],
+  "modifiers": ["public", "Result<T,"],
   "returns": symbol {
    "type": "E>"
    },
+  "annotations": [{
+   "annotation": "Deprecated"
+   }],
   "children": [return {
    "value": any {
     "content": "result"

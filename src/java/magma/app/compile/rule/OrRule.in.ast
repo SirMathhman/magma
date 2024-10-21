@@ -21,14 +21,16 @@
   },
  "children": [method {
   "name": "parse",
-  "modifiers": ["@Override
-", "public", "RuleResult<Node,"],
+  "modifiers": ["public", "RuleResult<Node,"],
   "params": content {
    "params": "String input"
    },
   "returns": symbol {
    "type": "ParseException>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "var list = new ArrayList<RuleResult<Node, ParseException>>();"
    }, any {
@@ -44,14 +46,16 @@
    }]
   }, method {
   "name": "generate",
-  "modifiers": ["@Override
-", "public", "RuleResult<String,"],
+  "modifiers": ["public", "RuleResult<String,"],
   "params": content {
    "params": "Node node"
    },
   "returns": symbol {
    "type": "GenerateException>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "var list = new ArrayList<RuleResult<String, GenerateException>>();"
    }, any {

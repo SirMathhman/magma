@@ -21,11 +21,13 @@
   },
  "children": [method {
   "name": "collect",
-  "modifiers": ["@Override
-", "public", "Result<Set<Path>,"],
+  "modifiers": ["public", "Result<Set<Path>,"],
   "returns": symbol {
    "type": "IOException>"
    },
+  "annotations": [{
+   "annotation": "Override"
+   }],
   "children": [any {
    "content": "var sources = new HashSet<Path>();"
    }, any {
