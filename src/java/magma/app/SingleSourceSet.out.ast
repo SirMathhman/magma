@@ -23,29 +23,12 @@
   }],
  "params": [definition {
   "name": "source",
-  "type": symbol {
-   "value": "Path"
-   }
+  "before-name": "Path"
   }],
  "children": [method {
   "name": "collect",
-  "type-params": "@Override
-    public",
-  "returns": generic {
-   "base": symbol {
-    "value": "Result"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Set"
-     },
-    "children": [symbol {
-     "value": "Path"
-     }]
-    }, symbol {
-    "value": "IOException"
-    }]
-   },
+  "before-name": "@Override
+    public Result<Set<Path>, IOException>",
   "children": [symbol {
    "content": "var sources = new HashSet<Path>();"
    }, symbol {

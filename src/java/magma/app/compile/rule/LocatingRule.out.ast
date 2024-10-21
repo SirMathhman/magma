@@ -48,10 +48,10 @@
         final var right = input.substring(index + locator.slice().length());
 
         final var leftResult = leftRule.parse(left);
-        if (leftResult.isError()) return leftResult.wrapErr(new ParseException("Invalid left", left));
+        if (leftResult.isError()) return leftResult;
 
         final var rightResult = rightRule.parse(right);
-        if (rightResult.isError()) return rightResult.wrapErr(new ParseException("Invalid right", right));
+        if (rightResult.isError()) return rightResult;
 
         return new RuleResult<>(leftResult.result().and(rightResult::result).mapValue(tuple -> tuple.left().merge(tuple.right())));
     }

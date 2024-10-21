@@ -42,8 +42,7 @@ public class JavaLang {
     }
 
     private static TypeRule createDefinitionRule() {
-        final var type = new NodeRule("type", createTypeRule());
-        return new TypeRule("definition", new LocatingRule(type, new LastLocator(" "), new ExtractRule("name")));
+        return new TypeRule("definition", new LocatingRule(new ExtractRule("before-name"), new LastLocator(" "), new ExtractRule("name")));
     }
 
     private static OrRule createRootMemberRule() {
@@ -80,20 +79,13 @@ public class JavaLang {
     }
 
     private static TypeRule createMethodRule() {
-        final var type = createTypeRule();
-        final var name = new ExtractRule("name");
-        final var returns = new NodeRule("returns", type);
-
-        final var withTypeParams = new LocatingRule(new ExtractRule("type-params"), new BackwardsLocator(" "), returns);
-        final var maybeTypeParams = new OptionalNodeRule("type-params", withTypeParams, returns);
-        final var beforeParams = new LocatingRule(maybeTypeParams, new LastLocator(" "), name);
         final var params = new OptionalNodeRule("params", new NodeListRule(new ValueSplitter(), "params", createDefinitionRule()), new EmptyRule());
 
         final var children = new StripRule(new PrefixRule("{", new SuffixRule(new NodeListRule(new StatementSplitter(), "children", new StripRule(createStatementRule(), "", "")), "}")), "", "");
         final var maybeChildren = new OptionalNodeRule("children", children, new SuffixRule(new EmptyRule(), ";"));
         final var withParams = new LocatingRule(params, new FirstLocator(")"), maybeChildren);
 
-        return new TypeRule(METHOD, new LocatingRule(beforeParams, new FirstLocator("("), withParams));
+        return new TypeRule(METHOD, new LocatingRule(createDefinitionRule(), new FirstLocator("("), withParams));
     }
 
     private static Rule createStatementRule() {

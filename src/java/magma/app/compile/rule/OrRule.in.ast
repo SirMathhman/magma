@@ -23,29 +23,12 @@
   }],
  "params": [definition {
   "name": "rules",
-  "type": generic {
-   "base": symbol {
-    "value": "List"
-    },
-   "children": [symbol {
-    "value": "Rule"
-    }]
-   }
+  "before-name": "List<Rule>"
   }],
  "children": [method {
   "name": "parse",
-  "type-params": "@Override
-    public",
-  "returns": generic {
-   "base": symbol {
-    "value": "RuleResult"
-    },
-   "children": [symbol {
-    "value": "Node"
-    }, symbol {
-    "value": "ParseException"
-    }]
-   },
+  "before-name": "@Override
+    public RuleResult<Node, ParseException>",
   "children": [symbol {
    "content": "var list = new ArrayList<RuleResult<Node, ParseException>>();"
    }, symbol {
@@ -70,24 +53,12 @@
    }],
   "params": [definition {
    "name": "input",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "generate",
-  "type-params": "@Override
-    public",
-  "returns": generic {
-   "base": symbol {
-    "value": "RuleResult"
-    },
-   "children": [symbol {
-    "value": "String"
-    }, symbol {
-    "value": "GenerateException"
-    }]
-   },
+  "before-name": "@Override
+    public RuleResult<String, GenerateException>",
   "children": [symbol {
    "content": "var list = new ArrayList<RuleResult<String, GenerateException>>();"
    }, symbol {
@@ -112,9 +83,7 @@
    }],
   "params": [definition {
    "name": "node",
-   "type": symbol {
-    "value": "Node"
-    }
+   "before-name": "Node"
    }]
   }]
  }]

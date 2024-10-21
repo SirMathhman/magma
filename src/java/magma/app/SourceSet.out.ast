@@ -14,21 +14,7 @@
   }],
  "content": [method {
   "name": "collect",
-  "returns": generic {
-   "base": symbol {
-    "value": "Result"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Set"
-     },
-    "children": [symbol {
-     "value": "Path"
-     }]
-    }, symbol {
-    "value": "IOException"
-    }]
-   },
+  "before-name": "Result<Set<Path>, IOException>",
   "params": []
   }]
  }]

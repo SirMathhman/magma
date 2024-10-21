@@ -13,14 +13,10 @@
   }],
  "params": [definition {
   "name": "left",
-  "type": symbol {
-   "value": "A"
-   }
+  "before-name": "A"
   }, definition {
   "name": "right",
-  "type": symbol {
-   "value": "B"
-   }
+  "before-name": " B"
   }],
  "children": []
  }]

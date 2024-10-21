@@ -19,17 +19,12 @@
   }],
  "params": [definition {
   "name": "delimiter",
-  "type": symbol {
-   "value": "String"
-   }
+  "before-name": "String"
   }],
  "children": [method {
   "name": "slice",
-  "type-params": "@Override
-    public",
-  "returns": symbol {
-   "value": "String"
-   },
+  "before-name": "@Override
+    public String",
   "children": [return {
    "value": symbol {
     "content": "delimiter"
@@ -38,16 +33,8 @@
   "params": []
   }, method {
   "name": "locate",
-  "type-params": "@Override
-    public",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [symbol {
-    "value": "Integer"
-    }]
-   },
+  "before-name": "@Override
+    public Stream<Integer>",
   "children": [symbol {
    "content": "List<Integer> indices = new ArrayList<>();"
    }, symbol {
@@ -70,9 +57,7 @@
    }],
   "params": [definition {
    "name": "input",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }]
  }]

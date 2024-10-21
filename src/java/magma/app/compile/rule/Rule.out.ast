@@ -12,39 +12,17 @@
   }],
  "content": [method {
   "name": "parse",
-  "returns": generic {
-   "base": symbol {
-    "value": "RuleResult"
-    },
-   "children": [symbol {
-    "value": "Node"
-    }, symbol {
-    "value": "ParseException"
-    }]
-   },
+  "before-name": "RuleResult<Node, ParseException>",
   "params": [definition {
    "name": "input",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "generate",
-  "returns": generic {
-   "base": symbol {
-    "value": "RuleResult"
-    },
-   "children": [symbol {
-    "value": "String"
-    }, symbol {
-    "value": "GenerateException"
-    }]
-   },
+  "before-name": "RuleResult<String, GenerateException>",
   "params": [definition {
    "name": "node",
-   "type": symbol {
-    "value": "Node"
-    }
+   "before-name": "Node"
    }]
   }]
  }]

@@ -1,0 +1,39 @@
+{
+"children": [import {
+ "namespace": ["java", "util", "List"]
+ }, function {
+ "name": "ListFilter",
+ "interface": symbol {
+  "value": "Filter"
+  },
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "values",
+  "before-name": "List<String>"
+  }],
+ "children": [method {
+  "name": "filter",
+  "before-name": "@Override
+    public boolean",
+  "children": [return {
+   "value": invocation {
+    "caller": symbol {
+     "content": "values"
+     },
+    "arguments": [access {
+     "name": "contains(input",
+     "parent": symbol {
+      "content": ")"
+      }
+     }]
+    }
+   }],
+  "params": [definition {
+   "name": "input",
+   "before-name": "String"
+   }]
+  }]
+ }]
+}

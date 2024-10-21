@@ -1,14 +1,14 @@
 {
-"children": [import {
- "namespace": ["magma", "api", "result", "Err"]
+"children": [package {
+ "namespace": ["magma", "app", "compile", "rule"]
  }, import {
  "namespace": ["magma", "app", "compile", "GenerateException"]
  }, import {
  "namespace": ["magma", "app", "compile", "Node"]
  }, import {
  "namespace": ["magma", "app", "compile", "ParseException"]
- }, function {
- "name": "TypeRule",
+ }, record {
+ "name": "ContextRule",
  "interface": symbol {
   "value": "Rule"
   },
@@ -16,10 +16,10 @@
   "content": "public"
   }],
  "params": [definition {
-  "name": "type",
+  "name": "message",
   "before-name": "String"
   }, definition {
-  "name": "rule",
+  "name": "childRule",
   "before-name": " Rule"
   }],
  "children": [method {
@@ -31,27 +31,16 @@
     "caller": access {
      "name": "parse",
      "parent": symbol {
-      "content": "rule"
+      "content": "childRule"
       }
      },
-    "arguments": [invocation {
-     "caller": access {
-      "name": "mapValue",
-      "parent": symbol {
-       "content": "input)
-                "
-       }
-      },
-     "arguments": [access {
-      "name": "wrapErr(new ParseException("Failed to assign type ' type + "'input",
-      "parent": access {
-       "name": "retype(type))
-                ",
-       "parent": symbol {
-        "content": "node -> node"
-        }
-       }
-      }]
+    "arguments": [access {
+     "name": "wrapErr(new ParseException(message",
+     "parent": symbol {
+      "content": "input)"
+      }
+     }, symbol {
+     "content": " input)"
      }]
     }
    }],
@@ -63,19 +52,21 @@
   "name": "generate",
   "before-name": "@Override
     public RuleResult<String, GenerateException>",
-  "children": [symbol {
-   "content": "if (!node.is(type))
-            return new RuleResult<>(new Err<>(new GenerateException("Expected a type of ' type + "'node)));"
-   }, return {
+  "children": [return {
    "value": invocation {
     "caller": access {
      "name": "generate",
      "parent": symbol {
-      "content": "rule"
+      "content": "childRule"
       }
      },
-    "arguments": [symbol {
-     "content": "node"
+    "arguments": [access {
+     "name": "wrapErr(new GenerateException(message",
+     "parent": symbol {
+      "content": "node)"
+      }
+     }, symbol {
+     "content": " node)"
      }]
     }
    }],

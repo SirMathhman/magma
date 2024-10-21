@@ -1,14 +1,12 @@
 {
-"children": [import {
- "namespace": ["java", "util", "List"]
- }, trait {
- "name": "Splitter",
+"children": [trait {
+ "name": "Filter",
  "modifiers": [modifier {
   "content": "public"
   }],
  "content": [method {
-  "name": "split",
-  "before-name": "List<String>",
+  "name": "filter",
+  "before-name": "boolean",
   "params": [definition {
    "name": "input",
    "before-name": "String"

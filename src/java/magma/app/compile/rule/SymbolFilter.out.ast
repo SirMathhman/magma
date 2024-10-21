@@ -1,0 +1,18 @@
+{
+"children": [function {
+ "name": "SymbolFilter implements Filter ",
+ "body": "
+    @Override
+    public boolean filter(String input) {
+        for (int i = 0; i < input.length(); i++) {
+            if(!Character.isLetter(input.charAt(i))) {
+            return false;
+            }
+        }
+
+        return true;
+    }
+}",
+ "before-keyword": "public "
+ }]
+}

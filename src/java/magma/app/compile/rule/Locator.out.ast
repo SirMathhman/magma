@@ -8,25 +8,14 @@
   }],
  "content": [method {
   "name": "locate",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [symbol {
-    "value": "Integer"
-    }]
-   },
+  "before-name": "Stream<Integer>",
   "params": [definition {
    "name": "input",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "slice",
-  "returns": symbol {
-   "value": "String"
-   },
+  "before-name": "String",
   "params": []
   }]
  }]

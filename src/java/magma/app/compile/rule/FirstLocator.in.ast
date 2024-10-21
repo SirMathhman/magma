@@ -15,21 +15,11 @@
   }],
  "params": [definition {
   "name": "slice",
-  "type": symbol {
-   "value": "String"
-   }
+  "before-name": "String"
   }],
  "children": [method {
   "name": "locate0",
-  "type-params": "private",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [symbol {
-    "value": "Integer"
-    }]
-   },
+  "before-name": "private Optional<Integer>",
   "children": [symbol {
    "content": "final var index = input.indexOf(slice);"
    }, return {
@@ -50,22 +40,12 @@
    }],
   "params": [definition {
    "name": "input",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "locate",
-  "type-params": "@Override
-    public",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [symbol {
-    "value": "Integer"
-    }]
-   },
+  "before-name": "@Override
+    public Stream<Integer>",
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -81,9 +61,7 @@
    }],
   "params": [definition {
    "name": "input",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }]
  }]

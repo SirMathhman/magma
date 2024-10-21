@@ -18,364 +18,142 @@
   }],
  "content": [method {
   "name": "retype",
-  "returns": symbol {
-   "value": "Node"
-   },
+  "before-name": "Node",
   "params": [definition {
    "name": "type",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "is",
-  "returns": symbol {
-   "value": "boolean"
-   },
+  "before-name": "boolean",
   "params": [definition {
    "name": "type",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "withString",
-  "returns": symbol {
-   "value": "Node"
-   },
+  "before-name": "Node",
   "params": [definition {
    "name": "propertyKey",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }, definition {
    "name": "propertyValue",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": " String"
    }]
   }, method {
   "name": "findString",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [symbol {
-    "value": "String"
-    }]
-   },
+  "before-name": "Optional<String>",
   "params": [definition {
    "name": "propertyKey",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "mapNodeList",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [symbol {
-    "value": "Node"
-    }]
-   },
+  "before-name": "Optional<Node>",
   "params": [definition {
    "name": "propertyKey",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }, definition {
    "name": "mapper",
-   "type": generic {
-    "base": symbol {
-     "value": "Function"
-     },
-    "children": [generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "Node"
-      }]
-     }, generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "Node"
-      }]
-     }]
-    }
+   "before-name": " Function<List<Node>, List<Node>>"
    }]
   }, method {
   "name": "findNodeList",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "List"
-     },
-    "children": [symbol {
-     "value": "Node"
-     }]
-    }]
-   },
+  "before-name": "Optional<List<Node>>",
   "params": [definition {
    "name": "propertyKey",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "withNodeList",
-  "returns": symbol {
-   "value": "Node"
-   },
+  "before-name": "Node",
   "params": [definition {
    "name": "propertyKey",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }, definition {
    "name": "values",
-   "type": generic {
-    "base": symbol {
-     "value": "List"
-     },
-    "children": [symbol {
-     "value": "Node"
-     }]
-    }
+   "before-name": " List<Node>"
    }]
   }, method {
   "name": "format",
-  "returns": symbol {
-   "value": "String"
-   },
+  "before-name": "String",
   "params": [definition {
    "name": "depth",
-   "type": symbol {
-    "value": "int"
-    }
+   "before-name": "int"
    }]
   }, method {
   "name": "merge",
-  "returns": symbol {
-   "value": "Node"
-   },
+  "before-name": "Node",
   "params": [definition {
    "name": "other",
-   "type": symbol {
-    "value": "Node"
-    }
+   "before-name": "Node"
    }]
   }, method {
   "name": "streamStrings",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Tuple"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, symbol {
-     "value": "String"
-     }]
-    }]
-   },
+  "before-name": "Stream<Tuple<String, String>>",
   "params": []
   }, method {
   "name": "streamNodeLists",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Tuple"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "Node"
-      }]
-     }]
-    }]
-   },
+  "before-name": "Stream<Tuple<String, List<Node>>>",
   "params": []
   }, method {
   "name": "withNode",
-  "returns": symbol {
-   "value": "Node"
-   },
+  "before-name": "Node",
   "params": [definition {
    "name": "propertyKey",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }, definition {
    "name": "propertyValue",
-   "type": symbol {
-    "value": "Node"
-    }
+   "before-name": " Node"
    }]
   }, method {
   "name": "findNode",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [symbol {
-    "value": "Node"
-    }]
-   },
+  "before-name": "Optional<Node>",
   "params": [definition {
    "name": "propertyKey",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "streamNodes",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Tuple"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, symbol {
-     "value": "Node"
-     }]
-    }]
-   },
+  "before-name": "Stream<Tuple<String, Node>>",
   "params": []
   }, method {
   "name": "hasNode",
-  "returns": symbol {
-   "value": "boolean"
-   },
+  "before-name": "boolean",
   "params": [definition {
    "name": "node",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "withStringList",
-  "returns": symbol {
-   "value": "Node"
-   },
+  "before-name": "Node",
   "params": [definition {
    "name": "propertyKey",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }, definition {
    "name": "propertyValues",
-   "type": generic {
-    "base": symbol {
-     "value": "List"
-     },
-    "children": [symbol {
-     "value": "String"
-     }]
-    }
+   "before-name": " List<String>"
    }]
   }, method {
   "name": "findStringList",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "List"
-     },
-    "children": [symbol {
-     "value": "String"
-     }]
-    }]
-   },
+  "before-name": "Optional<List<String>>",
   "params": [definition {
    "name": "propertyKey",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "streamStringLists",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Tuple"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "String"
-      }]
-     }]
-    }]
-   },
+  "before-name": "Stream<Tuple<String, List<String>>>",
   "params": []
   }, method {
   "name": "mapStringList",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [symbol {
-    "value": "Node"
-    }]
-   },
+  "before-name": "Optional<Node>",
   "params": [definition {
    "name": "propertyKey",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }, definition {
    "name": "mapper",
-   "type": generic {
-    "base": symbol {
-     "value": "Function"
-     },
-    "children": [generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "String"
-      }]
-     }, generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "String"
-      }]
-     }]
-    }
+   "before-name": " Function<List<String>, List<String>>"
    }]
   }]
  }]

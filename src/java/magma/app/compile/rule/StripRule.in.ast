@@ -17,34 +17,18 @@
   }],
  "params": [definition {
   "name": "childRule",
-  "type": symbol {
-   "value": "Rule"
-   }
+  "before-name": "Rule"
   }, definition {
   "name": "leftPaddingKey",
-  "type": symbol {
-   "value": "String"
-   }
+  "before-name": " String"
   }, definition {
   "name": "rightPaddingKey",
-  "type": symbol {
-   "value": "String"
-   }
+  "before-name": " String"
   }],
  "children": [method {
   "name": "parse",
-  "type-params": "@Override
-    public",
-  "returns": generic {
-   "base": symbol {
-    "value": "RuleResult"
-    },
-   "children": [symbol {
-    "value": "Node"
-    }, symbol {
-    "value": "ParseException"
-    }]
-   },
+  "before-name": "@Override
+    public RuleResult<Node, ParseException>",
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -66,24 +50,12 @@
    }],
   "params": [definition {
    "name": "input",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "generate",
-  "type-params": "@Override
-    public",
-  "returns": generic {
-   "base": symbol {
-    "value": "RuleResult"
-    },
-   "children": [symbol {
-    "value": "String"
-    }, symbol {
-    "value": "GenerateException"
-    }]
-   },
+  "before-name": "@Override
+    public RuleResult<String, GenerateException>",
   "children": [symbol {
    "content": "final var leftPadding = node.findString(leftPaddingKey).orElse("");"
    }, symbol {
@@ -106,9 +78,7 @@
    }],
   "params": [definition {
    "name": "node",
-   "type": symbol {
-    "value": "Node"
-    }
+   "before-name": "Node"
    }]
   }]
  }]

@@ -17,29 +17,15 @@
   }],
  "params": [definition {
   "name": "prefix",
-  "type": symbol {
-   "value": "String"
-   }
+  "before-name": "String"
   }, definition {
   "name": "childRule",
-  "type": symbol {
-   "value": "Rule"
-   }
+  "before-name": " Rule"
   }],
  "children": [method {
   "name": "parse",
-  "type-params": "@Override
-    public",
-  "returns": generic {
-   "base": symbol {
-    "value": "RuleResult"
-    },
-   "children": [symbol {
-    "value": "Node"
-    }, symbol {
-    "value": "ParseException"
-    }]
-   },
+  "before-name": "@Override
+    public RuleResult<Node, ParseException>",
   "children": [symbol {
    "content": "if (!input.startsWith(prefix))
             return new RuleResult<>(new Err<>(new ParseException("Prefix ' prefix + "'t present", input)));"
@@ -72,24 +58,12 @@
    }],
   "params": [definition {
    "name": "input",
-   "type": symbol {
-    "value": "String"
-    }
+   "before-name": "String"
    }]
   }, method {
   "name": "generate",
-  "type-params": "@Override
-    public",
-  "returns": generic {
-   "base": symbol {
-    "value": "RuleResult"
-    },
-   "children": [symbol {
-    "value": "String"
-    }, symbol {
-    "value": "GenerateException"
-    }]
-   },
+  "before-name": "@Override
+    public RuleResult<String, GenerateException>",
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -108,9 +82,7 @@
    }],
   "params": [definition {
    "name": "node",
-   "type": symbol {
-    "value": "Node"
-    }
+   "before-name": "Node"
    }]
   }]
  }]

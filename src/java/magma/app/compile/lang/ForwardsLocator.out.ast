@@ -2,13 +2,13 @@
 "children": [import {
  "namespace": ["magma", "app", "compile", "rule", "Locator"]
  }, import {
+ "namespace": ["java", "util", "stream", "Stream"]
+ }, import {
  "namespace": ["java", "util", "ArrayList"]
  }, import {
  "namespace": ["java", "util", "List"]
- }, import {
- "namespace": ["java", "util", "stream", "Stream"]
  }, function {
- "name": "BackwardsLocator",
+ "name": "ForwardsLocator",
  "interface": symbol {
   "value": "Locator"
   },
@@ -36,11 +36,11 @@
   "children": [symbol {
    "content": "List<Integer> indices = new ArrayList<>();"
    }, symbol {
-   "content": "int index = input.lastIndexOf(delimiter);"
+   "content": "int index = input.indexOf(delimiter);"
    }, symbol {
    "content": "while (index != -1) {
             indices.add(index);
-            index = input.lastIndexOf(delimiter, index - 1);
+            index = input.indexOf(delimiter, index + 1);
         }"
    }, return {
    "value": invocation {

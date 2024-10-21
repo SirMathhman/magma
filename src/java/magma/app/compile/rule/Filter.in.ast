@@ -1,16 +1,14 @@
 {
 "children": [package {
  "namespace": ["magma", "app", "compile", "rule"]
- }, import {
- "namespace": ["java", "util", "List"]
  }, interface {
- "name": "Splitter",
+ "name": "Filter",
  "modifiers": [modifier {
   "content": "public"
   }],
  "content": [method {
-  "name": "split",
-  "before-name": "List<String>",
+  "name": "filter",
+  "before-name": "boolean",
   "params": [definition {
    "name": "input",
    "before-name": "String"

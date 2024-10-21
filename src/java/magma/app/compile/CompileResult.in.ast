@@ -8,19 +8,13 @@
   }],
  "params": [definition {
   "name": "beforePass",
-  "type": symbol {
-   "value": "Node"
-   }
+  "before-name": "Node"
   }, definition {
   "name": "afterPass",
-  "type": symbol {
-   "value": "Node"
-   }
+  "before-name": " Node"
   }, definition {
   "name": "output",
-  "type": symbol {
-   "value": "String"
-   }
+  "before-name": " String"
   }],
  "children": []
  }]
