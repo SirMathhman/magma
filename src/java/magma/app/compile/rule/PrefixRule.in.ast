@@ -15,22 +15,47 @@
  "interface": symbol {
   "type": "Rule"
   },
- "children": [any {
-  "content": "
-    @Override
-    public RuleResult<Node, ParseException> parse(String input) {
+ "children": [method {
+  "name": "parse",
+  "content": " {
         if (!input.startsWith(prefix))
             return new RuleResult<>(new Err<>(new ParseException("Prefix '+ prefix + "'ot present", input)));
 
         return childRule.parse(input.substring(prefix.length()));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public RuleResult<String, GenerateException> generate(Node node) {
+    }",
+  "params": content {
+   "params": "String input"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public RuleResult"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }, symbol {
+    "type": "ParseException"
+    }]
+   }
+  }, method {
+  "name": "generate",
+  "content": " {
         return childRule.generate(node).mapValue(value -> prefix + value);
-    }"
+    }",
+  "params": content {
+   "params": "Node node"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public RuleResult"
+    },
+   "children": [symbol {
+    "type": "String"
+    }, symbol {
+    "type": "GenerateException"
+    }]
+   }
   }],
  "params": [definition {
   "type": "String",

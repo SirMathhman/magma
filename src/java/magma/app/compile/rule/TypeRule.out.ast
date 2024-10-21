@@ -13,23 +13,48 @@
  "interface": symbol {
   "type": "Rule"
   },
- "children": [any {
-  "content": "
-    @Override
-    public RuleResult<Node, ParseException> parse(String input) {
+ "children": [method {
+  "name": "parse",
+  "content": " {
         return rule.parse(input)
                 .mapValue(node -> node.retype(type))
                 .wrapErr(new ParseException("Failed to assign type '+ type + "' input));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public RuleResult<String, GenerateException> generate(Node node) {
+    }",
+  "params": content {
+   "params": "String input"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public RuleResult"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }, symbol {
+    "type": "ParseException"
+    }]
+   }
+  }, method {
+  "name": "generate",
+  "content": " {
         if (!node.is(type))
             return new RuleResult<>(new Err<>(new GenerateException("Expected a type of '+ type + "' node)));
         return rule.generate(node);
-    }"
+    }",
+  "params": content {
+   "params": "Node node"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public RuleResult"
+    },
+   "children": [symbol {
+    "type": "String"
+    }, symbol {
+    "type": "GenerateException"
+    }]
+   }
   }],
  "params": [definition {
   "type": "String",

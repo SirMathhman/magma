@@ -21,14 +21,29 @@
  "interface": symbol {
   "type": "SourceSet"
   },
- "children": [any {
-  "content": "
-    @Override
-    public Result<Set<Path>, IOException> collect() {
+ "children": [method {
+  "name": "collect",
+  "content": " {
         var sources = new HashSet<Path>();
         if(Files.exists(this.source())) sources.add(this.source());
         return new Ok<>(sources);
-    }"
+    }",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Result"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Set"
+     },
+    "children": [symbol {
+     "type": "Path"
+     }]
+    }, symbol {
+    "type": "IOException"
+    }]
+   }
   }],
  "params": [definition {
   "type": "Path",

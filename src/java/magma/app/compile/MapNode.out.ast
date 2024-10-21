@@ -15,150 +15,305 @@
  "interface": symbol {
   "type": "Node"
   },
- "children": [any {
-  "content": "
-    public MapNode() {
+ "children": [method {
+  "name": "MapNode",
+  "content": " {
         this(Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
-    }"
-  }, any {
-  "content": "
-
-    private static String formatLine(int depth, String key, String value) {
+    }",
+  "returns": symbol {
+   "type": "public"
+   }
+  }, method {
+  "name": "formatLine",
+  "content": " {
         return "\n" + " ".repeat(depth) + "\"" + key + "\": " + value;
-    }"
-  }, any {
-  "content": "
-
-    private static String formatNodeList(int depth, List<Node> values) {
+    }",
+  "params": content {
+   "params": "int depth, String key, String value"
+   },
+  "returns": symbol {
+   "type": "private static String"
+   }
+  }, method {
+  "name": "formatNodeList",
+  "content": " {
         return values.stream()
                 .map(node -> node.format(depth + 1))
                 .collect(Collectors.joining(", ", "[", "]"));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Node retype(String type) {
+    }",
+  "params": content {
+   "params": "int depth, List<Node> values"
+   },
+  "returns": symbol {
+   "type": "private static String"
+   }
+  }, method {
+  "name": "retype",
+  "content": " {
         return new MapNode(Optional.of(type), strings, stringLists, nodes, nodeLists);
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public boolean is(String type) {
+    }",
+  "params": content {
+   "params": "String type"
+   },
+  "returns": symbol {
+   "type": "@Override
+    public Node"
+   }
+  }, method {
+  "name": "is",
+  "content": " {
         return this.type.filter(value -> value.equals(type)).isPresent();
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Node withString(String propertyKey, String propertyValue) {
+    }",
+  "params": content {
+   "params": "String type"
+   },
+  "returns": symbol {
+   "type": "@Override
+    public boolean"
+   }
+  }, method {
+  "name": "withString",
+  "content": " {
         final var copy = new HashMap<>(strings);
         copy.put(propertyKey, propertyValue);
         return new MapNode(type, copy, stringLists, nodes, nodeLists);
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Optional<String> findString(String propertyKey) {
+    }",
+  "params": content {
+   "params": "String propertyKey, String propertyValue"
+   },
+  "returns": symbol {
+   "type": "@Override
+    public Node"
+   }
+  }, method {
+  "name": "findString",
+  "content": " {
         return Optional.ofNullable(strings.get(propertyKey));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Optional<Node> mapNodeList(String propertyKey, Function<List<Node>, List<Node>> mapper) {
+    }",
+  "params": content {
+   "params": "String propertyKey"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "String"
+    }]
+   }
+  }, method {
+  "name": "mapNodeList",
+  "content": " {
         return findNodeList(propertyKey).map(mapper).map(value -> withNodeList(propertyKey, value));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Stream<Tuple<String, List<Node>>> streamNodeLists() {
+    }",
+  "params": content {
+   "params": "String propertyKey, Function<List<Node>, List<Node>> mapper"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
+   }
+  }, method {
+  "name": "streamNodeLists",
+  "content": " {
         return nodeLists.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Node withNode(String propertyKey, Node propertyValue) {
+    }",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Stream"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Tuple"
+     },
+    "children": [symbol {
+     "type": "String"
+     }, generic {
+     "base": symbol {
+      "type": "List"
+      },
+     "children": [symbol {
+      "type": "Node"
+      }]
+     }]
+    }]
+   }
+  }, method {
+  "name": "withNode",
+  "content": " {
         final var copy = new HashMap<>(nodes);
         copy.put(propertyKey, propertyValue);
         return new MapNode(type, strings, stringLists, copy, nodeLists);
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Optional<Node> findNode(String propertyKey) {
+    }",
+  "params": content {
+   "params": "String propertyKey, Node propertyValue"
+   },
+  "returns": symbol {
+   "type": "@Override
+    public Node"
+   }
+  }, method {
+  "name": "findNode",
+  "content": " {
         return Optional.ofNullable(nodes.get(propertyKey));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Stream<Tuple<String, Node>> streamNodes() {
+    }",
+  "params": content {
+   "params": "String propertyKey"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
+   }
+  }, method {
+  "name": "streamNodes",
+  "content": " {
         return nodes.entrySet().stream().map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public boolean hasNode(String node) {
+    }",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Stream"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Tuple"
+     },
+    "children": [symbol {
+     "type": "String"
+     }, symbol {
+     "type": "Node"
+     }]
+    }]
+   }
+  }, method {
+  "name": "hasNode",
+  "content": " {
         return nodes.containsKey(node);
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Node withStringList(String propertyKey, List<String> propertyValues) {
+    }",
+  "params": content {
+   "params": "String node"
+   },
+  "returns": symbol {
+   "type": "@Override
+    public boolean"
+   }
+  }, method {
+  "name": "withStringList",
+  "content": " {
         final var copy = new HashMap<>(stringLists);
         copy.put(propertyKey, propertyValues);
         return new MapNode(type, strings, copy, nodes, nodeLists);
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Optional<List<String>> findStringList(String propertyKey) {
+    }",
+  "params": content {
+   "params": "String propertyKey, List<String> propertyValues"
+   },
+  "returns": symbol {
+   "type": "@Override
+    public Node"
+   }
+  }, method {
+  "name": "findStringList",
+  "content": " {
         return Optional.ofNullable(stringLists.get(propertyKey));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Stream<Tuple<String, String>> streamStrings() {
+    }",
+  "params": content {
+   "params": "String propertyKey"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "List"
+     },
+    "children": [symbol {
+     "type": "String"
+     }]
+    }]
+   }
+  }, method {
+  "name": "streamStrings",
+  "content": " {
         return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Optional<List<Node>> findNodeList(String propertyKey) {
+    }",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Stream"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Tuple"
+     },
+    "children": [symbol {
+     "type": "String"
+     }, symbol {
+     "type": "String"
+     }]
+    }]
+   }
+  }, method {
+  "name": "findNodeList",
+  "content": " {
         return Optional.ofNullable(nodeLists.get(propertyKey));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Node withNodeList(String propertyKey, List<Node> values) {
+    }",
+  "params": content {
+   "params": "String propertyKey"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "List"
+     },
+    "children": [symbol {
+     "type": "Node"
+     }]
+    }]
+   }
+  }, method {
+  "name": "withNodeList",
+  "content": " {
         final var copy = new HashMap<>(nodeLists);
         copy.put(propertyKey, values);
         return new MapNode(type, strings, stringLists, nodes, copy);
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public String toString() {
+    }",
+  "params": content {
+   "params": "String propertyKey, List<Node> values"
+   },
+  "returns": symbol {
+   "type": "@Override
+    public Node"
+   }
+  }, method {
+  "name": "toString",
+  "content": " {
         return format(0);
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public String format(int depth) {
+    }",
+  "returns": symbol {
+   "type": "@Override
+    public String"
+   }
+  }, method {
+  "name": "format",
+  "content": " {
         final var typeString = type.map(value -> value + " ").orElse("");
 
         final var joinedStrings = formatMap(depth, strings, value -> "\"" + value + "\"");
@@ -176,45 +331,89 @@
 
         final var joined = String.join(",", list);
         return typeString + "{" + joined + "\n" + " ".repeat(depth) + "}";
-    }"
-  }, any {
-  "content": "
-
-    private String formatStringList(List<String> list) {
+    }",
+  "params": content {
+   "params": "int depth"
+   },
+  "returns": symbol {
+   "type": "@Override
+    public String"
+   }
+  }, method {
+  "name": "formatStringList",
+  "content": " {
         return list.stream()
                 .map(inner -> "\"" + inner + "\"")
                 .collect(Collectors.joining(", ", "[", "]"));
-    }"
-  }, any {
-  "content": "
-
-    private <T> String formatMap(int depth, Map<String, T> set, Function<T, String> format) {
+    }",
+  "params": content {
+   "params": "List<String> list"
+   },
+  "returns": symbol {
+   "type": "private String"
+   }
+  }, method {
+  "name": "formatMap",
+  "content": " {
         return set.entrySet()
                 .stream()
                 .map(entry -> formatLine(depth, entry.getKey(), format.apply(entry.getValue())))
                 .collect(Collectors.joining(","));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Stream<Tuple<String, List<String>>> streamStringLists() {
+    }",
+  "params": content {
+   "params": "int depth, Map<String, T> set, Function<T, String> format"
+   },
+  "returns": symbol {
+   "type": "private <T> String"
+   }
+  }, method {
+  "name": "streamStringLists",
+  "content": " {
         return stringLists.entrySet()
                 .stream()
                 .map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Optional<Node> mapStringList(String propertyKey, Function<List<String>, List<String>> mapper) {
+    }",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Stream"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Tuple"
+     },
+    "children": [symbol {
+     "type": "String"
+     }, generic {
+     "base": symbol {
+      "type": "List"
+      },
+     "children": [symbol {
+      "type": "String"
+      }]
+     }]
+    }]
+   }
+  }, method {
+  "name": "mapStringList",
+  "content": " {
         return findStringList(propertyKey).map(mapper).map(list -> withStringList(propertyKey, list));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Node merge(Node other) {
+    }",
+  "params": content {
+   "params": "String propertyKey, Function<List<String>, List<String>> mapper"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
+   }
+  }, method {
+  "name": "merge",
+  "content": " {
         final var stringsCopy = new HashMap<>(strings);
         other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));
 
@@ -228,7 +427,14 @@
         other.streamNodeLists().forEach(tuple -> nodeListCopy.put(tuple.left(), tuple.right()));
 
         return new MapNode(type, stringsCopy, stringListCopy, nodesCopy, nodeListCopy);
-    }"
+    }",
+  "params": content {
+   "params": "Node other"
+   },
+  "returns": symbol {
+   "type": "@Override
+    public Node"
+   }
   }],
  "params": [definition {
   "type": "

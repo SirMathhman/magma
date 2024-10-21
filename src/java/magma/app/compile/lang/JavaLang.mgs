@@ -1,4 +1,1 @@
-import magma\.app\.compile\.rule\.*;import java\.util\.List;import static magma\.app\.compile\.lang\.CommonLang\.*;class def "), afterKeyword));
-    }
-
-    private static TypeRule createDefinitionRule() => {}
+import magma\.app\.compile\.rule\.*;import java\.util\.List;import static magma\.app\.compile\.lang\.CommonLang\.*;class def JavaLang () => {}

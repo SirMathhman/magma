@@ -18,62 +18,121 @@
  }, record {
  "name": "RuleResult",
  "modifiers": ["public"],
- "children": [any {
-  "content": "
-    public RuleResult(Result<T, E> result) {
+ "children": [method {
+  "name": "RuleResult",
+  "content": " {
         this(result, Collections.emptyList());
-    }"
-  }, any {
-  "content": "
-
-    @Deprecated
-    public Result<T, E> unwrap() {
+    }",
+  "params": content {
+   "params": "Result<T, E> result"
+   },
+  "returns": symbol {
+   "type": "public"
+   }
+  }, method {
+  "name": "unwrap",
+  "content": " {
         return result;
-    }"
-  }, any {
-  "content": "
-
-    public boolean isValid() {
+    }",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Deprecated
+    public Result"
+    },
+   "children": [symbol {
+    "type": "T"
+    }, symbol {
+    "type": "E"
+    }]
+   }
+  }, method {
+  "name": "isValid",
+  "content": " {
         return result.isOk();
-    }"
-  }, any {
-  "content": "
-
-    public RuleResult<T, E> mapValue(Function<T, T> mapper) {
+    }",
+  "returns": symbol {
+   "type": "public boolean"
+   }
+  }, method {
+  "name": "mapValue",
+  "content": " {
         return new RuleResult<>(result.mapValue(mapper), children);
-    }"
-  }, any {
-  "content": "
-
-    public RuleResult<T, E> wrapErr(E error) {
+    }",
+  "params": content {
+   "params": "Function<T, T> mapper"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "public RuleResult"
+    },
+   "children": [symbol {
+    "type": "T"
+    }, symbol {
+    "type": "E"
+    }]
+   }
+  }, method {
+  "name": "wrapErr",
+  "content": " {
         if (!isError()) return this;
 
         var list = singletonList(this);
         return new RuleResult<>(new Err<>(error), list);
-    }"
-  }, any {
-  "content": "
-
-    public boolean isError() {
+    }",
+  "params": content {
+   "params": "E error"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "public RuleResult"
+    },
+   "children": [symbol {
+    "type": "T"
+    }, symbol {
+    "type": "E"
+    }]
+   }
+  }, method {
+  "name": "isError",
+  "content": " {
         return result.isErr();
-    }"
-  }, any {
-  "content": "
-
-    public int depth() {
+    }",
+  "returns": symbol {
+   "type": "public boolean"
+   }
+  }, method {
+  "name": "depth",
+  "content": " {
         return 1 + children.stream()
                 .map(RuleResult::depth)
                 .max(Integer::compare)
                 .orElse(0);
-    }"
-  }, any {
-  "content": "
-
-    public List<RuleResult<T, E>> sortedChildren() {
+    }",
+  "returns": symbol {
+   "type": "public int"
+   }
+  }, method {
+  "name": "sortedChildren",
+  "content": " {
         return children.stream()
                 .sorted(Comparator.comparingInt(RuleResult::depth))
                 .toList();
-    }"
+    }",
+  "returns": generic {
+   "base": symbol {
+    "type": "public List"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "RuleResult"
+     },
+    "children": [symbol {
+     "type": "T"
+     }, symbol {
+     "type": "E"
+     }]
+    }]
+   }
   }],
  "type-params": [symbol {
   "type": "T"

@@ -19,24 +19,48 @@
  "interface": symbol {
   "type": "Rule"
   },
- "children": [any {
-  "content": "
-
-    @Override
-    public RuleResult<Node, ParseException> parse(String input) {
+ "children": [method {
+  "name": "parse",
+  "content": " {
         if (input.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("Input is empty", input)));
         return new RuleResult<>(new Ok<>(new MapNode().withString(propertyKey, input)));
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public RuleResult<String, GenerateException> generate(Node node) {
+    }",
+  "params": content {
+   "params": "String input"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public RuleResult"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }, symbol {
+    "type": "ParseException"
+    }]
+   }
+  }, method {
+  "name": "generate",
+  "content": " {
         return node.findString(propertyKey)
                 .<RuleResult<String, GenerateException>>map(s -> new RuleResult<>(new Ok<>(s)))
                 .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String '+ propertyKey + "'ot present", node))));
 
-    }"
+    }",
+  "params": content {
+   "params": "Node node"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public RuleResult"
+    },
+   "children": [symbol {
+    "type": "String"
+    }, symbol {
+    "type": "GenerateException"
+    }]
+   }
   }],
  "params": [definition {
   "type": "String",

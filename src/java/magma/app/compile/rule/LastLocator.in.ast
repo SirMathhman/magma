@@ -9,13 +9,24 @@
  "interface": symbol {
   "type": "Locator"
   },
- "children": [any {
-  "content": "
-    @Override
-    public Optional<Integer> locate(String input) {
+ "children": [method {
+  "name": "locate",
+  "content": " {
         final var index = input.lastIndexOf(slice);
         return index == -1 ? Optional.empty() : Optional.of(index);
-    }"
+    }",
+  "params": content {
+   "params": "String input"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "Integer"
+    }]
+   }
   }],
  "params": [definition {
   "type": "String",

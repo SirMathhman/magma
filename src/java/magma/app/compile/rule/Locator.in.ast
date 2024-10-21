@@ -8,6 +8,7 @@
  "modifiers": ["public"],
  "content": [method {
   "name": "locate",
+  "content": ";",
   "params": content {
    "params": "String input"
    },
@@ -21,6 +22,7 @@
    }
   }, method {
   "name": "slice",
+  "content": ";",
   "returns": symbol {
    "type": "String"
    }

@@ -20,47 +20,95 @@
    "type": "E"
    }]
   },
- "children": [any {
-  "content": "
-    @Override
-    public Optional<T> findValue() {
+ "children": [method {
+  "name": "findValue",
+  "content": " {
         return Optional.empty();
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Optional<E> findError() {
+    }",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "T"
+    }]
+   }
+  }, method {
+  "name": "findError",
+  "content": " {
         return Optional.of(error);
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public <R> Result<R, E> mapValue(Function<T, R> mapper) {
+    }",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "E"
+    }]
+   }
+  }, method {
+  "name": "mapValue",
+  "content": " {
         return new Err<>(error);
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public boolean isErr() {
+    }",
+  "params": content {
+   "params": "Function<T, R> mapper"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public"
+    },
+   "children": [symbol {
+    "type": "R> Result<R"
+    }, symbol {
+    "type": "E"
+    }]
+   }
+  }, method {
+  "name": "isErr",
+  "content": " {
         return true;
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public <R> Result<Tuple<T, R>, E> and(Supplier<Result<R, E>> supplier) {
+    }",
+  "returns": symbol {
+   "type": "@Override
+    public boolean"
+   }
+  }, method {
+  "name": "and",
+  "content": " {
         return new Err<>(error);
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public boolean isOk() {
+    }",
+  "params": content {
+   "params": "Supplier<Result<R, E>> supplier"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "R> Result"
+     },
+    "children": [symbol {
+     "type": "Tuple<T, R"
+     }]
+    }, symbol {
+    "type": "E"
+    }]
+   }
+  }, method {
+  "name": "isOk",
+  "content": " {
         return false;
-    }"
+    }",
+  "returns": symbol {
+   "type": "@Override
+    public boolean"
+   }
   }],
  "type-params": [symbol {
   "type": "T"

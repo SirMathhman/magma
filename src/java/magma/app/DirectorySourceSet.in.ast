@@ -23,26 +23,48 @@
  "interface": symbol {
   "type": "SourceSet"
   },
- "children": [any {
-  "content": "
-    private Set<Path> collect0() throws IOException {
+ "children": [method {
+  "name": "collect0",
+  "content": " throws IOException {
         try (var stream = Files.walk(root)) {
             return stream
                     .filter(path -> path.toString().endsWith(".java"))
                     .collect(Collectors.toSet());
         }
-    }"
-  }, any {
-  "content": "
-
-    @Override
-    public Result<Set<Path>, IOException> collect() {
+    }",
+  "returns": generic {
+   "base": symbol {
+    "type": "private Set"
+    },
+   "children": [symbol {
+    "type": "Path"
+    }]
+   }
+  }, method {
+  "name": "collect",
+  "content": " {
         try {
             return new Ok<>(collect0());
         } catch (IOException e) {
             return new Err<>(e);
         }
-    }"
+    }",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Result"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Set"
+     },
+    "children": [symbol {
+     "type": "Path"
+     }]
+    }, symbol {
+    "type": "IOException"
+    }]
+   }
   }],
  "params": [definition {
   "type": "Path",

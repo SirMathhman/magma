@@ -28,49 +28,89 @@
  }, function {
  "name": "Compiler",
  "modifiers": ["public"],
- "children": [any {
-  "content": "
-    private static Node pass(Node node) {
+ "children": [method {
+  "name": "pass",
+  "content": " {
         return node.mapNodeList(CHILDREN, Compiler::passChildren).orElse(node);
-    }"
-  }, any {
-  "content": "
-
-    private static List<Node> passChildren(List<Node> children) {
+    }",
+  "params": content {
+   "params": "Node node"
+   },
+  "returns": symbol {
+   "type": "private static Node"
+   }
+  }, method {
+  "name": "passChildren",
+  "content": " {
         return children.stream()
                 .filter(child -> !child.is(JavaLang.PACKAGE))
                 .map(Compiler::passRootChild)
                 .toList();
-    }"
-  }, any {
-  "content": "
-
-    private static Node passRootChild(Node node) {
+    }",
+  "params": content {
+   "params": "List<Node> children"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "private static List"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
+   }
+  }, method {
+  "name": "passRootChild",
+  "content": " {
         return passRecord(node)
                 .or(() -> passInterface(node))
                 .or(() -> passClass(node))
                 .orElse(node);
-    }"
-  }, any {
-  "content": "
-
-    private static Optional<? extends Node> passClass(Node node) {
+    }",
+  "params": content {
+   "params": "Node node"
+   },
+  "returns": symbol {
+   "type": "private static Node"
+   }
+  }, method {
+  "name": "passClass",
+  "content": " {
         if (node.is(CLASS)) {
             return Optional.of(node.retype(FUNCTION));
         } else {
             return Optional.empty();
         }
-    }"
-  }, any {
-  "content": "
-
-    private static Optional<Node> passRecord(Node node) {
+    }",
+  "params": content {
+   "params": "Node node"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "private static Optional"
+    },
+   "children": [symbol {
+    "type": "? extends Node"
+    }]
+   }
+  }, method {
+  "name": "passRecord",
+  "content": " {
         return node.is(RECORD) ? Optional.of(node.retype(FUNCTION)) : Optional.empty();
-    }"
-  }, any {
-  "content": "
-
-    private static Optional<Node> passInterface(Node node) {
+    }",
+  "params": content {
+   "params": "Node node"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "private static Optional"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
+   }
+  }, method {
+  "name": "passInterface",
+  "content": " {
         if (!node.is(INTERFACE)) return Optional.empty();
 
         final var retype = node.retype(MagmaLang.TRAIT);
@@ -86,38 +126,69 @@
                 .toList()).orElse(withModifiers);
 
         return Optional.of(withChildren);
-    }"
-  }, any {
-  "content": "
-
-    private static Node passClassMember(Node child) {
+    }",
+  "params": content {
+   "params": "Node node"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "private static Optional"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
+   }
+  }, method {
+  "name": "passClassMember",
+  "content": " {
         if (child.is(METHOD)) return child.retype(FUNCTION);
         return child;
-    }"
-  }, any {
-  "content": "
-
-    public CompileResult compile() throws CompileException {
+    }",
+  "params": content {
+   "params": "Node child"
+   },
+  "returns": symbol {
+   "type": "private static Node"
+   }
+  }, method {
+  "name": "compile",
+  "content": " throws CompileException {
         final var beforePass = Results.unwrap(write(createRootRule().parse(input)));
         final var afterPass = pass(beforePass);
         final var output = Results.unwrap(write(MagmaLang.createRootRule().generate(afterPass)));
         return new CompileResult(beforePass, afterPass, output);
-    }"
-  }, any {
-  "content": "
-
-    private <T, E extends Exception> Result<T, CompileException> write(RuleResult<T, E> result) {
+    }",
+  "returns": symbol {
+   "type": "public CompileResult"
+   }
+  }, method {
+  "name": "write",
+  "content": " {
         if (result.isValid()) {
             return new Ok<>(result.result().findValue().orElseThrow());
         } else {
             writeResult(result, 0, 0);
             return new Err<>(new CompileException());
         }
-    }"
-  }, any {
-  "content": "
-
-    private <T, E extends Exception> void writeResult(RuleResult<T, E> result, int depth, int index) {
+    }",
+  "params": content {
+   "params": "RuleResult<T, E> result"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "private"
+    },
+   "children": [symbol {
+    "type": "T"
+    }, symbol {
+    "type": "E extends Exception> Result<T"
+    }, symbol {
+    "type": "CompileException"
+    }]
+   }
+  }, method {
+  "name": "writeResult",
+  "content": " {
         final var error = result.result().findError();
         if (error.isPresent()) {
             final var repeat = " ".repeat(depth);
@@ -132,7 +203,13 @@
             RuleResult<T, E> child = children.get(i);
             writeResult(child, depth + 1, i);
         }
-    }"
+    }",
+  "params": content {
+   "params": "RuleResult<T, E> result, int depth, int index"
+   },
+  "returns": symbol {
+   "type": "private <T, E extends Exception> void"
+   }
   }],
  "params": [definition {
   "type": "String",

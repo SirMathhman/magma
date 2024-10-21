@@ -66,8 +66,7 @@ public class JavaLang {
 
     private static OrRule createClassMemberRule() {
         return new OrRule(List.of(
-                createMethodRule(),
-                new TypeRule("any", new ExtractRule("content"))
+                createMethodRule()
         ));
     }
 
@@ -82,7 +81,7 @@ public class JavaLang {
 
         final var beforeParams = new LocatingRule(returns, new LastLocator(" "), name);
         final var params = new OptionalNodeRule("params", new NodeRule("params", new TypeRule("content", new ExtractRule("params"))), new EmptyRule());
-        final var withParams = new SuffixRule(params, ");");
+        final var withParams = new LocatingRule(params, new FirstLocator(")"), new ExtractRule("content"));
 
         return new TypeRule(METHOD, new LocatingRule(beforeParams, new FirstLocator("("), withParams));
     }

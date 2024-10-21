@@ -14,6 +14,7 @@
  "modifiers": ["export"],
  "content": [method {
   "name": "retype",
+  "content": ";",
   "params": content {
    "params": "String type"
    },
@@ -22,6 +23,7 @@
    }
   }, method {
   "name": "is",
+  "content": ";",
   "params": content {
    "params": "String type"
    },
@@ -30,6 +32,7 @@
    }
   }, method {
   "name": "withString",
+  "content": ";",
   "params": content {
    "params": "String propertyKey, String propertyValue"
    },
@@ -38,6 +41,7 @@
    }
   }, method {
   "name": "findString",
+  "content": ";",
   "params": content {
    "params": "String propertyKey"
    },
@@ -51,6 +55,7 @@
    }
   }, method {
   "name": "mapNodeList",
+  "content": ";",
   "params": content {
    "params": "String propertyKey, Function<List<Node>, List<Node>> mapper"
    },
@@ -64,6 +69,7 @@
    }
   }, method {
   "name": "findNodeList",
+  "content": ";",
   "params": content {
    "params": "String propertyKey"
    },
@@ -82,6 +88,7 @@
    }
   }, method {
   "name": "withNodeList",
+  "content": ";",
   "params": content {
    "params": "String propertyKey, List<Node> values"
    },
@@ -90,6 +97,7 @@
    }
   }, method {
   "name": "format",
+  "content": ";",
   "params": content {
    "params": "int depth"
    },
@@ -98,6 +106,7 @@
    }
   }, method {
   "name": "merge",
+  "content": ";",
   "params": content {
    "params": "Node other"
    },
@@ -106,6 +115,7 @@
    }
   }, method {
   "name": "streamStrings",
+  "content": ";",
   "returns": generic {
    "base": symbol {
     "type": "Stream"
@@ -123,6 +133,7 @@
    }
   }, method {
   "name": "streamNodeLists",
+  "content": ";",
   "returns": generic {
    "base": symbol {
     "type": "Stream"
@@ -145,6 +156,7 @@
    }
   }, method {
   "name": "withNode",
+  "content": ";",
   "params": content {
    "params": "String propertyKey, Node propertyValue"
    },
@@ -153,6 +165,7 @@
    }
   }, method {
   "name": "findNode",
+  "content": ";",
   "params": content {
    "params": "String propertyKey"
    },
@@ -166,6 +179,7 @@
    }
   }, method {
   "name": "streamNodes",
+  "content": ";",
   "returns": generic {
    "base": symbol {
     "type": "Stream"
@@ -183,6 +197,7 @@
    }
   }, method {
   "name": "hasNode",
+  "content": ";",
   "params": content {
    "params": "String node"
    },
@@ -191,6 +206,7 @@
    }
   }, method {
   "name": "withStringList",
+  "content": ";",
   "params": content {
    "params": "String propertyKey, List<String> propertyValues"
    },
@@ -199,6 +215,7 @@
    }
   }, method {
   "name": "findStringList",
+  "content": ";",
   "params": content {
    "params": "String propertyKey"
    },
@@ -217,6 +234,7 @@
    }
   }, method {
   "name": "streamStringLists",
+  "content": ";",
   "returns": generic {
    "base": symbol {
     "type": "Stream"
@@ -239,6 +257,7 @@
    }
   }, method {
   "name": "mapStringList",
+  "content": ";",
   "params": content {
    "params": "String propertyKey, Function<List<String>, List<String>> mapper"
    },
