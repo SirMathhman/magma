@@ -8,7 +8,7 @@
  }, import {
  "namespace": ["java", "util", "function", "Supplier"]
  }, function {
- "name": "Err<T, E>",
+ "name": "Err",
  "params-and-body": "E error) implements Result<T, E> {
     @Override
     public Optional<T> findValue() {
@@ -40,6 +40,11 @@
         return false;
     }
 }",
- "modifiers": ["public"]
+ "modifiers": ["public"],
+ "children": [symbol {
+  "type": "T"
+  }, symbol {
+  "type": "E"
+  }]
  }]
 }

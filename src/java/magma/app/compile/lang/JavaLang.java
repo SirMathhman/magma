@@ -23,7 +23,11 @@ public class JavaLang {
     }
 
     public static TypeRule createRecordRule() {
-        return new TypeRule(RECORD, new LocatingRule(createModifiersRule(), new FirstLocator("record "), new LocatingRule(new ExtractRule(NAME), new FirstLocator("("), new ExtractRule("params-and-body"))));
+        final var simpleName = new ExtractRule(NAME);
+        final var typeParams = new NodeListRule(new ValueSplitter(), "type-params", createTypeRule());
+        final var name = new OptionalNodeRule("type-params", new LocatingRule(simpleName, new FirstLocator("<"), new SuffixRule(typeParams, ">")), simpleName);
+        final var afterKeyword = new LocatingRule(name, new FirstLocator("("), new ExtractRule("params-and-body"));
+        return new TypeRule(RECORD, new LocatingRule(createModifiersRule(), new FirstLocator("record "), afterKeyword));
     }
 
     private static OrRule createRootMemberRule() {

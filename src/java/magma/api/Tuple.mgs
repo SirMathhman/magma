@@ -1,1 +1,1 @@
-class def Tuple<A, B>() => {}
+class def Tuple() => {}

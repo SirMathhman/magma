@@ -14,7 +14,7 @@
  }, import {
  "namespace": ["static java", "util", "Collections", "singletonList"]
  }, record {
- "name": "RuleResult<T, E>",
+ "name": "RuleResult",
  "params-and-body": "Result<T, E> result, List<RuleResult<T, E>> children) {
     public RuleResult(Result<T, E> result) {
         this(result, Collections.emptyList());
@@ -44,6 +44,11 @@
         return result.isErr();
     }
 }",
- "modifiers": ["public"]
+ "modifiers": ["public"],
+ "children": [symbol {
+  "type": "T"
+  }, symbol {
+  "type": "E"
+  }]
  }]
 }

@@ -6,11 +6,11 @@
  }, import {
  "namespace": ["static magma", "app", "compile", "lang", "CommonLang", "*"]
  }, function {
- "name": ""), new LocatingRule",
- "params-and-body": "new ExtractRule(NAME), new FirstLocator("("), new ExtractRule("params-and-body"))));
+ "name": ""), afterKeyword));
     }
 
-    private static OrRule createRootMemberRule() {
+    private static OrRule createRootMemberRule",
+ "params-and-body": ") {
         return new OrRule(List.of(
                 createPackageRule(),
                 createImportRule(),
@@ -84,6 +84,10 @@
 ", "", "", "", "}
 
 ", "", "", "", "public", "static", "TypeRule", "createRecordRule()", "{
+", "", "", "", "", "", "", "", "final", "var", "simpleName", "=", "new", "ExtractRule(NAME);
+", "", "", "", "", "", "", "", "final", "var", "typeParams", "=", "new", "NodeListRule(new", "ValueSplitter(),", ""type-params",", "createTypeRule());
+", "", "", "", "", "", "", "", "final", "var", "name", "=", "new", "OptionalNodeRule("type-params",", "new", "LocatingRule(simpleName,", "new", "FirstLocator("<"),", "new", "SuffixRule(typeParams,", "">")),", "simpleName);
+", "", "", "", "", "", "", "", "final", "var", "afterKeyword", "=", "new", "LocatingRule(name,", "new", "FirstLocator("("),", "new", "ExtractRule("params-and-body"));
 ", "", "", "", "", "", "", "", "return", "new", "TypeRule(RECORD,", "new", "LocatingRule(createModifiersRule(),", "new", "FirstLocator(""]
  }]
 }

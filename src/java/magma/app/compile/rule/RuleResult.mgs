@@ -1,1 +1,1 @@
-import magma\.api\.result\.Err;import magma\.api\.result\.Result;import java\.util\.Collections;import java\.util\.List;import java\.util\.function\.Function;import static java\.util\.Collections\.singletonList;class def RuleResult<T, E>() => {}
+import magma\.api\.result\.Err;import magma\.api\.result\.Result;import java\.util\.Collections;import java\.util\.List;import java\.util\.function\.Function;import static java\.util\.Collections\.singletonList;class def RuleResult() => {}
