@@ -123,9 +123,19 @@ public class JavaLang {
                 createConstructionRule(value),
                 createInvocationRule(value),
                 createAccessRule(value),
-                createSymbolRule()
+                createSymbolRule(),
+                createAdditionRule(value),
+                createNumberRule()
         ))));
         return value;
+    }
+
+    private static Rule createNumberRule() {
+        return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new ExtractRule("value")), "", ""));
+    }
+
+    private static TypeRule createAdditionRule(LazyRule value) {
+        return new TypeRule("addition", new LocatingRule(new NodeRule("left", value), new FirstLocator("+"), new NodeRule("right", value)));
     }
 
     private static TypeRule createSymbolRule() {
