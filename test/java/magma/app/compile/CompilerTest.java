@@ -4,6 +4,7 @@ import magma.app.compile.lang.CommonLang;
 import magma.app.compile.lang.JavaLang;
 import magma.app.compile.lang.MagmaLang;
 import magma.api.result.Results;
+import magma.app.compile.rule.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -28,7 +29,7 @@ class CompilerTest {
             final var targetNode = sourceNode.retype(FUNCTION);
 
             final var actual = new Compiler(Results.unwrap(JavaLang.RECORD_RULE.generate(sourceNode).unwrap())).compile();
-            assertEquals(Results.unwrap(MagmaLang.FUNCTION_RULE.generate(targetNode).unwrap()), actual);
+            assertEquals(Results.unwrap(((Rule) MagmaLang.createFunctionRule()).generate(targetNode).unwrap()), actual);
         } catch (CompileException e) {
             fail(e);
         }

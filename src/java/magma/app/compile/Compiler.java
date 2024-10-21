@@ -64,7 +64,7 @@ public record Compiler(String input) {
     public String compile() throws CompileException {
         final var node = Results.unwrap(write(JavaLang.JAVA_ROOT_RULE.parse(input)));
         final var passed = pass(node);
-        return Results.unwrap(write(MagmaLang.MAGMA_ROOT_RULE.generate(passed)));
+        return Results.unwrap(write(MagmaLang.createRootRule().generate(passed)));
     }
 
     private <T, E extends Exception> Result<T, CompileException> write(RuleResult<T, E> result) {
