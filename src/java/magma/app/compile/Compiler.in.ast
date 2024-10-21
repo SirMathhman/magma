@@ -1,32 +1,32 @@
 {
 "children": [package {
- "namespace": "magma.app.compile"
+ "namespace": ["magma", "app", "compile"]
  }, import {
- "namespace": "magma.api.result.Err"
+ "namespace": ["magma", "api", "result", "Err"]
  }, import {
- "namespace": "magma.api.result.Ok"
+ "namespace": ["magma", "api", "result", "Ok"]
  }, import {
- "namespace": "magma.api.result.Result"
+ "namespace": ["magma", "api", "result", "Result"]
  }, import {
- "namespace": "magma.api.result.Results"
+ "namespace": ["magma", "api", "result", "Results"]
  }, import {
- "namespace": "magma.app.compile.lang.JavaLang"
+ "namespace": ["magma", "app", "compile", "lang", "JavaLang"]
  }, import {
- "namespace": "magma.app.compile.lang.MagmaLang"
+ "namespace": ["magma", "app", "compile", "lang", "MagmaLang"]
  }, import {
- "namespace": "magma.app.compile.rule.RuleResult"
+ "namespace": ["magma", "app", "compile", "rule", "RuleResult"]
  }, import {
- "namespace": "java.util.ArrayList"
+ "namespace": ["java", "util", "ArrayList"]
  }, import {
- "namespace": "java.util.List"
+ "namespace": ["java", "util", "List"]
  }, import {
- "namespace": "java.util.Optional"
+ "namespace": ["java", "util", "Optional"]
  }, import {
- "namespace": "static magma.app.compile.lang.CommonLang.CHILDREN"
+ "namespace": ["static magma", "app", "compile", "lang", "CommonLang", "CHILDREN"]
  }, import {
- "namespace": "static magma.app.compile.lang.JavaLang.*"
+ "namespace": ["static magma", "app", "compile", "lang", "JavaLang", "*"]
  }, import {
- "namespace": "static magma.app.compile.lang.MagmaLang.FUNCTION"
+ "namespace": ["static magma", "app", "compile", "lang", "MagmaLang", "FUNCTION"]
  }, record {
  "modifiers": "public ",
  "name": "Compiler",

@@ -1,6 +1,6 @@
 {
 "children": [package {
- "namespace": "magma.api.result"
+ "namespace": ["magma", "api", "result"]
  }, class {
  "name": "Results ",
  "body": "

@@ -1,12 +1,12 @@
 {
 "children": [package {
- "namespace": "magma.app.compile.lang"
+ "namespace": ["magma", "app", "compile", "lang"]
  }, import {
- "namespace": "magma.app.compile.rule.Splitter"
+ "namespace": ["magma", "app", "compile", "rule", "Splitter"]
  }, import {
- "namespace": "java.util.Arrays"
+ "namespace": ["java", "util", "Arrays"]
  }, import {
- "namespace": "java.util.List"
+ "namespace": ["java", "util", "List"]
  }, class {
  "name": "ValueSplitter implements Splitter ",
  "body": "

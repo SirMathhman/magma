@@ -1,18 +1,18 @@
 {
 "children": [import {
- "namespace": "magma.api.result.Err"
+ "namespace": ["magma", "api", "result", "Err"]
  }, import {
- "namespace": "magma.api.result.Ok"
+ "namespace": ["magma", "api", "result", "Ok"]
  }, import {
- "namespace": "magma.app.compile.GenerateException"
+ "namespace": ["magma", "app", "compile", "GenerateException"]
  }, import {
- "namespace": "magma.app.compile.MapNode"
+ "namespace": ["magma", "app", "compile", "MapNode"]
  }, import {
- "namespace": "magma.app.compile.Node"
+ "namespace": ["magma", "app", "compile", "Node"]
  }, import {
- "namespace": "magma.app.compile.ParseException"
+ "namespace": ["magma", "app", "compile", "ParseException"]
  }, import {
- "namespace": "java.util.Arrays"
+ "namespace": ["java", "util", "Arrays"]
  }, function {
  "modifiers": "public ",
  "name": "StringListRule",

@@ -16,7 +16,7 @@ public class MagmaLang {
 
     private static OrRule createRootMemberRule() {
         return new OrRule(List.of(
-                CommonLang.IMPORT_RULE,
+                CommonLang.createImportRule(),
                 createFunctionRule(),
                 new TypeRule(TRAIT, new EmptyRule())
         ));

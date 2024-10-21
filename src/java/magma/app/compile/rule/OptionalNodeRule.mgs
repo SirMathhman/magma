@@ -1,1 +1,1 @@
-import magma.api.result.Err;import magma.app.compile.GenerateException;import magma.app.compile.Node;import magma.app.compile.ParseException;import java.util.List;class def OptionalNodeRule implements Rule () => {}
+import magma\.api\.result\.Err;import magma\.app\.compile\.GenerateException;import magma\.app\.compile\.Node;import magma\.app\.compile\.ParseException;import java\.util\.List;class def OptionalNodeRule implements Rule () => {}

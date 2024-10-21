@@ -1,8 +1,8 @@
 {
 "children": [package {
- "namespace": "magma.app.compile.rule"
+ "namespace": ["magma", "app", "compile", "rule"]
  }, import {
- "namespace": "java.util.Optional"
+ "namespace": ["java", "util", "Optional"]
  }, interface {
  "name": "Locator",
  "modifiers": ["public"],

@@ -1,1 +1,1 @@
-import magma.app.compile.rule.*;class def CommonLang () => {}
+import magma\.app\.compile\.rule\.*;class def CommonLang () => {}

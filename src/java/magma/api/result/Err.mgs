@@ -1,1 +1,1 @@
-import magma.api.Tuple;import java.util.Optional;import java.util.function.Function;import java.util.function.Supplier;class def Err<T, E> implements Result<T, E> () => {}
+import magma\.api\.Tuple;import java\.util\.Optional;import java\.util\.function\.Function;import java\.util\.function\.Supplier;class def Err<T, E> implements Result<T, E> () => {}

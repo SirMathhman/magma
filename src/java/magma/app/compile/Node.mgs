@@ -1,1 +1,1 @@
-import magma.api.Tuple;import java.util.List;import java.util.Optional;import java.util.function.Function;import java.util.stream.Stream;
+import magma\.api\.Tuple;import java\.util\.List;import java\.util\.Optional;import java\.util\.function\.Function;import java\.util\.stream\.Stream;

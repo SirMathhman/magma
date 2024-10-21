@@ -15,7 +15,7 @@ public class JavaLang {
     public static final String METHOD = "method";
 
     public static TypeRule createPackageRule() {
-        return new TypeRule(PACKAGE, new PrefixRule("package ", new SuffixRule(new ExtractRule(NAMESPACE), STATEMENT_END)));
+        return new TypeRule(PACKAGE, new PrefixRule("package ", new SuffixRule(createNamespaceRule(), STATEMENT_END)));
     }
 
     public static NodeListRule createRootRule() {
@@ -29,7 +29,7 @@ public class JavaLang {
     private static OrRule createRootMemberRule() {
         return new OrRule(List.of(
                 createPackageRule(),
-                IMPORT_RULE,
+                createImportRule(),
                 createRecordRule(),
                 createInterfaceRule(),
                 createClassRule()

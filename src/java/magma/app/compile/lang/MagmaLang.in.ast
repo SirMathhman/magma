@@ -1,10 +1,10 @@
 {
 "children": [package {
- "namespace": "magma.app.compile.lang"
+ "namespace": ["magma", "app", "compile", "lang"]
  }, import {
- "namespace": "magma.app.compile.rule.*"
+ "namespace": ["magma", "app", "compile", "rule", "*"]
  }, import {
- "namespace": "java.util.List"
+ "namespace": ["java", "util", "List"]
  }, class {
  "name": "MagmaLang ",
  "body": "
@@ -19,7 +19,7 @@
 
     private static OrRule createRootMemberRule() {
         return new OrRule(List.of(
-                CommonLang.IMPORT_RULE,
+                CommonLang.createImportRule(),
                 createFunctionRule(),
                 new TypeRule(TRAIT, new EmptyRule())
         ));

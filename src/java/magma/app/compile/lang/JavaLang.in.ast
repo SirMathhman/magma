@@ -1,12 +1,12 @@
 {
 "children": [package {
- "namespace": "magma.app.compile.lang"
+ "namespace": ["magma", "app", "compile", "lang"]
  }, import {
- "namespace": "magma.app.compile.rule.*"
+ "namespace": ["magma", "app", "compile", "rule", "*"]
  }, import {
- "namespace": "java.util.List"
+ "namespace": ["java", "util", "List"]
  }, import {
- "namespace": "static magma.app.compile.lang.CommonLang.*"
+ "namespace": ["static magma", "app", "compile", "lang", "CommonLang", "*"]
  }, record {
  "modifiers": "public class JavaLang {
     public static final String PACKAGE = "package";
@@ -17,7 +17,7 @@
     public static final String METHOD = "method";
 
     public static TypeRule createPackageRule() {
-        return new TypeRule(PACKAGE, new PrefixRule("package ", new SuffixRule(new ExtractRule(NAMESPACE), STATEMENT_END)));
+        return new TypeRule(PACKAGE, new PrefixRule("package ", new SuffixRule(createNamespaceRule(), STATEMENT_END)));
     }
 
     public static NodeListRule createRootRule() {
@@ -33,7 +33,7 @@
     private static OrRule createRootMemberRule() {
         return new OrRule(List.of(
                 createPackageRule(),
-                IMPORT_RULE,
+                createImportRule(),
                 createRecordRule(),
                 createInterfaceRule(),
                 createClassRule()

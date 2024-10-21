@@ -1,6 +1,6 @@
 {
 "children": [package {
- "namespace": "magma.api"
+ "namespace": ["magma", "api"]
  }, record {
  "modifiers": "public ",
  "name": "Tuple<A, B>",

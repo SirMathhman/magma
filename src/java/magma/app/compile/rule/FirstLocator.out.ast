@@ -1,6 +1,6 @@
 {
 "children": [import {
- "namespace": "java.util.Optional"
+ "namespace": ["java", "util", "Optional"]
  }, function {
  "modifiers": "public ",
  "name": "FirstLocator",

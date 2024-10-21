@@ -1,8 +1,8 @@
 {
 "children": [package {
- "namespace": "magma.app.compile.rule"
+ "namespace": ["magma", "app", "compile", "rule"]
  }, import {
- "namespace": "java.util.Optional"
+ "namespace": ["java", "util", "Optional"]
  }, record {
  "modifiers": "public ",
  "name": "LastLocator",

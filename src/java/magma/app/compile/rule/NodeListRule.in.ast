@@ -1,24 +1,24 @@
 {
 "children": [package {
- "namespace": "magma.app.compile.rule"
+ "namespace": ["magma", "app", "compile", "rule"]
  }, import {
- "namespace": "magma.api.result.Err"
+ "namespace": ["magma", "api", "result", "Err"]
  }, import {
- "namespace": "magma.api.result.Ok"
+ "namespace": ["magma", "api", "result", "Ok"]
  }, import {
- "namespace": "magma.app.compile.GenerateException"
+ "namespace": ["magma", "app", "compile", "GenerateException"]
  }, import {
- "namespace": "magma.app.compile.MapNode"
+ "namespace": ["magma", "app", "compile", "MapNode"]
  }, import {
- "namespace": "magma.app.compile.Node"
+ "namespace": ["magma", "app", "compile", "Node"]
  }, import {
- "namespace": "magma.app.compile.ParseException"
+ "namespace": ["magma", "app", "compile", "ParseException"]
  }, import {
- "namespace": "java.util.ArrayList"
+ "namespace": ["java", "util", "ArrayList"]
  }, import {
- "namespace": "java.util.Collections"
+ "namespace": ["java", "util", "Collections"]
  }, import {
- "namespace": "java.util.Objects"
+ "namespace": ["java", "util", "Objects"]
  }, class {
  "name": "NodeListRule implements Rule ",
  "body": "

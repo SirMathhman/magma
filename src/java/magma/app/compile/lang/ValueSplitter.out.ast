@@ -1,10 +1,10 @@
 {
 "children": [import {
- "namespace": "magma.app.compile.rule.Splitter"
+ "namespace": ["magma", "app", "compile", "rule", "Splitter"]
  }, import {
- "namespace": "java.util.Arrays"
+ "namespace": ["java", "util", "Arrays"]
  }, import {
- "namespace": "java.util.List"
+ "namespace": ["java", "util", "List"]
  }, function {
  "name": "ValueSplitter implements Splitter ",
  "body": "

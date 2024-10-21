@@ -1,6 +1,6 @@
 {
 "children": [import {
- "namespace": "magma.app.ApplicationException"
+ "namespace": ["magma", "app", "ApplicationException"]
  }, function {
  "name": "CompileException extends ApplicationException ",
  "body": "
