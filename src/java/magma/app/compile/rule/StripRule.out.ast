@@ -56,16 +56,13 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "parse",
+     "child": "parse",
      "parent": symbol {
       "content": "childRule"
       }
      },
-    "arguments": [access {
-     "name": "strip()",
-     "parent": symbol {
-      "content": "input"
-      }
+    "arguments": [symbol {
+     "content": "input.strip()"
      }]
     }
    }]
@@ -100,16 +97,13 @@
    }, return {
    "value": invocation {
     "caller": access {
-     "name": "generate",
+     "child": "generate",
      "parent": symbol {
       "content": "childRule"
       }
      },
-    "arguments": [access {
-     "name": "mapValue(inner -> leftPadding + inner + rightPadding",
-     "parent": symbol {
-      "content": "node)"
-      }
+    "arguments": [symbol {
+     "content": "node).mapValue(inner -> leftPadding + inner + rightPadding"
      }]
     }
    }]

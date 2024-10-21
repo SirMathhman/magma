@@ -53,18 +53,15 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "mapNodeList",
+     "child": "mapNodeList",
      "parent": symbol {
       "content": "node"
       }
      },
     "arguments": [symbol {
      "content": "CHILDREN"
-     }, access {
-     "name": "orElse(node",
-     "parent": symbol {
-      "content": " Compiler::passChildren)"
-      }
+     }, symbol {
+     "content": " Compiler::passChildren).orElse(node"
      }]
     }
    }]
@@ -97,31 +94,16 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "stream",
+     "child": "stream",
      "parent": symbol {
       "content": "children"
       }
      },
-    "arguments": [access {
-     "name": "toList(",
-     "parent": access {
-      "name": "map(Compiler::passRootChild)
-                ",
-      "parent": access {
-       "name": "PACKAGE))
-                ",
-       "parent": access {
-        "name": "is(JavaLang",
-        "parent": access {
-         "name": "filter(child -> !child",
-         "parent": symbol {
-          "content": ")
-                "
-          }
-         }
-        }
-       }
-      }
+    "arguments": [symbol {
+     "content": ")
+                .filter(child -> !child.is(JavaLang.PACKAGE))
+                .map(Compiler::passRootChild)
+                .toList("
      }]
     }
    }]
@@ -146,20 +128,11 @@
     "caller": symbol {
      "content": "passRecord"
      },
-    "arguments": [access {
-     "name": "orElse(node",
-     "parent": access {
-      "name": "or(() -> passClass(node))
-                ",
-      "parent": access {
-       "name": "or(() -> passInterface(node))
-                ",
-       "parent": symbol {
-        "content": "node)
-                "
-        }
-       }
-      }
+    "arguments": [symbol {
+     "content": "node)
+                .or(() -> passInterface(node))
+                .or(() -> passClass(node))
+                .orElse(node"
      }]
     }
    }]
@@ -217,22 +190,13 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "is",
+     "child": "is",
      "parent": symbol {
       "content": "node"
       }
      },
-    "arguments": [access {
-     "name": "empty(",
-     "parent": access {
-      "name": "retype(FUNCTION)) : Optional",
-      "parent": access {
-       "name": "of(node",
-       "parent": symbol {
-        "content": "RECORD) ? Optional"
-        }
-       }
-      }
+    "arguments": [symbol {
+     "content": "RECORD) ? Optional.of(node.retype(FUNCTION)) : Optional.empty("
      }]
     }
    }]
@@ -276,7 +240,7 @@
    }, return {
    "value": invocation {
     "caller": access {
-     "name": "of",
+     "child": "of",
      "parent": symbol {
       "content": "Optional"
       }

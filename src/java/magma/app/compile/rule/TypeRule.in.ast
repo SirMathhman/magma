@@ -55,28 +55,22 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "parse",
+     "child": "parse",
      "parent": symbol {
       "content": "rule"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "mapValue",
+      "child": "mapValue",
       "parent": symbol {
        "content": "input)
                 "
        }
       },
-     "arguments": [access {
-      "name": "wrapErr(new ParseException("Failed to assign type ' type + "'input",
-      "parent": access {
-       "name": "retype(type))
-                ",
-       "parent": symbol {
-        "content": "node -> node"
-        }
-       }
+     "arguments": [symbol {
+      "content": "node -> node.retype(type))
+                .wrapErr(new ParseException("Failed to assign type ' type + "'input"
       }]
      }]
     }
@@ -111,7 +105,7 @@
    }, return {
    "value": invocation {
     "caller": access {
-     "name": "generate",
+     "child": "generate",
      "parent": symbol {
       "content": "rule"
       }

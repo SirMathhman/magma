@@ -51,16 +51,13 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "parse",
+     "child": "parse",
      "parent": symbol {
       "content": "childRule"
       }
      },
-    "arguments": [access {
-     "name": "wrapErr(new ParseException(message",
-     "parent": symbol {
-      "content": "input)"
-      }
+    "arguments": [symbol {
+     "content": "input).wrapErr(new ParseException(message"
      }, symbol {
      "content": " input)"
      }]
@@ -93,16 +90,13 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "generate",
+     "child": "generate",
      "parent": symbol {
       "content": "childRule"
       }
      },
-    "arguments": [access {
-     "name": "wrapErr(new GenerateException(message",
-     "parent": symbol {
-      "content": "node)"
-      }
+    "arguments": [symbol {
+     "content": "node).wrapErr(new GenerateException(message"
      }, symbol {
      "content": " node)"
      }]

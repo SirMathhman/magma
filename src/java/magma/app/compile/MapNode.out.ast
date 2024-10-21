@@ -121,11 +121,8 @@
     }
    }],
   "children": [return {
-   "value": access {
-    "name": "repeat(depth) + "\"" + key + "\": " + value",
-    "parent": symbol {
-     "content": ""\n" + " ""
-     }
+   "value": symbol {
+    "content": ""\n" + " ".repeat(depth) + "\"" + key + "\": " + value"
     }
    }]
   }, method {
@@ -157,31 +154,22 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "stream",
+     "child": "stream",
      "parent": symbol {
       "content": "values"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "map",
+      "child": "map",
       "parent": symbol {
        "content": ")
                 "
        }
       },
-     "arguments": [access {
-      "name": "joining(", ", "[", "]"",
-      "parent": access {
-       "name": "collect(Collectors",
-       "parent": access {
-        "name": "format(depth + 1))
-                ",
-        "parent": symbol {
-         "content": "node -> node"
-         }
-        }
-       }
+     "arguments": [symbol {
+      "content": "node -> node.format(depth + 1))
+                .collect(Collectors.joining(", ", "[", "]""
       }]
      }]
     }
@@ -210,7 +198,7 @@
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "of",
+      "child": "of",
       "parent": symbol {
        "content": "Optional"
        }
@@ -249,27 +237,16 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "filter",
+     "child": "filter",
      "parent": access {
-      "name": "type",
+      "child": "type",
       "parent": symbol {
        "content": "this"
        }
       }
      },
-    "arguments": [access {
-     "name": "isPresent(",
-     "parent": invocation {
-      "caller": access {
-       "name": "equals",
-       "parent": symbol {
-        "content": "value -> value"
-        }
-       },
-      "arguments": [symbol {
-       "content": "type)"
-       }]
-      }
+    "arguments": [symbol {
+     "content": "value -> value.equals(type)).isPresent("
      }]
     }
    }]
@@ -342,14 +319,14 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "ofNullable",
+     "child": "ofNullable",
      "parent": symbol {
       "content": "Optional"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "get",
+      "child": "get",
       "parent": symbol {
        "content": "strings"
        }
@@ -411,16 +388,13 @@
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "map",
+      "child": "map",
       "parent": symbol {
        "content": "propertyKey)"
        }
       },
-     "arguments": [access {
-      "name": "map(value -> withNodeList(propertyKey, value",
-      "parent": symbol {
-       "content": "mapper)"
-       }
+     "arguments": [symbol {
+      "content": "mapper).map(value -> withNodeList(propertyKey, value"
       }]
      }]
     }
@@ -456,33 +430,27 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "entrySet",
+     "child": "entrySet",
      "parent": symbol {
       "content": "nodeLists"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "stream",
+      "child": "stream",
       "parent": symbol {
        "content": ")"
        }
       },
      "arguments": [invocation {
       "caller": access {
-       "name": "map",
+       "child": "map",
        "parent": symbol {
         "content": ")"
         }
        },
-      "arguments": [access {
-       "name": "getValue(",
-       "parent": access {
-        "name": "getKey(), pair",
-        "parent": symbol {
-         "content": "pair -> new Tuple<>(pair"
-         }
-        }
+      "arguments": [symbol {
+       "content": "pair -> new Tuple<>(pair.getKey(), pair.getValue("
        }]
       }]
      }]
@@ -557,14 +525,14 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "ofNullable",
+     "child": "ofNullable",
      "parent": symbol {
       "content": "Optional"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "get",
+      "child": "get",
       "parent": symbol {
        "content": "nodes"
        }
@@ -601,33 +569,27 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "entrySet",
+     "child": "entrySet",
      "parent": symbol {
       "content": "nodes"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "stream",
+      "child": "stream",
       "parent": symbol {
        "content": ")"
        }
       },
      "arguments": [invocation {
       "caller": access {
-       "name": "map",
+       "child": "map",
        "parent": symbol {
         "content": ")"
         }
        },
-      "arguments": [access {
-       "name": "getValue(",
-       "parent": access {
-        "name": "getKey(), entry",
-        "parent": symbol {
-         "content": "entry -> new Tuple<>(entry"
-         }
-        }
+      "arguments": [symbol {
+       "content": "entry -> new Tuple<>(entry.getKey(), entry.getValue("
        }]
       }]
      }]
@@ -653,7 +615,7 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "containsKey",
+     "child": "containsKey",
      "parent": symbol {
       "content": "nodes"
       }
@@ -742,14 +704,14 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "ofNullable",
+     "child": "ofNullable",
      "parent": symbol {
       "content": "Optional"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "get",
+      "child": "get",
       "parent": symbol {
        "content": "stringLists"
        }
@@ -786,33 +748,27 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "entrySet",
+     "child": "entrySet",
      "parent": symbol {
       "content": "strings"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "stream",
+      "child": "stream",
       "parent": symbol {
        "content": ")"
        }
       },
      "arguments": [invocation {
       "caller": access {
-       "name": "map",
+       "child": "map",
        "parent": symbol {
         "content": ")"
         }
        },
-      "arguments": [access {
-       "name": "getValue(",
-       "parent": access {
-        "name": "getKey(), pair",
-        "parent": symbol {
-         "content": "pair -> new Tuple<>(pair"
-         }
-        }
+      "arguments": [symbol {
+       "content": "pair -> new Tuple<>(pair.getKey(), pair.getValue("
        }]
       }]
      }]
@@ -848,14 +804,14 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "ofNullable",
+     "child": "ofNullable",
      "parent": symbol {
       "content": "Optional"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "get",
+      "child": "get",
       "parent": symbol {
        "content": "nodeLists"
        }
@@ -1002,28 +958,22 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "stream",
+     "child": "stream",
      "parent": symbol {
       "content": "list"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "map",
+      "child": "map",
       "parent": symbol {
        "content": ")
                 "
        }
       },
-     "arguments": [access {
-      "name": "joining(", ", "[", "]"",
-      "parent": access {
-       "name": "collect(Collectors",
-       "parent": symbol {
-        "content": "inner -> "\"" + inner + "\"")
-                "
-        }
-       }
+     "arguments": [symbol {
+      "content": "inner -> "\"" + inner + "\"")
+                .collect(Collectors.joining(", ", "[", "]""
       }]
      }]
     }
@@ -1070,41 +1020,23 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "entrySet",
+     "child": "entrySet",
      "parent": symbol {
       "content": "set"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "stream",
+      "child": "stream",
       "parent": symbol {
        "content": ")
                 "
        }
       },
-     "arguments": [access {
-      "name": "joining(","",
-      "parent": access {
-       "name": "collect(Collectors",
-       "parent": access {
-        "name": "getValue())))
-                ",
-        "parent": access {
-         "name": "apply(entry",
-         "parent": access {
-          "name": "getKey(), format",
-          "parent": access {
-           "name": "map(entry -> formatLine(depth, entry",
-           "parent": symbol {
-            "content": ")
-                "
-            }
-           }
-          }
-         }
-        }
-       }
+     "arguments": [symbol {
+      "content": ")
+                .map(entry -> formatLine(depth, entry.getKey(), format.apply(entry.getValue())))
+                .collect(Collectors.joining(",""
       }]
      }]
     }
@@ -1140,14 +1072,14 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "entrySet",
+     "child": "entrySet",
      "parent": symbol {
       "content": "stringLists"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "stream",
+      "child": "stream",
       "parent": symbol {
        "content": ")
                 "
@@ -1155,20 +1087,14 @@
       },
      "arguments": [invocation {
       "caller": access {
-       "name": "map",
+       "child": "map",
        "parent": symbol {
         "content": ")
                 "
         }
        },
-      "arguments": [access {
-       "name": "getValue(",
-       "parent": access {
-        "name": "getKey(), entry",
-        "parent": symbol {
-         "content": "entry -> new Tuple<>(entry"
-         }
-        }
+      "arguments": [symbol {
+       "content": "entry -> new Tuple<>(entry.getKey(), entry.getValue("
        }]
       }]
      }]
@@ -1225,16 +1151,13 @@
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "map",
+      "child": "map",
       "parent": symbol {
        "content": "propertyKey)"
        }
       },
-     "arguments": [access {
-      "name": "map(list -> withStringList(propertyKey, list",
-      "parent": symbol {
-       "content": "mapper)"
-       }
+     "arguments": [symbol {
+      "content": "mapper).map(list -> withStringList(propertyKey, list"
       }]
      }]
     }

@@ -116,10 +116,16 @@
         final var value = new LazyRule();
         value.setChildRule(new OrRule(List.of(
                 createInvocationRule(value),
-                new TypeRule("access", new LocatingRule(new NodeRule("parent", value), new LastLocator("."), new ExtractRule("name"))),
+                createAccessRule(value),
                 new TypeRule("symbol", new ExtractRule("content"))
         )));
         return value;
+    }
+
+    private static TypeRule createAccessRule(LazyRule value) {
+        final var parent = new NodeRule("parent", value);
+        final var child = new FilterRule(new SymbolFilter(), new ExtractRule("child"));
+        return new TypeRule("access", new LocatingRule(parent, new LastLocator("."), child));
     }
 
     private static TypeRule createInvocationRule(LazyRule value) {

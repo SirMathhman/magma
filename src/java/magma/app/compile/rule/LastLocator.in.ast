@@ -43,16 +43,13 @@
    }, return {
    "value": invocation {
     "caller": access {
-     "name": "empty",
+     "child": "empty",
      "parent": symbol {
       "content": "index == -1 ? Optional"
       }
      },
-    "arguments": [access {
-     "name": "of(index",
-     "parent": symbol {
-      "content": ") : Optional"
-      }
+    "arguments": [symbol {
+     "content": ") : Optional.of(index"
      }]
     }
    }]
@@ -83,11 +80,8 @@
     "caller": symbol {
      "content": "locate0"
      },
-    "arguments": [access {
-     "name": "stream(",
-     "parent": symbol {
-      "content": "input)"
-      }
+    "arguments": [symbol {
+     "content": "input).stream("
      }]
     }
    }]

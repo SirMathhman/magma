@@ -42,11 +42,8 @@
     "caller": symbol {
      "content": "values"
      },
-    "arguments": [access {
-     "name": "contains(input",
-     "parent": symbol {
-      "content": ")"
-      }
+    "arguments": [symbol {
+     "content": ").contains(input"
      }]
     }
    }]

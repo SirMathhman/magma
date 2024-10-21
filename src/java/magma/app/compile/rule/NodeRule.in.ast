@@ -57,23 +57,20 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "parse",
+     "child": "parse",
      "parent": symbol {
       "content": "propertyRule"
       }
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "mapValue",
+      "child": "mapValue",
       "parent": symbol {
        "content": "input)"
        }
       },
-     "arguments": [access {
-      "name": "withNode(propertyKey, node",
-      "parent": symbol {
-       "content": "node -> new MapNode()"
-       }
+     "arguments": [symbol {
+      "content": "node -> new MapNode().withNode(propertyKey, node"
       }]
      }]
     }
@@ -112,7 +109,7 @@
    }, return {
    "value": invocation {
     "caller": access {
-     "name": "generate",
+     "child": "generate",
      "parent": symbol {
       "content": "propertyRule"
       }

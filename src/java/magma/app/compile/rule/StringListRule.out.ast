@@ -67,16 +67,8 @@
     "caller": symbol {
      "content": "new RuleResult<>"
      },
-    "arguments": [access {
-     "name": "withStringList(propertyKey",
-     "parent": invocation {
-      "caller": symbol {
-       "content": "new Ok<>"
-       },
-      "arguments": [symbol {
-       "content": "new MapNode("
-       }]
-      }
+    "arguments": [symbol {
+     "content": "new Ok<>(new MapNode().withStringList(propertyKey"
      }, symbol {
      "content": " args))"
      }]

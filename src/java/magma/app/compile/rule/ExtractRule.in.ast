@@ -58,16 +58,8 @@
     "caller": symbol {
      "content": "new RuleResult<>"
      },
-    "arguments": [access {
-     "name": "withString(propertyKey",
-     "parent": invocation {
-      "caller": symbol {
-       "content": "new Ok<>"
-       },
-      "arguments": [symbol {
-       "content": "new MapNode("
-       }]
-      }
+    "arguments": [symbol {
+     "content": "new Ok<>(new MapNode().withString(propertyKey"
      }, symbol {
      "content": " input))"
      }]
@@ -100,18 +92,15 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "findString",
+     "child": "findString",
      "parent": symbol {
       "content": "node"
       }
      },
     "arguments": [invocation {
-     "caller": access {
-      "name": "<RuleResult<String, GenerateException>>map",
-      "parent": symbol {
-       "content": "propertyKey)
-                "
-       }
+     "caller": symbol {
+      "content": "propertyKey)
+                .<RuleResult<String, GenerateException>>map"
       },
      "arguments": [invocation {
       "caller": symbol {
@@ -121,12 +110,9 @@
        "caller": symbol {
         "content": "new Ok<>"
         },
-       "arguments": [access {
-        "name": "orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String ' propertyKey + "'t present", node",
-        "parent": symbol {
-         "content": "s)))
-                "
-         }
+       "arguments": [symbol {
+        "content": "s)))
+                .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String ' propertyKey + "'t present", node"
         }]
        }]
       }]

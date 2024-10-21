@@ -50,11 +50,8 @@
    "value": "Override"
    }],
   "children": [return {
-   "value": access {
-    "name": "empty()",
-    "parent": symbol {
-     "content": "Optional"
-     }
+   "value": symbol {
+    "content": "Optional.empty()"
     }
    }]
   }, method {
@@ -76,7 +73,7 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "of",
+     "child": "of",
      "parent": symbol {
       "content": "Optional"
       }

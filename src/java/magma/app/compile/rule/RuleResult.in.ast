@@ -108,11 +108,8 @@
    "content": "public"
    }],
   "children": [return {
-   "value": access {
-    "name": "isOk()",
-    "parent": symbol {
-     "content": "result"
-     }
+   "value": symbol {
+    "content": "result.isOk()"
     }
    }]
   }, method {
@@ -150,7 +147,7 @@
      },
     "arguments": [invocation {
      "caller": access {
-      "name": "mapValue",
+      "child": "mapValue",
       "parent": symbol {
        "content": "result"
        }
@@ -214,11 +211,8 @@
    "content": "public"
    }],
   "children": [return {
-   "value": access {
-    "name": "isErr()",
-    "parent": symbol {
-     "content": "result"
-     }
+   "value": symbol {
+    "content": "result.isErr()"
     }
    }]
   }, method {
@@ -232,25 +226,16 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "stream",
+     "child": "stream",
      "parent": symbol {
       "content": "1 + children"
       }
      },
-    "arguments": [access {
-     "name": "orElse(0",
-     "parent": access {
-      "name": "max(Integer::compare)
-                ",
-      "parent": access {
-       "name": "map(RuleResult::depth)
-                ",
-       "parent": symbol {
-        "content": ")
-                "
-        }
-       }
-      }
+    "arguments": [symbol {
+     "content": ")
+                .map(RuleResult::depth)
+                .max(Integer::compare)
+                .orElse(0"
      }]
     }
    }]
@@ -277,24 +262,15 @@
   "children": [return {
    "value": invocation {
     "caller": access {
-     "name": "stream",
+     "child": "stream",
      "parent": symbol {
       "content": "children"
       }
      },
-    "arguments": [access {
-     "name": "toList(",
-     "parent": access {
-      "name": "comparingInt(RuleResult::depth))
-                ",
-      "parent": access {
-       "name": "sorted(Comparator",
-       "parent": symbol {
-        "content": ")
-                "
-        }
-       }
-      }
+    "arguments": [symbol {
+     "content": ")
+                .sorted(Comparator.comparingInt(RuleResult::depth))
+                .toList("
      }]
     }
    }]
