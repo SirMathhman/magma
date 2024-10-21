@@ -53,26 +53,8 @@
   "children": [symbol {
    "content": "if (!input.startsWith(prefix))
             return new RuleResult<>(new Err<>(new ParseException("Prefix ' prefix + "'t present", input)));"
-   }, return {
-   "value": invocation {
-    "caller": access {
-     "child": "parse",
-     "parent": symbol {
-      "content": "childRule"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "substring",
-      "parent": symbol {
-       "content": "input"
-       }
-      },
-     "arguments": [symbol {
-      "content": "prefix.length()"
-      }]
-     }]
-    }
+   }, symbol {
+   "content": "return childRule.parse(input.substring(prefix.length()));"
    }]
   }, method {
   "name": "generate",
@@ -98,18 +80,8 @@
     "value": "Node"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "generate",
-     "parent": symbol {
-      "content": "childRule"
-      }
-     },
-    "arguments": [symbol {
-     "content": "node).mapValue(value -> prefix + value"
-     }]
-    }
+  "children": [symbol {
+   "content": "return childRule.generate(node).mapValue(value -> prefix + value);"
    }]
   }]
  }]

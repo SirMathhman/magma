@@ -50,20 +50,8 @@
     "value": "String"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "parse",
-     "parent": symbol {
-      "content": "childRule"
-      }
-     },
-    "arguments": [symbol {
-     "content": "input).wrapErr(new ParseException(message"
-     }, symbol {
-     "content": " input)"
-     }]
-    }
+  "children": [symbol {
+   "content": "return childRule.parse(input).wrapErr(new ParseException(message, input));"
    }]
   }, method {
   "name": "generate",
@@ -89,20 +77,8 @@
     "value": "Node"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "generate",
-     "parent": symbol {
-      "content": "childRule"
-      }
-     },
-    "arguments": [symbol {
-     "content": "node).wrapErr(new GenerateException(message"
-     }, symbol {
-     "content": " node)"
-     }]
-    }
+  "children": [symbol {
+   "content": "return childRule.generate(node).wrapErr(new GenerateException(message, node));"
    }]
   }]
  }]

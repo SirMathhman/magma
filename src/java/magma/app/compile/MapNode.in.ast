@@ -122,10 +122,8 @@
     "value": "String"
     }
    }],
-  "children": [return {
-   "value": symbol {
-    "content": ""\n" + " ".repeat(depth) + "\"" + key + "\": " + value"
-    }
+  "children": [symbol {
+   "content": "return "\n" + " ".repeat(depth) + "\"" + key + "\": " + value;"
    }]
   }, method {
   "name": "formatNodeList",
@@ -153,28 +151,10 @@
      }]
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "stream",
-     "parent": symbol {
-      "content": "values"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "map",
-      "parent": symbol {
-       "content": ")
-                "
-       }
-      },
-     "arguments": [symbol {
-      "content": "node -> node.format(depth + 1))
-                .collect(Collectors.joining(", ", "[", "]""
-      }]
-     }]
-    }
+  "children": [symbol {
+   "content": "return values.stream()
+                .map(node -> node.format(depth + 1))
+                .collect(Collectors.joining(", ", "[", "]"));"
    }]
   }, method {
   "name": "retype",
@@ -193,31 +173,8 @@
     "value": "String"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new MapNode"
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "of",
-      "parent": symbol {
-       "content": "Optional"
-       }
-      },
-     "arguments": [symbol {
-      "content": "type"
-      }]
-     }, symbol {
-     "content": " strings"
-     }, symbol {
-     "content": " stringLists"
-     }, symbol {
-     "content": " nodes"
-     }, symbol {
-     "content": " nodeLists"
-     }]
-    }
+  "children": [symbol {
+   "content": "return new MapNode(Optional.of(type), strings, stringLists, nodes, nodeLists);"
    }]
   }, method {
   "name": "is",
@@ -236,21 +193,8 @@
     "value": "String"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "filter",
-     "parent": access {
-      "child": "type",
-      "parent": symbol {
-       "content": "this"
-       }
-      }
-     },
-    "arguments": [symbol {
-     "content": "value -> value.equals(type)).isPresent("
-     }]
-    }
+  "children": [symbol {
+   "content": "return this.type.filter(value -> value.equals(type)).isPresent();"
    }]
   }, method {
   "name": "withString",
@@ -278,23 +222,8 @@
    "content": "final var copy = new HashMap<>(strings);"
    }, symbol {
    "content": "copy.put(propertyKey, propertyValue);"
-   }, return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new MapNode"
-     },
-    "arguments": [symbol {
-     "content": "type"
-     }, symbol {
-     "content": " copy"
-     }, symbol {
-     "content": " stringLists"
-     }, symbol {
-     "content": " nodes"
-     }, symbol {
-     "content": " nodeLists"
-     }]
-    }
+   }, symbol {
+   "content": "return new MapNode(type, copy, stringLists, nodes, nodeLists);"
    }]
   }, method {
   "name": "findString",
@@ -383,23 +312,8 @@
      }]
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "findNodeList"
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "map",
-      "parent": symbol {
-       "content": "propertyKey)"
-       }
-      },
-     "arguments": [symbol {
-      "content": "mapper).map(value -> withNodeList(propertyKey, value"
-      }]
-     }]
-    }
+  "children": [symbol {
+   "content": "return findNodeList(propertyKey).map(mapper).map(value -> withNodeList(propertyKey, value));"
    }]
   }, method {
   "name": "streamNodeLists",
@@ -429,34 +343,8 @@
   "annotations": [annotation {
    "value": "Override"
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "entrySet",
-     "parent": symbol {
-      "content": "nodeLists"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "stream",
-      "parent": symbol {
-       "content": ")"
-       }
-      },
-     "arguments": [invocation {
-      "caller": access {
-       "child": "map",
-       "parent": symbol {
-        "content": ")"
-        }
-       },
-      "arguments": [symbol {
-       "content": "pair -> new Tuple<>(pair.getKey(), pair.getValue("
-       }]
-      }]
-     }]
-    }
+  "children": [symbol {
+   "content": "return nodeLists.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));"
    }]
   }, method {
   "name": "withNode",
@@ -484,23 +372,8 @@
    "content": "final var copy = new HashMap<>(nodes);"
    }, symbol {
    "content": "copy.put(propertyKey, propertyValue);"
-   }, return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new MapNode"
-     },
-    "arguments": [symbol {
-     "content": "type"
-     }, symbol {
-     "content": " strings"
-     }, symbol {
-     "content": " stringLists"
-     }, symbol {
-     "content": " copy"
-     }, symbol {
-     "content": " nodeLists"
-     }]
-    }
+   }, symbol {
+   "content": "return new MapNode(type, strings, stringLists, copy, nodeLists);"
    }]
   }, method {
   "name": "findNode",
@@ -568,34 +441,8 @@
   "annotations": [annotation {
    "value": "Override"
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "entrySet",
-     "parent": symbol {
-      "content": "nodes"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "stream",
-      "parent": symbol {
-       "content": ")"
-       }
-      },
-     "arguments": [invocation {
-      "caller": access {
-       "child": "map",
-       "parent": symbol {
-        "content": ")"
-        }
-       },
-      "arguments": [symbol {
-       "content": "entry -> new Tuple<>(entry.getKey(), entry.getValue("
-       }]
-      }]
-     }]
-    }
+  "children": [symbol {
+   "content": "return nodes.entrySet().stream().map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));"
    }]
   }, method {
   "name": "hasNode",
@@ -658,23 +505,8 @@
    "content": "final var copy = new HashMap<>(stringLists);"
    }, symbol {
    "content": "copy.put(propertyKey, propertyValues);"
-   }, return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new MapNode"
-     },
-    "arguments": [symbol {
-     "content": "type"
-     }, symbol {
-     "content": " strings"
-     }, symbol {
-     "content": " copy"
-     }, symbol {
-     "content": " nodes"
-     }, symbol {
-     "content": " nodeLists"
-     }]
-    }
+   }, symbol {
+   "content": "return new MapNode(type, strings, copy, nodes, nodeLists);"
    }]
   }, method {
   "name": "findStringList",
@@ -747,34 +579,8 @@
   "annotations": [annotation {
    "value": "Override"
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "entrySet",
-     "parent": symbol {
-      "content": "strings"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "stream",
-      "parent": symbol {
-       "content": ")"
-       }
-      },
-     "arguments": [invocation {
-      "caller": access {
-       "child": "map",
-       "parent": symbol {
-        "content": ")"
-        }
-       },
-      "arguments": [symbol {
-       "content": "pair -> new Tuple<>(pair.getKey(), pair.getValue("
-       }]
-      }]
-     }]
-    }
+  "children": [symbol {
+   "content": "return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));"
    }]
   }, method {
   "name": "findNodeList",
@@ -855,23 +661,8 @@
    "content": "final var copy = new HashMap<>(nodeLists);"
    }, symbol {
    "content": "copy.put(propertyKey, values);"
-   }, return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new MapNode"
-     },
-    "arguments": [symbol {
-     "content": "type"
-     }, symbol {
-     "content": " strings"
-     }, symbol {
-     "content": " stringLists"
-     }, symbol {
-     "content": " nodes"
-     }, symbol {
-     "content": " copy"
-     }]
-    }
+   }, symbol {
+   "content": "return new MapNode(type, strings, stringLists, nodes, copy);"
    }]
   }, method {
   "name": "toString",
@@ -884,15 +675,8 @@
   "annotations": [annotation {
    "value": "Override"
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "format"
-     },
-    "arguments": [symbol {
-     "content": "0"
-     }]
-    }
+  "children": [symbol {
+   "content": "return format(0);"
    }]
   }, method {
   "name": "format",
@@ -957,28 +741,10 @@
      }]
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "stream",
-     "parent": symbol {
-      "content": "list"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "map",
-      "parent": symbol {
-       "content": ")
-                "
-       }
-      },
-     "arguments": [symbol {
-      "content": "inner -> "\"" + inner + "\"")
-                .collect(Collectors.joining(", ", "[", "]""
-      }]
-     }]
-    }
+  "children": [symbol {
+   "content": "return list.stream()
+                .map(inner -> "\"" + inner + "\"")
+                .collect(Collectors.joining(", ", "[", "]"));"
    }]
   }, method {
   "name": "formatMap",
@@ -1019,29 +785,11 @@
      }]
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "entrySet",
-     "parent": symbol {
-      "content": "set"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "stream",
-      "parent": symbol {
-       "content": ")
-                "
-       }
-      },
-     "arguments": [symbol {
-      "content": ")
+  "children": [symbol {
+   "content": "return set.entrySet()
+                .stream()
                 .map(entry -> formatLine(depth, entry.getKey(), format.apply(entry.getValue())))
-                .collect(Collectors.joining(",""
-      }]
-     }]
-    }
+                .collect(Collectors.joining(","));"
    }]
   }, method {
   "name": "streamStringLists",
@@ -1071,36 +819,10 @@
   "annotations": [annotation {
    "value": "Override"
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "entrySet",
-     "parent": symbol {
-      "content": "stringLists"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "stream",
-      "parent": symbol {
-       "content": ")
-                "
-       }
-      },
-     "arguments": [invocation {
-      "caller": access {
-       "child": "map",
-       "parent": symbol {
-        "content": ")
-                "
-        }
-       },
-      "arguments": [symbol {
-       "content": "entry -> new Tuple<>(entry.getKey(), entry.getValue("
-       }]
-      }]
-     }]
-    }
+  "children": [symbol {
+   "content": "return stringLists.entrySet()
+                .stream()
+                .map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));"
    }]
   }, method {
   "name": "mapStringList",
@@ -1146,23 +868,8 @@
      }]
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "findStringList"
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "map",
-      "parent": symbol {
-       "content": "propertyKey)"
-       }
-      },
-     "arguments": [symbol {
-      "content": "mapper).map(list -> withStringList(propertyKey, list"
-      }]
-     }]
-    }
+  "children": [symbol {
+   "content": "return findStringList(propertyKey).map(mapper).map(list -> withStringList(propertyKey, list));"
    }]
   }, method {
   "name": "merge",
@@ -1197,23 +904,8 @@
    "content": "final var nodeListCopy = new HashMap<>(nodeLists);"
    }, symbol {
    "content": "other.streamNodeLists().forEach(tuple -> nodeListCopy.put(tuple.left(), tuple.right()));"
-   }, return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new MapNode"
-     },
-    "arguments": [symbol {
-     "content": "type"
-     }, symbol {
-     "content": " stringsCopy"
-     }, symbol {
-     "content": " stringListCopy"
-     }, symbol {
-     "content": " nodesCopy"
-     }, symbol {
-     "content": " nodeListCopy"
-     }]
-    }
+   }, symbol {
+   "content": "return new MapNode(type, stringsCopy, stringListCopy, nodesCopy, nodeListCopy);"
    }]
   }]
  }]

@@ -105,10 +105,8 @@
   "modifiers": [modifier {
    "content": "public"
    }],
-  "children": [return {
-   "value": symbol {
-    "content": "result.isOk()"
-    }
+  "children": [symbol {
+   "content": "return result.isOk();"
    }]
   }, method {
   "name": "mapValue",
@@ -138,25 +136,8 @@
      }]
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new RuleResult<>"
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "mapValue",
-      "parent": symbol {
-       "content": "result"
-       }
-      },
-     "arguments": [symbol {
-      "content": "mapper"
-      }]
-     }, symbol {
-     "content": " children"
-     }]
-    }
+  "children": [symbol {
+   "content": "return new RuleResult<>(result.mapValue(mapper), children);"
    }]
   }, method {
   "name": "wrapErr",
@@ -183,22 +164,8 @@
    "content": "if (!isError()) return this;"
    }, symbol {
    "content": "var list = singletonList(this);"
-   }, return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new RuleResult<>"
-     },
-    "arguments": [invocation {
-     "caller": symbol {
-      "content": "new Err<>"
-      },
-     "arguments": [symbol {
-      "content": "error"
-      }]
-     }, symbol {
-     "content": " list"
-     }]
-    }
+   }, symbol {
+   "content": "return new RuleResult<>(new Err<>(error), list);"
    }]
   }, method {
   "name": "isError",
@@ -208,10 +175,8 @@
   "modifiers": [modifier {
    "content": "public"
    }],
-  "children": [return {
-   "value": symbol {
-    "content": "result.isErr()"
-    }
+  "children": [symbol {
+   "content": "return result.isErr();"
    }]
   }, method {
   "name": "depth",
@@ -221,21 +186,11 @@
   "modifiers": [modifier {
    "content": "public"
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "stream",
-     "parent": symbol {
-      "content": "1 + children"
-      }
-     },
-    "arguments": [symbol {
-     "content": ")
+  "children": [symbol {
+   "content": "return 1 + children.stream()
                 .map(RuleResult::depth)
                 .max(Integer::compare)
-                .orElse(0"
-     }]
-    }
+                .orElse(0);"
    }]
   }, method {
   "name": "sortedChildren",
@@ -257,20 +212,10 @@
   "modifiers": [modifier {
    "content": "public"
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "stream",
-     "parent": symbol {
-      "content": "children"
-      }
-     },
-    "arguments": [symbol {
-     "content": ")
+  "children": [symbol {
+   "content": "return children.stream()
                 .sorted(Comparator.comparingInt(RuleResult::depth))
-                .toList("
-     }]
-    }
+                .toList();"
    }]
   }]
  }]

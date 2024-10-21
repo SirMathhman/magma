@@ -106,8 +106,7 @@ public class JavaLang {
 
     private static Rule createStatementRule() {
         return new OrRule(List.of(
-                new TypeRule("return", new PrefixRule("return ", new SuffixRule(new NodeRule("value", createValueRule()), ";"))),
-                new TypeRule("symbol", new ExtractRule("content"))
+                new TypeRule("return", new PrefixRule("return ", new SuffixRule(new NodeRule("value", createValueRule()), ";")))
         ));
     }
 
@@ -116,9 +115,13 @@ public class JavaLang {
         value.setChildRule(new OrRule(List.of(
                 createInvocationRule(value),
                 createAccessRule(value),
-                new TypeRule("symbol", new ExtractRule("content"))
+                createSymbolRule()
         )));
         return value;
+    }
+
+    private static TypeRule createSymbolRule() {
+        return new TypeRule("symbol", new FilterRule(new SymbolFilter(), new ExtractRule("content")));
     }
 
     private static TypeRule createAccessRule(LazyRule value) {

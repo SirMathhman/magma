@@ -40,18 +40,8 @@
    }],
   "children": [symbol {
    "content": "final var index = input.indexOf(slice);"
-   }, return {
-   "value": invocation {
-    "caller": access {
-     "child": "empty",
-     "parent": symbol {
-      "content": "index == -1 ? Optional"
-      }
-     },
-    "arguments": [symbol {
-     "content": ") : Optional.of(index"
-     }]
-    }
+   }, symbol {
+   "content": "return index == -1 ? Optional.empty() : Optional.of(index);"
    }]
   }, method {
   "name": "locate",
@@ -75,15 +65,8 @@
     "value": "String"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "locate0"
-     },
-    "arguments": [symbol {
-     "content": "input).stream("
-     }]
-    }
+  "children": [symbol {
+   "content": "return locate0(input).stream();"
    }]
   }]
  }]

@@ -64,19 +64,8 @@
             if (parsed.isValid()) return parsed;
             list.add(parsed);
         }"
-   }, return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new RuleResult<>"
-     },
-    "arguments": [symbol {
-     "content": "new Err<>(new ParseException("No valid rule in disjunction""
-     }, symbol {
-     "content": " input))"
-     }, symbol {
-     "content": " list"
-     }]
-    }
+   }, symbol {
+   "content": "return new RuleResult<>(new Err<>(new ParseException("No valid rule in disjunction", input)), list);"
    }]
   }, method {
   "name": "generate",
@@ -110,19 +99,8 @@
             if (generated.isValid()) return generated;
             list.add(generated);
         }"
-   }, return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new RuleResult<>"
-     },
-    "arguments": [symbol {
-     "content": "new Err<>(new GenerateException("No valid rule in disjunction""
-     }, symbol {
-     "content": " node))"
-     }, symbol {
-     "content": " list"
-     }]
-    }
+   }, symbol {
+   "content": "return new RuleResult<>(new Err<>(new GenerateException("No valid rule in disjunction", node)), list);"
    }]
   }]
  }]

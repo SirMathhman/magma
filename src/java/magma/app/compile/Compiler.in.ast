@@ -52,20 +52,8 @@
     "value": "Node"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "mapNodeList",
-     "parent": symbol {
-      "content": "node"
-      }
-     },
-    "arguments": [symbol {
-     "content": "CHILDREN"
-     }, symbol {
-     "content": " Compiler::passChildren).orElse(node"
-     }]
-    }
+  "children": [symbol {
+   "content": "return node.mapNodeList(CHILDREN, Compiler::passChildren).orElse(node);"
    }]
   }, method {
   "name": "passChildren",
@@ -93,21 +81,11 @@
      }]
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "stream",
-     "parent": symbol {
-      "content": "children"
-      }
-     },
-    "arguments": [symbol {
-     "content": ")
+  "children": [symbol {
+   "content": "return children.stream()
                 .filter(child -> !child.is(JavaLang.PACKAGE))
                 .map(Compiler::passRootChild)
-                .toList("
-     }]
-    }
+                .toList();"
    }]
   }, method {
   "name": "passRootChild",
@@ -125,18 +103,11 @@
     "value": "Node"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "passRecord"
-     },
-    "arguments": [symbol {
-     "content": "node)
+  "children": [symbol {
+   "content": "return passRecord(node)
                 .or(() -> passInterface(node))
                 .or(() -> passClass(node))
-                .orElse(node"
-     }]
-    }
+                .orElse(node);"
    }]
   }, method {
   "name": "passClass",
@@ -189,18 +160,8 @@
     "value": "Node"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "is",
-     "parent": symbol {
-      "content": "node"
-      }
-     },
-    "arguments": [symbol {
-     "content": "RECORD) ? Optional.of(node.retype(FUNCTION)) : Optional.empty("
-     }]
-    }
+  "children": [symbol {
+   "content": "return node.is(RECORD) ? Optional.of(node.retype(FUNCTION)) : Optional.empty();"
    }]
   }, method {
   "name": "passInterface",

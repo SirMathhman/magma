@@ -55,18 +55,8 @@
     "value": "String"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "parse",
-     "parent": symbol {
-      "content": "childRule"
-      }
-     },
-    "arguments": [symbol {
-     "content": "input.strip()"
-     }]
-    }
+  "children": [symbol {
+   "content": "return childRule.parse(input.strip());"
    }]
   }, method {
   "name": "generate",
@@ -96,18 +86,8 @@
    "content": "final var leftPadding = node.findString(leftPaddingKey).orElse("");"
    }, symbol {
    "content": "final var rightPadding = node.findString(rightPaddingKey).orElse("");"
-   }, return {
-   "value": invocation {
-    "caller": access {
-     "child": "generate",
-     "parent": symbol {
-      "content": "childRule"
-      }
-     },
-    "arguments": [symbol {
-     "content": "node).mapValue(inner -> leftPadding + inner + rightPadding"
-     }]
-    }
+   }, symbol {
+   "content": "return childRule.generate(node).mapValue(inner -> leftPadding + inner + rightPadding);"
    }]
   }]
  }]

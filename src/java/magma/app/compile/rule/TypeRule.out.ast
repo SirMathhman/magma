@@ -50,28 +50,10 @@
     "value": "String"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "parse",
-     "parent": symbol {
-      "content": "rule"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "mapValue",
-      "parent": symbol {
-       "content": "input)
-                "
-       }
-      },
-     "arguments": [symbol {
-      "content": "node -> node.retype(type))
-                .wrapErr(new ParseException("Failed to assign type ' type + "'input"
-      }]
-     }]
-    }
+  "children": [symbol {
+   "content": "return rule.parse(input)
+                .mapValue(node -> node.retype(type))
+                .wrapErr(new ParseException("Failed to assign type ' type + "'input));"
    }]
   }, method {
   "name": "generate",

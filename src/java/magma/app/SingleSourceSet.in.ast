@@ -56,15 +56,8 @@
    "content": "var sources = new HashSet<Path>();"
    }, symbol {
    "content": "if(Files.exists(this.source())) sources.add(this.source());"
-   }, return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new Ok<>"
-     },
-    "arguments": [symbol {
-     "content": "sources"
-     }]
-    }
+   }, symbol {
+   "content": "return new Ok<>(sources);"
    }]
   }]
  }]

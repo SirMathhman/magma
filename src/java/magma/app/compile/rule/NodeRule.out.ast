@@ -52,26 +52,8 @@
     "value": "String"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "parse",
-     "parent": symbol {
-      "content": "propertyRule"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "mapValue",
-      "parent": symbol {
-       "content": "input)"
-       }
-      },
-     "arguments": [symbol {
-      "content": "node -> new MapNode().withNode(propertyKey, node"
-      }]
-     }]
-    }
+  "children": [symbol {
+   "content": "return propertyRule.parse(input).mapValue(node -> new MapNode().withNode(propertyKey, node));"
    }]
   }, method {
   "name": "generate",
@@ -104,18 +86,8 @@
             return new RuleResult<>(new Err<>(new GenerateException("Node ' propertyKey + "'es not exist.", node)));"
    }, symbol {
    "content": "final var node1 = optional.get();"
-   }, return {
-   "value": invocation {
-    "caller": access {
-     "child": "generate",
-     "parent": symbol {
-      "content": "propertyRule"
-      }
-     },
-    "arguments": [symbol {
-     "content": "node1"
-     }]
-    }
+   }, symbol {
+   "content": "return propertyRule.generate(node1);"
    }]
   }]
  }]

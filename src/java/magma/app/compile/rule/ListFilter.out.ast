@@ -37,15 +37,8 @@
     "value": "String"
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "values"
-     },
-    "arguments": [symbol {
-     "content": ").contains(input"
-     }]
-    }
+  "children": [symbol {
+   "content": "return values().contains(input);"
    }]
   }]
  }]

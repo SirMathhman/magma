@@ -51,10 +51,8 @@
   "annotations": [annotation {
    "value": "Override"
    }],
-  "children": [return {
-   "value": symbol {
-    "content": "Optional.empty()"
-    }
+  "children": [symbol {
+   "content": "return Optional.empty();"
    }]
   }, method {
   "name": "findError",
@@ -117,15 +115,8 @@
      }]
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new Err<>"
-     },
-    "arguments": [symbol {
-     "content": "error"
-     }]
-    }
+  "children": [symbol {
+   "content": "return new Err<>(error);"
    }]
   }, method {
   "name": "isErr",
@@ -187,15 +178,8 @@
      }]
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new Err<>"
-     },
-    "arguments": [symbol {
-     "content": "error"
-     }]
-    }
+  "children": [symbol {
+   "content": "return new Err<>(error);"
    }]
   }, method {
   "name": "isOk",
@@ -252,15 +236,8 @@
      }]
     }
    }],
-  "children": [return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new Err<>"
-     },
-    "arguments": [symbol {
-     "content": "error"
-     }]
-    }
+  "children": [symbol {
+   "content": "return new Err<>(error);"
    }]
   }]
  }]

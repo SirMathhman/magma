@@ -64,17 +64,8 @@
                 .toList();"
    }, symbol {
    "content": "if (args.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("No items present", input)));"
-   }, return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new RuleResult<>"
-     },
-    "arguments": [symbol {
-     "content": "new Ok<>(new MapNode().withStringList(propertyKey"
-     }, symbol {
-     "content": " args))"
-     }]
-    }
+   }, symbol {
+   "content": "return new RuleResult<>(new Ok<>(new MapNode().withStringList(propertyKey, args)));"
    }]
   }, method {
   "name": "generate",
@@ -107,20 +98,8 @@
             return new RuleResult<>(new Err<>(new GenerateException("String list ' propertyKey + "'t present", node)));"
    }, symbol {
    "content": "final var joined = String.join(delimiter, list.get());"
-   }, return {
-   "value": invocation {
-    "caller": symbol {
-     "content": "new RuleResult<>"
-     },
-    "arguments": [invocation {
-     "caller": symbol {
-      "content": "new Ok<>"
-      },
-     "arguments": [symbol {
-      "content": "joined"
-      }]
-     }]
-    }
+   }, symbol {
+   "content": "return new RuleResult<>(new Ok<>(joined));"
    }]
   }]
  }]
