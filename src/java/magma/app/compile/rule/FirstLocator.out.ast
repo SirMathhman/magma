@@ -9,10 +9,6 @@
   },
  "children": [method {
   "name": "locate",
-  "content": " {
-        final var index = input.indexOf(slice);
-        return index == -1 ? Optional.empty() : Optional.of(index);
-    }",
   "params": content {
    "params": "String input"
    },
@@ -24,7 +20,14 @@
    "children": [symbol {
     "type": "Integer"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        final var index = input.indexOf(slice);"
+   }, any {
+   "content": "
+        return index == -1 ? Optional.empty() : Optional.of(index);"
+   }]
   }],
  "params": [definition {
   "type": "String",

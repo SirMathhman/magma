@@ -24,9 +24,6 @@
   },
  "children": [method {
   "name": "findValue",
-  "content": " {
-        return Optional.empty();
-    }",
   "returns": generic {
    "base": symbol {
     "type": "@Override
@@ -35,12 +32,13 @@
    "children": [symbol {
     "type": "T"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return Optional.empty();"
+   }]
   }, method {
   "name": "findError",
-  "content": " {
-        return Optional.of(error);
-    }",
   "returns": generic {
    "base": symbol {
     "type": "@Override
@@ -49,12 +47,13 @@
    "children": [symbol {
     "type": "E"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return Optional.of(error);"
+   }]
   }, method {
   "name": "mapValue",
-  "content": " {
-        return new Err<>(error);
-    }",
   "params": content {
    "params": "Function<T, R> mapper"
    },
@@ -68,21 +67,23 @@
     }, symbol {
     "type": "E"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return new Err<>(error);"
+   }]
   }, method {
   "name": "isErr",
-  "content": " {
-        return true;
-    }",
   "returns": symbol {
    "type": "@Override
     public boolean"
-   }
+   },
+  "children": [any {
+   "content": "
+        return true;"
+   }]
   }, method {
   "name": "and",
-  "content": " {
-        return new Err<>(error);
-    }",
   "params": content {
    "params": "Supplier<Result<R, E>> supplier"
    },
@@ -101,16 +102,41 @@
     }, symbol {
     "type": "E"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return new Err<>(error);"
+   }]
   }, method {
   "name": "isOk",
-  "content": " {
-        return false;
-    }",
   "returns": symbol {
    "type": "@Override
     public boolean"
-   }
+   },
+  "children": [any {
+   "content": "
+        return false;"
+   }]
+  }, method {
+  "name": "flatMapValue",
+  "params": content {
+   "params": "Function<T, Result<R, E>> mapper"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public"
+    },
+   "children": [symbol {
+    "type": "R> Result<R"
+    }, symbol {
+    "type": "E"
+    }]
+   },
+  "children": [any {
+   "content": "
+        return new Err<>(error);"
+   }]
   }],
  "type-params": [symbol {
   "type": "T"

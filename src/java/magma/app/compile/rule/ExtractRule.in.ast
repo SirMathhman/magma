@@ -21,10 +21,6 @@
   },
  "children": [method {
   "name": "parse",
-  "content": " {
-        if (input.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("Input is empty", input)));
-        return new RuleResult<>(new Ok<>(new MapNode().withString(propertyKey, input)));
-    }",
   "params": content {
    "params": "String input"
    },
@@ -38,15 +34,16 @@
     }, symbol {
     "type": "ParseException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        if (input.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("Input is empty", input)));"
+   }, any {
+   "content": "
+        return new RuleResult<>(new Ok<>(new MapNode().withString(propertyKey, input)));"
+   }]
   }, method {
   "name": "generate",
-  "content": " {
-        return node.findString(propertyKey)
-                .<RuleResult<String, GenerateException>>map(s -> new RuleResult<>(new Ok<>(s)))
-                .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String '+ propertyKey + "'ot present", node))));
-
-    }",
   "params": content {
    "params": "Node node"
    },
@@ -60,7 +57,13 @@
     }, symbol {
     "type": "GenerateException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return node.findString(propertyKey)
+                .<RuleResult<String, GenerateException>>map(s -> new RuleResult<>(new Ok<>(s)))
+                .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String ' propertyKey + "'t present", node))));"
+   }]
   }],
  "params": [definition {
   "type": "String",

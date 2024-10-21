@@ -63,7 +63,7 @@ public final class Application {
         final var fileNameWithoutExtension = fileName.substring(0, separator);
 
         var compiler = new Compiler(input);
-        final var result = compiler.compile();
+        final var result = Results.unwrap(compiler.compile());
 
         writeDebug(source, result.output(), fileNameWithoutExtension, MAGMA_EXTENSION);
         writeDebug(source, result.beforePass().toString(), fileNameWithoutExtension, "in.ast");

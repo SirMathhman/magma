@@ -17,12 +17,6 @@
   },
  "children": [method {
   "name": "parse",
-  "content": " {
-        if (!input.startsWith(prefix))
-            return new RuleResult<>(new Err<>(new ParseException("Prefix '+ prefix + "'ot present", input)));
-
-        return childRule.parse(input.substring(prefix.length()));
-    }",
   "params": content {
    "params": "String input"
    },
@@ -36,12 +30,18 @@
     }, symbol {
     "type": "ParseException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        if (!input.startsWith(prefix))
+            return new RuleResult<>(new Err<>(new ParseException("Prefix ' prefix + "'t present", input)));"
+   }, any {
+   "content": "
+
+        return childRule.parse(input.substring(prefix.length()));"
+   }]
   }, method {
   "name": "generate",
-  "content": " {
-        return childRule.generate(node).mapValue(value -> prefix + value);
-    }",
   "params": content {
    "params": "Node node"
    },
@@ -55,7 +55,11 @@
     }, symbol {
     "type": "GenerateException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return childRule.generate(node).mapValue(value -> prefix + value);"
+   }]
   }],
  "params": [definition {
   "type": "String",

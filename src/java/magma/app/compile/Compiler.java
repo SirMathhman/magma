@@ -3,7 +3,6 @@ package magma.app.compile;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.api.result.Results;
 import magma.app.compile.lang.JavaLang;
 import magma.app.compile.lang.MagmaLang;
 import magma.app.compile.rule.RuleResult;
@@ -70,11 +69,13 @@ public record Compiler(String input) {
         return child;
     }
 
-    public CompileResult compile() throws CompileException {
-        final var beforePass = Results.unwrap(write(createRootRule().parse(input)));
-        final var afterPass = pass(beforePass);
-        final var output = Results.unwrap(write(MagmaLang.createRootRule().generate(afterPass)));
-        return new CompileResult(beforePass, afterPass, output);
+    public Result<CompileResult, CompileException> compile() {
+        final var parsed = createRootRule().parse(input);
+        return write(parsed).flatMapValue(beforePass -> {
+            final var afterPass = pass(beforePass);
+            final var generated = MagmaLang.createRootRule().generate(afterPass);
+            return write(generated).mapValue(output -> new CompileResult(beforePass, afterPass, output));
+        });
     }
 
     private <T, E extends Exception> Result<T, CompileException> write(RuleResult<T, E> result) {

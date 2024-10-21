@@ -17,11 +17,6 @@
   },
  "children": [method {
   "name": "parse",
-  "content": " {
-        return rule.parse(input)
-                .mapValue(node -> node.retype(type))
-                .wrapErr(new ParseException("Failed to assign type '+ type + "' input));
-    }",
   "params": content {
    "params": "String input"
    },
@@ -35,14 +30,15 @@
     }, symbol {
     "type": "ParseException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return rule.parse(input)
+                .mapValue(node -> node.retype(type))
+                .wrapErr(new ParseException("Failed to assign type ' type + "'input));"
+   }]
   }, method {
   "name": "generate",
-  "content": " {
-        if (!node.is(type))
-            return new RuleResult<>(new Err<>(new GenerateException("Expected a type of '+ type + "' node)));
-        return rule.generate(node);
-    }",
   "params": content {
    "params": "Node node"
    },
@@ -56,7 +52,15 @@
     }, symbol {
     "type": "GenerateException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        if (!node.is(type))
+            return new RuleResult<>(new Err<>(new GenerateException("Expected a type of ' type + "'node)));"
+   }, any {
+   "content": "
+        return rule.generate(node);"
+   }]
   }],
  "params": [definition {
   "type": "String",

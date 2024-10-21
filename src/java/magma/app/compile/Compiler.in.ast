@@ -8,8 +8,6 @@
  }, import {
  "namespace": ["magma", "api", "result", "Result"]
  }, import {
- "namespace": ["magma", "api", "result", "Results"]
- }, import {
  "namespace": ["magma", "app", "compile", "lang", "JavaLang"]
  }, import {
  "namespace": ["magma", "app", "compile", "lang", "MagmaLang"]
@@ -32,23 +30,18 @@
  "modifiers": ["public"],
  "children": [method {
   "name": "pass",
-  "content": " {
-        return node.mapNodeList(CHILDREN, Compiler::passChildren).orElse(node);
-    }",
   "params": content {
    "params": "Node node"
    },
   "returns": symbol {
    "type": "private static Node"
-   }
+   },
+  "children": [any {
+   "content": "
+        return node.mapNodeList(CHILDREN, Compiler::passChildren).orElse(node);"
+   }]
   }, method {
   "name": "passChildren",
-  "content": " {
-        return children.stream()
-                .filter(child -> !child.is(JavaLang.PACKAGE))
-                .map(Compiler::passRootChild)
-                .toList();
-    }",
   "params": content {
    "params": "List<Node> children"
    },
@@ -59,30 +52,31 @@
    "children": [symbol {
     "type": "Node"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return children.stream()
+                .filter(child -> !child.is(JavaLang.PACKAGE))
+                .map(Compiler::passRootChild)
+                .toList();"
+   }]
   }, method {
   "name": "passRootChild",
-  "content": " {
-        return passRecord(node)
-                .or(() -> passInterface(node))
-                .or(() -> passClass(node))
-                .orElse(node);
-    }",
   "params": content {
    "params": "Node node"
    },
   "returns": symbol {
    "type": "private static Node"
-   }
+   },
+  "children": [any {
+   "content": "
+        return passRecord(node)
+                .or(() -> passInterface(node))
+                .or(() -> passClass(node))
+                .orElse(node);"
+   }]
   }, method {
   "name": "passClass",
-  "content": " {
-        if (node.is(CLASS)) {
-            return Optional.of(node.retype(FUNCTION));
-        } else {
-            return Optional.empty();
-        }
-    }",
   "params": content {
    "params": "Node node"
    },
@@ -93,12 +87,19 @@
    "children": [symbol {
     "type": "? extends Node"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        if (node.is(CLASS)) {
+            return Optional.of(node.retype(FUNCTION));
+        }"
+   }, any {
+   "content": " else {
+            return Optional.empty();
+        }"
+   }]
   }, method {
   "name": "passRecord",
-  "content": " {
-        return node.is(RECORD) ? Optional.of(node.retype(FUNCTION)) : Optional.empty();
-    }",
   "params": content {
    "params": "Node node"
    },
@@ -109,70 +110,94 @@
    "children": [symbol {
     "type": "Node"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return node.is(RECORD) ? Optional.of(node.retype(FUNCTION)) : Optional.empty();"
+   }]
   }, method {
   "name": "passInterface",
-  "content": " {
-        if (!node.is(INTERFACE)) return Optional.empty();
+  "params": content {
+   "params": "Node node"
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "private static Optional"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
+   },
+  "children": [any {
+   "content": "
+        if (!node.is(INTERFACE)) return Optional.empty();"
+   }, any {
+   "content": "
 
-        final var retype = node.retype(MagmaLang.TRAIT);
+        final var retype = node.retype(MagmaLang.TRAIT);"
+   }, any {
+   "content": "
 
         final var withModifiers = retype.mapStringList(MODIFIERS, modifiers -> {
             var newList = new ArrayList<String>();
             if (modifiers.contains("public")) newList.add("export");
             return newList;
-        }).orElse(retype);
+        }"
+   }, any {
+   "content": ").orElse(retype);"
+   }, any {
+   "content": "
 
         final var withChildren = withModifiers.mapNodeList(CHILDREN, children -> children.stream()
                 .map(Compiler::passClassMember)
-                .toList()).orElse(withModifiers);
+                .toList()).orElse(withModifiers);"
+   }, any {
+   "content": "
 
-        return Optional.of(withChildren);
-    }",
-  "params": content {
-   "params": "Node node"
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "private static Optional"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }]
-   }
+        return Optional.of(withChildren);"
+   }]
   }, method {
   "name": "passClassMember",
-  "content": " {
-        if (child.is(METHOD)) return child.retype(FUNCTION);
-        return child;
-    }",
   "params": content {
    "params": "Node child"
    },
   "returns": symbol {
    "type": "private static Node"
-   }
+   },
+  "children": [any {
+   "content": "
+        if (child.is(METHOD)) return child.retype(FUNCTION);"
+   }, any {
+   "content": "
+        return child;"
+   }]
   }, method {
   "name": "compile",
-  "content": " throws CompileException {
-        final var beforePass = Results.unwrap(write(createRootRule().parse(input)));
-        final var afterPass = pass(beforePass);
-        final var output = Results.unwrap(write(MagmaLang.createRootRule().generate(afterPass)));
-        return new CompileResult(beforePass, afterPass, output);
-    }",
-  "returns": symbol {
-   "type": "public CompileResult"
-   }
+  "returns": generic {
+   "base": symbol {
+    "type": "public Result"
+    },
+   "children": [symbol {
+    "type": "CompileResult"
+    }, symbol {
+    "type": "CompileException"
+    }]
+   },
+  "children": [any {
+   "content": "
+        final var parsed = createRootRule().parse(input);"
+   }, any {
+   "content": "
+        return write(parsed).flatMapValue(beforePass -> {
+            final var afterPass = pass(beforePass);
+            final var generated = MagmaLang.createRootRule().generate(afterPass);
+            return write(generated).mapValue(output -> new CompileResult(beforePass, afterPass, output));
+        }"
+   }, any {
+   "content": ");"
+   }]
   }, method {
   "name": "write",
-  "content": " {
-        if (result.isValid()) {
-            return new Ok<>(result.result().findValue().orElseThrow());
-        } else {
-            writeResult(result, 0, 0);
-            return new Err<>(new CompileException());
-        }
-    }",
   "params": content {
    "params": "RuleResult<T, E> result"
    },
@@ -187,31 +212,53 @@
     }, symbol {
     "type": "CompileException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        if (result.isValid()) {
+            return new Ok<>(result.result().findValue().orElseThrow());
+        }"
+   }, any {
+   "content": " else {
+            writeResult(result, 0, 0);
+            return new Err<>(new CompileException());
+        }"
+   }]
   }, method {
   "name": "writeResult",
-  "content": " {
-        final var error = result.result().findError();
+  "params": content {
+   "params": "RuleResult<T, E> result, int depth, int index"
+   },
+  "returns": symbol {
+   "type": "private <T, E extends Exception> void"
+   },
+  "children": [any {
+   "content": "
+        final var error = result.result().findError();"
+   }, any {
+   "content": "
         if (error.isPresent()) {
             final var repeat = " ".repeat(depth);
             final var s = (index + 1) + ") ";
             final var rawMessage = error.get().getMessage();
             final var message = rawMessage.replaceAll("\r\n", "\r\n" + repeat + " ".repeat(s.length()));
             System.out.println(repeat + s + message);
-        }
+        }"
+   }, any {
+   "content": "
 
-        List<RuleResult<T, E>> children = result.sortedChildren();
-        for (int i = 0; i < children.size(); i++) {
+        List<RuleResult<T, E>> children = result.sortedChildren();"
+   }, any {
+   "content": "
+        for (int i = 0;"
+   }, any {
+   "content": " i < children.size();"
+   }, any {
+   "content": " i++) {
             RuleResult<T, E> child = children.get(i);
             writeResult(child, depth + 1, i);
-        }
-    }",
-  "params": content {
-   "params": "RuleResult<T, E> result, int depth, int index"
-   },
-  "returns": symbol {
-   "type": "private <T, E extends Exception> void"
-   }
+        }"
+   }]
   }],
  "params": [definition {
   "type": "String",

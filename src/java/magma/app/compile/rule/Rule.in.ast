@@ -12,7 +12,6 @@
  "modifiers": ["public"],
  "content": [method {
   "name": "parse",
-  "content": ";",
   "params": content {
    "params": "String input"
    },
@@ -28,7 +27,6 @@
    }
   }, method {
   "name": "generate",
-  "content": ";",
   "params": content {
    "params": "Node node"
    },

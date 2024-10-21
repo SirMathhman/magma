@@ -13,9 +13,6 @@
   },
  "children": [method {
   "name": "parse",
-  "content": " {
-        return childRule.parse(input.strip());
-    }",
   "params": content {
    "params": "String input"
    },
@@ -29,14 +26,13 @@
     }, symbol {
     "type": "ParseException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return childRule.parse(input.strip());"
+   }]
   }, method {
   "name": "generate",
-  "content": " {
-        final var leftPadding = node.findString(leftPaddingKey).orElse("");
-        final var rightPadding = node.findString(rightPaddingKey).orElse("");
-        return childRule.generate(node).mapValue(inner -> leftPadding + inner + rightPadding);
-    }",
   "params": content {
    "params": "Node node"
    },
@@ -50,7 +46,17 @@
     }, symbol {
     "type": "GenerateException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        final var leftPadding = node.findString(leftPaddingKey).orElse("");"
+   }, any {
+   "content": "
+        final var rightPadding = node.findString(rightPaddingKey).orElse("");"
+   }, any {
+   "content": "
+        return childRule.generate(node).mapValue(inner -> leftPadding + inner + rightPadding);"
+   }]
   }],
  "params": [definition {
   "type": "Rule",

@@ -42,4 +42,9 @@ public class Ok<T, E> implements Result<T, E> {
     public boolean isOk() {
         return true;
     }
+
+    @Override
+    public <R> Result<R, E> flatMapValue(Function<T, Result<R, E>> mapper) {
+        return mapper.apply(value);
+    }
 }

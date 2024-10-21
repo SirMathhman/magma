@@ -12,7 +12,6 @@
  "modifiers": ["export"],
  "content": [method {
   "name": "collect",
-  "content": ";",
   "returns": generic {
    "base": symbol {
     "type": "Result"

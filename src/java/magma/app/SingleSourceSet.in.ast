@@ -23,11 +23,6 @@
   },
  "children": [method {
   "name": "collect",
-  "content": " {
-        var sources = new HashSet<Path>();
-        if(Files.exists(this.source())) sources.add(this.source());
-        return new Ok<>(sources);
-    }",
   "returns": generic {
    "base": symbol {
     "type": "@Override
@@ -43,7 +38,17 @@
     }, symbol {
     "type": "IOException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        var sources = new HashSet<Path>();"
+   }, any {
+   "content": "
+        if(Files.exists(this.source())) sources.add(this.source());"
+   }, any {
+   "content": "
+        return new Ok<>(sources);"
+   }]
   }],
  "params": [definition {
   "type": "Path",

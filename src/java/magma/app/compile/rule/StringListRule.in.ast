@@ -23,12 +23,6 @@
   },
  "children": [method {
   "name": "parse",
-  "content": " {
-        final var args = input.split(delimiter);
-        if (args.length == 0) return new RuleResult<>(new Err<>(new ParseException("No items present", input)));
-
-        return new RuleResult<>(new Ok<>(new MapNode().withStringList(propertyKey, Arrays.asList(args))));
-    }",
   "params": content {
    "params": "String input"
    },
@@ -42,17 +36,20 @@
     }, symbol {
     "type": "ParseException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        final var args = input.split(delimiter);"
+   }, any {
+   "content": "
+        if (args.length == 0) return new RuleResult<>(new Err<>(new ParseException("No items present", input)));"
+   }, any {
+   "content": "
+
+        return new RuleResult<>(new Ok<>(new MapNode().withStringList(propertyKey, Arrays.asList(args))));"
+   }]
   }, method {
   "name": "generate",
-  "content": " {
-        final var list = node.findStringList(propertyKey);
-        if (list.isEmpty())
-            return new RuleResult<>(new Err<>(new GenerateException("String list '+ propertyKey + "'ot present", node)));
-
-        final var joined = String.join(delimiter, list.get());
-        return new RuleResult<>(new Ok<>(joined));
-    }",
   "params": content {
    "params": "Node node"
    },
@@ -66,7 +63,22 @@
     }, symbol {
     "type": "GenerateException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        final var list = node.findStringList(propertyKey);"
+   }, any {
+   "content": "
+        if (list.isEmpty())
+            return new RuleResult<>(new Err<>(new GenerateException("String list ' propertyKey + "'t present", node)));"
+   }, any {
+   "content": "
+
+        final var joined = String.join(delimiter, list.get());"
+   }, any {
+   "content": "
+        return new RuleResult<>(new Ok<>(joined));"
+   }]
   }],
  "params": [definition {
   "type": "String",

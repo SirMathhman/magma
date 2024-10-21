@@ -17,9 +17,6 @@
   },
  "children": [method {
   "name": "parse",
-  "content": " {
-        return propertyRule.parse(input).mapValue(node -> new MapNode().withNode(propertyKey, node));
-    }",
   "params": content {
    "params": "String input"
    },
@@ -33,17 +30,13 @@
     }, symbol {
     "type": "ParseException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return propertyRule.parse(input).mapValue(node -> new MapNode().withNode(propertyKey, node));"
+   }]
   }, method {
   "name": "generate",
-  "content": " {
-        final var optional = node.findNode(propertyKey);
-        if (optional.isEmpty())
-            return new RuleResult<>(new Err<>(new GenerateException("Node '+ propertyKey + "'oes not exist.", node)));
-
-        final var node1 = optional.get();
-        return propertyRule.generate(node1);
-    }",
   "params": content {
    "params": "Node node"
    },
@@ -57,7 +50,22 @@
     }, symbol {
     "type": "GenerateException"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        final var optional = node.findNode(propertyKey);"
+   }, any {
+   "content": "
+        if (optional.isEmpty())
+            return new RuleResult<>(new Err<>(new GenerateException("Node ' propertyKey + "'es not exist.", node)));"
+   }, any {
+   "content": "
+
+        final var node1 = optional.get();"
+   }, any {
+   "content": "
+        return propertyRule.generate(node1);"
+   }]
   }],
  "params": [definition {
   "type": "String",

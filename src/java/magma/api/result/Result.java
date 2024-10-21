@@ -18,4 +18,6 @@ public interface Result<T, E> {
     <R> Result<Tuple<T, R>, E> and(Supplier<Result<R, E>> supplier);
 
     boolean isOk();
+
+    <R> Result<R, E> flatMapValue(Function<T, Result<R, E>> mapper);
 }

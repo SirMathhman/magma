@@ -20,20 +20,18 @@
  "modifiers": ["public"],
  "children": [method {
   "name": "RuleResult",
-  "content": " {
-        this(result, Collections.emptyList());
-    }",
   "params": content {
    "params": "Result<T, E> result"
    },
   "returns": symbol {
    "type": "public"
-   }
+   },
+  "children": [any {
+   "content": "
+        this(result, Collections.emptyList());"
+   }]
   }, method {
   "name": "unwrap",
-  "content": " {
-        return result;
-    }",
   "returns": generic {
    "base": symbol {
     "type": "@Deprecated
@@ -44,20 +42,22 @@
     }, symbol {
     "type": "E"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return result;"
+   }]
   }, method {
   "name": "isValid",
-  "content": " {
-        return result.isOk();
-    }",
   "returns": symbol {
    "type": "public boolean"
-   }
+   },
+  "children": [any {
+   "content": "
+        return result.isOk();"
+   }]
   }, method {
   "name": "mapValue",
-  "content": " {
-        return new RuleResult<>(result.mapValue(mapper), children);
-    }",
   "params": content {
    "params": "Function<T, T> mapper"
    },
@@ -70,15 +70,13 @@
     }, symbol {
     "type": "E"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return new RuleResult<>(result.mapValue(mapper), children);"
+   }]
   }, method {
   "name": "wrapErr",
-  "content": " {
-        if (!isError()) return this;
-
-        var list = singletonList(this);
-        return new RuleResult<>(new Err<>(error), list);
-    }",
   "params": content {
    "params": "E error"
    },
@@ -91,33 +89,41 @@
     }, symbol {
     "type": "E"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        if (!isError()) return this;"
+   }, any {
+   "content": "
+
+        var list = singletonList(this);"
+   }, any {
+   "content": "
+        return new RuleResult<>(new Err<>(error), list);"
+   }]
   }, method {
   "name": "isError",
-  "content": " {
-        return result.isErr();
-    }",
   "returns": symbol {
    "type": "public boolean"
-   }
+   },
+  "children": [any {
+   "content": "
+        return result.isErr();"
+   }]
   }, method {
   "name": "depth",
-  "content": " {
+  "returns": symbol {
+   "type": "public int"
+   },
+  "children": [any {
+   "content": "
         return 1 + children.stream()
                 .map(RuleResult::depth)
                 .max(Integer::compare)
-                .orElse(0);
-    }",
-  "returns": symbol {
-   "type": "public int"
-   }
+                .orElse(0);"
+   }]
   }, method {
   "name": "sortedChildren",
-  "content": " {
-        return children.stream()
-                .sorted(Comparator.comparingInt(RuleResult::depth))
-                .toList();
-    }",
   "returns": generic {
    "base": symbol {
     "type": "public List"
@@ -132,7 +138,13 @@
      "type": "E"
      }]
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return children.stream()
+                .sorted(Comparator.comparingInt(RuleResult::depth))
+                .toList();"
+   }]
   }],
  "type-params": [symbol {
   "type": "T"

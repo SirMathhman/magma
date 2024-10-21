@@ -14,7 +14,6 @@
  "modifiers": ["public"],
  "content": [method {
   "name": "findValue",
-  "content": ";",
   "returns": generic {
    "base": symbol {
     "type": "Optional"
@@ -25,7 +24,6 @@
    }
   }, method {
   "name": "findError",
-  "content": ";",
   "returns": generic {
    "base": symbol {
     "type": "Optional"
@@ -36,7 +34,6 @@
    }
   }, method {
   "name": "mapValue",
-  "content": ";",
   "params": content {
    "params": "Function<T, R> mapper"
    },
@@ -45,13 +42,11 @@
    }
   }, method {
   "name": "isErr",
-  "content": ";",
   "returns": symbol {
    "type": "boolean"
    }
   }, method {
   "name": "and",
-  "content": ";",
   "params": content {
    "params": "Supplier<Result<R, E>> supplier"
    },
@@ -60,9 +55,16 @@
    }
   }, method {
   "name": "isOk",
-  "content": ";",
   "returns": symbol {
    "type": "boolean"
+   }
+  }, method {
+  "name": "flatMapValue",
+  "params": content {
+   "params": "Function<T, Result<R, E>> mapper"
+   },
+  "returns": symbol {
+   "type": "<R> Result<R, E>"
    }
   }]
  }]

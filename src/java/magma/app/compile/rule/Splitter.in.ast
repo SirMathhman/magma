@@ -8,7 +8,6 @@
  "modifiers": ["public"],
  "content": [method {
   "name": "split",
-  "content": ";",
   "params": content {
    "params": "String input"
    },

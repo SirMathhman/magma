@@ -19,79 +19,86 @@
   },
  "children": [method {
   "name": "MapNode",
-  "content": " {
-        this(Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
-    }",
   "returns": symbol {
    "type": "public"
-   }
+   },
+  "children": [any {
+   "content": "
+        this(Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());"
+   }]
   }, method {
   "name": "formatLine",
-  "content": " {
-        return "\n" + " ".repeat(depth) + "\"" + key + "\": " + value;
-    }",
   "params": content {
    "params": "int depth, String key, String value"
    },
   "returns": symbol {
    "type": "private static String"
-   }
+   },
+  "children": [any {
+   "content": "
+        return "\n" + " ".repeat(depth) + "\"" + key + "\": " + value;"
+   }]
   }, method {
   "name": "formatNodeList",
-  "content": " {
-        return values.stream()
-                .map(node -> node.format(depth + 1))
-                .collect(Collectors.joining(", ", "[", "]"));
-    }",
   "params": content {
    "params": "int depth, List<Node> values"
    },
   "returns": symbol {
    "type": "private static String"
-   }
+   },
+  "children": [any {
+   "content": "
+        return values.stream()
+                .map(node -> node.format(depth + 1))
+                .collect(Collectors.joining(", ", "[", "]"));"
+   }]
   }, method {
   "name": "retype",
-  "content": " {
-        return new MapNode(Optional.of(type), strings, stringLists, nodes, nodeLists);
-    }",
   "params": content {
    "params": "String type"
    },
   "returns": symbol {
    "type": "@Override
     public Node"
-   }
+   },
+  "children": [any {
+   "content": "
+        return new MapNode(Optional.of(type), strings, stringLists, nodes, nodeLists);"
+   }]
   }, method {
   "name": "is",
-  "content": " {
-        return this.type.filter(value -> value.equals(type)).isPresent();
-    }",
   "params": content {
    "params": "String type"
    },
   "returns": symbol {
    "type": "@Override
     public boolean"
-   }
+   },
+  "children": [any {
+   "content": "
+        return this.type.filter(value -> value.equals(type)).isPresent();"
+   }]
   }, method {
   "name": "withString",
-  "content": " {
-        final var copy = new HashMap<>(strings);
-        copy.put(propertyKey, propertyValue);
-        return new MapNode(type, copy, stringLists, nodes, nodeLists);
-    }",
   "params": content {
    "params": "String propertyKey, String propertyValue"
    },
   "returns": symbol {
    "type": "@Override
     public Node"
-   }
+   },
+  "children": [any {
+   "content": "
+        final var copy = new HashMap<>(strings);"
+   }, any {
+   "content": "
+        copy.put(propertyKey, propertyValue);"
+   }, any {
+   "content": "
+        return new MapNode(type, copy, stringLists, nodes, nodeLists);"
+   }]
   }, method {
   "name": "findString",
-  "content": " {
-        return Optional.ofNullable(strings.get(propertyKey));
-    }",
   "params": content {
    "params": "String propertyKey"
    },
@@ -103,12 +110,13 @@
    "children": [symbol {
     "type": "String"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return Optional.ofNullable(strings.get(propertyKey));"
+   }]
   }, method {
   "name": "mapNodeList",
-  "content": " {
-        return findNodeList(propertyKey).map(mapper).map(value -> withNodeList(propertyKey, value));
-    }",
   "params": content {
    "params": "String propertyKey, Function<List<Node>, List<Node>> mapper"
    },
@@ -120,12 +128,13 @@
    "children": [symbol {
     "type": "Node"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return findNodeList(propertyKey).map(mapper).map(value -> withNodeList(propertyKey, value));"
+   }]
   }, method {
   "name": "streamNodeLists",
-  "content": " {
-        return nodeLists.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
-    }",
   "returns": generic {
    "base": symbol {
     "type": "@Override
@@ -146,26 +155,32 @@
       }]
      }]
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return nodeLists.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));"
+   }]
   }, method {
   "name": "withNode",
-  "content": " {
-        final var copy = new HashMap<>(nodes);
-        copy.put(propertyKey, propertyValue);
-        return new MapNode(type, strings, stringLists, copy, nodeLists);
-    }",
   "params": content {
    "params": "String propertyKey, Node propertyValue"
    },
   "returns": symbol {
    "type": "@Override
     public Node"
-   }
+   },
+  "children": [any {
+   "content": "
+        final var copy = new HashMap<>(nodes);"
+   }, any {
+   "content": "
+        copy.put(propertyKey, propertyValue);"
+   }, any {
+   "content": "
+        return new MapNode(type, strings, stringLists, copy, nodeLists);"
+   }]
   }, method {
   "name": "findNode",
-  "content": " {
-        return Optional.ofNullable(nodes.get(propertyKey));
-    }",
   "params": content {
    "params": "String propertyKey"
    },
@@ -177,12 +192,13 @@
    "children": [symbol {
     "type": "Node"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return Optional.ofNullable(nodes.get(propertyKey));"
+   }]
   }, method {
   "name": "streamNodes",
-  "content": " {
-        return nodes.entrySet().stream().map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));
-    }",
   "returns": generic {
    "base": symbol {
     "type": "@Override
@@ -198,38 +214,45 @@
      "type": "Node"
      }]
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return nodes.entrySet().stream().map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));"
+   }]
   }, method {
   "name": "hasNode",
-  "content": " {
-        return nodes.containsKey(node);
-    }",
   "params": content {
    "params": "String node"
    },
   "returns": symbol {
    "type": "@Override
     public boolean"
-   }
+   },
+  "children": [any {
+   "content": "
+        return nodes.containsKey(node);"
+   }]
   }, method {
   "name": "withStringList",
-  "content": " {
-        final var copy = new HashMap<>(stringLists);
-        copy.put(propertyKey, propertyValues);
-        return new MapNode(type, strings, copy, nodes, nodeLists);
-    }",
   "params": content {
    "params": "String propertyKey, List<String> propertyValues"
    },
   "returns": symbol {
    "type": "@Override
     public Node"
-   }
+   },
+  "children": [any {
+   "content": "
+        final var copy = new HashMap<>(stringLists);"
+   }, any {
+   "content": "
+        copy.put(propertyKey, propertyValues);"
+   }, any {
+   "content": "
+        return new MapNode(type, strings, copy, nodes, nodeLists);"
+   }]
   }, method {
   "name": "findStringList",
-  "content": " {
-        return Optional.ofNullable(stringLists.get(propertyKey));
-    }",
   "params": content {
    "params": "String propertyKey"
    },
@@ -246,12 +269,13 @@
      "type": "String"
      }]
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return Optional.ofNullable(stringLists.get(propertyKey));"
+   }]
   }, method {
   "name": "streamStrings",
-  "content": " {
-        return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
-    }",
   "returns": generic {
    "base": symbol {
     "type": "@Override
@@ -267,12 +291,13 @@
      "type": "String"
      }]
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));"
+   }]
   }, method {
   "name": "findNodeList",
-  "content": " {
-        return Optional.ofNullable(nodeLists.get(propertyKey));
-    }",
   "params": content {
    "params": "String propertyKey"
    },
@@ -289,92 +314,124 @@
      "type": "Node"
      }]
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return Optional.ofNullable(nodeLists.get(propertyKey));"
+   }]
   }, method {
   "name": "withNodeList",
-  "content": " {
-        final var copy = new HashMap<>(nodeLists);
-        copy.put(propertyKey, values);
-        return new MapNode(type, strings, stringLists, nodes, copy);
-    }",
   "params": content {
    "params": "String propertyKey, List<Node> values"
    },
   "returns": symbol {
    "type": "@Override
     public Node"
-   }
+   },
+  "children": [any {
+   "content": "
+        final var copy = new HashMap<>(nodeLists);"
+   }, any {
+   "content": "
+        copy.put(propertyKey, values);"
+   }, any {
+   "content": "
+        return new MapNode(type, strings, stringLists, nodes, copy);"
+   }]
   }, method {
   "name": "toString",
-  "content": " {
-        return format(0);
-    }",
   "returns": symbol {
    "type": "@Override
     public String"
-   }
+   },
+  "children": [any {
+   "content": "
+        return format(0);"
+   }]
   }, method {
   "name": "format",
-  "content": " {
-        final var typeString = type.map(value -> value + " ").orElse("");
-
-        final var joinedStrings = formatMap(depth, strings, value -> "\"" + value + "\"");
-        final var joinedStringLists = formatMap(depth, stringLists, this::formatStringList);
-        final var joinedNodes = formatMap(depth, nodes, value -> value.format(depth + 1));
-        final var joinedNodeLists = formatMap(depth, nodeLists, values -> formatNodeList(depth, values));
-
-        final List<String> list = new ArrayList<>();
-
-        if (!joinedStrings.isEmpty()) list.add(joinedStrings);
-        if (!joinedStringLists.isEmpty()) list.add(joinedStringLists);
-
-        if (!joinedNodes.isEmpty()) list.add(joinedNodes);
-        if (!joinedNodeLists.isEmpty()) list.add(joinedNodeLists);
-
-        final var joined = String.join(",", list);
-        return typeString + "{" + joined + "\n" + " ".repeat(depth) + "}";
-    }",
   "params": content {
    "params": "int depth"
    },
   "returns": symbol {
    "type": "@Override
     public String"
-   }
+   },
+  "children": [any {
+   "content": "
+        final var typeString = type.map(value -> value + " ").orElse("");"
+   }, any {
+   "content": "
+
+        final var joinedStrings = formatMap(depth, strings, value -> "\"" + value + "\"");"
+   }, any {
+   "content": "
+        final var joinedStringLists = formatMap(depth, stringLists, this::formatStringList);"
+   }, any {
+   "content": "
+        final var joinedNodes = formatMap(depth, nodes, value -> value.format(depth + 1));"
+   }, any {
+   "content": "
+        final var joinedNodeLists = formatMap(depth, nodeLists, values -> formatNodeList(depth, values));"
+   }, any {
+   "content": "
+
+        final List<String> list = new ArrayList<>();"
+   }, any {
+   "content": "
+
+        if (!joinedStrings.isEmpty()) list.add(joinedStrings);"
+   }, any {
+   "content": "
+        if (!joinedStringLists.isEmpty()) list.add(joinedStringLists);"
+   }, any {
+   "content": "
+
+        if (!joinedNodes.isEmpty()) list.add(joinedNodes);"
+   }, any {
+   "content": "
+        if (!joinedNodeLists.isEmpty()) list.add(joinedNodeLists);"
+   }, any {
+   "content": "
+
+        final var joined = String.join(",", list);"
+   }, any {
+   "content": "
+        return typeString + "{" + joined + "\n" + " ".repeat(depth) + "}"
+   }, any {
+   "content": "";"
+   }]
   }, method {
   "name": "formatStringList",
-  "content": " {
-        return list.stream()
-                .map(inner -> "\"" + inner + "\"")
-                .collect(Collectors.joining(", ", "[", "]"));
-    }",
   "params": content {
    "params": "List<String> list"
    },
   "returns": symbol {
    "type": "private String"
-   }
+   },
+  "children": [any {
+   "content": "
+        return list.stream()
+                .map(inner -> "\"" + inner + "\"")
+                .collect(Collectors.joining(", ", "[", "]"));"
+   }]
   }, method {
   "name": "formatMap",
-  "content": " {
-        return set.entrySet()
-                .stream()
-                .map(entry -> formatLine(depth, entry.getKey(), format.apply(entry.getValue())))
-                .collect(Collectors.joining(","));
-    }",
   "params": content {
    "params": "int depth, Map<String, T> set, Function<T, String> format"
    },
   "returns": symbol {
    "type": "private <T> String"
-   }
+   },
+  "children": [any {
+   "content": "
+        return set.entrySet()
+                .stream()
+                .map(entry -> formatLine(depth, entry.getKey(), format.apply(entry.getValue())))
+                .collect(Collectors.joining(","));"
+   }]
   }, method {
   "name": "streamStringLists",
-  "content": " {
-        return stringLists.entrySet()
-                .stream()
-                .map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));
-    }",
   "returns": generic {
    "base": symbol {
     "type": "@Override
@@ -395,12 +452,15 @@
       }]
      }]
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return stringLists.entrySet()
+                .stream()
+                .map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));"
+   }]
   }, method {
   "name": "mapStringList",
-  "content": " {
-        return findStringList(propertyKey).map(mapper).map(list -> withStringList(propertyKey, list));
-    }",
   "params": content {
    "params": "String propertyKey, Function<List<String>, List<String>> mapper"
    },
@@ -412,31 +472,52 @@
    "children": [symbol {
     "type": "Node"
     }]
-   }
+   },
+  "children": [any {
+   "content": "
+        return findStringList(propertyKey).map(mapper).map(list -> withStringList(propertyKey, list));"
+   }]
   }, method {
   "name": "merge",
-  "content": " {
-        final var stringsCopy = new HashMap<>(strings);
-        other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));
-
-        final var stringListCopy = new HashMap<>(stringLists);
-        other.streamStringLists().forEach(tuple -> stringListCopy.put(tuple.left(), tuple.right()));
-
-        final var nodesCopy = new HashMap<>(nodes);
-        other.streamNodes().forEach(tuple -> nodesCopy.put(tuple.left(), tuple.right()));
-
-        final var nodeListCopy = new HashMap<>(nodeLists);
-        other.streamNodeLists().forEach(tuple -> nodeListCopy.put(tuple.left(), tuple.right()));
-
-        return new MapNode(type, stringsCopy, stringListCopy, nodesCopy, nodeListCopy);
-    }",
   "params": content {
    "params": "Node other"
    },
   "returns": symbol {
    "type": "@Override
     public Node"
-   }
+   },
+  "children": [any {
+   "content": "
+        final var stringsCopy = new HashMap<>(strings);"
+   }, any {
+   "content": "
+        other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));"
+   }, any {
+   "content": "
+
+        final var stringListCopy = new HashMap<>(stringLists);"
+   }, any {
+   "content": "
+        other.streamStringLists().forEach(tuple -> stringListCopy.put(tuple.left(), tuple.right()));"
+   }, any {
+   "content": "
+
+        final var nodesCopy = new HashMap<>(nodes);"
+   }, any {
+   "content": "
+        other.streamNodes().forEach(tuple -> nodesCopy.put(tuple.left(), tuple.right()));"
+   }, any {
+   "content": "
+
+        final var nodeListCopy = new HashMap<>(nodeLists);"
+   }, any {
+   "content": "
+        other.streamNodeLists().forEach(tuple -> nodeListCopy.put(tuple.left(), tuple.right()));"
+   }, any {
+   "content": "
+
+        return new MapNode(type, stringsCopy, stringListCopy, nodesCopy, nodeListCopy);"
+   }]
   }],
  "params": [definition {
   "type": "
