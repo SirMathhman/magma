@@ -3,6 +3,7 @@ package magma.app.compile.lang;
 import magma.app.compile.rule.*;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static magma.app.compile.lang.CommonLang.*;
 
@@ -160,7 +161,7 @@ public class JavaLang {
     private static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
         final var arguments = createArgumentsRule(value);
-        return new TypeRule("invocation", new LocatingRule(caller, new FirstLocator("("), new SuffixRule(arguments, ")")));
+        return new TypeRule("invocation", new LocatingRule(caller, new OpeningLocator(), new SuffixRule(arguments, ")")));
     }
 
     private static OptionalNodeListRule createArgumentsRule(Rule value) {
@@ -181,5 +182,28 @@ public class JavaLang {
         final var child = new NodeListRule(new ValueSplitter(), "children", type);
 
         return new TypeRule("generic", new StripRule(new LocatingRule(base, new FirstLocator("<"), new SuffixRule(child, ">")), "", ""));
+    }
+
+    private static class OpeningLocator implements Locator {
+        @Override
+        public Stream<Integer> locate(String input) {
+            var depth = 0;
+            for (int i = input.length() - 1; i >= 0; i--) {
+                var c = input.charAt(i);
+                if (c == '(' && depth == 1) {
+                    return Stream.of(i);
+                } else {
+                    if (c == ')') depth++;
+                    if (c == '(') depth--;
+                }
+            }
+
+            return Stream.empty();
+        }
+
+        @Override
+        public String slice() {
+            return "(";
+        }
     }
 }

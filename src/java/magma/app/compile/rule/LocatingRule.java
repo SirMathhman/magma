@@ -32,7 +32,9 @@ public final class LocatingRule implements Rule {
             }
         }
 
-        if (occurrences.size() == 1) {
+        if (occurrences.isEmpty()) {
+            return new RuleResult<>(new Err<>(new ParseException("No occurrence found of '" + locator.slice() + "'", input)));
+        } else if (occurrences.size() == 1) {
             return errors.getFirst();
         } else {
             return new RuleResult<>(new Err<>(new ParseException("Failed to find a valid combination of slice '" + locator.slice() + "'", input)), errors);
