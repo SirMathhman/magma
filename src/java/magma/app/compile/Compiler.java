@@ -90,7 +90,7 @@ public record Compiler(String input) {
     private <T, E extends Exception> void writeResult(RuleResult<T, E> result, int depth, int index) {
         final var error = result.result().findError();
         if (error.isPresent()) {
-            final var repeat = " ".repeat(depth);
+            final var repeat = "| ".repeat(depth);
             final var s = (index + 1) + ") ";
             final var rawMessage = error.get().getMessage();
             final var message = rawMessage.replaceAll("\r\n", "\r\n" + repeat + " ".repeat(s.length()));

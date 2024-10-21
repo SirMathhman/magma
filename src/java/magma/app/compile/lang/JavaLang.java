@@ -120,14 +120,15 @@ public class JavaLang {
 
     private static Rule createValueRule() {
         final var value = new LazyRule();
-        value.setChildRule(new ContextRule("Value failed", new OrRule(List.of(
+        value.setChildRule(new OrRule(List.of(
                 createConstructionRule(value),
                 createInvocationRule(value),
-                createAccessRule(value),
                 createSymbolRule(),
+                createNumberRule(),
                 createAdditionRule(value),
-                createNumberRule()
-        ))));
+                createAccessRule(value, "property-access", "."),
+                createAccessRule(value, "method-access", "::")
+        )));
         return value;
     }
 
@@ -143,10 +144,10 @@ public class JavaLang {
         return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("content")), "", ""));
     }
 
-    private static TypeRule createAccessRule(LazyRule value) {
+    private static TypeRule createAccessRule(LazyRule value, String type, String separator) {
         final var parent = new NodeRule("parent", value);
-        final var child = new FilterRule(new SymbolFilter(), new ExtractRule("child"));
-        return new TypeRule("access", new LocatingRule(parent, new LastLocator("."), child));
+        final var child = new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("child")), "", "");
+        return new TypeRule(type, new LocatingRule(parent, new LastLocator(separator), child));
     }
 
     private static TypeRule createConstructionRule(Rule value) {
@@ -155,13 +156,13 @@ public class JavaLang {
 
         final var beforeParams = new PrefixRule("new ", new OptionalNodeRule("type-arguments", withTypeArguments, caller));
         final var arguments = createArgumentsRule(value);
-        return new TypeRule("construction", new LocatingRule(beforeParams, new FirstLocator("("), new SuffixRule(arguments, ")")));
+        return new TypeRule("construction", new StripRule(new LocatingRule(beforeParams, new FirstLocator("("), new SuffixRule(arguments, ")")), "", ""));
     }
 
     private static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
         final var arguments = createArgumentsRule(value);
-        return new TypeRule("invocation", new LocatingRule(caller, new OpeningLocator(), new SuffixRule(arguments, ")")));
+        return new TypeRule("invocation", new StripRule(new LocatingRule(caller, new OpeningLocator(), new SuffixRule(arguments, ")")), "", ""));
     }
 
     private static OptionalNodeListRule createArgumentsRule(Rule value) {
