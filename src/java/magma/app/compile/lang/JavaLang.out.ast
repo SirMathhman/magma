@@ -83,14 +83,21 @@
         final var beforeParams = new LocatingRule(returns, new LastLocator(" "), name);
         final var params = new OptionalNodeRule("params", new NodeRule("params", new TypeRule("content", new ExtractRule("params"))), new EmptyRule());
 
-        final var children = new StripRule(new PrefixRule("{", new SuffixRule(new NodeListRule(new StatementSplitter(), "children", createStatementRule()), "}")), "", "");
+        final var children = new StripRule(new PrefixRule("{", new SuffixRule(new NodeListRule(new StatementSplitter(), "children", new StripRule(createStatementRule(), "", "")), "}")), "", "");
         final var maybeChildren = new OptionalNodeRule("children", children, new SuffixRule(new EmptyRule(), ";"));
         final var withParams = new LocatingRule(params, new FirstLocator(")"), maybeChildren);
 
         return new TypeRule(METHOD, new LocatingRule(beforeParams, new FirstLocator("("), withParams));
     }
 
-    private static TypeRule createStatementRule() {
+    private static Rule createStatementRule() {
+        return new OrRule(List.of(
+                new TypeRule("return", new PrefixRule("return ", new SuffixRule(new NodeRule("value", createValueRule()), ";"))),
+                new TypeRule("any", new ExtractRule("content"))
+        ));
+    }
+
+    private static Rule createValueRule() {
         return new TypeRule("any", new ExtractRule("content"));
     }
 

@@ -42,14 +42,13 @@
     }]
    },
   "children": [any {
-   "content": "
-        try (var stream = Files.walk(root)) {
+   "content": "try (var stream = Files.walk(root)) {
             return new Ok<>(stream
                     .filter(path -> path.toString().endsWith(".java"))
                     .collect(Collectors.toSet()));
         }"
    }, any {
-   "content": " catch (IOException e) {
+   "content": "catch (IOException e) {
             return new Err<>(e);
         }"
    }]

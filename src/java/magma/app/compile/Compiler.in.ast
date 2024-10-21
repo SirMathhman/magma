@@ -36,9 +36,10 @@
   "returns": symbol {
    "type": "private static Node"
    },
-  "children": [any {
-   "content": "
-        return node.mapNodeList(CHILDREN, Compiler::passChildren).orElse(node);"
+  "children": [return {
+   "value": any {
+    "content": "node.mapNodeList(CHILDREN, Compiler::passChildren).orElse(node)"
+    }
    }]
   }, method {
   "name": "passChildren",
@@ -53,12 +54,13 @@
     "type": "Node"
     }]
    },
-  "children": [any {
-   "content": "
-        return children.stream()
+  "children": [return {
+   "value": any {
+    "content": "children.stream()
                 .filter(child -> !child.is(JavaLang.PACKAGE))
                 .map(Compiler::passRootChild)
-                .toList();"
+                .toList()"
+    }
    }]
   }, method {
   "name": "passRootChild",
@@ -68,12 +70,13 @@
   "returns": symbol {
    "type": "private static Node"
    },
-  "children": [any {
-   "content": "
-        return passRecord(node)
+  "children": [return {
+   "value": any {
+    "content": "passRecord(node)
                 .or(() -> passInterface(node))
                 .or(() -> passClass(node))
-                .orElse(node);"
+                .orElse(node)"
+    }
    }]
   }, method {
   "name": "passClass",
@@ -89,12 +92,11 @@
     }]
    },
   "children": [any {
-   "content": "
-        if (node.is(CLASS)) {
+   "content": "if (node.is(CLASS)) {
             return Optional.of(node.retype(FUNCTION));
         }"
    }, any {
-   "content": " else {
+   "content": "else {
             return Optional.empty();
         }"
    }]
@@ -111,9 +113,10 @@
     "type": "Node"
     }]
    },
-  "children": [any {
-   "content": "
-        return node.is(RECORD) ? Optional.of(node.retype(FUNCTION)) : Optional.empty();"
+  "children": [return {
+   "value": any {
+    "content": "node.is(RECORD) ? Optional.of(node.retype(FUNCTION)) : Optional.empty()"
+    }
    }]
   }, method {
   "name": "passInterface",
@@ -129,16 +132,11 @@
     }]
    },
   "children": [any {
-   "content": "
-        if (!node.is(INTERFACE)) return Optional.empty();"
+   "content": "if (!node.is(INTERFACE)) return Optional.empty();"
    }, any {
-   "content": "
-
-        final var retype = node.retype(MagmaLang.TRAIT);"
+   "content": "final var retype = node.retype(MagmaLang.TRAIT);"
    }, any {
-   "content": "
-
-        final var withModifiers = retype.mapStringList(MODIFIERS, modifiers -> {
+   "content": "final var withModifiers = retype.mapStringList(MODIFIERS, modifiers -> {
             var newList = new ArrayList<String>();
             if (modifiers.contains("public")) newList.add("export");
             return newList;
@@ -146,15 +144,13 @@
    }, any {
    "content": ").orElse(retype);"
    }, any {
-   "content": "
-
-        final var withChildren = withModifiers.mapNodeList(CHILDREN, children -> children.stream()
+   "content": "final var withChildren = withModifiers.mapNodeList(CHILDREN, children -> children.stream()
                 .map(Compiler::passClassMember)
                 .toList()).orElse(withModifiers);"
-   }, any {
-   "content": "
-
-        return Optional.of(withChildren);"
+   }, return {
+   "value": any {
+    "content": "Optional.of(withChildren)"
+    }
    }]
   }, method {
   "name": "passClassMember",
@@ -165,11 +161,11 @@
    "type": "private static Node"
    },
   "children": [any {
-   "content": "
-        if (child.is(METHOD)) return child.retype(FUNCTION);"
-   }, any {
-   "content": "
-        return child;"
+   "content": "if (child.is(METHOD)) return child.retype(FUNCTION);"
+   }, return {
+   "value": any {
+    "content": "child"
+    }
    }]
   }, method {
   "name": "compile",
@@ -184,11 +180,9 @@
     }]
    },
   "children": [any {
-   "content": "
-        final var parsed = createRootRule().parse(input);"
+   "content": "final var parsed = createRootRule().parse(input);"
    }, any {
-   "content": "
-        return write(parsed).flatMapValue(beforePass -> {
+   "content": "return write(parsed).flatMapValue(beforePass -> {
             final var afterPass = pass(beforePass);
             final var generated = MagmaLang.createRootRule().generate(afterPass);
             return write(generated).mapValue(output -> new CompileResult(beforePass, afterPass, output));
@@ -214,12 +208,11 @@
     }]
    },
   "children": [any {
-   "content": "
-        if (result.isValid()) {
+   "content": "if (result.isValid()) {
             return new Ok<>(result.result().findValue().orElseThrow());
         }"
    }, any {
-   "content": " else {
+   "content": "else {
             writeResult(result, 0, 0);
             return new Err<>(new CompileException());
         }"
@@ -233,11 +226,9 @@
    "type": "private <T, E extends Exception> void"
    },
   "children": [any {
-   "content": "
-        final var error = result.result().findError();"
+   "content": "final var error = result.result().findError();"
    }, any {
-   "content": "
-        if (error.isPresent()) {
+   "content": "if (error.isPresent()) {
             final var repeat = " ".repeat(depth);
             final var s = (index + 1) + ") ";
             final var rawMessage = error.get().getMessage();
@@ -245,16 +236,13 @@
             System.out.println(repeat + s + message);
         }"
    }, any {
-   "content": "
-
-        List<RuleResult<T, E>> children = result.sortedChildren();"
+   "content": "List<RuleResult<T, E>> children = result.sortedChildren();"
    }, any {
-   "content": "
-        for (int i = 0;"
+   "content": "for (int i = 0;"
    }, any {
-   "content": " i < children.size();"
+   "content": "i < children.size();"
    }, any {
-   "content": " i++) {
+   "content": "i++) {
             RuleResult<T, E> child = children.get(i);
             writeResult(child, depth + 1, i);
         }"

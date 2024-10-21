@@ -31,9 +31,10 @@
     "type": "ParseException"
     }]
    },
-  "children": [any {
-   "content": "
-        return propertyRule.parse(input).mapValue(node -> new MapNode().withNode(propertyKey, node));"
+  "children": [return {
+   "value": any {
+    "content": "propertyRule.parse(input).mapValue(node -> new MapNode().withNode(propertyKey, node))"
+    }
    }]
   }, method {
   "name": "generate",
@@ -52,19 +53,16 @@
     }]
    },
   "children": [any {
-   "content": "
-        final var optional = node.findNode(propertyKey);"
+   "content": "final var optional = node.findNode(propertyKey);"
    }, any {
-   "content": "
-        if (optional.isEmpty())
+   "content": "if (optional.isEmpty())
             return new RuleResult<>(new Err<>(new GenerateException("Node ' propertyKey + "'es not exist.", node)));"
    }, any {
-   "content": "
-
-        final var node1 = optional.get();"
-   }, any {
-   "content": "
-        return propertyRule.generate(node1);"
+   "content": "final var node1 = optional.get();"
+   }, return {
+   "value": any {
+    "content": "propertyRule.generate(node1)"
+    }
    }]
   }],
  "params": [definition {

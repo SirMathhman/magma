@@ -34,19 +34,17 @@
     }]
    },
   "children": [any {
-   "content": "
-        var list = new ArrayList<RuleResult<Node, ParseException>>();"
+   "content": "var list = new ArrayList<RuleResult<Node, ParseException>>();"
    }, any {
-   "content": "
-        for (Rule rule : rules) {
+   "content": "for (Rule rule : rules) {
             final var parsed = rule.parse(input);
             if (parsed.isValid()) return parsed;
             list.add(parsed);
         }"
-   }, any {
-   "content": "
-
-        return new RuleResult<>(new Err<>(new ParseException("No valid rule in disjunction", input)), list);"
+   }, return {
+   "value": any {
+    "content": "new RuleResult<>(new Err<>(new ParseException("No valid rule in disjunction", input)), list)"
+    }
    }]
   }, method {
   "name": "generate",
@@ -65,18 +63,17 @@
     }]
    },
   "children": [any {
-   "content": "
-        var list = new ArrayList<RuleResult<String, GenerateException>>();"
+   "content": "var list = new ArrayList<RuleResult<String, GenerateException>>();"
    }, any {
-   "content": "
-        for (Rule rule : rules) {
+   "content": "for (Rule rule : rules) {
             final var generated = rule.generate(node);
             if (generated.isValid()) return generated;
             list.add(generated);
         }"
-   }, any {
-   "content": "
-        return new RuleResult<>(new Err<>(new GenerateException("No valid rule in disjunction", node)), list);"
+   }, return {
+   "value": any {
+    "content": "new RuleResult<>(new Err<>(new GenerateException("No valid rule in disjunction", node)), list)"
+    }
    }]
   }],
  "params": [definition {

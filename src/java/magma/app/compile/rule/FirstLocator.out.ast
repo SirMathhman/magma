@@ -22,11 +22,11 @@
     }]
    },
   "children": [any {
-   "content": "
-        final var index = input.indexOf(slice);"
-   }, any {
-   "content": "
-        return index == -1 ? Optional.empty() : Optional.of(index);"
+   "content": "final var index = input.indexOf(slice);"
+   }, return {
+   "value": any {
+    "content": "index == -1 ? Optional.empty() : Optional.of(index)"
+    }
    }]
   }],
  "params": [definition {

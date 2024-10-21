@@ -25,8 +25,7 @@
    "type": "public"
    },
   "children": [any {
-   "content": "
-        this(result, Collections.emptyList());"
+   "content": "this(result, Collections.emptyList());"
    }]
   }, method {
   "name": "unwrap",
@@ -41,18 +40,20 @@
     "type": "E"
     }]
    },
-  "children": [any {
-   "content": "
-        return result;"
+  "children": [return {
+   "value": any {
+    "content": "result"
+    }
    }]
   }, method {
   "name": "isValid",
   "returns": symbol {
    "type": "public boolean"
    },
-  "children": [any {
-   "content": "
-        return result.isOk();"
+  "children": [return {
+   "value": any {
+    "content": "result.isOk()"
+    }
    }]
   }, method {
   "name": "mapValue",
@@ -69,9 +70,10 @@
     "type": "E"
     }]
    },
-  "children": [any {
-   "content": "
-        return new RuleResult<>(result.mapValue(mapper), children);"
+  "children": [return {
+   "value": any {
+    "content": "new RuleResult<>(result.mapValue(mapper), children)"
+    }
    }]
   }, method {
   "name": "wrapErr",
@@ -89,36 +91,36 @@
     }]
    },
   "children": [any {
-   "content": "
-        if (!isError()) return this;"
+   "content": "if (!isError()) return this;"
    }, any {
-   "content": "
-
-        var list = singletonList(this);"
-   }, any {
-   "content": "
-        return new RuleResult<>(new Err<>(error), list);"
+   "content": "var list = singletonList(this);"
+   }, return {
+   "value": any {
+    "content": "new RuleResult<>(new Err<>(error), list)"
+    }
    }]
   }, method {
   "name": "isError",
   "returns": symbol {
    "type": "public boolean"
    },
-  "children": [any {
-   "content": "
-        return result.isErr();"
+  "children": [return {
+   "value": any {
+    "content": "result.isErr()"
+    }
    }]
   }, method {
   "name": "depth",
   "returns": symbol {
    "type": "public int"
    },
-  "children": [any {
-   "content": "
-        return 1 + children.stream()
+  "children": [return {
+   "value": any {
+    "content": "1 + children.stream()
                 .map(RuleResult::depth)
                 .max(Integer::compare)
-                .orElse(0);"
+                .orElse(0)"
+    }
    }]
   }, method {
   "name": "sortedChildren",
@@ -137,11 +139,12 @@
      }]
     }]
    },
-  "children": [any {
-   "content": "
-        return children.stream()
+  "children": [return {
+   "value": any {
+    "content": "children.stream()
                 .sorted(Comparator.comparingInt(RuleResult::depth))
-                .toList();"
+                .toList()"
+    }
    }]
   }],
  "type-params": [symbol {

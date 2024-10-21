@@ -40,14 +40,13 @@
     }]
    },
   "children": [any {
-   "content": "
-        var sources = new HashSet<Path>();"
+   "content": "var sources = new HashSet<Path>();"
    }, any {
-   "content": "
-        if(Files.exists(this.source())) sources.add(this.source());"
-   }, any {
-   "content": "
-        return new Ok<>(sources);"
+   "content": "if(Files.exists(this.source())) sources.add(this.source());"
+   }, return {
+   "value": any {
+    "content": "new Ok<>(sources)"
+    }
    }]
   }],
  "params": [definition {

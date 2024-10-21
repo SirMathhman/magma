@@ -27,9 +27,10 @@
     "type": "ParseException"
     }]
    },
-  "children": [any {
-   "content": "
-        return childRule.parse(input.strip());"
+  "children": [return {
+   "value": any {
+    "content": "childRule.parse(input.strip())"
+    }
    }]
   }, method {
   "name": "generate",
@@ -48,14 +49,13 @@
     }]
    },
   "children": [any {
-   "content": "
-        final var leftPadding = node.findString(leftPaddingKey).orElse("");"
+   "content": "final var leftPadding = node.findString(leftPaddingKey).orElse("");"
    }, any {
-   "content": "
-        final var rightPadding = node.findString(rightPaddingKey).orElse("");"
-   }, any {
-   "content": "
-        return childRule.generate(node).mapValue(inner -> leftPadding + inner + rightPadding);"
+   "content": "final var rightPadding = node.findString(rightPaddingKey).orElse("");"
+   }, return {
+   "value": any {
+    "content": "childRule.generate(node).mapValue(inner -> leftPadding + inner + rightPadding)"
+    }
    }]
   }],
  "params": [definition {

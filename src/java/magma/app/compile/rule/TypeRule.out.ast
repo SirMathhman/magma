@@ -29,11 +29,12 @@
     "type": "ParseException"
     }]
    },
-  "children": [any {
-   "content": "
-        return rule.parse(input)
+  "children": [return {
+   "value": any {
+    "content": "rule.parse(input)
                 .mapValue(node -> node.retype(type))
-                .wrapErr(new ParseException("Failed to assign type ' type + "'input));"
+                .wrapErr(new ParseException("Failed to assign type ' type + "'input))"
+    }
    }]
   }, method {
   "name": "generate",
@@ -52,12 +53,12 @@
     }]
    },
   "children": [any {
-   "content": "
-        if (!node.is(type))
+   "content": "if (!node.is(type))
             return new RuleResult<>(new Err<>(new GenerateException("Expected a type of ' type + "'node)));"
-   }, any {
-   "content": "
-        return rule.generate(node);"
+   }, return {
+   "value": any {
+    "content": "rule.generate(node)"
+    }
    }]
   }],
  "params": [definition {

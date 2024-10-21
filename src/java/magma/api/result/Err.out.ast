@@ -31,9 +31,10 @@
     "type": "T"
     }]
    },
-  "children": [any {
-   "content": "
-        return Optional.empty();"
+  "children": [return {
+   "value": any {
+    "content": "Optional.empty()"
+    }
    }]
   }, method {
   "name": "findError",
@@ -46,9 +47,10 @@
     "type": "E"
     }]
    },
-  "children": [any {
-   "content": "
-        return Optional.of(error);"
+  "children": [return {
+   "value": any {
+    "content": "Optional.of(error)"
+    }
    }]
   }, method {
   "name": "mapValue",
@@ -66,9 +68,10 @@
     "type": "E"
     }]
    },
-  "children": [any {
-   "content": "
-        return new Err<>(error);"
+  "children": [return {
+   "value": any {
+    "content": "new Err<>(error)"
+    }
    }]
   }, method {
   "name": "isErr",
@@ -76,9 +79,10 @@
    "type": "@Override
     public boolean"
    },
-  "children": [any {
-   "content": "
-        return true;"
+  "children": [return {
+   "value": any {
+    "content": "true"
+    }
    }]
   }, method {
   "name": "and",
@@ -101,9 +105,10 @@
     "type": "E"
     }]
    },
-  "children": [any {
-   "content": "
-        return new Err<>(error);"
+  "children": [return {
+   "value": any {
+    "content": "new Err<>(error)"
+    }
    }]
   }, method {
   "name": "isOk",
@@ -111,9 +116,10 @@
    "type": "@Override
     public boolean"
    },
-  "children": [any {
-   "content": "
-        return false;"
+  "children": [return {
+   "value": any {
+    "content": "false"
+    }
    }]
   }, method {
   "name": "flatMapValue",
@@ -131,9 +137,10 @@
     "type": "E"
     }]
    },
-  "children": [any {
-   "content": "
-        return new Err<>(error);"
+  "children": [return {
+   "value": any {
+    "content": "new Err<>(error)"
+    }
    }]
   }],
  "type-params": [symbol {
