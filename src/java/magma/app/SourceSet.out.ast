@@ -13,8 +13,22 @@
   "content": "public"
   }],
  "content": [method {
-  "modifiers": "Result<Set<Path>, IOException>",
-  "name": "collect"
+  "name": "collect",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "Set"
+     },
+    "children": [symbol {
+     "value": "Path"
+     }]
+    }, symbol {
+    "value": "IOException"
+    }]
+   }
   }]
  }]
 }

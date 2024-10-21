@@ -85,9 +85,8 @@
         final var name = new ExtractRule("name");
         final var returns = new NodeRule("returns", type);
 
-        final var maybeModifiers = new LocatingRule(createModifiersRule(), new BackwardsLocator(" "), returns);
-
-        final var beforeParams = new LocatingRule(new ExtractRule("modifiers"), new LastLocator(" "), name);
+        final var maybeModifiers = new OrRule(List.of(returns));
+        final var beforeParams = new LocatingRule(maybeModifiers, new LastLocator(" "), name);
         final var params = new OptionalNodeRule("params", new NodeRule("params", createDefinitionRule()), new EmptyRule());
 
         final var children = new StripRule(new PrefixRule("{", new SuffixRule(new NodeListRule(new StatementSplitter(), "children", new StripRule(createStatementRule(), "", "")), "}")), "", "");

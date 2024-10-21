@@ -27,14 +27,23 @@
    }
   }],
  "children": [method {
-  "modifiers": "@Override
-    public RuleResult<Node, ParseException>",
   "name": "parse",
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public RuleResult"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }, symbol {
+    "type": "ParseException"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -66,14 +75,23 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public RuleResult<String, GenerateException>",
   "name": "generate",
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "Node"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public RuleResult"
+    },
+   "children": [symbol {
+    "type": "String"
+    }, symbol {
+    "type": "GenerateException"
+    }]
    },
   "children": [symbol {
    "content": "if (!node.is(type))

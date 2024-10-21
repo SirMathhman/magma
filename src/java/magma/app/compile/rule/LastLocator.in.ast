@@ -20,13 +20,20 @@
    }
   }],
  "children": [method {
-  "modifiers": "private Optional<Integer>",
   "name": "locate0",
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "private Optional"
+    },
+   "children": [symbol {
+    "type": "Integer"
+    }]
    },
   "children": [symbol {
    "content": "final var index = input.lastIndexOf(slice);"
@@ -47,14 +54,21 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Stream<Integer>",
   "name": "locate",
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Stream"
+    },
+   "children": [symbol {
+    "type": "Integer"
+    }]
    },
   "children": [return {
    "value": invocation {

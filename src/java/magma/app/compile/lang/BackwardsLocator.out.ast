@@ -1,0 +1,74 @@
+{
+"children": [import {
+ "namespace": ["magma", "app", "compile", "rule", "Locator"]
+ }, import {
+ "namespace": ["java", "util", "ArrayList"]
+ }, import {
+ "namespace": ["java", "util", "List"]
+ }, import {
+ "namespace": ["java", "util", "stream", "Stream"]
+ }, function {
+ "name": "BackwardsLocator",
+ "interface": symbol {
+  "type": "Locator"
+  },
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "delimiter",
+  "type": symbol {
+   "type": "String"
+   }
+  }],
+ "children": [method {
+  "name": "slice",
+  "returns": symbol {
+   "type": "@Override
+    public String"
+   },
+  "children": [return {
+   "value": symbol {
+    "content": "delimiter"
+    }
+   }]
+  }, method {
+  "name": "locate",
+  "params": definition {
+   "name": "input",
+   "type": symbol {
+    "type": "String"
+    }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Stream"
+    },
+   "children": [symbol {
+    "type": "Integer"
+    }]
+   },
+  "children": [symbol {
+   "content": "List<Integer> indices = new ArrayList<>();"
+   }, symbol {
+   "content": "int index = input.lastIndexOf(delimiter);"
+   }, symbol {
+   "content": "while (index != -1) {
+            indices.add(index);
+            index = input.lastIndexOf(delimiter, index - 1);
+        }"
+   }, return {
+   "value": invocation {
+    "caller": access {
+     "name": "stream",
+     "parent": symbol {
+      "content": "indices"
+      }
+     },
+    "arguments": []
+    }
+   }]
+  }]
+ }]
+}

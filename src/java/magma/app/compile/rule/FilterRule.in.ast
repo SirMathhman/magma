@@ -1,5 +1,7 @@
 {
-"children": [import {
+"children": [package {
+ "namespace": ["magma", "app", "compile", "rule"]
+ }, import {
  "namespace": ["magma", "api", "result", "Err"]
  }, import {
  "namespace": ["magma", "app", "compile", "GenerateException"]
@@ -8,11 +10,9 @@
  }, import {
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, import {
- "namespace": ["java", "util", "ArrayList"]
- }, import {
  "namespace": ["java", "util", "List"]
- }, function {
- "name": "OrRule",
+ }, record {
+ "name": "FilterRule",
  "interface": symbol {
   "type": "Rule"
   },
@@ -20,14 +20,19 @@
   "content": "public"
   }],
  "params": [definition {
-  "name": "rules",
+  "name": "values",
   "type": generic {
    "base": symbol {
     "type": "List"
     },
    "children": [symbol {
-    "type": "Rule"
+    "type": "String"
     }]
+   }
+  }, definition {
+  "name": "childRule",
+  "type": symbol {
+   "type": "Rule"
    }
   }],
  "children": [method {
@@ -49,25 +54,21 @@
     "type": "ParseException"
     }]
    },
-  "children": [symbol {
-   "content": "var list = new ArrayList<RuleResult<Node, ParseException>>();"
-   }, symbol {
-   "content": "for (Rule rule : rules) {
-            final var parsed = rule.parse(input);
-            if (parsed.isValid()) return parsed;
-            list.add(parsed);
-        }"
-   }, return {
+  "children": [return {
    "value": invocation {
-    "caller": symbol {
-     "content": "new RuleResult<>"
+    "caller": access {
+     "name": "contains",
+     "parent": symbol {
+      "content": "values"
+      }
      },
-    "arguments": [symbol {
-     "content": "new Err<>(new ParseException("No valid rule in disjunction""
+    "arguments": [access {
+     "name": "parse(input) : new RuleResult<>(new Err<>(new ParseException("Invalid value"",
+     "parent": symbol {
+      "content": "input) ? childRule"
+      }
      }, symbol {
      "content": " input))"
-     }, symbol {
-     "content": " list"
      }]
     }
    }]
@@ -90,25 +91,16 @@
     "type": "GenerateException"
     }]
    },
-  "children": [symbol {
-   "content": "var list = new ArrayList<RuleResult<String, GenerateException>>();"
-   }, symbol {
-   "content": "for (Rule rule : rules) {
-            final var generated = rule.generate(node);
-            if (generated.isValid()) return generated;
-            list.add(generated);
-        }"
-   }, return {
+  "children": [return {
    "value": invocation {
-    "caller": symbol {
-     "content": "new RuleResult<>"
+    "caller": access {
+     "name": "generate",
+     "parent": symbol {
+      "content": "childRule"
+      }
      },
     "arguments": [symbol {
-     "content": "new Err<>(new GenerateException("No valid rule in disjunction""
-     }, symbol {
-     "content": " node))"
-     }, symbol {
-     "content": " list"
+     "content": "node"
      }]
     }
    }]

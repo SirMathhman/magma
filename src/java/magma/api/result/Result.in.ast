@@ -15,13 +15,26 @@
   "content": "public"
   }],
  "content": [method {
-  "modifiers": "Optional<T>",
-  "name": "findValue"
+  "name": "findValue",
+  "returns": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [symbol {
+    "type": "T"
+    }]
+   }
   }, method {
-  "modifiers": "Optional<E>",
-  "name": "findError"
+  "name": "findError",
+  "returns": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [symbol {
+    "type": "E"
+    }]
+   }
   }, method {
-  "modifiers": "<R> Result<R, E>",
   "name": "mapValue",
   "params": definition {
    "name": "mapper",
@@ -35,12 +48,16 @@
      "type": "R"
      }]
     }
+   },
+  "returns": symbol {
+   "type": "<R> Result<R, E>"
    }
   }, method {
-  "modifiers": "boolean",
-  "name": "isErr"
+  "name": "isErr",
+  "returns": symbol {
+   "type": "boolean"
+   }
   }, method {
-  "modifiers": "<R> Result<Tuple<T, R>, E>",
   "name": "and",
   "params": definition {
    "name": "supplier",
@@ -59,12 +76,16 @@
       }]
      }]
     }
+   },
+  "returns": symbol {
+   "type": "<R> Result<Tuple<T, R>, E>"
    }
   }, method {
-  "modifiers": "boolean",
-  "name": "isOk"
+  "name": "isOk",
+  "returns": symbol {
+   "type": "boolean"
+   }
   }, method {
-  "modifiers": "<R> Result<R, E>",
   "name": "flatMapValue",
   "params": definition {
    "name": "mapper",
@@ -85,6 +106,9 @@
       }]
      }]
     }
+   },
+  "returns": symbol {
+   "type": "<R> Result<R, E>"
    }
   }]
  }]

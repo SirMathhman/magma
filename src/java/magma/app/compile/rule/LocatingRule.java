@@ -21,6 +21,7 @@ public final class LocatingRule implements Rule {
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         final var occurrences = locator.locate(input).toList();
+
         var errors = new ArrayList<RuleResult<Node, ParseException>>();
         for (Integer occurrence : occurrences) {
             var result = getNodeParseExceptionRuleResult(input, occurrence);
@@ -31,7 +32,11 @@ public final class LocatingRule implements Rule {
             }
         }
 
-        return new RuleResult<>(new Err<>(new ParseException("Failed to find a valid combination", input)), errors);
+        if (occurrences.size() == 1) {
+            return errors.getFirst();
+        } else {
+            return new RuleResult<>(new Err<>(new ParseException("Failed to find a valid combination of slice '" + locator.slice() + "'", input)), errors);
+        }
     }
 
     private RuleResult<Node, ParseException> getNodeParseExceptionRuleResult(String input, int index) {

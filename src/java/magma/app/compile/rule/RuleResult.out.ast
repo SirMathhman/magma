@@ -54,7 +54,6 @@
    }
   }],
  "children": [method {
-  "modifiers": "public",
   "name": "RuleResult",
   "params": definition {
    "name": "result",
@@ -69,21 +68,35 @@
      }]
     }
    },
+  "returns": symbol {
+   "type": "public"
+   },
   "children": [symbol {
    "content": "this(result, Collections.emptyList());"
    }]
   }, method {
-  "modifiers": "@Deprecated
-    public Result<T, E>",
   "name": "unwrap",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Deprecated
+    public Result"
+    },
+   "children": [symbol {
+    "type": "T"
+    }, symbol {
+    "type": "E"
+    }]
+   },
   "children": [return {
    "value": symbol {
     "content": "result"
     }
    }]
   }, method {
-  "modifiers": "public boolean",
   "name": "isValid",
+  "returns": symbol {
+   "type": "public boolean"
+   },
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -96,7 +109,6 @@
     }
    }]
   }, method {
-  "modifiers": "public RuleResult<T, E>",
   "name": "mapValue",
   "params": definition {
    "name": "mapper",
@@ -110,6 +122,16 @@
      "type": "T"
      }]
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "public RuleResult"
+    },
+   "children": [symbol {
+    "type": "T"
+    }, symbol {
+    "type": "E"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -132,13 +154,22 @@
     }
    }]
   }, method {
-  "modifiers": "public RuleResult<T, E>",
   "name": "wrapErr",
   "params": definition {
    "name": "error",
    "type": symbol {
     "type": "E"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "public RuleResult"
+    },
+   "children": [symbol {
+    "type": "T"
+    }, symbol {
+    "type": "E"
+    }]
    },
   "children": [symbol {
    "content": "if (!isError()) return this;"
@@ -162,8 +193,10 @@
     }
    }]
   }, method {
-  "modifiers": "public boolean",
   "name": "isError",
+  "returns": symbol {
+   "type": "public boolean"
+   },
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -176,8 +209,10 @@
     }
    }]
   }, method {
-  "modifiers": "public int",
   "name": "depth",
+  "returns": symbol {
+   "type": "public int"
+   },
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -204,8 +239,22 @@
     }
    }]
   }, method {
-  "modifiers": "public List<RuleResult<T, E>>",
   "name": "sortedChildren",
+  "returns": generic {
+   "base": symbol {
+    "type": "public List"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "RuleResult"
+     },
+    "children": [symbol {
+     "type": "T"
+     }, symbol {
+     "type": "E"
+     }]
+    }]
+   },
   "children": [return {
    "value": invocation {
     "caller": access {

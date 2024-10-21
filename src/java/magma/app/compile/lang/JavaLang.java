@@ -75,7 +75,7 @@ public class JavaLang {
     }
 
     private static Rule createModifiersRule() {
-        final var modifier = new TypeRule("modifier", new FilterRule(MODIFIERS_LIST, new ExtractRule("content")));
+        final var modifier = new TypeRule("modifier", new FilterRule(new ListFilter(MODIFIERS_LIST), new ExtractRule("content")));
         return new NodeListRule(new SimpleSplitter(" "), MODIFIERS, modifier);
     }
 
@@ -84,9 +84,8 @@ public class JavaLang {
         final var name = new ExtractRule("name");
         final var returns = new NodeRule("returns", type);
 
-        final var maybeModifiers = new LocatingRule(createModifiersRule(), new BackwardsLocator(" "), returns);
-
-        final var beforeParams = new LocatingRule(new ExtractRule("modifiers"), new LastLocator(" "), name);
+        final var maybeModifiers = new OrRule(List.of(returns));
+        final var beforeParams = new LocatingRule(maybeModifiers, new LastLocator(" "), name);
         final var params = new OptionalNodeRule("params", new NodeRule("params", createDefinitionRule()), new EmptyRule());
 
         final var children = new StripRule(new PrefixRule("{", new SuffixRule(new NodeListRule(new StatementSplitter(), "children", new StripRule(createStatementRule(), "", "")), "}")), "", "");
@@ -121,7 +120,7 @@ public class JavaLang {
         final var type = new LazyRule();
         type.setChildRule(new OrRule(List.of(
                 createGenericRule(type),
-                new TypeRule("symbol", new StripRule(new ExtractRule("type"), "", ""))
+                new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("value")), "", ""))
         )));
         return type;
     }

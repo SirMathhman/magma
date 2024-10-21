@@ -30,9 +30,23 @@
    }
   }],
  "children": [method {
-  "modifiers": "@Override
-    public Result<Set<Path>, IOException>",
   "name": "collect",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Result"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Set"
+     },
+    "children": [symbol {
+     "type": "Path"
+     }]
+    }, symbol {
+    "type": "IOException"
+    }]
+   },
   "children": [symbol {
    "content": "try (var stream = Files.walk(root)) {
             return new Ok<>(stream

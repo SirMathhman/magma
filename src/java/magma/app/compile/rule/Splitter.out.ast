@@ -7,13 +7,20 @@
   "content": "public"
   }],
  "content": [method {
-  "modifiers": "List<String>",
   "name": "split",
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "List"
+    },
+   "children": [symbol {
+    "type": "String"
+    }]
    }
   }]
  }]

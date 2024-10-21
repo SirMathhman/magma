@@ -5,12 +5,18 @@ import magma.app.compile.GenerateException;
 import magma.app.compile.Node;
 import magma.app.compile.ParseException;
 
-import java.util.List;
+public final class FilterRule implements Rule {
+    private final Rule childRule;
+    private final Filter filter;
 
-public record FilterRule(List<String> values, Rule childRule) implements Rule {
+    public FilterRule(Filter filter, Rule childRule) {
+        this.childRule = childRule;
+        this.filter = filter;
+    }
+
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        return values.contains(input) ? childRule.parse(input) : new RuleResult<>(new Err<>(new ParseException("Invalid value", input)));
+        return filter.filter(input) ? childRule.parse(input) : new RuleResult<>(new Err<>(new ParseException("Invalid value", input)));
     }
 
     @Override

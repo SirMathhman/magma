@@ -36,9 +36,16 @@
    }
   }],
  "children": [method {
-  "modifiers": "@Override
-    public Optional<T>",
   "name": "findValue",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "T"
+    }]
+   },
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -51,9 +58,16 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Optional<E>",
   "name": "findError",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "E"
+    }]
+   },
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -68,8 +82,6 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public <R> Result<R, E>",
   "name": "mapValue",
   "params": definition {
    "name": "mapper",
@@ -84,6 +96,17 @@
      }]
     }
    },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public"
+    },
+   "children": [symbol {
+    "type": "R> Result<R"
+    }, symbol {
+    "type": "E"
+    }]
+   },
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -95,17 +118,17 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public boolean",
   "name": "isErr",
+  "returns": symbol {
+   "type": "@Override
+    public boolean"
+   },
   "children": [return {
    "value": symbol {
     "content": "true"
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public <R> Result<Tuple<T, R>, E>",
   "name": "and",
   "params": definition {
    "name": "supplier",
@@ -125,6 +148,22 @@
      }]
     }
    },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "R> Result"
+     },
+    "children": [symbol {
+     "type": "Tuple<T, R"
+     }]
+    }, symbol {
+    "type": "E"
+    }]
+   },
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -136,17 +175,17 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public boolean",
   "name": "isOk",
+  "returns": symbol {
+   "type": "@Override
+    public boolean"
+   },
   "children": [return {
    "value": symbol {
     "content": "false"
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public <R> Result<R, E>",
   "name": "flatMapValue",
   "params": definition {
    "name": "mapper",
@@ -167,6 +206,17 @@
       }]
      }]
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public"
+    },
+   "children": [symbol {
+    "type": "R> Result<R"
+    }, symbol {
+    "type": "E"
+    }]
    },
   "children": [return {
    "value": invocation {

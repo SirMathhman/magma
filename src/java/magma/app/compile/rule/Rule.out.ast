@@ -11,22 +11,40 @@
   "content": "public"
   }],
  "content": [method {
-  "modifiers": "RuleResult<Node, ParseException>",
   "name": "parse",
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "RuleResult"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }, symbol {
+    "type": "ParseException"
+    }]
    }
   }, method {
-  "modifiers": "RuleResult<String, GenerateException>",
   "name": "generate",
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "Node"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "RuleResult"
+    },
+   "children": [symbol {
+    "type": "String"
+    }, symbol {
+    "type": "GenerateException"
+    }]
    }
   }]
  }]

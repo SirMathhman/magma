@@ -87,19 +87,23 @@
    }
   }],
  "children": [method {
-  "modifiers": "public",
   "name": "MapNode",
+  "returns": symbol {
+   "type": "public"
+   },
   "children": [symbol {
    "content": "this(Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());"
    }]
   }, method {
-  "modifiers": "private static String",
   "name": "formatLine",
   "params": definition {
    "name": "value",
    "type": symbol {
     "type": "int depth, String key, String"
     }
+   },
+  "returns": symbol {
+   "type": "private static String"
    },
   "children": [return {
    "value": access {
@@ -110,7 +114,6 @@
     }
    }]
   }, method {
-  "modifiers": "private static String",
   "name": "formatNodeList",
   "params": definition {
    "name": "values",
@@ -122,6 +125,9 @@
      "type": "Node"
      }]
     }
+   },
+  "returns": symbol {
+   "type": "private static String"
    },
   "children": [return {
    "value": invocation {
@@ -156,14 +162,16 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Node",
   "name": "retype",
   "params": definition {
    "name": "type",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": symbol {
+   "type": "@Override
+    public Node"
    },
   "children": [return {
    "value": invocation {
@@ -192,14 +200,16 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public boolean",
   "name": "is",
   "params": definition {
    "name": "type",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": symbol {
+   "type": "@Override
+    public boolean"
    },
   "children": [return {
    "value": invocation {
@@ -229,14 +239,16 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Node",
   "name": "withString",
   "params": definition {
    "name": "propertyValue",
    "type": symbol {
     "type": "String propertyKey, String"
     }
+   },
+  "returns": symbol {
+   "type": "@Override
+    public Node"
    },
   "children": [symbol {
    "content": "final var copy = new HashMap<>(strings);"
@@ -261,14 +273,21 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Optional<String>",
   "name": "findString",
   "params": definition {
    "name": "propertyKey",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "String"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -292,8 +311,6 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Optional<Node>",
   "name": "mapNodeList",
   "params": definition {
    "name": "mapper",
@@ -318,6 +335,15 @@
      }]
     }
    },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
+   },
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -340,9 +366,28 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Stream<Tuple<String, List<Node>>>",
   "name": "streamNodeLists",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Stream"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Tuple"
+     },
+    "children": [symbol {
+     "type": "String"
+     }, generic {
+     "base": symbol {
+      "type": "List"
+      },
+     "children": [symbol {
+      "type": "Node"
+      }]
+     }]
+    }]
+   },
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -379,14 +424,16 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Node",
   "name": "withNode",
   "params": definition {
    "name": "propertyValue",
    "type": symbol {
     "type": "String propertyKey, Node"
     }
+   },
+  "returns": symbol {
+   "type": "@Override
+    public Node"
    },
   "children": [symbol {
    "content": "final var copy = new HashMap<>(nodes);"
@@ -411,14 +458,21 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Optional<Node>",
   "name": "findNode",
   "params": definition {
    "name": "propertyKey",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -442,9 +496,23 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Stream<Tuple<String, Node>>",
   "name": "streamNodes",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Stream"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Tuple"
+     },
+    "children": [symbol {
+     "type": "String"
+     }, symbol {
+     "type": "Node"
+     }]
+    }]
+   },
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -481,14 +549,16 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public boolean",
   "name": "hasNode",
   "params": definition {
    "name": "node",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": symbol {
+   "type": "@Override
+    public boolean"
    },
   "children": [return {
    "value": invocation {
@@ -504,8 +574,6 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Node",
   "name": "withStringList",
   "params": definition {
    "name": "propertyValues",
@@ -517,6 +585,10 @@
      "type": "String"
      }]
     }
+   },
+  "returns": symbol {
+   "type": "@Override
+    public Node"
    },
   "children": [symbol {
    "content": "final var copy = new HashMap<>(stringLists);"
@@ -541,14 +613,26 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Optional<List<String>>",
   "name": "findStringList",
   "params": definition {
    "name": "propertyKey",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "List"
+     },
+    "children": [symbol {
+     "type": "String"
+     }]
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -572,9 +656,23 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Stream<Tuple<String, String>>",
   "name": "streamStrings",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Stream"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Tuple"
+     },
+    "children": [symbol {
+     "type": "String"
+     }, symbol {
+     "type": "String"
+     }]
+    }]
+   },
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -611,14 +709,26 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Optional<List<Node>>",
   "name": "findNodeList",
   "params": definition {
    "name": "propertyKey",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "List"
+     },
+    "children": [symbol {
+     "type": "Node"
+     }]
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -642,8 +752,6 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Node",
   "name": "withNodeList",
   "params": definition {
    "name": "values",
@@ -655,6 +763,10 @@
      "type": "Node"
      }]
     }
+   },
+  "returns": symbol {
+   "type": "@Override
+    public Node"
    },
   "children": [symbol {
    "content": "final var copy = new HashMap<>(nodeLists);"
@@ -679,9 +791,11 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public String",
   "name": "toString",
+  "returns": symbol {
+   "type": "@Override
+    public String"
+   },
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -693,14 +807,16 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public String",
   "name": "format",
   "params": definition {
    "name": "depth",
    "type": symbol {
     "type": "int"
     }
+   },
+  "returns": symbol {
+   "type": "@Override
+    public String"
    },
   "children": [symbol {
    "content": "final var typeString = type.map(value -> value + " ").orElse("");"
@@ -730,7 +846,6 @@
    "content": "";"
    }]
   }, method {
-  "modifiers": "private String",
   "name": "formatStringList",
   "params": definition {
    "name": "list",
@@ -742,6 +857,9 @@
      "type": "String"
      }]
     }
+   },
+  "returns": symbol {
+   "type": "private String"
    },
   "children": [return {
    "value": invocation {
@@ -773,7 +891,6 @@
     }
    }]
   }, method {
-  "modifiers": "private <T> String",
   "name": "formatMap",
   "params": definition {
    "name": "format",
@@ -789,6 +906,9 @@
      "type": "String"
      }]
     }
+   },
+  "returns": symbol {
+   "type": "private <T> String"
    },
   "children": [return {
    "value": invocation {
@@ -833,9 +953,28 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Stream<Tuple<String, List<String>>>",
   "name": "streamStringLists",
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Stream"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "Tuple"
+     },
+    "children": [symbol {
+     "type": "String"
+     }, generic {
+     "base": symbol {
+      "type": "List"
+      },
+     "children": [symbol {
+      "type": "String"
+      }]
+     }]
+    }]
+   },
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -874,8 +1013,6 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Optional<Node>",
   "name": "mapStringList",
   "params": definition {
    "name": "mapper",
@@ -900,6 +1037,15 @@
      }]
     }
    },
+  "returns": generic {
+   "base": symbol {
+    "type": "@Override
+    public Optional"
+    },
+   "children": [symbol {
+    "type": "Node"
+    }]
+   },
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -922,14 +1068,16 @@
     }
    }]
   }, method {
-  "modifiers": "@Override
-    public Node",
   "name": "merge",
   "params": definition {
    "name": "other",
    "type": symbol {
     "type": "Node"
     }
+   },
+  "returns": symbol {
+   "type": "@Override
+    public Node"
    },
   "children": [symbol {
    "content": "final var stringsCopy = new HashMap<>(strings);"

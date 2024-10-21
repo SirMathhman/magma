@@ -7,17 +7,26 @@
   "content": "public"
   }],
  "content": [method {
-  "modifiers": "Stream<Integer>",
   "name": "locate",
   "params": definition {
    "name": "input",
    "type": symbol {
     "type": "String"
     }
+   },
+  "returns": generic {
+   "base": symbol {
+    "type": "Stream"
+    },
+   "children": [symbol {
+    "type": "Integer"
+    }]
    }
   }, method {
-  "modifiers": "String",
-  "name": "slice"
+  "name": "slice",
+  "returns": symbol {
+   "type": "String"
+   }
   }]
  }]
 }
