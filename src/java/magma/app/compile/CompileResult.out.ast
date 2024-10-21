@@ -4,14 +4,20 @@
  "modifiers": ["public"],
  "children": [],
  "params": [definition {
-  "type": "Node",
-  "name": "beforePass"
+  "name": "beforePass",
+  "type": symbol {
+   "type": "Node"
+   }
   }, definition {
-  "type": " Node",
-  "name": "afterPass"
+  "name": "afterPass",
+  "type": symbol {
+   "type": "Node"
+   }
   }, definition {
-  "type": " String",
-  "name": "output"
+  "name": "output",
+  "type": symbol {
+   "type": "String"
+   }
   }]
  }]
 }

@@ -21,8 +21,17 @@
  "children": [method {
   "name": "RuleResult",
   "params": definition {
-   "type": "Result<T, E>",
-   "name": "result"
+   "name": "result",
+   "type": generic {
+    "base": symbol {
+     "type": "Result"
+     },
+    "children": [symbol {
+     "type": "T"
+     }, symbol {
+     "type": "E"
+     }]
+    }
    },
   "returns": symbol {
    "type": "public"
@@ -65,8 +74,17 @@
   "name": "mapValue",
   "modifiers": ["public", "RuleResult<T,"],
   "params": definition {
-   "type": "Function<T, T>",
-   "name": "mapper"
+   "name": "mapper",
+   "type": generic {
+    "base": symbol {
+     "type": "Function"
+     },
+    "children": [symbol {
+     "type": "T"
+     }, symbol {
+     "type": "T"
+     }]
+    }
    },
   "returns": symbol {
    "type": "E>"
@@ -95,8 +113,10 @@
   "name": "wrapErr",
   "modifiers": ["public", "RuleResult<T,"],
   "params": definition {
-   "type": "E",
-   "name": "error"
+   "name": "error",
+   "type": symbol {
+    "type": "E"
+    }
    },
   "returns": symbol {
    "type": "E>"
@@ -207,11 +227,34 @@
   "type": "E"
   }],
  "params": [definition {
-  "type": "Result<T, E>",
-  "name": "result"
+  "name": "result",
+  "type": generic {
+   "base": symbol {
+    "type": "Result"
+    },
+   "children": [symbol {
+    "type": "T"
+    }, symbol {
+    "type": "E"
+    }]
+   }
   }, definition {
-  "type": " List<RuleResult<T, E>>",
-  "name": "children"
+  "name": "children",
+  "type": generic {
+   "base": symbol {
+    "type": "List"
+    },
+   "children": [generic {
+    "base": symbol {
+     "type": "RuleResult"
+     },
+    "children": [symbol {
+     "type": "T"
+     }, symbol {
+     "type": "E"
+     }]
+    }]
+   }
   }]
  }]
 }

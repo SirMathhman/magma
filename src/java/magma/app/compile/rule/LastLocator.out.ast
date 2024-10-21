@@ -11,8 +11,10 @@
   "name": "locate",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String",
-   "name": "input"
+   "name": "input",
+   "type": symbol {
+    "type": "String"
+    }
    },
   "returns": generic {
    "base": symbol {
@@ -45,8 +47,10 @@
    }]
   }],
  "params": [definition {
-  "type": "String",
-  "name": "slice"
+  "name": "slice",
+  "type": symbol {
+   "type": "String"
+   }
   }]
  }]
 }

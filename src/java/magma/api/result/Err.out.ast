@@ -76,8 +76,17 @@
   "name": "mapValue",
   "modifiers": ["public", "<R>", "Result<R,"],
   "params": definition {
-   "type": "Function<T, R>",
-   "name": "mapper"
+   "name": "mapper",
+   "type": generic {
+    "base": symbol {
+     "type": "Function"
+     },
+    "children": [symbol {
+     "type": "T"
+     }, symbol {
+     "type": "R"
+     }]
+    }
    },
   "returns": symbol {
    "type": "E>"
@@ -113,8 +122,22 @@
   "name": "and",
   "modifiers": ["public", "<R>", "Result<Tuple<T,", "R>,"],
   "params": definition {
-   "type": "Supplier<Result<R, E>>",
-   "name": "supplier"
+   "name": "supplier",
+   "type": generic {
+    "base": symbol {
+     "type": "Supplier"
+     },
+    "children": [generic {
+     "base": symbol {
+      "type": "Result"
+      },
+     "children": [symbol {
+      "type": "R"
+      }, symbol {
+      "type": "E"
+      }]
+     }]
+    }
    },
   "returns": symbol {
    "type": "E>"
@@ -150,8 +173,24 @@
   "name": "flatMapValue",
   "modifiers": ["public", "<R>", "Result<R,"],
   "params": definition {
-   "type": "Function<T, Result<R, E>>",
-   "name": "mapper"
+   "name": "mapper",
+   "type": generic {
+    "base": symbol {
+     "type": "Function"
+     },
+    "children": [symbol {
+     "type": "T"
+     }, generic {
+     "base": symbol {
+      "type": "Result"
+      },
+     "children": [symbol {
+      "type": "R"
+      }, symbol {
+      "type": "E"
+      }]
+     }]
+    }
    },
   "returns": symbol {
    "type": "E>"
@@ -176,8 +215,10 @@
   "type": "E"
   }],
  "params": [definition {
-  "type": "E",
-  "name": "error"
+  "name": "error",
+  "type": symbol {
+   "type": "E"
+   }
   }]
  }]
 }

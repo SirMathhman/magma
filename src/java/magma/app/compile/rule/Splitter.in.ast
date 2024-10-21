@@ -9,8 +9,10 @@
  "content": [method {
   "name": "split",
   "params": definition {
-   "type": "String",
-   "name": "input"
+   "name": "input",
+   "type": symbol {
+    "type": "String"
+    }
    },
   "returns": generic {
    "base": symbol {

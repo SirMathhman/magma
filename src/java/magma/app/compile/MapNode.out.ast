@@ -27,8 +27,10 @@
   "name": "formatLine",
   "modifiers": ["private", "static"],
   "params": definition {
-   "type": "int depth, String key, String",
-   "name": "value"
+   "name": "value",
+   "type": symbol {
+    "type": "int depth, String key, String"
+    }
    },
   "returns": symbol {
    "type": "String"
@@ -45,8 +47,15 @@
   "name": "formatNodeList",
   "modifiers": ["private", "static"],
   "params": definition {
-   "type": "int depth, List<Node>",
-   "name": "values"
+   "name": "values",
+   "type": generic {
+    "base": symbol {
+     "type": "int depth, List"
+     },
+    "children": [symbol {
+     "type": "Node"
+     }]
+    }
    },
   "returns": symbol {
    "type": "String"
@@ -87,8 +96,10 @@
   "name": "retype",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String",
-   "name": "type"
+   "name": "type",
+   "type": symbol {
+    "type": "String"
+    }
    },
   "returns": symbol {
    "type": "Node"
@@ -126,8 +137,10 @@
   "name": "is",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String",
-   "name": "type"
+   "name": "type",
+   "type": symbol {
+    "type": "String"
+    }
    },
   "returns": symbol {
    "type": "boolean"
@@ -166,8 +179,10 @@
   "name": "withString",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String propertyKey, String",
-   "name": "propertyValue"
+   "name": "propertyValue",
+   "type": symbol {
+    "type": "String propertyKey, String"
+    }
    },
   "returns": symbol {
    "type": "Node"
@@ -201,8 +216,10 @@
   "name": "findString",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String",
-   "name": "propertyKey"
+   "name": "propertyKey",
+   "type": symbol {
+    "type": "String"
+    }
    },
   "returns": generic {
    "base": symbol {
@@ -240,8 +257,27 @@
   "name": "mapNodeList",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String propertyKey, Function<List<Node>, List<Node>>",
-   "name": "mapper"
+   "name": "mapper",
+   "type": generic {
+    "base": symbol {
+     "type": "String propertyKey, Function"
+     },
+    "children": [generic {
+     "base": symbol {
+      "type": "List"
+      },
+     "children": [symbol {
+      "type": "Node"
+      }]
+     }, generic {
+     "base": symbol {
+      "type": "List"
+      },
+     "children": [symbol {
+      "type": "Node"
+      }]
+     }]
+    }
    },
   "returns": generic {
    "base": symbol {
@@ -328,8 +364,10 @@
   "name": "withNode",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String propertyKey, Node",
-   "name": "propertyValue"
+   "name": "propertyValue",
+   "type": symbol {
+    "type": "String propertyKey, Node"
+    }
    },
   "returns": symbol {
    "type": "Node"
@@ -363,8 +401,10 @@
   "name": "findNode",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String",
-   "name": "propertyKey"
+   "name": "propertyKey",
+   "type": symbol {
+    "type": "String"
+    }
    },
   "returns": generic {
    "base": symbol {
@@ -446,8 +486,10 @@
   "name": "hasNode",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String",
-   "name": "node"
+   "name": "node",
+   "type": symbol {
+    "type": "String"
+    }
    },
   "returns": symbol {
    "type": "boolean"
@@ -472,8 +514,15 @@
   "name": "withStringList",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String propertyKey, List<String>",
-   "name": "propertyValues"
+   "name": "propertyValues",
+   "type": generic {
+    "base": symbol {
+     "type": "String propertyKey, List"
+     },
+    "children": [symbol {
+     "type": "String"
+     }]
+    }
    },
   "returns": symbol {
    "type": "Node"
@@ -507,8 +556,10 @@
   "name": "findStringList",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String",
-   "name": "propertyKey"
+   "name": "propertyKey",
+   "type": symbol {
+    "type": "String"
+    }
    },
   "returns": generic {
    "base": symbol {
@@ -595,8 +646,10 @@
   "name": "findNodeList",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String",
-   "name": "propertyKey"
+   "name": "propertyKey",
+   "type": symbol {
+    "type": "String"
+    }
    },
   "returns": generic {
    "base": symbol {
@@ -639,8 +692,15 @@
   "name": "withNodeList",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String propertyKey, List<Node>",
-   "name": "values"
+   "name": "values",
+   "type": generic {
+    "base": symbol {
+     "type": "String propertyKey, List"
+     },
+    "children": [symbol {
+     "type": "Node"
+     }]
+    }
    },
   "returns": symbol {
    "type": "Node"
@@ -693,8 +753,10 @@
   "name": "format",
   "modifiers": ["public"],
   "params": definition {
-   "type": "int",
-   "name": "depth"
+   "name": "depth",
+   "type": symbol {
+    "type": "int"
+    }
    },
   "returns": symbol {
    "type": "String"
@@ -733,8 +795,15 @@
   "name": "formatStringList",
   "modifiers": ["private"],
   "params": definition {
-   "type": "List<String>",
-   "name": "list"
+   "name": "list",
+   "type": generic {
+    "base": symbol {
+     "type": "List"
+     },
+    "children": [symbol {
+     "type": "String"
+     }]
+    }
    },
   "returns": symbol {
    "type": "String"
@@ -772,8 +841,19 @@
   "name": "formatMap",
   "modifiers": ["private", "<T>"],
   "params": definition {
-   "type": "int depth, Map<String, T> set, Function<T, String>",
-   "name": "format"
+   "name": "format",
+   "type": generic {
+    "base": symbol {
+     "type": "int depth, Map"
+     },
+    "children": [symbol {
+     "type": "String"
+     }, symbol {
+     "type": "T> set, Function<T"
+     }, symbol {
+     "type": "String"
+     }]
+    }
    },
   "returns": symbol {
    "type": "String"
@@ -875,8 +955,27 @@
   "name": "mapStringList",
   "modifiers": ["public"],
   "params": definition {
-   "type": "String propertyKey, Function<List<String>, List<String>>",
-   "name": "mapper"
+   "name": "mapper",
+   "type": generic {
+    "base": symbol {
+     "type": "String propertyKey, Function"
+     },
+    "children": [generic {
+     "base": symbol {
+      "type": "List"
+      },
+     "children": [symbol {
+      "type": "String"
+      }]
+     }, generic {
+     "base": symbol {
+      "type": "List"
+      },
+     "children": [symbol {
+      "type": "String"
+      }]
+     }]
+    }
    },
   "returns": generic {
    "base": symbol {
@@ -914,8 +1013,10 @@
   "name": "merge",
   "modifiers": ["public"],
   "params": definition {
-   "type": "Node",
-   "name": "other"
+   "name": "other",
+   "type": symbol {
+    "type": "Node"
+    }
    },
   "returns": symbol {
    "type": "Node"
@@ -959,25 +1060,73 @@
    }]
   }],
  "params": [definition {
-  "type": "
-        Optional<String>",
-  "name": "type"
+  "name": "type",
+  "type": generic {
+   "base": symbol {
+    "type": "Optional"
+    },
+   "children": [symbol {
+    "type": "String"
+    }]
+   }
   }, definition {
-  "type": "
-        Map<String, String>",
-  "name": "strings"
+  "name": "strings",
+  "type": generic {
+   "base": symbol {
+    "type": "Map"
+    },
+   "children": [symbol {
+    "type": "String"
+    }, symbol {
+    "type": "String"
+    }]
+   }
   }, definition {
-  "type": "
-
-        Map<String, List<String>>",
-  "name": "stringLists"
+  "name": "stringLists",
+  "type": generic {
+   "base": symbol {
+    "type": "Map"
+    },
+   "children": [symbol {
+    "type": "String"
+    }, generic {
+    "base": symbol {
+     "type": "List"
+     },
+    "children": [symbol {
+     "type": "String"
+     }]
+    }]
+   }
   }, definition {
-  "type": " Map<String, Node>",
-  "name": "nodes"
+  "name": "nodes",
+  "type": generic {
+   "base": symbol {
+    "type": "Map"
+    },
+   "children": [symbol {
+    "type": "String"
+    }, symbol {
+    "type": "Node"
+    }]
+   }
   }, definition {
-  "type": " Map<String,
-        List<Node>>",
-  "name": "nodeLists"
+  "name": "nodeLists",
+  "type": generic {
+   "base": symbol {
+    "type": "Map"
+    },
+   "children": [symbol {
+    "type": "String"
+    }, generic {
+    "base": symbol {
+     "type": "List"
+     },
+    "children": [symbol {
+     "type": "Node"
+     }]
+    }]
+   }
   }]
  }]
 }

@@ -2,6 +2,8 @@
 "children": [package {
  "namespace": ["magma", "app", "compile", "lang"]
  }, import {
+ "namespace": ["magma", "app", "compile", "Node"]
+ }, import {
  "namespace": ["magma", "app", "compile", "rule", "*"]
  }, import {
  "namespace": ["java", "util", "List"]
@@ -42,7 +44,8 @@
     }
 
     private static TypeRule createDefinitionRule() {
-        return new TypeRule("definition", new LocatingRule(new ExtractRule("type"), new LastLocator(" "), new ExtractRule("name")));
+        final var type = new NodeRule("type", createTypeRule());
+        return new TypeRule("definition", new LocatingRule(type, new LastLocator(" "), new ExtractRule("name")));
     }
 
     private static OrRule createRootMemberRule() {

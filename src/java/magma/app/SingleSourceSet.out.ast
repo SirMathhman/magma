@@ -44,8 +44,10 @@
    }]
   }],
  "params": [definition {
-  "type": "Path",
-  "name": "source"
+  "name": "source",
+  "type": symbol {
+   "type": "Path"
+   }
   }]
  }]
 }

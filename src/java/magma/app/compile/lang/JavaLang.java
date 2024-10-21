@@ -1,5 +1,6 @@
 package magma.app.compile.lang;
 
+import magma.app.compile.Node;
 import magma.app.compile.rule.*;
 
 import java.util.List;
@@ -39,7 +40,8 @@ public class JavaLang {
     }
 
     private static TypeRule createDefinitionRule() {
-        return new TypeRule("definition", new LocatingRule(new ExtractRule("type"), new LastLocator(" "), new ExtractRule("name")));
+        final var type = new NodeRule("type", createTypeRule());
+        return new TypeRule("definition", new LocatingRule(type, new LastLocator(" "), new ExtractRule("name")));
     }
 
     private static OrRule createRootMemberRule() {

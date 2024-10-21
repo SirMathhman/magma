@@ -19,8 +19,10 @@
   "name": "parse",
   "modifiers": ["public", "RuleResult<Node,"],
   "params": definition {
-   "type": "String",
-   "name": "input"
+   "name": "input",
+   "type": symbol {
+    "type": "String"
+    }
    },
   "returns": symbol {
    "type": "ParseException>"
@@ -61,8 +63,10 @@
   "name": "generate",
   "modifiers": ["public", "RuleResult<String,"],
   "params": definition {
-   "type": "Node",
-   "name": "node"
+   "name": "node",
+   "type": symbol {
+    "type": "Node"
+    }
    },
   "returns": symbol {
    "type": "GenerateException>"
@@ -88,11 +92,15 @@
    }]
   }],
  "params": [definition {
-  "type": "String",
-  "name": "type"
+  "name": "type",
+  "type": symbol {
+   "type": "String"
+   }
   }, definition {
-  "type": " Rule",
-  "name": "rule"
+  "name": "rule",
+  "type": symbol {
+   "type": "Rule"
+   }
   }]
  }]
 }

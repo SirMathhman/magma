@@ -45,8 +45,10 @@
    }]
   }],
  "params": [definition {
-  "type": "Path",
-  "name": "root"
+  "name": "root",
+  "type": symbol {
+   "type": "Path"
+   }
   }]
  }]
 }

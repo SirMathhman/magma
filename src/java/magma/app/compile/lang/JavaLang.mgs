@@ -1,1 +1,1 @@
-import magma\.app\.compile\.rule\.*;import java\.util\.List;import static magma\.app\.compile\.lang\.CommonLang\.*;class def JavaLang () => {}
+import magma\.app\.compile\.Node;import magma\.app\.compile\.rule\.*;import java\.util\.List;import static magma\.app\.compile\.lang\.CommonLang\.*;class def JavaLang () => {}

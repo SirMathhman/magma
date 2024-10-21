@@ -11,11 +11,15 @@
   "type": "B"
   }],
  "params": [definition {
-  "type": "A",
-  "name": "left"
+  "name": "left",
+  "type": symbol {
+   "type": "A"
+   }
   }, definition {
-  "type": " B",
-  "name": "right"
+  "name": "right",
+  "type": symbol {
+   "type": "B"
+   }
   }]
  }]
 }

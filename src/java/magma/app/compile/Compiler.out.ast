@@ -30,8 +30,10 @@
   "name": "pass",
   "modifiers": ["private", "static"],
   "params": definition {
-   "type": "Node",
-   "name": "node"
+   "name": "node",
+   "type": symbol {
+    "type": "Node"
+    }
    },
   "returns": symbol {
    "type": "Node"
@@ -58,8 +60,15 @@
   "name": "passChildren",
   "modifiers": ["private", "static"],
   "params": definition {
-   "type": "List<Node>",
-   "name": "children"
+   "name": "children",
+   "type": generic {
+    "base": symbol {
+     "type": "List"
+     },
+    "children": [symbol {
+     "type": "Node"
+     }]
+    }
    },
   "returns": generic {
    "base": symbol {
@@ -104,8 +113,10 @@
   "name": "passRootChild",
   "modifiers": ["private", "static"],
   "params": definition {
-   "type": "Node",
-   "name": "node"
+   "name": "node",
+   "type": symbol {
+    "type": "Node"
+    }
    },
   "returns": symbol {
    "type": "Node"
@@ -136,8 +147,10 @@
   "name": "passClass",
   "modifiers": ["private", "static", "Optional<?", "extends"],
   "params": definition {
-   "type": "Node",
-   "name": "node"
+   "name": "node",
+   "type": symbol {
+    "type": "Node"
+    }
    },
   "returns": symbol {
    "type": "Node>"
@@ -155,8 +168,10 @@
   "name": "passRecord",
   "modifiers": ["private", "static"],
   "params": definition {
-   "type": "Node",
-   "name": "node"
+   "name": "node",
+   "type": symbol {
+    "type": "Node"
+    }
    },
   "returns": generic {
    "base": symbol {
@@ -192,8 +207,10 @@
   "name": "passInterface",
   "modifiers": ["private", "static"],
   "params": definition {
-   "type": "Node",
-   "name": "node"
+   "name": "node",
+   "type": symbol {
+    "type": "Node"
+    }
    },
   "returns": generic {
    "base": symbol {
@@ -236,8 +253,10 @@
   "name": "passClassMember",
   "modifiers": ["private", "static"],
   "params": definition {
-   "type": "Node",
-   "name": "child"
+   "name": "child",
+   "type": symbol {
+    "type": "Node"
+    }
    },
   "returns": symbol {
    "type": "Node"
@@ -270,8 +289,17 @@
   "name": "write",
   "modifiers": ["private", "<T,", "E", "extends", "Exception>", "Result<T,"],
   "params": definition {
-   "type": "RuleResult<T, E>",
-   "name": "result"
+   "name": "result",
+   "type": generic {
+    "base": symbol {
+     "type": "RuleResult"
+     },
+    "children": [symbol {
+     "type": "T"
+     }, symbol {
+     "type": "E"
+     }]
+    }
    },
   "returns": symbol {
    "type": "CompileException>"
@@ -290,8 +318,10 @@
   "name": "writeResult",
   "modifiers": ["private", "<T,", "E", "extends", "Exception>"],
   "params": definition {
-   "type": "RuleResult<T, E> result, int depth, int",
-   "name": "index"
+   "name": "index",
+   "type": symbol {
+    "type": "RuleResult<T, E> result, int depth, int"
+    }
    },
   "returns": symbol {
    "type": "void"
@@ -320,8 +350,10 @@
    }]
   }],
  "params": [definition {
-  "type": "String",
-  "name": "input"
+  "name": "input",
+  "type": symbol {
+   "type": "String"
+   }
   }]
  }]
 }
