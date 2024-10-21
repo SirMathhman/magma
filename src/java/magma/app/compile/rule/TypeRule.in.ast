@@ -17,19 +17,13 @@
   },
  "children": [method {
   "name": "parse",
+  "modifiers": ["@Override
+", "public", "RuleResult<Node,"],
   "params": content {
    "params": "String input"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public RuleResult"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }, symbol {
-    "type": "ParseException"
-    }]
+  "returns": symbol {
+   "type": "ParseException>"
    },
   "children": [return {
    "value": any {
@@ -40,19 +34,13 @@
    }]
   }, method {
   "name": "generate",
+  "modifiers": ["@Override
+", "public", "RuleResult<String,"],
   "params": content {
    "params": "Node node"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public RuleResult"
-    },
-   "children": [symbol {
-    "type": "String"
-    }, symbol {
-    "type": "GenerateException"
-    }]
+  "returns": symbol {
+   "type": "GenerateException>"
    },
   "children": [any {
    "content": "if (!node.is(type))

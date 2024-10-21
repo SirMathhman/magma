@@ -12,10 +12,13 @@ import java.util.Arrays;
 public record StringListRule(String propertyKey, String delimiter) implements Rule {
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        final var args = input.split(delimiter);
-        if (args.length == 0) return new RuleResult<>(new Err<>(new ParseException("No items present", input)));
+        final var args = Arrays.stream(input.split(delimiter))
+                .filter(value -> !value.isEmpty())
+                .toList();
 
-        return new RuleResult<>(new Ok<>(new MapNode().withStringList(propertyKey, Arrays.asList(args))));
+        if (args.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("No items present", input)));
+
+        return new RuleResult<>(new Ok<>(new MapNode().withStringList(propertyKey, args)));
     }
 
     @Override

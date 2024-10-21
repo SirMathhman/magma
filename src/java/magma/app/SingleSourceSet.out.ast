@@ -21,21 +21,10 @@
   },
  "children": [method {
   "name": "collect",
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public Result"
-    },
-   "children": [generic {
-    "base": symbol {
-     "type": "Set"
-     },
-    "children": [symbol {
-     "type": "Path"
-     }]
-    }, symbol {
-    "type": "IOException"
-    }]
+  "modifiers": ["@Override
+", "public", "Result<Set<Path>,"],
+  "returns": symbol {
+   "type": "IOException>"
    },
   "children": [any {
    "content": "var sources = new HashSet<Path>();"

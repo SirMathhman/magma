@@ -14,20 +14,9 @@
  "modifiers": ["public"],
  "content": [method {
   "name": "collect",
-  "returns": generic {
-   "base": symbol {
-    "type": "Result"
-    },
-   "children": [generic {
-    "base": symbol {
-     "type": "Set"
-     },
-    "children": [symbol {
-     "type": "Path"
-     }]
-    }, symbol {
-    "type": "IOException"
-    }]
+  "modifiers": ["Result<Set<Path>,"],
+  "returns": symbol {
+   "type": "IOException>"
    }
   }]
  }]

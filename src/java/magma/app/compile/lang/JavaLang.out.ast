@@ -29,7 +29,7 @@
         final var name = new OptionalNodeRule("type-params", new LocatingRule(simpleName, new FirstLocator("<"), new SuffixRule(typeParams, ">")), simpleName);
 
         final var params = new NodeListRule(new ValueSplitter(), "params", createDefinitionRule());
-        final var content = new NodeListRule(new StatementSplitter(), "children", createClassMemberRule());
+        final var content = new NodeListRule(new StatementSplitter(), "children", new StripRule(createClassMemberRule(), "", ""));
 
         final var anInterface = new NodeRule("interface", createTypeRule());
         final var implementsPresent = new StripRule(new PrefixRule("implements", new LocatingRule(anInterface, new FirstLocator("{"), new SuffixRule(content, "}"))), "", "");
@@ -80,7 +80,9 @@
         final var name = new ExtractRule("name");
         final var returns = new NodeRule("returns", type);
 
-        final var beforeParams = new LocatingRule(returns, new LastLocator(" "), name);
+        final var withModifiers = new LocatingRule(createModifiersRule(), new LastLocator(" "), returns);
+        final var maybeModifiers = new OptionalNodeRule("modifiers", withModifiers, returns);
+        final var beforeParams = new LocatingRule(maybeModifiers, new LastLocator(" "), name);
         final var params = new OptionalNodeRule("params", new NodeRule("params", new TypeRule("content", new ExtractRule("params"))), new EmptyRule());
 
         final var children = new StripRule(new PrefixRule("{", new SuffixRule(new NodeListRule(new StatementSplitter(), "children", new StripRule(createStatementRule(), "", "")), "}")), "", "");

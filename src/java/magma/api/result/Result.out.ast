@@ -32,11 +32,12 @@
    }
   }, method {
   "name": "mapValue",
+  "modifiers": ["<R>", "Result<R,"],
   "params": content {
    "params": "Function<T, R> mapper"
    },
   "returns": symbol {
-   "type": "<R> Result<R, E>"
+   "type": "E>"
    }
   }, method {
   "name": "isErr",
@@ -45,11 +46,12 @@
    }
   }, method {
   "name": "and",
+  "modifiers": ["<R>", "Result<Tuple<T,", "R>,"],
   "params": content {
    "params": "Supplier<Result<R, E>> supplier"
    },
   "returns": symbol {
-   "type": "<R> Result<Tuple<T, R>, E>"
+   "type": "E>"
    }
   }, method {
   "name": "isOk",
@@ -58,11 +60,12 @@
    }
   }, method {
   "name": "flatMapValue",
+  "modifiers": ["<R>", "Result<R,"],
   "params": content {
    "params": "Function<T, Result<R, E>> mapper"
    },
   "returns": symbol {
-   "type": "<R> Result<R, E>"
+   "type": "E>"
    }
   }]
  }]

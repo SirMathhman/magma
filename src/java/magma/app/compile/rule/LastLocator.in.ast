@@ -11,13 +11,14 @@
   },
  "children": [method {
   "name": "locate",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String input"
    },
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "type": "Optional"
     },
    "children": [symbol {
     "type": "Integer"

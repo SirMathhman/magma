@@ -108,41 +108,19 @@
    }
   }, method {
   "name": "streamStrings",
-  "returns": generic {
-   "base": symbol {
-    "type": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "type": "Tuple"
-     },
-    "children": [symbol {
-     "type": "String"
-     }, symbol {
-     "type": "String"
-     }]
-    }]
+  "modifiers": ["Stream<Tuple<String,"],
+  "returns": symbol {
+   "type": "String>>"
    }
   }, method {
   "name": "streamNodeLists",
+  "modifiers": ["Stream<Tuple<String,"],
   "returns": generic {
    "base": symbol {
-    "type": "Stream"
+    "type": "List"
     },
-   "children": [generic {
-    "base": symbol {
-     "type": "Tuple"
-     },
-    "children": [symbol {
-     "type": "String"
-     }, generic {
-     "base": symbol {
-      "type": "List"
-      },
-     "children": [symbol {
-      "type": "Node"
-      }]
-     }]
+   "children": [symbol {
+    "type": "Node>>"
     }]
    }
   }, method {
@@ -168,20 +146,9 @@
    }
   }, method {
   "name": "streamNodes",
-  "returns": generic {
-   "base": symbol {
-    "type": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "type": "Tuple"
-     },
-    "children": [symbol {
-     "type": "String"
-     }, symbol {
-     "type": "Node"
-     }]
-    }]
+  "modifiers": ["Stream<Tuple<String,"],
+  "returns": symbol {
+   "type": "Node>>"
    }
   }, method {
   "name": "hasNode",
@@ -219,24 +186,13 @@
    }
   }, method {
   "name": "streamStringLists",
+  "modifiers": ["Stream<Tuple<String,"],
   "returns": generic {
    "base": symbol {
-    "type": "Stream"
+    "type": "List"
     },
-   "children": [generic {
-    "base": symbol {
-     "type": "Tuple"
-     },
-    "children": [symbol {
-     "type": "String"
-     }, generic {
-     "base": symbol {
-      "type": "List"
-      },
-     "children": [symbol {
-      "type": "String"
-      }]
-     }]
+   "children": [symbol {
+    "type": "String>>"
     }]
    }
   }, method {

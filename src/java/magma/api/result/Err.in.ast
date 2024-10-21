@@ -24,10 +24,11 @@
   },
  "children": [method {
   "name": "findValue",
+  "modifiers": ["@Override
+", "public"],
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "type": "Optional"
     },
    "children": [symbol {
     "type": "T"
@@ -40,10 +41,11 @@
    }]
   }, method {
   "name": "findError",
+  "modifiers": ["@Override
+", "public"],
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "type": "Optional"
     },
    "children": [symbol {
     "type": "E"
@@ -56,19 +58,13 @@
    }]
   }, method {
   "name": "mapValue",
+  "modifiers": ["@Override
+", "public", "<R>", "Result<R,"],
   "params": content {
    "params": "Function<T, R> mapper"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public"
-    },
-   "children": [symbol {
-    "type": "R> Result<R"
-    }, symbol {
-    "type": "E"
-    }]
+  "returns": symbol {
+   "type": "E>"
    },
   "children": [return {
    "value": any {
@@ -77,9 +73,10 @@
    }]
   }, method {
   "name": "isErr",
+  "modifiers": ["@Override
+", "public"],
   "returns": symbol {
-   "type": "@Override
-    public boolean"
+   "type": "boolean"
    },
   "children": [return {
    "value": any {
@@ -88,24 +85,13 @@
    }]
   }, method {
   "name": "and",
+  "modifiers": ["@Override
+", "public", "<R>", "Result<Tuple<T,", "R>,"],
   "params": content {
    "params": "Supplier<Result<R, E>> supplier"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public"
-    },
-   "children": [generic {
-    "base": symbol {
-     "type": "R> Result"
-     },
-    "children": [symbol {
-     "type": "Tuple<T, R"
-     }]
-    }, symbol {
-    "type": "E"
-    }]
+  "returns": symbol {
+   "type": "E>"
    },
   "children": [return {
    "value": any {
@@ -114,9 +100,10 @@
    }]
   }, method {
   "name": "isOk",
+  "modifiers": ["@Override
+", "public"],
   "returns": symbol {
-   "type": "@Override
-    public boolean"
+   "type": "boolean"
    },
   "children": [return {
    "value": any {
@@ -125,19 +112,13 @@
    }]
   }, method {
   "name": "flatMapValue",
+  "modifiers": ["@Override
+", "public", "<R>", "Result<R,"],
   "params": content {
    "params": "Function<T, Result<R, E>> mapper"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public"
-    },
-   "children": [symbol {
-    "type": "R> Result<R"
-    }, symbol {
-    "type": "E"
-    }]
+  "returns": symbol {
+   "type": "E>"
    },
   "children": [return {
    "value": any {

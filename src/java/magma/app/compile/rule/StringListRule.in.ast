@@ -23,44 +23,34 @@
   },
  "children": [method {
   "name": "parse",
+  "modifiers": ["@Override
+", "public", "RuleResult<Node,"],
   "params": content {
    "params": "String input"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public RuleResult"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }, symbol {
-    "type": "ParseException"
-    }]
+  "returns": symbol {
+   "type": "ParseException>"
    },
   "children": [any {
-   "content": "final var args = input.split(delimiter);"
+   "content": "final var args = Arrays.stream(input.split(delimiter))
+                .filter(value -> !value.isEmpty())
+                .toList();"
    }, any {
-   "content": "if (args.length == 0) return new RuleResult<>(new Err<>(new ParseException("No items present", input)));"
+   "content": "if (args.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("No items present", input)));"
    }, return {
    "value": any {
-    "content": "new RuleResult<>(new Ok<>(new MapNode().withStringList(propertyKey, Arrays.asList(args))))"
+    "content": "new RuleResult<>(new Ok<>(new MapNode().withStringList(propertyKey, args)))"
     }
    }]
   }, method {
   "name": "generate",
+  "modifiers": ["@Override
+", "public", "RuleResult<String,"],
   "params": content {
    "params": "Node node"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public RuleResult"
-    },
-   "children": [symbol {
-    "type": "String"
-    }, symbol {
-    "type": "GenerateException"
-    }]
+  "returns": symbol {
+   "type": "GenerateException>"
    },
   "children": [any {
    "content": "final var list = node.findStringList(propertyKey);"

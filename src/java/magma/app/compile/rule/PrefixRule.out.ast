@@ -15,19 +15,13 @@
   },
  "children": [method {
   "name": "parse",
+  "modifiers": ["@Override
+", "public", "RuleResult<Node,"],
   "params": content {
    "params": "String input"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public RuleResult"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }, symbol {
-    "type": "ParseException"
-    }]
+  "returns": symbol {
+   "type": "ParseException>"
    },
   "children": [any {
    "content": "if (!input.startsWith(prefix))
@@ -39,19 +33,13 @@
    }]
   }, method {
   "name": "generate",
+  "modifiers": ["@Override
+", "public", "RuleResult<String,"],
   "params": content {
    "params": "Node node"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public RuleResult"
-    },
-   "children": [symbol {
-    "type": "String"
-    }, symbol {
-    "type": "GenerateException"
-    }]
+  "returns": symbol {
+   "type": "GenerateException>"
    },
   "children": [return {
    "value": any {

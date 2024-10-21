@@ -27,11 +27,12 @@
    }]
   }, method {
   "name": "formatLine",
+  "modifiers": ["private", "static"],
   "params": content {
    "params": "int depth, String key, String value"
    },
   "returns": symbol {
-   "type": "private static String"
+   "type": "String"
    },
   "children": [return {
    "value": any {
@@ -40,11 +41,12 @@
    }]
   }, method {
   "name": "formatNodeList",
+  "modifiers": ["private", "static"],
   "params": content {
    "params": "int depth, List<Node> values"
    },
   "returns": symbol {
-   "type": "private static String"
+   "type": "String"
    },
   "children": [return {
    "value": any {
@@ -55,12 +57,13 @@
    }]
   }, method {
   "name": "retype",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String type"
    },
   "returns": symbol {
-   "type": "@Override
-    public Node"
+   "type": "Node"
    },
   "children": [return {
    "value": any {
@@ -69,12 +72,13 @@
    }]
   }, method {
   "name": "is",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String type"
    },
   "returns": symbol {
-   "type": "@Override
-    public boolean"
+   "type": "boolean"
    },
   "children": [return {
    "value": any {
@@ -83,12 +87,13 @@
    }]
   }, method {
   "name": "withString",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String propertyKey, String propertyValue"
    },
   "returns": symbol {
-   "type": "@Override
-    public Node"
+   "type": "Node"
    },
   "children": [any {
    "content": "final var copy = new HashMap<>(strings);"
@@ -101,13 +106,14 @@
    }]
   }, method {
   "name": "findString",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String propertyKey"
    },
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "type": "Optional"
     },
    "children": [symbol {
     "type": "String"
@@ -120,13 +126,14 @@
    }]
   }, method {
   "name": "mapNodeList",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String propertyKey, Function<List<Node>, List<Node>> mapper"
    },
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "type": "Optional"
     },
    "children": [symbol {
     "type": "Node"
@@ -139,25 +146,14 @@
    }]
   }, method {
   "name": "streamNodeLists",
+  "modifiers": ["@Override
+", "public", "Stream<Tuple<String,"],
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Stream"
+    "type": "List"
     },
-   "children": [generic {
-    "base": symbol {
-     "type": "Tuple"
-     },
-    "children": [symbol {
-     "type": "String"
-     }, generic {
-     "base": symbol {
-      "type": "List"
-      },
-     "children": [symbol {
-      "type": "Node"
-      }]
-     }]
+   "children": [symbol {
+    "type": "Node>>"
     }]
    },
   "children": [return {
@@ -167,12 +163,13 @@
    }]
   }, method {
   "name": "withNode",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String propertyKey, Node propertyValue"
    },
   "returns": symbol {
-   "type": "@Override
-    public Node"
+   "type": "Node"
    },
   "children": [any {
    "content": "final var copy = new HashMap<>(nodes);"
@@ -185,13 +182,14 @@
    }]
   }, method {
   "name": "findNode",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String propertyKey"
    },
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "type": "Optional"
     },
    "children": [symbol {
     "type": "Node"
@@ -204,21 +202,10 @@
    }]
   }, method {
   "name": "streamNodes",
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "type": "Tuple"
-     },
-    "children": [symbol {
-     "type": "String"
-     }, symbol {
-     "type": "Node"
-     }]
-    }]
+  "modifiers": ["@Override
+", "public", "Stream<Tuple<String,"],
+  "returns": symbol {
+   "type": "Node>>"
    },
   "children": [return {
    "value": any {
@@ -227,12 +214,13 @@
    }]
   }, method {
   "name": "hasNode",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String node"
    },
   "returns": symbol {
-   "type": "@Override
-    public boolean"
+   "type": "boolean"
    },
   "children": [return {
    "value": any {
@@ -241,12 +229,13 @@
    }]
   }, method {
   "name": "withStringList",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String propertyKey, List<String> propertyValues"
    },
   "returns": symbol {
-   "type": "@Override
-    public Node"
+   "type": "Node"
    },
   "children": [any {
    "content": "final var copy = new HashMap<>(stringLists);"
@@ -259,13 +248,14 @@
    }]
   }, method {
   "name": "findStringList",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String propertyKey"
    },
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "type": "Optional"
     },
    "children": [generic {
     "base": symbol {
@@ -283,21 +273,10 @@
    }]
   }, method {
   "name": "streamStrings",
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "type": "Tuple"
-     },
-    "children": [symbol {
-     "type": "String"
-     }, symbol {
-     "type": "String"
-     }]
-    }]
+  "modifiers": ["@Override
+", "public", "Stream<Tuple<String,"],
+  "returns": symbol {
+   "type": "String>>"
    },
   "children": [return {
    "value": any {
@@ -306,13 +285,14 @@
    }]
   }, method {
   "name": "findNodeList",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String propertyKey"
    },
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "type": "Optional"
     },
    "children": [generic {
     "base": symbol {
@@ -330,12 +310,13 @@
    }]
   }, method {
   "name": "withNodeList",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String propertyKey, List<Node> values"
    },
   "returns": symbol {
-   "type": "@Override
-    public Node"
+   "type": "Node"
    },
   "children": [any {
    "content": "final var copy = new HashMap<>(nodeLists);"
@@ -348,9 +329,10 @@
    }]
   }, method {
   "name": "toString",
+  "modifiers": ["@Override
+", "public"],
   "returns": symbol {
-   "type": "@Override
-    public String"
+   "type": "String"
    },
   "children": [return {
    "value": any {
@@ -359,12 +341,13 @@
    }]
   }, method {
   "name": "format",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "int depth"
    },
   "returns": symbol {
-   "type": "@Override
-    public String"
+   "type": "String"
    },
   "children": [any {
    "content": "final var typeString = type.map(value -> value + " ").orElse("");"
@@ -395,11 +378,12 @@
    }]
   }, method {
   "name": "formatStringList",
+  "modifiers": ["private"],
   "params": content {
    "params": "List<String> list"
    },
   "returns": symbol {
-   "type": "private String"
+   "type": "String"
    },
   "children": [return {
    "value": any {
@@ -410,11 +394,12 @@
    }]
   }, method {
   "name": "formatMap",
+  "modifiers": ["private", "<T>"],
   "params": content {
    "params": "int depth, Map<String, T> set, Function<T, String> format"
    },
   "returns": symbol {
-   "type": "private <T> String"
+   "type": "String"
    },
   "children": [return {
    "value": any {
@@ -426,25 +411,14 @@
    }]
   }, method {
   "name": "streamStringLists",
+  "modifiers": ["@Override
+", "public", "Stream<Tuple<String,"],
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Stream"
+    "type": "List"
     },
-   "children": [generic {
-    "base": symbol {
-     "type": "Tuple"
-     },
-    "children": [symbol {
-     "type": "String"
-     }, generic {
-     "base": symbol {
-      "type": "List"
-      },
-     "children": [symbol {
-      "type": "String"
-      }]
-     }]
+   "children": [symbol {
+    "type": "String>>"
     }]
    },
   "children": [return {
@@ -456,13 +430,14 @@
    }]
   }, method {
   "name": "mapStringList",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "String propertyKey, Function<List<String>, List<String>> mapper"
    },
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "type": "Optional"
     },
    "children": [symbol {
     "type": "Node"
@@ -475,12 +450,13 @@
    }]
   }, method {
   "name": "merge",
+  "modifiers": ["@Override
+", "public"],
   "params": content {
    "params": "Node other"
    },
   "returns": symbol {
-   "type": "@Override
-    public Node"
+   "type": "Node"
    },
   "children": [any {
    "content": "final var stringsCopy = new HashMap<>(strings);"

@@ -10,33 +10,21 @@
  "modifiers": ["export"],
  "content": [method {
   "name": "parse",
+  "modifiers": ["RuleResult<Node,"],
   "params": content {
    "params": "String input"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "RuleResult"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }, symbol {
-    "type": "ParseException"
-    }]
+  "returns": symbol {
+   "type": "ParseException>"
    }
   }, method {
   "name": "generate",
+  "modifiers": ["RuleResult<String,"],
   "params": content {
    "params": "Node node"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "RuleResult"
-    },
-   "children": [symbol {
-    "type": "String"
-    }, symbol {
-    "type": "GenerateException"
-    }]
+  "returns": symbol {
+   "type": "GenerateException>"
    }
   }]
  }]

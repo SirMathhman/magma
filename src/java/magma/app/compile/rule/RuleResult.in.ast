@@ -31,16 +31,10 @@
    }]
   }, method {
   "name": "unwrap",
-  "returns": generic {
-   "base": symbol {
-    "type": "@Deprecated
-    public Result"
-    },
-   "children": [symbol {
-    "type": "T"
-    }, symbol {
-    "type": "E"
-    }]
+  "modifiers": ["@Deprecated
+", "public", "Result<T,"],
+  "returns": symbol {
+   "type": "E>"
    },
   "children": [return {
    "value": any {
@@ -49,8 +43,9 @@
    }]
   }, method {
   "name": "isValid",
+  "modifiers": ["public"],
   "returns": symbol {
-   "type": "public boolean"
+   "type": "boolean"
    },
   "children": [return {
    "value": any {
@@ -59,18 +54,12 @@
    }]
   }, method {
   "name": "mapValue",
+  "modifiers": ["public", "RuleResult<T,"],
   "params": content {
    "params": "Function<T, T> mapper"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "public RuleResult"
-    },
-   "children": [symbol {
-    "type": "T"
-    }, symbol {
-    "type": "E"
-    }]
+  "returns": symbol {
+   "type": "E>"
    },
   "children": [return {
    "value": any {
@@ -79,18 +68,12 @@
    }]
   }, method {
   "name": "wrapErr",
+  "modifiers": ["public", "RuleResult<T,"],
   "params": content {
    "params": "E error"
    },
-  "returns": generic {
-   "base": symbol {
-    "type": "public RuleResult"
-    },
-   "children": [symbol {
-    "type": "T"
-    }, symbol {
-    "type": "E"
-    }]
+  "returns": symbol {
+   "type": "E>"
    },
   "children": [any {
    "content": "if (!isError()) return this;"
@@ -103,8 +86,9 @@
    }]
   }, method {
   "name": "isError",
+  "modifiers": ["public"],
   "returns": symbol {
-   "type": "public boolean"
+   "type": "boolean"
    },
   "children": [return {
    "value": any {
@@ -113,8 +97,9 @@
    }]
   }, method {
   "name": "depth",
+  "modifiers": ["public"],
   "returns": symbol {
-   "type": "public int"
+   "type": "int"
    },
   "children": [return {
    "value": any {
@@ -126,20 +111,9 @@
    }]
   }, method {
   "name": "sortedChildren",
-  "returns": generic {
-   "base": symbol {
-    "type": "public List"
-    },
-   "children": [generic {
-    "base": symbol {
-     "type": "RuleResult"
-     },
-    "children": [symbol {
-     "type": "T"
-     }, symbol {
-     "type": "E"
-     }]
-    }]
+  "modifiers": ["public", "List<RuleResult<T,"],
+  "returns": symbol {
+   "type": "E>>"
    },
   "children": [return {
    "value": any {
