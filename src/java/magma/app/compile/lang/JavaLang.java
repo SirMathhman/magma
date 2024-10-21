@@ -105,9 +105,11 @@ public class JavaLang {
     }
 
     private static Rule createStatementRule() {
+        final var valueRule = createValueRule();
         return new OrRule(List.of(
-                new TypeRule("return", new PrefixRule("return ", new SuffixRule(new NodeRule("value", createValueRule()), ";")))
-        ));
+                new TypeRule("return", new PrefixRule("return ", new SuffixRule(new NodeRule("value", valueRule), ";"))),
+                new TypeRule("invocation", new SuffixRule(createInvocationRule(valueRule), ";")
+                )));
     }
 
     private static Rule createValueRule() {
@@ -121,7 +123,7 @@ public class JavaLang {
     }
 
     private static TypeRule createSymbolRule() {
-        return new TypeRule("symbol", new FilterRule(new SymbolFilter(), new ExtractRule("content")));
+        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("content")), "", ""));
     }
 
     private static TypeRule createAccessRule(LazyRule value) {
@@ -130,8 +132,11 @@ public class JavaLang {
         return new TypeRule("access", new LocatingRule(parent, new LastLocator("."), child));
     }
 
-    private static TypeRule createInvocationRule(LazyRule value) {
-        return new TypeRule("invocation", new LocatingRule(new NodeRule("caller", value), new FirstLocator("("), new SuffixRule(new NodeListRule(new ValueSplitter(), "arguments", value), ")")));
+    private static TypeRule createInvocationRule(Rule value) {
+        final var caller = new NodeRule("caller", value);
+        final var arguments = new OptionalNodeListRule("arguments", new NodeListRule(new ValueSplitter(), "arguments", value), new EmptyRule());
+
+        return new TypeRule("invocation", new LocatingRule(caller, new FirstLocator("("), new SuffixRule(arguments, ")")));
     }
 
     private static Rule createTypeRule() {

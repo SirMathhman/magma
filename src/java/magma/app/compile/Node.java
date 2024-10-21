@@ -45,4 +45,6 @@ public interface Node {
     Stream<Tuple<String, List<String>>> streamStringLists();
 
     Optional<Node> mapStringList(String propertyKey, Function<List<String>, List<String>> mapper);
+
+    boolean hasNodeList(String propertyKey);
 }

@@ -162,6 +162,11 @@ public record MapNode(
     }
 
     @Override
+    public boolean hasNodeList(String propertyKey) {
+        return nodeLists.containsKey(propertyKey);
+    }
+
+    @Override
     public Node merge(Node other) {
         final var stringsCopy = new HashMap<>(strings);
         other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));
