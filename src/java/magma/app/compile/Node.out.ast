@@ -186,8 +186,7 @@
      "value": "String"
      }]
     }]
-   },
-  "params": []
+   }
   }, method {
   "name": "streamNodeLists",
   "returns": generic {
@@ -209,8 +208,7 @@
       }]
      }]
     }]
-   },
-  "params": []
+   }
   }, method {
   "name": "withNode",
   "returns": symbol {
@@ -259,8 +257,7 @@
      "value": "Node"
      }]
     }]
-   },
-  "params": []
+   }
   }, method {
   "name": "hasNode",
   "returns": symbol {
@@ -335,8 +332,7 @@
       }]
      }]
     }]
-   },
-  "params": []
+   }
   }, method {
   "name": "mapStringList",
   "returns": generic {

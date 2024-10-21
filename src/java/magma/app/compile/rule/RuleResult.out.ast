@@ -86,13 +86,12 @@
     "value": "E"
     }]
    },
-  "annotations": [annotation {
-   "value": "Deprecated"
-   }],
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
+  "annotations": [annotation {
+   "value": "Deprecated"
+   }],
   "children": [return {
    "value": symbol {
     "content": "result"
@@ -106,16 +105,12 @@
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
   "children": [return {
-   "value": invocation {
-    "caller": access {
-     "name": "isOk",
-     "parent": symbol {
-      "content": "result"
-      }
-     },
-    "arguments": []
+   "value": access {
+    "name": "isOk()",
+    "parent": symbol {
+     "content": "result"
+     }
     }
    }]
   }, method {
@@ -216,16 +211,12 @@
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
   "children": [return {
-   "value": invocation {
-    "caller": access {
-     "name": "isErr",
-     "parent": symbol {
-      "content": "result"
-      }
-     },
-    "arguments": []
+   "value": access {
+    "name": "isErr()",
+    "parent": symbol {
+     "content": "result"
+     }
     }
    }]
   }, method {
@@ -236,7 +227,6 @@
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -282,7 +272,6 @@
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
   "children": [return {
    "value": invocation {
     "caller": access {

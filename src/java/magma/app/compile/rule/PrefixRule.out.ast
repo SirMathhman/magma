@@ -68,14 +68,11 @@
        "content": "input"
        }
       },
-     "arguments": [invocation {
-      "caller": access {
-       "name": "length",
-       "parent": symbol {
-        "content": "prefix"
-        }
-       },
-      "arguments": []
+     "arguments": [access {
+      "name": "length()",
+      "parent": symbol {
+       "content": "prefix"
+       }
       }]
      }]
     }

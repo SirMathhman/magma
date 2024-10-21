@@ -28,8 +28,7 @@
   "name": "slice",
   "returns": symbol {
    "value": "String"
-   },
-  "params": []
+   }
   }]
  }]
 }

@@ -26,13 +26,12 @@
   "returns": symbol {
    "value": "String"
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": symbol {
     "content": "delimiter"
@@ -70,14 +69,11 @@
             index = input.indexOf(delimiter, index + 1);
         }"
    }, return {
-   "value": invocation {
-    "caller": access {
-     "name": "stream",
-     "parent": symbol {
-      "content": "indices"
-      }
-     },
-    "arguments": []
+   "value": access {
+    "name": "stream()",
+    "parent": symbol {
+     "content": "indices"
+     }
     }
    }]
   }]

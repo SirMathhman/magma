@@ -61,14 +61,11 @@
       "content": "childRule"
       }
      },
-    "arguments": [invocation {
-     "caller": access {
-      "name": "strip",
-      "parent": symbol {
-       "content": "input"
-       }
-      },
-     "arguments": []
+    "arguments": [access {
+     "name": "strip()",
+     "parent": symbol {
+      "content": "input"
+      }
      }]
     }
    }]

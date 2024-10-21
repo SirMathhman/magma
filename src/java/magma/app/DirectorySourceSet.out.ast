@@ -46,13 +46,12 @@
     "value": "IOException"
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "try (var stream = Files.walk(root)) {
             return new Ok<>(stream

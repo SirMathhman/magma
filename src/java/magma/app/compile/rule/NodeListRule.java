@@ -24,6 +24,9 @@ public final class NodeListRule implements Rule {
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         final var segments = splitter.split(input);
+        if (segments.isEmpty()) {
+            return new RuleResult<>(new Err<>(new ParseException("No segments present for node list '" + propertyKey + "'", input)));
+        }
 
         var children = new ArrayList<Node>();
         for (var segment : segments) {

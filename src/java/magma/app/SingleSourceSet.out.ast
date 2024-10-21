@@ -44,13 +44,12 @@
     "value": "IOException"
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [symbol {
    "content": "var sources = new HashSet<Path>();"
    }, symbol {

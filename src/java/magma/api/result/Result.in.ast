@@ -23,8 +23,7 @@
    "children": [symbol {
     "value": "T"
     }]
-   },
-  "params": []
+   }
   }, method {
   "name": "findError",
   "returns": generic {
@@ -34,8 +33,7 @@
    "children": [symbol {
     "value": "E"
     }]
-   },
-  "params": []
+   }
   }, method {
   "name": "mapValue",
   "type-params": "R",
@@ -66,8 +64,7 @@
   "name": "isErr",
   "returns": symbol {
    "value": "boolean"
-   },
-  "params": []
+   }
   }, method {
   "name": "and",
   "type-params": "R",
@@ -110,8 +107,7 @@
   "name": "isOk",
   "returns": symbol {
    "value": "boolean"
-   },
-  "params": []
+   }
   }, method {
   "name": "flatMapValue",
   "type-params": "R",

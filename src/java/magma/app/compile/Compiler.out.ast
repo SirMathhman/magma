@@ -324,7 +324,6 @@
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
   "children": [symbol {
    "content": "final var parsed = createRootRule().parse(input);"
    }, symbol {

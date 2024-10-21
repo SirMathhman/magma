@@ -93,8 +93,7 @@
    },
   "children": [symbol {
    "content": "this(Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());"
-   }],
-  "params": []
+   }]
   }, method {
   "name": "formatLine",
   "returns": symbol {
@@ -448,13 +447,12 @@
      }]
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -594,13 +592,12 @@
      }]
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -780,13 +777,12 @@
      }]
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {
@@ -924,13 +920,12 @@
   "returns": symbol {
    "value": "String"
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": symbol {
@@ -1136,13 +1131,12 @@
      }]
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "modifiers": [modifier {
    "content": "public"
    }],
-  "params": [],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
   "children": [return {
    "value": invocation {
     "caller": access {

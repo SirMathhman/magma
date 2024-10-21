@@ -33,11 +33,12 @@ public class JavaLang {
         final var name = new OptionalNodeRule("type-params", new LocatingRule(simpleName, new FirstLocator("<"), new SuffixRule(typeParams, ">")), simpleName);
 
         final var params = new NodeListRule(new ValueSplitter(), "params", createDefinitionRule());
-        final var content = new NodeListRule(new StatementSplitter(), "children", new StripRule(createClassMemberRule(), "", ""));
+        final var withChildren = new NodeListRule(new StatementSplitter(), "children", new StripRule(createClassMemberRule(), "", ""));
+        final var maybeChildren = new StripRule(new OptionalNodeRule("children", withChildren, new EmptyRule()), "", "");
 
         final var anInterface = new NodeRule("interface", createTypeRule());
-        final var implementsPresent = new StripRule(new PrefixRule("implements", new LocatingRule(anInterface, new FirstLocator("{"), new SuffixRule(content, "}"))), "", "");
-        final var implementsEmpty = new StripRule(new PrefixRule("{", new SuffixRule(content, "}")), "", "");
+        final var implementsPresent = new StripRule(new PrefixRule("implements", new LocatingRule(anInterface, new FirstLocator("{"), new SuffixRule(maybeChildren, "}"))), "", "");
+        final var implementsEmpty = new StripRule(new PrefixRule("{", new SuffixRule(maybeChildren, "}")), "", "");
         final var afterParams = new OptionalNodeRule("super", implementsPresent, implementsEmpty);
         final var afterKeyword = new LocatingRule(name, new FirstLocator("("), new LocatingRule(params, new FirstLocator(")"), afterParams));
         return new TypeRule(RECORD, new LocatingRule(createModifiersRule(), new FirstLocator("record "), afterKeyword));

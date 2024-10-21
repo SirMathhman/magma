@@ -71,11 +71,8 @@
       },
      "arguments": [access {
       "name": "withNode(propertyKey, node",
-      "parent": invocation {
-       "caller": symbol {
-        "content": "node -> new MapNode"
-        },
-       "arguments": []
+      "parent": symbol {
+       "content": "node -> new MapNode()"
        }
       }]
      }]
