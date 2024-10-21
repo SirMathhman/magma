@@ -31,7 +31,16 @@ public record Compiler(String input) {
     private static Node passRootChild(Node node) {
         return passRecord(node)
                 .or(() -> passInterface(node))
+                .or(() -> passClass(node))
                 .orElse(node);
+    }
+
+    private static Optional<? extends Node> passClass(Node node) {
+        if (node.is(CLASS)) {
+            return Optional.of(node.retype(FUNCTION));
+        } else {
+            return Optional.empty();
+        }
     }
 
     private static Optional<Node> passRecord(Node node) {
@@ -62,7 +71,7 @@ public record Compiler(String input) {
     }
 
     public String compile() throws CompileException {
-        final var node = Results.unwrap(write(JavaLang.JAVA_ROOT_RULE.parse(input)));
+        final var node = Results.unwrap(write(createRootRule().parse(input)));
         final var passed = pass(node);
         return Results.unwrap(write(MagmaLang.createRootRule().generate(passed)));
     }

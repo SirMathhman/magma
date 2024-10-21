@@ -8,20 +8,38 @@ import static magma.app.compile.lang.CommonLang.*;
 
 public class JavaLang {
     public static final String PACKAGE = "package";
-    public static final Rule PACKAGE_RULE = new TypeRule(PACKAGE, new PrefixRule("package ", new SuffixRule(new ExtractRule(NAMESPACE), STATEMENT_END)));
-
     public static final String RECORD = "record";
-    public static final Rule RECORD_RULE = new TypeRule(RECORD, new PrefixRule("record ", new SuffixRule(new ExtractRule(NAME), "(){}")));
-    public static final OrRule JAVA_ROOT_MEMBER = new OrRule(List.of(
-            PACKAGE_RULE,
-            IMPORT_RULE,
-            RECORD_RULE,
-            createInterfaceRule()
-    ));
-    public static final NodeListRule JAVA_ROOT_RULE = new NodeListRule(new StatementSplitter(), CHILDREN, new StripRule(JAVA_ROOT_MEMBER));
+    public static final String CLASS = "class";
     public static final String INTERFACE = "interface";
     public static final String MODIFIERS = "modifiers";
     public static final String METHOD = "method";
+
+    public static TypeRule createPackageRule() {
+        return new TypeRule(PACKAGE, new PrefixRule("package ", new SuffixRule(new ExtractRule(NAMESPACE), STATEMENT_END)));
+    }
+
+    public static NodeListRule createRootRule() {
+        return new NodeListRule(new StatementSplitter(), CHILDREN, new StripRule(createRootMemberRule()));
+    }
+
+    public static TypeRule createRecordRule() {
+        return new TypeRule(RECORD, new LocatingRule(new ExtractRule("modifiers"), new FirstLocator("record "), new LocatingRule(new ExtractRule(NAME), new FirstLocator("("), new ExtractRule("params-and-body"))));
+    }
+
+    private static OrRule createRootMemberRule() {
+        return new OrRule(List.of(
+                createPackageRule(),
+                IMPORT_RULE,
+                createRecordRule(),
+                createInterfaceRule(),
+                createClassRule()
+        ));
+    }
+
+    private static TypeRule createClassRule() {
+        final var afterKeyword = new LocatingRule(new ExtractRule("name"), new FirstLocator("{"), new ExtractRule("body"));
+        return new TypeRule(CLASS, new LocatingRule(new ExtractRule("before-keyword"), new FirstLocator("class "), afterKeyword));
+    }
 
     private static TypeRule createInterfaceRule() {
         final var modifiers = new StringListRule(MODIFIERS, " ");
