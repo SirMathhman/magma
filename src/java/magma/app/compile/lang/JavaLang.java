@@ -17,7 +17,8 @@ public class JavaLang {
     public static final List<String> MODIFIERS_LIST = List.of(
             "public",
             "private",
-            "static"
+            "static",
+            "final"
     );
 
     public static TypeRule createPackageRule() {
