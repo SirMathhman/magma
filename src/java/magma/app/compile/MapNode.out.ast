@@ -12,7 +12,7 @@
  }, function {
  "name": "MapNode",
  "interface": symbol {
-  "type": "Node"
+  "value": "Node"
   },
  "modifiers": [modifier {
   "content": "public"
@@ -21,38 +21,38 @@
   "name": "type",
   "type": generic {
    "base": symbol {
-    "type": "Optional"
+    "value": "Optional"
     },
    "children": [symbol {
-    "type": "String"
+    "value": "String"
     }]
    }
   }, definition {
   "name": "strings",
   "type": generic {
    "base": symbol {
-    "type": "Map"
+    "value": "Map"
     },
    "children": [symbol {
-    "type": "String"
+    "value": "String"
     }, symbol {
-    "type": "String"
+    "value": "String"
     }]
    }
   }, definition {
   "name": "stringLists",
   "type": generic {
    "base": symbol {
-    "type": "Map"
+    "value": "Map"
     },
    "children": [symbol {
-    "type": "String"
+    "value": "String"
     }, generic {
     "base": symbol {
-     "type": "List"
+     "value": "List"
      },
     "children": [symbol {
-     "type": "String"
+     "value": "String"
      }]
     }]
    }
@@ -60,28 +60,28 @@
   "name": "nodes",
   "type": generic {
    "base": symbol {
-    "type": "Map"
+    "value": "Map"
     },
    "children": [symbol {
-    "type": "String"
+    "value": "String"
     }, symbol {
-    "type": "Node"
+    "value": "Node"
     }]
    }
   }, definition {
   "name": "nodeLists",
   "type": generic {
    "base": symbol {
-    "type": "Map"
+    "value": "Map"
     },
    "children": [symbol {
-    "type": "String"
+    "value": "String"
     }, generic {
     "base": symbol {
-     "type": "List"
+     "value": "List"
      },
     "children": [symbol {
-     "type": "Node"
+     "value": "Node"
      }]
     }]
    }
@@ -89,21 +89,17 @@
  "children": [method {
   "name": "MapNode",
   "returns": symbol {
-   "type": "public"
+   "value": "public"
    },
   "children": [symbol {
    "content": "this(Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());"
-   }]
+   }],
+  "params": []
   }, method {
   "name": "formatLine",
-  "params": definition {
-   "name": "value",
-   "type": symbol {
-    "type": "int depth, String key, String"
-    }
-   },
+  "type-params": "private static",
   "returns": symbol {
-   "type": "private static String"
+   "value": "String"
    },
   "children": [return {
    "value": access {
@@ -112,22 +108,28 @@
      "content": ""\n" + " ""
      }
     }
+   }],
+  "params": [definition {
+   "name": "depth",
+   "type": symbol {
+    "value": "int"
+    }
+   }, definition {
+   "name": "key",
+   "type": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "value",
+   "type": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "formatNodeList",
-  "params": definition {
-   "name": "values",
-   "type": generic {
-    "base": symbol {
-     "type": "int depth, List"
-     },
-    "children": [symbol {
-     "type": "Node"
-     }]
-    }
-   },
+  "type-params": "private static",
   "returns": symbol {
-   "type": "private static String"
+   "value": "String"
    },
   "children": [return {
    "value": invocation {
@@ -160,18 +162,29 @@
       }]
      }]
     }
+   }],
+  "params": [definition {
+   "name": "depth",
+   "type": symbol {
+    "value": "int"
+    }
+   }, definition {
+   "name": "values",
+   "type": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "Node"
+     }]
+    }
    }]
   }, method {
   "name": "retype",
-  "params": definition {
-   "name": "type",
-   "type": symbol {
-    "type": "String"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public Node"
+   "value": "Node"
    },
   "children": [return {
    "value": invocation {
@@ -198,18 +211,19 @@
      "content": " nodeLists"
      }]
     }
+   }],
+  "params": [definition {
+   "name": "type",
+   "type": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "is",
-  "params": definition {
-   "name": "type",
-   "type": symbol {
-    "type": "String"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public boolean"
+   "value": "boolean"
    },
   "children": [return {
    "value": invocation {
@@ -237,18 +251,19 @@
       }
      }]
     }
+   }],
+  "params": [definition {
+   "name": "type",
+   "type": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "withString",
-  "params": definition {
-   "name": "propertyValue",
-   "type": symbol {
-    "type": "String propertyKey, String"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public Node"
+   "value": "Node"
    },
   "children": [symbol {
    "content": "final var copy = new HashMap<>(strings);"
@@ -271,22 +286,28 @@
      "content": " nodeLists"
      }]
     }
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "type": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "propertyValue",
+   "type": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "findString",
-  "params": definition {
-   "name": "propertyKey",
-   "type": symbol {
-    "type": "String"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "value": "Optional"
     },
    "children": [symbol {
-    "type": "String"
+    "value": "String"
     }]
    },
   "children": [return {
@@ -309,39 +330,23 @@
       }]
      }]
     }
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "type": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "mapNodeList",
-  "params": definition {
-   "name": "mapper",
-   "type": generic {
-    "base": symbol {
-     "type": "String propertyKey, Function"
-     },
-    "children": [generic {
-     "base": symbol {
-      "type": "List"
-      },
-     "children": [symbol {
-      "type": "Node"
-      }]
-     }, generic {
-     "base": symbol {
-      "type": "List"
-      },
-     "children": [symbol {
-      "type": "Node"
-      }]
-     }]
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "value": "Optional"
     },
    "children": [symbol {
-    "type": "Node"
+    "value": "Node"
     }]
    },
   "children": [return {
@@ -364,26 +369,55 @@
       }]
      }]
     }
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "type": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "mapper",
+   "type": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [generic {
+     "base": symbol {
+      "value": "List"
+      },
+     "children": [symbol {
+      "value": "Node"
+      }]
+     }, generic {
+     "base": symbol {
+      "value": "List"
+      },
+     "children": [symbol {
+      "value": "Node"
+      }]
+     }]
+    }
    }]
   }, method {
   "name": "streamNodeLists",
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Stream"
+    "value": "Stream"
     },
    "children": [generic {
     "base": symbol {
-     "type": "Tuple"
+     "value": "Tuple"
      },
     "children": [symbol {
-     "type": "String"
+     "value": "String"
      }, generic {
      "base": symbol {
-      "type": "List"
+      "value": "List"
       },
      "children": [symbol {
-      "type": "Node"
+      "value": "Node"
       }]
      }]
     }]
@@ -422,18 +456,14 @@
       }]
      }]
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "withNode",
-  "params": definition {
-   "name": "propertyValue",
-   "type": symbol {
-    "type": "String propertyKey, Node"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public Node"
+   "value": "Node"
    },
   "children": [symbol {
    "content": "final var copy = new HashMap<>(nodes);"
@@ -456,22 +486,28 @@
      "content": " nodeLists"
      }]
     }
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "type": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "propertyValue",
+   "type": symbol {
+    "value": "Node"
+    }
    }]
   }, method {
   "name": "findNode",
-  "params": definition {
-   "name": "propertyKey",
-   "type": symbol {
-    "type": "String"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "value": "Optional"
     },
    "children": [symbol {
-    "type": "Node"
+    "value": "Node"
     }]
    },
   "children": [return {
@@ -494,22 +530,29 @@
       }]
      }]
     }
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "type": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "streamNodes",
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Stream"
+    "value": "Stream"
     },
    "children": [generic {
     "base": symbol {
-     "type": "Tuple"
+     "value": "Tuple"
      },
     "children": [symbol {
-     "type": "String"
+     "value": "String"
      }, symbol {
-     "type": "Node"
+     "value": "Node"
      }]
     }]
    },
@@ -547,18 +590,14 @@
       }]
      }]
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "hasNode",
-  "params": definition {
-   "name": "node",
-   "type": symbol {
-    "type": "String"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public boolean"
+   "value": "boolean"
    },
   "children": [return {
    "value": invocation {
@@ -572,23 +611,19 @@
      "content": "node"
      }]
     }
+   }],
+  "params": [definition {
+   "name": "node",
+   "type": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "withStringList",
-  "params": definition {
-   "name": "propertyValues",
-   "type": generic {
-    "base": symbol {
-     "type": "String propertyKey, List"
-     },
-    "children": [symbol {
-     "type": "String"
-     }]
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public Node"
+   "value": "Node"
    },
   "children": [symbol {
    "content": "final var copy = new HashMap<>(stringLists);"
@@ -611,26 +646,37 @@
      "content": " nodeLists"
      }]
     }
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "type": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "propertyValues",
+   "type": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "String"
+     }]
+    }
    }]
   }, method {
   "name": "findStringList",
-  "params": definition {
-   "name": "propertyKey",
-   "type": symbol {
-    "type": "String"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "value": "Optional"
     },
    "children": [generic {
     "base": symbol {
-     "type": "List"
+     "value": "List"
      },
     "children": [symbol {
-     "type": "String"
+     "value": "String"
      }]
     }]
    },
@@ -654,22 +700,29 @@
       }]
      }]
     }
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "type": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "streamStrings",
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Stream"
+    "value": "Stream"
     },
    "children": [generic {
     "base": symbol {
-     "type": "Tuple"
+     "value": "Tuple"
      },
     "children": [symbol {
-     "type": "String"
+     "value": "String"
      }, symbol {
-     "type": "String"
+     "value": "String"
      }]
     }]
    },
@@ -707,26 +760,22 @@
       }]
      }]
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "findNodeList",
-  "params": definition {
-   "name": "propertyKey",
-   "type": symbol {
-    "type": "String"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "value": "Optional"
     },
    "children": [generic {
     "base": symbol {
-     "type": "List"
+     "value": "List"
      },
     "children": [symbol {
-     "type": "Node"
+     "value": "Node"
      }]
     }]
    },
@@ -750,23 +799,19 @@
       }]
      }]
     }
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "type": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "withNodeList",
-  "params": definition {
-   "name": "values",
-   "type": generic {
-    "base": symbol {
-     "type": "String propertyKey, List"
-     },
-    "children": [symbol {
-     "type": "Node"
-     }]
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public Node"
+   "value": "Node"
    },
   "children": [symbol {
    "content": "final var copy = new HashMap<>(nodeLists);"
@@ -789,12 +834,29 @@
      "content": " copy"
      }]
     }
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "type": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "values",
+   "type": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "Node"
+     }]
+    }
    }]
   }, method {
   "name": "toString",
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public String"
+   "value": "String"
    },
   "children": [return {
    "value": invocation {
@@ -805,18 +867,14 @@
      "content": "0"
      }]
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "format",
-  "params": definition {
-   "name": "depth",
-   "type": symbol {
-    "type": "int"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public String"
+   "value": "String"
    },
   "children": [symbol {
    "content": "final var typeString = type.map(value -> value + " ").orElse("");"
@@ -844,22 +902,18 @@
    "content": "return typeString + "{" + joined + "\n" + " ".repeat(depth) + "}"
    }, symbol {
    "content": "";"
+   }],
+  "params": [definition {
+   "name": "depth",
+   "type": symbol {
+    "value": "int"
+    }
    }]
   }, method {
   "name": "formatStringList",
-  "params": definition {
-   "name": "list",
-   "type": generic {
-    "base": symbol {
-     "type": "List"
-     },
-    "children": [symbol {
-     "type": "String"
-     }]
-    }
-   },
+  "type-params": "private",
   "returns": symbol {
-   "type": "private String"
+   "value": "String"
    },
   "children": [return {
    "value": invocation {
@@ -889,26 +943,23 @@
       }]
      }]
     }
+   }],
+  "params": [definition {
+   "name": "list",
+   "type": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "String"
+     }]
+    }
    }]
   }, method {
   "name": "formatMap",
-  "params": definition {
-   "name": "format",
-   "type": generic {
-    "base": symbol {
-     "type": "int depth, Map"
-     },
-    "children": [symbol {
-     "type": "String"
-     }, symbol {
-     "type": "T> set, Function<T"
-     }, symbol {
-     "type": "String"
-     }]
-    }
-   },
+  "type-params": "private <T>",
   "returns": symbol {
-   "type": "private <T> String"
+   "value": "String"
    },
   "children": [return {
    "value": invocation {
@@ -951,26 +1002,57 @@
       }]
      }]
     }
+   }],
+  "params": [definition {
+   "name": "depth",
+   "type": symbol {
+    "value": "int"
+    }
+   }, definition {
+   "name": "set",
+   "type": generic {
+    "base": symbol {
+     "value": "Map"
+     },
+    "children": [symbol {
+     "value": "String"
+     }, symbol {
+     "value": "T"
+     }]
+    }
+   }, definition {
+   "name": "format",
+   "type": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "String"
+     }]
+    }
    }]
   }, method {
   "name": "streamStringLists",
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Stream"
+    "value": "Stream"
     },
    "children": [generic {
     "base": symbol {
-     "type": "Tuple"
+     "value": "Tuple"
      },
     "children": [symbol {
-     "type": "String"
+     "value": "String"
      }, generic {
      "base": symbol {
-      "type": "List"
+      "value": "List"
       },
      "children": [symbol {
-      "type": "String"
+      "value": "String"
       }]
      }]
     }]
@@ -1011,39 +1093,18 @@
       }]
      }]
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "mapStringList",
-  "params": definition {
-   "name": "mapper",
-   "type": generic {
-    "base": symbol {
-     "type": "String propertyKey, Function"
-     },
-    "children": [generic {
-     "base": symbol {
-      "type": "List"
-      },
-     "children": [symbol {
-      "type": "String"
-      }]
-     }, generic {
-     "base": symbol {
-      "type": "List"
-      },
-     "children": [symbol {
-      "type": "String"
-      }]
-     }]
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "value": "Optional"
     },
    "children": [symbol {
-    "type": "Node"
+    "value": "Node"
     }]
    },
   "children": [return {
@@ -1066,18 +1127,41 @@
       }]
      }]
     }
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "type": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "mapper",
+   "type": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [generic {
+     "base": symbol {
+      "value": "List"
+      },
+     "children": [symbol {
+      "value": "String"
+      }]
+     }, generic {
+     "base": symbol {
+      "value": "List"
+      },
+     "children": [symbol {
+      "value": "String"
+      }]
+     }]
+    }
    }]
   }, method {
   "name": "merge",
-  "params": definition {
-   "name": "other",
-   "type": symbol {
-    "type": "Node"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public Node"
+   "value": "Node"
    },
   "children": [symbol {
    "content": "final var stringsCopy = new HashMap<>(strings);"
@@ -1111,6 +1195,12 @@
      }, symbol {
      "content": " nodeListCopy"
      }]
+    }
+   }],
+  "params": [definition {
+   "name": "other",
+   "type": symbol {
+    "value": "Node"
     }
    }]
   }]

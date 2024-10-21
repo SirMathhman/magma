@@ -18,9 +18,9 @@
  }, record {
  "name": "RuleResult",
  "type-params": [symbol {
-  "type": "T"
+  "value": "T"
   }, symbol {
-  "type": "E"
+  "value": "E"
   }],
  "modifiers": [modifier {
   "content": "public"
@@ -29,75 +29,78 @@
   "name": "result",
   "type": generic {
    "base": symbol {
-    "type": "Result"
+    "value": "Result"
     },
    "children": [symbol {
-    "type": "T"
+    "value": "T"
     }, symbol {
-    "type": "E"
+    "value": "E"
     }]
    }
   }, definition {
   "name": "children",
   "type": generic {
    "base": symbol {
-    "type": "List"
+    "value": "List"
     },
    "children": [generic {
     "base": symbol {
-     "type": "RuleResult"
+     "value": "RuleResult"
      },
     "children": [symbol {
-     "type": "T"
+     "value": "T"
      }, symbol {
-     "type": "E"
+     "value": "E"
      }]
     }]
    }
   }],
  "children": [method {
   "name": "RuleResult",
-  "params": definition {
-   "name": "result",
-   "type": generic {
-    "base": symbol {
-     "type": "Result"
-     },
-    "children": [symbol {
-     "type": "T"
-     }, symbol {
-     "type": "E"
-     }]
-    }
-   },
   "returns": symbol {
-   "type": "public"
+   "value": "public"
    },
   "children": [symbol {
    "content": "this(result, Collections.emptyList());"
+   }],
+  "params": [definition {
+   "name": "result",
+   "type": generic {
+    "base": symbol {
+     "value": "Result"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "E"
+     }]
+    }
    }]
   }, method {
   "name": "unwrap",
+  "type-params": "@Deprecated
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Deprecated
-    public Result"
+    "value": "Result"
     },
    "children": [symbol {
-    "type": "T"
+    "value": "T"
     }, symbol {
-    "type": "E"
+    "value": "E"
     }]
    },
   "children": [return {
    "value": symbol {
     "content": "result"
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "isValid",
+  "type-params": "public",
   "returns": symbol {
-   "type": "public boolean"
+   "value": "boolean"
    },
   "children": [return {
    "value": invocation {
@@ -109,30 +112,19 @@
      },
     "arguments": []
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "mapValue",
-  "params": definition {
-   "name": "mapper",
-   "type": generic {
-    "base": symbol {
-     "type": "Function"
-     },
-    "children": [symbol {
-     "type": "T"
-     }, symbol {
-     "type": "T"
-     }]
-    }
-   },
+  "type-params": "public",
   "returns": generic {
    "base": symbol {
-    "type": "public RuleResult"
+    "value": "RuleResult"
     },
    "children": [symbol {
-    "type": "T"
+    "value": "T"
     }, symbol {
-    "type": "E"
+    "value": "E"
     }]
    },
   "children": [return {
@@ -154,23 +146,31 @@
      "content": " children"
      }]
     }
+   }],
+  "params": [definition {
+   "name": "mapper",
+   "type": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "T"
+     }]
+    }
    }]
   }, method {
   "name": "wrapErr",
-  "params": definition {
-   "name": "error",
-   "type": symbol {
-    "type": "E"
-    }
-   },
+  "type-params": "public",
   "returns": generic {
    "base": symbol {
-    "type": "public RuleResult"
+    "value": "RuleResult"
     },
    "children": [symbol {
-    "type": "T"
+    "value": "T"
     }, symbol {
-    "type": "E"
+    "value": "E"
     }]
    },
   "children": [symbol {
@@ -193,11 +193,18 @@
      "content": " list"
      }]
     }
+   }],
+  "params": [definition {
+   "name": "error",
+   "type": symbol {
+    "value": "E"
+    }
    }]
   }, method {
   "name": "isError",
+  "type-params": "public",
   "returns": symbol {
-   "type": "public boolean"
+   "value": "boolean"
    },
   "children": [return {
    "value": invocation {
@@ -209,11 +216,13 @@
      },
     "arguments": []
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "depth",
+  "type-params": "public",
   "returns": symbol {
-   "type": "public int"
+   "value": "int"
    },
   "children": [return {
    "value": invocation {
@@ -239,21 +248,23 @@
       }
      }]
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "sortedChildren",
+  "type-params": "public",
   "returns": generic {
    "base": symbol {
-    "type": "public List"
+    "value": "List"
     },
    "children": [generic {
     "base": symbol {
-     "type": "RuleResult"
+     "value": "RuleResult"
      },
     "children": [symbol {
-     "type": "T"
+     "value": "T"
      }, symbol {
-     "type": "E"
+     "value": "E"
      }]
     }]
    },
@@ -280,7 +291,8 @@
       }
      }]
     }
-   }]
+   }],
+  "params": []
   }]
  }]
 }

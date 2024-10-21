@@ -13,18 +13,18 @@
  "name": "Err",
  "interface": generic {
   "base": symbol {
-   "type": "Result"
+   "value": "Result"
    },
   "children": [symbol {
-   "type": "T"
+   "value": "T"
    }, symbol {
-   "type": "E"
+   "value": "E"
    }]
   },
  "type-params": [symbol {
-  "type": "T"
+  "value": "T"
   }, symbol {
-  "type": "E"
+  "value": "E"
   }],
  "modifiers": [modifier {
   "content": "public"
@@ -32,18 +32,19 @@
  "params": [definition {
   "name": "error",
   "type": symbol {
-   "type": "E"
+   "value": "E"
    }
   }],
  "children": [method {
   "name": "findValue",
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "value": "Optional"
     },
    "children": [symbol {
-    "type": "T"
+    "value": "T"
     }]
    },
   "children": [return {
@@ -56,16 +57,18 @@
      },
     "arguments": []
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "findError",
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Optional"
+    "value": "Optional"
     },
    "children": [symbol {
-    "type": "E"
+    "value": "E"
     }]
    },
   "children": [return {
@@ -80,31 +83,20 @@
      "content": "error"
      }]
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "mapValue",
-  "params": definition {
-   "name": "mapper",
-   "type": generic {
-    "base": symbol {
-     "type": "Function"
-     },
-    "children": [symbol {
-     "type": "T"
-     }, symbol {
-     "type": "R"
-     }]
-    }
-   },
+  "type-params": "@Override
+    public <R>",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public"
+    "value": "Result"
     },
    "children": [symbol {
-    "type": "R> Result<R"
+    "value": "R"
     }, symbol {
-    "type": "E"
+    "value": "E"
     }]
    },
   "children": [return {
@@ -114,54 +106,54 @@
      },
     "arguments": [symbol {
      "content": "error"
+     }]
+    }
+   }],
+  "params": [definition {
+   "name": "mapper",
+   "type": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "R"
      }]
     }
    }]
   }, method {
   "name": "isErr",
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public boolean"
+   "value": "boolean"
    },
   "children": [return {
    "value": symbol {
     "content": "true"
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "and",
-  "params": definition {
-   "name": "supplier",
-   "type": generic {
-    "base": symbol {
-     "type": "Supplier"
-     },
-    "children": [generic {
-     "base": symbol {
-      "type": "Result"
-      },
-     "children": [symbol {
-      "type": "R"
-      }, symbol {
-      "type": "E"
-      }]
-     }]
-    }
-   },
+  "type-params": "@Override
+    public <R>",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public"
+    "value": "Result"
     },
    "children": [generic {
     "base": symbol {
-     "type": "R> Result"
+     "value": "Tuple"
      },
     "children": [symbol {
-     "type": "Tuple<T, R"
+     "value": "T"
+     }, symbol {
+     "value": "R"
      }]
     }, symbol {
-    "type": "E"
+    "value": "E"
     }]
    },
   "children": [return {
@@ -171,51 +163,52 @@
      },
     "arguments": [symbol {
      "content": "error"
+     }]
+    }
+   }],
+  "params": [definition {
+   "name": "supplier",
+   "type": generic {
+    "base": symbol {
+     "value": "Supplier"
+     },
+    "children": [generic {
+     "base": symbol {
+      "value": "Result"
+      },
+     "children": [symbol {
+      "value": "R"
+      }, symbol {
+      "value": "E"
+      }]
      }]
     }
    }]
   }, method {
   "name": "isOk",
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public boolean"
+   "value": "boolean"
    },
   "children": [return {
    "value": symbol {
     "content": "false"
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "flatMapValue",
-  "params": definition {
-   "name": "mapper",
-   "type": generic {
-    "base": symbol {
-     "type": "Function"
-     },
-    "children": [symbol {
-     "type": "T"
-     }, generic {
-     "base": symbol {
-      "type": "Result"
-      },
-     "children": [symbol {
-      "type": "R"
-      }, symbol {
-      "type": "E"
-      }]
-     }]
-    }
-   },
+  "type-params": "@Override
+    public <R>",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public"
+    "value": "Result"
     },
    "children": [symbol {
-    "type": "R> Result<R"
+    "value": "R"
     }, symbol {
-    "type": "E"
+    "value": "E"
     }]
    },
   "children": [return {
@@ -225,6 +218,26 @@
      },
     "arguments": [symbol {
      "content": "error"
+     }]
+    }
+   }],
+  "params": [definition {
+   "name": "mapper",
+   "type": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, generic {
+     "base": symbol {
+      "value": "Result"
+      },
+     "children": [symbol {
+      "value": "R"
+      }, symbol {
+      "value": "E"
+      }]
      }]
     }
    }]

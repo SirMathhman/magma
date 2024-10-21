@@ -10,7 +10,7 @@
  }, function {
  "name": "PrefixRule",
  "interface": symbol {
-  "type": "Rule"
+  "value": "Rule"
   },
  "modifiers": [modifier {
   "content": "public"
@@ -18,31 +18,26 @@
  "params": [definition {
   "name": "prefix",
   "type": symbol {
-   "type": "String"
+   "value": "String"
    }
   }, definition {
   "name": "childRule",
   "type": symbol {
-   "type": "Rule"
+   "value": "Rule"
    }
   }],
  "children": [method {
   "name": "parse",
-  "params": definition {
-   "name": "input",
-   "type": symbol {
-    "type": "String"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public RuleResult"
+    "value": "RuleResult"
     },
    "children": [symbol {
-    "type": "Node"
+    "value": "Node"
     }, symbol {
-    "type": "ParseException"
+    "value": "ParseException"
     }]
    },
   "children": [symbol {
@@ -74,24 +69,25 @@
       }]
      }]
     }
+   }],
+  "params": [definition {
+   "name": "input",
+   "type": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "generate",
-  "params": definition {
-   "name": "node",
-   "type": symbol {
-    "type": "Node"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public RuleResult"
+    "value": "RuleResult"
     },
    "children": [symbol {
-    "type": "String"
+    "value": "String"
     }, symbol {
-    "type": "GenerateException"
+    "value": "GenerateException"
     }]
    },
   "children": [return {
@@ -108,6 +104,12 @@
       "content": "node)"
       }
      }]
+    }
+   }],
+  "params": [definition {
+   "name": "node",
+   "type": symbol {
+    "value": "Node"
     }
    }]
   }]

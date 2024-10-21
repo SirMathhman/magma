@@ -10,20 +10,20 @@
   }],
  "content": [method {
   "name": "split",
-  "params": definition {
-   "name": "input",
-   "type": symbol {
-    "type": "String"
-    }
-   },
   "returns": generic {
    "base": symbol {
-    "type": "List"
+    "value": "List"
     },
    "children": [symbol {
-    "type": "String"
+    "value": "String"
     }]
-   }
+   },
+  "params": [definition {
+   "name": "input",
+   "type": symbol {
+    "value": "String"
+    }
+   }]
   }]
  }]
 }

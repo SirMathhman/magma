@@ -10,25 +10,26 @@
   }],
  "content": [method {
   "name": "locate",
-  "params": definition {
-   "name": "input",
-   "type": symbol {
-    "type": "String"
-    }
-   },
   "returns": generic {
    "base": symbol {
-    "type": "Stream"
+    "value": "Stream"
     },
    "children": [symbol {
-    "type": "Integer"
+    "value": "Integer"
     }]
-   }
+   },
+  "params": [definition {
+   "name": "input",
+   "type": symbol {
+    "value": "String"
+    }
+   }]
   }, method {
   "name": "slice",
   "returns": symbol {
-   "type": "String"
-   }
+   "value": "String"
+   },
+  "params": []
   }]
  }]
 }

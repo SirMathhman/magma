@@ -14,40 +14,40 @@
   }],
  "content": [method {
   "name": "parse",
-  "params": definition {
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }, symbol {
+    "value": "ParseException"
+    }]
+   },
+  "params": [definition {
    "name": "input",
    "type": symbol {
-    "type": "String"
+    "value": "String"
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "RuleResult"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }, symbol {
-    "type": "ParseException"
-    }]
-   }
+   }]
   }, method {
   "name": "generate",
-  "params": definition {
-   "name": "node",
-   "type": symbol {
-    "type": "Node"
-    }
-   },
   "returns": generic {
    "base": symbol {
-    "type": "RuleResult"
+    "value": "RuleResult"
     },
    "children": [symbol {
-    "type": "String"
+    "value": "String"
     }, symbol {
-    "type": "GenerateException"
+    "value": "GenerateException"
     }]
-   }
+   },
+  "params": [definition {
+   "name": "node",
+   "type": symbol {
+    "value": "Node"
+    }
+   }]
   }]
  }]
 }

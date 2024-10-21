@@ -84,9 +84,10 @@ public class JavaLang {
         final var name = new ExtractRule("name");
         final var returns = new NodeRule("returns", type);
 
-        final var maybeModifiers = new OrRule(List.of(returns));
-        final var beforeParams = new LocatingRule(maybeModifiers, new LastLocator(" "), name);
-        final var params = new OptionalNodeRule("params", new NodeRule("params", createDefinitionRule()), new EmptyRule());
+        final var withTypeParams = new LocatingRule(new ExtractRule("type-params"), new BackwardsLocator(" "), returns);
+        final var maybeTypeParams = new OptionalNodeRule("type-params", withTypeParams, returns);
+        final var beforeParams = new LocatingRule(maybeTypeParams, new LastLocator(" "), name);
+        final var params = new OptionalNodeRule("params", new NodeListRule(new ValueSplitter(), "params", createDefinitionRule()), new EmptyRule());
 
         final var children = new StripRule(new PrefixRule("{", new SuffixRule(new NodeListRule(new StatementSplitter(), "children", new StripRule(createStatementRule(), "", "")), "}")), "", "");
         final var maybeChildren = new OptionalNodeRule("children", children, new SuffixRule(new EmptyRule(), ";"));

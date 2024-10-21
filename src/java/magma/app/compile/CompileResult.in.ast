@@ -9,17 +9,17 @@
  "params": [definition {
   "name": "beforePass",
   "type": symbol {
-   "type": "Node"
+   "value": "Node"
    }
   }, definition {
   "name": "afterPass",
   "type": symbol {
-   "type": "Node"
+   "value": "Node"
    }
   }, definition {
   "name": "output",
   "type": symbol {
-   "type": "String"
+   "value": "String"
    }
   }],
  "children": []

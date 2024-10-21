@@ -2,9 +2,9 @@
 "children": [function {
  "name": "Tuple",
  "type-params": [symbol {
-  "type": "A"
+  "value": "A"
   }, symbol {
-  "type": "B"
+  "value": "B"
   }],
  "modifiers": [modifier {
   "content": "public"
@@ -12,12 +12,12 @@
  "params": [definition {
   "name": "left",
   "type": symbol {
-   "type": "A"
+   "value": "A"
    }
   }, definition {
   "name": "right",
   "type": symbol {
-   "type": "B"
+   "value": "B"
    }
   }],
  "children": []

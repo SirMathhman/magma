@@ -33,19 +33,14 @@
  "params": [definition {
   "name": "input",
   "type": symbol {
-   "type": "String"
+   "value": "String"
    }
   }],
  "children": [method {
   "name": "pass",
-  "params": definition {
-   "name": "node",
-   "type": symbol {
-    "type": "Node"
-    }
-   },
+  "type-params": "private static",
   "returns": symbol {
-   "type": "private static Node"
+   "value": "Node"
    },
   "children": [return {
    "value": invocation {
@@ -64,26 +59,22 @@
       }
      }]
     }
+   }],
+  "params": [definition {
+   "name": "node",
+   "type": symbol {
+    "value": "Node"
+    }
    }]
   }, method {
   "name": "passChildren",
-  "params": definition {
-   "name": "children",
-   "type": generic {
-    "base": symbol {
-     "type": "List"
-     },
-    "children": [symbol {
-     "type": "Node"
-     }]
-    }
-   },
+  "type-params": "private static",
   "returns": generic {
    "base": symbol {
-    "type": "private static List"
+    "value": "List"
     },
    "children": [symbol {
-    "type": "Node"
+    "value": "Node"
     }]
    },
   "children": [return {
@@ -116,17 +107,23 @@
       }
      }]
     }
+   }],
+  "params": [definition {
+   "name": "children",
+   "type": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "Node"
+     }]
+    }
    }]
   }, method {
   "name": "passRootChild",
-  "params": definition {
-   "name": "node",
-   "type": symbol {
-    "type": "Node"
-    }
-   },
+  "type-params": "private static",
   "returns": symbol {
-   "type": "private static Node"
+   "value": "Node"
    },
   "children": [return {
    "value": invocation {
@@ -149,21 +146,22 @@
       }
      }]
     }
+   }],
+  "params": [definition {
+   "name": "node",
+   "type": symbol {
+    "value": "Node"
+    }
    }]
   }, method {
   "name": "passClass",
-  "params": definition {
-   "name": "node",
-   "type": symbol {
-    "type": "Node"
-    }
-   },
+  "type-params": "private static",
   "returns": generic {
    "base": symbol {
-    "type": "private static Optional"
+    "value": "Optional"
     },
    "children": [symbol {
-    "type": "? extends Node"
+    "value": "Node"
     }]
    },
   "children": [symbol {
@@ -174,21 +172,22 @@
    "content": "else {
             return Optional.empty();
         }"
+   }],
+  "params": [definition {
+   "name": "node",
+   "type": symbol {
+    "value": "Node"
+    }
    }]
   }, method {
   "name": "passRecord",
-  "params": definition {
-   "name": "node",
-   "type": symbol {
-    "type": "Node"
-    }
-   },
+  "type-params": "private static",
   "returns": generic {
    "base": symbol {
-    "type": "private static Optional"
+    "value": "Optional"
     },
    "children": [symbol {
-    "type": "Node"
+    "value": "Node"
     }]
    },
   "children": [return {
@@ -212,21 +211,22 @@
       }
      }]
     }
+   }],
+  "params": [definition {
+   "name": "node",
+   "type": symbol {
+    "value": "Node"
+    }
    }]
   }, method {
   "name": "passInterface",
-  "params": definition {
-   "name": "node",
-   "type": symbol {
-    "type": "Node"
-    }
-   },
+  "type-params": "private static",
   "returns": generic {
    "base": symbol {
-    "type": "private static Optional"
+    "value": "Optional"
     },
    "children": [symbol {
-    "type": "Node"
+    "value": "Node"
     }]
    },
   "children": [symbol {
@@ -257,17 +257,18 @@
      "content": "withChildren"
      }]
     }
+   }],
+  "params": [definition {
+   "name": "node",
+   "type": symbol {
+    "value": "Node"
+    }
    }]
   }, method {
   "name": "passClassMember",
-  "params": definition {
-   "name": "child",
-   "type": symbol {
-    "type": "Node"
-    }
-   },
+  "type-params": "private static",
   "returns": symbol {
-   "type": "private static Node"
+   "value": "Node"
    },
   "children": [symbol {
    "content": "if (child.is(METHOD)) return child.retype(FUNCTION);"
@@ -275,17 +276,24 @@
    "value": symbol {
     "content": "child"
     }
+   }],
+  "params": [definition {
+   "name": "child",
+   "type": symbol {
+    "value": "Node"
+    }
    }]
   }, method {
   "name": "compile",
+  "type-params": "public",
   "returns": generic {
    "base": symbol {
-    "type": "public Result"
+    "value": "Result"
     },
    "children": [symbol {
-    "type": "CompileResult"
+    "value": "CompileResult"
     }, symbol {
-    "type": "CompileException"
+    "value": "CompileException"
     }]
    },
   "children": [symbol {
@@ -298,32 +306,19 @@
         }"
    }, symbol {
    "content": ");"
-   }]
+   }],
+  "params": []
   }, method {
   "name": "write",
-  "params": definition {
-   "name": "result",
-   "type": generic {
-    "base": symbol {
-     "type": "RuleResult"
-     },
-    "children": [symbol {
-     "type": "T"
-     }, symbol {
-     "type": "E"
-     }]
-    }
-   },
+  "type-params": "private <T, E extends Exception>",
   "returns": generic {
    "base": symbol {
-    "type": "private"
+    "value": "Result"
     },
    "children": [symbol {
-    "type": "T"
+    "value": "T"
     }, symbol {
-    "type": "E extends Exception> Result<T"
-    }, symbol {
-    "type": "CompileException"
+    "value": "CompileException"
     }]
    },
   "children": [symbol {
@@ -335,17 +330,25 @@
             writeResult(result, 0, 0);
             return new Err<>(new CompileException());
         }"
+   }],
+  "params": [definition {
+   "name": "result",
+   "type": generic {
+    "base": symbol {
+     "value": "RuleResult"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "E"
+     }]
+    }
    }]
   }, method {
   "name": "writeResult",
-  "params": definition {
-   "name": "index",
-   "type": symbol {
-    "type": "RuleResult<T, E> result, int depth, int"
-    }
-   },
+  "type-params": "private <T, E extends Exception>",
   "returns": symbol {
-   "type": "private <T, E extends Exception> void"
+   "value": "void"
    },
   "children": [symbol {
    "content": "final var error = result.result().findError();"
@@ -368,6 +371,29 @@
             RuleResult<T, E> child = children.get(i);
             writeResult(child, depth + 1, i);
         }"
+   }],
+  "params": [definition {
+   "name": "result",
+   "type": generic {
+    "base": symbol {
+     "value": "RuleResult"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "E"
+     }]
+    }
+   }, definition {
+   "name": "depth",
+   "type": symbol {
+    "value": "int"
+    }
+   }, definition {
+   "name": "index",
+   "type": symbol {
+    "value": "int"
+    }
    }]
   }]
  }]

@@ -10,7 +10,7 @@
  }, record {
  "name": "StripRule",
  "interface": symbol {
-  "type": "Rule"
+  "value": "Rule"
   },
  "modifiers": [modifier {
   "content": "public"
@@ -18,36 +18,31 @@
  "params": [definition {
   "name": "childRule",
   "type": symbol {
-   "type": "Rule"
+   "value": "Rule"
    }
   }, definition {
   "name": "leftPaddingKey",
   "type": symbol {
-   "type": "String"
+   "value": "String"
    }
   }, definition {
   "name": "rightPaddingKey",
   "type": symbol {
-   "type": "String"
+   "value": "String"
    }
   }],
  "children": [method {
   "name": "parse",
-  "params": definition {
-   "name": "input",
-   "type": symbol {
-    "type": "String"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public RuleResult"
+    "value": "RuleResult"
     },
    "children": [symbol {
-    "type": "Node"
+    "value": "Node"
     }, symbol {
-    "type": "ParseException"
+    "value": "ParseException"
     }]
    },
   "children": [return {
@@ -68,24 +63,25 @@
      "arguments": []
      }]
     }
+   }],
+  "params": [definition {
+   "name": "input",
+   "type": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "generate",
-  "params": definition {
-   "name": "node",
-   "type": symbol {
-    "type": "Node"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public RuleResult"
+    "value": "RuleResult"
     },
    "children": [symbol {
-    "type": "String"
+    "value": "String"
     }, symbol {
-    "type": "GenerateException"
+    "value": "GenerateException"
     }]
    },
   "children": [symbol {
@@ -106,6 +102,12 @@
       "content": "node)"
       }
      }]
+    }
+   }],
+  "params": [definition {
+   "name": "node",
+   "type": symbol {
+    "value": "Node"
     }
    }]
   }]

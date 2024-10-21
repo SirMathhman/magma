@@ -34,7 +34,7 @@ public record Compiler(String input) {
                 .orElse(node);
     }
 
-    private static Optional<? extends Node> passClass(Node node) {
+    private static Optional<Node> passClass(Node node) {
         if (node.is(CLASS)) {
             return Optional.of(node.retype(FUNCTION));
         } else {

@@ -12,7 +12,7 @@
  }, record {
  "name": "BackwardsLocator",
  "interface": symbol {
-  "type": "Locator"
+  "value": "Locator"
   },
  "modifiers": [modifier {
   "content": "public"
@@ -20,35 +20,32 @@
  "params": [definition {
   "name": "delimiter",
   "type": symbol {
-   "type": "String"
+   "value": "String"
    }
   }],
  "children": [method {
   "name": "slice",
+  "type-params": "@Override
+    public",
   "returns": symbol {
-   "type": "@Override
-    public String"
+   "value": "String"
    },
   "children": [return {
    "value": symbol {
     "content": "delimiter"
     }
-   }]
+   }],
+  "params": []
   }, method {
   "name": "locate",
-  "params": definition {
-   "name": "input",
-   "type": symbol {
-    "type": "String"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Stream"
+    "value": "Stream"
     },
    "children": [symbol {
-    "type": "Integer"
+    "value": "Integer"
     }]
    },
   "children": [symbol {
@@ -69,6 +66,12 @@
       }
      },
     "arguments": []
+    }
+   }],
+  "params": [definition {
+   "name": "input",
+   "type": symbol {
+    "value": "String"
     }
    }]
   }]

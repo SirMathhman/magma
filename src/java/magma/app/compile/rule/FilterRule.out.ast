@@ -7,101 +7,27 @@
  "namespace": ["magma", "app", "compile", "Node"]
  }, import {
  "namespace": ["magma", "app", "compile", "ParseException"]
- }, import {
- "namespace": ["java", "util", "List"]
  }, function {
- "name": "FilterRule",
- "interface": symbol {
-  "type": "Rule"
-  },
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "values",
-  "type": generic {
-   "base": symbol {
-    "type": "List"
-    },
-   "children": [symbol {
-    "type": "String"
-    }]
-   }
-  }, definition {
-  "name": "childRule",
-  "type": symbol {
-   "type": "Rule"
-   }
-  }],
- "children": [method {
-  "name": "parse",
-  "params": definition {
-   "name": "input",
-   "type": symbol {
-    "type": "String"
+ "name": "FilterRule implements Rule ",
+ "body": "
+    private final Rule childRule;
+    private final Filter filter;
+
+    public FilterRule(Filter filter, Rule childRule) {
+        this.childRule = childRule;
+        this.filter = filter;
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public RuleResult"
-    },
-   "children": [symbol {
-    "type": "Node"
-    }, symbol {
-    "type": "ParseException"
-    }]
-   },
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "name": "contains",
-     "parent": symbol {
-      "content": "values"
-      }
-     },
-    "arguments": [access {
-     "name": "parse(input) : new RuleResult<>(new Err<>(new ParseException("Invalid value"",
-     "parent": symbol {
-      "content": "input) ? childRule"
-      }
-     }, symbol {
-     "content": " input))"
-     }]
+
+    @Override
+    public RuleResult<Node, ParseException> parse(String input) {
+        return filter.filter(input) ? childRule.parse(input) : new RuleResult<>(new Err<>(new ParseException("Invalid value", input)));
     }
-   }]
-  }, method {
-  "name": "generate",
-  "params": definition {
-   "name": "node",
-   "type": symbol {
-    "type": "Node"
+
+    @Override
+    public RuleResult<String, GenerateException> generate(Node node) {
+        return childRule.generate(node);
     }
-   },
-  "returns": generic {
-   "base": symbol {
-    "type": "@Override
-    public RuleResult"
-    },
-   "children": [symbol {
-    "type": "String"
-    }, symbol {
-    "type": "GenerateException"
-    }]
-   },
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "name": "generate",
-     "parent": symbol {
-      "content": "childRule"
-      }
-     },
-    "arguments": [symbol {
-     "content": "node"
-     }]
-    }
-   }]
-  }]
+}",
+ "before-keyword": "public final "
  }]
 }

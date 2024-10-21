@@ -20,7 +20,7 @@
  }, record {
  "name": "DirectorySourceSet",
  "interface": symbol {
-  "type": "SourceSet"
+  "value": "SourceSet"
   },
  "modifiers": [modifier {
   "content": "public"
@@ -28,25 +28,26 @@
  "params": [definition {
   "name": "root",
   "type": symbol {
-   "type": "Path"
+   "value": "Path"
    }
   }],
  "children": [method {
   "name": "collect",
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Result"
+    "value": "Result"
     },
    "children": [generic {
     "base": symbol {
-     "type": "Set"
+     "value": "Set"
      },
     "children": [symbol {
-     "type": "Path"
+     "value": "Path"
      }]
     }, symbol {
-    "type": "IOException"
+    "value": "IOException"
     }]
    },
   "children": [symbol {
@@ -59,7 +60,8 @@
    "content": "catch (IOException e) {
             return new Err<>(e);
         }"
-   }]
+   }],
+  "params": []
   }]
  }]
 }

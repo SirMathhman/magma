@@ -8,7 +8,7 @@
  }, record {
  "name": "LastLocator",
  "interface": symbol {
-  "type": "Locator"
+  "value": "Locator"
   },
  "modifiers": [modifier {
   "content": "public"
@@ -16,23 +16,18 @@
  "params": [definition {
   "name": "slice",
   "type": symbol {
-   "type": "String"
+   "value": "String"
    }
   }],
  "children": [method {
   "name": "locate0",
-  "params": definition {
-   "name": "input",
-   "type": symbol {
-    "type": "String"
-    }
-   },
+  "type-params": "private",
   "returns": generic {
    "base": symbol {
-    "type": "private Optional"
+    "value": "Optional"
     },
    "children": [symbol {
-    "type": "Integer"
+    "value": "Integer"
     }]
    },
   "children": [symbol {
@@ -52,22 +47,23 @@
       }
      }]
     }
+   }],
+  "params": [definition {
+   "name": "input",
+   "type": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "locate",
-  "params": definition {
-   "name": "input",
-   "type": symbol {
-    "type": "String"
-    }
-   },
+  "type-params": "@Override
+    public",
   "returns": generic {
    "base": symbol {
-    "type": "@Override
-    public Stream"
+    "value": "Stream"
     },
    "children": [symbol {
-    "type": "Integer"
+    "value": "Integer"
     }]
    },
   "children": [return {
@@ -81,6 +77,12 @@
       "content": "input)"
       }
      }]
+    }
+   }],
+  "params": [definition {
+   "name": "input",
+   "type": symbol {
+    "value": "String"
     }
    }]
   }]
