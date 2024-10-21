@@ -26,11 +26,22 @@
   "annotations": [{
    "annotation": "Override"
    }],
-  "children": [any {
+  "children": [symbol {
    "content": "final var index = input.indexOf(slice);"
    }, return {
-   "value": any {
-    "content": "index == -1 ? Optional.empty() : Optional.of(index)"
+   "value": invocation {
+    "caller": access {
+     "name": "empty",
+     "parent": symbol {
+      "content": "index == -1 ? Optional"
+      }
+     },
+    "arguments": [access {
+     "name": "of(index",
+     "parent": symbol {
+      "content": ") : Optional"
+      }
+     }]
     }
    }]
   }],

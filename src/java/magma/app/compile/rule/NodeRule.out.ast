@@ -28,8 +28,30 @@
    "annotation": "Override"
    }],
   "children": [return {
-   "value": any {
-    "content": "propertyRule.parse(input).mapValue(node -> new MapNode().withNode(propertyKey, node))"
+   "value": invocation {
+    "caller": access {
+     "name": "parse",
+     "parent": symbol {
+      "content": "propertyRule"
+      }
+     },
+    "arguments": [invocation {
+     "caller": access {
+      "name": "mapValue",
+      "parent": symbol {
+       "content": "input)"
+       }
+      },
+     "arguments": [access {
+      "name": "withNode(propertyKey, node",
+      "parent": invocation {
+       "caller": symbol {
+        "content": "node -> new MapNode"
+        },
+       "arguments": []
+       }
+      }]
+     }]
     }
    }]
   }, method {
@@ -44,16 +66,24 @@
   "annotations": [{
    "annotation": "Override"
    }],
-  "children": [any {
+  "children": [symbol {
    "content": "final var optional = node.findNode(propertyKey);"
-   }, any {
+   }, symbol {
    "content": "if (optional.isEmpty())
             return new RuleResult<>(new Err<>(new GenerateException("Node ' propertyKey + "'es not exist.", node)));"
-   }, any {
+   }, symbol {
    "content": "final var node1 = optional.get();"
    }, return {
-   "value": any {
-    "content": "propertyRule.generate(node1)"
+   "value": invocation {
+    "caller": access {
+     "name": "generate",
+     "parent": symbol {
+      "content": "propertyRule"
+      }
+     },
+    "arguments": [symbol {
+     "content": "node1"
+     }]
     }
    }]
   }],

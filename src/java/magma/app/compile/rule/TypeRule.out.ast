@@ -26,10 +26,32 @@
    "annotation": "Override"
    }],
   "children": [return {
-   "value": any {
-    "content": "rule.parse(input)
-                .mapValue(node -> node.retype(type))
-                .wrapErr(new ParseException("Failed to assign type ' type + "'input))"
+   "value": invocation {
+    "caller": access {
+     "name": "parse",
+     "parent": symbol {
+      "content": "rule"
+      }
+     },
+    "arguments": [invocation {
+     "caller": access {
+      "name": "mapValue",
+      "parent": symbol {
+       "content": "input)
+                "
+       }
+      },
+     "arguments": [access {
+      "name": "wrapErr(new ParseException("Failed to assign type ' type + "'input",
+      "parent": access {
+       "name": "retype(type))
+                ",
+       "parent": symbol {
+        "content": "node -> node"
+        }
+       }
+      }]
+     }]
     }
    }]
   }, method {
@@ -44,12 +66,20 @@
   "annotations": [{
    "annotation": "Override"
    }],
-  "children": [any {
+  "children": [symbol {
    "content": "if (!node.is(type))
             return new RuleResult<>(new Err<>(new GenerateException("Expected a type of ' type + "'node)));"
    }, return {
-   "value": any {
-    "content": "rule.generate(node)"
+   "value": invocation {
+    "caller": access {
+     "name": "generate",
+     "parent": symbol {
+      "content": "rule"
+      }
+     },
+    "arguments": [symbol {
+     "content": "node"
+     }]
     }
    }]
   }],

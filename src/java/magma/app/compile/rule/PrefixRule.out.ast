@@ -25,12 +25,34 @@
   "annotations": [{
    "annotation": "Override"
    }],
-  "children": [any {
+  "children": [symbol {
    "content": "if (!input.startsWith(prefix))
             return new RuleResult<>(new Err<>(new ParseException("Prefix ' prefix + "'t present", input)));"
    }, return {
-   "value": any {
-    "content": "childRule.parse(input.substring(prefix.length()))"
+   "value": invocation {
+    "caller": access {
+     "name": "parse",
+     "parent": symbol {
+      "content": "childRule"
+      }
+     },
+    "arguments": [invocation {
+     "caller": access {
+      "name": "substring",
+      "parent": symbol {
+       "content": "input"
+       }
+      },
+     "arguments": [invocation {
+      "caller": access {
+       "name": "length",
+       "parent": symbol {
+        "content": "prefix"
+        }
+       },
+      "arguments": []
+      }]
+     }]
     }
    }]
   }, method {
@@ -46,8 +68,19 @@
    "annotation": "Override"
    }],
   "children": [return {
-   "value": any {
-    "content": "childRule.generate(node).mapValue(value -> prefix + value)"
+   "value": invocation {
+    "caller": access {
+     "name": "generate",
+     "parent": symbol {
+      "content": "childRule"
+      }
+     },
+    "arguments": [access {
+     "name": "mapValue(value -> prefix + value",
+     "parent": symbol {
+      "content": "node)"
+      }
+     }]
     }
    }]
   }],

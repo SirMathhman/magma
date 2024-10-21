@@ -31,11 +31,26 @@
   "annotations": [{
    "annotation": "Override"
    }],
-  "children": [any {
+  "children": [symbol {
    "content": "if (input.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("Input is empty", input)));"
    }, return {
-   "value": any {
-    "content": "new RuleResult<>(new Ok<>(new MapNode().withString(propertyKey, input)))"
+   "value": invocation {
+    "caller": symbol {
+     "content": "new RuleResult<>"
+     },
+    "arguments": [access {
+     "name": "withString(propertyKey",
+     "parent": invocation {
+      "caller": symbol {
+       "content": "new Ok<>"
+       },
+      "arguments": [symbol {
+       "content": "new MapNode("
+       }]
+      }
+     }, symbol {
+     "content": " input))"
+     }]
     }
    }]
   }, method {
@@ -51,10 +66,39 @@
    "annotation": "Override"
    }],
   "children": [return {
-   "value": any {
-    "content": "node.findString(propertyKey)
-                .<RuleResult<String, GenerateException>>map(s -> new RuleResult<>(new Ok<>(s)))
-                .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String ' propertyKey + "'t present", node))))"
+   "value": invocation {
+    "caller": access {
+     "name": "findString",
+     "parent": symbol {
+      "content": "node"
+      }
+     },
+    "arguments": [invocation {
+     "caller": access {
+      "name": "<RuleResult<String, GenerateException>>map",
+      "parent": symbol {
+       "content": "propertyKey)
+                "
+       }
+      },
+     "arguments": [invocation {
+      "caller": symbol {
+       "content": "s -> new RuleResult<>"
+       },
+      "arguments": [invocation {
+       "caller": symbol {
+        "content": "new Ok<>"
+        },
+       "arguments": [access {
+        "name": "orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String ' propertyKey + "'t present", node",
+        "parent": symbol {
+         "content": "s)))
+                "
+         }
+        }]
+       }]
+      }]
+     }]
     }
    }]
   }],

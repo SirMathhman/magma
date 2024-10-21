@@ -28,13 +28,18 @@
   "annotations": [{
    "annotation": "Override"
    }],
-  "children": [any {
+  "children": [symbol {
    "content": "var sources = new HashSet<Path>();"
-   }, any {
+   }, symbol {
    "content": "if(Files.exists(this.source())) sources.add(this.source());"
    }, return {
-   "value": any {
-    "content": "new Ok<>(sources)"
+   "value": invocation {
+    "caller": symbol {
+     "content": "new Ok<>"
+     },
+    "arguments": [symbol {
+     "content": "sources"
+     }]
     }
    }]
   }],

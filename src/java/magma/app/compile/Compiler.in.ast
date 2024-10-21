@@ -38,8 +38,21 @@
    "type": "Node"
    },
   "children": [return {
-   "value": any {
-    "content": "node.mapNodeList(CHILDREN, Compiler::passChildren).orElse(node)"
+   "value": invocation {
+    "caller": access {
+     "name": "mapNodeList",
+     "parent": symbol {
+      "content": "node"
+      }
+     },
+    "arguments": [symbol {
+     "content": "CHILDREN"
+     }, access {
+     "name": "orElse(node",
+     "parent": symbol {
+      "content": " Compiler::passChildren)"
+      }
+     }]
     }
    }]
   }, method {
@@ -57,11 +70,34 @@
     }]
    },
   "children": [return {
-   "value": any {
-    "content": "children.stream()
-                .filter(child -> !child.is(JavaLang.PACKAGE))
-                .map(Compiler::passRootChild)
-                .toList()"
+   "value": invocation {
+    "caller": access {
+     "name": "stream",
+     "parent": symbol {
+      "content": "children"
+      }
+     },
+    "arguments": [access {
+     "name": "toList(",
+     "parent": access {
+      "name": "map(Compiler::passRootChild)
+                ",
+      "parent": access {
+       "name": "PACKAGE))
+                ",
+       "parent": access {
+        "name": "is(JavaLang",
+        "parent": access {
+         "name": "filter(child -> !child",
+         "parent": symbol {
+          "content": ")
+                "
+          }
+         }
+        }
+       }
+      }
+     }]
     }
    }]
   }, method {
@@ -74,11 +110,25 @@
    "type": "Node"
    },
   "children": [return {
-   "value": any {
-    "content": "passRecord(node)
-                .or(() -> passInterface(node))
-                .or(() -> passClass(node))
-                .orElse(node)"
+   "value": invocation {
+    "caller": symbol {
+     "content": "passRecord"
+     },
+    "arguments": [access {
+     "name": "orElse(node",
+     "parent": access {
+      "name": "or(() -> passClass(node))
+                ",
+      "parent": access {
+       "name": "or(() -> passInterface(node))
+                ",
+       "parent": symbol {
+        "content": "node)
+                "
+        }
+       }
+      }
+     }]
     }
    }]
   }, method {
@@ -90,11 +140,11 @@
   "returns": symbol {
    "type": "Node>"
    },
-  "children": [any {
+  "children": [symbol {
    "content": "if (node.is(CLASS)) {
             return Optional.of(node.retype(FUNCTION));
         }"
-   }, any {
+   }, symbol {
    "content": "else {
             return Optional.empty();
         }"
@@ -114,8 +164,25 @@
     }]
    },
   "children": [return {
-   "value": any {
-    "content": "node.is(RECORD) ? Optional.of(node.retype(FUNCTION)) : Optional.empty()"
+   "value": invocation {
+    "caller": access {
+     "name": "is",
+     "parent": symbol {
+      "content": "node"
+      }
+     },
+    "arguments": [access {
+     "name": "empty(",
+     "parent": access {
+      "name": "retype(FUNCTION)) : Optional",
+      "parent": access {
+       "name": "of(node",
+       "parent": symbol {
+        "content": "RECORD) ? Optional"
+        }
+       }
+      }
+     }]
     }
    }]
   }, method {
@@ -132,25 +199,33 @@
     "type": "Node"
     }]
    },
-  "children": [any {
+  "children": [symbol {
    "content": "if (!node.is(INTERFACE)) return Optional.empty();"
-   }, any {
+   }, symbol {
    "content": "final var retype = node.retype(MagmaLang.TRAIT);"
-   }, any {
+   }, symbol {
    "content": "final var withModifiers = retype.mapStringList(MODIFIERS, modifiers -> {
             var newList = new ArrayList<String>();
             if (modifiers.contains("public")) newList.add("export");
             return newList;
         }"
-   }, any {
+   }, symbol {
    "content": ").orElse(retype);"
-   }, any {
+   }, symbol {
    "content": "final var withChildren = withModifiers.mapNodeList(CHILDREN, children -> children.stream()
                 .map(Compiler::passClassMember)
                 .toList()).orElse(withModifiers);"
    }, return {
-   "value": any {
-    "content": "Optional.of(withChildren)"
+   "value": invocation {
+    "caller": access {
+     "name": "of",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [symbol {
+     "content": "withChildren"
+     }]
     }
    }]
   }, method {
@@ -162,10 +237,10 @@
   "returns": symbol {
    "type": "Node"
    },
-  "children": [any {
+  "children": [symbol {
    "content": "if (child.is(METHOD)) return child.retype(FUNCTION);"
    }, return {
-   "value": any {
+   "value": symbol {
     "content": "child"
     }
    }]
@@ -175,15 +250,15 @@
   "returns": symbol {
    "type": "CompileException>"
    },
-  "children": [any {
+  "children": [symbol {
    "content": "final var parsed = createRootRule().parse(input);"
-   }, any {
+   }, symbol {
    "content": "return write(parsed).flatMapValue(beforePass -> {
             final var afterPass = pass(beforePass);
             final var generated = MagmaLang.createRootRule().generate(afterPass);
             return write(generated).mapValue(output -> new CompileResult(beforePass, afterPass, output));
         }"
-   }, any {
+   }, symbol {
    "content": ");"
    }]
   }, method {
@@ -195,11 +270,11 @@
   "returns": symbol {
    "type": "CompileException>"
    },
-  "children": [any {
+  "children": [symbol {
    "content": "if (result.isValid()) {
             return new Ok<>(result.result().findValue().orElseThrow());
         }"
-   }, any {
+   }, symbol {
    "content": "else {
             writeResult(result, 0, 0);
             return new Err<>(new CompileException());
@@ -214,9 +289,9 @@
   "returns": symbol {
    "type": "void"
    },
-  "children": [any {
+  "children": [symbol {
    "content": "final var error = result.result().findError();"
-   }, any {
+   }, symbol {
    "content": "if (error.isPresent()) {
             final var repeat = " ".repeat(depth);
             final var s = (index + 1) + ") ";
@@ -224,13 +299,13 @@
             final var message = rawMessage.replaceAll("\r\n", "\r\n" + repeat + " ".repeat(s.length()));
             System.out.println(repeat + s + message);
         }"
-   }, any {
+   }, symbol {
    "content": "List<RuleResult<T, E>> children = result.sortedChildren();"
-   }, any {
+   }, symbol {
    "content": "for (int i = 0;"
-   }, any {
+   }, symbol {
    "content": "i < children.size();"
-   }, any {
+   }, symbol {
    "content": "i++) {
             RuleResult<T, E> child = children.get(i);
             writeResult(child, depth + 1, i);

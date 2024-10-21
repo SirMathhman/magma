@@ -32,13 +32,13 @@
   "annotations": [{
    "annotation": "Override"
    }],
-  "children": [any {
+  "children": [symbol {
    "content": "try (var stream = Files.walk(root)) {
             return new Ok<>(stream
                     .filter(path -> path.toString().endsWith(".java"))
                     .collect(Collectors.toSet()));
         }"
-   }, any {
+   }, symbol {
    "content": "catch (IOException e) {
             return new Err<>(e);
         }"

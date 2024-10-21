@@ -33,15 +33,30 @@
   "annotations": [{
    "annotation": "Override"
    }],
-  "children": [any {
+  "children": [symbol {
    "content": "final var args = Arrays.stream(input.split(delimiter))
                 .filter(value -> !value.isEmpty())
                 .toList();"
-   }, any {
+   }, symbol {
    "content": "if (args.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("No items present", input)));"
    }, return {
-   "value": any {
-    "content": "new RuleResult<>(new Ok<>(new MapNode().withStringList(propertyKey, args)))"
+   "value": invocation {
+    "caller": symbol {
+     "content": "new RuleResult<>"
+     },
+    "arguments": [access {
+     "name": "withStringList(propertyKey",
+     "parent": invocation {
+      "caller": symbol {
+       "content": "new Ok<>"
+       },
+      "arguments": [symbol {
+       "content": "new MapNode("
+       }]
+      }
+     }, symbol {
+     "content": " args))"
+     }]
     }
    }]
   }, method {
@@ -56,16 +71,26 @@
   "annotations": [{
    "annotation": "Override"
    }],
-  "children": [any {
+  "children": [symbol {
    "content": "final var list = node.findStringList(propertyKey);"
-   }, any {
+   }, symbol {
    "content": "if (list.isEmpty())
             return new RuleResult<>(new Err<>(new GenerateException("String list ' propertyKey + "'t present", node)));"
-   }, any {
+   }, symbol {
    "content": "final var joined = String.join(delimiter, list.get());"
    }, return {
-   "value": any {
-    "content": "new RuleResult<>(new Ok<>(joined))"
+   "value": invocation {
+    "caller": symbol {
+     "content": "new RuleResult<>"
+     },
+    "arguments": [invocation {
+     "caller": symbol {
+      "content": "new Ok<>"
+      },
+     "arguments": [symbol {
+      "content": "joined"
+      }]
+     }]
     }
    }]
   }],

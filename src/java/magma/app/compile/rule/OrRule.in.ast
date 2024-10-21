@@ -31,17 +31,26 @@
   "annotations": [{
    "annotation": "Override"
    }],
-  "children": [any {
+  "children": [symbol {
    "content": "var list = new ArrayList<RuleResult<Node, ParseException>>();"
-   }, any {
+   }, symbol {
    "content": "for (Rule rule : rules) {
             final var parsed = rule.parse(input);
             if (parsed.isValid()) return parsed;
             list.add(parsed);
         }"
    }, return {
-   "value": any {
-    "content": "new RuleResult<>(new Err<>(new ParseException("No valid rule in disjunction", input)), list)"
+   "value": invocation {
+    "caller": symbol {
+     "content": "new RuleResult<>"
+     },
+    "arguments": [symbol {
+     "content": "new Err<>(new ParseException("No valid rule in disjunction""
+     }, symbol {
+     "content": " input))"
+     }, symbol {
+     "content": " list"
+     }]
     }
    }]
   }, method {
@@ -56,17 +65,26 @@
   "annotations": [{
    "annotation": "Override"
    }],
-  "children": [any {
+  "children": [symbol {
    "content": "var list = new ArrayList<RuleResult<String, GenerateException>>();"
-   }, any {
+   }, symbol {
    "content": "for (Rule rule : rules) {
             final var generated = rule.generate(node);
             if (generated.isValid()) return generated;
             list.add(generated);
         }"
    }, return {
-   "value": any {
-    "content": "new RuleResult<>(new Err<>(new GenerateException("No valid rule in disjunction", node)), list)"
+   "value": invocation {
+    "caller": symbol {
+     "content": "new RuleResult<>"
+     },
+    "arguments": [symbol {
+     "content": "new Err<>(new GenerateException("No valid rule in disjunction""
+     }, symbol {
+     "content": " node))"
+     }, symbol {
+     "content": " list"
+     }]
     }
    }]
   }],

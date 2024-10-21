@@ -37,8 +37,14 @@
    "annotation": "Override"
    }],
   "children": [return {
-   "value": any {
-    "content": "Optional.empty()"
+   "value": invocation {
+    "caller": access {
+     "name": "empty",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": []
     }
    }]
   }, method {
@@ -56,8 +62,16 @@
    "annotation": "Override"
    }],
   "children": [return {
-   "value": any {
-    "content": "Optional.of(error)"
+   "value": invocation {
+    "caller": access {
+     "name": "of",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [symbol {
+     "content": "error"
+     }]
     }
    }]
   }, method {
@@ -73,8 +87,13 @@
    "annotation": "Override"
    }],
   "children": [return {
-   "value": any {
-    "content": "new Err<>(error)"
+   "value": invocation {
+    "caller": symbol {
+     "content": "new Err<>"
+     },
+    "arguments": [symbol {
+     "content": "error"
+     }]
     }
    }]
   }, method {
@@ -87,7 +106,7 @@
    "annotation": "Override"
    }],
   "children": [return {
-   "value": any {
+   "value": symbol {
     "content": "true"
     }
    }]
@@ -104,8 +123,13 @@
    "annotation": "Override"
    }],
   "children": [return {
-   "value": any {
-    "content": "new Err<>(error)"
+   "value": invocation {
+    "caller": symbol {
+     "content": "new Err<>"
+     },
+    "arguments": [symbol {
+     "content": "error"
+     }]
     }
    }]
   }, method {
@@ -118,7 +142,7 @@
    "annotation": "Override"
    }],
   "children": [return {
-   "value": any {
+   "value": symbol {
     "content": "false"
     }
    }]
@@ -135,8 +159,13 @@
    "annotation": "Override"
    }],
   "children": [return {
-   "value": any {
-    "content": "new Err<>(error)"
+   "value": invocation {
+    "caller": symbol {
+     "content": "new Err<>"
+     },
+    "arguments": [symbol {
+     "content": "error"
+     }]
     }
    }]
   }],

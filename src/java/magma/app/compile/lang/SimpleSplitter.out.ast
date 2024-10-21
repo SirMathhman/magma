@@ -1,0 +1,22 @@
+{
+"children": [import {
+ "namespace": ["magma", "app", "compile", "rule", "Splitter"]
+ }, import {
+ "namespace": ["java", "util", "List"]
+ }, function {
+ "name": "SimpleSplitter implements Splitter ",
+ "body": "
+    private final String delimiter;
+
+    public SimpleSplitter(String delimiter) {
+        this.delimiter = delimiter;
+    }
+
+    @Override
+    public List<String> split(String input) {
+        return List.of(input.split(delimiter));
+    }
+}",
+ "before-keyword": "public "
+ }]
+}

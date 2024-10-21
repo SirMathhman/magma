@@ -26,7 +26,7 @@
   "returns": symbol {
    "type": "public"
    },
-  "children": [any {
+  "children": [symbol {
    "content": "this(result, Collections.emptyList());"
    }]
   }, method {
@@ -39,7 +39,7 @@
    "annotation": "Deprecated"
    }],
   "children": [return {
-   "value": any {
+   "value": symbol {
     "content": "result"
     }
    }]
@@ -50,8 +50,14 @@
    "type": "boolean"
    },
   "children": [return {
-   "value": any {
-    "content": "result.isOk()"
+   "value": invocation {
+    "caller": access {
+     "name": "isOk",
+     "parent": symbol {
+      "content": "result"
+      }
+     },
+    "arguments": []
     }
    }]
   }, method {
@@ -64,8 +70,23 @@
    "type": "E>"
    },
   "children": [return {
-   "value": any {
-    "content": "new RuleResult<>(result.mapValue(mapper), children)"
+   "value": invocation {
+    "caller": symbol {
+     "content": "new RuleResult<>"
+     },
+    "arguments": [invocation {
+     "caller": access {
+      "name": "mapValue",
+      "parent": symbol {
+       "content": "result"
+       }
+      },
+     "arguments": [symbol {
+      "content": "mapper"
+      }]
+     }, symbol {
+     "content": " children"
+     }]
     }
    }]
   }, method {
@@ -77,13 +98,25 @@
   "returns": symbol {
    "type": "E>"
    },
-  "children": [any {
+  "children": [symbol {
    "content": "if (!isError()) return this;"
-   }, any {
+   }, symbol {
    "content": "var list = singletonList(this);"
    }, return {
-   "value": any {
-    "content": "new RuleResult<>(new Err<>(error), list)"
+   "value": invocation {
+    "caller": symbol {
+     "content": "new RuleResult<>"
+     },
+    "arguments": [invocation {
+     "caller": symbol {
+      "content": "new Err<>"
+      },
+     "arguments": [symbol {
+      "content": "error"
+      }]
+     }, symbol {
+     "content": " list"
+     }]
     }
    }]
   }, method {
@@ -93,8 +126,14 @@
    "type": "boolean"
    },
   "children": [return {
-   "value": any {
-    "content": "result.isErr()"
+   "value": invocation {
+    "caller": access {
+     "name": "isErr",
+     "parent": symbol {
+      "content": "result"
+      }
+     },
+    "arguments": []
     }
    }]
   }, method {
@@ -104,11 +143,28 @@
    "type": "int"
    },
   "children": [return {
-   "value": any {
-    "content": "1 + children.stream()
-                .map(RuleResult::depth)
-                .max(Integer::compare)
-                .orElse(0)"
+   "value": invocation {
+    "caller": access {
+     "name": "stream",
+     "parent": symbol {
+      "content": "1 + children"
+      }
+     },
+    "arguments": [access {
+     "name": "orElse(0",
+     "parent": access {
+      "name": "max(Integer::compare)
+                ",
+      "parent": access {
+       "name": "map(RuleResult::depth)
+                ",
+       "parent": symbol {
+        "content": ")
+                "
+        }
+       }
+      }
+     }]
     }
    }]
   }, method {
@@ -118,10 +174,27 @@
    "type": "E>>"
    },
   "children": [return {
-   "value": any {
-    "content": "children.stream()
-                .sorted(Comparator.comparingInt(RuleResult::depth))
-                .toList()"
+   "value": invocation {
+    "caller": access {
+     "name": "stream",
+     "parent": symbol {
+      "content": "children"
+      }
+     },
+    "arguments": [access {
+     "name": "toList(",
+     "parent": access {
+      "name": "comparingInt(RuleResult::depth))
+                ",
+      "parent": access {
+       "name": "sorted(Comparator",
+       "parent": symbol {
+        "content": ")
+                "
+        }
+       }
+      }
+     }]
     }
    }]
   }],

@@ -99,12 +99,22 @@ public class JavaLang {
     private static Rule createStatementRule() {
         return new OrRule(List.of(
                 new TypeRule("return", new PrefixRule("return ", new SuffixRule(new NodeRule("value", createValueRule()), ";"))),
-                new TypeRule("any", new ExtractRule("content"))
+                new TypeRule("symbol", new ExtractRule("content"))
         ));
     }
 
     private static Rule createValueRule() {
-        return new TypeRule("any", new ExtractRule("content"));
+        final var value = new LazyRule();
+        value.setChildRule(new OrRule(List.of(
+                createInvocationRule(value),
+                new TypeRule("access", new LocatingRule(new NodeRule("parent", value), new LastLocator("."), new ExtractRule("name"))),
+                new TypeRule("symbol", new ExtractRule("content"))
+        )));
+        return value;
+    }
+
+    private static TypeRule createInvocationRule(LazyRule value) {
+        return new TypeRule("invocation", new LocatingRule(new NodeRule("caller", value), new FirstLocator("("), new SuffixRule(new NodeListRule(new ValueSplitter(), "arguments", value), ")")));
     }
 
     private static Rule createTypeRule() {

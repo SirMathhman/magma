@@ -26,8 +26,22 @@
    "annotation": "Override"
    }],
   "children": [return {
-   "value": any {
-    "content": "childRule.parse(input.strip())"
+   "value": invocation {
+    "caller": access {
+     "name": "parse",
+     "parent": symbol {
+      "content": "childRule"
+      }
+     },
+    "arguments": [invocation {
+     "caller": access {
+      "name": "strip",
+      "parent": symbol {
+       "content": "input"
+       }
+      },
+     "arguments": []
+     }]
     }
    }]
   }, method {
@@ -42,13 +56,24 @@
   "annotations": [{
    "annotation": "Override"
    }],
-  "children": [any {
+  "children": [symbol {
    "content": "final var leftPadding = node.findString(leftPaddingKey).orElse("");"
-   }, any {
+   }, symbol {
    "content": "final var rightPadding = node.findString(rightPaddingKey).orElse("");"
    }, return {
-   "value": any {
-    "content": "childRule.generate(node).mapValue(inner -> leftPadding + inner + rightPadding)"
+   "value": invocation {
+    "caller": access {
+     "name": "generate",
+     "parent": symbol {
+      "content": "childRule"
+      }
+     },
+    "arguments": [access {
+     "name": "mapValue(inner -> leftPadding + inner + rightPadding",
+     "parent": symbol {
+      "content": "node)"
+      }
+     }]
     }
    }]
   }],
