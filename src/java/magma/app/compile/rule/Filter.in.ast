@@ -1,6 +1,6 @@
 {
 "children": [package {
- "namespace": ["magma", "app", "compile", "rule"]
+ "namespace": ["magma.app.compile.rule"]
  }, interface {
  "name": "Filter",
  "modifiers": [modifier {

@@ -1,14 +1,14 @@
 {
 "children": [import {
- "namespace": ["magma", "api", "Tuple"]
+ "namespace": ["magma.api.Tuple"]
  }, import {
- "namespace": ["java", "util", "List"]
+ "namespace": ["java.util.List"]
  }, import {
- "namespace": ["java", "util", "Optional"]
+ "namespace": ["java.util.Optional"]
  }, import {
- "namespace": ["java", "util", "function", "Function"]
+ "namespace": ["java.util.function.Function"]
  }, import {
- "namespace": ["java", "util", "stream", "Stream"]
+ "namespace": ["java.util.stream.Stream"]
  }, trait {
  "name": "Node",
  "modifiers": [modifier {

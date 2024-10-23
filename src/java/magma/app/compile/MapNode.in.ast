@@ -1,16 +1,16 @@
 {
 "children": [package {
- "namespace": ["magma", "app", "compile"]
+ "namespace": ["magma.app.compile"]
  }, import {
- "namespace": ["magma", "api", "Tuple"]
+ "namespace": ["magma.api.Tuple"]
  }, import {
- "namespace": ["java", "util", "*"]
+ "namespace": ["java.util.*"]
  }, import {
- "namespace": ["java", "util", "function", "Function"]
+ "namespace": ["java.util.function.Function"]
  }, import {
- "namespace": ["java", "util", "stream", "Collectors"]
+ "namespace": ["java.util.stream.Collectors"]
  }, import {
- "namespace": ["java", "util", "stream", "Stream"]
+ "namespace": ["java.util.stream.Stream"]
  }, record {
  "name": "MapNode",
  "interface": symbol {

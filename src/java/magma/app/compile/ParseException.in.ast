@@ -1,6 +1,6 @@
 {
 "children": [package {
- "namespace": ["magma", "app", "compile"]
+ "namespace": ["magma.app.compile"]
  }, class {
  "before-keyword": "public ",
  "name": "ParseException extends CompileException ",

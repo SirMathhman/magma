@@ -1,8 +1,8 @@
 {
 "children": [package {
- "namespace": ["magma", "app", "compile"]
+ "namespace": ["magma.app.compile"]
  }, import {
- "namespace": ["magma", "app", "ApplicationException"]
+ "namespace": ["magma.app.ApplicationException"]
  }, class {
  "before-keyword": "public ",
  "name": "CompileException extends ApplicationException ",

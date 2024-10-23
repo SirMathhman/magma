@@ -2,13 +2,13 @@
 "children": [package {
  "namespace": ["magma"]
  }, import {
- "namespace": ["magma", "app", "Application"]
+ "namespace": ["magma.app.Application"]
  }, import {
- "namespace": ["magma", "app", "ApplicationException"]
+ "namespace": ["magma.app.ApplicationException"]
  }, import {
- "namespace": ["magma", "app", "DirectorySourceSet"]
+ "namespace": ["magma.app.DirectorySourceSet"]
  }, import {
- "namespace": ["java", "nio", "file", "Paths"]
+ "namespace": ["java.nio.file.Paths"]
  }, class {
  "before-keyword": "public ",
  "name": "Main ",

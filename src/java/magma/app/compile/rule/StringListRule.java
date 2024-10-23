@@ -24,15 +24,17 @@ public record StringListRule(String propertyKey, String delimiter) implements Ru
     }
 
     private List<String> split(String input) {
-        int index;
         String remaining = input;
         List<String> parts = new ArrayList<>();
 
-        while ((index = remaining.indexOf(delimiter)) != -1) {
+        while (true) {
+            var index = remaining.indexOf(delimiter);
+            if (index == -1) break;
+
             parts.add(remaining.substring(0, index));
             remaining = remaining.substring(index + delimiter.length());
         }
-        parts.add(remaining);  // Add the final part after the last delimiter
+        parts.add(remaining);
         return parts;
     }
 

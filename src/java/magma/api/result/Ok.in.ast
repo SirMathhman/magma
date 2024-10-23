@@ -1,14 +1,14 @@
 {
 "children": [package {
- "namespace": ["magma", "api", "result"]
+ "namespace": ["magma.api.result"]
  }, import {
- "namespace": ["magma", "api", "Tuple"]
+ "namespace": ["magma.api.Tuple"]
  }, import {
- "namespace": ["java", "util", "Optional"]
+ "namespace": ["java.util.Optional"]
  }, import {
- "namespace": ["java", "util", "function", "Function"]
+ "namespace": ["java.util.function.Function"]
  }, import {
- "namespace": ["java", "util", "function", "Supplier"]
+ "namespace": ["java.util.function.Supplier"]
  }, class {
  "before-keyword": "public ",
  "name": "Ok<T, E> implements Result<T, E> ",

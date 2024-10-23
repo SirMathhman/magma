@@ -1,14 +1,14 @@
 {
 "children": [import {
- "namespace": ["magma", "api", "result", "Err"]
+ "namespace": ["magma.api.result.Err"]
  }, import {
- "namespace": ["magma", "app", "compile", "GenerateException"]
+ "namespace": ["magma.app.compile.GenerateException"]
  }, import {
- "namespace": ["magma", "app", "compile", "Node"]
+ "namespace": ["magma.app.compile.Node"]
  }, import {
- "namespace": ["magma", "app", "compile", "ParseException"]
+ "namespace": ["magma.app.compile.ParseException"]
  }, import {
- "namespace": ["java", "util", "ArrayList"]
+ "namespace": ["java.util.ArrayList"]
  }, function {
  "before-keyword": "public final ",
  "name": "LocatingRule implements Rule ",
