@@ -58,14 +58,44 @@
     "value": "String"
     }
    }],
-  "children": [symbol {
-   "content": "final var args = Arrays.stream(input.split(delimiter))
-                .filter(value -> !value.isEmpty())
-                .toList();"
-   }, symbol {
-   "content": "if (args.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("No items present", input)));"
-   }, symbol {
-   "content": "return new RuleResult<>(new Ok<>(new MapNode().withStringList(propertyKey, args)));"
+  "children": [invocation {
+   "caller": property-access {
+    "child": "toList",
+    "parent": lambda {
+     "after-arrow": " !value.isEmpty())
+                ",
+     "before-arrow": "final var args = Arrays.stream(input.split(delimiter))
+                .filter(value "
+     }
+    }
+   }, if {
+   "content": " (args.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("No items present", input)));"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "Ok"
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "withStringList",
+       "parent": construction {
+        "caller": symbol {
+         "content": "MapNode"
+         }
+        }
+       },
+      "arguments": [symbol {
+       "content": "propertyKey"
+       }, symbol {
+       "content": "args"
+       }]
+      }]
+     }]
+    }
    }]
   }, method {
   "name": "generate",
@@ -91,15 +121,64 @@
     "value": "Node"
     }
    }],
-  "children": [symbol {
-   "content": "final var list = node.findStringList(propertyKey);"
-   }, symbol {
-   "content": "if (list.isEmpty())
-            return new RuleResult<>(new Err<>(new GenerateException("String list ' propertyKey + "'t present", node)));"
-   }, symbol {
-   "content": "final var joined = String.join(delimiter, list.get());"
-   }, symbol {
-   "content": "return new RuleResult<>(new Ok<>(joined));"
+  "children": [declaration {
+   "name": "list",
+   "returns": symbol {
+    "value": "var"
+    },
+   "caller": property-access {
+    "child": "findStringList",
+    "parent": symbol {
+     "content": "node"
+     }
+    },
+   "modifiers": [modifier {
+    "content": "final"
+    }],
+   "arguments": [symbol {
+    "content": "propertyKey"
+    }]
+   }, if {
+   "content": " (list.isEmpty())
+            return new RuleResult<>(new Err<>(new GenerateException("String list '" + propertyKey + "' not present", node)));"
+   }, declaration {
+   "name": "joined",
+   "returns": symbol {
+    "value": "var"
+    },
+   "caller": property-access {
+    "child": "join",
+    "parent": symbol {
+     "content": "String"
+     }
+    },
+   "modifiers": [modifier {
+    "content": "final"
+    }],
+   "arguments": [symbol {
+    "content": "delimiter"
+    }, invocation {
+    "caller": property-access {
+     "child": "get",
+     "parent": symbol {
+      "content": "list"
+      }
+     }
+    }]
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "Ok"
+      },
+     "arguments": [symbol {
+      "content": "joined"
+      }]
+     }]
+    }
    }]
   }]
  }]

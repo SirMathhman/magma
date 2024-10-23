@@ -53,8 +53,23 @@
     "value": "String"
     }
    }],
-  "children": [symbol {
-   "content": "return childRule.parse(input.strip());"
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "parse",
+     "parent": symbol {
+      "content": "childRule"
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "strip",
+      "parent": symbol {
+       "content": "input"
+       }
+      }
+     }]
+    }
    }]
   }, method {
   "name": "generate",
@@ -80,12 +95,59 @@
     "value": "Node"
     }
    }],
-  "children": [symbol {
-   "content": "final var leftPadding = node.findString(leftPaddingKey).orElse("");"
-   }, symbol {
-   "content": "final var rightPadding = node.findString(rightPaddingKey).orElse("");"
-   }, symbol {
-   "content": "return childRule.generate(node).mapValue(inner -> leftPadding + inner + rightPadding);"
+  "children": [declaration {
+   "name": "leftPadding",
+   "returns": symbol {
+    "value": "var"
+    },
+   "caller": property-access {
+    "child": "orElse",
+    "parent": invocation {
+     "caller": property-access {
+      "child": "findString",
+      "parent": symbol {
+       "content": "node"
+       }
+      },
+     "arguments": [symbol {
+      "content": "leftPaddingKey"
+      }]
+     }
+    },
+   "modifiers": [modifier {
+    "content": "final"
+    }],
+   "arguments": [string {
+    }]
+   }, declaration {
+   "name": "rightPadding",
+   "returns": symbol {
+    "value": "var"
+    },
+   "caller": property-access {
+    "child": "orElse",
+    "parent": invocation {
+     "caller": property-access {
+      "child": "findString",
+      "parent": symbol {
+       "content": "node"
+       }
+      },
+     "arguments": [symbol {
+      "content": "rightPaddingKey"
+      }]
+     }
+    },
+   "modifiers": [modifier {
+    "content": "final"
+    }],
+   "arguments": [string {
+    }]
+   }, return {
+   "value": lambda {
+    "after-arrow": " leftPadding + inner + rightPadding)",
+    "before-arrow": "childRule.generate(node).mapValue(inner "
+    }
    }]
   }]
  }]

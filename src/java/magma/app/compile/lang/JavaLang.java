@@ -155,7 +155,8 @@ public class JavaLang {
     }
 
     private static TypeRule createStringRule() {
-        return new TypeRule("string", new StripRule(new PrefixRule("\"", new SuffixRule(new ExtractRule("value"), "\"")), "", ""));
+        final var value = new OrRule(List.of(new ExtractRule("value"), new EmptyRule()));
+        return new TypeRule("string", new StripRule(new PrefixRule("\"", new SuffixRule(value, "\"")), "", ""));
     }
 
     private static TypeRule createLambdaRule() {
