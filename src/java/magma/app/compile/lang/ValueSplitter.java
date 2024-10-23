@@ -31,6 +31,20 @@ public class ValueSplitter implements Splitter {
                 }
             }
 
+            if (c == '\"') {
+                while (!queue.isEmpty()) {
+                    final var next = queue.pop();
+
+                    if (next == '\\' && !queue.isEmpty()) {
+                        queue.pop();
+                    }
+
+                    if (next == '\"') {
+                        break;
+                    }
+                }
+            }
+
             if (c == ',' && depth == 0) {
                 advance(buffer, lines);
                 buffer = new StringBuilder();
