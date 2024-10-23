@@ -30,7 +30,7 @@ public class JavaLang {
         final var name = new OptionalNodeRule("type-params", simpleName, new LocatingRule(simpleName, new FirstLocator("<"), new SuffixRule(typeParams, ">")));
 
         final var params = new NodeListRule(new ValueSplitter(), "params", createDefinitionRule());
-        final var withChildren = new NodeListRule(new StatementSplitter(), "children", new StripRule(createClassMemberRule(), "", ""));
+        final var withChildren = createChildrenRule(createClassMemberRule());
         final var maybeChildren = new StripRule(new OptionalNodeRule("children", new EmptyRule(), withChildren), "", "");
 
         final var anInterface = new NodeRule("interface", createTypeRule());
@@ -89,21 +89,34 @@ public class JavaLang {
     private static TypeRule createMethodRule() {
         final var params = new OptionalNodeRule("params", new EmptyRule(), new NodeListRule(new ValueSplitter(), "params", createDefinitionRule()));
 
-        final var children = new StripRule(new PrefixRule("{", new SuffixRule(new NodeListRule(new StatementSplitter(), "children", new StripRule(createStatementRule(), "", "")), "}")), "", "");
+        final var children = new StripRule(new PrefixRule("{", new SuffixRule(createChildrenRule(createStatementRule()), "}")), "", "");
         final var maybeChildren = new OptionalNodeRule("children", new SuffixRule(new EmptyRule(), ";"), children);
         final var withParams = new LocatingRule(params, new FirstLocator(")"), maybeChildren);
 
         return new TypeRule(METHOD, new LocatingRule(createDefinitionRule(), new FirstLocator("("), withParams));
     }
 
+    private static NodeListRule createChildrenRule(Rule statement) {
+        return new NodeListRule(new StatementSplitter(), "children", new StripRule(statement, "", ""));
+    }
+
     private static Rule createStatementRule() {
         final var valueRule = createValueRule();
-        return new OrRule(List.of(
+
+        final var statement = new LazyRule();
+        statement.setChildRule(new OrRule(List.of(
                 createReturnRule(valueRule),
                 createInvocationStatementRule(valueRule),
                 createConditionRule("if", "if"),
                 createConditionRule("while", "while"),
-                createDeclarationRule(valueRule)));
+                createDeclarationRule(valueRule),
+                createElseRule(statement)
+        )));
+        return statement;
+    }
+
+    private static TypeRule createElseRule(Rule statement) {
+        return new TypeRule("else", new PrefixRule("else", new StripRule(new PrefixRule("{", new SuffixRule(createChildrenRule(statement), "}")), "", "")));
     }
 
     private static TypeRule createDeclarationRule(Rule valueRule) {
