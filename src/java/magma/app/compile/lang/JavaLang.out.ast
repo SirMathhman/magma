@@ -100,7 +100,28 @@
 
     private static Rule createStatementRule() {
         final var valueRule = createValueRule();
-        return new OrRule(List.of(new TypeRule("return", new PrefixRule("return ", new SuffixRule(new NodeRule("value", valueRule), ";"))), new TypeRule("invocation", new SuffixRule(createInvocationRule(valueRule), ";")), new TypeRule("if", new PrefixRule("if", new ExtractRule("content"))), new TypeRule("declaration", new LocatingRule(createDefinitionRule(), new FirstLocator("="), new SuffixRule(valueRule, ";")))));
+        return new OrRule(List.of(
+                createReturnRule(valueRule),
+                createInvocationStatementRule(valueRule),
+                createConditionRule("if", "if"),
+                createConditionRule("while", "while"),
+                createDeclarationRule(valueRule)));
+    }
+
+    private static TypeRule createDeclarationRule(Rule valueRule) {
+        return new TypeRule("declaration", new LocatingRule(createDefinitionRule(), new FirstLocator("="), new SuffixRule(valueRule, ";")));
+    }
+
+    private static TypeRule createConditionRule(String type, String prefix) {
+        return new TypeRule(type, new PrefixRule(prefix, new ExtractRule("content")));
+    }
+
+    private static TypeRule createInvocationStatementRule(Rule valueRule) {
+        return new TypeRule("invocation", new SuffixRule(createInvocationRule(valueRule), ";"));
+    }
+
+    private static TypeRule createReturnRule(Rule valueRule) {
+        return new TypeRule("return", new PrefixRule("return ", new SuffixRule(new NodeRule("value", valueRule), ";")));
     }
 
     private static Rule createValueRule() {
