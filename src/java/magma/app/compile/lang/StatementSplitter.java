@@ -12,6 +12,23 @@ import java.util.stream.IntStream;
 public class StatementSplitter implements Splitter {
     static State splitAtChar(State state, char c, Deque<Character> queue) {
         final var appended = state.append(c);
+        if (c == '\"') {
+            var current = appended;
+            while (!queue.isEmpty()) {
+                final var next = queue.pop();
+                current = current.append(next);
+
+                if (next == '\\') {
+                    if (!queue.isEmpty()) {
+                        final var escaped = queue.pop();
+                        current = current.append(escaped);
+                    }
+                } else if (next == '\"') {
+                    return current;
+                }
+            }
+        }
+
         if (c == '\'') {
             final var next = queue.pop();
             final State escaped;
@@ -35,7 +52,6 @@ public class StatementSplitter implements Splitter {
 
     @Override
     public List<String> split(String input) {
-        final var length = input.length();
         var state = new State();
 
         final var queue = IntStream.range(0, input.length())

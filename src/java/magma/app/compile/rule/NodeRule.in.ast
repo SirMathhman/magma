@@ -103,7 +103,7 @@
     }]
    }, if {
    "content": " (optional.isEmpty())
-            return new RuleResult<>(new Err<>(new GenerateException("Node ' propertyKey + "'es not exist.", node)));"
+            return new RuleResult<>(new Err<>(new GenerateException("Node '" + propertyKey + "' does not exist.", node)));"
    }, declaration {
    "name": "node1",
    "returns": symbol {

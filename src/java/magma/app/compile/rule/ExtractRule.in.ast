@@ -107,7 +107,7 @@
   "children": [return {
    "value": lambda {
     "after-arrow": " new RuleResult<>(new Ok<>(s)))
-                .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String ' propertyKey + "'t present", node))))",
+                .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String '" + propertyKey + "' not present", node))))",
     "before-arrow": "node.findString(propertyKey)
                 .<RuleResult<String, GenerateException>>map(s "
     }
