@@ -54,16 +54,61 @@
     "value": "String"
     }
    }],
-  "children": [symbol {
-   "content": "var list = new ArrayList<RuleResult<Node, ParseException>>();"
-   }, symbol {
-   "content": "for (Rule rule : rules) {
+  "children": [declaration {
+   "name": "list",
+   "returns": symbol {
+    "value": "var"
+    },
+   "caller": symbol {
+    "content": "ArrayList"
+    },
+   "type-arguments": [generic {
+    "base": symbol {
+     "value": "RuleResult"
+     },
+    "children": [symbol {
+     "value": "Node"
+     }, symbol {
+     "value": "ParseException"
+     }]
+    }]
+   }, declaration {
+   "name": "i",
+   "value": "0",
+   "returns": symbol {
+    "value": "int"
+    }
+   }, while {
+   "content": " (i < rules.size()) {
+            Rule rule = rules.get(i);
             final var parsed = rule.parse(input);
             if (parsed.isValid()) return parsed;
             list.add(parsed);
+            i++;
         }"
-   }, symbol {
-   "content": "return new RuleResult<>(new Err<>(new ParseException("No valid rule in disjunction", input)), list);"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "Err"
+      },
+     "arguments": [construction {
+      "caller": symbol {
+       "content": "ParseException"
+       },
+      "arguments": [string {
+       "value": "No valid rule in disjunction"
+       }, symbol {
+       "content": "input"
+       }]
+      }]
+     }, symbol {
+     "content": "list"
+     }]
+    }
    }]
   }, method {
   "name": "generate",
@@ -89,16 +134,61 @@
     "value": "Node"
     }
    }],
-  "children": [symbol {
-   "content": "var list = new ArrayList<RuleResult<String, GenerateException>>();"
-   }, symbol {
-   "content": "for (Rule rule : rules) {
+  "children": [declaration {
+   "name": "list",
+   "returns": symbol {
+    "value": "var"
+    },
+   "caller": symbol {
+    "content": "ArrayList"
+    },
+   "type-arguments": [generic {
+    "base": symbol {
+     "value": "RuleResult"
+     },
+    "children": [symbol {
+     "value": "String"
+     }, symbol {
+     "value": "GenerateException"
+     }]
+    }]
+   }, declaration {
+   "name": "i",
+   "value": "0",
+   "returns": symbol {
+    "value": "int"
+    }
+   }, while {
+   "content": " (i < rules.size()) {
+            Rule rule = rules.get(i);
             final var generated = rule.generate(node);
             if (generated.isValid()) return generated;
             list.add(generated);
+            i++;
         }"
-   }, symbol {
-   "content": "return new RuleResult<>(new Err<>(new GenerateException("No valid rule in disjunction", node)), list);"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "Err"
+      },
+     "arguments": [construction {
+      "caller": symbol {
+       "content": "GenerateException"
+       },
+      "arguments": [string {
+       "value": "No valid rule in disjunction"
+       }, symbol {
+       "content": "node"
+       }]
+      }]
+     }, symbol {
+     "content": "list"
+     }]
+    }
    }]
   }]
  }]

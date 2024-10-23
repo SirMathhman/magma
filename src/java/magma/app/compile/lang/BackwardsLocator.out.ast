@@ -59,17 +59,47 @@
     "value": "String"
     }
    }],
-  "children": [symbol {
-   "content": "List<Integer> indices = new ArrayList<>();"
-   }, symbol {
-   "content": "int index = input.lastIndexOf(delimiter);"
-   }, symbol {
-   "content": "while (index != -1) {
+  "children": [declaration {
+   "name": "indices",
+   "returns": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "Integer"
+     }]
+    },
+   "caller": symbol {
+    "content": "ArrayList"
+    }
+   }, declaration {
+   "name": "index",
+   "returns": symbol {
+    "value": "int"
+    },
+   "caller": property-access {
+    "child": "lastIndexOf",
+    "parent": symbol {
+     "content": "input"
+     }
+    },
+   "arguments": [symbol {
+    "content": "delimiter"
+    }]
+   }, while {
+   "content": " (index != -1) {
             indices.add(index);
             index = input.lastIndexOf(delimiter, index - 1);
         }"
-   }, symbol {
-   "content": "return indices.stream();"
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "stream",
+     "parent": symbol {
+      "content": "indices"
+      }
+     }
+    }
    }]
   }]
  }]

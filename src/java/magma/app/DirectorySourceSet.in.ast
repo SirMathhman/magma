@@ -54,14 +54,31 @@
   "annotations": [annotation {
    "value": "Override"
    }],
-  "children": [symbol {
-   "content": "try (var stream = Files.walk(root)) {
-            return new Ok<>(stream
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .collect(Collectors.toSet()));
-        }"
-   }, symbol {
-   "content": "catch (IOException e) {
+  "children": [try {
+   "children": [declaration {
+    "name": "stream",
+    "returns": symbol {
+     "value": "var"
+     },
+    "caller": property-access {
+     "child": "walk",
+     "parent": symbol {
+      "content": "Files"
+      }
+     },
+    "arguments": [symbol {
+     "content": "root"
+     }]
+    }, return {
+    "value": lambda {
+     "after-arrow": " path.toString().endsWith(".java"))
+                    .collect(Collectors.toSet()))",
+     "before-arrow": "new Ok<>(stream
+                    .filter(path "
+     }
+    }]
+   }, catch {
+   "content": " (IOException e) {
             return new Err<>(e);
         }"
    }]
