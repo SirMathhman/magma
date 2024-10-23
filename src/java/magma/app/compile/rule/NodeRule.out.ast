@@ -53,37 +53,9 @@
     }
    }],
   "children": [return {
-   "value": invocation {
-    "caller": property-access {
-     "child": "mapValue",
-     "parent": invocation {
-      "caller": property-access {
-       "child": "parse",
-       "parent": symbol {
-        "content": "propertyRule"
-        }
-       },
-      "arguments": [symbol {
-       "content": "input"
-       }]
-      }
-     },
-    "arguments": [invocation {
-     "caller": property-access {
-      "child": "withNode",
-      "parent": invocation {
-       "caller": lambda {
-        "after-arrow": " new MapNode",
-        "before-arrow": "node "
-        }
-       }
-      },
-     "arguments": [symbol {
-      "content": "propertyKey"
-      }, symbol {
-      "content": "node"
-      }]
-     }]
+   "value": lambda {
+    "after-arrow": " new MapNode().withNode(propertyKey, node))",
+    "before-arrow": "propertyRule.parse(input).mapValue(node "
     }
    }]
   }, method {

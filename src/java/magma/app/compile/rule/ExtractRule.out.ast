@@ -49,10 +49,34 @@
     "value": "String"
     }
    }],
-  "children": [symbol {
-   "content": "if (input.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("Input is empty", input)));"
-   }, symbol {
-   "content": "return new RuleResult<>(new Ok<>(new MapNode().withString(propertyKey, input)));"
+  "children": [if {
+   "content": " (input.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("Input is empty", input)));"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "Ok"
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "withString",
+       "parent": construction {
+        "caller": symbol {
+         "content": "MapNode"
+         }
+        }
+       },
+      "arguments": [symbol {
+       "content": "propertyKey"
+       }, symbol {
+       "content": "input"
+       }]
+      }]
+     }]
+    }
    }]
   }, method {
   "name": "generate",
@@ -78,10 +102,22 @@
     "value": "Node"
     }
    }],
-  "children": [symbol {
-   "content": "return node.findString(propertyKey)
-                .<RuleResult<String, GenerateException>>map(s -> new RuleResult<>(new Ok<>(s)))
-                .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String ' propertyKey + "'t present", node))));"
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "orElseGet",
+     "parent": lambda {
+      "after-arrow": " new RuleResult<>(new Ok<>(s)))
+                ",
+      "before-arrow": "node.findString(propertyKey)
+                .<RuleResult<String, GenerateException>>map(s "
+      }
+     },
+    "arguments": [lambda {
+     "after-arrow": " new RuleResult<>(new Err<>(new GenerateException("String ' propertyKey + "'t present", node)))",
+     "before-arrow": "() "
+     }]
+    }
    }]
   }]
  }]

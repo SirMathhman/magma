@@ -39,8 +39,20 @@
     "value": "String"
     }
    }],
-  "children": [symbol {
-   "content": "return values().contains(input);"
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "contains",
+     "parent": invocation {
+      "caller": symbol {
+       "content": "values"
+       }
+      }
+     },
+    "arguments": [symbol {
+     "content": "input"
+     }]
+    }
    }]
   }]
  }]

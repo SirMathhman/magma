@@ -21,8 +21,8 @@ public class ValueSplitter implements Splitter {
                 advance(buffer, lines);
                 buffer = new StringBuilder();
             } else {
-                if (c == '<') depth++;
-                if (c == '>') depth--;
+                if (c == '<' || c == '(') depth++;
+                if (c == '>' || c == ')') depth--;
                 buffer.append(c);
             }
         }

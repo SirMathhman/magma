@@ -48,8 +48,33 @@
     "value": "String"
     }
    }],
-  "children": [symbol {
-   "content": "return childRule.parse(input).wrapErr(new ParseException(message, input));"
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "wrapErr",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "parse",
+       "parent": symbol {
+        "content": "childRule"
+        }
+       },
+      "arguments": [symbol {
+       "content": "input"
+       }]
+      }
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "ParseException"
+      },
+     "arguments": [symbol {
+      "content": "message"
+      }, symbol {
+      "content": "input"
+      }]
+     }]
+    }
    }]
   }, method {
   "name": "generate",
@@ -75,8 +100,33 @@
     "value": "Node"
     }
    }],
-  "children": [symbol {
-   "content": "return childRule.generate(node).wrapErr(new GenerateException(message, node));"
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "wrapErr",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "generate",
+       "parent": symbol {
+        "content": "childRule"
+        }
+       },
+      "arguments": [symbol {
+       "content": "node"
+       }]
+      }
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "GenerateException"
+      },
+     "arguments": [symbol {
+      "content": "message"
+      }, symbol {
+      "content": "node"
+      }]
+     }]
+    }
    }]
   }]
  }]
