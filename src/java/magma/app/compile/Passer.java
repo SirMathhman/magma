@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static magma.app.compile.lang.CommonLang.CHILDREN;
+import static magma.app.compile.lang.CommonLang.*;
 import static magma.app.compile.lang.JavaLang.*;
 import static magma.app.compile.lang.MagmaLang.FUNCTION;
 
@@ -27,7 +27,14 @@ public class Passer {
         return passRecord(node)
                 .or(() -> passInterface(node))
                 .or(() -> passClass(node))
+                .or(() -> passImport(node))
                 .orElse(node);
+    }
+
+    private static Optional<? extends Node> passImport(Node node) {
+        if (!node.is(IMPORT)) return Optional.empty();
+
+        return Optional.of(node.withString(AFTER_IMPORT, "\n"));
     }
 
     private static Optional<Node> passClass(Node node) {

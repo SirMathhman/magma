@@ -9,9 +9,11 @@ public class CommonLang {
 
     public static final String IMPORT = "import";
     public static final String CHILDREN = "children";
+    public static final String AFTER_IMPORT = "after-import";
 
     public static TypeRule createImportRule() {
-        return new TypeRule(IMPORT, new PrefixRule("import ", new SuffixRule(createNamespaceRule(), STATEMENT_END)));
+        final var childRule = new SuffixRule(createNamespaceRule(), STATEMENT_END);
+        return new TypeRule(IMPORT, new StripRule(new PrefixRule("import ", childRule), "before-import", AFTER_IMPORT));
     }
 
     static Rule createNamespaceRule() {

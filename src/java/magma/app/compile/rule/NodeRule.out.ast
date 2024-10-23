@@ -1,13 +1,23 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.api.result.Err"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.GenerateException"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.MapNode"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.Node"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.ParseException"]
  }, function {
  "name": "NodeRule",

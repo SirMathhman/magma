@@ -1,17 +1,31 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.api.result.Results"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.Compiler"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.io.IOException"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.nio.file.Files"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.nio.file.Path"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.Iterator"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.Set"]
  }, function {
  "before-keyword": "public final ",

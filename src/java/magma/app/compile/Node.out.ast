@@ -1,13 +1,23 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.api.Tuple"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.List"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.Optional"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.function.Function"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.stream.Stream"]
  }, trait {
  "name": "Node",

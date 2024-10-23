@@ -1,11 +1,19 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.rule.*"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.List"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.stream.Stream"]
  }, import {
+ "after-import": "
+",
  "namespace": ["static magma.app.compile.lang.CommonLang.*"]
  }, function {
  "before-keyword": "public ",

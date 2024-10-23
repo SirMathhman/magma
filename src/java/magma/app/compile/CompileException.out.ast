@@ -1,5 +1,7 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.app.ApplicationException"]
  }, function {
  "before-keyword": "public ",

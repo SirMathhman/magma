@@ -1,17 +1,31 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.api.result.Err"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.api.result.Ok"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.api.result.Result"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.lang.MagmaLang"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.rule.RuleResult"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.List"]
  }, import {
+ "after-import": "
+",
  "namespace": ["static magma.app.compile.lang.JavaLang.*"]
  }, function {
  "name": "Compiler",

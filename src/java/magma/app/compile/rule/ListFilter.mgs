@@ -1,1 +1,2 @@
-import java.util.List;class def ListFilter() => {}
+import java.util.List;
+class def ListFilter() => {}

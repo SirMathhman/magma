@@ -1,13 +1,23 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.api.Tuple"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.*"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.function.Function"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.stream.Collectors"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.stream.Stream"]
  }, function {
  "name": "MapNode",

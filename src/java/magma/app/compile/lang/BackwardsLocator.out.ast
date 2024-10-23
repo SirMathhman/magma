@@ -1,11 +1,19 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.rule.Locator"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.ArrayList"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.List"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.stream.Stream"]
  }, function {
  "name": "BackwardsLocator",

@@ -1,9 +1,15 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.GenerateException"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.Node"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.ParseException"]
  }, trait {
  "name": "Rule",

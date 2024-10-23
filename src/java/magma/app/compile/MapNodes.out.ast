@@ -1,9 +1,15 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["java.util.HashMap"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.List"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.stream.Stream"]
  }, function {
  "before-keyword": "public ",

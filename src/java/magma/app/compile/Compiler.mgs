@@ -1,1 +1,8 @@
-import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.app.compile.lang.MagmaLang;import magma.app.compile.rule.RuleResult;import java.util.List;import static magma.app.compile.lang.JavaLang.*;class def Compiler() => {}
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.app.compile.lang.MagmaLang;
+import magma.app.compile.rule.RuleResult;
+import java.util.List;
+import static magma.app.compile.lang.JavaLang.*;
+class def Compiler() => {}

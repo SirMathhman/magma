@@ -1,5 +1,7 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["java.util.List"]
  }, function {
  "name": "ListFilter",

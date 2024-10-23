@@ -1,11 +1,19 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.app.Application"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.ApplicationException"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.DirectorySourceSet"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.nio.file.Paths"]
  }, function {
  "before-keyword": "public ",

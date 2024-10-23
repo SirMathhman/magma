@@ -1,7 +1,11 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.rule.Filter"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.stream.IntStream"]
  }, function {
  "before-keyword": "public ",

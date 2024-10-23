@@ -1,15 +1,27 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.rule.Splitter"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.ArrayList"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.LinkedList"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.List"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.stream.Collectors"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.stream.IntStream"]
  }, function {
  "before-keyword": "public ",

@@ -1,7 +1,11 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["java.util.Optional"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.stream.Stream"]
  }, function {
  "name": "LastLocator",

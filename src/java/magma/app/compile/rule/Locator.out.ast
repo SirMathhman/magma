@@ -1,5 +1,7 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["java.util.stream.Stream"]
  }, trait {
  "name": "Locator",

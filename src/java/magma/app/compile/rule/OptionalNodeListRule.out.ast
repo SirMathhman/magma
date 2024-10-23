@@ -1,11 +1,19 @@
 {
 "children": [import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.GenerateException"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.Node"]
  }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.ParseException"]
  }, import {
+ "after-import": "
+",
  "namespace": ["java.util.List"]
  }, function {
  "before-keyword": "public final ",
