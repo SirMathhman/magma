@@ -1,0 +1,23 @@
+{
+"children": [import {
+ "namespace": ["magma", "app", "compile", "rule", "Filter"]
+ }, import {
+ "namespace": ["java", "util", "stream", "IntStream"]
+ }, function {
+ "name": "NumberFilter implements Filter ",
+ "body": "
+    private static boolean allDigits(String input) {
+        return IntStream.range(0, input.length())
+                .allMatch(i -> Character.isDigit(input.charAt(i)));
+    }
+
+    @Override
+    public boolean filter(String input) {
+        return input.startsWith("-")
+                ? allDigits(input.substring(1))
+                : allDigits(input);
+    }
+}",
+ "before-keyword": "public "
+ }]
+}

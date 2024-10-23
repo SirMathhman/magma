@@ -114,13 +114,14 @@
                 createConditionRule("if", "if"),
                 createConditionRule("while", "while"),
                 createDeclarationRule(valueRule),
-                createElseRule(statement)
+                createNamedBlockRule(statement, "else", "else"),
+                createNamedBlockRule(statement, "try", "try")
         )));
         return statement;
     }
 
-    private static TypeRule createElseRule(Rule statement) {
-        return new TypeRule("else", new PrefixRule("else", new StripRule(new PrefixRule("{", new SuffixRule(createChildrenRule(statement), "}")), "", "")));
+    private static TypeRule createNamedBlockRule(Rule statement, String type, String prefix) {
+        return new TypeRule(type, new PrefixRule(prefix, new StripRule(new PrefixRule("{", new SuffixRule(createChildrenRule(statement), "}")), "", "")));
     }
 
     private static TypeRule createDeclarationRule(Rule valueRule) {

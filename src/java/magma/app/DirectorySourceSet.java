@@ -14,7 +14,8 @@ public record DirectorySourceSet(Path root) implements SourceSet {
 
     @Override
     public Result<Set<Path>, IOException> collect() {
-        try (var stream = Files.walk(root)) {
+        try {
+            var stream = Files.walk(root);
             return new Ok<>(stream
                     .filter(path -> path.toString().endsWith(".java"))
                     .collect(Collectors.toSet()));

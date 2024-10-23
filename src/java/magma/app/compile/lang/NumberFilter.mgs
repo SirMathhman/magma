@@ -1,0 +1,1 @@
+import magma\.app\.compile\.rule\.Filter;import java\.util\.stream\.IntStream;class def NumberFilter implements Filter () => {}
