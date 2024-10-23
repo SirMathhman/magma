@@ -1,22 +1,22 @@
 {
 "children": [package {
- "namespace": ["magma", "app"]
+ "namespace": ["magma.app"]
  }, import {
- "namespace": ["magma", "api", "result", "Err"]
+ "namespace": ["magma.api.result.Err"]
  }, import {
- "namespace": ["magma", "api", "result", "Ok"]
+ "namespace": ["magma.api.result.Ok"]
  }, import {
- "namespace": ["magma", "api", "result", "Result"]
+ "namespace": ["magma.api.result.Result"]
  }, import {
- "namespace": ["java", "io", "IOException"]
+ "namespace": ["java.io.IOException"]
  }, import {
- "namespace": ["java", "nio", "file", "Files"]
+ "namespace": ["java.nio.file.Files"]
  }, import {
- "namespace": ["java", "nio", "file", "Path"]
+ "namespace": ["java.nio.file.Path"]
  }, import {
- "namespace": ["java", "util", "Set"]
+ "namespace": ["java.util.Set"]
  }, import {
- "namespace": ["java", "util", "stream", "Collectors"]
+ "namespace": ["java.util.stream.Collectors"]
  }, record {
  "name": "DirectorySourceSet",
  "interface": symbol {

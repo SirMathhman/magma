@@ -1,14 +1,14 @@
 {
 "children": [package {
- "namespace": ["magma", "app", "compile", "lang"]
+ "namespace": ["magma.app.compile.lang"]
  }, import {
- "namespace": ["magma", "app", "compile", "rule", "Locator"]
+ "namespace": ["magma.app.compile.rule.Locator"]
  }, import {
- "namespace": ["java", "util", "ArrayList"]
+ "namespace": ["java.util.ArrayList"]
  }, import {
- "namespace": ["java", "util", "List"]
+ "namespace": ["java.util.List"]
  }, import {
- "namespace": ["java", "util", "stream", "Stream"]
+ "namespace": ["java.util.stream.Stream"]
  }, record {
  "name": "BackwardsLocator",
  "interface": symbol {

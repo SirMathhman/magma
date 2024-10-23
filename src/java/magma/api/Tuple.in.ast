@@ -1,6 +1,6 @@
 {
 "children": [package {
- "namespace": ["magma", "api"]
+ "namespace": ["magma.api"]
  }, record {
  "name": "Tuple",
  "type-params": [symbol {

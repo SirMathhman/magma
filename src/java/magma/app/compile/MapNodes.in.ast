@@ -1,12 +1,12 @@
 {
 "children": [package {
- "namespace": ["magma", "app", "compile"]
+ "namespace": ["magma.app.compile"]
  }, import {
- "namespace": ["java", "util", "HashMap"]
+ "namespace": ["java.util.HashMap"]
  }, import {
- "namespace": ["java", "util", "List"]
+ "namespace": ["java.util.List"]
  }, import {
- "namespace": ["java", "util", "stream", "Stream"]
+ "namespace": ["java.util.stream.Stream"]
  }, class {
  "before-keyword": "public ",
  "name": "MapNodes ",

@@ -1,1 +1,1 @@
-import magma\.app\.compile\.rule\.Splitter;import java\.util\.ArrayList;import java\.util\.Deque;import java\.util\.LinkedList;import java\.util\.List;import java\.util\.stream\.Collectors;import java\.util\.stream\.IntStream;class def StatementSplitter implements Splitter () => {}
+import magma.app.compile.rule.Splitter;import java.util.ArrayList;import java.util.Deque;import java.util.LinkedList;import java.util.List;import java.util.stream.Collectors;import java.util.stream.IntStream;class def StatementSplitter implements Splitter () => {}

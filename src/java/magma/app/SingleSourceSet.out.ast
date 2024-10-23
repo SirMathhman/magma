@@ -1,18 +1,18 @@
 {
 "children": [import {
- "namespace": ["magma", "api", "result", "Ok"]
+ "namespace": ["magma.api.result.Ok"]
  }, import {
- "namespace": ["magma", "api", "result", "Result"]
+ "namespace": ["magma.api.result.Result"]
  }, import {
- "namespace": ["java", "io", "IOException"]
+ "namespace": ["java.io.IOException"]
  }, import {
- "namespace": ["java", "nio", "file", "Files"]
+ "namespace": ["java.nio.file.Files"]
  }, import {
- "namespace": ["java", "nio", "file", "Path"]
+ "namespace": ["java.nio.file.Path"]
  }, import {
- "namespace": ["java", "util", "HashSet"]
+ "namespace": ["java.util.HashSet"]
  }, import {
- "namespace": ["java", "util", "Set"]
+ "namespace": ["java.util.Set"]
  }, function {
  "name": "SingleSourceSet",
  "interface": symbol {

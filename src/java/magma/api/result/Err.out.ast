@@ -1,12 +1,12 @@
 {
 "children": [import {
- "namespace": ["magma", "api", "Tuple"]
+ "namespace": ["magma.api.Tuple"]
  }, import {
- "namespace": ["java", "util", "Optional"]
+ "namespace": ["java.util.Optional"]
  }, import {
- "namespace": ["java", "util", "function", "Function"]
+ "namespace": ["java.util.function.Function"]
  }, import {
- "namespace": ["java", "util", "function", "Supplier"]
+ "namespace": ["java.util.function.Supplier"]
  }, function {
  "name": "Err",
  "interface": generic {

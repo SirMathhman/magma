@@ -1,6 +1,6 @@
 {
 "children": [package {
- "namespace": ["magma", "app"]
+ "namespace": ["magma.app"]
  }, class {
  "before-keyword": "public ",
  "name": "ApplicationException extends Exception ",

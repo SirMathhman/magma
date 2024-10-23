@@ -1,18 +1,18 @@
 {
 "children": [import {
- "namespace": ["magma", "api", "result", "Results"]
+ "namespace": ["magma.api.result.Results"]
  }, import {
- "namespace": ["magma", "app", "compile", "Compiler"]
+ "namespace": ["magma.app.compile.Compiler"]
  }, import {
- "namespace": ["java", "io", "IOException"]
+ "namespace": ["java.io.IOException"]
  }, import {
- "namespace": ["java", "nio", "file", "Files"]
+ "namespace": ["java.nio.file.Files"]
  }, import {
- "namespace": ["java", "nio", "file", "Path"]
+ "namespace": ["java.nio.file.Path"]
  }, import {
- "namespace": ["java", "util", "Iterator"]
+ "namespace": ["java.util.Iterator"]
  }, import {
- "namespace": ["java", "util", "Set"]
+ "namespace": ["java.util.Set"]
  }, function {
  "before-keyword": "public final ",
  "name": "Application ",

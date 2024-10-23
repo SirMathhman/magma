@@ -1,10 +1,10 @@
 {
 "children": [package {
- "namespace": ["magma", "app", "compile", "lang"]
+ "namespace": ["magma.app.compile.lang"]
  }, import {
- "namespace": ["magma", "app", "compile", "rule", "Filter"]
+ "namespace": ["magma.app.compile.rule.Filter"]
  }, import {
- "namespace": ["java", "util", "stream", "IntStream"]
+ "namespace": ["java.util.stream.IntStream"]
  }, class {
  "before-keyword": "public ",
  "name": "NumberFilter implements Filter ",

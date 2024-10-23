@@ -1,6 +1,6 @@
 {
 "children": [import {
- "namespace": ["java", "util", "stream", "Stream"]
+ "namespace": ["java.util.stream.Stream"]
  }, trait {
  "name": "Locator",
  "modifiers": [modifier {

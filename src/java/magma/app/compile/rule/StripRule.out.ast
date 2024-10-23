@@ -1,10 +1,10 @@
 {
 "children": [import {
- "namespace": ["magma", "app", "compile", "GenerateException"]
+ "namespace": ["magma.app.compile.GenerateException"]
  }, import {
- "namespace": ["magma", "app", "compile", "Node"]
+ "namespace": ["magma.app.compile.Node"]
  }, import {
- "namespace": ["magma", "app", "compile", "ParseException"]
+ "namespace": ["magma.app.compile.ParseException"]
  }, function {
  "name": "StripRule",
  "interface": symbol {

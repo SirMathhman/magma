@@ -1,8 +1,8 @@
 {
 "children": [import {
- "namespace": ["java", "util", "Optional"]
+ "namespace": ["java.util.Optional"]
  }, import {
- "namespace": ["java", "util", "stream", "Stream"]
+ "namespace": ["java.util.stream.Stream"]
  }, function {
  "name": "LastLocator",
  "interface": symbol {

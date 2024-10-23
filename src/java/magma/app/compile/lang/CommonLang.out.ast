@@ -1,6 +1,6 @@
 {
 "children": [import {
- "namespace": ["magma", "app", "compile", "rule", "*"]
+ "namespace": ["magma.app.compile.rule.*"]
  }, function {
  "before-keyword": "public ",
  "name": "CommonLang ",

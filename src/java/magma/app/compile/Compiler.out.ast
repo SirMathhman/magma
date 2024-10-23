@@ -1,18 +1,18 @@
 {
 "children": [import {
- "namespace": ["magma", "api", "result", "Err"]
+ "namespace": ["magma.api.result.Err"]
  }, import {
- "namespace": ["magma", "api", "result", "Ok"]
+ "namespace": ["magma.api.result.Ok"]
  }, import {
- "namespace": ["magma", "api", "result", "Result"]
+ "namespace": ["magma.api.result.Result"]
  }, import {
- "namespace": ["magma", "app", "compile", "lang", "MagmaLang"]
+ "namespace": ["magma.app.compile.lang.MagmaLang"]
  }, import {
- "namespace": ["magma", "app", "compile", "rule", "RuleResult"]
+ "namespace": ["magma.app.compile.rule.RuleResult"]
  }, import {
- "namespace": ["java", "util", "List"]
+ "namespace": ["java.util.List"]
  }, import {
- "namespace": ["static magma", "app", "compile", "lang", "JavaLang", "*"]
+ "namespace": ["static magma.app.compile.lang.JavaLang.*"]
  }, function {
  "name": "Compiler",
  "children": [method {

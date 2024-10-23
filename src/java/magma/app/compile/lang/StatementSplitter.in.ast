@@ -1,20 +1,20 @@
 {
 "children": [package {
- "namespace": ["magma", "app", "compile", "lang"]
+ "namespace": ["magma.app.compile.lang"]
  }, import {
- "namespace": ["magma", "app", "compile", "rule", "Splitter"]
+ "namespace": ["magma.app.compile.rule.Splitter"]
  }, import {
- "namespace": ["java", "util", "ArrayList"]
+ "namespace": ["java.util.ArrayList"]
  }, import {
- "namespace": ["java", "util", "Deque"]
+ "namespace": ["java.util.Deque"]
  }, import {
- "namespace": ["java", "util", "LinkedList"]
+ "namespace": ["java.util.LinkedList"]
  }, import {
- "namespace": ["java", "util", "List"]
+ "namespace": ["java.util.List"]
  }, import {
- "namespace": ["java", "util", "stream", "Collectors"]
+ "namespace": ["java.util.stream.Collectors"]
  }, import {
- "namespace": ["java", "util", "stream", "IntStream"]
+ "namespace": ["java.util.stream.IntStream"]
  }, class {
  "before-keyword": "public ",
  "name": "StatementSplitter implements Splitter ",

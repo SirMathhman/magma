@@ -1,8 +1,8 @@
 {
 "children": [import {
- "namespace": ["magma", "app", "compile", "rule", "Filter"]
+ "namespace": ["magma.app.compile.rule.Filter"]
  }, import {
- "namespace": ["java", "util", "stream", "IntStream"]
+ "namespace": ["java.util.stream.IntStream"]
  }, function {
  "before-keyword": "public ",
  "name": "NumberFilter implements Filter ",

@@ -1,14 +1,14 @@
 {
 "children": [package {
- "namespace": ["magma", "app"]
+ "namespace": ["magma.app"]
  }, import {
- "namespace": ["magma", "api", "result", "Result"]
+ "namespace": ["magma.api.result.Result"]
  }, import {
- "namespace": ["java", "io", "IOException"]
+ "namespace": ["java.io.IOException"]
  }, import {
- "namespace": ["java", "nio", "file", "Path"]
+ "namespace": ["java.nio.file.Path"]
  }, import {
- "namespace": ["java", "util", "Set"]
+ "namespace": ["java.util.Set"]
  }, interface {
  "name": "SourceSet",
  "modifiers": [modifier {

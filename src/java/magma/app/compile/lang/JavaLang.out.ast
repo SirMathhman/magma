@@ -1,12 +1,12 @@
 {
 "children": [import {
- "namespace": ["magma", "app", "compile", "rule", "*"]
+ "namespace": ["magma.app.compile.rule.*"]
  }, import {
- "namespace": ["java", "util", "List"]
+ "namespace": ["java.util.List"]
  }, import {
- "namespace": ["java", "util", "stream", "Stream"]
+ "namespace": ["java.util.stream.Stream"]
  }, import {
- "namespace": ["static magma", "app", "compile", "lang", "CommonLang", "*"]
+ "namespace": ["static magma.app.compile.lang.CommonLang.*"]
  }, function {
  "before-keyword": "public ",
  "name": "JavaLang ",

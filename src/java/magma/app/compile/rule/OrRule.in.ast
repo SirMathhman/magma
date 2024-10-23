@@ -1,18 +1,18 @@
 {
 "children": [package {
- "namespace": ["magma", "app", "compile", "rule"]
+ "namespace": ["magma.app.compile.rule"]
  }, import {
- "namespace": ["magma", "api", "result", "Err"]
+ "namespace": ["magma.api.result.Err"]
  }, import {
- "namespace": ["magma", "app", "compile", "GenerateException"]
+ "namespace": ["magma.app.compile.GenerateException"]
  }, import {
- "namespace": ["magma", "app", "compile", "Node"]
+ "namespace": ["magma.app.compile.Node"]
  }, import {
- "namespace": ["magma", "app", "compile", "ParseException"]
+ "namespace": ["magma.app.compile.ParseException"]
  }, import {
- "namespace": ["java", "util", "ArrayList"]
+ "namespace": ["java.util.ArrayList"]
  }, import {
- "namespace": ["java", "util", "List"]
+ "namespace": ["java.util.List"]
  }, record {
  "name": "OrRule",
  "interface": symbol {

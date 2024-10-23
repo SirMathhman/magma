@@ -1,18 +1,18 @@
 {
 "children": [import {
- "namespace": ["magma", "api", "result", "Err"]
+ "namespace": ["magma.api.result.Err"]
  }, import {
- "namespace": ["magma", "api", "result", "Result"]
+ "namespace": ["magma.api.result.Result"]
  }, import {
- "namespace": ["java", "util", "Collections"]
+ "namespace": ["java.util.Collections"]
  }, import {
- "namespace": ["java", "util", "Comparator"]
+ "namespace": ["java.util.Comparator"]
  }, import {
- "namespace": ["java", "util", "List"]
+ "namespace": ["java.util.List"]
  }, import {
- "namespace": ["java", "util", "function", "Function"]
+ "namespace": ["java.util.function.Function"]
  }, import {
- "namespace": ["static java", "util", "Collections", "singletonList"]
+ "namespace": ["static java.util.Collections.singletonList"]
  }, function {
  "name": "RuleResult",
  "children": [method {

@@ -1,6 +1,6 @@
 {
 "children": [package {
- "namespace": ["magma", "app", "compile", "rule"]
+ "namespace": ["magma.app.compile.rule"]
  }, class {
  "before-keyword": "public ",
  "name": "SymbolFilter implements Filter ",

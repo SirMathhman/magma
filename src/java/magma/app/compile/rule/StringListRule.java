@@ -7,18 +7,33 @@ import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.ParseException;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public record StringListRule(String propertyKey, String delimiter) implements Rule {
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        final var args = Arrays.stream(input.split(delimiter))
+        final var args = split(input)
+                .stream()
                 .filter(value -> !value.isEmpty())
                 .toList();
 
         if (args.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("No items present", input)));
 
         return new RuleResult<>(new Ok<>(new MapNode().withStringList(propertyKey, args)));
+    }
+
+    private List<String> split(String input) {
+        int index;
+        String remaining = input;
+        List<String> parts = new ArrayList<>();
+
+        while ((index = remaining.indexOf(delimiter)) != -1) {
+            parts.add(remaining.substring(0, index));
+            remaining = remaining.substring(index + delimiter.length());
+        }
+        parts.add(remaining);  // Add the final part after the last delimiter
+        return parts;
     }
 
     @Override

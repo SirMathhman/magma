@@ -1,6 +1,6 @@
 {
 "children": [import {
- "namespace": ["java", "util", "List"]
+ "namespace": ["java.util.List"]
  }, function {
  "name": "ListFilter",
  "interface": symbol {

@@ -1,8 +1,8 @@
 {
 "children": [package {
- "namespace": ["magma", "app", "compile", "rule"]
+ "namespace": ["magma.app.compile.rule"]
  }, import {
- "namespace": ["java", "util", "List"]
+ "namespace": ["java.util.List"]
  }, record {
  "name": "ListFilter",
  "interface": symbol {
