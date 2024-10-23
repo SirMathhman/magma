@@ -4,6 +4,7 @@
  }, import {
  "namespace": ["magma", "app", "ApplicationException"]
  }, class {
+ "before-keyword": "public ",
  "name": "CompileException extends ApplicationException ",
  "body": "
     public CompileException() {
@@ -12,7 +13,6 @@
     public CompileException(String message, String context) {
         super(message + ": " + context);
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

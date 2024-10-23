@@ -14,20 +14,6 @@
  "interface": symbol {
   "value": "Rule"
   },
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "prefix",
-  "returns": symbol {
-   "value": "String"
-   }
-  }, definition {
-  "name": "childRule",
-  "returns": symbol {
-   "value": "Rule"
-   }
-  }],
  "children": [method {
   "name": "parse",
   "returns": generic {
@@ -40,18 +26,6 @@
     "value": "ParseException"
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "input",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
   "children": [if {
    "content": " (!input.startsWith(prefix))
             return new RuleResult<>(new Err<>(new ParseException("Prefix '" + prefix + "' not present", input)));"
@@ -80,6 +54,18 @@
       }]
      }]
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "generate",
@@ -93,6 +79,12 @@
     "value": "GenerateException"
     }]
    },
+  "children": [return {
+   "value": lambda {
+    "before-arrow": "childRule.generate(node).mapValue(value ",
+    "after-arrow": " prefix + value)"
+    }
+   }],
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -104,13 +96,21 @@
    "returns": symbol {
     "value": "Node"
     }
-   }],
-  "children": [return {
-   "value": lambda {
-    "after-arrow": " prefix + value)",
-    "before-arrow": "childRule.generate(node).mapValue(value "
-    }
    }]
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "prefix",
+  "returns": symbol {
+   "value": "String"
+   }
+  }, definition {
+  "name": "childRule",
+  "returns": symbol {
+   "value": "Rule"
+   }
   }]
  }]
 }

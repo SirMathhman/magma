@@ -12,6 +12,127 @@
  "interface": symbol {
   "value": "Rule"
   },
+ "children": [method {
+  "name": "parse",
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }, symbol {
+    "value": "ParseException"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "parse",
+     "parent": symbol {
+      "content": "childRule"
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "strip",
+      "parent": symbol {
+       "content": "input"
+       }
+      }
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "generate",
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "String"
+    }, symbol {
+    "value": "GenerateException"
+    }]
+   },
+  "children": [declaration {
+   "name": "leftPadding",
+   "caller": property-access {
+    "child": "orElse",
+    "parent": invocation {
+     "caller": property-access {
+      "child": "findString",
+      "parent": symbol {
+       "content": "node"
+       }
+      },
+     "arguments": [symbol {
+      "content": "leftPaddingKey"
+      }]
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [string {
+    }],
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, declaration {
+   "name": "rightPadding",
+   "caller": property-access {
+    "child": "orElse",
+    "parent": invocation {
+     "caller": property-access {
+      "child": "findString",
+      "parent": symbol {
+       "content": "node"
+       }
+      },
+     "arguments": [symbol {
+      "content": "rightPaddingKey"
+      }]
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [string {
+    }],
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, return {
+   "value": lambda {
+    "before-arrow": "childRule.generate(node).mapValue(inner ",
+    "after-arrow": " leftPadding + inner + rightPadding)"
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }]
+  }],
  "modifiers": [modifier {
   "content": "public"
   }],
@@ -30,127 +151,6 @@
   "returns": symbol {
    "value": "String"
    }
-  }],
- "children": [method {
-  "name": "parse",
-  "returns": generic {
-   "base": symbol {
-    "value": "RuleResult"
-    },
-   "children": [symbol {
-    "value": "Node"
-    }, symbol {
-    "value": "ParseException"
-    }]
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "input",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
-  "children": [return {
-   "value": invocation {
-    "caller": property-access {
-     "child": "parse",
-     "parent": symbol {
-      "content": "childRule"
-      }
-     },
-    "arguments": [invocation {
-     "caller": property-access {
-      "child": "strip",
-      "parent": symbol {
-       "content": "input"
-       }
-      }
-     }]
-    }
-   }]
-  }, method {
-  "name": "generate",
-  "returns": generic {
-   "base": symbol {
-    "value": "RuleResult"
-    },
-   "children": [symbol {
-    "value": "String"
-    }, symbol {
-    "value": "GenerateException"
-    }]
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "node",
-   "returns": symbol {
-    "value": "Node"
-    }
-   }],
-  "children": [declaration {
-   "name": "leftPadding",
-   "returns": symbol {
-    "value": "var"
-    },
-   "caller": property-access {
-    "child": "orElse",
-    "parent": invocation {
-     "caller": property-access {
-      "child": "findString",
-      "parent": symbol {
-       "content": "node"
-       }
-      },
-     "arguments": [symbol {
-      "content": "leftPaddingKey"
-      }]
-     }
-    },
-   "modifiers": [modifier {
-    "content": "final"
-    }],
-   "arguments": [string {
-    }]
-   }, declaration {
-   "name": "rightPadding",
-   "returns": symbol {
-    "value": "var"
-    },
-   "caller": property-access {
-    "child": "orElse",
-    "parent": invocation {
-     "caller": property-access {
-      "child": "findString",
-      "parent": symbol {
-       "content": "node"
-       }
-      },
-     "arguments": [symbol {
-      "content": "rightPaddingKey"
-      }]
-     }
-    },
-   "modifiers": [modifier {
-    "content": "final"
-    }],
-   "arguments": [string {
-    }]
-   }, return {
-   "value": lambda {
-    "after-arrow": " leftPadding + inner + rightPadding)",
-    "before-arrow": "childRule.generate(node).mapValue(inner "
-    }
-   }]
   }]
  }]
 }

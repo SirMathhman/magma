@@ -3,6 +3,11 @@
  "namespace": ["magma", "api"]
  }, record {
  "name": "Tuple",
+ "type-params": [symbol {
+  "value": "A"
+  }, symbol {
+  "value": "B"
+  }],
  "modifiers": [modifier {
   "content": "public"
   }],
@@ -16,11 +21,6 @@
   "returns": symbol {
    "value": "B"
    }
-  }],
- "type-params": [symbol {
-  "value": "A"
-  }, symbol {
-  "value": "B"
   }]
  }]
 }

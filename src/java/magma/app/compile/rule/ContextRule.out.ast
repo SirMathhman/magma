@@ -10,20 +10,6 @@
  "interface": symbol {
   "value": "Rule"
   },
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "message",
-  "returns": symbol {
-   "value": "String"
-   }
-  }, definition {
-  "name": "childRule",
-  "returns": symbol {
-   "value": "Rule"
-   }
-  }],
  "children": [method {
   "name": "parse",
   "returns": generic {
@@ -36,18 +22,6 @@
     "value": "ParseException"
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "input",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
   "children": [return {
    "value": invocation {
     "caller": property-access {
@@ -75,6 +49,18 @@
       }]
      }]
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "generate",
@@ -88,18 +74,6 @@
     "value": "GenerateException"
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "node",
-   "returns": symbol {
-    "value": "Node"
-    }
-   }],
   "children": [return {
    "value": invocation {
     "caller": property-access {
@@ -127,7 +101,33 @@
       }]
      }]
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
    }]
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "message",
+  "returns": symbol {
+   "value": "String"
+   }
+  }, definition {
+  "name": "childRule",
+  "returns": symbol {
+   "value": "Rule"
+   }
   }]
  }]
 }

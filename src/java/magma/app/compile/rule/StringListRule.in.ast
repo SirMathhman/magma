@@ -20,20 +20,6 @@
  "interface": symbol {
   "value": "Rule"
   },
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "propertyKey",
-  "returns": symbol {
-   "value": "String"
-   }
-  }, definition {
-  "name": "delimiter",
-  "returns": symbol {
-   "value": "String"
-   }
-  }],
  "children": [method {
   "name": "parse",
   "returns": generic {
@@ -46,26 +32,14 @@
     "value": "ParseException"
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "input",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
   "children": [invocation {
    "caller": property-access {
     "child": "toList",
     "parent": lambda {
-     "after-arrow": " !value.isEmpty())
-                ",
      "before-arrow": "final var args = Arrays.stream(input.split(delimiter))
-                .filter(value "
+                .filter(value ",
+     "after-arrow": " !value.isEmpty())
+                "
      }
     }
    }, if {
@@ -96,6 +70,18 @@
       }]
      }]
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "generate",
@@ -109,52 +95,37 @@
     "value": "GenerateException"
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "node",
-   "returns": symbol {
-    "value": "Node"
-    }
-   }],
   "children": [declaration {
    "name": "list",
-   "returns": symbol {
-    "value": "var"
-    },
    "caller": property-access {
     "child": "findStringList",
     "parent": symbol {
      "content": "node"
      }
     },
-   "modifiers": [modifier {
-    "content": "final"
-    }],
+   "returns": symbol {
+    "value": "var"
+    },
    "arguments": [symbol {
     "content": "propertyKey"
+    }],
+   "modifiers": [modifier {
+    "content": "final"
     }]
    }, if {
    "content": " (list.isEmpty())
             return new RuleResult<>(new Err<>(new GenerateException("String list '" + propertyKey + "' not present", node)));"
    }, declaration {
    "name": "joined",
-   "returns": symbol {
-    "value": "var"
-    },
    "caller": property-access {
     "child": "join",
     "parent": symbol {
      "content": "String"
      }
     },
-   "modifiers": [modifier {
-    "content": "final"
-    }],
+   "returns": symbol {
+    "value": "var"
+    },
    "arguments": [symbol {
     "content": "delimiter"
     }, invocation {
@@ -164,6 +135,9 @@
       "content": "list"
       }
      }
+    }],
+   "modifiers": [modifier {
+    "content": "final"
     }]
    }, return {
    "value": construction {
@@ -179,7 +153,33 @@
       }]
      }]
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
    }]
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "propertyKey",
+  "returns": symbol {
+   "value": "String"
+   }
+  }, definition {
+  "name": "delimiter",
+  "returns": symbol {
+   "value": "String"
+   }
   }]
  }]
 }

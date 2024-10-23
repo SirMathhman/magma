@@ -2,6 +2,7 @@
 "children": [import {
  "namespace": ["magma", "app", "compile", "rule", "*"]
  }, function {
+ "before-keyword": "public ",
  "name": "CommonLang ",
  "body": "
     public static final String NAME = "name";
@@ -18,7 +19,6 @@
     static Rule createNamespaceRule() {
         return new StringListRule(NAMESPACE, "\\.");
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

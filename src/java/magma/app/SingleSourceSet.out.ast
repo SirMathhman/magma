@@ -18,15 +18,6 @@
  "interface": symbol {
   "value": "SourceSet"
   },
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "source",
-  "returns": symbol {
-   "value": "Path"
-   }
-  }],
  "children": [method {
   "name": "collect",
   "returns": generic {
@@ -44,19 +35,13 @@
     "value": "IOException"
     }]
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "children": [declaration {
    "name": "sources",
-   "returns": symbol {
-    "value": "var"
-    },
    "caller": symbol {
     "content": "HashSet"
+    },
+   "returns": symbol {
+    "value": "var"
     },
    "type-arguments": [symbol {
     "value": "Path"
@@ -72,7 +57,22 @@
      "content": "sources"
      }]
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "source",
+  "returns": symbol {
+   "value": "Path"
+   }
   }]
  }]
 }

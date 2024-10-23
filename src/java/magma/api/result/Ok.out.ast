@@ -8,6 +8,7 @@
  }, import {
  "namespace": ["java", "util", "function", "Supplier"]
  }, function {
+ "before-keyword": "public ",
  "name": "Ok<T, E> implements Result<T, E> ",
  "body": "
     private final T value;
@@ -50,7 +51,6 @@
     public <R> Result<R, E> flatMapValue(Function<T, Result<R, E>> mapper) {
         return mapper.apply(value);
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

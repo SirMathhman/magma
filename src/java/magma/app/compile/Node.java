@@ -47,4 +47,6 @@ public interface Node {
     Optional<Node> mapStringList(String propertyKey, Function<List<String>, List<String>> mapper);
 
     boolean hasNodeList(String propertyKey);
+
+    Optional<String> findType();
 }

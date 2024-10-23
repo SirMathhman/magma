@@ -12,30 +12,21 @@
  "interface": symbol {
   "value": "Locator"
   },
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "delimiter",
-  "returns": symbol {
-   "value": "String"
-   }
-  }],
  "children": [method {
   "name": "slice",
   "returns": symbol {
    "value": "String"
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "children": [return {
    "value": symbol {
     "content": "delimiter"
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
   }, method {
   "name": "locate",
@@ -47,20 +38,11 @@
     "value": "Integer"
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "input",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
   "children": [declaration {
    "name": "indices",
+   "caller": symbol {
+    "content": "ArrayList"
+    },
    "returns": generic {
     "base": symbol {
      "value": "List"
@@ -68,20 +50,17 @@
     "children": [symbol {
      "value": "Integer"
      }]
-    },
-   "caller": symbol {
-    "content": "ArrayList"
     }
    }, declaration {
    "name": "index",
-   "returns": symbol {
-    "value": "int"
-    },
    "caller": property-access {
     "child": "lastIndexOf",
     "parent": symbol {
      "content": "input"
      }
+    },
+   "returns": symbol {
+    "value": "int"
     },
    "arguments": [symbol {
     "content": "delimiter"
@@ -100,7 +79,28 @@
       }
      }
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
    }]
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "delimiter",
+  "returns": symbol {
+   "value": "String"
+   }
   }]
  }]
 }

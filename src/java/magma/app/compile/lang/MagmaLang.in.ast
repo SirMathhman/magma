@@ -6,6 +6,7 @@
  }, import {
  "namespace": ["java", "util", "List"]
  }, class {
+ "before-keyword": "public ",
  "name": "MagmaLang ",
  "body": "
     public static final String FUNCTION_PREFIX = "class def ";
@@ -28,7 +29,6 @@
     public static Rule createRootRule() {
         return new NodeListRule(new StatementSplitter(), CommonLang.CHILDREN, createRootMemberRule());
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

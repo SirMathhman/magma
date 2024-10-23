@@ -10,15 +10,6 @@
  "interface": symbol {
   "value": "Locator"
   },
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "slice",
-  "returns": symbol {
-   "value": "String"
-   }
-  }],
  "children": [method {
   "name": "locate0",
   "returns": generic {
@@ -29,31 +20,22 @@
     "value": "Integer"
     }]
    },
-  "modifiers": [modifier {
-   "content": "private"
-   }],
-  "params": [definition {
-   "name": "input",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
   "children": [declaration {
    "name": "index",
-   "returns": symbol {
-    "value": "var"
-    },
    "caller": property-access {
     "child": "indexOf",
     "parent": symbol {
      "content": "input"
      }
     },
-   "modifiers": [modifier {
-    "content": "final"
-    }],
+   "returns": symbol {
+    "value": "var"
+    },
    "arguments": [symbol {
     "content": "slice"
+    }],
+   "modifiers": [modifier {
+    "content": "final"
     }]
    }, return {
    "value": invocation {
@@ -62,14 +44,6 @@
       "content": "index"
       },
      "right": ternary {
-      "ifTrue": invocation {
-       "caller": property-access {
-        "child": "empty",
-        "parent": symbol {
-         "content": "Optional"
-         }
-        }
-       },
       "condition": number {
        "value": "-1"
        },
@@ -78,12 +52,29 @@
        "parent": symbol {
         "content": "Optional"
         }
+       },
+      "ifTrue": invocation {
+       "caller": property-access {
+        "child": "empty",
+        "parent": symbol {
+         "content": "Optional"
+         }
+        }
        }
       }
      },
     "arguments": [symbol {
      "content": "index"
      }]
+    }
+   }],
+  "modifiers": [modifier {
+   "content": "private"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
     }
    }]
   }, method {
@@ -96,18 +87,6 @@
     "value": "Integer"
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "input",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
   "children": [return {
    "value": invocation {
     "caller": property-access {
@@ -122,7 +101,28 @@
       }
      }
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
    }]
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "slice",
+  "returns": symbol {
+   "value": "String"
+   }
   }]
  }]
 }

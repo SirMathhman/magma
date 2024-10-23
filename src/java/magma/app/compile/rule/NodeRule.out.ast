@@ -14,20 +14,6 @@
  "interface": symbol {
   "value": "Rule"
   },
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "propertyKey",
-  "returns": symbol {
-   "value": "String"
-   }
-  }, definition {
-  "name": "propertyRule",
-  "returns": symbol {
-   "value": "Rule"
-   }
-  }],
  "children": [method {
   "name": "parse",
   "returns": generic {
@@ -40,6 +26,12 @@
     "value": "ParseException"
     }]
    },
+  "children": [return {
+   "value": lambda {
+    "before-arrow": "propertyRule.parse(input).mapValue(node ",
+    "after-arrow": " new MapNode().withNode(propertyKey, node))"
+    }
+   }],
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -50,12 +42,6 @@
    "name": "input",
    "returns": symbol {
     "value": "String"
-    }
-   }],
-  "children": [return {
-   "value": lambda {
-    "after-arrow": " new MapNode().withNode(propertyKey, node))",
-    "before-arrow": "propertyRule.parse(input).mapValue(node "
     }
    }]
   }, method {
@@ -70,48 +56,36 @@
     "value": "GenerateException"
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "node",
-   "returns": symbol {
-    "value": "Node"
-    }
-   }],
   "children": [declaration {
    "name": "optional",
-   "returns": symbol {
-    "value": "var"
-    },
    "caller": property-access {
     "child": "findNode",
     "parent": symbol {
      "content": "node"
      }
     },
-   "modifiers": [modifier {
-    "content": "final"
-    }],
+   "returns": symbol {
+    "value": "var"
+    },
    "arguments": [symbol {
     "content": "propertyKey"
+    }],
+   "modifiers": [modifier {
+    "content": "final"
     }]
    }, if {
    "content": " (optional.isEmpty())
             return new RuleResult<>(new Err<>(new GenerateException("Node '" + propertyKey + "' does not exist.", node)));"
    }, declaration {
    "name": "node1",
-   "returns": symbol {
-    "value": "var"
-    },
    "caller": property-access {
     "child": "get",
     "parent": symbol {
      "content": "optional"
      }
+    },
+   "returns": symbol {
+    "value": "var"
     },
    "modifiers": [modifier {
     "content": "final"
@@ -128,7 +102,33 @@
      "content": "node1"
      }]
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
    }]
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "propertyKey",
+  "returns": symbol {
+   "value": "String"
+   }
+  }, definition {
+  "name": "propertyRule",
+  "returns": symbol {
+   "value": "Rule"
+   }
   }]
  }]
 }

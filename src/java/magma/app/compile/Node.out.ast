@@ -371,6 +371,27 @@
      }]
     }
    }]
+  }, method {
+  "name": "hasNodeList",
+  "returns": symbol {
+   "value": "boolean"
+   },
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "findType",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "String"
+    }]
+   }
   }]
  }]
 }

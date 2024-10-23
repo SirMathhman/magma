@@ -8,6 +8,7 @@
  }, import {
  "namespace": ["static magma", "app", "compile", "lang", "CommonLang", "*"]
  }, function {
+ "before-keyword": "public ",
  "name": "JavaLang ",
  "body": "
     public static final String PACKAGE = "package";
@@ -250,7 +251,6 @@
             return "(";
         }
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

@@ -1,5 +1,6 @@
 {
 "children": [function {
+ "before-keyword": "public ",
  "name": "Results ",
  "body": "
     public static <T, E extends Exception> T unwrap(Result<T, E> result) throws E {
@@ -11,7 +12,6 @@
 
         throw new RuntimeException();
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

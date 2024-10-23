@@ -17,15 +17,6 @@
  "namespace": ["static magma", "app", "compile", "lang", "JavaLang", "*"]
  }, record {
  "name": "Compiler",
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "input",
-  "returns": symbol {
-   "value": "String"
-   }
-  }],
  "children": [method {
   "name": "compile",
   "returns": generic {
@@ -38,14 +29,8 @@
     "value": "CompileException"
     }]
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
   "children": [declaration {
    "name": "parsed",
-   "returns": symbol {
-    "value": "var"
-    },
    "caller": property-access {
     "child": "parse",
     "parent": invocation {
@@ -54,21 +39,27 @@
       }
      }
     },
-   "modifiers": [modifier {
-    "content": "final"
-    }],
+   "returns": symbol {
+    "value": "var"
+    },
    "arguments": [symbol {
     "content": "input"
+    }],
+   "modifiers": [modifier {
+    "content": "final"
     }]
    }, return {
    "value": lambda {
+    "before-arrow": "write(parsed).flatMapValue(beforePass ",
     "after-arrow": " {
             final var afterPass = Passer.pass(beforePass);
             final var generated = MagmaLang.createRootRule().generate(afterPass);
             return write(generated).mapValue(output -> new CompileResult(beforePass, afterPass, output));
-        })",
-    "before-arrow": "write(parsed).flatMapValue(beforePass "
+        })"
     }
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
   }, method {
   "name": "write",
@@ -83,22 +74,6 @@
     "value": "CompileException"
     }]
    },
-  "modifiers": [modifier {
-   "content": "private"
-   }],
-  "params": [definition {
-   "name": "result",
-   "returns": generic {
-    "base": symbol {
-     "value": "RuleResult"
-     },
-    "children": [symbol {
-     "value": "T"
-     }, symbol {
-     "value": "E"
-     }]
-    }
-   }],
   "children": [if {
    "content": " (result.isValid()) {
             return new Ok<>(result.result().findValue().orElseThrow());
@@ -127,6 +102,22 @@
       }]
      }
     }]
+   }],
+  "modifiers": [modifier {
+   "content": "private"
+   }],
+  "params": [definition {
+   "name": "result",
+   "returns": generic {
+    "base": symbol {
+     "value": "RuleResult"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "E"
+     }]
+    }
    }]
   }, method {
   "name": "writeResult",
@@ -134,6 +125,69 @@
   "returns": symbol {
    "value": "void"
    },
+  "children": [declaration {
+   "name": "error",
+   "caller": property-access {
+    "child": "findError",
+    "parent": invocation {
+     "caller": property-access {
+      "child": "result",
+      "parent": symbol {
+       "content": "result"
+       }
+      }
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, if {
+   "content": " (error.isPresent()) {
+            final var repeat = "| ".repeat(depth);
+            final var s = (index + 1) + ") ";
+            final var rawMessage = error.get().getMessage();
+            final var message = rawMessage.replaceAll("\r\n", "\r\n" + repeat + " ".repeat(s.length()));
+            System.out.println(repeat + s + message);
+        }"
+   }, declaration {
+   "name": "children",
+   "caller": property-access {
+    "child": "sortedChildren",
+    "parent": symbol {
+     "content": "result"
+     }
+    },
+   "returns": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [generic {
+     "base": symbol {
+      "value": "RuleResult"
+      },
+     "children": [symbol {
+      "value": "T"
+      }, symbol {
+      "value": "E"
+      }]
+     }]
+    }
+   }, declaration {
+   "name": "i",
+   "value": "0",
+   "returns": symbol {
+    "value": "int"
+    }
+   }, while {
+   "content": " (i < children.size()) {
+            RuleResult<T, E> child = children.get(i);
+            writeResult(child, depth + 1, i);
+            i++;
+        }"
+   }],
   "modifiers": [modifier {
    "content": "private"
    }],
@@ -159,70 +213,16 @@
    "returns": symbol {
     "value": "int"
     }
-   }],
-  "children": [declaration {
-   "name": "error",
-   "returns": symbol {
-    "value": "var"
-    },
-   "caller": property-access {
-    "child": "findError",
-    "parent": invocation {
-     "caller": property-access {
-      "child": "result",
-      "parent": symbol {
-       "content": "result"
-       }
-      }
-     }
-    },
-   "modifiers": [modifier {
-    "content": "final"
-    }]
-   }, if {
-   "content": " (error.isPresent()) {
-            final var repeat = "| ".repeat(depth);
-            final var s = (index + 1) + ") ";
-            final var rawMessage = error.get().getMessage();
-            final var message = rawMessage.replaceAll("\r\n", "\r\n" + repeat + " ".repeat(s.length()));
-            System.out.println(repeat + s + message);
-        }"
-   }, declaration {
-   "name": "children",
-   "returns": generic {
-    "base": symbol {
-     "value": "List"
-     },
-    "children": [generic {
-     "base": symbol {
-      "value": "RuleResult"
-      },
-     "children": [symbol {
-      "value": "T"
-      }, symbol {
-      "value": "E"
-      }]
-     }]
-    },
-   "caller": property-access {
-    "child": "sortedChildren",
-    "parent": symbol {
-     "content": "result"
-     }
-    }
-   }, declaration {
-   "name": "i",
-   "value": "0",
-   "returns": symbol {
-    "value": "int"
-    }
-   }, while {
-   "content": " (i < children.size()) {
-            RuleResult<T, E> child = children.get(i);
-            writeResult(child, depth + 1, i);
-            i++;
-        }"
    }]
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "input",
+  "returns": symbol {
+   "value": "String"
+   }
   }]
  }]
 }

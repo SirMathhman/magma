@@ -10,6 +10,7 @@
  }, import {
  "namespace": ["static magma", "app", "compile", "lang", "CommonLang", "*"]
  }, class {
+ "before-keyword": "public ",
  "name": "JavaLang ",
  "body": "
     public static final String PACKAGE = "package";
@@ -252,7 +253,6 @@
             return "(";
         }
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

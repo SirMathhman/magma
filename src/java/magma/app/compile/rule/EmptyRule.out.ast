@@ -12,6 +12,7 @@
  }, import {
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, function {
+ "before-keyword": "public ",
  "name": "EmptyRule implements Rule ",
  "body": "
     @Override
@@ -25,7 +26,6 @@
     public RuleResult<String, GenerateException> generate(Node node) {
         return new RuleResult<>(new Ok<>(""));
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

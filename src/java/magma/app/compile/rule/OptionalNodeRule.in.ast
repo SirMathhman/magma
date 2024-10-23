@@ -10,6 +10,7 @@
  }, import {
  "namespace": ["java", "util", "List"]
  }, class {
+ "before-keyword": "public final ",
  "name": "OptionalNodeRule implements Rule ",
  "body": "
     private final String propertyKey;
@@ -37,7 +38,6 @@
             return ifEmpty.generate(node);
         }
     }
-}",
- "before-keyword": "public final "
+}"
  }]
 }

@@ -28,6 +28,11 @@ public record MapNode(
     }
 
     @Override
+    public Optional<String> findType() {
+        return type;
+    }
+
+    @Override
     public Node retype(String type) {
         return new MapNode(Optional.of(type), strings, stringLists, nodes, nodeLists);
     }
@@ -168,18 +173,6 @@ public record MapNode(
 
     @Override
     public Node merge(Node other) {
-        final var stringsCopy = new HashMap<>(strings);
-        other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));
-
-        final var stringListCopy = new HashMap<>(stringLists);
-        other.streamStringLists().forEach(tuple -> stringListCopy.put(tuple.left(), tuple.right()));
-
-        final var nodesCopy = new HashMap<>(nodes);
-        other.streamNodes().forEach(tuple -> nodesCopy.put(tuple.left(), tuple.right()));
-
-        final var nodeListCopy = new HashMap<>(nodeLists);
-        other.streamNodeLists().forEach(tuple -> nodeListCopy.put(tuple.left(), tuple.right()));
-
-        return new MapNode(type, stringsCopy, stringListCopy, nodesCopy, nodeListCopy);
+        return MapNodes.merge0(this, other);
     }
 }

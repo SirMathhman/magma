@@ -17,44 +17,6 @@
  "namespace": ["static java", "util", "Collections", "singletonList"]
  }, record {
  "name": "RuleResult",
- "type-params": [symbol {
-  "value": "T"
-  }, symbol {
-  "value": "E"
-  }],
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "result",
-  "returns": generic {
-   "base": symbol {
-    "value": "Result"
-    },
-   "children": [symbol {
-    "value": "T"
-    }, symbol {
-    "value": "E"
-    }]
-   }
-  }, definition {
-  "name": "children",
-  "returns": generic {
-   "base": symbol {
-    "value": "List"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "RuleResult"
-     },
-    "children": [symbol {
-     "value": "T"
-     }, symbol {
-     "value": "E"
-     }]
-    }]
-   }
-  }],
  "children": [method {
   "name": "RuleResult",
   "returns": symbol {
@@ -100,25 +62,22 @@
     "value": "E"
     }]
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Deprecated"
-   }],
   "children": [return {
    "value": symbol {
     "content": "result"
     }
+   }],
+  "annotations": [annotation {
+   "value": "Deprecated"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
   }, method {
   "name": "isValid",
   "returns": symbol {
    "value": "boolean"
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
   "children": [return {
    "value": invocation {
     "caller": property-access {
@@ -128,6 +87,9 @@
       }
      }
     }
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
   }, method {
   "name": "mapValue",
@@ -141,22 +103,6 @@
     "value": "E"
     }]
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "mapper",
-   "returns": generic {
-    "base": symbol {
-     "value": "Function"
-     },
-    "children": [symbol {
-     "value": "T"
-     }, symbol {
-     "value": "T"
-     }]
-    }
-   }],
   "children": [return {
    "value": construction {
     "caller": symbol {
@@ -176,6 +122,22 @@
      "content": "children"
      }]
     }
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "mapper",
+   "returns": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "T"
+     }]
+    }
    }]
   }, method {
   "name": "wrapErr",
@@ -189,24 +151,15 @@
     "value": "E"
     }]
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "error",
-   "returns": symbol {
-    "value": "E"
-    }
-   }],
   "children": [if {
    "content": " (!isError()) return this;"
    }, declaration {
    "name": "list",
-   "returns": symbol {
-    "value": "var"
-    },
    "caller": symbol {
     "content": "singletonList"
+    },
+   "returns": symbol {
+    "value": "var"
     },
    "arguments": [symbol {
     "content": "this"
@@ -227,15 +180,21 @@
      "content": "list"
      }]
     }
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "error",
+   "returns": symbol {
+    "value": "E"
+    }
    }]
   }, method {
   "name": "isError",
   "returns": symbol {
    "value": "boolean"
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
   "children": [return {
    "value": invocation {
     "caller": property-access {
@@ -245,15 +204,15 @@
       }
      }
     }
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
   }, method {
   "name": "depth",
   "returns": symbol {
    "value": "int"
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
   "children": [return {
    "value": invocation {
     "caller": addition {
@@ -298,6 +257,9 @@
      "value": "0"
      }]
     }
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
   }, method {
   "name": "sortedChildren",
@@ -316,9 +278,6 @@
      }]
     }]
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
   "children": [return {
    "value": invocation {
     "caller": property-access {
@@ -352,7 +311,48 @@
       }
      }
     }
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
+  }],
+ "type-params": [symbol {
+  "value": "T"
+  }, symbol {
+  "value": "E"
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "result",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [symbol {
+    "value": "T"
+    }, symbol {
+    "value": "E"
+    }]
+   }
+  }, definition {
+  "name": "children",
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "RuleResult"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "E"
+     }]
+    }]
+   }
   }]
  }]
 }

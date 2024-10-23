@@ -16,6 +16,1302 @@
  "interface": symbol {
   "value": "Node"
   },
+ "children": [method {
+  "name": "MapNode",
+  "returns": symbol {
+   "value": "public"
+   },
+  "children": [invocation {
+   "caller": symbol {
+    "content": "this"
+    },
+   "arguments": [invocation {
+    "caller": property-access {
+     "child": "empty",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     }
+    }, invocation {
+    "caller": property-access {
+     "child": "emptyMap",
+     "parent": symbol {
+      "content": "Collections"
+      }
+     }
+    }, invocation {
+    "caller": property-access {
+     "child": "emptyMap",
+     "parent": symbol {
+      "content": "Collections"
+      }
+     }
+    }, invocation {
+    "caller": property-access {
+     "child": "emptyMap",
+     "parent": symbol {
+      "content": "Collections"
+      }
+     }
+    }, invocation {
+    "caller": property-access {
+     "child": "emptyMap",
+     "parent": symbol {
+      "content": "Collections"
+      }
+     }
+    }]
+   }]
+  }, method {
+  "name": "formatLine",
+  "returns": symbol {
+   "value": "String"
+   },
+  "children": [return {
+   "value": addition {
+    "left": string {
+     "value": "\n"
+     },
+    "right": addition {
+     "left": invocation {
+      "caller": property-access {
+       "child": "repeat",
+       "parent": string {
+        "value": " "
+        }
+       },
+      "arguments": [symbol {
+       "content": "depth"
+       }]
+      },
+     "right": addition {
+      "left": string {
+       "value": "\""
+       },
+      "right": addition {
+       "left": symbol {
+        "content": "key"
+        },
+       "right": addition {
+        "left": string {
+         "value": "\": "
+         },
+        "right": symbol {
+         "content": "value"
+         }
+        }
+       }
+      }
+     }
+    }
+   }],
+  "modifiers": [modifier {
+   "content": "private"
+   }, modifier {
+   "content": "static"
+   }],
+  "params": [definition {
+   "name": "depth",
+   "returns": symbol {
+    "value": "int"
+    }
+   }, definition {
+   "name": "key",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "value",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "formatNodeList",
+  "returns": symbol {
+   "value": "String"
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "collect",
+     "parent": lambda {
+      "before-arrow": "values.stream()
+                .map(node ",
+      "after-arrow": " node.format(depth + 1))
+                "
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "joining",
+      "parent": symbol {
+       "content": "Collectors"
+       }
+      },
+     "arguments": [string {
+      "value": ", "
+      }, string {
+      "value": "["
+      }, string {
+      "value": "]"
+      }]
+     }]
+    }
+   }],
+  "modifiers": [modifier {
+   "content": "private"
+   }, modifier {
+   "content": "static"
+   }],
+  "params": [definition {
+   "name": "depth",
+   "returns": symbol {
+    "value": "int"
+    }
+   }, definition {
+   "name": "values",
+   "returns": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "Node"
+     }]
+    }
+   }]
+  }, method {
+  "name": "findType",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "String"
+    }]
+   },
+  "children": [return {
+   "value": symbol {
+    "content": "type"
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }]
+  }, method {
+  "name": "retype",
+  "returns": symbol {
+   "value": "Node"
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "MapNode"
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "of",
+      "parent": symbol {
+       "content": "Optional"
+       }
+      },
+     "arguments": [symbol {
+      "content": "type"
+      }]
+     }, symbol {
+     "content": "strings"
+     }, symbol {
+     "content": "stringLists"
+     }, symbol {
+     "content": "nodes"
+     }, symbol {
+     "content": "nodeLists"
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "type",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "is",
+  "returns": symbol {
+   "value": "boolean"
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "isPresent",
+     "parent": lambda {
+      "before-arrow": "this.type.filter(value ",
+      "after-arrow": " value.equals(type))"
+      }
+     }
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "type",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "withString",
+  "returns": symbol {
+   "value": "Node"
+   },
+  "children": [declaration {
+   "name": "copy",
+   "caller": symbol {
+    "content": "HashMap"
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "strings"
+    }],
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, invocation {
+   "caller": property-access {
+    "child": "put",
+    "parent": symbol {
+     "content": "copy"
+     }
+    },
+   "arguments": [symbol {
+    "content": "propertyKey"
+    }, symbol {
+    "content": "propertyValue"
+    }]
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "MapNode"
+     },
+    "arguments": [symbol {
+     "content": "type"
+     }, symbol {
+     "content": "copy"
+     }, symbol {
+     "content": "stringLists"
+     }, symbol {
+     "content": "nodes"
+     }, symbol {
+     "content": "nodeLists"
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "propertyValue",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "findString",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "String"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "ofNullable",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "get",
+      "parent": symbol {
+       "content": "strings"
+       }
+      },
+     "arguments": [symbol {
+      "content": "propertyKey"
+      }]
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "mapNodeList",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }]
+   },
+  "children": [return {
+   "value": lambda {
+    "before-arrow": "findNodeList(propertyKey).map(mapper).map(value ",
+    "after-arrow": " withNodeList(propertyKey, value))"
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "mapper",
+   "returns": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [generic {
+     "base": symbol {
+      "value": "List"
+      },
+     "children": [symbol {
+      "value": "Node"
+      }]
+     }, generic {
+     "base": symbol {
+      "value": "List"
+      },
+     "children": [symbol {
+      "value": "Node"
+      }]
+     }]
+    }
+   }]
+  }, method {
+  "name": "streamNodeLists",
+  "returns": generic {
+   "base": symbol {
+    "value": "Stream"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "Tuple"
+     },
+    "children": [symbol {
+     "value": "String"
+     }, generic {
+     "base": symbol {
+      "value": "List"
+      },
+     "children": [symbol {
+      "value": "Node"
+      }]
+     }]
+    }]
+   },
+  "children": [return {
+   "value": lambda {
+    "before-arrow": "nodeLists.entrySet().stream().map(pair ",
+    "after-arrow": " new Tuple<>(pair.getKey(), pair.getValue()))"
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }]
+  }, method {
+  "name": "withNode",
+  "returns": symbol {
+   "value": "Node"
+   },
+  "children": [declaration {
+   "name": "copy",
+   "caller": symbol {
+    "content": "HashMap"
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "nodes"
+    }],
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, invocation {
+   "caller": property-access {
+    "child": "put",
+    "parent": symbol {
+     "content": "copy"
+     }
+    },
+   "arguments": [symbol {
+    "content": "propertyKey"
+    }, symbol {
+    "content": "propertyValue"
+    }]
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "MapNode"
+     },
+    "arguments": [symbol {
+     "content": "type"
+     }, symbol {
+     "content": "strings"
+     }, symbol {
+     "content": "stringLists"
+     }, symbol {
+     "content": "copy"
+     }, symbol {
+     "content": "nodeLists"
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "propertyValue",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }]
+  }, method {
+  "name": "findNode",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "ofNullable",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "get",
+      "parent": symbol {
+       "content": "nodes"
+       }
+      },
+     "arguments": [symbol {
+      "content": "propertyKey"
+      }]
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "streamNodes",
+  "returns": generic {
+   "base": symbol {
+    "value": "Stream"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "Tuple"
+     },
+    "children": [symbol {
+     "value": "String"
+     }, symbol {
+     "value": "Node"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": lambda {
+    "before-arrow": "nodes.entrySet().stream().map(entry ",
+    "after-arrow": " new Tuple<>(entry.getKey(), entry.getValue()))"
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }]
+  }, method {
+  "name": "hasNode",
+  "returns": symbol {
+   "value": "boolean"
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "containsKey",
+     "parent": symbol {
+      "content": "nodes"
+      }
+     },
+    "arguments": [symbol {
+     "content": "node"
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "withStringList",
+  "returns": symbol {
+   "value": "Node"
+   },
+  "children": [declaration {
+   "name": "copy",
+   "caller": symbol {
+    "content": "HashMap"
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "stringLists"
+    }],
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, invocation {
+   "caller": property-access {
+    "child": "put",
+    "parent": symbol {
+     "content": "copy"
+     }
+    },
+   "arguments": [symbol {
+    "content": "propertyKey"
+    }, symbol {
+    "content": "propertyValues"
+    }]
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "MapNode"
+     },
+    "arguments": [symbol {
+     "content": "type"
+     }, symbol {
+     "content": "strings"
+     }, symbol {
+     "content": "copy"
+     }, symbol {
+     "content": "nodes"
+     }, symbol {
+     "content": "nodeLists"
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "propertyValues",
+   "returns": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "String"
+     }]
+    }
+   }]
+  }, method {
+  "name": "findStringList",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "String"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "ofNullable",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "get",
+      "parent": symbol {
+       "content": "stringLists"
+       }
+      },
+     "arguments": [symbol {
+      "content": "propertyKey"
+      }]
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "streamStrings",
+  "returns": generic {
+   "base": symbol {
+    "value": "Stream"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "Tuple"
+     },
+    "children": [symbol {
+     "value": "String"
+     }, symbol {
+     "value": "String"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": lambda {
+    "before-arrow": "strings.entrySet().stream().map(pair ",
+    "after-arrow": " new Tuple<>(pair.getKey(), pair.getValue()))"
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }]
+  }, method {
+  "name": "findNodeList",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "Node"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "ofNullable",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "get",
+      "parent": symbol {
+       "content": "nodeLists"
+       }
+      },
+     "arguments": [symbol {
+      "content": "propertyKey"
+      }]
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "withNodeList",
+  "returns": symbol {
+   "value": "Node"
+   },
+  "children": [declaration {
+   "name": "copy",
+   "caller": symbol {
+    "content": "HashMap"
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "nodeLists"
+    }],
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, invocation {
+   "caller": property-access {
+    "child": "put",
+    "parent": symbol {
+     "content": "copy"
+     }
+    },
+   "arguments": [symbol {
+    "content": "propertyKey"
+    }, symbol {
+    "content": "values"
+    }]
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "MapNode"
+     },
+    "arguments": [symbol {
+     "content": "type"
+     }, symbol {
+     "content": "strings"
+     }, symbol {
+     "content": "stringLists"
+     }, symbol {
+     "content": "nodes"
+     }, symbol {
+     "content": "copy"
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "values",
+   "returns": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "Node"
+     }]
+    }
+   }]
+  }, method {
+  "name": "toString",
+  "returns": symbol {
+   "value": "String"
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": symbol {
+     "content": "format"
+     },
+    "arguments": [number {
+     "value": "0"
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }]
+  }, method {
+  "name": "format",
+  "returns": symbol {
+   "value": "String"
+   },
+  "children": [invocation {
+   "caller": property-access {
+    "child": "orElse",
+    "parent": lambda {
+     "before-arrow": "final var typeString = type.map(value ",
+     "after-arrow": " value + " ")"
+     }
+    },
+   "arguments": [string {
+    }]
+   }, declaration {
+   "before-arrow": " formatMap(depth, strings, value ",
+   "name": "joinedStrings",
+   "after-arrow": " "\"" + value + "\"")",
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, declaration {
+   "name": "joinedStringLists",
+   "caller": symbol {
+    "content": "formatMap"
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "depth"
+    }, symbol {
+    "content": "stringLists"
+    }, method-access {
+    "child": "formatStringList",
+    "parent": symbol {
+     "content": "this"
+     }
+    }],
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, declaration {
+   "before-arrow": " formatMap(depth, nodes, value ",
+   "name": "joinedNodes",
+   "after-arrow": " value.format(depth + 1))",
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, declaration {
+   "before-arrow": " formatMap(depth, nodeLists, values ",
+   "name": "joinedNodeLists",
+   "after-arrow": " formatNodeList(depth, values))",
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, declaration {
+   "name": "list",
+   "caller": symbol {
+    "content": "ArrayList"
+    },
+   "returns": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "String"
+     }]
+    },
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, if {
+   "content": " (!joinedStrings.isEmpty()) list.add(joinedStrings);"
+   }, if {
+   "content": " (!joinedStringLists.isEmpty()) list.add(joinedStringLists);"
+   }, if {
+   "content": " (!joinedNodes.isEmpty()) list.add(joinedNodes);"
+   }, if {
+   "content": " (!joinedNodeLists.isEmpty()) list.add(joinedNodeLists);"
+   }, declaration {
+   "name": "joined",
+   "caller": property-access {
+    "child": "join",
+    "parent": symbol {
+     "content": "String"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [string {
+    "value": ","
+    }, symbol {
+    "content": "list"
+    }],
+   "modifiers": [modifier {
+    "content": "final"
+    }]
+   }, return {
+   "value": addition {
+    "left": symbol {
+     "content": "typeString"
+     },
+    "right": string {
+     "value": "{" + joined + "\n" + " ".repeat(depth) + "}"
+     }
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "depth",
+   "returns": symbol {
+    "value": "int"
+    }
+   }]
+  }, method {
+  "name": "formatStringList",
+  "returns": symbol {
+   "value": "String"
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "collect",
+     "parent": lambda {
+      "before-arrow": "list.stream()
+                .map(inner ",
+      "after-arrow": " "\"" + inner + "\"")
+                "
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "joining",
+      "parent": symbol {
+       "content": "Collectors"
+       }
+      },
+     "arguments": [string {
+      "value": ", "
+      }, string {
+      "value": "["
+      }, string {
+      "value": "]"
+      }]
+     }]
+    }
+   }],
+  "modifiers": [modifier {
+   "content": "private"
+   }],
+  "params": [definition {
+   "name": "list",
+   "returns": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "String"
+     }]
+    }
+   }]
+  }, method {
+  "name": "formatMap",
+  "type-params": "T",
+  "returns": symbol {
+   "value": "String"
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "collect",
+     "parent": lambda {
+      "before-arrow": "set.entrySet()
+                .stream()
+                .map(entry ",
+      "after-arrow": " formatLine(depth, entry.getKey(), format.apply(entry.getValue())))
+                "
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "joining",
+      "parent": symbol {
+       "content": "Collectors"
+       }
+      },
+     "arguments": [string {
+      "value": ","
+      }]
+     }]
+    }
+   }],
+  "modifiers": [modifier {
+   "content": "private"
+   }],
+  "params": [definition {
+   "name": "depth",
+   "returns": symbol {
+    "value": "int"
+    }
+   }, definition {
+   "name": "set",
+   "returns": generic {
+    "base": symbol {
+     "value": "Map"
+     },
+    "children": [symbol {
+     "value": "String"
+     }, symbol {
+     "value": "T"
+     }]
+    }
+   }, definition {
+   "name": "format",
+   "returns": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "String"
+     }]
+    }
+   }]
+  }, method {
+  "name": "streamStringLists",
+  "returns": generic {
+   "base": symbol {
+    "value": "Stream"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "Tuple"
+     },
+    "children": [symbol {
+     "value": "String"
+     }, generic {
+     "base": symbol {
+      "value": "List"
+      },
+     "children": [symbol {
+      "value": "String"
+      }]
+     }]
+    }]
+   },
+  "children": [return {
+   "value": lambda {
+    "before-arrow": "stringLists.entrySet()
+                .stream()
+                .map(entry ",
+    "after-arrow": " new Tuple<>(entry.getKey(), entry.getValue()))"
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }]
+  }, method {
+  "name": "mapStringList",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }]
+   },
+  "children": [return {
+   "value": lambda {
+    "before-arrow": "findStringList(propertyKey).map(mapper).map(list ",
+    "after-arrow": " withStringList(propertyKey, list))"
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "mapper",
+   "returns": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [generic {
+     "base": symbol {
+      "value": "List"
+      },
+     "children": [symbol {
+      "value": "String"
+      }]
+     }, generic {
+     "base": symbol {
+      "value": "List"
+      },
+     "children": [symbol {
+      "value": "String"
+      }]
+     }]
+    }
+   }]
+  }, method {
+  "name": "hasNodeList",
+  "returns": symbol {
+   "value": "boolean"
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "containsKey",
+     "parent": symbol {
+      "content": "nodeLists"
+      }
+     },
+    "arguments": [symbol {
+     "content": "propertyKey"
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "merge",
+  "returns": symbol {
+   "value": "Node"
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "merge0",
+     "parent": symbol {
+      "content": "MapNodes"
+      }
+     },
+    "arguments": [symbol {
+     "content": "this"
+     }, symbol {
+     "content": "other"
+     }]
+    }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "other",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }]
+  }],
  "modifiers": [modifier {
   "content": "public"
   }],
@@ -87,826 +1383,6 @@
      }]
     }]
    }
-  }],
- "children": [method {
-  "name": "MapNode",
-  "returns": symbol {
-   "value": "public"
-   },
-  "children": [symbol {
-   "content": "this(Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());"
-   }]
-  }, method {
-  "name": "formatLine",
-  "returns": symbol {
-   "value": "String"
-   },
-  "modifiers": [modifier {
-   "content": "private"
-   }, modifier {
-   "content": "static"
-   }],
-  "params": [definition {
-   "name": "depth",
-   "returns": symbol {
-    "value": "int"
-    }
-   }, definition {
-   "name": "key",
-   "returns": symbol {
-    "value": "String"
-    }
-   }, definition {
-   "name": "value",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
-  "children": [symbol {
-   "content": "return "\n" + " ".repeat(depth) + "\"" + key + "\": " + value;"
-   }]
-  }, method {
-  "name": "formatNodeList",
-  "returns": symbol {
-   "value": "String"
-   },
-  "modifiers": [modifier {
-   "content": "private"
-   }, modifier {
-   "content": "static"
-   }],
-  "params": [definition {
-   "name": "depth",
-   "returns": symbol {
-    "value": "int"
-    }
-   }, definition {
-   "name": "values",
-   "returns": generic {
-    "base": symbol {
-     "value": "List"
-     },
-    "children": [symbol {
-     "value": "Node"
-     }]
-    }
-   }],
-  "children": [symbol {
-   "content": "return values.stream()
-                .map(node -> node.format(depth + 1))
-                .collect(Collectors.joining(", ", "[", "]"));"
-   }]
-  }, method {
-  "name": "retype",
-  "returns": symbol {
-   "value": "Node"
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "type",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
-  "children": [symbol {
-   "content": "return new MapNode(Optional.of(type), strings, stringLists, nodes, nodeLists);"
-   }]
-  }, method {
-  "name": "is",
-  "returns": symbol {
-   "value": "boolean"
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "type",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
-  "children": [symbol {
-   "content": "return this.type.filter(value -> value.equals(type)).isPresent();"
-   }]
-  }, method {
-  "name": "withString",
-  "returns": symbol {
-   "value": "Node"
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "returns": symbol {
-    "value": "String"
-    }
-   }, definition {
-   "name": "propertyValue",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
-  "children": [symbol {
-   "content": "final var copy = new HashMap<>(strings);"
-   }, symbol {
-   "content": "copy.put(propertyKey, propertyValue);"
-   }, symbol {
-   "content": "return new MapNode(type, copy, stringLists, nodes, nodeLists);"
-   }]
-  }, method {
-  "name": "findString",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [symbol {
-    "value": "String"
-    }]
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "ofNullable",
-     "parent": symbol {
-      "content": "Optional"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "get",
-      "parent": symbol {
-       "content": "strings"
-       }
-      },
-     "arguments": [symbol {
-      "content": "propertyKey"
-      }]
-     }]
-    }
-   }]
-  }, method {
-  "name": "mapNodeList",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [symbol {
-    "value": "Node"
-    }]
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "returns": symbol {
-    "value": "String"
-    }
-   }, definition {
-   "name": "mapper",
-   "returns": generic {
-    "base": symbol {
-     "value": "Function"
-     },
-    "children": [generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "Node"
-      }]
-     }, generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "Node"
-      }]
-     }]
-    }
-   }],
-  "children": [symbol {
-   "content": "return findNodeList(propertyKey).map(mapper).map(value -> withNodeList(propertyKey, value));"
-   }]
-  }, method {
-  "name": "streamNodeLists",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Tuple"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "Node"
-      }]
-     }]
-    }]
-   },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "children": [symbol {
-   "content": "return nodeLists.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));"
-   }]
-  }, method {
-  "name": "withNode",
-  "returns": symbol {
-   "value": "Node"
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "returns": symbol {
-    "value": "String"
-    }
-   }, definition {
-   "name": "propertyValue",
-   "returns": symbol {
-    "value": "Node"
-    }
-   }],
-  "children": [symbol {
-   "content": "final var copy = new HashMap<>(nodes);"
-   }, symbol {
-   "content": "copy.put(propertyKey, propertyValue);"
-   }, symbol {
-   "content": "return new MapNode(type, strings, stringLists, copy, nodeLists);"
-   }]
-  }, method {
-  "name": "findNode",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [symbol {
-    "value": "Node"
-    }]
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "ofNullable",
-     "parent": symbol {
-      "content": "Optional"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "get",
-      "parent": symbol {
-       "content": "nodes"
-       }
-      },
-     "arguments": [symbol {
-      "content": "propertyKey"
-      }]
-     }]
-    }
-   }]
-  }, method {
-  "name": "streamNodes",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Tuple"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, symbol {
-     "value": "Node"
-     }]
-    }]
-   },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "children": [symbol {
-   "content": "return nodes.entrySet().stream().map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));"
-   }]
-  }, method {
-  "name": "hasNode",
-  "returns": symbol {
-   "value": "boolean"
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "node",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "containsKey",
-     "parent": symbol {
-      "content": "nodes"
-      }
-     },
-    "arguments": [symbol {
-     "content": "node"
-     }]
-    }
-   }]
-  }, method {
-  "name": "withStringList",
-  "returns": symbol {
-   "value": "Node"
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "returns": symbol {
-    "value": "String"
-    }
-   }, definition {
-   "name": "propertyValues",
-   "returns": generic {
-    "base": symbol {
-     "value": "List"
-     },
-    "children": [symbol {
-     "value": "String"
-     }]
-    }
-   }],
-  "children": [symbol {
-   "content": "final var copy = new HashMap<>(stringLists);"
-   }, symbol {
-   "content": "copy.put(propertyKey, propertyValues);"
-   }, symbol {
-   "content": "return new MapNode(type, strings, copy, nodes, nodeLists);"
-   }]
-  }, method {
-  "name": "findStringList",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "List"
-     },
-    "children": [symbol {
-     "value": "String"
-     }]
-    }]
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "ofNullable",
-     "parent": symbol {
-      "content": "Optional"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "get",
-      "parent": symbol {
-       "content": "stringLists"
-       }
-      },
-     "arguments": [symbol {
-      "content": "propertyKey"
-      }]
-     }]
-    }
-   }]
-  }, method {
-  "name": "streamStrings",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Tuple"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, symbol {
-     "value": "String"
-     }]
-    }]
-   },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "children": [symbol {
-   "content": "return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));"
-   }]
-  }, method {
-  "name": "findNodeList",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "List"
-     },
-    "children": [symbol {
-     "value": "Node"
-     }]
-    }]
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
-  "children": [return {
-   "value": invocation {
-    "caller": access {
-     "child": "ofNullable",
-     "parent": symbol {
-      "content": "Optional"
-      }
-     },
-    "arguments": [invocation {
-     "caller": access {
-      "child": "get",
-      "parent": symbol {
-       "content": "nodeLists"
-       }
-      },
-     "arguments": [symbol {
-      "content": "propertyKey"
-      }]
-     }]
-    }
-   }]
-  }, method {
-  "name": "withNodeList",
-  "returns": symbol {
-   "value": "Node"
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "returns": symbol {
-    "value": "String"
-    }
-   }, definition {
-   "name": "values",
-   "returns": generic {
-    "base": symbol {
-     "value": "List"
-     },
-    "children": [symbol {
-     "value": "Node"
-     }]
-    }
-   }],
-  "children": [symbol {
-   "content": "final var copy = new HashMap<>(nodeLists);"
-   }, symbol {
-   "content": "copy.put(propertyKey, values);"
-   }, symbol {
-   "content": "return new MapNode(type, strings, stringLists, nodes, copy);"
-   }]
-  }, method {
-  "name": "toString",
-  "returns": symbol {
-   "value": "String"
-   },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "children": [symbol {
-   "content": "return format(0);"
-   }]
-  }, method {
-  "name": "format",
-  "returns": symbol {
-   "value": "String"
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "depth",
-   "returns": symbol {
-    "value": "int"
-    }
-   }],
-  "children": [symbol {
-   "content": "final var typeString = type.map(value -> value + " ").orElse("");"
-   }, symbol {
-   "content": "final var joinedStrings = formatMap(depth, strings, value -> "\"" + value + "\"");"
-   }, symbol {
-   "content": "final var joinedStringLists = formatMap(depth, stringLists, this::formatStringList);"
-   }, symbol {
-   "content": "final var joinedNodes = formatMap(depth, nodes, value -> value.format(depth + 1));"
-   }, symbol {
-   "content": "final var joinedNodeLists = formatMap(depth, nodeLists, values -> formatNodeList(depth, values));"
-   }, symbol {
-   "content": "final List<String> list = new ArrayList<>();"
-   }, symbol {
-   "content": "if (!joinedStrings.isEmpty()) list.add(joinedStrings);"
-   }, symbol {
-   "content": "if (!joinedStringLists.isEmpty()) list.add(joinedStringLists);"
-   }, symbol {
-   "content": "if (!joinedNodes.isEmpty()) list.add(joinedNodes);"
-   }, symbol {
-   "content": "if (!joinedNodeLists.isEmpty()) list.add(joinedNodeLists);"
-   }, symbol {
-   "content": "final var joined = String.join(",", list);"
-   }, symbol {
-   "content": "return typeString + "{" + joined + "\n" + " ".repeat(depth) + "}"
-   }, symbol {
-   "content": "";"
-   }]
-  }, method {
-  "name": "formatStringList",
-  "returns": symbol {
-   "value": "String"
-   },
-  "modifiers": [modifier {
-   "content": "private"
-   }],
-  "params": [definition {
-   "name": "list",
-   "returns": generic {
-    "base": symbol {
-     "value": "List"
-     },
-    "children": [symbol {
-     "value": "String"
-     }]
-    }
-   }],
-  "children": [symbol {
-   "content": "return list.stream()
-                .map(inner -> "\"" + inner + "\"")
-                .collect(Collectors.joining(", ", "[", "]"));"
-   }]
-  }, method {
-  "name": "formatMap",
-  "type-params": "T",
-  "returns": symbol {
-   "value": "String"
-   },
-  "modifiers": [modifier {
-   "content": "private"
-   }],
-  "params": [definition {
-   "name": "depth",
-   "returns": symbol {
-    "value": "int"
-    }
-   }, definition {
-   "name": "set",
-   "returns": generic {
-    "base": symbol {
-     "value": "Map"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, symbol {
-     "value": "T"
-     }]
-    }
-   }, definition {
-   "name": "format",
-   "returns": generic {
-    "base": symbol {
-     "value": "Function"
-     },
-    "children": [symbol {
-     "value": "T"
-     }, symbol {
-     "value": "String"
-     }]
-    }
-   }],
-  "children": [symbol {
-   "content": "return set.entrySet()
-                .stream()
-                .map(entry -> formatLine(depth, entry.getKey(), format.apply(entry.getValue())))
-                .collect(Collectors.joining(","));"
-   }]
-  }, method {
-  "name": "streamStringLists",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Tuple"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "String"
-      }]
-     }]
-    }]
-   },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "children": [symbol {
-   "content": "return stringLists.entrySet()
-                .stream()
-                .map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));"
-   }]
-  }, method {
-  "name": "mapStringList",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [symbol {
-    "value": "Node"
-    }]
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "returns": symbol {
-    "value": "String"
-    }
-   }, definition {
-   "name": "mapper",
-   "returns": generic {
-    "base": symbol {
-     "value": "Function"
-     },
-    "children": [generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "String"
-      }]
-     }, generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "String"
-      }]
-     }]
-    }
-   }],
-  "children": [symbol {
-   "content": "return findStringList(propertyKey).map(mapper).map(list -> withStringList(propertyKey, list));"
-   }]
-  }, method {
-  "name": "merge",
-  "returns": symbol {
-   "value": "Node"
-   },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "other",
-   "returns": symbol {
-    "value": "Node"
-    }
-   }],
-  "children": [symbol {
-   "content": "final var stringsCopy = new HashMap<>(strings);"
-   }, symbol {
-   "content": "other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));"
-   }, symbol {
-   "content": "final var stringListCopy = new HashMap<>(stringLists);"
-   }, symbol {
-   "content": "other.streamStringLists().forEach(tuple -> stringListCopy.put(tuple.left(), tuple.right()));"
-   }, symbol {
-   "content": "final var nodesCopy = new HashMap<>(nodes);"
-   }, symbol {
-   "content": "other.streamNodes().forEach(tuple -> nodesCopy.put(tuple.left(), tuple.right()));"
-   }, symbol {
-   "content": "final var nodeListCopy = new HashMap<>(nodeLists);"
-   }, symbol {
-   "content": "other.streamNodeLists().forEach(tuple -> nodeListCopy.put(tuple.left(), tuple.right()));"
-   }, symbol {
-   "content": "return new MapNode(type, stringsCopy, stringListCopy, nodesCopy, nodeListCopy);"
-   }]
   }]
  }]
 }

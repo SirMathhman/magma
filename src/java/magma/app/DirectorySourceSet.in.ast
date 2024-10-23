@@ -22,15 +22,6 @@
  "interface": symbol {
   "value": "SourceSet"
   },
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "root",
-  "returns": symbol {
-   "value": "Path"
-   }
-  }],
  "children": [method {
   "name": "collect",
   "returns": generic {
@@ -48,40 +39,49 @@
     "value": "IOException"
     }]
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "children": [try {
    "children": [declaration {
     "name": "stream",
-    "returns": symbol {
-     "value": "var"
-     },
     "caller": property-access {
      "child": "walk",
      "parent": symbol {
       "content": "Files"
       }
      },
+    "returns": symbol {
+     "value": "var"
+     },
     "arguments": [symbol {
      "content": "root"
      }]
     }, return {
     "value": lambda {
-     "after-arrow": " path.toString().endsWith(".java"))
-                    .collect(Collectors.toSet()))",
      "before-arrow": "new Ok<>(stream
-                    .filter(path "
+                    .filter(path ",
+     "after-arrow": " path.toString().endsWith(".java"))
+                    .collect(Collectors.toSet()))"
      }
     }]
    }, catch {
    "content": " (IOException e) {
             return new Err<>(e);
         }"
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "root",
+  "returns": symbol {
+   "value": "Path"
+   }
   }]
  }]
 }

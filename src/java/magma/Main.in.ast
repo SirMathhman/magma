@@ -10,6 +10,7 @@
  }, import {
  "namespace": ["java", "nio", "file", "Paths"]
  }, class {
+ "before-keyword": "public ",
  "name": "Main ",
  "body": "
     public static void main(String[] args) {
@@ -22,7 +23,6 @@
             e.printStackTrace();
         }
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

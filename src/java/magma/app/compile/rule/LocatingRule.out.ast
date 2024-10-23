@@ -10,6 +10,7 @@
  }, import {
  "namespace": ["java", "util", "ArrayList"]
  }, function {
+ "before-keyword": "public final ",
  "name": "LocatingRule implements Rule ",
  "body": "
     private final Rule leftRule;
@@ -27,19 +28,24 @@
         final var occurrences = locator.locate(input).toList();
 
         var errors = new ArrayList<RuleResult<Node, ParseException>>();
-        for (Integer occurrence : occurrences) {
+        int i = 0;
+        while (i < occurrences.size()) {
+            Integer occurrence = occurrences.get(i);
             var result = getNodeParseExceptionRuleResult(input, occurrence);
             if (result.isValid()) {
                 return result;
             } else {
                 errors.add(result);
             }
+            i++;
         }
 
-        if (occurrences.size() == 1) {
+        if (occurrences.isEmpty()) {
+            return new RuleResult<>(new Err<>(new ParseException("No occurrence found of '" + locator.slice() + "'", input)));
+        } else if (occurrences.size() == 1) {
             return errors.getFirst();
         } else {
-            return new RuleResult<>(new Err<>(new ParseException("Failed to find a valid combination of slice ' + locator.slice() + "', input)), errors);
+            return new RuleResult<>(new Err<>(new ParseException("Failed to find a valid combination of slice '" + locator.slice() + "'", input)), errors);
         }
     }
 
@@ -67,7 +73,6 @@
 
         return new RuleResult<>(leftResult.result().and(rightResult::result).mapValue(tuple -> tuple.left() + locator.slice() + tuple.right()));
     }
-}",
- "before-keyword": "public final "
+}"
  }]
 }

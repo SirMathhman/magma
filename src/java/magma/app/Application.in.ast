@@ -16,6 +16,7 @@
  }, import {
  "namespace": ["java", "util", "Set"]
  }, class {
+ "before-keyword": "public final ",
  "name": "Application ",
  "body": "
     public static final String MAGMA_EXTENSION = "mgs";
@@ -80,7 +81,6 @@
         writeDebug(source, result.beforePass().toString(), fileNameWithoutExtension, "in.ast");
         writeDebug(source, result.afterPass().toString(), fileNameWithoutExtension, "out.ast");
     }
-}",
- "before-keyword": "public final "
+}"
  }]
 }

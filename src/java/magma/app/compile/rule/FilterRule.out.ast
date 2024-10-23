@@ -8,6 +8,7 @@
  }, import {
  "namespace": ["magma", "app", "compile", "ParseException"]
  }, function {
+ "before-keyword": "public final ",
  "name": "FilterRule implements Rule ",
  "body": "
     private final Rule childRule;
@@ -27,7 +28,6 @@
     public RuleResult<String, GenerateException> generate(Node node) {
         return childRule.generate(node);
     }
-}",
- "before-keyword": "public final "
+}"
  }]
 }

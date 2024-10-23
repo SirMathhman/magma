@@ -6,6 +6,7 @@
  }, import {
  "namespace": ["java", "util", "List"]
  }, class {
+ "before-keyword": "public ",
  "name": "SimpleSplitter implements Splitter ",
  "body": "
     private final String delimiter;
@@ -18,7 +19,6 @@
     public List<String> split(String input) {
         return List.of(input.split(delimiter));
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

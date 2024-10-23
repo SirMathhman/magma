@@ -6,37 +6,11 @@
  "interface": symbol {
   "value": "Filter"
   },
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "values",
-  "returns": generic {
-   "base": symbol {
-    "value": "List"
-    },
-   "children": [symbol {
-    "value": "String"
-    }]
-   }
-  }],
  "children": [method {
   "name": "filter",
   "returns": symbol {
    "value": "boolean"
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "input",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
   "children": [return {
    "value": invocation {
     "caller": property-access {
@@ -51,7 +25,33 @@
      "content": "input"
      }]
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
    }]
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "values",
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [symbol {
+    "value": "String"
+    }]
+   }
   }]
  }]
 }

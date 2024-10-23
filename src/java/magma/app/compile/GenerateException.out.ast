@@ -1,11 +1,11 @@
 {
 "children": [function {
+ "before-keyword": "public ",
  "name": "GenerateException extends CompileException ",
  "body": "
     public GenerateException(String message, Node context) {
         super(message, "\n" + context.toString());
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

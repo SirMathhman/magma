@@ -16,6 +16,7 @@
  }, import {
  "namespace": ["static magma", "app", "compile", "lang", "MagmaLang", "FUNCTION"]
  }, function {
+ "before-keyword": "public ",
  "name": "Passer ",
  "body": "
     static Node pass(Node node) {
@@ -70,7 +71,6 @@
         if (child.is(METHOD)) return child.retype(FUNCTION);
         return child;
     }
-}",
- "before-keyword": "public "
+}"
  }]
 }

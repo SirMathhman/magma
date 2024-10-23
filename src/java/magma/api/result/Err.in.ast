@@ -21,20 +21,6 @@
    "value": "E"
    }]
   },
- "type-params": [symbol {
-  "value": "T"
-  }, symbol {
-  "value": "E"
-  }],
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "error",
-  "returns": symbol {
-   "value": "E"
-   }
-  }],
  "children": [method {
   "name": "findValue",
   "returns": generic {
@@ -45,12 +31,6 @@
     "value": "T"
     }]
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "children": [return {
    "value": invocation {
     "caller": property-access {
@@ -60,6 +40,12 @@
       }
      }
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
   }, method {
   "name": "findError",
@@ -71,12 +57,6 @@
     "value": "E"
     }]
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "children": [return {
    "value": invocation {
     "caller": property-access {
@@ -89,6 +69,12 @@
      "content": "error"
      }]
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
   }, method {
   "name": "mapValue",
@@ -103,6 +89,16 @@
     "value": "E"
     }]
    },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "Err"
+     },
+    "arguments": [symbol {
+     "content": "error"
+     }]
+    }
+   }],
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -121,32 +117,22 @@
      "value": "R"
      }]
     }
-   }],
-  "children": [return {
-   "value": construction {
-    "caller": symbol {
-     "content": "Err"
-     },
-    "arguments": [symbol {
-     "content": "error"
-     }]
-    }
    }]
   }, method {
   "name": "isErr",
   "returns": symbol {
    "value": "boolean"
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "children": [return {
    "value": symbol {
     "content": "true"
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
   }, method {
   "name": "and",
@@ -168,6 +154,16 @@
     "value": "E"
     }]
    },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "Err"
+     },
+    "arguments": [symbol {
+     "content": "error"
+     }]
+    }
+   }],
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -191,32 +187,22 @@
       }]
      }]
     }
-   }],
-  "children": [return {
-   "value": construction {
-    "caller": symbol {
-     "content": "Err"
-     },
-    "arguments": [symbol {
-     "content": "error"
-     }]
-    }
    }]
   }, method {
   "name": "isOk",
   "returns": symbol {
    "value": "boolean"
    },
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
   "children": [return {
    "value": symbol {
     "content": "false"
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
    }]
   }, method {
   "name": "flatMapValue",
@@ -231,6 +217,16 @@
     "value": "E"
     }]
    },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "Err"
+     },
+    "arguments": [symbol {
+     "content": "error"
+     }]
+    }
+   }],
   "annotations": [annotation {
    "value": "Override"
    }],
@@ -256,17 +252,21 @@
       }]
      }]
     }
-   }],
-  "children": [return {
-   "value": construction {
-    "caller": symbol {
-     "content": "Err"
-     },
-    "arguments": [symbol {
-     "content": "error"
-     }]
-    }
    }]
+  }],
+ "type-params": [symbol {
+  "value": "T"
+  }, symbol {
+  "value": "E"
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "error",
+  "returns": symbol {
+   "value": "E"
+   }
   }]
  }]
 }

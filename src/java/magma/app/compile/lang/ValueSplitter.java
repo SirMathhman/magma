@@ -25,13 +25,9 @@ public class ValueSplitter implements Splitter {
 
         while (!queue.isEmpty()) {
             var c = queue.pop();
-            if (c == '-') {
-                if (!queue.isEmpty() && queue.peek() == '>') {
-                    queue.pop();
-                }
-            }
-
             if (c == '\"') {
+                buffer.append(c);
+
                 while (!queue.isEmpty()) {
                     final var next = queue.pop();
                     buffer.append(next);
@@ -45,9 +41,12 @@ public class ValueSplitter implements Splitter {
                         break;
                     }
                 }
-            }
-
-            if (c == ',' && depth == 0) {
+            } else if (c == '-') {
+                buffer.append('-');
+                if (!queue.isEmpty() && queue.peek() == '>') {
+                    queue.pop();
+                }
+            } else if (c == ',' && depth == 0) {
                 advance(buffer, lines);
                 buffer = new StringBuilder();
             } else {

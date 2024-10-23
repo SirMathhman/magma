@@ -18,20 +18,6 @@
  "interface": symbol {
   "value": "Rule"
   },
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "rules",
-  "returns": generic {
-   "base": symbol {
-    "value": "List"
-    },
-   "children": [symbol {
-    "value": "Rule"
-    }]
-   }
-  }],
  "children": [method {
   "name": "parse",
   "returns": generic {
@@ -44,25 +30,13 @@
     "value": "ParseException"
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "input",
-   "returns": symbol {
-    "value": "String"
-    }
-   }],
   "children": [declaration {
    "name": "list",
-   "returns": symbol {
-    "value": "var"
-    },
    "caller": symbol {
     "content": "ArrayList"
+    },
+   "returns": symbol {
+    "value": "var"
     },
    "type-arguments": [generic {
     "base": symbol {
@@ -111,6 +85,18 @@
      "content": "list"
      }]
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
    }]
   }, method {
   "name": "generate",
@@ -124,25 +110,13 @@
     "value": "GenerateException"
     }]
    },
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "content": "public"
-   }],
-  "params": [definition {
-   "name": "node",
-   "returns": symbol {
-    "value": "Node"
-    }
-   }],
   "children": [declaration {
    "name": "list",
-   "returns": symbol {
-    "value": "var"
-    },
    "caller": symbol {
     "content": "ArrayList"
+    },
+   "returns": symbol {
+    "value": "var"
     },
    "type-arguments": [generic {
     "base": symbol {
@@ -191,7 +165,33 @@
      "content": "list"
      }]
     }
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "content": "public"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
    }]
+  }],
+ "modifiers": [modifier {
+  "content": "public"
+  }],
+ "params": [definition {
+  "name": "rules",
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [symbol {
+    "value": "Rule"
+    }]
+   }
   }]
  }]
 }
