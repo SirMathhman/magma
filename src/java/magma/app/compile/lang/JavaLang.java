@@ -14,12 +14,7 @@ public class JavaLang {
     public static final String INTERFACE = "interface";
     public static final String MODIFIERS = "modifiers";
     public static final String METHOD = "method";
-    public static final List<String> MODIFIERS_LIST = List.of(
-            "public",
-            "private",
-            "static",
-            "final"
-    );
+    public static final List<String> MODIFIERS_LIST = List.of("public", "private", "static", "final");
 
     public static TypeRule createPackageRule() {
         return new TypeRule(PACKAGE, new PrefixRule("package ", new SuffixRule(createNamespaceRule(), STATEMENT_END)));
@@ -67,13 +62,7 @@ public class JavaLang {
     }
 
     private static OrRule createRootMemberRule() {
-        return new OrRule(List.of(
-                createPackageRule(),
-                createImportRule(),
-                createRecordRule(),
-                createInterfaceRule(),
-                createClassRule()
-        ));
+        return new OrRule(List.of(createPackageRule(), createImportRule(), createRecordRule(), createInterfaceRule(), createClassRule()));
     }
 
     private static TypeRule createClassRule() {
@@ -89,9 +78,7 @@ public class JavaLang {
     }
 
     private static OrRule createClassMemberRule() {
-        return new OrRule(List.of(
-                createMethodRule()
-        ));
+        return new OrRule(List.of(createMethodRule()));
     }
 
     private static Rule createModifiersRule() {
@@ -111,27 +98,21 @@ public class JavaLang {
 
     private static Rule createStatementRule() {
         final var valueRule = createValueRule();
-        return new OrRule(List.of(
-                new TypeRule("return", new PrefixRule("return ", new SuffixRule(new NodeRule("value", valueRule), ";"))),
-                new TypeRule("invocation", new SuffixRule(createInvocationRule(valueRule), ";")),
-                new TypeRule("if", new PrefixRule("if", new ExtractRule("content"))),
-                new TypeRule("declaration", new LocatingRule(createDefinitionRule(), new FirstLocator("="), new SuffixRule(valueRule, ";")))
-        ));
+        return new OrRule(List.of(new TypeRule("return", new PrefixRule("return ", new SuffixRule(new NodeRule("value", valueRule), ";"))), new TypeRule("invocation", new SuffixRule(createInvocationRule(valueRule), ";")), new TypeRule("if", new PrefixRule("if", new ExtractRule("content"))), new TypeRule("declaration", new LocatingRule(createDefinitionRule(), new FirstLocator("="), new SuffixRule(valueRule, ";")))));
     }
 
     private static Rule createValueRule() {
         final var value = new LazyRule();
-        value.setChildRule(new OrRule(List.of(
-                createConstructionRule(value),
-                createInvocationRule(value),
-                createSymbolRule(),
-                createNumberRule(),
-                createAdditionRule(value),
-                createAccessRule(value, "property-access", "."),
-                createAccessRule(value, "method-access", "::"),
-                new TypeRule("lambda", new LocatingRule(new ExtractRule("before-arrow"), new FirstLocator("->"), new ExtractRule("after-arrow")))
-        )));
+        value.setChildRule(new OrRule(List.of(createConstructionRule(value), createInvocationRule(value), createSymbolRule(), createNumberRule(), createAdditionRule(value), createTernaryRule(value), createAccessRule(value, "property-access", "."), createAccessRule(value, "method-access", "::"), new TypeRule("lambda", new LocatingRule(new ExtractRule("before-arrow"), new FirstLocator("->"), new ExtractRule("after-arrow"))))));
         return value;
+    }
+
+    private static TypeRule createTernaryRule(LazyRule value) {
+        final var condition = new NodeRule("condition", value);
+        final var ifTrue = new NodeRule("ifTrue", value);
+        final var ifFalse = new NodeRule("ifFalse", value);
+        final var afterCondition = new LocatingRule(ifTrue, new FirstLocator(":"), ifFalse);
+        return new TypeRule("ternary", new LocatingRule(condition, new FirstLocator("?"), afterCondition));
     }
 
     private static Rule createNumberRule() {
@@ -174,10 +155,7 @@ public class JavaLang {
 
     private static Rule createTypeRule() {
         final var type = new LazyRule();
-        type.setChildRule(new OrRule(List.of(
-                createGenericRule(type),
-                new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("value")), "", ""))
-        )));
+        type.setChildRule(new OrRule(List.of(createGenericRule(type), new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("value")), "", "")))));
         return type;
     }
 
