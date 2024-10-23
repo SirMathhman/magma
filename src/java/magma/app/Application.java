@@ -6,6 +6,7 @@ import magma.app.compile.Compiler;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.Set;
 
 public final class Application {
@@ -41,7 +42,9 @@ public final class Application {
 
     public void run() throws ApplicationException {
         final var sources = collectSources();
-        for (Path source : sources) {
+        Iterator<Path> iterator = sources.iterator();
+        while (iterator.hasNext()) {
+            Path source = iterator.next();
             runWithSource(source);
         }
     }

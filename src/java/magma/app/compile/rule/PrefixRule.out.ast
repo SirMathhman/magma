@@ -50,11 +50,34 @@
     "value": "String"
     }
    }],
-  "children": [symbol {
-   "content": "if (!input.startsWith(prefix))
-            return new RuleResult<>(new Err<>(new ParseException("Prefix ' prefix + "'t present", input)));"
-   }, symbol {
-   "content": "return childRule.parse(input.substring(prefix.length()));"
+  "children": [if {
+   "content": " (!input.startsWith(prefix))
+            return new RuleResult<>(new Err<>(new ParseException("Prefix '" + prefix + "' not present", input)));"
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "parse",
+     "parent": symbol {
+      "content": "childRule"
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "substring",
+      "parent": symbol {
+       "content": "input"
+       }
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "length",
+       "parent": symbol {
+        "content": "prefix"
+        }
+       }
+      }]
+     }]
+    }
    }]
   }, method {
   "name": "generate",
@@ -80,8 +103,11 @@
     "value": "Node"
     }
    }],
-  "children": [symbol {
-   "content": "return childRule.generate(node).mapValue(value -> prefix + value);"
+  "children": [return {
+   "value": lambda {
+    "after-arrow": " prefix + value)",
+    "before-arrow": "childRule.generate(node).mapValue(value "
+    }
    }]
   }]
  }]

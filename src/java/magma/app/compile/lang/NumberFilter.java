@@ -2,16 +2,12 @@ package magma.app.compile.lang;
 
 import magma.app.compile.rule.Filter;
 
+import java.util.stream.IntStream;
+
 public class NumberFilter implements Filter {
     private static boolean allDigits(String input) {
-        final var length = input.length();
-        for (int i = 0; i < length; i++) {
-            if (!Character.isDigit(input.charAt(i))) {
-                return false;
-            }
-        }
-
-        return true;
+        return IntStream.range(0, input.length())
+                .allMatch(i -> Character.isDigit(input.charAt(i)));
     }
 
     @Override

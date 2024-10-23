@@ -41,9 +41,11 @@ public record Compiler(String input) {
         }
 
         List<RuleResult<T, E>> children = result.sortedChildren();
-        for (int i = 0; i < children.size(); i++) {
+        int i = 0;
+        while (i < children.size()) {
             RuleResult<T, E> child = children.get(i);
             writeResult(child, depth + 1, i);
+            i++;
         }
     }
 }

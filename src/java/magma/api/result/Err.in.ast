@@ -51,8 +51,15 @@
   "annotations": [annotation {
    "value": "Override"
    }],
-  "children": [symbol {
-   "content": "return Optional.empty();"
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "empty",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     }
+    }
    }]
   }, method {
   "name": "findError",
@@ -72,7 +79,7 @@
    }],
   "children": [return {
    "value": invocation {
-    "caller": access {
+    "caller": property-access {
      "child": "of",
      "parent": symbol {
       "content": "Optional"
@@ -115,8 +122,15 @@
      }]
     }
    }],
-  "children": [symbol {
-   "content": "return new Err<>(error);"
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "Err"
+     },
+    "arguments": [symbol {
+     "content": "error"
+     }]
+    }
    }]
   }, method {
   "name": "isErr",
@@ -178,8 +192,15 @@
      }]
     }
    }],
-  "children": [symbol {
-   "content": "return new Err<>(error);"
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "Err"
+     },
+    "arguments": [symbol {
+     "content": "error"
+     }]
+    }
    }]
   }, method {
   "name": "isOk",
@@ -236,8 +257,15 @@
      }]
     }
    }],
-  "children": [symbol {
-   "content": "return new Err<>(error);"
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "Err"
+     },
+    "arguments": [symbol {
+     "content": "error"
+     }]
+    }
    }]
   }]
  }]

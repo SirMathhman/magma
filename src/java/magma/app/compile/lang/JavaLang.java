@@ -225,7 +225,8 @@ public class JavaLang {
         @Override
         public Stream<Integer> locate(String input) {
             var depth = 0;
-            for (int i = input.length() - 1; i >= 0; i--) {
+            int i = input.length() - 1;
+            while (i >= 0) {
                 var c = input.charAt(i);
                 if (c == '(' && depth == 1) {
                     return Stream.of(i);
@@ -233,6 +234,7 @@ public class JavaLang {
                     if (c == ')') depth++;
                     if (c == '(') depth--;
                 }
+                i--;
             }
 
             return Stream.empty();

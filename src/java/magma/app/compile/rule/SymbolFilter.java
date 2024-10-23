@@ -1,14 +1,18 @@
 package magma.app.compile.rule;
 
 public class SymbolFilter implements Filter {
+    private static boolean isValid(char c, int index) {
+        return Character.isLetter(c) || (index != 0 && Character.isDigit(c));
+    }
+
     @Override
     public boolean filter(String input) {
-        for (int i = 0; i < input.length(); i++) {
+        int i = 0;
+        while (i < input.length()) {
             final var c = input.charAt(i);
-            if (Character.isLetter(c) || (i != 0 && Character.isDigit(c))) {
-                continue;
-            }
-            return false;
+            if (!isValid(c, i)) return false;
+
+            i++;
         }
 
         return true;

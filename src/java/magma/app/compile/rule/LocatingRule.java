@@ -23,13 +23,16 @@ public final class LocatingRule implements Rule {
         final var occurrences = locator.locate(input).toList();
 
         var errors = new ArrayList<RuleResult<Node, ParseException>>();
-        for (Integer occurrence : occurrences) {
+        int i = 0;
+        while (i < occurrences.size()) {
+            Integer occurrence = occurrences.get(i);
             var result = getNodeParseExceptionRuleResult(input, occurrence);
             if (result.isValid()) {
                 return result;
             } else {
                 errors.add(result);
             }
+            i++;
         }
 
         if (occurrences.isEmpty()) {

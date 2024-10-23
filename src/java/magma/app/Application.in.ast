@@ -12,6 +12,8 @@
  }, import {
  "namespace": ["java", "nio", "file", "Path"]
  }, import {
+ "namespace": ["java", "util", "Iterator"]
+ }, import {
  "namespace": ["java", "util", "Set"]
  }, class {
  "name": "Application ",
@@ -48,7 +50,9 @@
 
     public void run() throws ApplicationException {
         final var sources = collectSources();
-        for (Path source : sources) {
+        Iterator<Path> iterator = sources.iterator();
+        while (iterator.hasNext()) {
+            Path source = iterator.next();
             runWithSource(source);
         }
     }

@@ -9,6 +9,7 @@ import magma.app.compile.ParseException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public final class NodeListRule implements Rule {
     private final String propertyKey;
@@ -29,7 +30,9 @@ public final class NodeListRule implements Rule {
         }
 
         var children = new ArrayList<Node>();
-        for (var segment : segments) {
+        int i = 0;
+        while (i < segments.size()) {
+            var segment = segments.get(i);
             final var result = childRule.parse(segment);
             final var inner = result.result();
             if (inner.isErr()) {
@@ -37,6 +40,7 @@ public final class NodeListRule implements Rule {
             }
 
             children.add(inner.findValue().orElseThrow());
+            i++;
         }
 
         return new RuleResult<>(new Ok<>(new MapNode().withNodeList(propertyKey, children)));
@@ -49,7 +53,10 @@ public final class NodeListRule implements Rule {
             return new RuleResult<>(new Err<>(new GenerateException("Node list property '" + propertyKey + "' not present", node)));
 
         var buffer = new StringBuilder();
-        for (var value : propertyValues.get()) {
+        List<Node> get = propertyValues.get();
+        int i = 0;
+        while (i < get.size()) {
+            var value = get.get(i);
             final var result = childRule.generate(value);
             final var inner = result.result();
             if (inner.isErr()) {
@@ -58,6 +65,7 @@ public final class NodeListRule implements Rule {
 
             final var str = inner.findValue().orElseThrow();
             buffer.append(str);
+            i++;
         }
 
         return new RuleResult<>(new Ok<>(buffer.toString()));

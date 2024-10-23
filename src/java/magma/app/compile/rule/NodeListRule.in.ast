@@ -17,6 +17,8 @@
  "namespace": ["java", "util", "ArrayList"]
  }, import {
  "namespace": ["java", "util", "Collections"]
+ }, import {
+ "namespace": ["java", "util", "List"]
  }, class {
  "name": "NodeListRule implements Rule ",
  "body": "
@@ -38,7 +40,9 @@
         }
 
         var children = new ArrayList<Node>();
-        for (var segment : segments) {
+        int i = 0;
+        while (i < segments.size()) {
+            var segment = segments.get(i);
             final var result = childRule.parse(segment);
             final var inner = result.result();
             if (inner.isErr()) {
@@ -46,6 +50,7 @@
             }
 
             children.add(inner.findValue().orElseThrow());
+            i++;
         }
 
         return new RuleResult<>(new Ok<>(new MapNode().withNodeList(propertyKey, children)));
@@ -58,7 +63,10 @@
             return new RuleResult<>(new Err<>(new GenerateException("Node list property '" + propertyKey + "' not present", node)));
 
         var buffer = new StringBuilder();
-        for (var value : propertyValues.get()) {
+        List<Node> get = propertyValues.get();
+        int i = 0;
+        while (i < get.size()) {
+            var value = get.get(i);
             final var result = childRule.generate(value);
             final var inner = result.result();
             if (inner.isErr()) {
@@ -67,6 +75,7 @@
 
             final var str = inner.findValue().orElseThrow();
             buffer.append(str);
+            i++;
         }
 
         return new RuleResult<>(new Ok<>(buffer.toString()));
