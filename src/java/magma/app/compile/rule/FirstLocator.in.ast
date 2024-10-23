@@ -38,10 +38,53 @@
     "value": "String"
     }
    }],
-  "children": [symbol {
-   "content": "final var index = input.indexOf(slice);"
-   }, symbol {
-   "content": "return index == -1 ? Optional.empty() : Optional.of(index);"
+  "children": [declaration {
+   "name": "index",
+   "returns": symbol {
+    "value": "var"
+    },
+   "caller": property-access {
+    "child": "indexOf",
+    "parent": symbol {
+     "content": "input"
+     }
+    },
+   "modifiers": [modifier {
+    "content": "final"
+    }],
+   "arguments": [symbol {
+    "content": "slice"
+    }]
+   }, return {
+   "value": invocation {
+    "caller": equals {
+     "left": symbol {
+      "content": "index"
+      },
+     "right": ternary {
+      "ifTrue": invocation {
+       "caller": property-access {
+        "child": "empty",
+        "parent": symbol {
+         "content": "Optional"
+         }
+        }
+       },
+      "condition": number {
+       "value": "-1"
+       },
+      "ifFalse": property-access {
+       "child": "of",
+       "parent": symbol {
+        "content": "Optional"
+        }
+       }
+      }
+     },
+    "arguments": [symbol {
+     "content": "index"
+     }]
+    }
    }]
   }, method {
   "name": "locate",
@@ -65,8 +108,20 @@
     "value": "String"
     }
    }],
-  "children": [symbol {
-   "content": "return locate0(input).stream();"
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "stream",
+     "parent": invocation {
+      "caller": symbol {
+       "content": "locate0"
+       },
+      "arguments": [symbol {
+       "content": "input"
+       }]
+      }
+     }
+    }
    }]
   }]
  }]

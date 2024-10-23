@@ -103,8 +103,22 @@ public class JavaLang {
 
     private static Rule createValueRule() {
         final var value = new LazyRule();
-        value.setChildRule(new OrRule(List.of(createConstructionRule(value), createInvocationRule(value), createSymbolRule(), createNumberRule(), createAdditionRule(value), createTernaryRule(value), createAccessRule(value, "property-access", "."), createAccessRule(value, "method-access", "::"), new TypeRule("lambda", new LocatingRule(new ExtractRule("before-arrow"), new FirstLocator("->"), new ExtractRule("after-arrow"))))));
+        value.setChildRule(new OrRule(List.of(
+                createConstructionRule(value),
+                createInvocationRule(value),
+                createSymbolRule(),
+                createNumberRule(),
+                createOperationRule(value, "addition", "+"),
+                createOperationRule(value, "equals", "=="),
+                createTernaryRule(value),
+                createAccessRule(value, "property-access", "."),
+                createAccessRule(value, "method-access", "::"),
+                createLambdaRule())));
         return value;
+    }
+
+    private static TypeRule createLambdaRule() {
+        return new TypeRule("lambda", new LocatingRule(new ExtractRule("before-arrow"), new FirstLocator("->"), new ExtractRule("after-arrow")));
     }
 
     private static TypeRule createTernaryRule(LazyRule value) {
@@ -119,8 +133,10 @@ public class JavaLang {
         return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new ExtractRule("value")), "", ""));
     }
 
-    private static TypeRule createAdditionRule(LazyRule value) {
-        return new TypeRule("addition", new LocatingRule(new NodeRule("left", value), new FirstLocator("+"), new NodeRule("right", value)));
+    private static TypeRule createOperationRule(Rule value, String type, String operator) {
+        final var left = new NodeRule("left", value);
+        final var right = new NodeRule("right", value);
+        return new TypeRule(type, new LocatingRule(left, new FirstLocator(operator), right));
     }
 
     private static TypeRule createSymbolRule() {
