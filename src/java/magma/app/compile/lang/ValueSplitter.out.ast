@@ -4,7 +4,13 @@
  }, import {
  "namespace": ["java", "util", "ArrayList"]
  }, import {
+ "namespace": ["java", "util", "LinkedList"]
+ }, import {
  "namespace": ["java", "util", "List"]
+ }, import {
+ "namespace": ["java", "util", "stream", "Collectors"]
+ }, import {
+ "namespace": ["java", "util", "stream", "IntStream"]
  }, function {
  "name": "ValueSplitter implements Splitter ",
  "body": "
@@ -17,8 +23,19 @@
         var lines = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
-        for (int i = 0; i < input.length(); i++) {
-            var c = input.charAt(i);
+        final var length = input.length();
+        var queue = IntStream.range(0, length)
+                .mapToObj(input::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        while (!queue.isEmpty()) {
+            var c = queue.pop();
+            if (c == '') {
+                if (!queue.isEmpty() && queue.peek() == '') {
+                    queue.pop();
+                }
+            }
+
             if (c == '' && depth == 0) {
                 advance(buffer, lines);
                 buffer = new StringBuilder();
