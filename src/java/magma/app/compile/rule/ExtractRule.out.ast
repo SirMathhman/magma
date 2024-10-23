@@ -113,9 +113,26 @@
                 .<RuleResult<String, GenerateException>>map(s "
       }
      },
-    "arguments": [lambda {
-     "after-arrow": " new RuleResult<>(new Err<>(new GenerateException("String ' propertyKey + "'t present", node)))",
-     "before-arrow": "() "
+    "arguments": [invocation {
+     "caller": lambda {
+      "after-arrow": " new RuleResult<>",
+      "before-arrow": "() "
+      },
+     "arguments": [construction {
+      "caller": symbol {
+       "content": "Err"
+       },
+      "arguments": [construction {
+       "caller": symbol {
+        "content": "GenerateException"
+        },
+       "arguments": [string {
+        "value": "String ' propertyKey + "'t present"
+        }, symbol {
+        "content": "node"
+        }]
+       }]
+      }]
      }]
     }
    }]

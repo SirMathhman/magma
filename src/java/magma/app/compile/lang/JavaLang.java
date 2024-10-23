@@ -138,6 +138,7 @@ public class JavaLang {
     private static Rule createValueRule() {
         final var value = new LazyRule();
         value.setChildRule(new OrRule(List.of(
+                createStringRule(),
                 createConstructionRule(value),
                 createInvocationRule(value),
                 createSymbolRule(),
@@ -149,6 +150,10 @@ public class JavaLang {
                 createAccessRule(value, "method-access", "::"),
                 createLambdaRule())));
         return value;
+    }
+
+    private static TypeRule createStringRule() {
+        return new TypeRule("string", new StripRule(new PrefixRule("\"", new SuffixRule(new ExtractRule("value"), "\"")), "", ""));
     }
 
     private static TypeRule createLambdaRule() {
