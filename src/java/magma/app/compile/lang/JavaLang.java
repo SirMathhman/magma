@@ -111,7 +111,8 @@ public class JavaLang {
                 createConditionRule("while", "while"),
                 createDeclarationRule(valueRule),
                 createNamedBlockRule(statement, "else", "else"),
-                createNamedBlockRule(statement, "try", "try")
+                createNamedBlockRule(statement, "try", "try"),
+                createConditionRule("catch", "catch")
         )));
         return statement;
     }
