@@ -19,7 +19,7 @@ public final class SuffixRule implements Rule {
         if (!input.endsWith(suffix))
             return new RuleResult<>(new Err<>(new ParseException("Suffix '" + suffix + "' not present", input)));
         final var slice = input.substring(0, input.length() - suffix.length());
-        return childRule.parse(slice);
+        return childRule.parseWithTimeout(slice);
     }
 
     @Override

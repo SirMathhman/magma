@@ -9,7 +9,7 @@ import magma.app.compile.ParseException;
 public record NodeRule(String propertyKey, Rule propertyRule) implements Rule {
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        return propertyRule.parse(input).mapValue(node -> new MapNode().withNode(propertyKey, node));
+        return propertyRule.parseWithTimeout(input).mapValue(node -> new MapNode().withNode(propertyKey, node));
     }
 
     @Override

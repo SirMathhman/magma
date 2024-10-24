@@ -11,7 +11,7 @@ public record PrefixRule(String prefix, Rule childRule) implements Rule {
         if (!input.startsWith(prefix))
             return new RuleResult<>(new Err<>(new ParseException("Prefix '" + prefix + "' not present", input)));
 
-        return childRule.parse(input.substring(prefix.length()));
+        return childRule.parseWithTimeout(input.substring(prefix.length()));
     }
 
     @Override

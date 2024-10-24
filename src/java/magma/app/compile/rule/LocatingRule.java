@@ -48,10 +48,10 @@ public final class LocatingRule implements Rule {
         final var left = input.substring(0, index);
         final var right = input.substring(index + locator.slice().length());
 
-        final var leftResult = leftRule.parse(left);
+        final var leftResult = leftRule.parseWithTimeout(left);
         if (leftResult.isError()) return leftResult;
 
-        final var rightResult = rightRule.parse(right);
+        final var rightResult = rightRule.parseWithTimeout(right);
         if (rightResult.isError()) return rightResult;
 
         return new RuleResult<>(leftResult.result().and(rightResult::result).mapValue(tuple -> tuple.left().merge(tuple.right())));

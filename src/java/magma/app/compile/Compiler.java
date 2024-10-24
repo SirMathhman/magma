@@ -4,6 +4,7 @@ import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.lang.MagmaLang;
+import magma.app.compile.rule.Rule;
 import magma.app.compile.rule.RuleResult;
 
 import java.util.List;
@@ -13,7 +14,8 @@ import static magma.app.compile.lang.JavaLang.*;
 public record Compiler(String input) {
 
     public Result<CompileResult, CompileException> compile() {
-        final var parsed = createRootRule().parse(input);
+        Rule rule = createRootRule();
+        final var parsed = rule.parseWithTimeout(input);
         return write(parsed).flatMapValue(beforePass -> {
             final var afterPass = Passer.pass(beforePass);
             final var generated = MagmaLang.createRootRule().generate(afterPass);
