@@ -18,7 +18,8 @@ public class MagmaLang {
         final var withModifiers = new LocatingRule(createModifiersRule(), new FirstLocator(" " + FUNCTION_PREFIX), new ExtractRule(name));
         final var childRule = new OrRule(List.of(withModifiers, new PrefixRule(FUNCTION_PREFIX, new ExtractRule(name))));
 
-        return new TypeRule(FUNCTION, new LocatingRule(childRule, new FirstLocator("() => {"), new SuffixRule(createChildrenRule(createStatementRule()), "}")));
+        final var children = new OptionalNodeListRule("children", new EmptyRule(), new EmptyRule());
+        return new TypeRule(FUNCTION, new LocatingRule(childRule, new FirstLocator("() => {"), new SuffixRule(children, "}")));
     }
 
     private static Rule createStatementRule() {

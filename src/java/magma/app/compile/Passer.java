@@ -33,7 +33,7 @@ public class Passer {
                 .orElse(node);
     }
 
-    private static Optional<? extends Node> passImport(Node node) {
+    private static Optional<Node> passImport(Node node) {
         if (!node.is(IMPORT)) return Optional.empty();
 
         return Optional.of(node.withString(AFTER_IMPORT, "\n"));
