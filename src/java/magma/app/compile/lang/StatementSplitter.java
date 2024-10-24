@@ -1,48 +1,64 @@
 package magma.app.compile.lang;
 
 import magma.app.compile.rule.Splitter;
+import magma.java.JavaCollectors;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class StatementSplitter implements Splitter {
-    static State splitAtChar(State state, char c, Deque<Character> queue) {
+    static BufferedState splitAtChar(BufferedState state, char c) {
         final var appended = state.append(c);
-        if (c == '\"') {
-            var current = appended;
-            while (!queue.isEmpty()) {
-                final var next = queue.pop();
-                current = current.append(next);
+        return splitDoubleQuotes(appended, c)
+                .or(() -> splitSingleQuotes(appended, c))
+                .orElseGet(() -> splitOther(c, appended));
+    }
 
-                if (next == '\\') {
-                    if (!queue.isEmpty()) {
-                        final var escaped = queue.pop();
-                        current = current.append(escaped);
-                    }
-                } else if (next == '\"') {
-                    return current;
-                }
-            }
-        }
+    private static Optional<BufferedState> splitDoubleQuotes(BufferedState state, char c) {
+        if (c != '\"') return Optional.empty();
 
-        if (c == '\'') {
-            final var next = queue.pop();
-            final State escaped;
-            if (next == '\\') {
-                final var escapedValue = queue.pop();
-                escaped = appended.append('\\').append(escapedValue);
+        var current = state;
+        while (true) {
+            final var optional = state.popAndAppend();
+            if (optional.isEmpty()) break;
+
+            final var next = optional.get();
+            final var nextState = next.left();
+            final var nextChar = next.right();
+            if (nextChar == '\\') {
+                current = nextState.popAndAppendDiscard().orElse(nextState);
+            } else if (nextChar == '\"') {
+                break;
             } else {
-                escaped = appended;
+                current = nextState;
             }
-
-            final var closing = queue.pop();
-            return escaped.append(closing);
         }
 
+        return Optional.of(current);
+    }
+
+    private static Optional<BufferedState> splitSingleQuotes(BufferedState state, char c) {
+        if (c != '\'') return Optional.empty();
+
+        final var optional = state.popAndAppend();
+        if(optional.isEmpty()) return Optional.of(state);
+
+        final var next = optional.get();
+        final var nextState = next.left();
+        final var nextChar = next.right();
+
+        final BufferedState escaped;
+        if (nextChar == '\\') {
+            escaped = nextState.popAndAppendDiscard().orElse(nextState);
+        } else {
+            escaped = nextState;
+        }
+
+        return escaped.popAndAppendDiscard();
+    }
+
+    private static BufferedState splitOther(char c, BufferedState appended) {
         if (c == ';' && appended.isLevel()) return appended.advance();
         if (c == '}' && appended.isShallow()) return appended.exit().advance();
         if (c == '{' || c == '(') return appended.enter();
@@ -52,18 +68,20 @@ public class StatementSplitter implements Splitter {
 
     @Override
     public List<String> split(String input) {
-        var state = new State();
-
         final var queue = IntStream.range(0, input.length())
                 .mapToObj(input::charAt)
                 .collect(Collectors.toCollection(LinkedList::new));
 
-        while (!queue.isEmpty()) {
-            final var c = queue.pop();
-            state = splitAtChar(state, c, queue);
+        var state = new BufferedState(queue);
+        while (true) {
+            final var optional = state.popAndAppend();
+            if (optional.isEmpty()) break;
+
+            final var next = optional.get();
+            state = splitAtChar(next.left(), next.right());
         }
 
-        return state.advance().segments;
+        return state.advance().stream().collect(JavaCollectors.asList());
     }
 
     static class State {

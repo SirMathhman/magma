@@ -2,28 +2,31 @@ package magma.app.compile.lang;
 
 import magma.api.Tuple;
 import magma.app.compile.rule.Splitter;
+import magma.java.JavaCollectors;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class ValueSplitter implements Splitter {
 
-    private static State splitAtChar(State current, Character c) {
+    private static BufferedState splitAtChar(BufferedState current, Character c) {
         return processDoubleQuotes(current, c)
                 .or(() -> processMinusSign(current, c))
                 .or(() -> processComma(current, c))
                 .orElseGet(() -> processNormal(current, c));
     }
 
-    private static State processNormal(State current, Character c) {
+    private static BufferedState processNormal(BufferedState current, Character c) {
         final var appended = current.append(c);
         if (c == '<' || c == '(') return appended.withDepth(current.depth() + 1);
         if (c == '>' || c == ')') return appended.withDepth(current.depth() - 1);
         return appended;
     }
 
-    private static Optional<State> processComma(State current, char c) {
+    private static Optional<BufferedState> processComma(BufferedState current, char c) {
         if (c == ',' && current.isLevel()) {
             return Optional.of(current.advance());
         } else {
@@ -31,7 +34,7 @@ public class ValueSplitter implements Splitter {
         }
     }
 
-    private static Optional<State> processMinusSign(State current, char c) {
+    private static Optional<BufferedState> processMinusSign(BufferedState current, char c) {
         if (c != '-') return Optional.empty();
 
         final var appended = current.append('-');
@@ -41,7 +44,7 @@ public class ValueSplitter implements Splitter {
         return appended.popAndAppend().map(Tuple::left);
     }
 
-    private static Optional<State> processDoubleQuotes(State state, char c) {
+    private static Optional<BufferedState> processDoubleQuotes(BufferedState state, char c) {
         if (c != '\"') return Optional.empty();
 
         var current = state.append(c);
@@ -52,7 +55,7 @@ public class ValueSplitter implements Splitter {
         }
     }
 
-    private static Optional<State> processInDoubleQuotes(State current) {
+    private static Optional<BufferedState> processInDoubleQuotes(BufferedState current) {
         final var optional = current.popAndAppend();
         if (optional.isEmpty()) return Optional.empty();
 
@@ -79,7 +82,7 @@ public class ValueSplitter implements Splitter {
                 .mapToObj(input::charAt)
                 .collect(Collectors.toCollection(LinkedList::new));
 
-        var current = new State(queue);
+        var current = new BufferedState(queue);
         while (true) {
             final var popped = current.pop();
             if (popped.isEmpty()) break;
@@ -88,47 +91,8 @@ public class ValueSplitter implements Splitter {
             current = splitAtChar(current, c);
         }
 
-        return current.advance().lines;
-    }
-
-    private record State(Deque<Character> queue, List<String> lines, StringBuilder buffer, int depth) {
-        public State(Deque<Character> queue) {
-            this(queue, new ArrayList<>(), new StringBuilder(), 0);
-        }
-
-        private boolean isLevel() {
-            return depth() == 0;
-        }
-
-        private State advance() {
-            if (buffer.isEmpty()) return this;
-
-            final var copy = new ArrayList<>(lines);
-            copy.add(buffer.toString());
-            return new State(queue, copy, new StringBuilder(), depth);
-        }
-
-        private Optional<Tuple<State, Character>> pop() {
-            if (queue.isEmpty()) return Optional.empty();
-            return Optional.of(new Tuple<>(this, queue.pop()));
-        }
-
-        private State append(Character c) {
-            buffer().append(c);
-            return this;
-        }
-
-        public State withDepth(int depth) {
-            return new State(queue, lines, buffer, depth);
-        }
-
-        public Optional<Character> peek() {
-            if (queue.isEmpty()) return Optional.empty();
-            return Optional.of(queue.peek());
-        }
-
-        public Optional<Tuple<State, Character>> popAndAppend() {
-            return pop().map(tuple -> new Tuple<>(tuple.left().append(tuple.right()), tuple.right()));
-        }
+        return current.advance()
+                .stream()
+                .collect(JavaCollectors.asList());
     }
 }

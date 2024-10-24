@@ -16,6 +16,7 @@ import java.util.Set;
 public final class Application {
     public static final String MAGMA_EXTENSION = "mgs";
     public static final String EXTENSION_SEPARATOR = ".";
+    public static final char FILE_NAME_SEPARATOR = '.';
     private final SourceSet sourceSet;
 
     public Application(SourceSet sourceSet) {
@@ -47,10 +48,14 @@ public final class Application {
 
     private static Optional<ApplicationException> compileWithInput(Path source, String input) {
         final var fileName = source.getFileName().toString();
-        final var separator = fileName.indexOf('.');
+        final var separator = fileName.indexOf(FILE_NAME_SEPARATOR);
         if (separator == -1) return Optional.empty();
 
         final var fileNameWithoutExtension = fileName.substring(0, separator);
+        return compileWithFileName(source, input, fileNameWithoutExtension);
+    }
+
+    private static Optional<ApplicationException> compileWithFileName(Path source, String input, String fileNameWithoutExtension) {
         return new Compiler(input)
                 .compile()
                 .mapErr(err -> new ApplicationException(source.toAbsolutePath().toString(), err))

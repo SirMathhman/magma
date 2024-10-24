@@ -44,18 +44,18 @@ public class JavaLang {
     private static TypeRule createDefinitionRule() {
         final var content = new NodeRule("returns", createTypeRule());
         final var typeParams = new StripRule(new PrefixRule("<", new SuffixRule(new ExtractRule("type-params"), ">")), "", "");
-        final var withTypeParams = new ContextRule("With type params.", new LocatingRule(typeParams, new ForwardsLocator(" "), content));
-        final var withoutTypeParams = new ContextRule("Without type params.", content);
+        final var withTypeParams = new ContextRule("With type params", new LocatingRule(typeParams, new ForwardsLocator(" "), content));
+        final var withoutTypeParams = new ContextRule("Without type params", content);
         final var maybeTypeParams = new OptionalNodeRule("type-params", withoutTypeParams, withTypeParams);
 
-        final var withModifiers = new ContextRule("With modifiers.", new LocatingRule(createModifiersRule(), new ForwardsLocator(" "), maybeTypeParams));
-        final var withoutModifiers = new ContextRule("Without modifiers.", maybeTypeParams);
+        final var withModifiers = new ContextRule("With modifiers", new LocatingRule(createModifiersRule(), new ForwardsLocator(" "), maybeTypeParams));
+        final var withoutModifiers = new ContextRule("Without modifiers", maybeTypeParams);
         final var maybeModifiers = new StripRule(new OptionalNodeRule("modifiers", withoutModifiers, withModifiers), "", "");
 
         final var annotation = new TypeRule("annotation", new StripRule(new PrefixRule("@", new ExtractRule("value")), "", ""));
         final var annotations = new NodeListRule(new SimpleSplitter("\n"), "annotations", annotation);
-        final var withAnnotations = new ContextRule("With annotations.", new LocatingRule(annotations, new LastLocator("\n"), maybeModifiers));
-        final var withoutAnnotations = new ContextRule("Without annotations.", maybeModifiers);
+        final var withAnnotations = new ContextRule("With annotations", new LocatingRule(annotations, new LastLocator("\n"), maybeModifiers));
+        final var withoutAnnotations = new ContextRule("Without annotations", maybeModifiers);
         final var maybeAnnotations = new OptionalNodeRule("annotations", withoutAnnotations, withAnnotations);
 
         return new TypeRule("definition", new StripRule(new LocatingRule(maybeAnnotations, new LastLocator(" "), new ExtractRule("name")), "", ""));
@@ -79,7 +79,7 @@ public class JavaLang {
     }
 
     private static OrRule createClassMemberRule() {
-        return new OrRule(List.of(createMethodRule(), createDefinitionStatementRule()));
+        return new OrRule(List.of(createMethodRule(), createDeclarationRule(createValueRule()), createDefinitionStatementRule()));
     }
 
     private static TypeRule createDefinitionStatementRule() {
