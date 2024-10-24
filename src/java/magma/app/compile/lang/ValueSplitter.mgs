@@ -3,4 +3,3 @@ import magma.app.compile.rule.Splitter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-public class def ValueSplitter implements Splitter () => {}

@@ -1,24 +1,4 @@
 {
 "children": [function {
- "name": "Tuple",
- "modifiers": [modifier {
-  "modifier-value": "export"
-  }],
- "params": [definition {
-  "name": "left",
-  "returns": symbol {
-   "value": "A"
-   }
-  }, definition {
-  "name": "right",
-  "returns": symbol {
-   "value": "B"
-   }
-  }],
- "type-params": [symbol {
-  "value": "A"
-  }, symbol {
-  "value": "B"
-  }]
  }]
 }
