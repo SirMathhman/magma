@@ -97,8 +97,7 @@ public record MapNode(
         return Optional.ofNullable(stringLists.get(propertyKey));
     }
 
-    @Override
-    public Stream<Tuple<String, String>> streamStrings() {
+    private Stream<Tuple<String, String>> streamStrings0() {
         return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
     }
 
@@ -153,8 +152,7 @@ public record MapNode(
                 .collect(Collectors.joining(","));
     }
 
-    @Override
-    public Stream<Tuple<String, List<String>>> streamStringLists() {
+    private Stream<Tuple<String, List<String>>> streamStringLists0() {
         return stringLists.entrySet()
                 .stream()
                 .map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));
@@ -178,5 +176,15 @@ public record MapNode(
     @Override
     public magma.api.stream.Stream<Tuple<String, List<Node>>> streamNodeLists() {
         return new JavaList<>(streamNodeLists0().toList()).stream();
+    }
+
+    @Override
+    public magma.api.stream.Stream<Tuple<String, String>> streamStrings() {
+        return new JavaList<>(streamStrings0().toList()).stream();
+    }
+
+    @Override
+    public magma.api.stream.Stream<Tuple<String, List<String>>> streamStringLists() {
+        return new JavaList<>(streamStringLists0().toList()).stream();
     }
 }

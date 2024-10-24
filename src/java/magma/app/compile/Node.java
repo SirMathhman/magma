@@ -1,11 +1,11 @@
 package magma.app.compile;
 
 import magma.api.Tuple;
+import magma.api.stream.Stream;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 public interface Node {
     Node retype(String type);
@@ -28,13 +28,13 @@ public interface Node {
 
     Stream<Tuple<String, String>> streamStrings();
 
-    magma.api.stream.Stream<Tuple<String, List<Node>>> streamNodeLists();
+    Stream<Tuple<String, List<Node>>> streamNodeLists();
 
     Node withNode(String propertyKey, Node propertyValue);
 
     Optional<Node> findNode(String propertyKey);
 
-    magma.api.stream.Stream<Tuple<String, Node>> streamNodes();
+    Stream<Tuple<String, Node>> streamNodes();
 
     boolean hasNode(String node);
 
