@@ -83,6 +83,7 @@ public final class Application {
     }
 
     private Optional<ApplicationException> runWithSource(Path source) {
+        System.out.println("Compiling: " + source);
         return Application.readSafe(source)
                 .mapValue(input -> compileWithInput(source, input))
                 .match(value -> value, Optional::of);
