@@ -1,0 +1,20 @@
+{
+"children": [import {
+ "after-import": "
+",
+ "namespace": ["magma.app.compile.Node"]
+ }, import {
+ "after-import": "
+",
+ "namespace": ["java.util.Optional"]
+ }, import {
+ "after-import": "
+",
+ "namespace": ["static magma.app.compile.lang.JavaLang.CLASS_TYPE"]
+ }, import {
+ "after-import": "
+",
+ "namespace": ["static magma.app.compile.lang.MagmaLang.FUNCTION"]
+ }, function {
+ }]
+}

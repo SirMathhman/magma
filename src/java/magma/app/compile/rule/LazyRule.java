@@ -17,7 +17,7 @@ public class LazyRule implements Rule {
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         if (childRule.isEmpty()) return new RuleResult<>(new Err<>(new ParseException("Child rule is not set", input)));
-        return childRule.orElseThrow().parseWithTimeout(input);
+        return childRule.orElseThrow().parse(input);
     }
 
     @Override

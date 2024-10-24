@@ -7,7 +7,7 @@ import magma.app.compile.ParseException;
 public record ContextRule(String message, Rule childRule) implements Rule {
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        return childRule.parseWithTimeout(input).wrapErr(new ParseException(message, input));
+        return childRule.parse(input).wrapErr(new ParseException(message, input));
     }
 
     @Override

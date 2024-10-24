@@ -16,7 +16,7 @@ public final class FilterRule implements Rule {
 
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        return filter.filter(input) ? childRule.parseWithTimeout(input) : new RuleResult<Node, ParseException>(new Err<>(new ParseException("Invalid value", input)));
+        return filter.filter(input) ? childRule.parse(input) : new RuleResult<Node, ParseException>(new Err<>(new ParseException("Invalid value", input)));
     }
 
     @Override

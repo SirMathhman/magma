@@ -15,7 +15,7 @@ public record Compiler(String input) {
 
     public Result<CompileResult, CompileException> compile() {
         Rule rule = createRootRule();
-        final var parsed = rule.parseWithTimeout(input);
+        final var parsed = rule.parse(input);
         return write(parsed).flatMapValue(beforePass -> {
             final var afterPass = Passer.pass(beforePass);
             final var generated = MagmaLang.createRootRule().generate(afterPass);

@@ -21,7 +21,7 @@ public final class OptionalNodeListRule implements Rule {
 
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
-        return maybe.parseWithTimeout(input);
+        return maybe.parse(input);
     }
 
     @Override

@@ -15,7 +15,7 @@ public record OrRule(List<Rule> rules) implements Rule {
         int i = 0;
         while (i < rules.size()) {
             Rule rule = rules.get(i);
-            final var parsed = rule.parseWithTimeout(input);
+            final var parsed = rule.parse(input);
             if (parsed.isValid()) return parsed;
             list.add(parsed);
             i++;

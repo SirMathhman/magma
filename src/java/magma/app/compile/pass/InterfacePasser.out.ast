@@ -1,0 +1,24 @@
+{
+"children": [import {
+ "after-import": "
+",
+ "namespace": ["magma.app.compile.Node"]
+ }, import {
+ "after-import": "
+",
+ "namespace": ["magma.app.compile.lang.CommonLang"]
+ }, import {
+ "after-import": "
+",
+ "namespace": ["magma.app.compile.lang.JavaLang"]
+ }, import {
+ "after-import": "
+",
+ "namespace": ["magma.app.compile.lang.MagmaLang"]
+ }, import {
+ "after-import": "
+",
+ "namespace": ["java.util.Optional"]
+ }, function {
+ }]
+}

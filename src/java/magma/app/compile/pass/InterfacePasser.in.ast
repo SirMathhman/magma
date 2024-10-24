@@ -1,0 +1,16 @@
+{
+"children": [package {
+ "namespace": ["magma.app.compile.pass"]
+ }, import {
+ "namespace": ["magma.app.compile.Node"]
+ }, import {
+ "namespace": ["magma.app.compile.lang.CommonLang"]
+ }, import {
+ "namespace": ["magma.app.compile.lang.JavaLang"]
+ }, import {
+ "namespace": ["magma.app.compile.lang.MagmaLang"]
+ }, import {
+ "namespace": ["java.util.Optional"]
+ }, class {
+ }]
+}

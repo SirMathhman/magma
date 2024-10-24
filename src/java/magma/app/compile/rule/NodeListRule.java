@@ -33,7 +33,7 @@ public final class NodeListRule implements Rule {
         int i = 0;
         while (i < segments.size()) {
             var segment = segments.get(i);
-            final var result = childRule.parseWithTimeout(segment);
+            final var result = childRule.parse(segment);
             final var inner = result.result();
             if (inner.isErr()) {
                 return new RuleResult<>(new Err<>(new ParseException("Invalid child", segment)), Collections.singletonList(result));
