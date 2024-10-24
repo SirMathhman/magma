@@ -24,6 +24,20 @@
  "interface": symbol {
   "value": "Rule"
   },
+ "modifiers": [modifier {
+  "modifier-value": "export"
+  }],
+ "params": [definition {
+  "name": "propertyKey",
+  "returns": symbol {
+   "value": "String"
+   }
+  }, definition {
+  "name": "propertyRule",
+  "returns": symbol {
+   "value": "Rule"
+   }
+  }],
  "children": [method {
   "name": "parse",
   "returns": generic {
@@ -46,7 +60,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "input",
@@ -81,7 +95,7 @@
     "content": "propertyKey"
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, if {
    "content": " (optional.isEmpty())
@@ -98,7 +112,7 @@
     "value": "var"
     },
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, return {
    "value": invocation {
@@ -117,7 +131,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "node",
@@ -125,20 +139,6 @@
     "value": "Node"
     }
    }]
-  }],
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "propertyKey",
-  "returns": symbol {
-   "value": "String"
-   }
-  }, definition {
-  "name": "propertyRule",
-  "returns": symbol {
-   "value": "Rule"
-   }
   }]
  }]
 }

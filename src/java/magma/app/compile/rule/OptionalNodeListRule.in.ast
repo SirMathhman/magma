@@ -10,7 +10,6 @@
  }, import {
  "namespace": ["java.util.List"]
  }, class {
- "before-keyword": "public final ",
  "name": "OptionalNodeListRule implements Rule ",
  "body": "
     private final String propertyKey;
@@ -38,6 +37,11 @@
             return ifEmpty.generate(node);
         }
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }, modifier {
+  "modifier-value": "final"
+  }]
  }]
 }

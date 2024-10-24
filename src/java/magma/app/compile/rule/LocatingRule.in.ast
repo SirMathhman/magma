@@ -12,7 +12,6 @@
  }, import {
  "namespace": ["java.util.ArrayList"]
  }, class {
- "before-keyword": "public final ",
  "name": "LocatingRule implements Rule ",
  "body": "
     private final Rule leftRule;
@@ -75,6 +74,11 @@
 
         return new RuleResult<>(leftResult.result().and(rightResult::result).mapValue(tuple -> tuple.left() + locator.slice() + tuple.right()));
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }, modifier {
+  "modifier-value": "final"
+  }]
  }]
 }

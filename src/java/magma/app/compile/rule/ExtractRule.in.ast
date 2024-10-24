@@ -63,7 +63,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "input",
@@ -95,7 +95,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "node",
@@ -105,7 +105,7 @@
    }]
   }],
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "propertyKey",

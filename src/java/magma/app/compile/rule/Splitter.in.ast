@@ -6,7 +6,7 @@
  }, interface {
  "name": "Splitter",
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "public"
   }],
  "content": [method {
   "name": "split",

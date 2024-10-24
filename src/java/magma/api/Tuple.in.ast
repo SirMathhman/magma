@@ -9,7 +9,7 @@
   "value": "B"
   }],
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "left",

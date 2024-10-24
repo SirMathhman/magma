@@ -3,4 +3,4 @@ import magma.app.compile.GenerateException;
 import magma.app.compile.Node;
 import magma.app.compile.ParseException;
 import java.util.ArrayList;
-class def LocatingRule implements Rule () => {}
+publicfinal class def LocatingRule implements Rule () => {}

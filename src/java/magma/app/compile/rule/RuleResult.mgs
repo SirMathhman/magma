@@ -5,4 +5,4 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import static java.util.Collections.singletonList;
-class def RuleResult() => {}
+export class def RuleResult() => {}

@@ -8,6 +8,20 @@
  "interface": symbol {
   "value": "Filter"
   },
+ "modifiers": [modifier {
+  "modifier-value": "export"
+  }],
+ "params": [definition {
+  "name": "values",
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [symbol {
+    "value": "String"
+    }]
+   }
+  }],
  "children": [method {
   "name": "filter",
   "returns": symbol {
@@ -32,7 +46,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "input",
@@ -40,20 +54,6 @@
     "value": "String"
     }
    }]
-  }],
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "values",
-  "returns": generic {
-   "base": symbol {
-    "value": "List"
-    },
-   "children": [symbol {
-    "value": "String"
-    }]
-   }
   }]
  }]
 }

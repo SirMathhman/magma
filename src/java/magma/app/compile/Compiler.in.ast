@@ -46,7 +46,7 @@
     "content": "input"
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, return {
    "value": lambda {
@@ -59,7 +59,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "write",
@@ -104,7 +104,7 @@
     }]
    }],
   "modifiers": [modifier {
-   "content": "private"
+   "modifier-value": "private"
    }],
   "params": [definition {
    "name": "result",
@@ -142,7 +142,7 @@
     "value": "var"
     },
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, if {
    "content": " (error.isPresent()) {
@@ -189,7 +189,7 @@
         }"
    }],
   "modifiers": [modifier {
-   "content": "private"
+   "modifier-value": "private"
    }],
   "params": [definition {
    "name": "result",
@@ -216,7 +216,7 @@
    }]
   }],
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "input",

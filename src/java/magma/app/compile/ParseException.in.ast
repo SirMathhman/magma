@@ -2,12 +2,14 @@
 "children": [package {
  "namespace": ["magma.app.compile"]
  }, class {
- "before-keyword": "public ",
  "name": "ParseException extends CompileException ",
  "body": "
     public ParseException(String message, String context) {
         super(message, context);
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

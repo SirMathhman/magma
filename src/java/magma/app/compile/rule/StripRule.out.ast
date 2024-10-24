@@ -16,6 +16,25 @@
  "interface": symbol {
   "value": "Rule"
   },
+ "modifiers": [modifier {
+  "modifier-value": "export"
+  }],
+ "params": [definition {
+  "name": "childRule",
+  "returns": symbol {
+   "value": "Rule"
+   }
+  }, definition {
+  "name": "leftPaddingKey",
+  "returns": symbol {
+   "value": "String"
+   }
+  }, definition {
+  "name": "rightPaddingKey",
+  "returns": symbol {
+   "value": "String"
+   }
+  }],
  "children": [method {
   "name": "parse",
   "returns": generic {
@@ -50,7 +69,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "input",
@@ -92,7 +111,7 @@
    "arguments": [string {
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, declaration {
    "name": "rightPadding",
@@ -116,7 +135,7 @@
    "arguments": [string {
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, return {
    "value": lambda {
@@ -128,7 +147,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "node",
@@ -136,25 +155,6 @@
     "value": "Node"
     }
    }]
-  }],
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "childRule",
-  "returns": symbol {
-   "value": "Rule"
-   }
-  }, definition {
-  "name": "leftPaddingKey",
-  "returns": symbol {
-   "value": "String"
-   }
-  }, definition {
-  "name": "rightPaddingKey",
-  "returns": symbol {
-   "value": "String"
-   }
   }]
  }]
 }

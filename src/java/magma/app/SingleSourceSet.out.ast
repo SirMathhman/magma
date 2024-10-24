@@ -32,6 +32,15 @@
  "interface": symbol {
   "value": "SourceSet"
   },
+ "modifiers": [modifier {
+  "modifier-value": "export"
+  }],
+ "params": [definition {
+  "name": "source",
+  "returns": symbol {
+   "value": "Path"
+   }
+  }],
  "children": [method {
   "name": "collect",
   "returns": generic {
@@ -76,17 +85,8 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
-  }],
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "source",
-  "returns": symbol {
-   "value": "Path"
-   }
   }]
  }]
 }

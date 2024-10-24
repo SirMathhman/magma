@@ -67,7 +67,7 @@ public class JavaLang {
 
     private static TypeRule createClassRule() {
         final var afterKeyword = new LocatingRule(new ExtractRule("name"), new FirstLocator("{"), new ExtractRule("body"));
-        return new TypeRule(CLASS, new LocatingRule(new ExtractRule("before-keyword"), new FirstLocator("class "), afterKeyword));
+        return new TypeRule(CLASS, new LocatingRule(createModifiersRule(), new FirstLocator("class "), afterKeyword));
     }
 
     private static TypeRule createInterfaceRule() {
@@ -79,11 +79,6 @@ public class JavaLang {
 
     private static OrRule createClassMemberRule() {
         return new OrRule(List.of(createMethodRule()));
-    }
-
-    private static Rule createModifiersRule() {
-        final var modifier = new TypeRule("modifier", new FilterRule(new ListFilter(MODIFIERS_LIST), new ExtractRule("content")));
-        return new NodeListRule(new SimpleSplitter(" "), MODIFIERS, modifier);
     }
 
     private static TypeRule createMethodRule() {

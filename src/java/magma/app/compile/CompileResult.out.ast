@@ -2,7 +2,7 @@
 "children": [function {
  "name": "CompileResult",
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "export"
   }],
  "params": [definition {
   "name": "beforePass",

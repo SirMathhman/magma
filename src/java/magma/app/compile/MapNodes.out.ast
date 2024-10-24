@@ -12,7 +12,6 @@
 ",
  "namespace": ["java.util.stream.Stream"]
  }, function {
- "before-keyword": "public ",
  "name": "MapNodes ",
  "body": "
     static MapNode merge0(MapNode self, Node other) {
@@ -30,6 +29,9 @@
 
         return new MapNode(self.findType(), stringsCopy, stringListCopy, nodesCopy, nodeListCopy);
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

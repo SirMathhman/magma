@@ -71,11 +71,11 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }],
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "root",

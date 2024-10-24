@@ -28,6 +28,20 @@
  "interface": symbol {
   "value": "Rule"
   },
+ "modifiers": [modifier {
+  "modifier-value": "export"
+  }],
+ "params": [definition {
+  "name": "rules",
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [symbol {
+    "value": "Rule"
+    }]
+   }
+  }],
  "children": [method {
   "name": "parse",
   "returns": generic {
@@ -100,7 +114,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "input",
@@ -180,7 +194,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "node",
@@ -188,20 +202,6 @@
     "value": "Node"
     }
    }]
-  }],
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "rules",
-  "returns": generic {
-   "base": symbol {
-    "value": "List"
-    },
-   "children": [symbol {
-    "value": "Rule"
-    }]
-   }
   }]
  }]
 }

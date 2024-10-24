@@ -6,7 +6,7 @@
  }, trait {
  "name": "Splitter",
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "export"
   }],
  "content": [method {
   "name": "split",

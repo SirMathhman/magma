@@ -106,9 +106,9 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "private"
+   "modifier-value": "private"
    }, modifier {
-   "content": "static"
+   "modifier-value": "static"
    }],
   "params": [definition {
    "name": "depth",
@@ -160,9 +160,9 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "private"
+   "modifier-value": "private"
    }, modifier {
-   "content": "static"
+   "modifier-value": "static"
    }],
   "params": [definition {
    "name": "depth",
@@ -199,7 +199,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "retype",
@@ -236,7 +236,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "type",
@@ -264,7 +264,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "type",
@@ -289,7 +289,7 @@
     "content": "strings"
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, invocation {
    "caller": property-access {
@@ -325,7 +325,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "propertyKey",
@@ -373,7 +373,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "propertyKey",
@@ -401,7 +401,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "propertyKey",
@@ -463,7 +463,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "withNode",
@@ -482,7 +482,7 @@
     "content": "nodes"
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, invocation {
    "caller": property-access {
@@ -518,7 +518,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "propertyKey",
@@ -566,7 +566,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "propertyKey",
@@ -601,7 +601,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "hasNode",
@@ -625,7 +625,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "node",
@@ -650,7 +650,7 @@
     "content": "stringLists"
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, invocation {
    "caller": property-access {
@@ -686,7 +686,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "propertyKey",
@@ -744,7 +744,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "propertyKey",
@@ -779,7 +779,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "findNodeList",
@@ -821,7 +821,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "propertyKey",
@@ -846,7 +846,7 @@
     "content": "nodeLists"
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, invocation {
    "caller": property-access {
@@ -882,7 +882,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "propertyKey",
@@ -919,7 +919,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "format",
@@ -944,7 +944,7 @@
     "value": "var"
     },
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, declaration {
    "name": "joinedStringLists",
@@ -965,7 +965,7 @@
      }
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, declaration {
    "before-arrow": " formatMap(depth, nodes, value ",
@@ -975,7 +975,7 @@
     "value": "var"
     },
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, declaration {
    "before-arrow": " formatMap(depth, nodeLists, values ",
@@ -985,7 +985,7 @@
     "value": "var"
     },
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, declaration {
    "name": "list",
@@ -1001,7 +1001,7 @@
      }]
     },
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, if {
    "content": " (!joinedStrings.isEmpty()) list.add(joinedStrings);"
@@ -1028,7 +1028,7 @@
     "content": "list"
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, return {
    "value": addition {
@@ -1044,7 +1044,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "depth",
@@ -1086,7 +1086,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "private"
+   "modifier-value": "private"
    }],
   "params": [definition {
    "name": "list",
@@ -1131,7 +1131,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "private"
+   "modifier-value": "private"
    }],
   "params": [definition {
    "name": "depth",
@@ -1197,7 +1197,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "mapStringList",
@@ -1219,7 +1219,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "propertyKey",
@@ -1271,7 +1271,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "propertyKey",
@@ -1303,7 +1303,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "other",
@@ -1313,7 +1313,7 @@
    }]
   }],
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "type",

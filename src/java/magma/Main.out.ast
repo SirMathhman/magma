@@ -16,7 +16,6 @@
 ",
  "namespace": ["java.nio.file.Paths"]
  }, function {
- "before-keyword": "public ",
  "name": "Main ",
  "body": "
     public static void main(String[] args) {
@@ -29,6 +28,9 @@
             e.printStackTrace();
         }
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

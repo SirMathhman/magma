@@ -20,6 +20,15 @@
  "interface": symbol {
   "value": "Locator"
   },
+ "modifiers": [modifier {
+  "modifier-value": "export"
+  }],
+ "params": [definition {
+  "name": "delimiter",
+  "returns": symbol {
+   "value": "String"
+   }
+  }],
  "children": [method {
   "name": "slice",
   "returns": symbol {
@@ -34,7 +43,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "locate",
@@ -92,7 +101,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "input",
@@ -100,15 +109,6 @@
     "value": "String"
     }
    }]
-  }],
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "delimiter",
-  "returns": symbol {
-   "value": "String"
-   }
   }]
  }]
 }

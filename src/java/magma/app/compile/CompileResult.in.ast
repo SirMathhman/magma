@@ -4,7 +4,7 @@
  }, record {
  "name": "CompileResult",
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "beforePass",

@@ -78,7 +78,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "input",
@@ -139,7 +139,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "private"
+   "modifier-value": "private"
    }],
   "params": [definition {
    "name": "input",
@@ -174,7 +174,7 @@
     "content": "propertyKey"
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, if {
    "content": " (list.isEmpty())
@@ -201,7 +201,7 @@
      }
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, return {
    "value": construction {
@@ -222,7 +222,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "node",
@@ -232,7 +232,7 @@
    }]
   }],
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "propertyKey",

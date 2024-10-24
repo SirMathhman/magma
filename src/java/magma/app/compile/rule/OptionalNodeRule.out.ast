@@ -16,7 +16,6 @@
 ",
  "namespace": ["java.util.List"]
  }, function {
- "before-keyword": "public final ",
  "name": "OptionalNodeRule implements Rule ",
  "body": "
     private final String propertyKey;
@@ -44,6 +43,11 @@
             return ifEmpty.generate(node);
         }
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }, modifier {
+  "modifier-value": "final"
+  }]
  }]
 }

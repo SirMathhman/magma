@@ -28,7 +28,6 @@
 ",
  "namespace": ["java.util.stream.IntStream"]
  }, function {
- "before-keyword": "public ",
  "name": "StatementSplitter implements Splitter ",
  "body": "
     static State splitAtChar(State state, char c, Deque<Character> queue) {
@@ -130,6 +129,9 @@
             return depth == 1;
         }
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

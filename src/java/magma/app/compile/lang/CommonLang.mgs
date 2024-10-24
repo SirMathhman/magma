@@ -1,2 +1,2 @@
 import magma.app.compile.rule.*;
-class def CommonLang () => {}
+public class def CommonLang () => {}

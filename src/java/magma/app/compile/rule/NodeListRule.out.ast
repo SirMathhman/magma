@@ -36,7 +36,6 @@
 ",
  "namespace": ["java.util.List"]
  }, function {
- "before-keyword": "public final ",
  "name": "NodeListRule implements Rule ",
  "body": "
     private final String propertyKey;
@@ -97,6 +96,11 @@
 
         return new RuleResult<>(new Ok<>(buffer.toString()));
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }, modifier {
+  "modifier-value": "final"
+  }]
  }]
 }

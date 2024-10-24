@@ -12,7 +12,6 @@
  }, import {
  "namespace": ["java.util.Optional"]
  }, class {
- "before-keyword": "public ",
  "name": "LazyRule implements Rule ",
  "body": "
     private Optional<Rule> childRule = Optional.empty();
@@ -33,6 +32,9 @@
             return new RuleResult<>(new Err<>(new GenerateException("Child rule is not set", node)));
         return childRule.orElseThrow().generate(node);
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

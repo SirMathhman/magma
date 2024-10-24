@@ -8,7 +8,6 @@
 ",
  "namespace": ["java.util.stream.IntStream"]
  }, function {
- "before-keyword": "public ",
  "name": "NumberFilter implements Filter ",
  "body": "
     private static boolean allDigits(String input) {
@@ -22,6 +21,9 @@
                 ? allDigits(input.substring(1))
                 : allDigits(input);
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

@@ -71,7 +71,7 @@
    "value": "Deprecated"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "isValid",
@@ -89,7 +89,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "mapValue",
@@ -124,7 +124,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "mapper",
@@ -182,7 +182,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "error",
@@ -206,7 +206,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "depth",
@@ -259,7 +259,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "sortedChildren",
@@ -313,7 +313,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }],
  "type-params": [symbol {
@@ -322,7 +322,7 @@
   "value": "E"
   }],
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "result",

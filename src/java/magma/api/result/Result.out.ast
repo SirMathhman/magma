@@ -18,7 +18,7 @@
  }, trait {
  "name": "Result<T, E>",
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "export"
   }],
  "content": [method {
   "name": "findValue",

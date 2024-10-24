@@ -1,1 +1,1 @@
-class def ApplicationException extends Exception () => {}
+public class def ApplicationException extends Exception () => {}

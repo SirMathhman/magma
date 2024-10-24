@@ -2,12 +2,14 @@
 "children": [package {
  "namespace": ["magma.app.compile"]
  }, class {
- "before-keyword": "public ",
  "name": "GenerateException extends CompileException ",
  "body": "
     public GenerateException(String message, Node context) {
         super(message, "\n" + context.toString());
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

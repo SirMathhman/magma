@@ -2,4 +2,4 @@ import magma.app.compile.rule.Locator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-class def BackwardsLocator() => {}
+export class def BackwardsLocator() => {}

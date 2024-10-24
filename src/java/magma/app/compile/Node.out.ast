@@ -22,7 +22,7 @@
  }, trait {
  "name": "Node",
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "export"
   }],
  "content": [method {
   "name": "retype",

@@ -16,7 +16,6 @@
 ",
  "namespace": ["magma.app.compile.ParseException"]
  }, function {
- "before-keyword": "public final ",
  "name": "SuffixRule implements Rule ",
  "body": "
     private final String suffix;
@@ -39,6 +38,11 @@
     public RuleResult<String, GenerateException> generate(Node node) {
         return childRule.generate(node).mapValue(value -> value + suffix);
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }, modifier {
+  "modifier-value": "final"
+  }]
  }]
 }

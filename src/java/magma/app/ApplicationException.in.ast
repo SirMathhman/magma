@@ -2,7 +2,6 @@
 "children": [package {
  "namespace": ["magma.app"]
  }, class {
- "before-keyword": "public ",
  "name": "ApplicationException extends Exception ",
  "body": "
     public ApplicationException(Exception cause) {
@@ -15,6 +14,9 @@
     public ApplicationException(String message) {
         super(message);
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

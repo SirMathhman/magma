@@ -29,6 +29,44 @@
  "namespace": ["static java.util.Collections.singletonList"]
  }, function {
  "name": "RuleResult",
+ "type-params": [symbol {
+  "value": "T"
+  }, symbol {
+  "value": "E"
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "export"
+  }],
+ "params": [definition {
+  "name": "result",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [symbol {
+    "value": "T"
+    }, symbol {
+    "value": "E"
+    }]
+   }
+  }, definition {
+  "name": "children",
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "RuleResult"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "E"
+     }]
+    }]
+   }
+  }],
  "children": [method {
   "name": "RuleResult",
   "returns": symbol {
@@ -83,7 +121,7 @@
    "value": "Deprecated"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "isValid",
@@ -101,7 +139,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "mapValue",
@@ -136,7 +174,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "mapper",
@@ -194,7 +232,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "error",
@@ -218,7 +256,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "depth",
@@ -271,7 +309,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
   }, method {
   "name": "sortedChildren",
@@ -325,46 +363,8 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }]
-  }],
- "type-params": [symbol {
-  "value": "T"
-  }, symbol {
-  "value": "E"
-  }],
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "result",
-  "returns": generic {
-   "base": symbol {
-    "value": "Result"
-    },
-   "children": [symbol {
-    "value": "T"
-    }, symbol {
-    "value": "E"
-    }]
-   }
-  }, definition {
-  "name": "children",
-  "returns": generic {
-   "base": symbol {
-    "value": "List"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "RuleResult"
-     },
-    "children": [symbol {
-     "value": "T"
-     }, symbol {
-     "value": "E"
-     }]
-    }]
-   }
   }]
  }]
 }

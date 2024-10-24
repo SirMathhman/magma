@@ -12,6 +12,15 @@
  "interface": symbol {
   "value": "Locator"
   },
+ "modifiers": [modifier {
+  "modifier-value": "export"
+  }],
+ "params": [definition {
+  "name": "slice",
+  "returns": symbol {
+   "value": "String"
+   }
+  }],
  "children": [method {
   "name": "locate0",
   "returns": generic {
@@ -37,7 +46,7 @@
     "content": "slice"
     }],
    "modifiers": [modifier {
-    "content": "final"
+    "modifier-value": "final"
     }]
    }, return {
    "value": invocation {
@@ -71,7 +80,7 @@
     }
    }],
   "modifiers": [modifier {
-   "content": "private"
+   "modifier-value": "private"
    }],
   "params": [definition {
    "name": "input",
@@ -108,7 +117,7 @@
    "value": "Override"
    }],
   "modifiers": [modifier {
-   "content": "public"
+   "modifier-value": "public"
    }],
   "params": [definition {
    "name": "input",
@@ -116,15 +125,6 @@
     "value": "String"
     }
    }]
-  }],
- "modifiers": [modifier {
-  "content": "public"
-  }],
- "params": [definition {
-  "name": "slice",
-  "returns": symbol {
-   "value": "String"
-   }
   }]
  }]
 }

@@ -2,7 +2,7 @@
 "children": [trait {
  "name": "Filter",
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "export"
   }],
  "content": [method {
   "name": "filter",

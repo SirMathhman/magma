@@ -1,6 +1,5 @@
 {
 "children": [function {
- "before-keyword": "public ",
  "name": "SymbolFilter implements Filter ",
  "body": "
     private static boolean isValid(char c, int index) {
@@ -19,6 +18,9 @@
 
         return true;
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

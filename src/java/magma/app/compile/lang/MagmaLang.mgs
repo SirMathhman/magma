@@ -1,3 +1,4 @@
 import magma.app.compile.rule.*;
 import java.util.List;
-class def MagmaLang () => {}
+import static magma.app.compile.lang.CommonLang.createModifiersRule;
+public class def MagmaLang () => {}

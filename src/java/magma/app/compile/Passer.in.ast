@@ -12,13 +12,16 @@
  }, import {
  "namespace": ["java.util.Optional"]
  }, import {
+ "namespace": ["java.util.Set"]
+ }, import {
+ "namespace": ["java.util.stream.Collectors"]
+ }, import {
  "namespace": ["static magma.app.compile.lang.CommonLang.*"]
  }, import {
  "namespace": ["static magma.app.compile.lang.JavaLang.*"]
  }, import {
  "namespace": ["static magma.app.compile.lang.MagmaLang.FUNCTION"]
  }, class {
- "before-keyword": "public ",
  "name": "Passer ",
  "body": "
     static Node pass(Node node) {
@@ -55,7 +58,10 @@
     }
 
     private static Optional<Node> passRecord(Node node) {
-        return node.is(RECORD) ? Optional.of(node.retype(FUNCTION)) : Optional.empty();
+        if (!node.is(RECORD)) return Optional.empty();
+
+        final var retyped = node.retype(FUNCTION);
+        return Optional.of(passRootMemberModifiers(retyped).orElse(retyped));
     }
 
     private static Optional<Node> passInterface(Node node) {
@@ -63,11 +69,7 @@
 
         final var retype = node.retype(MagmaLang.TRAIT);
 
-        final var withModifiers = retype.mapStringList(MODIFIERS, modifiers -> {
-            var newList = new ArrayList<String>();
-            if (modifiers.contains("public")) newList.add("export");
-            return newList;
-        }).orElse(retype);
+        final var withModifiers = passRootMemberModifiers(retype).orElse(retype);
 
         final var withChildren = withModifiers.mapNodeList(CHILDREN, children -> children.stream()
                 .map(Passer::passClassMember)
@@ -76,10 +78,29 @@
         return Optional.of(withChildren);
     }
 
+    private static Optional<Node> passRootMemberModifiers(Node retype) {
+        return retype.mapNodeList(MODIFIERS, modifiers -> {
+            final var inputModifiers = modifiers.stream()
+                    .map(modifier -> modifier.findString(MODIFIER_VALUE))
+                    .flatMap(Optional::stream)
+                    .collect(Collectors.toSet());
+
+            var newList = new ArrayList<String>();
+            if (inputModifiers.contains("public")) newList.add("export");
+
+            return newList.stream()
+                    .map(modifier -> new MapNode().retype(MODIFIER_TYPE).withString(MODIFIER_VALUE, modifier))
+                    .toList();
+        });
+    }
+
     private static Node passClassMember(Node child) {
         if (child.is(METHOD)) return child.retype(FUNCTION);
         return child;
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

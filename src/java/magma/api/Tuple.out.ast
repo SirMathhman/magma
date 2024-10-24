@@ -1,13 +1,8 @@
 {
 "children": [function {
  "name": "Tuple",
- "type-params": [symbol {
-  "value": "A"
-  }, symbol {
-  "value": "B"
-  }],
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "export"
   }],
  "params": [definition {
   "name": "left",
@@ -19,6 +14,11 @@
   "returns": symbol {
    "value": "B"
    }
+  }],
+ "type-params": [symbol {
+  "value": "A"
+  }, symbol {
+  "value": "B"
   }]
  }]
 }

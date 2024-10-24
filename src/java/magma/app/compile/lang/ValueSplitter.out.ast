@@ -24,7 +24,6 @@
 ",
  "namespace": ["java.util.stream.IntStream"]
  }, function {
- "before-keyword": "public ",
  "name": "ValueSplitter implements Splitter ",
  "body": "
     private static void advance(StringBuilder buffer, ArrayList<String> lines) {
@@ -76,6 +75,9 @@
         advance(buffer, lines);
         return lines;
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

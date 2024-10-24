@@ -14,7 +14,6 @@
  }, import {
  "namespace": ["magma.app.compile.ParseException"]
  }, class {
- "before-keyword": "public ",
  "name": "EmptyRule implements Rule ",
  "body": "
     @Override
@@ -28,6 +27,9 @@
     public RuleResult<String, GenerateException> generate(Node node) {
         return new RuleResult<>(new Ok<>(""));
     }
-}"
+}",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

@@ -2,4 +2,4 @@ import magma.app.compile.rule.*;
 import java.util.List;
 import java.util.stream.Stream;
 import static magma.app.compile.lang.CommonLang.*;
-class def JavaLang () => {}
+public class def JavaLang () => {}

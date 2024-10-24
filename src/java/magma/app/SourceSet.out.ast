@@ -18,7 +18,7 @@
  }, trait {
  "name": "SourceSet",
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "export"
   }],
  "content": [method {
   "name": "collect",

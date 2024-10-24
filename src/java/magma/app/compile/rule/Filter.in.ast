@@ -4,7 +4,7 @@
  }, interface {
  "name": "Filter",
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "public"
   }],
  "content": [method {
   "name": "filter",

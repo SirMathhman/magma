@@ -4,4 +4,4 @@ import magma.app.compile.GenerateException;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.ParseException;
-class def EmptyRule implements Rule () => {}
+public class def EmptyRule implements Rule () => {}

@@ -14,7 +14,7 @@
  }, interface {
  "name": "Node",
  "modifiers": [modifier {
-  "content": "public"
+  "modifier-value": "public"
   }],
  "content": [method {
   "name": "retype",
