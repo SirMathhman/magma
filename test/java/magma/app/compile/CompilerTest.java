@@ -1,9 +1,9 @@
 package magma.app.compile;
 
+import magma.api.result.Result;
 import magma.app.compile.lang.CommonLang;
 import magma.app.compile.lang.JavaLang;
 import magma.app.compile.lang.MagmaLang;
-import magma.api.result.Results;
 import magma.app.compile.rule.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,6 +14,17 @@ import static magma.app.compile.lang.MagmaLang.FUNCTION;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CompilerTest {
+    @Deprecated
+    public static <T, E extends Exception> T unwrap(Result<T, E> result) throws E {
+        final var value = result.findValue();
+        if (value.isPresent()) return value.get();
+
+        final var error = result.findError();
+        if (error.isPresent()) throw error.get();
+
+        throw new RuntimeException();
+    }
+
     @Test
     void importStatic() {
 
@@ -28,9 +39,9 @@ class CompilerTest {
                     .withString(CommonLang.NAME, name);
             final var targetNode = sourceNode.retype(FUNCTION);
 
-            Compiler compiler = new Compiler(Results.unwrap(((Rule) JavaLang.createRecordRule()).generate(sourceNode).unwrap()));
-            final var actual = Results.unwrap(compiler.compile()).output();
-            assertEquals(Results.unwrap(((Rule) MagmaLang.createFunctionRule()).generate(targetNode).unwrap()), actual);
+            Compiler compiler = new Compiler(unwrap(((Rule) JavaLang.createRecordRule()).generate(sourceNode).unwrap()));
+            final var actual = unwrap(compiler.compile()).output();
+            assertEquals(unwrap(((Rule) MagmaLang.createFunctionRule()).generate(targetNode).unwrap()), actual);
         } catch (CompileException e) {
             fail(e);
         }
@@ -40,7 +51,7 @@ class CompilerTest {
     void invalid() {
         assertThrows(CompileException.class, () -> {
             Compiler compiler = new Compiler("test");
-            Results.unwrap(compiler.compile()).output();
+            unwrap(compiler.compile()).output();
         });
     }
 }

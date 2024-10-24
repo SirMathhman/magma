@@ -2,6 +2,7 @@ package magma.app;
 
 import magma.app.compile.lang.CommonLang;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -22,11 +23,9 @@ public class ApplicationTest {
     }
 
     private static void runMaybeFail() {
-        try {
-            new Application(new SingleSourceSet(SOURCE)).run();
-        } catch (ApplicationException e) {
-            fail(e);
-        }
+        new Application(new SingleSourceSet(SOURCE))
+                .run()
+                .ifPresent(Assertions::fail);
     }
 
     private static String renderNamespaceStatement(String prefix, String namespace) {

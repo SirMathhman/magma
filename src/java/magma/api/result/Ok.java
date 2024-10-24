@@ -47,4 +47,14 @@ public class Ok<T, E> implements Result<T, E> {
     public <R> Result<R, E> flatMapValue(Function<T, Result<R, E>> mapper) {
         return mapper.apply(value);
     }
+
+    @Override
+    public <R> Result<T, R> mapErr(Function<E, R> mapper) {
+        return new Ok<>(value);
+    }
+
+    @Override
+    public <R> R match(Function<T, R> onValid, Function<E, R> onError) {
+        return onValid.apply(value);
+    }
 }

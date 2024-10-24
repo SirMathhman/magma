@@ -147,6 +147,63 @@
      }]
     }
    }]
+  }, method {
+  "name": "mapErr",
+  "type-params": "R",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [symbol {
+    "value": "T"
+    }, symbol {
+    "value": "R"
+    }]
+   },
+  "params": [definition {
+   "name": "mapper",
+   "returns": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "E"
+     }, symbol {
+     "value": "R"
+     }]
+    }
+   }]
+  }, method {
+  "name": "match",
+  "type-params": "R",
+  "returns": symbol {
+   "value": "R"
+   },
+  "params": [definition {
+   "name": "onValid",
+   "returns": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "T"
+     }, symbol {
+     "value": "R"
+     }]
+    }
+   }, definition {
+   "name": "onError",
+   "returns": generic {
+    "base": symbol {
+     "value": "Function"
+     },
+    "children": [symbol {
+     "value": "E"
+     }, symbol {
+     "value": "R"
+     }]
+    }
+   }]
   }]
  }]
 }

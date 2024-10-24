@@ -1,12 +1,16 @@
 package magma.app;
 
-import magma.api.result.Results;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.app.compile.CompileResult;
 import magma.app.compile.Compiler;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 
 public final class Application {
@@ -18,58 +22,69 @@ public final class Application {
         this.sourceSet = sourceSet;
     }
 
-    private static void writeSafe(Path target, String output) throws ApplicationException {
+    private static Optional<ApplicationException> writeSafe(Path target, String output) {
         try {
             Files.writeString(target, output);
+            return Optional.empty();
         } catch (IOException e) {
-            throw new ApplicationException(e);
+            return Optional.of(new ApplicationException(e));
         }
     }
 
-    private static String readSafe(Path source) throws ApplicationException {
+    private static Result<String, ApplicationException> readSafe(Path source) {
         try {
-            return Files.readString(source);
+            return new Ok<>(Files.readString(source));
         } catch (IOException e) {
-            throw new ApplicationException(e);
+            return new Err<>(new ApplicationException(e));
         }
     }
 
-    private static void writeDebug(Path source, String output, String name, String extension) throws ApplicationException {
+    private static Optional<ApplicationException> writeDebug(String output, Path source, String name, String extension) {
         final var targetName = name + EXTENSION_SEPARATOR + extension;
         final var target = source.resolveSibling(targetName);
-        writeSafe(target, output);
+        return writeSafe(target, output);
     }
 
-    public void run() throws ApplicationException {
-        final var sources = collectSources();
-        Iterator<Path> iterator = sources.iterator();
-        while (iterator.hasNext()) {
-            Path source = iterator.next();
-            runWithSource(source);
-        }
-    }
-
-    private Set<Path> collectSources() throws ApplicationException {
-        try {
-            return Results.unwrap(sourceSet.collect());
-        } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
-    }
-
-    private void runWithSource(Path source) throws ApplicationException {
-        final var input = readSafe(source);
-
+    private static Optional<ApplicationException> compileWithInput(Path source, String input) {
         final var fileName = source.getFileName().toString();
         final var separator = fileName.indexOf('.');
-        if (separator == -1) return;
+        if (separator == -1) return Optional.empty();
+
         final var fileNameWithoutExtension = fileName.substring(0, separator);
+        return new Compiler(input)
+                .compile()
+                .mapValue(result -> writeResult(result, source, fileNameWithoutExtension))
+                .match(value -> value, Optional::of);
+    }
 
-        var compiler = new Compiler(input);
-        final var result = Results.unwrap(compiler.compile());
+    private static Optional<ApplicationException> writeResult(CompileResult result, Path source, String name) {
+        return writeDebug(result.output(), source, name, MAGMA_EXTENSION)
+                .or(() -> writeDebug(result.beforePass().toString(), source, name, "in.ast"))
+                .or(() -> writeDebug(result.afterPass().toString(), source, name, "out.ast"));
+    }
 
-        writeDebug(source, result.output(), fileNameWithoutExtension, MAGMA_EXTENSION);
-        writeDebug(source, result.beforePass().toString(), fileNameWithoutExtension, "in.ast");
-        writeDebug(source, result.afterPass().toString(), fileNameWithoutExtension, "out.ast");
+    public Optional<ApplicationException> run() {
+        return collectSources().match(sources -> {
+            Iterator<Path> iterator = sources.iterator();
+            while (iterator.hasNext()) {
+                Path source = iterator.next();
+                final var error = runWithSource(source);
+                if (error.isPresent()) {
+                    return error;
+                }
+            }
+
+            return Optional.empty();
+        }, Optional::of);
+    }
+
+    private Result<Set<Path>, ApplicationException> collectSources() {
+        return sourceSet.collect().mapErr(ApplicationException::new);
+    }
+
+    private Optional<ApplicationException> runWithSource(Path source) {
+        return Application.readSafe(source)
+                .mapValue(input -> compileWithInput(source, input))
+                .match(value -> value, Optional::of);
     }
 }

@@ -20,4 +20,8 @@ public interface Result<T, E> {
     boolean isOk();
 
     <R> Result<R, E> flatMapValue(Function<T, Result<R, E>> mapper);
+
+    <R> Result<T, R> mapErr(Function<E, R> mapper);
+
+    <R> R match(Function<T, R> onValid, Function<E, R> onError);
 }
