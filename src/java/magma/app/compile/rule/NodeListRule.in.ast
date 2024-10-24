@@ -21,27 +21,128 @@
  "namespace": ["java.util.List"]
  }, class {
  "name": "NodeListRule implements Rule ",
- "body": "
-    private final String propertyKey;
-    private final Rule childRule;
-    private final Splitter splitter;
-
-    public NodeListRule(Splitter splitter, String propertyKey, Rule childRule) {
-        this.propertyKey = propertyKey;
-        this.childRule = childRule;
-        this.splitter = splitter;
+ "children": [definition {
+  "name": "propertyKey",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, definition {
+  "name": "childRule",
+  "returns": symbol {
+   "value": "Rule"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, definition {
+  "name": "splitter",
+  "returns": symbol {
+   "value": "Splitter"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, method {
+  "name": "NodeListRule",
+  "returns": symbol {
+   "value": "public"
+   },
+  "children": [assignment {
+   "content": "propertyKey",
+   "child": "propertyKey",
+   "parent": symbol {
+    "content": "this"
     }
-
-    @Override
-    public RuleResult<Node, ParseException> parse(String input) {
-        final var segments = splitter.split(input);
-        if (segments.isEmpty()) {
+   }, assignment {
+   "content": "childRule",
+   "child": "childRule",
+   "parent": symbol {
+    "content": "this"
+    }
+   }, assignment {
+   "content": "splitter",
+   "child": "splitter",
+   "parent": symbol {
+    "content": "this"
+    }
+   }],
+  "params": [definition {
+   "name": "splitter",
+   "returns": symbol {
+    "value": "Splitter"
+    }
+   }, definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "childRule",
+   "returns": symbol {
+    "value": "Rule"
+    }
+   }]
+  }, method {
+  "name": "parse",
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }, symbol {
+    "value": "ParseException"
+    }]
+   },
+  "children": [declaration {
+   "name": "segments",
+   "caller": property-access {
+    "child": "split",
+    "parent": symbol {
+     "content": "splitter"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "input"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (segments.isEmpty()) {
             return new RuleResult<>(new Err<>(new ParseException("No segments present for node list '" + propertyKey + "'", input)));
-        }
-
-        var children = new ArrayList<Node>();
-        int i = 0;
-        while (i < segments.size()) {
+        }"
+   }, declaration {
+   "name": "children",
+   "caller": symbol {
+    "content": "ArrayList"
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "type-arguments": [symbol {
+    "value": "Node"
+    }]
+   }, declaration {
+   "name": "i",
+   "value": "0",
+   "returns": symbol {
+    "value": "int"
+    }
+   }, while {
+   "content": " (i < segments.size()) {
             var segment = segments.get(i);
             final var result = childRule.parse(segment);
             final var inner = result.result();
@@ -51,21 +152,110 @@
 
             children.add(inner.findValue().orElseThrow());
             i++;
+        }"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "Ok"
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "withNodeList",
+       "parent": construction {
+        "caller": symbol {
+         "content": "MapNode"
+         }
         }
-
-        return new RuleResult<>(new Ok<>(new MapNode().withNodeList(propertyKey, children)));
+       },
+      "arguments": [symbol {
+       "content": "propertyKey"
+       }, symbol {
+       "content": "children"
+       }]
+      }]
+     }]
     }
-
-    @Override
-    public RuleResult<String, GenerateException> generate(Node node) {
-        final var propertyValues = node.findNodeList(propertyKey);
-        if (propertyValues.isEmpty())
-            return new RuleResult<>(new Err<>(new GenerateException("Node list property '" + propertyKey + "' not present", node)));
-
-        var buffer = new StringBuilder();
-        List<Node> get = propertyValues.get();
-        int i = 0;
-        while (i < get.size()) {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "generate",
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "String"
+    }, symbol {
+    "value": "GenerateException"
+    }]
+   },
+  "children": [declaration {
+   "name": "propertyValues",
+   "caller": property-access {
+    "child": "findNodeList",
+    "parent": symbol {
+     "content": "node"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "propertyKey"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (propertyValues.isEmpty())
+            return new RuleResult<>(new Err<>(new GenerateException("Node list property '" + propertyKey + "' not present", node)));"
+   }, declaration {
+   "name": "buffer",
+   "caller": symbol {
+    "content": "StringBuilder"
+    },
+   "returns": symbol {
+    "value": "var"
+    }
+   }, declaration {
+   "name": "get",
+   "caller": property-access {
+    "child": "get",
+    "parent": symbol {
+     "content": "propertyValues"
+     }
+    },
+   "returns": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "Node"
+     }]
+    }
+   }, declaration {
+   "name": "i",
+   "value": "0",
+   "returns": symbol {
+    "value": "int"
+    }
+   }, while {
+   "content": " (i < get.size()) {
             var value = get.get(i);
             final var result = childRule.generate(value);
             final var inner = result.result();
@@ -76,11 +266,40 @@
             final var str = inner.findValue().orElseThrow();
             buffer.append(str);
             i++;
+        }"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "Ok"
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "toString",
+       "parent": symbol {
+        "content": "buffer"
         }
-
-        return new RuleResult<>(new Ok<>(buffer.toString()));
+       }
+      }]
+     }]
     }
-}",
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }]
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }, modifier {

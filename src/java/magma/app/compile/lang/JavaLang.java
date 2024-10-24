@@ -108,9 +108,14 @@ public class JavaLang {
                 createDeclarationRule(valueRule),
                 createNamedBlockRule(statement, "else", "else"),
                 createNamedBlockRule(statement, "try", "try"),
-                createConditionRule("catch", "catch")
+                createConditionRule("catch", "catch"),
+                createAssignmentRule(valueRule)
         )));
         return statement;
+    }
+
+    private static TypeRule createAssignmentRule(Rule valueRule) {
+        return new TypeRule("assignment", new StripRule(new LocatingRule(valueRule, new FirstLocator("="), new SuffixRule(valueRule, ";")), "", ""));
     }
 
     private static TypeRule createNamedBlockRule(Rule statement, String type, String prefix) {
