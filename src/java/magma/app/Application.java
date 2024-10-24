@@ -53,6 +53,7 @@ public final class Application {
         final var fileNameWithoutExtension = fileName.substring(0, separator);
         return new Compiler(input)
                 .compile()
+                .mapErr(err -> new ApplicationException(source.toAbsolutePath().toString(), err))
                 .mapValue(result -> writeResult(result, source, fileNameWithoutExtension))
                 .match(value -> value, Optional::of);
     }
