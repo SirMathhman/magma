@@ -1,17 +1,18 @@
 package magma.app.compile;
 
 import magma.app.compile.lang.JavaLang;
-import magma.app.compile.lang.MagmaLang;
+import magma.app.compile.pass.ClassPasser;
+import magma.app.compile.pass.ImportPasser;
+import magma.app.compile.pass.InterfacePasser;
+import magma.app.compile.pass.RecordPasser;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static magma.app.compile.lang.CommonLang.*;
 import static magma.app.compile.lang.JavaLang.*;
-import static magma.app.compile.lang.MagmaLang.FUNCTION;
 
 public class Passer {
     static Node pass(Node node) {
@@ -26,58 +27,17 @@ public class Passer {
     }
 
     private static Node passRootChild(Node node) {
-        return passRecord(node)
-                .or(() -> passInterface(node))
-                .or(() -> passClass(node))
-                .or(() -> passImport(node))
+        return RecordPasser.passRecord(node)
+                .or(() -> InterfacePasser.passInterface(node))
+                .or(() -> ClassPasser.pass(node))
+                .or(() -> ImportPasser.pass(node))
                 .orElse(node);
     }
 
-    private static Optional<Node> passImport(Node node) {
-        if (!node.is(IMPORT)) return Optional.empty();
+    public static Optional<Node> passRootMemberModifiers(Node node) {
+        if (node.is(CLASS_TYPE) || node.is(INTERFACE_TYPE) || node.is(RECORD_TYPE)) return Optional.empty();
 
-        return Optional.of(node.withString(AFTER_IMPORT, "\n"));
-    }
-
-    private static Optional<Node> passClass(Node node) {
-        if (node.is(CLASS)) {
-            return Optional.of(node.retype(FUNCTION));
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    private static Optional<Node> passRecord(Node node) {
-        if (!node.is(RECORD)) return Optional.empty();
-
-        final var retyped = node.retype(FUNCTION);
-        final var withModifiers = passRootMemberModifiers(retyped).orElse(retyped);
-
-        final var withImplements = withModifiers.mapNodeList(CHILDREN, children -> {
-            var copy = new ArrayList<>(children);
-            copy.add(new MapNode().retype("implements"));
-            return copy;
-        }).orElse(withModifiers);
-
-        return Optional.of(withImplements);
-    }
-
-    private static Optional<Node> passInterface(Node node) {
-        if (!node.is(INTERFACE)) return Optional.empty();
-
-        final var retype = node.retype(MagmaLang.TRAIT);
-
-        final var withModifiers = passRootMemberModifiers(retype).orElse(retype);
-
-        final var withChildren = withModifiers.mapNodeList(CHILDREN, children -> children.stream()
-                .map(Passer::passClassMember)
-                .toList()).orElse(withModifiers);
-
-        return Optional.of(withChildren);
-    }
-
-    private static Optional<Node> passRootMemberModifiers(Node retype) {
-        return retype.mapNodeList(MODIFIERS, modifiers -> {
+        return node.mapNodeList(MODIFIERS, modifiers -> {
             final var inputModifiers = modifiers.stream()
                     .map(modifier -> modifier.findString(MODIFIER_VALUE))
                     .flatMap(Optional::stream)
@@ -92,8 +52,4 @@ public class Passer {
         });
     }
 
-    private static Node passClassMember(Node child) {
-        if (child.is(METHOD)) return child.retype(FUNCTION);
-        return child;
-    }
 }

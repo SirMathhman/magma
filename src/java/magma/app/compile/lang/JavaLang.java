@@ -9,9 +9,9 @@ import static magma.app.compile.lang.CommonLang.*;
 
 public class JavaLang {
     public static final String PACKAGE = "package";
-    public static final String RECORD = "record";
-    public static final String CLASS = "class";
-    public static final String INTERFACE = "interface";
+    public static final String RECORD_TYPE = "record";
+    public static final String CLASS_TYPE = "class";
+    public static final String INTERFACE_TYPE = "interface";
     public static final String MODIFIERS = "modifiers";
     public static final String METHOD = "method";
     public static final List<String> MODIFIERS_LIST = List.of("public", "private", "static", "final");
@@ -38,7 +38,7 @@ public class JavaLang {
         final var implementsEmpty = new StripRule(new PrefixRule("{", new SuffixRule(maybeChildren, "}")), "", "");
         final var afterParams = new OptionalNodeRule("super", implementsEmpty, implementsPresent);
         final var afterKeyword = new LocatingRule(name, new FirstLocator("("), new LocatingRule(params, new FirstLocator(")"), afterParams));
-        return new TypeRule(RECORD, new LocatingRule(createModifiersRule(), new FirstLocator("record "), afterKeyword));
+        return new TypeRule(RECORD_TYPE, new LocatingRule(createModifiersRule(), new FirstLocator("record "), afterKeyword));
     }
 
     private static TypeRule createDefinitionRule() {
@@ -68,14 +68,14 @@ public class JavaLang {
     private static TypeRule createClassRule() {
         final var body = createChildrenRule(createClassMemberRule());
         final var afterKeyword = new LocatingRule(new ExtractRule("name"), new FirstLocator("{"), new SuffixRule(body, "}"));
-        return new TypeRule(CLASS, new LocatingRule(createModifiersRule(), new FirstLocator("class "), afterKeyword));
+        return new TypeRule(CLASS_TYPE, new LocatingRule(createModifiersRule(), new FirstLocator("class "), afterKeyword));
     }
 
     private static TypeRule createInterfaceRule() {
         final var memberRule = createClassMemberRule();
         final var content = new SuffixRule(new NodeListRule(new StatementSplitter(), "content", new StripRule(memberRule, "", "")), "}");
         final var name = new LocatingRule(new StripRule(new ExtractRule("name"), "", ""), new FirstLocator("{"), new StripRule(content, "", ""));
-        return new TypeRule(INTERFACE, new LocatingRule(createModifiersRule(), new FirstLocator("interface"), name));
+        return new TypeRule(INTERFACE_TYPE, new LocatingRule(createModifiersRule(), new FirstLocator("interface"), name));
     }
 
     private static OrRule createClassMemberRule() {

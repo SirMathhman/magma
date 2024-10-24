@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static magma.app.compile.lang.JavaLang.RECORD;
+import static magma.app.compile.lang.JavaLang.RECORD_TYPE;
 import static magma.app.compile.lang.MagmaLang.FUNCTION;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,7 +35,7 @@ class CompilerTest {
     void recordStatement(String name) {
         try {
             final var sourceNode = new MapNode()
-                    .retype(RECORD)
+                    .retype(RECORD_TYPE)
                     .withString(CommonLang.NAME, name);
             final var targetNode = sourceNode.retype(FUNCTION);
 
