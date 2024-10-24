@@ -5,6 +5,7 @@ import magma.app.compile.pass.ClassPasser;
 import magma.app.compile.pass.ImportPasser;
 import magma.app.compile.pass.InterfacePasser;
 import magma.app.compile.pass.RecordPasser;
+import magma.java.JavaCollectors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,8 @@ import static magma.app.compile.lang.JavaLang.*;
 
 public class Passer {
     static Node pass(Node node) {
+        return node.streamNodes().collect(JavaCollectors.asList()).stream();
+
         return node.mapNodeList(CHILDREN, Passer::passChildren).orElse(node);
     }
 

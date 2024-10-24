@@ -28,13 +28,13 @@ public interface Node {
 
     Stream<Tuple<String, String>> streamStrings();
 
-    Stream<Tuple<String, List<Node>>> streamNodeLists();
+    magma.api.stream.Stream<Tuple<String, List<Node>>> streamNodeLists();
 
     Node withNode(String propertyKey, Node propertyValue);
 
     Optional<Node> findNode(String propertyKey);
 
-    Stream<Tuple<String, Node>> streamNodes();
+    magma.api.stream.Stream<Tuple<String, Node>> streamNodes();
 
     boolean hasNode(String node);
 
@@ -43,8 +43,6 @@ public interface Node {
     Optional<List<String>> findStringList(String propertyKey);
 
     Stream<Tuple<String, List<String>>> streamStringLists();
-
-    Optional<Node> mapStringList(String propertyKey, Function<List<String>, List<String>> mapper);
 
     boolean hasNodeList(String propertyKey);
 
