@@ -87,6 +87,7 @@
   "modifiers": [modifier {
    "modifier-value": "public"
    }]
+  }, implements {
   }]
  }]
 }

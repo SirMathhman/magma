@@ -61,7 +61,15 @@
         if (!node.is(RECORD)) return Optional.empty();
 
         final var retyped = node.retype(FUNCTION);
-        return Optional.of(passRootMemberModifiers(retyped).orElse(retyped));
+        final var withModifiers = passRootMemberModifiers(retyped).orElse(retyped);
+
+        final var withImplements = withModifiers.mapNodeList(CHILDREN, children -> {
+            var copy = new ArrayList<>(children);
+            copy.add(new MapNode().retype("implements"));
+            return copy;
+        }).orElse(withModifiers);
+
+        return Optional.of(withImplements);
     }
 
     private static Optional<Node> passInterface(Node node) {

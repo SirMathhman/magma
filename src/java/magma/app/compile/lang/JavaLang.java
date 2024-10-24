@@ -91,10 +91,6 @@ public class JavaLang {
         return new TypeRule(METHOD, new LocatingRule(createDefinitionRule(), new FirstLocator("("), withParams));
     }
 
-    private static NodeListRule createChildrenRule(Rule statement) {
-        return new NodeListRule(new StatementSplitter(), "children", new StripRule(statement, "", ""));
-    }
-
     private static Rule createStatementRule() {
         final var valueRule = createValueRule();
 

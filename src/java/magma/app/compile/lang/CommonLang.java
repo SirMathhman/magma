@@ -26,4 +26,8 @@ public class CommonLang {
         final var modifier = new TypeRule(MODIFIER_TYPE, new FilterRule(new ListFilter(JavaLang.MODIFIERS_LIST), new ExtractRule(MODIFIER_VALUE)));
         return new NodeListRule(new SimpleSplitter(" "), JavaLang.MODIFIERS, modifier);
     }
+
+    static NodeListRule createChildrenRule(Rule statement) {
+        return new NodeListRule(new StatementSplitter(), "children", new StripRule(statement, "", ""));
+    }
 }
