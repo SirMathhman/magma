@@ -18,8 +18,8 @@ public class ValueSplitter implements Splitter {
 
     private static State processNormal(State current, Character c) {
         final var appended = current.append(c);
-        if (c == '<' || c == '(') appended.withDepth(current.depth() + 1);
-        if (c == '>' || c == ')') appended.withDepth(current.depth() - 1);
+        if (c == '<' || c == '(') return appended.withDepth(current.depth() + 1);
+        if (c == '>' || c == ')') return appended.withDepth(current.depth() - 1);
         return appended;
     }
 
@@ -113,17 +113,9 @@ public class ValueSplitter implements Splitter {
             return Optional.of(new Tuple<>(this, queue.pop()));
         }
 
-        private boolean isEmpty() {
-            return queue().isEmpty();
-        }
-
         private State append(Character c) {
             buffer().append(c);
             return this;
-        }
-
-        public State withBuffer(StringBuilder buffer) {
-            return new State(queue, lines, buffer, depth);
         }
 
         public State withDepth(int depth) {

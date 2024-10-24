@@ -2,19 +2,15 @@
 "children": [import {
  "after-import": "
 ",
+ "namespace": ["magma.api.Tuple"]
+ }, import {
+ "after-import": "
+",
  "namespace": ["magma.app.compile.rule.Splitter"]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.ArrayList"]
- }, import {
- "after-import": "
-",
- "namespace": ["java.util.LinkedList"]
- }, import {
- "after-import": "
-",
- "namespace": ["java.util.List"]
+ "namespace": ["java.util.*"]
  }, import {
  "after-import": "
 ",
@@ -25,57 +21,240 @@
  "namespace": ["java.util.stream.IntStream"]
  }, function {
  "name": "ValueSplitter implements Splitter ",
- "body": "
-    private static void advance(StringBuilder buffer, ArrayList<String> lines) {
-        if (!buffer.isEmpty()) lines.add(buffer.toString());
+ "children": [method {
+  "name": "splitAtChar",
+  "returns": symbol {
+   "value": "State"
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "orElseGet",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "or",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "or",
+         "parent": invocation {
+          "caller": symbol {
+           "content": "processDoubleQuotes"
+           },
+          "arguments": [symbol {
+           "content": "current"
+           }, symbol {
+           "content": "c"
+           }]
+          }
+         },
+        "arguments": [invocation {
+         "caller": lambda {
+          "before-arrow": "() ",
+          "after-arrow": " processMinusSign"
+          },
+         "arguments": [symbol {
+          "content": "current"
+          }, symbol {
+          "content": "c"
+          }]
+         }]
+        }
+       },
+      "arguments": [invocation {
+       "caller": lambda {
+        "before-arrow": "() ",
+        "after-arrow": " processComma"
+        },
+       "arguments": [symbol {
+        "content": "current"
+        }, symbol {
+        "content": "c"
+        }]
+       }]
+      }
+     },
+    "arguments": [invocation {
+     "caller": lambda {
+      "before-arrow": "() ",
+      "after-arrow": " processNormal"
+      },
+     "arguments": [symbol {
+      "content": "current"
+      }, symbol {
+      "content": "c"
+      }]
+     }]
+    }
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "current",
+   "returns": symbol {
+    "value": "State"
+    }
+   }, definition {
+   "name": "c",
+   "returns": symbol {
+    "value": "Character"
+    }
+   }]
+  }, method {
+  "name": "processNormal",
+  "returns": symbol {
+   "value": "State"
+   },
+  "children": [declaration {
+   "name": "appended",
+   "caller": property-access {
+    "child": "append",
+    "parent": symbol {
+     "content": "current"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "c"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (c == '|| c == ' return appended.withDepth(current.depth() + 1);
+        if (c == '|| c == ' return appended.withDepth(current.depth() - 1);
+        return appended;
+    }
+
+    private static Optional<State> processComma(State current, char c) {
+        if (c == '&& current.isLevel()) {
+            return Optional.of(current.advance());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private static Optional<State> processMinusSign(State current, char c) {
+        if (c != ' return Optional.empty();
+
+        final var appended = current.append(';
+        final var peeked = appended.peek();
+        if (peeked.isEmpty() || peeked.get() != ' return Optional.of(appended);
+
+        return appended.popAndAppend().map(Tuple::left);
+    }
+
+    private static Optional<State> processDoubleQuotes(State state, char c) {
+        if (c != '\"') return Optional.empty();
+
+        var current = state.append(c);
+        while (true) {
+            var processed = processInDoubleQuotes(current);
+            if (processed.isEmpty()) return Optional.of(current);
+            current = processed.get();
+        }
+    }
+
+    private static Optional<State> processInDoubleQuotes(State current) {
+        final var optional = current.popAndAppend();
+        if (optional.isEmpty()) return Optional.empty();
+
+        final var next = optional.get();
+        final var nextState = next.left();
+        final var nextChar = next.right();
+
+        if (nextChar == '\\') {
+            return Optional.of(nextState
+                    .popAndAppend()
+                    .map(Tuple::left)
+                    .orElse(nextState));
+        } else if (nextChar == '\"') {
+            return Optional.empty();
+        } else {
+            return Optional.of(nextState);
+        }
     }
 
     @Override
     public List<String> split(String input) {
-        var lines = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
         final var length = input.length();
         var queue = IntStream.range(0, length)
                 .mapToObj(input::charAt)
                 .collect(Collectors.toCollection(LinkedList::new));
 
-        while (!queue.isEmpty()) {
-            var c = queue.pop();
-            if (c == '\"') {
-                buffer.append(c);
+        var current = new State(queue);
+        while (true) {
+            final var popped = current.pop();
+            if (popped.isEmpty()) break;
 
-                while (!queue.isEmpty()) {
-                    final var next = queue.pop();
-                    buffer.append(next);
-
-                    if (next == '\\' && !queue.isEmpty()) {
-                        final var escaped = queue.pop();
-                        buffer.append(escaped);
-                    }
-
-                    if (next == '\"') {
-                        break;
-                    }
-                }
-            } else if (c == '') {
-                buffer.append('');
-                if (!queue.isEmpty() && queue.peek() == '') {
-                    queue.pop();
-                }
-            } else if (c == '' && depth == 0) {
-                advance(buffer, lines);
-                buffer = new StringBuilder();
-            } else {
-                if (c == '' || c == '') depth++;
-                if (c == '' || c == '') depth--;
-                buffer.append(c);
-            }
+            var c = popped.get().right();
+            current = splitAtChar(current, c);
         }
-        advance(buffer, lines);
-        return lines;
+
+        return current.advance().lines;
     }
-}",
+
+    private record State(Deque<Character> queue, List<String> lines, StringBuilder buffer, int depth) {
+        public State(Deque<Character> queue) {
+            this(queue, new ArrayList<>(), new StringBuilder(), 0);
+        }
+
+        private boolean isLevel() {
+            return depth() == 0;
+        }
+
+        private State advance() {
+            if (buffer.isEmpty()) return this;
+
+            final var copy = new ArrayList<>(lines);
+            copy.add(buffer.toString());
+            return new State(queue, copy, new StringBuilder(), depth);
+        }
+
+        private Optional<Tuple<State, Character>> pop() {
+            if (queue.isEmpty()) return Optional.empty();
+            return Optional.of(new Tuple<>(this, queue.pop()));
+        }
+
+        private State append(Character c) {
+            buffer().append(c);
+            return this;
+        }
+
+        public State withDepth(int depth) {
+            return new State(queue, lines, buffer, depth);
+        }
+
+        public Optional<Character> peek() {
+            if (queue.isEmpty()) return Optional.empty();
+            return Optional.of(queue.peek());
+        }
+
+        public Optional<Tuple<State, Character>> popAndAppend() {
+            return pop().map(tuple -> new Tuple<>(tuple.left().append(tuple.right()), tuple.right()));
+        }"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "current",
+   "returns": symbol {
+    "value": "State"
+    }
+   }, definition {
+   "name": "c",
+   "returns": symbol {
+    "value": "Character"
+    }
+   }]
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }]
