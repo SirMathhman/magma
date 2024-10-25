@@ -1,30 +1,127 @@
 {
 "children": [package {
- "namespace": ["magma"]
+ "namespace": [segment {
+  "segment": "magma"
+  }]
  }, import {
- "namespace": ["magma.app.Application"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "Application"
+  }]
  }, import {
- "namespace": ["magma.app.ApplicationException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "DirectorySourceSet"
+  }]
  }, import {
- "namespace": ["magma.app.DirectorySourceSet"]
- }, import {
- "namespace": ["java.nio.file.Paths"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "nio"
+  }, segment {
+  "segment": "file"
+  }, segment {
+  "segment": "Paths"
+  }]
  }, class {
  "name": "Main ",
- "body": "
-    public static void main(String[] args) {
-        try {
-            final var source = Paths.get(".", "src", "java");
-            final var sourceSet = new DirectorySourceSet(source);
-            new Application(sourceSet).run();
-        } catch (ApplicationException e) {
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
-        }
+ "children": [method {
+  "name": "main",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "void"
+    }]
+   },
+  "children": [declaration {
+   "name": "source",
+   "caller": property-access {
+    "child": "get",
+    "parent": symbol {
+     "content": "Paths"
+     }
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [string {
+    "value": "."
+    }, string {
+    "value": "src"
+    }, string {
+    "value": "java"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "sourceSet",
+   "caller": symbol {
+    "content": "DirectorySourceSet"
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [symbol {
+    "content": "source"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, invocation {
+   "caller": property-access {
+    "child": "ifPresent",
+    "parent": invocation {
+     "caller": property-access {
+      "child": "run",
+      "parent": construction {
+       "caller": symbol {
+        "content": "Application"
+        },
+       "arguments": [symbol {
+        "content": "sourceSet"
+        }]
+       }
+      }
+     }
+    },
+   "arguments": [method-access {
+    "child": "printStackTrace",
+    "parent": symbol {
+     "content": "Throwable"
+     }
+    }]
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "args",
+   "returns": array {
+    "child": symbol {
+     "namespace": [segment {
+      "segment": "String"
+      }]
+     }
     }
-}",
+   }]
+  }, whitespace {
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }]
+ }, whitespace {
  }]
 }

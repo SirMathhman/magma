@@ -2,22 +2,50 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.rule.*"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }, segment {
+  "segment": "*"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.List"]
- }, import {
- "after-import": "
-",
- "namespace": ["static magma.app.compile.lang.CommonLang.*"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
+ }, import-static {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "CommonLang"
+  }, segment {
+  "segment": "*"
+  }]
  }, function {
  "name": "JavaLang ",
  "children": [declaration {
   "name": "PACKAGE",
   "value": "package",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -30,7 +58,9 @@
   "name": "RECORD_TYPE",
   "value": "record",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -43,7 +73,9 @@
   "name": "CLASS_TYPE",
   "value": "class",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -56,7 +88,9 @@
   "name": "INTERFACE_TYPE",
   "value": "interface",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -69,7 +103,9 @@
   "name": "MODIFIERS",
   "value": "modifiers",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -82,7 +118,9 @@
   "name": "METHOD",
   "value": "method",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -101,10 +139,14 @@
    },
   "returns": generic {
    "base": symbol {
-    "value": "List"
+    "namespace": [segment {
+     "segment": "List"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }]
    },
   "arguments": [string {
@@ -126,7 +168,9 @@
   }, method {
   "name": "createPackageRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -165,7 +209,9 @@
   }, method {
   "name": "createRootRule",
   "returns": symbol {
-   "value": "NodeListRule"
+   "namespace": [segment {
+    "segment": "NodeListRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -199,7 +245,9 @@
   }, method {
   "name": "createRecordRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "simpleName",
@@ -207,7 +255,9 @@
     "content": "ExtractRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "NAME"
@@ -221,7 +271,9 @@
     "content": "NodeListRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -243,7 +295,9 @@
     "content": "OptionalNodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "type-params"
@@ -282,7 +336,9 @@
     "content": "NodeListRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -304,7 +360,9 @@
     "content": "createChildrenRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [invocation {
     "caller": symbol {
@@ -320,7 +378,9 @@
     "content": "StripRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -345,7 +405,9 @@
     "content": "NodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "interface"
@@ -363,7 +425,9 @@
     "content": "StripRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -405,7 +469,9 @@
     "content": "StripRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -433,7 +499,9 @@
     "content": "OptionalNodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "super"
@@ -451,7 +519,9 @@
     "content": "LocatingRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "name"
@@ -519,7 +589,9 @@
   }, method {
   "name": "createDefinitionRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "content",
@@ -527,7 +599,9 @@
     "content": "NodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "returns"
@@ -545,7 +619,9 @@
     "content": "StripRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -578,7 +654,9 @@
     "content": "ContextRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "With type params"
@@ -608,7 +686,9 @@
     "content": "ContextRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "Without type params"
@@ -624,7 +704,9 @@
     "content": "OptionalNodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "type-params"
@@ -642,7 +724,9 @@
     "content": "ContextRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "With modifiers"
@@ -674,7 +758,9 @@
     "content": "ContextRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "Without modifiers"
@@ -690,7 +776,9 @@
     "content": "StripRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -713,7 +801,9 @@
     "content": "TypeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "annotation"
@@ -746,7 +836,9 @@
     "content": "NodeListRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -769,7 +861,9 @@
     "content": "ContextRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "With annotations"
@@ -799,7 +893,9 @@
     "content": "ContextRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "Without annotations"
@@ -815,7 +911,9 @@
     "content": "OptionalNodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "annotations"
@@ -872,7 +970,9 @@
   }, method {
   "name": "createRootMemberRule",
   "returns": symbol {
-   "value": "OrRule"
+   "namespace": [segment {
+    "segment": "OrRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -894,6 +994,15 @@
       "caller": symbol {
        "content": "createImportRule"
        }
+      }, invocation {
+      "caller": symbol {
+       "content": "createImportRule"
+       },
+      "arguments": [string {
+       "value": "import-static"
+       }, string {
+       "value": "import static "
+       }]
       }, invocation {
       "caller": symbol {
        "content": "createRecordRule"
@@ -923,7 +1032,9 @@
   }, method {
   "name": "createClassRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "body",
@@ -931,7 +1042,9 @@
     "content": "createChildrenRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [invocation {
     "caller": symbol {
@@ -947,7 +1060,9 @@
     "content": "LocatingRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -1013,7 +1128,9 @@
   }, method {
   "name": "createInterfaceRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "memberRule",
@@ -1021,7 +1138,9 @@
     "content": "createClassMemberRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -1032,7 +1151,9 @@
     "content": "SuffixRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -1064,7 +1185,9 @@
     "content": "LocatingRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -1133,7 +1256,9 @@
   }, method {
   "name": "createClassMemberRule",
   "returns": symbol {
-   "value": "OrRule"
+   "namespace": [segment {
+    "segment": "OrRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -1181,7 +1306,9 @@
   }, method {
   "name": "createWhitespaceRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -1211,7 +1338,9 @@
   }, method {
   "name": "createDefinitionStatementRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -1248,7 +1377,9 @@
   }, method {
   "name": "createMethodRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "params",
@@ -1256,7 +1387,9 @@
     "content": "OptionalNodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "params"
@@ -1289,7 +1422,9 @@
     "content": "StripRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -1324,7 +1459,9 @@
     "content": "OptionalNodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "children"
@@ -1351,7 +1488,9 @@
     "content": "LocatingRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "params"
@@ -1405,7 +1544,9 @@
   }, method {
   "name": "createStatementRule",
   "returns": symbol {
-   "value": "Rule"
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
    },
   "children": [declaration {
    "name": "valueRule",
@@ -1413,7 +1554,9 @@
     "content": "createValueRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -1424,7 +1567,9 @@
     "content": "LazyRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -1528,6 +1673,28 @@
       "arguments": [symbol {
        "content": "valueRule"
        }]
+      }, invocation {
+      "caller": symbol {
+       "content": "createPostRule"
+       },
+      "arguments": [string {
+       "value": "increment"
+       }, symbol {
+       "content": "valueRule"
+       }, string {
+       "value": "++"
+       }]
+      }, invocation {
+      "caller": symbol {
+       "content": "createPostRule"
+       },
+      "arguments": [string {
+       "value": "decrement"
+       }, symbol {
+       "content": "valueRule"
+       }, string {
+       "value": "--"
+       }]
       }]
      }]
     }]
@@ -1543,9 +1710,87 @@
    "modifier-value": "static"
    }]
   }, method {
+  "name": "createPostRule",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "TypeRule"
+     },
+    "arguments": [addition {
+     "left": string {
+      "value": "post-"
+      },
+     "right": symbol {
+      "content": "type"
+      }
+     }, construction {
+     "caller": symbol {
+      "content": "StripRule"
+      },
+     "arguments": [construction {
+      "caller": symbol {
+       "content": "SuffixRule"
+       },
+      "arguments": [construction {
+       "caller": symbol {
+        "content": "NodeRule"
+        },
+       "arguments": [string {
+        "value": "value"
+        }, symbol {
+        "content": "valueRule"
+        }]
+       }, addition {
+       "left": symbol {
+        "content": "operator"
+        },
+       "right": string {
+        "value": ";"
+        }
+       }]
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "type",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }
+   }, definition {
+   "name": "valueRule",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
+    }
+   }, definition {
+   "name": "operator",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }
+   }]
+  }, method {
   "name": "createAssignmentRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -1594,13 +1839,17 @@
   "params": [definition {
    "name": "valueRule",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }]
   }, method {
   "name": "createNamedBlockRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -1654,23 +1903,31 @@
   "params": [definition {
    "name": "statement",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }, definition {
    "name": "type",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "prefix",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "createDeclarationRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -1716,13 +1973,17 @@
   "params": [definition {
    "name": "valueRule",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }]
   }, method {
   "name": "createConditionRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -1757,18 +2018,24 @@
   "params": [definition {
    "name": "type",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "prefix",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "createInvocationStatementRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -1803,13 +2070,17 @@
   "params": [definition {
    "name": "valueRule",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }]
   }, method {
   "name": "createReturnRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -1853,13 +2124,17 @@
   "params": [definition {
    "name": "valueRule",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }]
   }, method {
   "name": "createValueRule",
   "returns": symbol {
-   "value": "Rule"
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
    },
   "children": [declaration {
    "name": "value",
@@ -1867,7 +2142,9 @@
     "content": "LazyRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -1974,6 +2251,17 @@
       "arguments": [symbol {
        "content": "value"
        }, string {
+       "value": "subtraction"
+       }, string {
+       "value": "-"
+       }]
+      }, invocation {
+      "caller": symbol {
+       "content": "createOperationRule"
+       },
+      "arguments": [symbol {
+       "content": "value"
+       }, string {
        "value": "equals"
        }, string {
        "value": "=="
@@ -2061,7 +2349,9 @@
   }, method {
   "name": "createQuantityRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -2110,13 +2400,17 @@
   "params": [definition {
    "name": "value",
    "returns": symbol {
-    "value": "LazyRule"
+    "namespace": [segment {
+     "segment": "LazyRule"
+     }]
     }
    }]
   }, method {
   "name": "createStringRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "value",
@@ -2124,7 +2418,9 @@
     "content": "OrRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [invocation {
     "caller": property-access {
@@ -2189,7 +2485,9 @@
   }, method {
   "name": "createLambdaRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -2236,7 +2534,9 @@
   }, method {
   "name": "createTernaryRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "condition",
@@ -2244,7 +2544,9 @@
     "content": "NodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "condition"
@@ -2260,7 +2562,9 @@
     "content": "NodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "ifTrue"
@@ -2276,7 +2580,9 @@
     "content": "NodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "ifFalse"
@@ -2292,7 +2598,9 @@
     "content": "LocatingRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "ifTrue"
@@ -2344,13 +2652,17 @@
   "params": [definition {
    "name": "value",
    "returns": symbol {
-    "value": "LazyRule"
+    "namespace": [segment {
+     "segment": "LazyRule"
+     }]
     }
    }]
   }, method {
   "name": "createNumberRule",
   "returns": symbol {
-   "value": "Rule"
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -2392,7 +2704,9 @@
   }, method {
   "name": "createOperationRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "left",
@@ -2400,7 +2714,9 @@
     "content": "NodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "left"
@@ -2416,7 +2732,9 @@
     "content": "NodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "right"
@@ -2461,23 +2779,31 @@
   "params": [definition {
    "name": "value",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }, definition {
    "name": "type",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "operator",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "createSymbolRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -2519,7 +2845,9 @@
   }, method {
   "name": "createAccessRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "parent",
@@ -2527,7 +2855,9 @@
     "content": "NodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "parent"
@@ -2543,7 +2873,9 @@
     "content": "StripRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -2600,23 +2932,31 @@
   "params": [definition {
    "name": "value",
    "returns": symbol {
-    "value": "LazyRule"
+    "namespace": [segment {
+     "segment": "LazyRule"
+     }]
     }
    }, definition {
    "name": "type",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "separator",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "createConstructionRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "caller",
@@ -2624,7 +2964,9 @@
     "content": "NodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "caller"
@@ -2640,7 +2982,9 @@
     "content": "OptionalNodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "type-arguments"
@@ -2673,7 +3017,9 @@
     "content": "StripRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -2708,7 +3054,9 @@
     "content": "PrefixRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "new "
@@ -2733,7 +3081,9 @@
     "content": "createArgumentsRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "value"
@@ -2788,13 +3138,17 @@
   "params": [definition {
    "name": "value",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }]
   }, method {
   "name": "createInvocationRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "caller",
@@ -2802,7 +3156,9 @@
     "content": "NodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "caller"
@@ -2818,7 +3174,9 @@
     "content": "createArgumentsRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "value"
@@ -2870,13 +3228,17 @@
   "params": [definition {
    "name": "value",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }]
   }, method {
   "name": "createArgumentsRule",
   "returns": symbol {
-   "value": "OptionalNodeListRule"
+   "namespace": [segment {
+    "segment": "OptionalNodeListRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -2914,13 +3276,17 @@
   "params": [definition {
    "name": "value",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }]
   }, method {
   "name": "createTypeRule",
   "returns": symbol {
-   "value": "Rule"
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
    },
   "children": [declaration {
    "name": "type",
@@ -2928,7 +3294,9 @@
     "content": "LazyRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -2963,27 +3331,43 @@
        "content": "TypeRule"
        },
       "arguments": [string {
-       "value": "symbol"
+       "value": "array"
        }, construction {
        "caller": symbol {
         "content": "StripRule"
         },
        "arguments": [construction {
         "caller": symbol {
-         "content": "FilterRule"
+         "content": "SuffixRule"
          },
         "arguments": [construction {
          "caller": symbol {
-          "content": "SymbolFilter"
-          }
-         }, construction {
-         "caller": symbol {
-          "content": "ExtractRule"
+          "content": "NodeRule"
           },
          "arguments": [string {
-          "value": "value"
+          "value": "child"
+          }, symbol {
+          "content": "type"
           }]
+         }, string {
+         "value": "[]"
          }]
+        }]
+       }]
+      }, construction {
+      "caller": symbol {
+       "content": "TypeRule"
+       },
+      "arguments": [string {
+       "value": "symbol"
+       }, construction {
+       "caller": symbol {
+        "content": "StripRule"
+        },
+       "arguments": [invocation {
+        "caller": symbol {
+         "content": "createNamespaceRule"
+         }
         }]
        }]
       }]
@@ -3003,7 +3387,9 @@
   }, method {
   "name": "createGenericRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "base",
@@ -3011,7 +3397,9 @@
     "content": "NodeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": "base"
@@ -3027,7 +3415,9 @@
     "content": "NodeListRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [construction {
     "caller": symbol {
@@ -3088,7 +3478,9 @@
   "params": [definition {
    "name": "type",
    "returns": symbol {
-    "value": "LazyRule"
+    "namespace": [segment {
+     "segment": "LazyRule"
+     }]
     }
    }]
   }, whitespace {

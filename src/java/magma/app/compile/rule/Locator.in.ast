@@ -1,8 +1,24 @@
 {
 "children": [package {
- "namespace": ["magma.app.compile.rule"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }]
  }, import {
- "namespace": ["java.util.stream.Stream"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Stream"
+  }]
  }, interface {
  "name": "Locator",
  "modifiers": [modifier {
@@ -12,23 +28,33 @@
   "name": "locate",
   "returns": generic {
    "base": symbol {
-    "value": "Stream"
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
     },
    "children": [symbol {
-    "value": "Integer"
+    "namespace": [segment {
+     "segment": "Integer"
+     }]
     }]
    },
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "slice",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    }
+  }, whitespace {
   }]
+ }, whitespace {
  }]
 }

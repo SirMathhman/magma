@@ -2,19 +2,94 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.app.ApplicationException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "ApplicationException"
+  }]
  }, function {
  "name": "CompileException extends ApplicationException ",
- "body": "
-    public CompileException() {
+ "children": [method {
+  "name": "CompileException",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [whitespace {
+   }]
+  }, method {
+  "name": "CompileException",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [invocation {
+   "caller": symbol {
+    "content": "super"
+    },
+   "arguments": [addition {
+    "left": symbol {
+     "content": "message"
+     },
+    "right": addition {
+     "left": string {
+      "value": ": "
+      },
+     "right": symbol {
+      "content": "context"
+      }
+     }
+    }]
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "message",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
-
-    public CompileException(String message, String context) {
-        super(message + ": " + context);
+   }, definition {
+   "name": "context",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
-}",
+   }]
+  }, method {
+  "name": "CompileException",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [invocation {
+   "caller": symbol {
+    "content": "super"
+    },
+   "arguments": [symbol {
+    "content": "parent"
+    }]
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "parent",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Exception"
+     }]
+    }
+   }]
+  }, whitespace {
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }]
+ }, whitespace {
  }]
 }

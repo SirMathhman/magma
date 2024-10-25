@@ -2,11 +2,19 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
  }, function {
  "name": "ListFilter",
  "interface": symbol {
-  "value": "Filter"
+  "namespace": [segment {
+   "segment": "Filter"
+   }]
   },
  "modifiers": [modifier {
   "modifier-value": "public"
@@ -15,17 +23,23 @@
   "name": "values",
   "returns": generic {
    "base": symbol {
-    "value": "List"
+    "namespace": [segment {
+     "segment": "List"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }]
    }
   }],
  "children": [method {
   "name": "filter",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -52,7 +66,9 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, implements {

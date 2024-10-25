@@ -2,64 +2,136 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Err"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Err"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Ok"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Ok"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Result"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Result"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.io.IOException"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "io"
+  }, segment {
+  "segment": "IOException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.nio.file.Files"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "nio"
+  }, segment {
+  "segment": "file"
+  }, segment {
+  "segment": "Files"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.nio.file.Path"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "nio"
+  }, segment {
+  "segment": "file"
+  }, segment {
+  "segment": "Path"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.Set"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Set"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.stream.Collectors"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Collectors"
+  }]
  }, function {
  "name": "DirectorySourceSet",
  "interface": symbol {
-  "value": "SourceSet"
+  "namespace": [segment {
+   "segment": "SourceSet"
+   }]
   },
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "root",
   "returns": symbol {
-   "value": "Path"
+   "namespace": [segment {
+    "segment": "Path"
+    }]
    }
   }],
  "children": [method {
   "name": "collect",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "Set"
+     "namespace": [segment {
+      "segment": "Set"
+      }]
      },
     "children": [symbol {
-     "value": "Path"
+     "namespace": [segment {
+      "segment": "Path"
+      }]
      }]
     }, symbol {
-    "value": "IOException"
+    "namespace": [segment {
+     "segment": "IOException"
+     }]
     }]
    },
   "children": [try {
@@ -72,23 +144,64 @@
       }
      },
     "returns": symbol {
-     "value": "var"
+     "namespace": [segment {
+      "segment": "var"
+      }]
      },
     "arguments": [symbol {
      "content": "root"
      }]
     }, return {
-    "value": lambda {
-     "before-arrow": "new Ok<>(stream
-                    .filter(path ",
-     "after-arrow": " path.toString().endsWith(".java"))
-                    .collect(Collectors.toSet()))"
+    "value": construction {
+     "caller": symbol {
+      "content": "Ok"
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "collect",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "filter",
+         "parent": symbol {
+          "content": "stream"
+          }
+         },
+        "arguments": [invocation {
+         "caller": property-access {
+          "child": "endsWith",
+          "parent": invocation {
+           "caller": property-access {
+            "child": "toString",
+            "parent": lambda {
+             "before-arrow": "path ",
+             "after-arrow": " path"
+             }
+            }
+           }
+          },
+         "arguments": [string {
+          "value": ".java"
+          }]
+         }]
+        }
+       },
+      "arguments": [invocation {
+       "caller": property-access {
+        "child": "toSet",
+        "parent": symbol {
+         "content": "Collectors"
+         }
+        }
+       }]
+      }]
      }
+    }, whitespace {
     }]
    }, catch {
    "content": " (IOException e) {
             return new Err<>(e);
         }"
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -98,5 +211,6 @@
    }]
   }, implements {
   }]
+ }, whitespace {
  }]
 }

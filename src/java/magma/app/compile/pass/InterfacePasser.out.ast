@@ -2,33 +2,81 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.Node"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "Node"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.lang.CommonLang"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "CommonLang"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.lang.JavaLang"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "JavaLang"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.lang.MagmaLang"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "MagmaLang"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.Optional"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
  }, function {
  "name": "InterfacePasser ",
  "children": [method {
   "name": "passInterface",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }]
    },
   "children": [if {
@@ -42,7 +90,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [property-access {
     "child": "TRAIT",
@@ -89,7 +139,9 @@
   "params": [definition {
    "name": "node",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, whitespace {

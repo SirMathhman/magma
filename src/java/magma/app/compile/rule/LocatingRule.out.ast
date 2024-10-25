@@ -2,43 +2,226 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Err"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Err"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.GenerateException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "GenerateException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.Node"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "Node"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.ParseException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "ParseException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.ArrayList"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "ArrayList"
+  }]
  }, function {
  "name": "LocatingRule implements Rule ",
- "body": "
-    private final Rule leftRule;
-    private final Rule rightRule;
-    private final Locator locator;
-
-    public LocatingRule(Rule leftRule, Locator locator, Rule rightRule) {
-        this.leftRule = leftRule;
-        this.rightRule = rightRule;
-        this.locator = locator;
+ "children": [definition {
+  "name": "leftRule",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, definition {
+  "name": "rightRule",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, definition {
+  "name": "locator",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "Locator"
+    }]
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, method {
+  "name": "LocatingRule",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [assignment {
+   "content": "leftRule",
+   "child": "leftRule",
+   "parent": symbol {
+    "content": "this"
     }
-
-    @Override
-    public RuleResult<Node, ParseException> parse(String input) {
-        final var occurrences = locator.locate(input).toList();
-
-        var errors = new ArrayList<RuleResult<Node, ParseException>>();
-        int i = 0;
-        while (i < occurrences.size()) {
+   }, assignment {
+   "content": "rightRule",
+   "child": "rightRule",
+   "parent": symbol {
+    "content": "this"
+    }
+   }, assignment {
+   "content": "locator",
+   "child": "locator",
+   "parent": symbol {
+    "content": "this"
+    }
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "leftRule",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
+    }
+   }, definition {
+   "name": "locator",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Locator"
+     }]
+    }
+   }, definition {
+   "name": "rightRule",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
+    }
+   }]
+  }, method {
+  "name": "parse",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "Node"
+     }]
+    }, symbol {
+    "namespace": [segment {
+     "segment": "ParseException"
+     }]
+    }]
+   },
+  "children": [declaration {
+   "name": "occurrences",
+   "caller": property-access {
+    "child": "toList",
+    "parent": invocation {
+     "caller": property-access {
+      "child": "locate",
+      "parent": symbol {
+       "content": "locator"
+       }
+      },
+     "arguments": [symbol {
+      "content": "input"
+      }]
+     }
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "errors",
+   "caller": symbol {
+    "content": "ArrayList"
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "type-arguments": [generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "RuleResult"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "Node"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "ParseException"
+      }]
+     }]
+    }]
+   }, declaration {
+   "name": "i",
+   "value": "0",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "int"
+     }]
+    }
+   }, while {
+   "content": " (i < occurrences.size()) {
             Integer occurrence = occurrences.get(i);
             var result = getNodeParseExceptionRuleResult(input, occurrence);
             if (result.isValid()) {
@@ -47,46 +230,383 @@
                 errors.add(result);
             }
             i++;
-        }
-
-        if (occurrences.isEmpty()) {
+        }"
+   }, if {
+   "content": " (occurrences.isEmpty()) {
             return new RuleResult<>(new Err<>(new ParseException("No occurrence found of '" + locator.slice() + "'", input)));
-        } else if (occurrences.size() == 1) {
+        }"
+   }, if {
+   "content": " (occurrences.size() == 1) {
             return errors.getFirst();
-        } else {
-            return new RuleResult<>(new Err<>(new ParseException("Failed to find a valid combination of slice '" + locator.slice() + "'", input)), errors);
+        }"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "Err"
+      },
+     "arguments": [construction {
+      "caller": symbol {
+       "content": "ParseException"
+       },
+      "arguments": [string {
+       "value": "Failed to find a valid combination of slice '" + locator.slice() + "'"
+       }, symbol {
+       "content": "input"
+       }]
+      }]
+     }, symbol {
+     "content": "errors"
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }
+   }]
+  }, method {
+  "name": "getNodeParseExceptionRuleResult",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "Node"
+     }]
+    }, symbol {
+    "namespace": [segment {
+     "segment": "ParseException"
+     }]
+    }]
+   },
+  "children": [declaration {
+   "name": "left",
+   "caller": property-access {
+    "child": "substring",
+    "parent": symbol {
+     "content": "input"
+     }
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [number {
+    "value": "0"
+    }, symbol {
+    "content": "index"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "right",
+   "caller": property-access {
+    "child": "substring",
+    "parent": symbol {
+     "content": "input"
+     }
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [invocation {
+    "caller": addition {
+     "left": symbol {
+      "content": "index"
+      },
+     "right": property-access {
+      "child": "length",
+      "parent": invocation {
+       "caller": property-access {
+        "child": "slice",
+        "parent": symbol {
+         "content": "locator"
+         }
         }
+       }
+      }
+     }
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "leftResult",
+   "caller": property-access {
+    "child": "parse",
+    "parent": symbol {
+     "content": "leftRule"
+     }
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [symbol {
+    "content": "left"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (leftResult.isError()) return leftResult;"
+   }, declaration {
+   "name": "rightResult",
+   "caller": property-access {
+    "child": "parse",
+    "parent": symbol {
+     "content": "rightRule"
+     }
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [symbol {
+    "content": "right"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (rightResult.isError()) return rightResult;"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "mapValue",
+      "parent": invocation {
+       "caller": property-access {
+        "child": "and",
+        "parent": invocation {
+         "caller": property-access {
+          "child": "result",
+          "parent": symbol {
+           "content": "leftResult"
+           }
+          }
+         }
+        },
+       "arguments": [method-access {
+        "child": "result",
+        "parent": symbol {
+         "content": "rightResult"
+         }
+        }]
+       }
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "merge",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "left",
+         "parent": lambda {
+          "before-arrow": "tuple ",
+          "after-arrow": " tuple"
+          }
+         }
+        }
+       },
+      "arguments": [invocation {
+       "caller": property-access {
+        "child": "right",
+        "parent": symbol {
+         "content": "tuple"
+         }
+        }
+       }]
+      }]
+     }]
     }
-
-    private RuleResult<Node, ParseException> getNodeParseExceptionRuleResult(String input, int index) {
-        final var left = input.substring(0, index);
-        final var right = input.substring(index + locator.slice().length());
-
-        final var leftResult = leftRule.parse(left);
-        if (leftResult.isError()) return leftResult;
-
-        final var rightResult = rightRule.parse(right);
-        if (rightResult.isError()) return rightResult;
-
-        return new RuleResult<>(leftResult.result().and(rightResult::result).mapValue(tuple -> tuple.left().merge(tuple.right())));
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
-
-
-    @Override
-    public RuleResult<String, GenerateException> generate(Node node) {
-        final var leftResult = leftRule.generate(node);
-        if (leftResult.isError()) return leftResult.wrapErr(new GenerateException("Invalid left", node));
-
-        final var rightResult = rightRule.generate(node);
-        if (rightResult.isError()) return rightResult.wrapErr(new GenerateException("Invalid right", node));
-
-        return new RuleResult<>(leftResult.result().and(rightResult::result).mapValue(tuple -> tuple.left() + locator.slice() + tuple.right()));
+   }, definition {
+   "name": "index",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "int"
+     }]
     }
-}",
+   }]
+  }, method {
+  "name": "generate",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }, symbol {
+    "namespace": [segment {
+     "segment": "GenerateException"
+     }]
+    }]
+   },
+  "children": [declaration {
+   "name": "leftResult",
+   "caller": property-access {
+    "child": "generate",
+    "parent": symbol {
+     "content": "leftRule"
+     }
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [symbol {
+    "content": "node"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (leftResult.isError()) return leftResult.wrapErr(new GenerateException("Invalid left", node));"
+   }, declaration {
+   "name": "rightResult",
+   "caller": property-access {
+    "child": "generate",
+    "parent": symbol {
+     "content": "rightRule"
+     }
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [symbol {
+    "content": "node"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (rightResult.isError()) return rightResult.wrapErr(new GenerateException("Invalid right", node));"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "mapValue",
+      "parent": invocation {
+       "caller": property-access {
+        "child": "and",
+        "parent": invocation {
+         "caller": property-access {
+          "child": "result",
+          "parent": symbol {
+           "content": "leftResult"
+           }
+          }
+         }
+        },
+       "arguments": [method-access {
+        "child": "result",
+        "parent": symbol {
+         "content": "rightResult"
+         }
+        }]
+       }
+      },
+     "arguments": [invocation {
+      "caller": addition {
+       "left": invocation {
+        "caller": property-access {
+         "child": "left",
+         "parent": lambda {
+          "before-arrow": "tuple ",
+          "after-arrow": " tuple"
+          }
+         }
+        },
+       "right": addition {
+        "left": invocation {
+         "caller": property-access {
+          "child": "slice",
+          "parent": symbol {
+           "content": "locator"
+           }
+          }
+         },
+        "right": property-access {
+         "child": "right",
+         "parent": symbol {
+          "content": "tuple"
+          }
+         }
+        }
+       }
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Node"
+     }]
+    }
+   }]
+  }, whitespace {
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }, modifier {
   "modifier-value": "final"
   }]
+ }, whitespace {
  }]
 }

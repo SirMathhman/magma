@@ -2,17 +2,47 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.rule.Splitter"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }, segment {
+  "segment": "Splitter"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
+ }, import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "regex"
+  }, segment {
+  "segment": "Pattern"
+  }]
  }, function {
  "name": "SimpleSplitter implements Splitter ",
  "children": [definition {
   "name": "delimiter",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -22,7 +52,9 @@
   }, method {
   "name": "SimpleSplitter",
   "returns": symbol {
-   "value": "public"
+   "namespace": [segment {
+    "segment": "public"
+    }]
    },
   "children": [assignment {
    "content": "delimiter",
@@ -35,17 +67,23 @@
   "params": [definition {
    "name": "delimiter",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "split",
   "returns": generic {
    "base": symbol {
-    "value": "List"
+    "namespace": [segment {
+     "segment": "List"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }]
    },
   "children": [return {
@@ -63,8 +101,16 @@
        "content": "input"
        }
       },
-     "arguments": [symbol {
-      "content": "delimiter"
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "quote",
+       "parent": symbol {
+        "content": "Pattern"
+        }
+       },
+      "arguments": [symbol {
+       "content": "delimiter"
+       }]
       }]
      }]
     }
@@ -79,7 +125,9 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, whitespace {

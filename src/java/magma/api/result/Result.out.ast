@@ -2,19 +2,47 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.Tuple"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "Tuple"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.Optional"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.function.Function"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "function"
+  }, segment {
+  "segment": "Function"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.function.Supplier"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "function"
+  }, segment {
+  "segment": "Supplier"
+  }]
  }, trait {
  "name": "Result<T, E>",
  "modifiers": [modifier {
@@ -24,20 +52,28 @@
   "name": "findValue",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "T"
+    "namespace": [segment {
+     "segment": "T"
+     }]
     }]
    }
   }, method {
   "name": "findError",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }]
    }
   }, method {
@@ -45,66 +81,98 @@
   "type-params": "R",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [symbol {
-    "value": "R"
+    "namespace": [segment {
+     "segment": "R"
+     }]
     }, symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }]
    },
   "params": [definition {
    "name": "mapper",
    "returns": generic {
     "base": symbol {
-     "value": "Function"
+     "namespace": [segment {
+      "segment": "Function"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, symbol {
-     "value": "R"
+     "namespace": [segment {
+      "segment": "R"
+      }]
      }]
     }
    }]
   }, method {
   "name": "isErr",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    }
   }, method {
   "name": "and",
   "type-params": "R",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "Tuple"
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, symbol {
-     "value": "R"
+     "namespace": [segment {
+      "segment": "R"
+      }]
      }]
     }, symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }]
    },
   "params": [definition {
    "name": "supplier",
    "returns": generic {
     "base": symbol {
-     "value": "Supplier"
+     "namespace": [segment {
+      "segment": "Supplier"
+      }]
      },
     "children": [generic {
      "base": symbol {
-      "value": "Result"
+      "namespace": [segment {
+       "segment": "Result"
+       }]
       },
      "children": [symbol {
-      "value": "R"
+      "namespace": [segment {
+       "segment": "R"
+       }]
       }, symbol {
-      "value": "E"
+      "namespace": [segment {
+       "segment": "E"
+       }]
       }]
      }]
     }
@@ -112,37 +180,55 @@
   }, method {
   "name": "isOk",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    }
   }, method {
   "name": "flatMapValue",
   "type-params": "R",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [symbol {
-    "value": "R"
+    "namespace": [segment {
+     "segment": "R"
+     }]
     }, symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }]
    },
   "params": [definition {
    "name": "mapper",
    "returns": generic {
     "base": symbol {
-     "value": "Function"
+     "namespace": [segment {
+      "segment": "Function"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, generic {
      "base": symbol {
-      "value": "Result"
+      "namespace": [segment {
+       "segment": "Result"
+       }]
       },
      "children": [symbol {
-      "value": "R"
+      "namespace": [segment {
+       "segment": "R"
+       }]
       }, symbol {
-      "value": "E"
+      "namespace": [segment {
+       "segment": "E"
+       }]
       }]
      }]
     }
@@ -152,24 +238,36 @@
   "type-params": "R",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [symbol {
-    "value": "T"
+    "namespace": [segment {
+     "segment": "T"
+     }]
     }, symbol {
-    "value": "R"
+    "namespace": [segment {
+     "segment": "R"
+     }]
     }]
    },
   "params": [definition {
    "name": "mapper",
    "returns": generic {
     "base": symbol {
-     "value": "Function"
+     "namespace": [segment {
+      "segment": "Function"
+      }]
      },
     "children": [symbol {
-     "value": "E"
+     "namespace": [segment {
+      "segment": "E"
+      }]
      }, symbol {
-     "value": "R"
+     "namespace": [segment {
+      "segment": "R"
+      }]
      }]
     }
    }]
@@ -177,30 +275,44 @@
   "name": "match",
   "type-params": "R",
   "returns": symbol {
-   "value": "R"
+   "namespace": [segment {
+    "segment": "R"
+    }]
    },
   "params": [definition {
    "name": "onValid",
    "returns": generic {
     "base": symbol {
-     "value": "Function"
+     "namespace": [segment {
+      "segment": "Function"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, symbol {
-     "value": "R"
+     "namespace": [segment {
+      "segment": "R"
+      }]
      }]
     }
    }, definition {
    "name": "onError",
    "returns": generic {
     "base": symbol {
-     "value": "Function"
+     "namespace": [segment {
+      "segment": "Function"
+      }]
      },
     "children": [symbol {
-     "value": "E"
+     "namespace": [segment {
+      "segment": "E"
+      }]
      }, symbol {
-     "value": "R"
+     "namespace": [segment {
+      "segment": "R"
+      }]
      }]
     }
    }]

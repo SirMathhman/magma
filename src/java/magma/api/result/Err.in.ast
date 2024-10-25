@@ -1,34 +1,78 @@
 {
 "children": [package {
- "namespace": ["magma.api.result"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }]
  }, import {
- "namespace": ["magma.api.Tuple"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "Tuple"
+  }]
  }, import {
- "namespace": ["java.util.Optional"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
  }, import {
- "namespace": ["java.util.function.Function"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "function"
+  }, segment {
+  "segment": "Function"
+  }]
  }, import {
- "namespace": ["java.util.function.Supplier"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "function"
+  }, segment {
+  "segment": "Supplier"
+  }]
  }, record {
  "name": "Err",
  "interface": generic {
   "base": symbol {
-   "value": "Result"
+   "namespace": [segment {
+    "segment": "Result"
+    }]
    },
   "children": [symbol {
-   "value": "T"
+   "namespace": [segment {
+    "segment": "T"
+    }]
    }, symbol {
-   "value": "E"
+   "namespace": [segment {
+    "segment": "E"
+    }]
    }]
   },
  "children": [method {
   "name": "findValue",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "T"
+    "namespace": [segment {
+     "segment": "T"
+     }]
     }]
    },
   "children": [return {
@@ -40,6 +84,7 @@
       }
      }
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -51,10 +96,14 @@
   "name": "findError",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }]
    },
   "children": [return {
@@ -69,6 +118,7 @@
      "content": "error"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -81,12 +131,18 @@
   "type-params": "R",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [symbol {
-    "value": "R"
+    "namespace": [segment {
+     "segment": "R"
+     }]
     }, symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }]
    },
   "children": [return {
@@ -98,6 +154,7 @@
      "content": "error"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -109,24 +166,33 @@
    "name": "mapper",
    "returns": generic {
     "base": symbol {
-     "value": "Function"
+     "namespace": [segment {
+      "segment": "Function"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, symbol {
-     "value": "R"
+     "namespace": [segment {
+      "segment": "R"
+      }]
      }]
     }
    }]
   }, method {
   "name": "isErr",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "children": [return {
    "value": symbol {
     "content": "true"
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -139,19 +205,29 @@
   "type-params": "R",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "Tuple"
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, symbol {
-     "value": "R"
+     "namespace": [segment {
+      "segment": "R"
+      }]
      }]
     }, symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }]
    },
   "children": [return {
@@ -163,6 +239,7 @@
      "content": "error"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -174,16 +251,24 @@
    "name": "supplier",
    "returns": generic {
     "base": symbol {
-     "value": "Supplier"
+     "namespace": [segment {
+      "segment": "Supplier"
+      }]
      },
     "children": [generic {
      "base": symbol {
-      "value": "Result"
+      "namespace": [segment {
+       "segment": "Result"
+       }]
       },
      "children": [symbol {
-      "value": "R"
+      "namespace": [segment {
+       "segment": "R"
+       }]
       }, symbol {
-      "value": "E"
+      "namespace": [segment {
+       "segment": "E"
+       }]
       }]
      }]
     }
@@ -191,12 +276,15 @@
   }, method {
   "name": "isOk",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "children": [return {
    "value": symbol {
     "content": "false"
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -209,12 +297,18 @@
   "type-params": "R",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [symbol {
-    "value": "R"
+    "namespace": [segment {
+     "segment": "R"
+     }]
     }, symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }]
    },
   "children": [return {
@@ -226,6 +320,7 @@
      "content": "error"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -237,27 +332,169 @@
    "name": "mapper",
    "returns": generic {
     "base": symbol {
-     "value": "Function"
+     "namespace": [segment {
+      "segment": "Function"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, generic {
      "base": symbol {
-      "value": "Result"
+      "namespace": [segment {
+       "segment": "Result"
+       }]
       },
      "children": [symbol {
-      "value": "R"
+      "namespace": [segment {
+       "segment": "R"
+       }]
       }, symbol {
-      "value": "E"
+      "namespace": [segment {
+       "segment": "E"
+       }]
+      }]
+     }]
+    }
+   }]
+  }, method {
+  "name": "mapErr",
+  "type-params": "R",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Result"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
+    }, symbol {
+    "namespace": [segment {
+     "segment": "R"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "Err"
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "apply",
+      "parent": symbol {
+       "content": "mapper"
+       }
+      },
+     "arguments": [symbol {
+      "content": "error"
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "mapper",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Function"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "E"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "R"
+      }]
+     }]
+    }
+   }]
+  }, method {
+  "name": "match",
+  "type-params": "R",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "R"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "apply",
+     "parent": symbol {
+      "content": "onError"
+      }
+     },
+    "arguments": [symbol {
+     "content": "error"
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "onValid",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Function"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "T"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "R"
+      }]
+     }]
+    }
+   }, definition {
+   "name": "onError",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Function"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "E"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "R"
       }]
      }]
     }
    }]
   }],
  "type-params": [symbol {
-  "value": "T"
+  "namespace": [segment {
+   "segment": "T"
+   }]
   }, symbol {
-  "value": "E"
+  "namespace": [segment {
+   "segment": "E"
+   }]
   }],
  "modifiers": [modifier {
   "modifier-value": "public"
@@ -265,8 +502,11 @@
  "params": [definition {
   "name": "error",
   "returns": symbol {
-   "value": "E"
+   "namespace": [segment {
+    "segment": "E"
+    }]
    }
   }]
+ }, whitespace {
  }]
 }

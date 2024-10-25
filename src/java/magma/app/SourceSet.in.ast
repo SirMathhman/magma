@@ -1,14 +1,46 @@
 {
 "children": [package {
- "namespace": ["magma.app"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }]
  }, import {
- "namespace": ["magma.api.result.Result"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Result"
+  }]
  }, import {
- "namespace": ["java.io.IOException"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "io"
+  }, segment {
+  "segment": "IOException"
+  }]
  }, import {
- "namespace": ["java.nio.file.Path"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "nio"
+  }, segment {
+  "segment": "file"
+  }, segment {
+  "segment": "Path"
+  }]
  }, import {
- "namespace": ["java.util.Set"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Set"
+  }]
  }, interface {
  "name": "SourceSet",
  "modifiers": [modifier {
@@ -18,19 +50,29 @@
   "name": "collect",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "Set"
+     "namespace": [segment {
+      "segment": "Set"
+      }]
      },
     "children": [symbol {
-     "value": "Path"
+     "namespace": [segment {
+      "segment": "Path"
+      }]
      }]
     }, symbol {
-    "value": "IOException"
+    "namespace": [segment {
+     "segment": "IOException"
+     }]
     }]
    }
+  }, whitespace {
   }]
+ }, whitespace {
  }]
 }

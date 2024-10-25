@@ -2,31 +2,81 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Err"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Err"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Ok"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Ok"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.GenerateException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "GenerateException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.MapNode"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "MapNode"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.Node"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "Node"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.ParseException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "ParseException"
+  }]
  }, function {
  "name": "ExtractRule",
  "interface": symbol {
-  "value": "Rule"
+  "namespace": [segment {
+   "segment": "Rule"
+   }]
   },
  "modifiers": [modifier {
   "modifier-value": "public"
@@ -34,19 +84,27 @@
  "params": [definition {
   "name": "propertyKey",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    }
   }],
  "children": [method {
   "name": "parse",
   "returns": generic {
    "base": symbol {
-    "value": "RuleResult"
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }, symbol {
-    "value": "ParseException"
+    "namespace": [segment {
+     "segment": "ParseException"
+     }]
     }]
    },
   "children": [if {
@@ -88,19 +146,27 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "generate",
   "returns": generic {
    "base": symbol {
-    "value": "RuleResult"
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, symbol {
-    "value": "GenerateException"
+    "namespace": [segment {
+     "segment": "GenerateException"
+     }]
     }]
    },
   "children": [return {
@@ -144,7 +210,9 @@
   "params": [definition {
    "name": "node",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, implements {

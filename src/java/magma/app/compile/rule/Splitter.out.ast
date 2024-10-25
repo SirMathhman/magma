@@ -2,28 +2,42 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
  }, trait {
  "name": "Splitter",
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "content": [method {
   "name": "split",
   "returns": generic {
    "base": symbol {
-    "value": "List"
+    "namespace": [segment {
+     "segment": "List"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }]
    },
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
+  }, whitespace {
   }]
+ }, whitespace {
  }]
 }

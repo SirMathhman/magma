@@ -1,2 +1,0 @@
-import magma.app.ApplicationException;
-public class def CompileException extends ApplicationException () => {}

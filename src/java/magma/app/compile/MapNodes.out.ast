@@ -2,29 +2,63 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.Tuple"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "Tuple"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.java.NativeListCollector"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "java"
+  }, segment {
+  "segment": "NativeListCollector"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.HashMap"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "HashMap"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.stream.Stream"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Stream"
+  }]
  }, function {
  "name": "MapNodes ",
  "children": [method {
   "name": "merge0",
   "returns": symbol {
-   "value": "MapNode"
+   "namespace": [segment {
+    "segment": "MapNode"
+    }]
    },
   "children": [declaration {
    "name": "stringsCopy",
@@ -32,12 +66,18 @@
     "content": "HashMap"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "type-arguments": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }],
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -73,12 +113,18 @@
           },
          "type-arguments": [generic {
           "base": symbol {
-           "value": "Tuple"
+           "namespace": [segment {
+            "segment": "Tuple"
+            }]
            },
           "children": [symbol {
-           "value": "String"
+           "namespace": [segment {
+            "segment": "String"
+            }]
            }, symbol {
-           "value": "String"
+           "namespace": [segment {
+            "segment": "String"
+            }]
            }]
           }]
          }]
@@ -105,12 +151,18 @@
           },
          "type-arguments": [generic {
           "base": symbol {
-           "value": "Tuple"
+           "namespace": [segment {
+            "segment": "Tuple"
+            }]
            },
           "children": [symbol {
-           "value": "String"
+           "namespace": [segment {
+            "segment": "String"
+            }]
            }, symbol {
-           "value": "String"
+           "namespace": [segment {
+            "segment": "String"
+            }]
            }]
           }]
          }]
@@ -149,16 +201,24 @@
     "content": "HashMap"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "type-arguments": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }]
     }],
    "modifiers": [modifier {
@@ -195,16 +255,24 @@
           },
          "type-arguments": [generic {
           "base": symbol {
-           "value": "Tuple"
+           "namespace": [segment {
+            "segment": "Tuple"
+            }]
            },
           "children": [symbol {
-           "value": "String"
+           "namespace": [segment {
+            "segment": "String"
+            }]
            }, generic {
            "base": symbol {
-            "value": "List"
+            "namespace": [segment {
+             "segment": "List"
+             }]
             },
            "children": [symbol {
-            "value": "String"
+            "namespace": [segment {
+             "segment": "String"
+             }]
             }]
            }]
           }]
@@ -232,16 +300,24 @@
           },
          "type-arguments": [generic {
           "base": symbol {
-           "value": "Tuple"
+           "namespace": [segment {
+            "segment": "Tuple"
+            }]
            },
           "children": [symbol {
-           "value": "String"
+           "namespace": [segment {
+            "segment": "String"
+            }]
            }, generic {
            "base": symbol {
-            "value": "List"
+            "namespace": [segment {
+             "segment": "List"
+             }]
             },
            "children": [symbol {
-            "value": "String"
+            "namespace": [segment {
+             "segment": "String"
+             }]
             }]
            }]
           }]
@@ -281,12 +357,18 @@
     "content": "HashMap"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "type-arguments": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }],
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -322,12 +404,18 @@
           },
          "type-arguments": [generic {
           "base": symbol {
-           "value": "Tuple"
+           "namespace": [segment {
+            "segment": "Tuple"
+            }]
            },
           "children": [symbol {
-           "value": "String"
+           "namespace": [segment {
+            "segment": "String"
+            }]
            }, symbol {
-           "value": "Node"
+           "namespace": [segment {
+            "segment": "Node"
+            }]
            }]
           }]
          }]
@@ -354,12 +442,18 @@
           },
          "type-arguments": [generic {
           "base": symbol {
-           "value": "Tuple"
+           "namespace": [segment {
+            "segment": "Tuple"
+            }]
            },
           "children": [symbol {
-           "value": "String"
+           "namespace": [segment {
+            "segment": "String"
+            }]
            }, symbol {
-           "value": "Node"
+           "namespace": [segment {
+            "segment": "Node"
+            }]
            }]
           }]
          }]
@@ -398,16 +492,24 @@
     "content": "HashMap"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "type-arguments": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "Node"
+     "namespace": [segment {
+      "segment": "Node"
+      }]
      }]
     }],
    "modifiers": [modifier {
@@ -444,16 +546,24 @@
           },
          "type-arguments": [generic {
           "base": symbol {
-           "value": "Tuple"
+           "namespace": [segment {
+            "segment": "Tuple"
+            }]
            },
           "children": [symbol {
-           "value": "String"
+           "namespace": [segment {
+            "segment": "String"
+            }]
            }, generic {
            "base": symbol {
-            "value": "List"
+            "namespace": [segment {
+             "segment": "List"
+             }]
             },
            "children": [symbol {
-            "value": "Node"
+            "namespace": [segment {
+             "segment": "Node"
+             }]
             }]
            }]
           }]
@@ -481,16 +591,24 @@
           },
          "type-arguments": [generic {
           "base": symbol {
-           "value": "Tuple"
+           "namespace": [segment {
+            "segment": "Tuple"
+            }]
            },
           "children": [symbol {
-           "value": "String"
+           "namespace": [segment {
+            "segment": "String"
+            }]
            }, generic {
            "base": symbol {
-            "value": "List"
+            "namespace": [segment {
+             "segment": "List"
+             }]
             },
            "children": [symbol {
-            "value": "Node"
+            "namespace": [segment {
+             "segment": "Node"
+             }]
             }]
            }]
           }]
@@ -554,12 +672,16 @@
   "params": [definition {
    "name": "self",
    "returns": symbol {
-    "value": "MapNode"
+    "namespace": [segment {
+     "segment": "MapNode"
+     }]
     }
    }, definition {
    "name": "other",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, whitespace {

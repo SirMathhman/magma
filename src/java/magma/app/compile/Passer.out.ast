@@ -2,53 +2,151 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.lang.JavaLang"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "JavaLang"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.pass.ClassPasser"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "pass"
+  }, segment {
+  "segment": "ClassPasser"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.pass.ImportPasser"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "pass"
+  }, segment {
+  "segment": "ImportPasser"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.pass.InterfacePasser"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "pass"
+  }, segment {
+  "segment": "InterfacePasser"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.pass.RecordPasser"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "pass"
+  }, segment {
+  "segment": "RecordPasser"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.ArrayList"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "ArrayList"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.Optional"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.stream.Collectors"]
- }, import {
- "after-import": "
-",
- "namespace": ["static magma.app.compile.lang.CommonLang.*"]
- }, import {
- "after-import": "
-",
- "namespace": ["static magma.app.compile.lang.JavaLang.*"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Collectors"
+  }]
+ }, import-static {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "CommonLang"
+  }, segment {
+  "segment": "*"
+  }]
+ }, import-static {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "JavaLang"
+  }, segment {
+  "segment": "*"
+  }]
  }, function {
  "name": "Passer ",
  "children": [method {
   "name": "pass",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -83,17 +181,23 @@
   "params": [definition {
    "name": "node",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, method {
   "name": "passChildren",
   "returns": generic {
    "base": symbol {
-    "value": "List"
+    "namespace": [segment {
+     "segment": "List"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }]
    },
   "children": [return {
@@ -152,17 +256,23 @@
    "name": "children",
    "returns": generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "Node"
+     "namespace": [segment {
+      "segment": "Node"
+      }]
      }]
     }
    }]
   }, method {
   "name": "passRootChild",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -227,17 +337,23 @@
   "params": [definition {
    "name": "node",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, method {
   "name": "passRootMemberModifiers",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }]
    },
   "children": [if {
@@ -252,11 +368,15 @@
      },
     "arguments": [symbol {
      "content": "MODIFIERS"
-     }, lambda {
-     "before-arrow": " modifiers ",
-     "after-arrow": " {
+     }, subtraction {
+     "left": symbol {
+      "content": "modifiers"
+      },
+     "right": lambda {
+      "before-arrow": "> {
             final var inputModifiers = modifiers.stream()
-                    .map(modifier -> modifier.findString(MODIFIER_VALUE))
+                    .map(modifier ",
+      "after-arrow": " modifier.findString(MODIFIER_VALUE))
                     .flatMap(Optional::stream)
                     .collect(Collectors.toSet());
 
@@ -267,6 +387,7 @@
                     .map(modifier -> new MapNode().retype(MODIFIER_TYPE).withString(MODIFIER_VALUE, modifier))
                     .toList();
         }"
+      }
      }]
     }
    }, whitespace {
@@ -279,7 +400,9 @@
   "params": [definition {
    "name": "node",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, whitespace {

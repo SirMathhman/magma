@@ -2,15 +2,31 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["java.util.Optional"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.stream.Stream"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Stream"
+  }]
  }, function {
  "name": "LastLocator",
  "interface": symbol {
-  "value": "Locator"
+  "namespace": [segment {
+   "segment": "Locator"
+   }]
   },
  "modifiers": [modifier {
   "modifier-value": "public"
@@ -18,17 +34,23 @@
  "params": [definition {
   "name": "slice",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    }
   }],
  "children": [method {
   "name": "locate0",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "Integer"
+    "namespace": [segment {
+     "segment": "Integer"
+     }]
     }]
    },
   "children": [declaration {
@@ -40,7 +62,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "slice"
@@ -86,17 +110,23 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "locate",
   "returns": generic {
    "base": symbol {
-    "value": "Stream"
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
     },
    "children": [symbol {
-    "value": "Integer"
+    "namespace": [segment {
+     "segment": "Integer"
+     }]
     }]
    },
   "children": [return {
@@ -124,7 +154,9 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, implements {

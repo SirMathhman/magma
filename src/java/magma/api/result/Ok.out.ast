@@ -2,65 +2,533 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.Tuple"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "Tuple"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.Optional"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.function.Function"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "function"
+  }, segment {
+  "segment": "Function"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.function.Supplier"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "function"
+  }, segment {
+  "segment": "Supplier"
+  }]
  }, function {
  "name": "Ok<T, E> implements Result<T, E> ",
- "body": "
-    private final T value;
-
-    public Ok(T value) {
-        this.value = value;
+ "children": [definition {
+  "name": "value",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "T"
+    }]
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, method {
+  "name": "Ok",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [assignment {
+   "content": "value",
+   "child": "value",
+   "parent": symbol {
+    "content": "this"
     }
-
-    @Override
-    public Optional<T> findValue() {
-        return Optional.of(value);
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "value",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
     }
-
-    @Override
-    public Optional<E> findError() {
-        return Optional.empty();
+   }]
+  }, method {
+  "name": "findValue",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "of",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [symbol {
+     "content": "value"
+     }]
     }
-
-    @Override
-    public <R> Result<R, E> mapValue(Function<T, R> mapper) {
-        return new Ok<>(mapper.apply(value));
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "findError",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "E"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "empty",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     }
     }
-
-    @Override
-    public boolean isErr() {
-        return false;
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "mapValue",
+  "type-params": "R",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Result"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "R"
+     }]
+    }, symbol {
+    "namespace": [segment {
+     "segment": "E"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "Ok"
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "apply",
+      "parent": symbol {
+       "content": "mapper"
+       }
+      },
+     "arguments": [symbol {
+      "content": "value"
+      }]
+     }]
     }
-
-    @Override
-    public <R> Result<Tuple<T, R>, E> and(Supplier<Result<R, E>> supplier) {
-        return supplier.get().mapValue(inner -> new Tuple<>(value, inner));
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "mapper",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Function"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "T"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "R"
+      }]
+     }]
     }
-
-    @Override
-    public boolean isOk() {
-        return true;
+   }]
+  }, method {
+  "name": "isErr",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
+   },
+  "children": [return {
+   "value": symbol {
+    "content": "false"
     }
-
-    @Override
-    public <R> Result<R, E> flatMapValue(Function<T, Result<R, E>> mapper) {
-        return mapper.apply(value);
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "and",
+  "type-params": "R",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Result"
+     }]
+    },
+   "children": [generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "T"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "R"
+      }]
+     }]
+    }, symbol {
+    "namespace": [segment {
+     "segment": "E"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "mapValue",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "get",
+       "parent": symbol {
+        "content": "supplier"
+        }
+       }
+      }
+     },
+    "arguments": [invocation {
+     "caller": lambda {
+      "before-arrow": "inner ",
+      "after-arrow": " new Tuple<>"
+      },
+     "arguments": [symbol {
+      "content": "value"
+      }, symbol {
+      "content": "inner"
+      }]
+     }]
     }
-}",
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "supplier",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Supplier"
+      }]
+     },
+    "children": [generic {
+     "base": symbol {
+      "namespace": [segment {
+       "segment": "Result"
+       }]
+      },
+     "children": [symbol {
+      "namespace": [segment {
+       "segment": "R"
+       }]
+      }, symbol {
+      "namespace": [segment {
+       "segment": "E"
+       }]
+      }]
+     }]
+    }
+   }]
+  }, method {
+  "name": "isOk",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
+   },
+  "children": [return {
+   "value": symbol {
+    "content": "true"
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "flatMapValue",
+  "type-params": "R",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Result"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "R"
+     }]
+    }, symbol {
+    "namespace": [segment {
+     "segment": "E"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "apply",
+     "parent": symbol {
+      "content": "mapper"
+      }
+     },
+    "arguments": [symbol {
+     "content": "value"
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "mapper",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Function"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "T"
+      }]
+     }, generic {
+     "base": symbol {
+      "namespace": [segment {
+       "segment": "Result"
+       }]
+      },
+     "children": [symbol {
+      "namespace": [segment {
+       "segment": "R"
+       }]
+      }, symbol {
+      "namespace": [segment {
+       "segment": "E"
+       }]
+      }]
+     }]
+    }
+   }]
+  }, method {
+  "name": "mapErr",
+  "type-params": "R",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Result"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
+    }, symbol {
+    "namespace": [segment {
+     "segment": "R"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "Ok"
+     },
+    "arguments": [symbol {
+     "content": "value"
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "mapper",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Function"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "E"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "R"
+      }]
+     }]
+    }
+   }]
+  }, method {
+  "name": "match",
+  "type-params": "R",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "R"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "apply",
+     "parent": symbol {
+      "content": "onValid"
+      }
+     },
+    "arguments": [symbol {
+     "content": "value"
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "onValid",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Function"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "T"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "R"
+      }]
+     }]
+    }
+   }, definition {
+   "name": "onError",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Function"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "E"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "R"
+      }]
+     }]
+    }
+   }]
+  }, whitespace {
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }]
+ }, whitespace {
  }]
 }

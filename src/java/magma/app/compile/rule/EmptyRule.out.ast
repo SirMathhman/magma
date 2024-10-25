@@ -2,44 +2,209 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Err"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Err"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Ok"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Ok"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.GenerateException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "GenerateException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.MapNode"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "MapNode"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.Node"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "Node"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.ParseException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "ParseException"
+  }]
  }, function {
  "name": "EmptyRule implements Rule ",
- "body": "
-    @Override
-    public RuleResult<Node, ParseException> parse(String input) {
-        return input.isEmpty()
-                ? new RuleResult<>(new Ok<>(new MapNode()))
-                : new RuleResult<>(new Err<>(new ParseException("Input is not empty", input)));
+ "children": [method {
+  "name": "parse",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "Node"
+     }]
+    }, symbol {
+    "namespace": [segment {
+     "segment": "ParseException"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": ternary {
+    "condition": invocation {
+     "caller": property-access {
+      "child": "isEmpty",
+      "parent": symbol {
+       "content": "input"
+       }
+      }
+     },
+    "ifFalse": construction {
+     "caller": symbol {
+      "content": "RuleResult"
+      },
+     "arguments": [construction {
+      "caller": symbol {
+       "content": "Err"
+       },
+      "arguments": [construction {
+       "caller": symbol {
+        "content": "ParseException"
+        },
+       "arguments": [string {
+        "value": "Input is not empty"
+        }, symbol {
+        "content": "input"
+        }]
+       }]
+      }]
+     },
+    "ifTrue": construction {
+     "caller": symbol {
+      "content": "RuleResult"
+      },
+     "arguments": [construction {
+      "caller": symbol {
+       "content": "Ok"
+       },
+      "arguments": [construction {
+       "caller": symbol {
+        "content": "MapNode"
+        }
+       }]
+      }]
+     }
     }
-
-    @Override
-    public RuleResult<String, GenerateException> generate(Node node) {
-        return new RuleResult<>(new Ok<>(""));
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
-}",
+   }]
+  }, method {
+  "name": "generate",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }, symbol {
+    "namespace": [segment {
+     "segment": "GenerateException"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "Ok"
+      },
+     "arguments": [string {
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Node"
+     }]
+    }
+   }]
+  }, whitespace {
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }]
+ }, whitespace {
  }]
 }

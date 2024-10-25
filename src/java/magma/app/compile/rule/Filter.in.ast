@@ -1,6 +1,14 @@
 {
 "children": [package {
- "namespace": ["magma.app.compile.rule"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }]
  }, interface {
  "name": "Filter",
  "modifiers": [modifier {
@@ -9,14 +17,20 @@
  "content": [method {
   "name": "filter",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
+  }, whitespace {
   }]
+ }, whitespace {
  }]
 }

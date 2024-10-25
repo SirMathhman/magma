@@ -1,0 +1,142 @@
+{
+"children": [import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Collector"
+  }]
+ }, import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "ArrayList"
+  }]
+ }, import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
+ }, function {
+ "name": "NativeListCollector<T> implements Collector<T, List<T>> ",
+ "children": [method {
+  "name": "initial",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "List"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "ArrayList"
+     }
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "fold",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "List"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
+    }]
+   },
+  "children": [declaration {
+   "name": "copy",
+   "caller": symbol {
+    "content": "ArrayList"
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [symbol {
+    "content": "current"
+    }]
+   }, invocation {
+   "caller": property-access {
+    "child": "add",
+    "parent": symbol {
+     "content": "copy"
+     }
+    },
+   "arguments": [symbol {
+    "content": "next"
+    }]
+   }, return {
+   "value": symbol {
+    "content": "copy"
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "current",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "List"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "T"
+      }]
+     }]
+    }
+   }, definition {
+   "name": "next",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
+    }
+   }]
+  }, whitespace {
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
+ }, whitespace {
+ }]
+}

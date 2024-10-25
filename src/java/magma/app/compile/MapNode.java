@@ -1,12 +1,12 @@
 package magma.app.compile;
 
 import magma.api.Tuple;
+import magma.api.stream.Stream;
 import magma.java.JavaList;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public record MapNode(
         Optional<String> type,
@@ -60,10 +60,6 @@ public record MapNode(
         return findNodeList(propertyKey).map(mapper).map(value -> withNodeList(propertyKey, value));
     }
 
-    private Stream<Tuple<String, List<Node>>> streamNodeLists0() {
-        return nodeLists.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
-    }
-
     @Override
     public Node withNode(String propertyKey, Node propertyValue) {
         final var copy = new HashMap<>(nodes);
@@ -74,10 +70,6 @@ public record MapNode(
     @Override
     public Optional<Node> findNode(String propertyKey) {
         return Optional.ofNullable(nodes.get(propertyKey));
-    }
-
-    private Stream<Tuple<String, Node>> streamNodes0() {
-        return nodes.entrySet().stream().map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));
     }
 
     @Override
@@ -95,10 +87,6 @@ public record MapNode(
     @Override
     public Optional<List<String>> findStringList(String propertyKey) {
         return Optional.ofNullable(stringLists.get(propertyKey));
-    }
-
-    private Stream<Tuple<String, String>> streamStrings0() {
-        return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
     }
 
     @Override
@@ -152,12 +140,6 @@ public record MapNode(
                 .collect(Collectors.joining(","));
     }
 
-    private Stream<Tuple<String, List<String>>> streamStringLists0() {
-        return stringLists.entrySet()
-                .stream()
-                .map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));
-    }
-
     @Override
     public boolean hasNodeList(String propertyKey) {
         return nodeLists.containsKey(propertyKey);
@@ -169,22 +151,24 @@ public record MapNode(
     }
 
     @Override
-    public magma.api.stream.Stream<Tuple<String, Node>> streamNodes() {
-        return new JavaList<>(streamNodes0().toList()).stream();
+    public Stream<Tuple<String, Node>> streamNodes() {
+        return new JavaList<>(nodes.entrySet().stream().map(entry -> new Tuple<>(entry.getKey(), entry.getValue())).toList()).stream();
     }
 
     @Override
-    public magma.api.stream.Stream<Tuple<String, List<Node>>> streamNodeLists() {
-        return new JavaList<>(streamNodeLists0().toList()).stream();
+    public Stream<Tuple<String, List<Node>>> streamNodeLists() {
+        return new JavaList<>(nodeLists.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue())).toList()).stream();
     }
 
     @Override
-    public magma.api.stream.Stream<Tuple<String, String>> streamStrings() {
-        return new JavaList<>(streamStrings0().toList()).stream();
+    public Stream<Tuple<String, String>> streamStrings() {
+        return new JavaList<>(strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue())).toList()).stream();
     }
 
     @Override
-    public magma.api.stream.Stream<Tuple<String, List<String>>> streamStringLists() {
-        return new JavaList<>(streamStringLists0().toList()).stream();
+    public Stream<Tuple<String, List<String>>> streamStringLists() {
+        return new JavaList<>(stringLists.entrySet()
+                .stream()
+                .map(entry -> new Tuple<>(entry.getKey(), entry.getValue())).toList()).stream();
     }
 }

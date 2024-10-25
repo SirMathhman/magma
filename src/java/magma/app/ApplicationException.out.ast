@@ -1,20 +1,101 @@
 {
 "children": [function {
  "name": "ApplicationException extends Exception ",
- "body": "
-    public ApplicationException(Exception cause) {
-        super(cause);
+ "children": [method {
+  "name": "ApplicationException",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [invocation {
+   "caller": symbol {
+    "content": "super"
+    },
+   "arguments": [symbol {
+    "content": "cause"
+    }]
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "cause",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Exception"
+     }]
     }
-
-    public ApplicationException() {
+   }]
+  }, method {
+  "name": "ApplicationException",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [whitespace {
+   }]
+  }, method {
+  "name": "ApplicationException",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [invocation {
+   "caller": symbol {
+    "content": "super"
+    },
+   "arguments": [symbol {
+    "content": "message"
+    }]
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "message",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
-
-    public ApplicationException(String message) {
-        super(message);
+   }]
+  }, method {
+  "name": "ApplicationException",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [invocation {
+   "caller": symbol {
+    "content": "super"
+    },
+   "arguments": [symbol {
+    "content": "message"
+    }, symbol {
+    "content": "cause"
+    }]
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "message",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
-}",
+   }, definition {
+   "name": "cause",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Exception"
+     }]
+    }
+   }]
+  }, whitespace {
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }]
+ }, whitespace {
  }]
 }

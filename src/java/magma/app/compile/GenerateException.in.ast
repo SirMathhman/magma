@@ -1,15 +1,62 @@
 {
 "children": [package {
- "namespace": ["magma.app.compile"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }]
  }, class {
  "name": "GenerateException extends CompileException ",
- "body": "
-    public GenerateException(String message, Node context) {
-        super(message, "\n" + context.toString());
+ "children": [method {
+  "name": "GenerateException",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [invocation {
+   "caller": symbol {
+    "content": "super"
+    },
+   "arguments": [symbol {
+    "content": "message"
+    }, invocation {
+    "caller": addition {
+     "left": string {
+      "value": "\n"
+      },
+     "right": property-access {
+      "child": "toString",
+      "parent": symbol {
+       "content": "context"
+       }
+      }
+     }
+    }]
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "message",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
-}",
+   }, definition {
+   "name": "context",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Node"
+     }]
+    }
+   }]
+  }, whitespace {
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }]
+ }, whitespace {
  }]
 }

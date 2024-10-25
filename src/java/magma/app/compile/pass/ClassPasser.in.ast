@@ -1,24 +1,74 @@
 {
 "children": [package {
- "namespace": ["magma.app.compile.pass"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "pass"
+  }]
  }, import {
- "namespace": ["magma.app.compile.Node"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "Node"
+  }]
  }, import {
- "namespace": ["java.util.Optional"]
- }, import {
- "namespace": ["static magma.app.compile.lang.JavaLang.CLASS_TYPE"]
- }, import {
- "namespace": ["static magma.app.compile.lang.MagmaLang.FUNCTION"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
+ }, import-static {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "JavaLang"
+  }, segment {
+  "segment": "CLASS_TYPE"
+  }]
+ }, import-static {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "MagmaLang"
+  }, segment {
+  "segment": "FUNCTION"
+  }]
  }, class {
  "name": "ClassPasser ",
  "children": [method {
   "name": "pass",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }]
    },
   "children": [if {
@@ -47,7 +97,9 @@
   "params": [definition {
    "name": "node",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, whitespace {

@@ -2,23 +2,30 @@
 "children": [function {
  "name": "CompileResult",
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "beforePass",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    }
   }, definition {
   "name": "afterPass",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    }
   }, definition {
   "name": "output",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    }
   }]
+ }, whitespace {
  }]
 }

@@ -1,6 +1,12 @@
 {
 "children": [package {
- "namespace": ["magma.app.compile"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }]
  }, record {
  "name": "CompileResult",
  "modifiers": [modifier {
@@ -9,18 +15,25 @@
  "params": [definition {
   "name": "beforePass",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    }
   }, definition {
   "name": "afterPass",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    }
   }, definition {
   "name": "output",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    }
   }]
+ }, whitespace {
  }]
 }

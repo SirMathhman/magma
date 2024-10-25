@@ -1,5 +1,0 @@
-import magma.app.Application;
-import magma.app.ApplicationException;
-import magma.app.DirectorySourceSet;
-import java.nio.file.Paths;
-public class def Main () => {}

@@ -1,8 +1,22 @@
 {
 "children": [package {
- "namespace": ["magma.app.compile.rule"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }]
  }, import {
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
  }, interface {
  "name": "Splitter",
  "modifiers": [modifier {
@@ -12,18 +26,26 @@
   "name": "split",
   "returns": generic {
    "base": symbol {
-    "value": "List"
+    "namespace": [segment {
+     "segment": "List"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }]
    },
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
+  }, whitespace {
   }]
+ }, whitespace {
  }]
 }

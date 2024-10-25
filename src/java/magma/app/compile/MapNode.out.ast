@@ -2,67 +2,133 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.Tuple"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "Tuple"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.*"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Stream"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.function.Function"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "java"
+  }, segment {
+  "segment": "JavaList"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.stream.Collectors"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "*"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.stream.Stream"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "function"
+  }, segment {
+  "segment": "Function"
+  }]
+ }, import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Collectors"
+  }]
  }, function {
  "name": "MapNode",
  "interface": symbol {
-  "value": "Node"
+  "namespace": [segment {
+   "segment": "Node"
+   }]
   },
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "type",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }]
    }
   }, definition {
   "name": "strings",
   "returns": generic {
    "base": symbol {
-    "value": "Map"
+    "namespace": [segment {
+     "segment": "Map"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }]
    }
   }, definition {
   "name": "stringLists",
   "returns": generic {
    "base": symbol {
-    "value": "Map"
+    "namespace": [segment {
+     "segment": "Map"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }]
     }]
    }
@@ -70,28 +136,42 @@
   "name": "nodes",
   "returns": generic {
    "base": symbol {
-    "value": "Map"
+    "namespace": [segment {
+     "segment": "Map"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }]
    }
   }, definition {
   "name": "nodeLists",
   "returns": generic {
    "base": symbol {
-    "value": "Map"
+    "namespace": [segment {
+     "segment": "Map"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "Node"
+     "namespace": [segment {
+      "segment": "Node"
+      }]
      }]
     }]
    }
@@ -99,7 +179,9 @@
  "children": [method {
   "name": "MapNode",
   "returns": symbol {
-   "value": "public"
+   "namespace": [segment {
+    "segment": "public"
+    }]
    },
   "children": [invocation {
    "caller": symbol {
@@ -141,11 +223,14 @@
       }
      }
     }]
+   }, whitespace {
    }]
   }, method {
   "name": "formatLine",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "children": [return {
    "value": addition {
@@ -184,6 +269,7 @@
       }
      }
     }
+   }, whitespace {
    }],
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -193,33 +279,65 @@
   "params": [definition {
    "name": "depth",
    "returns": symbol {
-    "value": "int"
+    "namespace": [segment {
+     "segment": "int"
+     }]
     }
    }, definition {
    "name": "key",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "value",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "formatNodeList",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "children": [return {
    "value": invocation {
     "caller": property-access {
      "child": "collect",
-     "parent": lambda {
-      "before-arrow": "values.stream()
-                .map(node ",
-      "after-arrow": " node.format(depth + 1))
-                "
+     "parent": invocation {
+      "caller": property-access {
+       "child": "map",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "stream",
+         "parent": symbol {
+          "content": "values"
+          }
+         }
+        }
+       },
+      "arguments": [invocation {
+       "caller": property-access {
+        "child": "format",
+        "parent": lambda {
+         "before-arrow": "node ",
+         "after-arrow": " node"
+         }
+        },
+       "arguments": [addition {
+        "left": symbol {
+         "content": "depth"
+         },
+        "right": number {
+         "value": "1"
+         }
+        }]
+       }]
       }
      },
     "arguments": [invocation {
@@ -238,6 +356,7 @@
       }]
      }]
     }
+   }, whitespace {
    }],
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -247,16 +366,22 @@
   "params": [definition {
    "name": "depth",
    "returns": symbol {
-    "value": "int"
+    "namespace": [segment {
+     "segment": "int"
+     }]
     }
    }, definition {
    "name": "values",
    "returns": generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "Node"
+     "namespace": [segment {
+      "segment": "Node"
+      }]
      }]
     }
    }]
@@ -264,16 +389,21 @@
   "name": "findType",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }]
    },
   "children": [return {
    "value": symbol {
     "content": "type"
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -284,7 +414,9 @@
   }, method {
   "name": "retype",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -311,6 +443,7 @@
      "content": "nodeLists"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -321,24 +454,48 @@
   "params": [definition {
    "name": "type",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "is",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "children": [return {
    "value": invocation {
     "caller": property-access {
      "child": "isPresent",
-     "parent": lambda {
-      "before-arrow": "this.type.filter(value ",
-      "after-arrow": " value.equals(type))"
+     "parent": invocation {
+      "caller": property-access {
+       "child": "filter",
+       "parent": property-access {
+        "child": "type",
+        "parent": symbol {
+         "content": "this"
+         }
+        }
+       },
+      "arguments": [invocation {
+       "caller": property-access {
+        "child": "equals",
+        "parent": lambda {
+         "before-arrow": "value ",
+         "after-arrow": " value"
+         }
+        },
+       "arguments": [symbol {
+        "content": "type"
+        }]
+       }]
       }
      }
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -349,13 +506,17 @@
   "params": [definition {
    "name": "type",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "withString",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "children": [declaration {
    "name": "copy",
@@ -363,7 +524,9 @@
     "content": "HashMap"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "strings"
@@ -400,6 +563,7 @@
      "content": "nodeLists"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -410,22 +574,30 @@
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "propertyValue",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "findString",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }]
    },
   "children": [return {
@@ -448,6 +620,7 @@
       }]
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -458,24 +631,59 @@
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "mapNodeList",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }]
    },
   "children": [return {
-   "value": lambda {
-    "before-arrow": "findNodeList(propertyKey).map(mapper).map(value ",
-    "after-arrow": " withNodeList(propertyKey, value))"
+   "value": invocation {
+    "caller": property-access {
+     "child": "map",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "map",
+       "parent": invocation {
+        "caller": symbol {
+         "content": "findNodeList"
+         },
+        "arguments": [symbol {
+         "content": "propertyKey"
+         }]
+        }
+       },
+      "arguments": [symbol {
+       "content": "mapper"
+       }]
+      }
+     },
+    "arguments": [invocation {
+     "caller": lambda {
+      "before-arrow": "value ",
+      "after-arrow": " withNodeList"
+      },
+     "arguments": [symbol {
+      "content": "propertyKey"
+      }, symbol {
+      "content": "value"
+      }]
+     }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -486,69 +694,49 @@
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "mapper",
    "returns": generic {
     "base": symbol {
-     "value": "Function"
+     "namespace": [segment {
+      "segment": "Function"
+      }]
      },
     "children": [generic {
      "base": symbol {
-      "value": "List"
+      "namespace": [segment {
+       "segment": "List"
+       }]
       },
      "children": [symbol {
-      "value": "Node"
+      "namespace": [segment {
+       "segment": "Node"
+       }]
       }]
      }, generic {
      "base": symbol {
-      "value": "List"
+      "namespace": [segment {
+       "segment": "List"
+       }]
       },
      "children": [symbol {
-      "value": "Node"
+      "namespace": [segment {
+       "segment": "Node"
+       }]
       }]
      }]
     }
-   }]
-  }, method {
-  "name": "streamNodeLists",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Tuple"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "Node"
-      }]
-     }]
-    }]
-   },
-  "children": [return {
-   "value": lambda {
-    "before-arrow": "nodeLists.entrySet().stream().map(pair ",
-    "after-arrow": " new Tuple<>(pair.getKey(), pair.getValue()))"
-    }
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "modifier-value": "public"
    }]
   }, method {
   "name": "withNode",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "children": [declaration {
    "name": "copy",
@@ -556,7 +744,9 @@
     "content": "HashMap"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "nodes"
@@ -593,6 +783,7 @@
      "content": "nodeLists"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -603,22 +794,30 @@
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "propertyValue",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, method {
   "name": "findNode",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }]
    },
   "children": [return {
@@ -641,6 +840,7 @@
       }]
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -651,42 +851,17 @@
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
-    }
-   }]
-  }, method {
-  "name": "streamNodes",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Tuple"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, symbol {
-     "value": "Node"
+    "namespace": [segment {
+     "segment": "String"
      }]
-    }]
-   },
-  "children": [return {
-   "value": lambda {
-    "before-arrow": "nodes.entrySet().stream().map(entry ",
-    "after-arrow": " new Tuple<>(entry.getKey(), entry.getValue()))"
     }
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "modifier-value": "public"
    }]
   }, method {
   "name": "hasNode",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -700,6 +875,7 @@
      "content": "node"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -710,13 +886,17 @@
   "params": [definition {
    "name": "node",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "withStringList",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "children": [declaration {
    "name": "copy",
@@ -724,7 +904,9 @@
     "content": "HashMap"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "stringLists"
@@ -761,6 +943,7 @@
      "content": "nodeLists"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -771,16 +954,22 @@
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "propertyValues",
    "returns": generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }]
     }
    }]
@@ -788,14 +977,20 @@
   "name": "findStringList",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }]
     }]
    },
@@ -819,6 +1014,7 @@
       }]
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -829,50 +1025,29 @@
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
-    }
-   }]
-  }, method {
-  "name": "streamStrings",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Tuple"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, symbol {
-     "value": "String"
+    "namespace": [segment {
+     "segment": "String"
      }]
-    }]
-   },
-  "children": [return {
-   "value": lambda {
-    "before-arrow": "strings.entrySet().stream().map(pair ",
-    "after-arrow": " new Tuple<>(pair.getKey(), pair.getValue()))"
     }
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "modifier-value": "public"
    }]
   }, method {
   "name": "findNodeList",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "Node"
+     "namespace": [segment {
+      "segment": "Node"
+      }]
      }]
     }]
    },
@@ -896,6 +1071,7 @@
       }]
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -906,13 +1082,17 @@
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "withNodeList",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "children": [declaration {
    "name": "copy",
@@ -920,7 +1100,9 @@
     "content": "HashMap"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "nodeLists"
@@ -957,6 +1139,7 @@
      "content": "copy"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -967,23 +1150,31 @@
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "values",
    "returns": generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "Node"
+     "namespace": [segment {
+      "segment": "Node"
+      }]
      }]
     }
    }]
   }, method {
   "name": "toString",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -994,6 +1185,7 @@
      "value": "0"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -1004,7 +1196,9 @@
   }, method {
   "name": "format",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "children": [invocation {
    "caller": property-access {
@@ -1017,12 +1211,33 @@
    "arguments": [string {
     }]
    }, declaration {
-   "before-arrow": " formatMap(depth, strings, value ",
    "name": "joinedStrings",
-   "after-arrow": " "\"" + value + "\"")",
-   "returns": symbol {
-    "value": "var"
+   "caller": symbol {
+    "content": "formatMap"
     },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [symbol {
+    "content": "depth"
+    }, symbol {
+    "content": "strings"
+    }, addition {
+    "left": lambda {
+     "before-arrow": " value ",
+     "after-arrow": " "\"" "
+     },
+    "right": addition {
+     "left": symbol {
+      "content": "value"
+      },
+     "right": string {
+      "value": "\""
+      }
+     }
+    }],
    "modifiers": [modifier {
     "modifier-value": "final"
     }]
@@ -1032,7 +1247,9 @@
     "content": "formatMap"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "depth"
@@ -1048,22 +1265,64 @@
     "modifier-value": "final"
     }]
    }, declaration {
-   "before-arrow": " formatMap(depth, nodes, value ",
    "name": "joinedNodes",
-   "after-arrow": " value.format(depth + 1))",
-   "returns": symbol {
-    "value": "var"
+   "caller": symbol {
+    "content": "formatMap"
     },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [symbol {
+    "content": "depth"
+    }, symbol {
+    "content": "nodes"
+    }, invocation {
+    "caller": property-access {
+     "child": "format",
+     "parent": lambda {
+      "before-arrow": "value ",
+      "after-arrow": " value"
+      }
+     },
+    "arguments": [addition {
+     "left": symbol {
+      "content": "depth"
+      },
+     "right": number {
+      "value": "1"
+      }
+     }]
+    }],
    "modifiers": [modifier {
     "modifier-value": "final"
     }]
    }, declaration {
-   "before-arrow": " formatMap(depth, nodeLists, values ",
    "name": "joinedNodeLists",
-   "after-arrow": " formatNodeList(depth, values))",
-   "returns": symbol {
-    "value": "var"
+   "caller": symbol {
+    "content": "formatMap"
     },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [symbol {
+    "content": "depth"
+    }, symbol {
+    "content": "nodeLists"
+    }, invocation {
+    "caller": lambda {
+     "before-arrow": "values ",
+     "after-arrow": " formatNodeList"
+     },
+    "arguments": [symbol {
+     "content": "depth"
+     }, symbol {
+     "content": "values"
+     }]
+    }],
    "modifiers": [modifier {
     "modifier-value": "final"
     }]
@@ -1074,10 +1333,14 @@
     },
    "returns": generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }]
     },
    "modifiers": [modifier {
@@ -1100,7 +1363,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     "value": ","
@@ -1119,6 +1384,7 @@
      "value": "{" + joined + "\n" + " ".repeat(depth) + "}"
      }
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -1129,23 +1395,48 @@
   "params": [definition {
    "name": "depth",
    "returns": symbol {
-    "value": "int"
+    "namespace": [segment {
+     "segment": "int"
+     }]
     }
    }]
   }, method {
   "name": "formatStringList",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "children": [return {
    "value": invocation {
     "caller": property-access {
      "child": "collect",
-     "parent": lambda {
-      "before-arrow": "list.stream()
-                .map(inner ",
-      "after-arrow": " "\"" + inner + "\"")
-                "
+     "parent": invocation {
+      "caller": property-access {
+       "child": "map",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "stream",
+         "parent": symbol {
+          "content": "list"
+          }
+         }
+        }
+       },
+      "arguments": [addition {
+       "left": lambda {
+        "before-arrow": "inner ",
+        "after-arrow": " "\"" "
+        },
+       "right": addition {
+        "left": symbol {
+         "content": "inner"
+         },
+        "right": string {
+         "value": "\""
+         }
+        }
+       }]
       }
      },
     "arguments": [invocation {
@@ -1164,6 +1455,7 @@
       }]
      }]
     }
+   }, whitespace {
    }],
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -1172,10 +1464,14 @@
    "name": "list",
    "returns": generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }]
     }
    }]
@@ -1183,18 +1479,62 @@
   "name": "formatMap",
   "type-params": "T",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "children": [return {
    "value": invocation {
     "caller": property-access {
      "child": "collect",
-     "parent": lambda {
-      "before-arrow": "set.entrySet()
-                .stream()
-                .map(entry ",
-      "after-arrow": " formatLine(depth, entry.getKey(), format.apply(entry.getValue())))
-                "
+     "parent": invocation {
+      "caller": property-access {
+       "child": "map",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "stream",
+         "parent": invocation {
+          "caller": property-access {
+           "child": "entrySet",
+           "parent": symbol {
+            "content": "set"
+            }
+           }
+          }
+         }
+        }
+       },
+      "arguments": [invocation {
+       "caller": lambda {
+        "before-arrow": "entry ",
+        "after-arrow": " formatLine"
+        },
+       "arguments": [symbol {
+        "content": "depth"
+        }, invocation {
+        "caller": property-access {
+         "child": "getKey",
+         "parent": symbol {
+          "content": "entry"
+          }
+         }
+        }, invocation {
+        "caller": property-access {
+         "child": "apply",
+         "parent": symbol {
+          "content": "format"
+          }
+         },
+        "arguments": [invocation {
+         "caller": property-access {
+          "child": "getValue",
+          "parent": symbol {
+           "content": "entry"
+           }
+          }
+         }]
+        }]
+       }]
       }
      },
     "arguments": [invocation {
@@ -1209,6 +1549,7 @@
       }]
      }]
     }
+   }, whitespace {
    }],
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -1216,115 +1557,43 @@
   "params": [definition {
    "name": "depth",
    "returns": symbol {
-    "value": "int"
+    "namespace": [segment {
+     "segment": "int"
+     }]
     }
    }, definition {
    "name": "set",
    "returns": generic {
     "base": symbol {
-     "value": "Map"
+     "namespace": [segment {
+      "segment": "Map"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }, symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }]
     }
    }, definition {
    "name": "format",
    "returns": generic {
     "base": symbol {
-     "value": "Function"
+     "namespace": [segment {
+      "segment": "Function"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, symbol {
-     "value": "String"
-     }]
-    }
-   }]
-  }, method {
-  "name": "streamStringLists",
-  "returns": generic {
-   "base": symbol {
-    "value": "Stream"
-    },
-   "children": [generic {
-    "base": symbol {
-     "value": "Tuple"
-     },
-    "children": [symbol {
-     "value": "String"
-     }, generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "String"
-      }]
-     }]
-    }]
-   },
-  "children": [return {
-   "value": lambda {
-    "before-arrow": "stringLists.entrySet()
-                .stream()
-                .map(entry ",
-    "after-arrow": " new Tuple<>(entry.getKey(), entry.getValue()))"
-    }
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "modifier-value": "public"
-   }]
-  }, method {
-  "name": "mapStringList",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [symbol {
-    "value": "Node"
-    }]
-   },
-  "children": [return {
-   "value": lambda {
-    "before-arrow": "findStringList(propertyKey).map(mapper).map(list ",
-    "after-arrow": " withStringList(propertyKey, list))"
-    }
-   }],
-  "annotations": [annotation {
-   "value": "Override"
-   }],
-  "modifiers": [modifier {
-   "modifier-value": "public"
-   }],
-  "params": [definition {
-   "name": "propertyKey",
-   "returns": symbol {
-    "value": "String"
-    }
-   }, definition {
-   "name": "mapper",
-   "returns": generic {
-    "base": symbol {
-     "value": "Function"
-     },
-    "children": [generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "String"
-      }]
-     }, generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "String"
+     "namespace": [segment {
+      "segment": "String"
       }]
      }]
     }
@@ -1332,7 +1601,9 @@
   }, method {
   "name": "hasNodeList",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -1346,6 +1617,7 @@
      "content": "propertyKey"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -1356,13 +1628,17 @@
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "merge",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -1378,6 +1654,7 @@
      "content": "other"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -1388,10 +1665,201 @@
   "params": [definition {
    "name": "other",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
+   }]
+  }, method {
+  "name": "streamNodes",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
+    },
+   "children": [generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "String"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "Node"
+      }]
+     }]
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "JavaList"
+     },
+    "arguments": [lambda {
+     "before-arrow": "nodes.entrySet().stream().map(entry ",
+     "after-arrow": " new Tuple<>(entry.getKey(), entry.getValue())).toList()).stream("
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "streamNodeLists",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
+    },
+   "children": [generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "String"
+      }]
+     }, generic {
+     "base": symbol {
+      "namespace": [segment {
+       "segment": "List"
+       }]
+      },
+     "children": [symbol {
+      "namespace": [segment {
+       "segment": "Node"
+       }]
+      }]
+     }]
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "JavaList"
+     },
+    "arguments": [lambda {
+     "before-arrow": "nodeLists.entrySet().stream().map(pair ",
+     "after-arrow": " new Tuple<>(pair.getKey(), pair.getValue())).toList()).stream("
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "streamStrings",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
+    },
+   "children": [generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "String"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "String"
+      }]
+     }]
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "JavaList"
+     },
+    "arguments": [lambda {
+     "before-arrow": "strings.entrySet().stream().map(pair ",
+     "after-arrow": " new Tuple<>(pair.getKey(), pair.getValue())).toList()).stream("
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "streamStringLists",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
+    },
+   "children": [generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "String"
+      }]
+     }, generic {
+     "base": symbol {
+      "namespace": [segment {
+       "segment": "List"
+       }]
+      },
+     "children": [symbol {
+      "namespace": [segment {
+       "segment": "String"
+       }]
+      }]
+     }]
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "JavaList"
+     },
+    "arguments": [lambda {
+     "before-arrow": "stringLists.entrySet()
+                .stream()
+                .map(entry ",
+     "after-arrow": " new Tuple<>(entry.getKey(), entry.getValue())).toList()).stream("
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
    }]
   }, implements {
   }]
+ }, whitespace {
  }]
 }

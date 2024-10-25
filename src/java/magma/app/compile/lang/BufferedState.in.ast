@@ -1,0 +1,628 @@
+{
+"children": [package {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "Tuple"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Stream"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "java"
+  }, segment {
+  "segment": "JavaList"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "ArrayList"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Deque"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
+ }, record {
+ "name": "BufferedState",
+ "children": [method {
+  "name": "BufferedState",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [invocation {
+   "caller": symbol {
+    "content": "this"
+    },
+   "arguments": [symbol {
+    "content": "queue"
+    }, construction {
+    "caller": symbol {
+     "content": "ArrayList"
+     }
+    }, construction {
+    "caller": symbol {
+     "content": "StringBuilder"
+     }
+    }, number {
+    "value": "0"
+    }]
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "queue",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Deque"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "Character"
+      }]
+     }]
+    }
+   }]
+  }, method {
+  "name": "isLevel",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
+   },
+  "children": [return {
+   "value": equals {
+    "left": invocation {
+     "caller": symbol {
+      "content": "depth"
+      }
+     },
+    "right": number {
+     "value": "0"
+     }
+    }
+   }, whitespace {
+   }]
+  }, method {
+  "name": "advance",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "BufferedState"
+    }]
+   },
+  "children": [if {
+   "content": " (buffer.isEmpty()) return this;"
+   }, declaration {
+   "name": "copy",
+   "caller": symbol {
+    "content": "ArrayList"
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [symbol {
+    "content": "segments"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, invocation {
+   "caller": property-access {
+    "child": "add",
+    "parent": symbol {
+     "content": "copy"
+     }
+    },
+   "arguments": [invocation {
+    "caller": property-access {
+     "child": "toString",
+     "parent": symbol {
+      "content": "buffer"
+      }
+     }
+    }]
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "BufferedState"
+     },
+    "arguments": [symbol {
+     "content": "queue"
+     }, symbol {
+     "content": "copy"
+     }, construction {
+     "caller": symbol {
+      "content": "StringBuilder"
+      }
+     }, symbol {
+     "content": "depth"
+     }]
+    }
+   }, whitespace {
+   }]
+  }, method {
+  "name": "pop",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
+    },
+   "children": [generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "BufferedState"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "Character"
+      }]
+     }]
+    }]
+   },
+  "children": [if {
+   "content": " (queue.isEmpty()) return Optional.empty();"
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "of",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "Tuple"
+      },
+     "arguments": [symbol {
+      "content": "this"
+      }, invocation {
+      "caller": property-access {
+       "child": "pop",
+       "parent": symbol {
+        "content": "queue"
+        }
+       }
+      }]
+     }]
+    }
+   }, whitespace {
+   }]
+  }, method {
+  "name": "append",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "BufferedState"
+    }]
+   },
+  "children": [invocation {
+   "caller": property-access {
+    "child": "append",
+    "parent": invocation {
+     "caller": symbol {
+      "content": "buffer"
+      }
+     }
+    },
+   "arguments": [symbol {
+    "content": "c"
+    }]
+   }, return {
+   "value": symbol {
+    "content": "this"
+    }
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "c",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Character"
+     }]
+    }
+   }]
+  }, method {
+  "name": "withDepth",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "BufferedState"
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "BufferedState"
+     },
+    "arguments": [symbol {
+     "content": "queue"
+     }, symbol {
+     "content": "segments"
+     }, symbol {
+     "content": "buffer"
+     }, symbol {
+     "content": "depth"
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "depth",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "int"
+     }]
+    }
+   }]
+  }, method {
+  "name": "peek",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "Character"
+     }]
+    }]
+   },
+  "children": [if {
+   "content": " (queue.isEmpty()) return Optional.empty();"
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "of",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "peek",
+      "parent": symbol {
+       "content": "queue"
+       }
+      }
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "popAndAppend",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
+    },
+   "children": [generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "BufferedState"
+      }]
+     }, symbol {
+     "namespace": [segment {
+      "segment": "Character"
+      }]
+     }]
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "map",
+     "parent": invocation {
+      "caller": symbol {
+       "content": "pop"
+       }
+      }
+     },
+    "arguments": [invocation {
+     "caller": lambda {
+      "before-arrow": "tuple ",
+      "after-arrow": " new Tuple<>"
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "append",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "left",
+         "parent": symbol {
+          "content": "tuple"
+          }
+         }
+        }
+       },
+      "arguments": [invocation {
+       "caller": property-access {
+        "child": "right",
+        "parent": symbol {
+         "content": "tuple"
+         }
+        }
+       }]
+      }, invocation {
+      "caller": property-access {
+       "child": "right",
+       "parent": symbol {
+        "content": "tuple"
+        }
+       }
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "stream",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "stream",
+     "parent": construction {
+      "caller": symbol {
+       "content": "JavaList"
+       },
+      "arguments": [symbol {
+       "content": "segments"
+       }]
+      }
+     }
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "popAndAppendDiscard",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "BufferedState"
+     }]
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "map",
+     "parent": invocation {
+      "caller": symbol {
+       "content": "popAndAppend"
+       }
+      }
+     },
+    "arguments": [method-access {
+     "child": "left",
+     "parent": symbol {
+      "content": "Tuple"
+      }
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "isShallow",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
+   },
+  "children": [return {
+   "value": equals {
+    "left": symbol {
+     "content": "depth"
+     },
+    "right": number {
+     "value": "1"
+     }
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "exit",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "BufferedState"
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "BufferedState"
+     },
+    "arguments": [symbol {
+     "content": "queue"
+     }, symbol {
+     "content": "segments"
+     }, symbol {
+     "content": "buffer"
+     }, subtraction {
+     "left": symbol {
+      "content": "depth"
+      },
+     "right": number {
+      "value": "1"
+      }
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "enter",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "BufferedState"
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "BufferedState"
+     },
+    "arguments": [symbol {
+     "content": "queue"
+     }, symbol {
+     "content": "segments"
+     }, symbol {
+     "content": "buffer"
+     }, addition {
+     "left": symbol {
+      "content": "depth"
+      },
+     "right": number {
+      "value": "1"
+      }
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }],
+ "modifiers": [modifier {
+  }],
+ "params": [definition {
+  "name": "queue",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Deque"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "Character"
+     }]
+    }]
+   }
+  }, definition {
+  "name": "segments",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "List"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }]
+   }
+  }, definition {
+  "name": "buffer",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "StringBuilder"
+    }]
+   }
+  }, definition {
+  "name": "depth",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "int"
+    }]
+   }
+  }]
+ }, whitespace {
+ }]
+}

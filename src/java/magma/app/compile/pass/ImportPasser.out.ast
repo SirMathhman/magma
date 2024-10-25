@@ -1,0 +1,102 @@
+{
+"children": [import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "Node"
+  }]
+ }, import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "CommonLang"
+  }]
+ }, import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
+ }, function {
+ "name": "ImportPasser ",
+ "children": [method {
+  "name": "pass",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "Node"
+     }]
+    }]
+   },
+  "children": [if {
+   "content": " (!node.is(CommonLang.IMPORT)) return Optional.empty();"
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "of",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "withString",
+      "parent": symbol {
+       "content": "node"
+       }
+      },
+     "arguments": [property-access {
+      "child": "AFTER_IMPORT",
+      "parent": symbol {
+       "content": "CommonLang"
+       }
+      }, string {
+      "value": "\n"
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Node"
+     }]
+    }
+   }]
+  }, whitespace {
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
+ }]
+}

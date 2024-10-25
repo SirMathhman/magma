@@ -2,46 +2,88 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.rule.*"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }, segment {
+  "segment": "EmptyRule"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.List"]
- }, import {
- "after-import": "
-",
- "namespace": ["static magma.app.compile.lang.CommonLang.createModifiersRule"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }, segment {
+  "segment": "Rule"
+  }]
  }, function {
  "name": "MagmaLang ",
- "body": "
-    public static final String FUNCTION_PREFIX = "class def ";
-    public static final String FUNCTION_SUFFIX = "() => {}";
-    public static final String FUNCTION = "function";
-    public static final String TRAIT = "trait";
-
-    public static Rule createFunctionRule() {
-        final var name = CommonLang.NAME;
-
-        final var withModifiers = new LocatingRule(createModifiersRule(), new FirstLocator(" " + FUNCTION_PREFIX), new ExtractRule(name));
-        final var childRule = new OrRule(List.of(withModifiers, new PrefixRule(FUNCTION_PREFIX, new ExtractRule(name))));
-
-        return new TypeRule(FUNCTION, new SuffixRule(childRule, FUNCTION_SUFFIX));
+ "children": [declaration {
+  "name": "FUNCTION",
+  "value": "function",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "String"
+    }]
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, declaration {
+  "name": "TRAIT",
+  "value": "trait",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "String"
+    }]
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, method {
+  "name": "createRootRule",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "EmptyRule"
+     }
     }
-
-    private static OrRule createRootMemberRule() {
-        return new OrRule(List.of(
-                CommonLang.createImportRule(),
-                createFunctionRule(),
-                new TypeRule(TRAIT, new EmptyRule())
-        ));
-    }
-
-    public static Rule createRootRule() {
-        return new NodeListRule(new StatementSplitter(), CommonLang.CHILDREN, createRootMemberRule());
-    }
-}",
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }]
+  }, whitespace {
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }]
+ }, whitespace {
  }]
 }

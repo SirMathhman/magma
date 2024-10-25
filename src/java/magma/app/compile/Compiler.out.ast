@@ -2,66 +2,158 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Err"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Err"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Ok"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Ok"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Result"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Result"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.lang.MagmaLang"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "MagmaLang"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.rule.RuleResult"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }, segment {
+  "segment": "Rule"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }, segment {
+  "segment": "RuleResult"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["static magma.app.compile.lang.JavaLang.*"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
+ }, import-static {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "JavaLang"
+  }, segment {
+  "segment": "*"
+  }]
  }, function {
  "name": "Compiler",
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "input",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    }
   }],
  "children": [method {
   "name": "compile",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [symbol {
-    "value": "CompileResult"
+    "namespace": [segment {
+     "segment": "CompileResult"
+     }]
     }, symbol {
-    "value": "CompileException"
+    "namespace": [segment {
+     "segment": "CompileException"
+     }]
     }]
    },
   "children": [declaration {
+   "name": "rule",
+   "caller": symbol {
+    "content": "createRootRule"
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
+    }
+   }, declaration {
    "name": "parsed",
    "caller": property-access {
     "child": "parse",
-    "parent": invocation {
-     "caller": symbol {
-      "content": "createRootRule"
-      }
+    "parent": symbol {
+     "content": "rule"
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "input"
@@ -70,14 +162,33 @@
     "modifier-value": "final"
     }]
    }, return {
-   "value": lambda {
-    "before-arrow": "write(parsed).flatMapValue(beforePass ",
-    "after-arrow": " {
+   "value": invocation {
+    "caller": property-access {
+     "child": "flatMapValue",
+     "parent": invocation {
+      "caller": symbol {
+       "content": "write"
+       },
+      "arguments": [symbol {
+       "content": "parsed"
+       }]
+      }
+     },
+    "arguments": [subtraction {
+     "left": symbol {
+      "content": "beforePass"
+      },
+     "right": lambda {
+      "before-arrow": "> {
             final var afterPass = Passer.pass(beforePass);
             final var generated = MagmaLang.createRootRule().generate(afterPass);
-            return write(generated).mapValue(output -> new CompileResult(beforePass, afterPass, output));
-        })"
+            return write(generated).mapValue(output ",
+      "after-arrow": " new CompileResult(beforePass, afterPass, output));
+        }"
+      }
+     }]
     }
+   }, whitespace {
    }],
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -87,12 +198,18 @@
   "type-params": "T, E extends Exception",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [symbol {
-    "value": "T"
+    "namespace": [segment {
+     "segment": "T"
+     }]
     }, symbol {
-    "value": "CompileException"
+    "namespace": [segment {
+     "segment": "CompileException"
+     }]
     }]
    },
   "children": [if {
@@ -122,7 +239,9 @@
        }
       }]
      }
+    }, whitespace {
     }]
+   }, whitespace {
    }],
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -131,12 +250,18 @@
    "name": "result",
    "returns": generic {
     "base": symbol {
-     "value": "RuleResult"
+     "namespace": [segment {
+      "segment": "RuleResult"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, symbol {
-     "value": "E"
+     "namespace": [segment {
+      "segment": "E"
+      }]
      }]
     }
    }]
@@ -144,7 +269,9 @@
   "name": "writeResult",
   "type-params": "T, E extends Exception",
   "returns": symbol {
-   "value": "void"
+   "namespace": [segment {
+    "segment": "void"
+    }]
    },
   "children": [declaration {
    "name": "error",
@@ -160,7 +287,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -183,16 +312,24 @@
     },
    "returns": generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [generic {
      "base": symbol {
-      "value": "RuleResult"
+      "namespace": [segment {
+       "segment": "RuleResult"
+       }]
       },
      "children": [symbol {
-      "value": "T"
+      "namespace": [segment {
+       "segment": "T"
+       }]
       }, symbol {
-      "value": "E"
+      "namespace": [segment {
+       "segment": "E"
+       }]
       }]
      }]
     }
@@ -200,7 +337,9 @@
    "name": "i",
    "value": "0",
    "returns": symbol {
-    "value": "int"
+    "namespace": [segment {
+     "segment": "int"
+     }]
     }
    }, while {
    "content": " (i < children.size()) {
@@ -208,6 +347,7 @@
             writeResult(child, depth + 1, i);
             i++;
         }"
+   }, whitespace {
    }],
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -216,23 +356,33 @@
    "name": "result",
    "returns": generic {
     "base": symbol {
-     "value": "RuleResult"
+     "namespace": [segment {
+      "segment": "RuleResult"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, symbol {
-     "value": "E"
+     "namespace": [segment {
+      "segment": "E"
+      }]
      }]
     }
    }, definition {
    "name": "depth",
    "returns": symbol {
-    "value": "int"
+    "namespace": [segment {
+     "segment": "int"
+     }]
     }
    }, definition {
    "name": "index",
    "returns": symbol {
-    "value": "int"
+    "namespace": [segment {
+     "segment": "int"
+     }]
     }
    }]
   }, implements {

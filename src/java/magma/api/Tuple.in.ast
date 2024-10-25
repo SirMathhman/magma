@@ -1,12 +1,20 @@
 {
 "children": [package {
- "namespace": ["magma.api"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }]
  }, record {
  "name": "Tuple",
  "type-params": [symbol {
-  "value": "A"
+  "namespace": [segment {
+   "segment": "A"
+   }]
   }, symbol {
-  "value": "B"
+  "namespace": [segment {
+   "segment": "B"
+   }]
   }],
  "modifiers": [modifier {
   "modifier-value": "public"
@@ -14,12 +22,16 @@
  "params": [definition {
   "name": "left",
   "returns": symbol {
-   "value": "A"
+   "namespace": [segment {
+    "segment": "A"
+    }]
    }
   }, definition {
   "name": "right",
   "returns": symbol {
-   "value": "B"
+   "namespace": [segment {
+    "segment": "B"
+    }]
    }
   }]
  }, whitespace {

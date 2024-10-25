@@ -1,8 +1,22 @@
 {
 "children": [package {
- "namespace": ["magma.api.stream"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "stream"
+  }]
  }, import {
- "namespace": ["magma.api.option.Option"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "option"
+  }, segment {
+  "segment": "Option"
+  }]
  }, interface {
  "name": "Head<T>",
  "modifiers": [modifier {
@@ -12,10 +26,14 @@
   "name": "next",
   "returns": generic {
    "base": symbol {
-    "value": "Option"
+    "namespace": [segment {
+     "segment": "Option"
+     }]
     },
    "children": [symbol {
-    "value": "T"
+    "namespace": [segment {
+     "segment": "T"
+     }]
     }]
    }
   }, whitespace {

@@ -1,15 +1,52 @@
 {
 "children": [package {
- "namespace": ["magma.app.compile"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }]
  }, class {
  "name": "ParseException extends CompileException ",
- "body": "
-    public ParseException(String message, String context) {
-        super(message, context);
+ "children": [method {
+  "name": "ParseException",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [invocation {
+   "caller": symbol {
+    "content": "super"
+    },
+   "arguments": [symbol {
+    "content": "message"
+    }, symbol {
+    "content": "context"
+    }]
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "message",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
-}",
+   }, definition {
+   "name": "context",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }
+   }]
+  }, whitespace {
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }]
+ }, whitespace {
  }]
 }

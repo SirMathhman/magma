@@ -1,23 +1,51 @@
 {
 "children": [package {
- "namespace": ["magma.app.compile.rule"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }]
  }, import {
- "namespace": ["java.util.Optional"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
  }, import {
- "namespace": ["java.util.stream.Stream"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Stream"
+  }]
  }, record {
  "name": "FirstLocator",
  "interface": symbol {
-  "value": "Locator"
+  "namespace": [segment {
+   "segment": "Locator"
+   }]
   },
  "children": [method {
   "name": "locate0",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "Integer"
+    "namespace": [segment {
+     "segment": "Integer"
+     }]
     }]
    },
   "children": [declaration {
@@ -29,7 +57,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "slice"
@@ -75,17 +105,23 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "locate",
   "returns": generic {
    "base": symbol {
-    "value": "Stream"
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
     },
    "children": [symbol {
-    "value": "Integer"
+    "namespace": [segment {
+     "segment": "Integer"
+     }]
     }]
    },
   "children": [return {
@@ -113,7 +149,9 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }],
@@ -123,7 +161,9 @@
  "params": [definition {
   "name": "slice",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    }
   }]
  }]

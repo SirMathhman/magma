@@ -1,0 +1,40 @@
+{
+"children": [trait {
+ "name": "Collector<T, C>",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }],
+ "content": [method {
+  "name": "initial",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "C"
+    }]
+   }
+  }, method {
+  "name": "fold",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "C"
+    }]
+   },
+  "params": [definition {
+   "name": "current",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "C"
+     }]
+    }
+   }, definition {
+   "name": "next",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
+    }
+   }]
+  }, whitespace {
+  }]
+ }, whitespace {
+ }]
+}

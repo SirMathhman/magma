@@ -1,28 +1,71 @@
 {
 "children": [package {
- "namespace": ["magma.app.compile.lang"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }]
  }, import {
- "namespace": ["magma.app.compile.rule.Locator"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }, segment {
+  "segment": "Locator"
+  }]
  }, import {
- "namespace": ["java.util.stream.Stream"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Stream"
+  }]
  }, import {
- "namespace": ["java.util.ArrayList"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "ArrayList"
+  }]
  }, import {
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
  }, record {
  "name": "ForwardsLocator",
  "interface": symbol {
-  "value": "Locator"
+  "namespace": [segment {
+   "segment": "Locator"
+   }]
   },
  "children": [method {
   "name": "slice",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "children": [return {
    "value": symbol {
     "content": "delimiter"
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -34,10 +77,14 @@
   "name": "locate",
   "returns": generic {
    "base": symbol {
-    "value": "Stream"
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
     },
    "children": [symbol {
-    "value": "Integer"
+    "namespace": [segment {
+     "segment": "Integer"
+     }]
     }]
    },
   "children": [declaration {
@@ -47,10 +94,14 @@
     },
    "returns": generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "Integer"
+     "namespace": [segment {
+      "segment": "Integer"
+      }]
      }]
     }
    }, declaration {
@@ -62,7 +113,9 @@
      }
     },
    "returns": symbol {
-    "value": "int"
+    "namespace": [segment {
+     "segment": "int"
+     }]
     },
    "arguments": [symbol {
     "content": "delimiter"
@@ -81,6 +134,7 @@
       }
      }
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -91,7 +145,9 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }],
@@ -101,8 +157,11 @@
  "params": [definition {
   "name": "delimiter",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    }
   }]
+ }, whitespace {
  }]
 }

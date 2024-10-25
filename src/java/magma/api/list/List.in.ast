@@ -1,0 +1,82 @@
+{
+"children": [package {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "list"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "option"
+  }, segment {
+  "segment": "Option"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Stream"
+  }]
+ }, interface {
+ "name": "List<T>",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }],
+ "content": [method {
+  "name": "stream",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
+    }]
+   }
+  }, method {
+  "name": "size",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "int"
+    }]
+   }
+  }, method {
+  "name": "get",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Option"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
+    }]
+   },
+  "params": [definition {
+   "name": "index",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "int"
+     }]
+    }
+   }]
+  }, whitespace {
+  }]
+ }, whitespace {
+ }]
+}

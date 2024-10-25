@@ -1,0 +1,225 @@
+{
+"children": [package {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Err"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Ok"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Result"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "CompileException"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "time"
+  }, segment {
+  "segment": "Duration"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "concurrent"
+  }, segment {
+  "segment": "CompletableFuture"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "concurrent"
+  }, segment {
+  "segment": "ExecutionException"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "concurrent"
+  }, segment {
+  "segment": "TimeUnit"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "concurrent"
+  }, segment {
+  "segment": "TimeoutException"
+  }]
+ }, import {
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "function"
+  }, segment {
+  "segment": "Supplier"
+  }]
+ }, class {
+ "name": "Rules ",
+ "children": [declaration {
+  "name": "DEFAULT_TIMEOUT",
+  "caller": property-access {
+   "child": "ofSeconds",
+   "parent": symbol {
+    "content": "Duration"
+    }
+   },
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "Duration"
+    }]
+   },
+  "arguments": [number {
+   "value": "1"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, method {
+  "name": "await",
+  "type-params": "T",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Result"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
+    }, symbol {
+    "namespace": [segment {
+     "segment": "CompileException"
+     }]
+    }]
+   },
+  "children": [try {
+   "children": [return {
+    "value": construction {
+     "caller": symbol {
+      "content": "Ok"
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "get",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "supplyAsync",
+         "parent": symbol {
+          "content": "CompletableFuture"
+          }
+         },
+        "arguments": [symbol {
+         "content": "supplier"
+         }]
+        }
+       },
+      "arguments": [invocation {
+       "caller": property-access {
+        "child": "toMillis",
+        "parent": symbol {
+         "content": "DEFAULT_TIMEOUT"
+         }
+        }
+       }, property-access {
+       "child": "MILLISECONDS",
+       "parent": symbol {
+        "content": "TimeUnit"
+        }
+       }]
+      }]
+     }
+    }, whitespace {
+    }]
+   }, catch {
+   "content": " (InterruptedException | ExecutionException | TimeoutException e) {
+            return new Err<>(new CompileException(e));
+        }"
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "supplier",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "Supplier"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "T"
+      }]
+     }]
+    }
+   }]
+  }, whitespace {
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
+ }, whitespace {
+ }]
+}

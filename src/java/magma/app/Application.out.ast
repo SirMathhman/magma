@@ -2,54 +2,136 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Err"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Err"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Ok"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Ok"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Result"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Result"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.CompileResult"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "CompileResult"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.Compiler"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "Compiler"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.io.IOException"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "io"
+  }, segment {
+  "segment": "IOException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.nio.file.Files"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "nio"
+  }, segment {
+  "segment": "file"
+  }, segment {
+  "segment": "Files"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.nio.file.Path"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "nio"
+  }, segment {
+  "segment": "file"
+  }, segment {
+  "segment": "Path"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.Iterator"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Iterator"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.Optional"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.Set"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Set"
+  }]
  }, function {
  "name": "Application ",
  "children": [declaration {
   "name": "MAGMA_EXTENSION",
   "value": "mgs",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -62,7 +144,9 @@
   "name": "EXTENSION_SEPARATOR",
   "value": ".",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -75,7 +159,9 @@
   "name": "FILE_NAME_SEPARATOR",
   "value": ".",
   "returns": symbol {
-   "value": "char"
+   "namespace": [segment {
+    "segment": "char"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -87,7 +173,9 @@
   }, definition {
   "name": "sourceSet",
   "returns": symbol {
-   "value": "SourceSet"
+   "namespace": [segment {
+    "segment": "SourceSet"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -97,7 +185,9 @@
   }, method {
   "name": "Application",
   "returns": symbol {
-   "value": "public"
+   "namespace": [segment {
+    "segment": "public"
+    }]
    },
   "children": [assignment {
    "content": "sourceSet",
@@ -110,17 +200,23 @@
   "params": [definition {
    "name": "sourceSet",
    "returns": symbol {
-    "value": "SourceSet"
+    "namespace": [segment {
+     "segment": "SourceSet"
+     }]
     }
    }]
   }, method {
   "name": "writeSafe",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "ApplicationException"
+    "namespace": [segment {
+     "segment": "ApplicationException"
+     }]
     }]
    },
   "children": [try {
@@ -161,24 +257,34 @@
   "params": [definition {
    "name": "target",
    "returns": symbol {
-    "value": "Path"
+    "namespace": [segment {
+     "segment": "Path"
+     }]
     }
    }, definition {
    "name": "output",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "readSafe",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, symbol {
-    "value": "ApplicationException"
+    "namespace": [segment {
+     "segment": "ApplicationException"
+     }]
     }]
    },
   "children": [try {
@@ -215,17 +321,23 @@
   "params": [definition {
    "name": "source",
    "returns": symbol {
-    "value": "Path"
+    "namespace": [segment {
+     "segment": "Path"
+     }]
     }
    }]
   }, method {
   "name": "writeDebug",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "ApplicationException"
+    "namespace": [segment {
+     "segment": "ApplicationException"
+     }]
     }]
    },
   "children": [declaration {
@@ -234,7 +346,9 @@
     "content": "name"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "right": addition {
     "left": symbol {
@@ -256,7 +370,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "targetName"
@@ -285,32 +401,44 @@
   "params": [definition {
    "name": "output",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "source",
    "returns": symbol {
-    "value": "Path"
+    "namespace": [segment {
+     "segment": "Path"
+     }]
     }
    }, definition {
    "name": "name",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "extension",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "compileWithInput",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "ApplicationException"
+    "namespace": [segment {
+     "segment": "ApplicationException"
+     }]
     }]
    },
   "children": [declaration {
@@ -327,7 +455,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -341,7 +471,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "FILE_NAME_SEPARATOR"
@@ -360,7 +492,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [number {
     "value": "0"
@@ -393,22 +527,30 @@
   "params": [definition {
    "name": "source",
    "returns": symbol {
-    "value": "Path"
+    "namespace": [segment {
+     "segment": "Path"
+     }]
     }
    }, definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "compileWithFileName",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "ApplicationException"
+    "namespace": [segment {
+     "segment": "ApplicationException"
+     }]
     }]
    },
   "children": [return {
@@ -440,27 +582,37 @@
   "params": [definition {
    "name": "source",
    "returns": symbol {
-    "value": "Path"
+    "namespace": [segment {
+     "segment": "Path"
+     }]
     }
    }, definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "fileNameWithoutExtension",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "writeResult",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "ApplicationException"
+    "namespace": [segment {
+     "segment": "ApplicationException"
+     }]
     }]
    },
   "children": [return {
@@ -515,27 +667,37 @@
   "params": [definition {
    "name": "result",
    "returns": symbol {
-    "value": "CompileResult"
+    "namespace": [segment {
+     "segment": "CompileResult"
+     }]
     }
    }, definition {
    "name": "source",
    "returns": symbol {
-    "value": "Path"
+    "namespace": [segment {
+     "segment": "Path"
+     }]
     }
    }, definition {
    "name": "name",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "run",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "ApplicationException"
+    "namespace": [segment {
+     "segment": "ApplicationException"
+     }]
     }]
    },
   "children": [return {
@@ -578,17 +740,25 @@
   "name": "collectSources",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "Set"
+     "namespace": [segment {
+      "segment": "Set"
+      }]
      },
     "children": [symbol {
-     "value": "Path"
+     "namespace": [segment {
+      "segment": "Path"
+      }]
      }]
     }, symbol {
-    "value": "ApplicationException"
+    "namespace": [segment {
+     "segment": "ApplicationException"
+     }]
     }]
    },
   "children": [return {
@@ -620,10 +790,14 @@
   "name": "runWithSource",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "ApplicationException"
+    "namespace": [segment {
+     "segment": "ApplicationException"
+     }]
     }]
    },
   "children": [invocation {
@@ -694,7 +868,9 @@
   "params": [definition {
    "name": "source",
    "returns": symbol {
-    "value": "Path"
+    "namespace": [segment {
+     "segment": "Path"
+     }]
     }
    }]
   }, whitespace {

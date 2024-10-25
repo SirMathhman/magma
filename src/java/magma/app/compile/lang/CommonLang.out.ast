@@ -2,18 +2,36 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.rule.*"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }, segment {
+  "segment": "*"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
  }, function {
  "name": "CommonLang ",
  "children": [declaration {
   "name": "NAME",
   "value": "name",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -26,7 +44,9 @@
   "name": "STATEMENT_END",
   "value": ";",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -39,7 +59,9 @@
   "name": "NAMESPACE",
   "value": "namespace",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -52,7 +74,9 @@
   "name": "IMPORT",
   "value": "import",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -65,7 +89,9 @@
   "name": "CHILDREN",
   "value": "children",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -78,7 +104,9 @@
   "name": "AFTER_IMPORT",
   "value": "after-import",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -91,7 +119,9 @@
   "name": "MODIFIER_VALUE",
   "value": "modifier-value",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -104,7 +134,9 @@
   "name": "MODIFIER_TYPE",
   "value": "modifier",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "public"
@@ -116,7 +148,34 @@
   }, method {
   "name": "createImportRule",
   "returns": symbol {
-   "value": "TypeRule"
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": symbol {
+     "content": "createImportRule"
+     },
+    "arguments": [symbol {
+     "content": "IMPORT"
+     }, string {
+     "value": "import "
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }]
+  }, method {
+  "name": "createImportRule",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
    },
   "children": [declaration {
    "name": "childRule",
@@ -124,7 +183,9 @@
     "content": "SuffixRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [invocation {
     "caller": symbol {
@@ -142,7 +203,7 @@
      "content": "TypeRule"
      },
     "arguments": [symbol {
-     "content": "IMPORT"
+     "content": "type"
      }, construction {
      "caller": symbol {
       "content": "StripRule"
@@ -151,8 +212,8 @@
       "caller": symbol {
        "content": "PrefixRule"
        },
-      "arguments": [string {
-       "value": "import "
+      "arguments": [symbol {
+       "content": "prefix"
        }, symbol {
        "content": "childRule"
        }]
@@ -169,21 +230,82 @@
    "modifier-value": "public"
    }, modifier {
    "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "type",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }
+   }, definition {
+   "name": "prefix",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }
    }]
   }, method {
   "name": "createNamespaceRule",
   "returns": symbol {
-   "value": "Rule"
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
    },
-  "children": [return {
+  "children": [declaration {
+   "name": "segment1",
+   "caller": symbol {
+    "content": "FilterRule"
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [construction {
+    "caller": symbol {
+     "content": "SymbolFilter"
+     }
+    }, construction {
+    "caller": symbol {
+     "content": "ExtractRule"
+     },
+    "arguments": [string {
+     "value": "segment"
+     }]
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, return {
    "value": construction {
     "caller": symbol {
-     "content": "StringListRule"
+     "content": "NodeListRule"
      },
-    "arguments": [symbol {
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "SimpleSplitter"
+      },
+     "arguments": [string {
+      "value": "."
+      }]
+     }, symbol {
      "content": "NAMESPACE"
-     }, string {
-     "value": "\\."
+     }, construction {
+     "caller": symbol {
+      "content": "TypeRule"
+      },
+     "arguments": [string {
+      "value": "segment"
+      }, construction {
+      "caller": symbol {
+       "content": "StripRule"
+       },
+      "arguments": [symbol {
+       "content": "segment1"
+       }]
+      }]
      }]
     }
    }, whitespace {
@@ -194,7 +316,9 @@
   }, method {
   "name": "createModifiersRule",
   "returns": symbol {
-   "value": "Rule"
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
    },
   "children": [declaration {
    "name": "modifier",
@@ -202,7 +326,9 @@
     "content": "TypeRule"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "MODIFIER_TYPE"
@@ -283,7 +409,9 @@
   }, method {
   "name": "createChildrenRule",
   "returns": symbol {
-   "value": "NodeListRule"
+   "namespace": [segment {
+    "segment": "NodeListRule"
+    }]
    },
   "children": [return {
    "value": construction {
@@ -315,7 +443,9 @@
   "params": [definition {
    "name": "statement",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }]
   }, whitespace {

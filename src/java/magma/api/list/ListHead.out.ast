@@ -1,0 +1,160 @@
+{
+"children": [import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "option"
+  }, segment {
+  "segment": "None"
+  }]
+ }, import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "option"
+  }, segment {
+  "segment": "Option"
+  }]
+ }, import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Head"
+  }]
+ }, function {
+ "name": "ListHead<T> implements Head<T> ",
+ "children": [definition {
+  "name": "list",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "List"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
+    }]
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, declaration {
+  "name": "counter",
+  "value": "0",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "int"
+    }]
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }]
+  }, method {
+  "name": "ListHead",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [assignment {
+   "content": "list",
+   "child": "list",
+   "parent": symbol {
+    "content": "this"
+    }
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "list",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "List"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "T"
+      }]
+     }]
+    }
+   }]
+  }, method {
+  "name": "next",
+  "returns": generic {
+   "base": symbol {
+    "namespace": [segment {
+     "segment": "Option"
+     }]
+    },
+   "children": [symbol {
+    "namespace": [segment {
+     "segment": "T"
+     }]
+    }]
+   },
+  "children": [if {
+   "content": " (counter >= list.size()) return new None<>();"
+   }, declaration {
+   "name": "value",
+   "caller": property-access {
+    "child": "get",
+    "parent": symbol {
+     "content": "list"
+     }
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [symbol {
+    "content": "counter"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, post-increment {
+   "value": symbol {
+    "content": "counter"
+    }
+   }, return {
+   "value": symbol {
+    "content": "value"
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, whitespace {
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }, modifier {
+  "modifier-value": "final"
+  }]
+ }, whitespace {
+ }]
+}

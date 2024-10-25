@@ -2,35 +2,87 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Ok"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Ok"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Result"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Result"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.io.IOException"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "io"
+  }, segment {
+  "segment": "IOException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.nio.file.Files"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "nio"
+  }, segment {
+  "segment": "file"
+  }, segment {
+  "segment": "Files"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.nio.file.Path"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "nio"
+  }, segment {
+  "segment": "file"
+  }, segment {
+  "segment": "Path"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.HashSet"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "HashSet"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.Set"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Set"
+  }]
  }, function {
  "name": "SingleSourceSet",
  "interface": symbol {
-  "value": "SourceSet"
+  "namespace": [segment {
+   "segment": "SourceSet"
+   }]
   },
  "modifiers": [modifier {
   "modifier-value": "public"
@@ -38,24 +90,34 @@
  "params": [definition {
   "name": "source",
   "returns": symbol {
-   "value": "Path"
+   "namespace": [segment {
+    "segment": "Path"
+    }]
    }
   }],
  "children": [method {
   "name": "collect",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "Set"
+     "namespace": [segment {
+      "segment": "Set"
+      }]
      },
     "children": [symbol {
-     "value": "Path"
+     "namespace": [segment {
+      "segment": "Path"
+      }]
      }]
     }, symbol {
-    "value": "IOException"
+    "namespace": [segment {
+     "segment": "IOException"
+     }]
     }]
    },
   "children": [declaration {
@@ -64,10 +126,14 @@
     "content": "HashSet"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "type-arguments": [symbol {
-    "value": "Path"
+    "namespace": [segment {
+     "segment": "Path"
+     }]
     }]
    }, if {
    "content": "(Files.exists(this.source())) sources.add(this.source());"

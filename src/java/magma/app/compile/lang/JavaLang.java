@@ -64,6 +64,7 @@ public class JavaLang {
         return new OrRule(List.of(
                 createPackageRule(),
                 createImportRule(),
+                createImportRule("import-static", "import static "),
                 createRecordRule(),
                 createInterfaceRule(),
                 createClassRule(),
@@ -125,9 +126,15 @@ public class JavaLang {
                 createNamedBlockRule(statement, "else", "else"),
                 createNamedBlockRule(statement, "try", "try"),
                 createConditionRule("catch", "catch"),
-                createAssignmentRule(valueRule)
+                createAssignmentRule(valueRule),
+                createPostRule("increment", valueRule, "++"),
+                createPostRule("decrement", valueRule, "--")
         )));
         return statement;
+    }
+
+    private static TypeRule createPostRule(String type, Rule valueRule, String operator) {
+        return new TypeRule("post-" + type, new StripRule(new SuffixRule(new NodeRule("value", valueRule), operator + ";")));
     }
 
     private static TypeRule createAssignmentRule(Rule valueRule) {
@@ -165,6 +172,7 @@ public class JavaLang {
                 createSymbolRule(),
                 createNumberRule(),
                 createOperationRule(value, "addition", "+"),
+                createOperationRule(value, "subtraction", "-"),
                 createOperationRule(value, "equals", "=="),
                 createOperationRule(value, "not-equals", "!="),
                 createOperationRule(value, "or", "||"),
@@ -239,7 +247,10 @@ public class JavaLang {
 
     private static Rule createTypeRule() {
         final var type = new LazyRule();
-        type.setChildRule(new OrRule(List.of(createGenericRule(type), new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("value")))))));
+        type.setChildRule(new OrRule(List.of(
+                createGenericRule(type),
+                new TypeRule("array", new StripRule(new SuffixRule(new NodeRule("child", type), "[]"))),
+                new TypeRule("symbol", new StripRule(createNamespaceRule())))));
         return type;
     }
 

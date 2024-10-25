@@ -2,25 +2,57 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.GenerateException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "GenerateException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.Node"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "Node"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.ParseException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "ParseException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
  }, function {
  "name": "OptionalNodeRule implements Rule ",
  "children": [definition {
   "name": "propertyKey",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -30,7 +62,9 @@
   }, definition {
   "name": "ifPresent",
   "returns": symbol {
-   "value": "Rule"
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -40,7 +74,9 @@
   }, definition {
   "name": "ifEmpty",
   "returns": symbol {
-   "value": "Rule"
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -50,7 +86,9 @@
   }, definition {
   "name": "maybe",
   "returns": symbol {
-   "value": "OrRule"
+   "namespace": [segment {
+    "segment": "OrRule"
+    }]
    },
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -60,7 +98,9 @@
   }, method {
   "name": "OptionalNodeRule",
   "returns": symbol {
-   "value": "public"
+   "namespace": [segment {
+    "segment": "public"
+    }]
    },
   "children": [assignment {
    "content": "propertyKey",
@@ -103,29 +143,41 @@
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "ifEmpty",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }, definition {
    "name": "ifPresent",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }]
   }, method {
   "name": "parse",
   "returns": generic {
    "base": symbol {
-    "value": "RuleResult"
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }, symbol {
-    "value": "ParseException"
+    "namespace": [segment {
+     "segment": "ParseException"
+     }]
     }]
    },
   "children": [return {
@@ -151,19 +203,27 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "generate",
   "returns": generic {
    "base": symbol {
-    "value": "RuleResult"
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, symbol {
-    "value": "GenerateException"
+    "namespace": [segment {
+     "segment": "GenerateException"
+     }]
     }]
    },
   "children": [if {
@@ -196,7 +256,9 @@
   "params": [definition {
    "name": "node",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, whitespace {

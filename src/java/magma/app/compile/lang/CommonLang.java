@@ -16,12 +16,17 @@ public class CommonLang {
     public static final String MODIFIER_TYPE = "modifier";
 
     public static TypeRule createImportRule() {
+        return createImportRule(IMPORT, "import ");
+    }
+
+    public static TypeRule createImportRule(String type, String prefix) {
         final var childRule = new SuffixRule(createNamespaceRule(), STATEMENT_END);
-        return new TypeRule(IMPORT, new StripRule(new PrefixRule("import ", childRule), "before-import", AFTER_IMPORT));
+        return new TypeRule(type, new StripRule(new PrefixRule(prefix, childRule), "before-import", AFTER_IMPORT));
     }
 
     static Rule createNamespaceRule() {
-        return new StringListRule(NAMESPACE, "\\.");
+        final var segment1 = new FilterRule(new SymbolFilter(), new ExtractRule("segment"));
+        return new NodeListRule(new SimpleSplitter("."), NAMESPACE, new TypeRule("segment", new StripRule(segment1)));
     }
 
     static Rule createModifiersRule() {

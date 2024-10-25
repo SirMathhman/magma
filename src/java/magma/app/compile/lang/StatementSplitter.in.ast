@@ -1,26 +1,86 @@
 {
 "children": [package {
- "namespace": ["magma.app.compile.lang"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }]
  }, import {
- "namespace": ["magma.app.compile.rule.Splitter"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }, segment {
+  "segment": "Splitter"
+  }]
  }, import {
- "namespace": ["magma.java.NativeListCollector"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "java"
+  }, segment {
+  "segment": "NativeListCollector"
+  }]
  }, import {
- "namespace": ["java.util.LinkedList"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "LinkedList"
+  }]
  }, import {
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
  }, import {
- "namespace": ["java.util.Optional"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
  }, import {
- "namespace": ["java.util.stream.Collectors"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Collectors"
+  }]
  }, import {
- "namespace": ["java.util.stream.IntStream"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "IntStream"
+  }]
  }, class {
  "name": "StatementSplitter implements Splitter ",
  "children": [method {
   "name": "splitAtChar",
   "returns": symbol {
-   "value": "BufferedState"
+   "namespace": [segment {
+    "segment": "BufferedState"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -63,22 +123,30 @@
   "params": [definition {
    "name": "state",
    "returns": symbol {
-    "value": "BufferedState"
+    "namespace": [segment {
+     "segment": "BufferedState"
+     }]
     }
    }, definition {
    "name": "c",
    "returns": symbol {
-    "value": "char"
+    "namespace": [segment {
+     "segment": "char"
+     }]
     }
    }]
   }, method {
   "name": "splitDoubleQuotes",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "BufferedState"
+    "namespace": [segment {
+     "segment": "BufferedState"
+     }]
     }]
    },
   "children": [if {
@@ -87,7 +155,9 @@
    "name": "current",
    "content": "state",
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     }
    }, while {
    "content": " (true) {
@@ -120,22 +190,30 @@
   "params": [definition {
    "name": "state",
    "returns": symbol {
-    "value": "BufferedState"
+    "namespace": [segment {
+     "segment": "BufferedState"
+     }]
     }
    }, definition {
    "name": "c",
    "returns": symbol {
-    "value": "char"
+    "namespace": [segment {
+     "segment": "char"
+     }]
     }
    }]
   }, method {
   "name": "splitWithinDoubleQuotes",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "BufferedState"
+    "namespace": [segment {
+     "segment": "BufferedState"
+     }]
     }]
    },
   "children": [declaration {
@@ -147,7 +225,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -163,7 +243,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -177,7 +259,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -191,7 +275,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -226,17 +312,23 @@
   "params": [definition {
    "name": "current",
    "returns": symbol {
-    "value": "BufferedState"
+    "namespace": [segment {
+     "segment": "BufferedState"
+     }]
     }
    }]
   }, method {
   "name": "splitSingleQuotes",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "BufferedState"
+    "namespace": [segment {
+     "segment": "BufferedState"
+     }]
     }]
    },
   "children": [if {
@@ -250,7 +342,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -266,7 +360,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -280,7 +376,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -294,7 +392,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "modifiers": [modifier {
     "modifier-value": "final"
@@ -305,7 +405,9 @@
     "content": "splitEscapeInSingleQuotes"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "nextState"
@@ -334,18 +436,24 @@
   "params": [definition {
    "name": "state",
    "returns": symbol {
-    "value": "BufferedState"
+    "namespace": [segment {
+     "segment": "BufferedState"
+     }]
     }
    }, definition {
    "name": "c",
    "returns": symbol {
-    "value": "char"
+    "namespace": [segment {
+     "segment": "char"
+     }]
     }
    }]
   }, method {
   "name": "splitEscapeInSingleQuotes",
   "returns": symbol {
-   "value": "BufferedState"
+   "namespace": [segment {
+    "segment": "BufferedState"
+    }]
    },
   "children": [if {
    "content": " (nextChar == '\\') {
@@ -368,18 +476,24 @@
   "params": [definition {
    "name": "nextState",
    "returns": symbol {
-    "value": "BufferedState"
+    "namespace": [segment {
+     "segment": "BufferedState"
+     }]
     }
    }, definition {
    "name": "nextChar",
    "returns": symbol {
-    "value": "char"
+    "namespace": [segment {
+     "segment": "char"
+     }]
     }
    }]
   }, method {
   "name": "splitOther",
   "returns": symbol {
-   "value": "BufferedState"
+   "namespace": [segment {
+    "segment": "BufferedState"
+    }]
    },
   "children": [if {
    "content": " (c == ';' && appended.isLevel()) return appended.advance();"
@@ -403,22 +517,30 @@
   "params": [definition {
    "name": "appended",
    "returns": symbol {
-    "value": "BufferedState"
+    "namespace": [segment {
+     "segment": "BufferedState"
+     }]
     }
    }, definition {
    "name": "c",
    "returns": symbol {
-    "value": "char"
+    "namespace": [segment {
+     "segment": "char"
+     }]
     }
    }]
   }, method {
   "name": "split",
   "returns": generic {
    "base": symbol {
-    "value": "List"
+    "namespace": [segment {
+     "segment": "List"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }]
    },
   "children": [declaration {
@@ -456,7 +578,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [invocation {
     "caller": property-access {
@@ -481,7 +605,9 @@
     "content": "BufferedState"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "queue"
@@ -517,7 +643,9 @@
       "content": "NativeListCollector"
       },
      "type-arguments": [symbol {
-      "value": "String"
+      "namespace": [segment {
+       "segment": "String"
+       }]
       }]
      }]
     }
@@ -532,7 +660,9 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, whitespace {

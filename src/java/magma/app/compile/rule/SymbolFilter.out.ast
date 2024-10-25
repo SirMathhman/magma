@@ -4,7 +4,9 @@
  "children": [method {
   "name": "isValid",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "children": [return {
    "value": equals {
@@ -24,31 +26,41 @@
       "content": "c"
       }
      },
-    "right": or {
-     "left": char {
-      "value": "_"
+    "right": equals {
+     "left": or {
+      "left": char {
+       "value": "_"
+       },
+      "right": symbol {
+       "content": "c"
+       }
       },
-     "right": quantity {
-      "value": invocation {
-       "caller": not-equals {
-        "left": symbol {
-         "content": "index"
-         },
-        "right": and {
-         "left": number {
-          "value": "0"
+     "right": or {
+      "left": char {
+       "value": "*"
+       },
+      "right": quantity {
+       "value": invocation {
+        "caller": not-equals {
+         "left": symbol {
+          "content": "index"
           },
-         "right": property-access {
-          "child": "isDigit",
-          "parent": symbol {
-           "content": "Character"
+         "right": and {
+          "left": number {
+           "value": "0"
+           },
+          "right": property-access {
+           "child": "isDigit",
+           "parent": symbol {
+            "content": "Character"
+            }
            }
           }
-         }
-        },
-       "arguments": [symbol {
-        "content": "c"
-        }]
+         },
+        "arguments": [symbol {
+         "content": "c"
+         }]
+        }
        }
       }
      }
@@ -63,24 +75,32 @@
   "params": [definition {
    "name": "c",
    "returns": symbol {
-    "value": "char"
+    "namespace": [segment {
+     "segment": "char"
+     }]
     }
    }, definition {
    "name": "index",
    "returns": symbol {
-    "value": "int"
+    "namespace": [segment {
+     "segment": "int"
+     }]
     }
    }]
   }, method {
   "name": "filter",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "children": [declaration {
    "name": "i",
    "value": "0",
    "returns": symbol {
-    "value": "int"
+    "namespace": [segment {
+     "segment": "int"
+     }]
     }
    }, while {
    "content": " (i < input.length()) {
@@ -104,7 +124,9 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, whitespace {

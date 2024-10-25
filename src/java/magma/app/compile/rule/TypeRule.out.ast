@@ -2,59 +2,125 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Err"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Err"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.GenerateException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "GenerateException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.Node"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "Node"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.ParseException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "ParseException"
+  }]
  }, function {
  "name": "TypeRule",
  "interface": symbol {
-  "value": "Rule"
+  "namespace": [segment {
+   "segment": "Rule"
+   }]
   },
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "type",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    }
   }, definition {
   "name": "rule",
   "returns": symbol {
-   "value": "Rule"
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
    }
   }],
  "children": [method {
   "name": "parse",
   "returns": generic {
    "base": symbol {
-    "value": "RuleResult"
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }, symbol {
-    "value": "ParseException"
+    "namespace": [segment {
+     "segment": "ParseException"
+     }]
     }]
    },
   "children": [return {
    "value": invocation {
     "caller": property-access {
      "child": "wrapErr",
-     "parent": lambda {
-      "before-arrow": "rule.parse(input)
-                .mapValue(node ",
-      "after-arrow": " node.retype(type))
-                "
+     "parent": invocation {
+      "caller": property-access {
+       "child": "mapValue",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "parse",
+         "parent": symbol {
+          "content": "rule"
+          }
+         },
+        "arguments": [symbol {
+         "content": "input"
+         }]
+        }
+       },
+      "arguments": [invocation {
+       "caller": property-access {
+        "child": "retype",
+        "parent": lambda {
+         "before-arrow": "node ",
+         "after-arrow": " node"
+         }
+        },
+       "arguments": [symbol {
+        "content": "type"
+        }]
+       }]
       }
      },
     "arguments": [construction {
@@ -68,6 +134,7 @@
       }]
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -78,19 +145,27 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "generate",
   "returns": generic {
    "base": symbol {
-    "value": "RuleResult"
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, symbol {
-    "value": "GenerateException"
+    "namespace": [segment {
+     "segment": "GenerateException"
+     }]
     }]
    },
   "children": [if {
@@ -108,6 +183,7 @@
      "content": "node"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -118,10 +194,13 @@
   "params": [definition {
    "name": "node",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, implements {
   }]
+ }, whitespace {
  }]
 }

@@ -2,49 +2,113 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.GenerateException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "GenerateException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.Node"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "Node"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.ParseException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "ParseException"
+  }]
  }, function {
  "name": "StripRule",
  "interface": symbol {
-  "value": "Rule"
+  "namespace": [segment {
+   "segment": "Rule"
+   }]
   },
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "childRule",
   "returns": symbol {
-   "value": "Rule"
+   "namespace": [segment {
+    "segment": "Rule"
+    }]
    }
   }, definition {
   "name": "leftPaddingKey",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    }
   }, definition {
   "name": "rightPaddingKey",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    }
   }],
  "children": [method {
+  "name": "StripRule",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "public"
+    }]
+   },
+  "children": [invocation {
+   "caller": symbol {
+    "content": "this"
+    },
+   "arguments": [symbol {
+    "content": "childRule"
+    }, string {
+    }, string {
+    }]
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "childRule",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
+    }
+   }]
+  }, method {
   "name": "parse",
   "returns": generic {
    "base": symbol {
-    "value": "RuleResult"
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }, symbol {
-    "value": "ParseException"
+    "namespace": [segment {
+     "segment": "ParseException"
+     }]
     }]
    },
   "children": [return {
@@ -64,6 +128,7 @@
       }
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -74,19 +139,27 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "generate",
   "returns": generic {
    "base": symbol {
-    "value": "RuleResult"
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, symbol {
-    "value": "GenerateException"
+    "namespace": [segment {
+     "segment": "GenerateException"
+     }]
     }]
    },
   "children": [declaration {
@@ -106,7 +179,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     }],
@@ -130,7 +205,9 @@
      }
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [string {
     }],
@@ -138,10 +215,37 @@
     "modifier-value": "final"
     }]
    }, return {
-   "value": lambda {
-    "before-arrow": "childRule.generate(node).mapValue(inner ",
-    "after-arrow": " leftPadding + inner + rightPadding)"
+   "value": invocation {
+    "caller": property-access {
+     "child": "mapValue",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "generate",
+       "parent": symbol {
+        "content": "childRule"
+        }
+       },
+      "arguments": [symbol {
+       "content": "node"
+       }]
+      }
+     },
+    "arguments": [addition {
+     "left": lambda {
+      "before-arrow": "inner ",
+      "after-arrow": " leftPadding "
+      },
+     "right": addition {
+      "left": symbol {
+       "content": "inner"
+       },
+      "right": symbol {
+       "content": "rightPadding"
+       }
+      }
+     }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -152,10 +256,13 @@
   "params": [definition {
    "name": "node",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, implements {
   }]
+ }, whitespace {
  }]
 }

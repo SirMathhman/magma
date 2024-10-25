@@ -2,7 +2,7 @@ package magma.app.compile.rule;
 
 public class SymbolFilter implements Filter {
     private static boolean isValid(char c, int index) {
-        return Character.isLetter(c) || c == '_' || (index != 0 && Character.isDigit(c));
+        return Character.isLetter(c) || c == '_' || c == '*' || (index != 0 && Character.isDigit(c));
     }
 
     @Override

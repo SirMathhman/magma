@@ -2,116 +2,186 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.Tuple"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "Tuple"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "stream"
+  }, segment {
+  "segment": "Stream"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.Optional"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.function.Function"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.stream.Stream"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "function"
+  }, segment {
+  "segment": "Function"
+  }]
  }, trait {
  "name": "Node",
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "content": [method {
   "name": "retype",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "params": [definition {
    "name": "type",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "is",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "params": [definition {
    "name": "type",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "withString",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "propertyValue",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "findString",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }]
    },
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "mapNodeList",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }]
    },
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "mapper",
    "returns": generic {
     "base": symbol {
-     "value": "Function"
+     "namespace": [segment {
+      "segment": "Function"
+      }]
      },
     "children": [generic {
      "base": symbol {
-      "value": "List"
+      "namespace": [segment {
+       "segment": "List"
+       }]
       },
      "children": [symbol {
-      "value": "Node"
+      "namespace": [segment {
+       "segment": "Node"
+       }]
       }]
      }, generic {
      "base": symbol {
-      "value": "List"
+      "namespace": [segment {
+       "segment": "List"
+       }]
       },
      "children": [symbol {
-      "value": "Node"
+      "namespace": [segment {
+       "segment": "Node"
+       }]
       }]
      }]
     }
@@ -120,80 +190,112 @@
   "name": "findNodeList",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "Node"
+     "namespace": [segment {
+      "segment": "Node"
+      }]
      }]
     }]
    },
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "withNodeList",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "values",
    "returns": generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "Node"
+     "namespace": [segment {
+      "segment": "Node"
+      }]
      }]
     }
    }]
   }, method {
   "name": "format",
   "returns": symbol {
-   "value": "String"
+   "namespace": [segment {
+    "segment": "String"
+    }]
    },
   "params": [definition {
    "name": "depth",
    "returns": symbol {
-    "value": "int"
+    "namespace": [segment {
+     "segment": "int"
+     }]
     }
    }]
   }, method {
   "name": "merge",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "params": [definition {
    "name": "other",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, method {
   "name": "streamStrings",
   "returns": generic {
    "base": symbol {
-    "value": "Stream"
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "Tuple"
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }, symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }]
     }]
    }
@@ -201,20 +303,30 @@
   "name": "streamNodeLists",
   "returns": generic {
    "base": symbol {
-    "value": "Stream"
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "Tuple"
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }, generic {
      "base": symbol {
-      "value": "List"
+      "namespace": [segment {
+       "segment": "List"
+       }]
       },
      "children": [symbol {
-      "value": "Node"
+      "namespace": [segment {
+       "segment": "Node"
+       }]
       }]
      }]
     }]
@@ -222,81 +334,113 @@
   }, method {
   "name": "withNode",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "propertyValue",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, method {
   "name": "findNode",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }]
    },
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "streamNodes",
   "returns": generic {
    "base": symbol {
-    "value": "Stream"
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "Tuple"
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }, symbol {
-     "value": "Node"
+     "namespace": [segment {
+      "segment": "Node"
+      }]
      }]
     }]
    }
   }, method {
   "name": "hasNode",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "params": [definition {
    "name": "node",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "withStringList",
   "returns": symbol {
-   "value": "Node"
+   "namespace": [segment {
+    "segment": "Node"
+    }]
    },
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }, definition {
    "name": "propertyValues",
    "returns": generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }]
     }
    }]
@@ -304,104 +448,94 @@
   "name": "findStringList",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "List"
+     "namespace": [segment {
+      "segment": "List"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }]
     }]
    },
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "streamStringLists",
   "returns": generic {
    "base": symbol {
-    "value": "Stream"
+    "namespace": [segment {
+     "segment": "Stream"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "Tuple"
+     "namespace": [segment {
+      "segment": "Tuple"
+      }]
      },
     "children": [symbol {
-     "value": "String"
+     "namespace": [segment {
+      "segment": "String"
+      }]
      }, generic {
      "base": symbol {
-      "value": "List"
+      "namespace": [segment {
+       "segment": "List"
+       }]
       },
      "children": [symbol {
-      "value": "String"
+      "namespace": [segment {
+       "segment": "String"
+       }]
       }]
      }]
     }]
    }
   }, method {
-  "name": "mapStringList",
-  "returns": generic {
-   "base": symbol {
-    "value": "Optional"
-    },
-   "children": [symbol {
-    "value": "Node"
+  "name": "hasNodeList",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "boolean"
     }]
    },
   "params": [definition {
    "name": "propertyKey",
    "returns": symbol {
-    "value": "String"
-    }
-   }, definition {
-   "name": "mapper",
-   "returns": generic {
-    "base": symbol {
-     "value": "Function"
-     },
-    "children": [generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "String"
-      }]
-     }, generic {
-     "base": symbol {
-      "value": "List"
-      },
-     "children": [symbol {
-      "value": "String"
-      }]
+    "namespace": [segment {
+     "segment": "String"
      }]
-    }
-   }]
-  }, method {
-  "name": "hasNodeList",
-  "returns": symbol {
-   "value": "boolean"
-   },
-  "params": [definition {
-   "name": "propertyKey",
-   "returns": symbol {
-    "value": "String"
     }
    }]
   }, method {
   "name": "findType",
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }]
    }
+  }, whitespace {
   }]
+ }, whitespace {
  }]
 }

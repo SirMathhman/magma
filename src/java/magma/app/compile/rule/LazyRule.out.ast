@@ -2,23 +2,61 @@
 "children": [import {
  "after-import": "
 ",
- "namespace": ["magma.api.result.Err"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Err"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.GenerateException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "GenerateException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.Node"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "Node"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.app.compile.ParseException"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "ParseException"
+  }]
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.Optional"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Optional"
+  }]
  }, function {
  "name": "LazyRule implements Rule ",
  "children": [declaration {
@@ -31,10 +69,14 @@
    },
   "returns": generic {
    "base": symbol {
-    "value": "Optional"
+    "namespace": [segment {
+     "segment": "Optional"
+     }]
     },
    "children": [symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }]
    },
   "modifiers": [modifier {
@@ -43,7 +85,9 @@
   }, method {
   "name": "setChildRule",
   "returns": symbol {
-   "value": "void"
+   "namespace": [segment {
+    "segment": "void"
+    }]
    },
   "children": [assignment {
    "child": "childRule",
@@ -67,19 +111,27 @@
   "params": [definition {
    "name": "childRule",
    "returns": symbol {
-    "value": "Rule"
+    "namespace": [segment {
+     "segment": "Rule"
+     }]
     }
    }]
   }, method {
   "name": "parse",
   "returns": generic {
    "base": symbol {
-    "value": "RuleResult"
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
     },
    "children": [symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }, symbol {
-    "value": "ParseException"
+    "namespace": [segment {
+     "segment": "ParseException"
+     }]
     }]
    },
   "children": [if {
@@ -112,19 +164,27 @@
   "params": [definition {
    "name": "input",
    "returns": symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }
    }]
   }, method {
   "name": "generate",
   "returns": generic {
    "base": symbol {
-    "value": "RuleResult"
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
     },
    "children": [symbol {
-    "value": "String"
+    "namespace": [segment {
+     "segment": "String"
+     }]
     }, symbol {
-    "value": "GenerateException"
+    "namespace": [segment {
+     "segment": "GenerateException"
+     }]
     }]
    },
   "children": [if {
@@ -158,7 +218,9 @@
   "params": [definition {
    "name": "node",
    "returns": symbol {
-    "value": "Node"
+    "namespace": [segment {
+     "segment": "Node"
+     }]
     }
    }]
   }, whitespace {

@@ -1,26 +1,86 @@
 {
 "children": [package {
- "namespace": ["magma.app.compile.rule"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "rule"
+  }]
  }, import {
- "namespace": ["magma.api.result.Err"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Err"
+  }]
  }, import {
- "namespace": ["magma.api.result.Result"]
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "api"
+  }, segment {
+  "segment": "result"
+  }, segment {
+  "segment": "Result"
+  }]
  }, import {
- "namespace": ["java.util.Collections"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Collections"
+  }]
  }, import {
- "namespace": ["java.util.Comparator"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Comparator"
+  }]
  }, import {
- "namespace": ["java.util.List"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "List"
+  }]
  }, import {
- "namespace": ["java.util.function.Function"]
- }, import {
- "namespace": ["static java.util.Collections.singletonList"]
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "function"
+  }, segment {
+  "segment": "Function"
+  }]
+ }, import-static {
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
+  "segment": "Collections"
+  }, segment {
+  "segment": "singletonList"
+  }]
  }, record {
  "name": "RuleResult",
  "children": [method {
   "name": "RuleResult",
   "returns": symbol {
-   "value": "public"
+   "namespace": [segment {
+    "segment": "public"
+    }]
    },
   "children": [invocation {
    "caller": symbol {
@@ -42,12 +102,18 @@
    "name": "result",
    "returns": generic {
     "base": symbol {
-     "value": "Result"
+     "namespace": [segment {
+      "segment": "Result"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, symbol {
-     "value": "E"
+     "namespace": [segment {
+      "segment": "E"
+      }]
      }]
     }
    }]
@@ -55,12 +121,18 @@
   "name": "unwrap",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [symbol {
-    "value": "T"
+    "namespace": [segment {
+     "segment": "T"
+     }]
     }, symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }]
    },
   "children": [return {
@@ -78,7 +150,9 @@
   }, method {
   "name": "isValid",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -98,12 +172,18 @@
   "name": "mapValue",
   "returns": generic {
    "base": symbol {
-    "value": "RuleResult"
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
     },
    "children": [symbol {
-    "value": "T"
+    "namespace": [segment {
+     "segment": "T"
+     }]
     }, symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }]
    },
   "children": [return {
@@ -134,12 +214,18 @@
    "name": "mapper",
    "returns": generic {
     "base": symbol {
-     "value": "Function"
+     "namespace": [segment {
+      "segment": "Function"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }]
     }
    }]
@@ -147,12 +233,18 @@
   "name": "wrapErr",
   "returns": generic {
    "base": symbol {
-    "value": "RuleResult"
+    "namespace": [segment {
+     "segment": "RuleResult"
+     }]
     },
    "children": [symbol {
-    "value": "T"
+    "namespace": [segment {
+     "segment": "T"
+     }]
     }, symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }]
    },
   "children": [if {
@@ -163,7 +255,9 @@
     "content": "singletonList"
     },
    "returns": symbol {
-    "value": "var"
+    "namespace": [segment {
+     "segment": "var"
+     }]
     },
    "arguments": [symbol {
     "content": "this"
@@ -192,13 +286,17 @@
   "params": [definition {
    "name": "error",
    "returns": symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }
    }]
   }, method {
   "name": "isError",
   "returns": symbol {
-   "value": "boolean"
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -217,7 +315,9 @@
   }, method {
   "name": "depth",
   "returns": symbol {
-   "value": "int"
+   "namespace": [segment {
+    "segment": "int"
+    }]
    },
   "children": [return {
    "value": invocation {
@@ -272,16 +372,24 @@
   "name": "sortedChildren",
   "returns": generic {
    "base": symbol {
-    "value": "List"
+    "namespace": [segment {
+     "segment": "List"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "RuleResult"
+     "namespace": [segment {
+      "segment": "RuleResult"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, symbol {
-     "value": "E"
+     "namespace": [segment {
+      "segment": "E"
+      }]
      }]
     }]
    },
@@ -325,9 +433,13 @@
    }]
   }],
  "type-params": [symbol {
-  "value": "T"
+  "namespace": [segment {
+   "segment": "T"
+   }]
   }, symbol {
-  "value": "E"
+  "namespace": [segment {
+   "segment": "E"
+   }]
   }],
  "modifiers": [modifier {
   "modifier-value": "public"
@@ -336,28 +448,42 @@
   "name": "result",
   "returns": generic {
    "base": symbol {
-    "value": "Result"
+    "namespace": [segment {
+     "segment": "Result"
+     }]
     },
    "children": [symbol {
-    "value": "T"
+    "namespace": [segment {
+     "segment": "T"
+     }]
     }, symbol {
-    "value": "E"
+    "namespace": [segment {
+     "segment": "E"
+     }]
     }]
    }
   }, definition {
   "name": "children",
   "returns": generic {
    "base": symbol {
-    "value": "List"
+    "namespace": [segment {
+     "segment": "List"
+     }]
     },
    "children": [generic {
     "base": symbol {
-     "value": "RuleResult"
+     "namespace": [segment {
+      "segment": "RuleResult"
+      }]
      },
     "children": [symbol {
-     "value": "T"
+     "namespace": [segment {
+      "segment": "T"
+      }]
      }, symbol {
-     "value": "E"
+     "namespace": [segment {
+      "segment": "E"
+      }]
      }]
     }]
    }
