@@ -9,4 +9,6 @@ public interface List<T> {
     int size();
 
     Option<T> get(int index);
+
+    List<T> add(T element);
 }

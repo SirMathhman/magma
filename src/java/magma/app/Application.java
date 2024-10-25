@@ -5,7 +5,7 @@ import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.CompileResult;
 import magma.app.compile.Compiler;
-import magma.app.compile.Passer;
+import magma.app.compile.pass.PassingStage;
 import magma.app.compile.rule.Rule;
 
 import java.io.IOException;
@@ -23,21 +23,21 @@ public final class Application {
     private final String targetExtension;
     private final Rule sourceRule;
     private final SourceSet sourceSet;
-    private final Passer passer;
+    private final PassingStage passingStage;
     private final Rule targetRule;
     private final String sourceExtension;
 
     public Application(
             SourceSet sourceSet,
             Rule sourceRule,
-            Passer passer,
+            PassingStage passingStage,
             Rule targetRule,
             String sourceExtension,
             String targetExtension
     ) {
         this.sourceSet = sourceSet;
         this.sourceRule = sourceRule;
-        this.passer = passer;
+        this.passingStage = passingStage;
         this.targetRule = targetRule;
 
         this.sourceExtension = sourceExtension;
@@ -83,7 +83,7 @@ public final class Application {
     }
 
     private Optional<ApplicationException> compileWithFileName(Path source, String fileNameWithoutExtension, String input) {
-        return new Compiler(input, sourceRule, passer, targetRule)
+        return new Compiler(input, sourceRule, passingStage, targetRule)
                 .compile()
                 .mapErr(err -> new ApplicationException(source.toAbsolutePath().toString(), err))
                 .mapValue(result -> writeResult(result, source, fileNameWithoutExtension))

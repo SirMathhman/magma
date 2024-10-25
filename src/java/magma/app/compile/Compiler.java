@@ -3,6 +3,7 @@ package magma.app.compile;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.app.compile.pass.PassingStage;
 import magma.app.compile.rule.Rule;
 import magma.app.compile.rule.RuleResult;
 
@@ -12,19 +13,19 @@ public final class Compiler {
     private final String input;
     private final Rule sourceRule;
     private final Rule targetRule;
-    private final Passer passer;
+    private final PassingStage passingStage;
 
-    public Compiler(String input, Rule sourceRule, Passer passer, Rule targetRule) {
+    public Compiler(String input, Rule sourceRule, PassingStage passingStage, Rule targetRule) {
         this.input = input;
         this.sourceRule = sourceRule;
-        this.passer = passer;
+        this.passingStage = passingStage;
         this.targetRule = targetRule;
     }
 
     public Result<CompileResult, CompileException> compile() {
         final var parsed = sourceRule.parse(input);
         return write(parsed).flatMapValue(beforePass -> {
-            final var afterPass = passer.pass(beforePass);
+            final var afterPass = passingStage.pass(beforePass);
             final var generated = targetRule.generate(afterPass);
             return write(generated).mapValue(output -> new CompileResult(beforePass, afterPass, output));
         });

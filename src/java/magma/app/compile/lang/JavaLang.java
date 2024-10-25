@@ -19,8 +19,8 @@ public class JavaLang {
         return new TypeRule(PACKAGE, new PrefixRule("package ", new SuffixRule(createNamespaceRule(), STATEMENT_END)));
     }
 
-    public static NodeListRule createRootRule() {
-        return createChildrenRule(createRootMemberRule());
+    public static Rule createRootRule() {
+        return new TypeRule("root", createChildrenRule(createRootMemberRule()));
     }
 
     public static TypeRule createRecordRule() {

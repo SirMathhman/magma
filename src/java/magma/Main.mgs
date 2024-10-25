@@ -1,8 +1,8 @@
 import magma.app.Application;
 import magma.app.DirectorySourceSet;
-import magma.app.compile.JavaToMagmaPasser;
+import magma.app.compile.pass.TreePassingStage;
 import magma.app.compile.MagmaToCParser;
-import magma.app.compile.Passer;
+import magma.app.compile.pass.PassingStage;
 import magma.app.compile.lang.CLang;
 import magma.app.compile.lang.MagmaLang;
 import magma.app.compile.rule.Rule;

@@ -1,6 +1,6 @@
 package magma.app;
 
-import magma.app.compile.JavaToMagmaPasser;
+import magma.app.compile.pass.TreePassingStage;
 import magma.app.compile.lang.CommonLang;
 import magma.app.compile.lang.MagmaLang;
 import org.junit.jupiter.api.AfterEach;
@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 
 import static magma.app.compile.lang.JavaLang.createRootRule;
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +27,7 @@ public class ApplicationTest {
     }
 
     private static void runMaybeFail() {
-        new Application(new SingleSourceSet(SOURCE), createRootRule(), new JavaToMagmaPasser(), MagmaLang.createRootRule(), Application.JAVA_EXTENSION, Application.MAGMA_EXTENSION)
+        new Application(new SingleSourceSet(SOURCE), createRootRule(), new TreePassingStage(Collections.emptyList()), MagmaLang.createRootRule(), Application.JAVA_EXTENSION, Application.MAGMA_EXTENSION)
                 .run()
                 .ifPresent(Assertions::fail);
     }
