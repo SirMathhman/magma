@@ -15,6 +15,7 @@ public class CommonLang {
     public static final String MODIFIER_VALUE = "modifier-value";
     public static final String MODIFIER_TYPE = "modifier";
     public static final String MODIFIERS = "modifiers";
+    public static final String ROOT_TYPE = "root";
 
     public static TypeRule createImportRule() {
         return createImportRule(IMPORT_TYPE, "import ");
@@ -41,5 +42,9 @@ public class CommonLang {
 
     static TypeRule createWhitespaceRule() {
         return new TypeRule("whitespace", new StripRule(new EmptyRule()));
+    }
+
+    public static TypeRule createRootRule(Rule rootMember) {
+        return new TypeRule(ROOT_TYPE, createChildrenRule(rootMember));
     }
 }

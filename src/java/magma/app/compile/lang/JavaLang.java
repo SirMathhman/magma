@@ -20,7 +20,7 @@ public class JavaLang {
     }
 
     public static Rule createRootRule() {
-        return new TypeRule("root", createChildrenRule(createRootMemberRule()));
+        return CommonLang.createRootRule(createRootMemberRule());
     }
 
     public static TypeRule createRecordRule() {

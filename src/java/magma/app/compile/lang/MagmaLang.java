@@ -5,6 +5,6 @@ import magma.app.compile.rule.Rule;
 
 public class MagmaLang {
     public static Rule createRootRule() {
-        return new EmptyRule();
+        return CommonLang.createRootRule(new EmptyRule());
     }
 }
