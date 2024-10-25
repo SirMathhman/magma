@@ -1,3 +1,3 @@
-import magmaapiTuple;
-import javautilfunctionFunction;
-def Some() => {}
+import magma.api.Tuple;
+import java.util.function.Function;
+public class def Some() => {}

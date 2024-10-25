@@ -29,6 +29,34 @@
   }, segment {
   "segment": "List"
   }]
+ }, import-static {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "CommonLang"
+  }, segment {
+  "segment": "MODIFIERS"
+  }]
+ }, import-static {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "CommonLang"
+  }, segment {
+  "segment": "createModifiersRule"
+  }]
  }, class {
  "name": "MagmaLang ",
  "children": [declaration {
@@ -112,34 +140,10 @@
           }
          }]
         }]
-       }, construction {
+       }, invocation {
        "caller": symbol {
-        "content": "TypeRule"
-        },
-       "arguments": [string {
-        "value": "function"
-        }, construction {
-        "caller": symbol {
-         "content": "PrefixRule"
-         },
-        "arguments": [string {
-         "value": "def "
-         }, construction {
-         "caller": symbol {
-          "content": "SuffixRule"
-          },
-         "arguments": [construction {
-          "caller": symbol {
-           "content": "ExtractRule"
-           },
-          "arguments": [string {
-           "value": "name"
-           }]
-          }, string {
-          "value": "() => {}"
-          }]
-         }]
-        }]
+        "content": "createFunctionRule"
+        }
        }, invocation {
        "caller": property-access {
         "child": "createWhitespaceRule",
@@ -155,6 +159,108 @@
    }],
   "modifiers": [modifier {
    "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }]
+  }, method {
+  "name": "createFunctionRule",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
+   },
+  "children": [declaration {
+   "name": "afterKeyword",
+   "caller": symbol {
+    "content": "SuffixRule"
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [construction {
+    "caller": symbol {
+     "content": "ExtractRule"
+     },
+    "arguments": [string {
+     "value": "name"
+     }]
+    }, string {
+    "value": "() => {}"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "withModifiers",
+   "caller": symbol {
+    "content": "LocatingRule"
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [invocation {
+    "caller": symbol {
+     "content": "createModifiersRule"
+     }
+    }, construction {
+    "caller": symbol {
+     "content": "FirstLocator"
+     },
+    "arguments": [string {
+     "value": " def "
+     }]
+    }, symbol {
+    "content": "afterKeyword"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "withoutModifiers",
+   "caller": symbol {
+    "content": "PrefixRule"
+    },
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "var"
+     }]
+    },
+   "arguments": [string {
+    "value": "def "
+    }, symbol {
+    "content": "afterKeyword"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "TypeRule"
+     },
+    "arguments": [string {
+     "value": "function"
+     }, construction {
+     "caller": symbol {
+      "content": "OptionalNodeListRule"
+      },
+     "arguments": [symbol {
+      "content": "MODIFIERS"
+      }, symbol {
+      "content": "withModifiers"
+      }, symbol {
+      "content": "withoutModifiers"
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
    }, modifier {
    "modifier-value": "static"
    }]

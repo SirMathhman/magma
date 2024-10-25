@@ -1,5 +1,5 @@
-import magmaappcompileGenerateException;
-import magmaappcompileNode;
-import magmaappcompileParseException;
-import javautilList;
-def OptionalNodeListRule implements Rule () => {}
+import magma.app.compile.GenerateException;
+import magma.app.compile.Node;
+import magma.app.compile.ParseException;
+import java.util.List;
+public final def OptionalNodeListRule implements Rule () => {}

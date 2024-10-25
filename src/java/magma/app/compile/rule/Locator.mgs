@@ -1,2 +1,2 @@
-import javautilstreamStream;
+import java.util.stream.Stream;
 trait

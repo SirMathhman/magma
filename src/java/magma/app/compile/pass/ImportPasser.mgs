@@ -1,6 +1,6 @@
-import magmaappcompileNode;
-import magmaappcompilelangCommonLang;
-import javautilOptional;
-import magmaappcompilelangCommonLangIMPORT_TYPE;
-import magmaappcompilelangJavaLangIMPORT_STATIC_TYPE;
-def ImportPasser () => {}
+import magma.app.compile.Node;
+import magma.app.compile.lang.CommonLang;
+import java.util.Optional;
+import magma.app.compile.lang.CommonLang.IMPORT_TYPE;
+import magma.app.compile.lang.JavaLang.IMPORT_STATIC_TYPE;
+public def ImportPasser () => {}

@@ -1,8 +1,8 @@
-import magmaapiresultOk;
-import magmaapiresultResult;
-import javaioIOException;
-import javaniofileFiles;
-import javaniofilePath;
-import javautilHashSet;
-import javautilSet;
-def SingleSourceSet() => {}
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
+public class def SingleSourceSet() => {}

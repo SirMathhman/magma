@@ -97,4 +97,9 @@ public class ValueSplitter implements Splitter {
                 .stream()
                 .collect(new NativeListCollector<String>());
     }
+
+    @Override
+    public StringBuilder append(StringBuilder buffer, String str) {
+        return buffer.append(str);
+    }
 }

@@ -148,14 +148,14 @@
      }]
     }
    }, definition {
-   "name": "ifEmpty",
+   "name": "ifPresent",
    "returns": symbol {
     "namespace": [segment {
      "segment": "Rule"
      }]
     }
    }, definition {
-   "name": "ifPresent",
+   "name": "ifEmpty",
    "returns": symbol {
     "namespace": [segment {
      "segment": "Rule"

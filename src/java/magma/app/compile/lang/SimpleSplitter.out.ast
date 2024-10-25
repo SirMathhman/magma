@@ -130,6 +130,58 @@
      }]
     }
    }]
+  }, method {
+  "name": "append",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "StringBuilder"
+    }]
+   },
+  "children": [if {
+   "content": "(buffer.isEmpty()) return buffer.append(str);"
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "append",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "append",
+       "parent": symbol {
+        "content": "buffer"
+        }
+       },
+      "arguments": [symbol {
+       "content": "delimiter"
+       }]
+      }
+     },
+    "arguments": [symbol {
+     "content": "str"
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "buffer",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "StringBuilder"
+     }]
+    }
+   }, definition {
+   "name": "str",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }
+   }]
   }, whitespace {
   }],
  "modifiers": [modifier {

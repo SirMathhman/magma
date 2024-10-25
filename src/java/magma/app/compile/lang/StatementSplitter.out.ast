@@ -669,6 +669,48 @@
      }]
     }
    }]
+  }, method {
+  "name": "append",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "StringBuilder"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "append",
+     "parent": symbol {
+      "content": "buffer"
+      }
+     },
+    "arguments": [symbol {
+     "content": "str"
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "buffer",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "StringBuilder"
+     }]
+    }
+   }, definition {
+   "name": "str",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }
+   }]
   }, whitespace {
   }],
  "modifiers": [modifier {

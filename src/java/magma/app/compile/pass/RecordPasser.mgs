@@ -1,8 +1,10 @@
-import magmaappcompileMapNode;
-import magmaappcompileNode;
-import magmaappcompilelangCommonLang;
-import magmaappcompilelangJavaLang;
-import magmaappcompilelangMagmaLang;
-import javautilArrayList;
-import javautilOptional;
-def RecordPasser () => {}
+import magma.app.compile.MapNode;
+import magma.app.compile.Node;
+import magma.app.compile.lang.CommonLang;
+import magma.app.compile.lang.JavaLang;
+import magma.app.compile.lang.MagmaLang;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Optional;
+import magma.app.compile.lang.CommonLang.*;
+public def RecordPasser () => {}

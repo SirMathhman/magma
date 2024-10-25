@@ -1,4 +1,4 @@
-import magmaappcompileNode;
-import magmaappcompilelangJavaLangMETHOD;
-import magmaappcompilelangMagmaLangFUNCTION;
-def ClassMemberPasser () => {}
+import magma.app.compile.Node;
+import magma.app.compile.lang.JavaLang.METHOD;
+import magma.app.compile.lang.MagmaLang.FUNCTION;
+public def ClassMemberPasser () => {}

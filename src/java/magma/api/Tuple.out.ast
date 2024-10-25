@@ -1,17 +1,10 @@
 {
 "children": [function {
  "name": "Tuple",
- "type-params": [symbol {
-  "namespace": [segment {
-   "segment": "A"
-   }]
-  }, symbol {
-  "namespace": [segment {
-   "segment": "B"
-   }]
-  }],
  "modifiers": [modifier {
   "modifier-value": "public"
+  }, modifier {
+  "modifier-value": "class"
   }],
  "params": [definition {
   "name": "left",
@@ -27,6 +20,15 @@
     "segment": "B"
     }]
    }
+  }],
+ "type-params": [symbol {
+  "namespace": [segment {
+   "segment": "A"
+   }]
+  }, symbol {
+  "namespace": [segment {
+   "segment": "B"
+   }]
   }]
  }, whitespace {
  }]

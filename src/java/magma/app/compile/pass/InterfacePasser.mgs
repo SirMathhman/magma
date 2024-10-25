@@ -1,6 +1,6 @@
-import magmaappcompileNode;
-import magmaappcompilelangCommonLang;
-import magmaappcompilelangJavaLang;
-import magmaappcompilelangMagmaLang;
-import javautilOptional;
-def InterfacePasser () => {}
+import magma.app.compile.Node;
+import magma.app.compile.lang.CommonLang;
+import magma.app.compile.lang.JavaLang;
+import magma.app.compile.lang.MagmaLang;
+import java.util.Optional;
+public def InterfacePasser () => {}

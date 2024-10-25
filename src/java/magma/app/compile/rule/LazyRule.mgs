@@ -1,6 +1,6 @@
-import magmaapiresultErr;
-import magmaappcompileGenerateException;
-import magmaappcompileNode;
-import magmaappcompileParseException;
-import javautilOptional;
-def LazyRule implements Rule () => {}
+import magma.api.result.Err;
+import magma.app.compile.GenerateException;
+import magma.app.compile.Node;
+import magma.app.compile.ParseException;
+import java.util.Optional;
+public def LazyRule implements Rule () => {}

@@ -1,1 +1,1 @@
-def SymbolFilter implements Filter () => {}
+public def SymbolFilter implements Filter () => {}

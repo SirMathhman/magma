@@ -1,4 +1,4 @@
-import magmaappApplication;
-import magmaappDirectorySourceSet;
-import javaniofilePaths;
-def Main () => {}
+import magma.app.Application;
+import magma.app.DirectorySourceSet;
+import java.nio.file.Paths;
+public def Main () => {}

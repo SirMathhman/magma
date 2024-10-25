@@ -1,1 +1,1 @@
-def GenerateException extends CompileException () => {}
+public def GenerateException extends CompileException () => {}

@@ -11,7 +11,6 @@ public class JavaLang {
     public static final String RECORD_TYPE = "record";
     public static final String CLASS_TYPE = "class";
     public static final String INTERFACE_TYPE = "interface";
-    public static final String MODIFIERS = "modifiers";
     public static final String METHOD = "method";
     public static final List<String> MODIFIERS_LIST = List.of("public", "private", "static", "final");
     public static final String IMPORT_STATIC_TYPE = "import-static";
@@ -239,7 +238,7 @@ public class JavaLang {
     }
 
     private static OptionalNodeListRule createArgumentsRule(Rule value) {
-        return new OptionalNodeListRule("arguments", new EmptyRule(), new NodeListRule(new ValueSplitter(), "arguments", value));
+        return new OptionalNodeListRule("arguments", new NodeListRule(new ValueSplitter(), "arguments", value), new EmptyRule());
     }
 
     private static Rule createTypeRule() {

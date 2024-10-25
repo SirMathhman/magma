@@ -1,8 +1,8 @@
-import magmaapiresultErr;
-import magmaapiresultResult;
-import javautilCollections;
-import javautilComparator;
-import javautilList;
-import javautilfunctionFunction;
-import javautilCollectionssingletonList;
-def RuleResult() => {}
+import magma.api.result.Err;
+import magma.api.result.Result;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Function;
+import java.util.Collections.singletonList;
+public class def RuleResult() => {}

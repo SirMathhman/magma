@@ -14,6 +14,7 @@ public class CommonLang {
     public static final String AFTER_IMPORT = "after-import";
     public static final String MODIFIER_VALUE = "modifier-value";
     public static final String MODIFIER_TYPE = "modifier";
+    public static final String MODIFIERS = "modifiers";
 
     public static TypeRule createImportRule() {
         return createImportRule(IMPORT_TYPE, "import ");
@@ -31,7 +32,7 @@ public class CommonLang {
 
     static Rule createModifiersRule() {
         final var modifier = new TypeRule(MODIFIER_TYPE, new StripRule(new OrRule(List.of(new FilterRule(new ListFilter(JavaLang.MODIFIERS_LIST), new ExtractRule(MODIFIER_VALUE)), new EmptyRule()))));
-        return new NodeListRule(new SimpleSplitter(" "), JavaLang.MODIFIERS, modifier);
+        return new NodeListRule(new SimpleSplitter(" "), MODIFIERS, modifier);
     }
 
     static NodeListRule createChildrenRule(Rule child) {

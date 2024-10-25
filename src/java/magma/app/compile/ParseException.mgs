@@ -1,1 +1,1 @@
-def ParseException extends CompileException () => {}
+public def ParseException extends CompileException () => {}

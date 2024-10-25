@@ -1,7 +1,7 @@
-import magmaapiresultErr;
-import magmaapiresultOk;
-import magmaappcompileGenerateException;
-import magmaappcompileMapNode;
-import magmaappcompileNode;
-import magmaappcompileParseException;
-def ExtractRule() => {}
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.app.compile.GenerateException;
+import magma.app.compile.MapNode;
+import magma.app.compile.Node;
+import magma.app.compile.ParseException;
+public class def ExtractRule() => {}

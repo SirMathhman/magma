@@ -151,6 +151,21 @@
    }, modifier {
    "modifier-value": "final"
    }]
+  }, declaration {
+  "name": "MODIFIERS",
+  "value": "modifiers",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "String"
+    }]
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
   }, method {
   "name": "createImportRule",
   "returns": symbol {
@@ -398,11 +413,8 @@
      "arguments": [string {
       "value": " "
       }]
-     }, property-access {
-     "child": "MODIFIERS",
-     "parent": symbol {
-      "content": "JavaLang"
-      }
+     }, symbol {
+     "content": "MODIFIERS"
      }, symbol {
      "content": "modifier"
      }]

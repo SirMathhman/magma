@@ -16,4 +16,10 @@ public class SimpleSplitter implements Splitter {
     public List<String> split(String input) {
         return List.of(input.split(Pattern.quote(delimiter)));
     }
+
+    @Override
+    public StringBuilder append(StringBuilder buffer, String str) {
+        if(buffer.isEmpty()) return buffer.append(str);
+        return buffer.append(delimiter).append(str);
+    }
 }

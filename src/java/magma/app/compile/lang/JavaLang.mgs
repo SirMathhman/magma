@@ -1,4 +1,4 @@
-import magmaappcompilerule*;
-import javautilList;
-import magmaappcompilelangCommonLang*;
-def JavaLang () => {}
+import magma.app.compile.rule.*;
+import java.util.List;
+import magma.app.compile.lang.CommonLang.*;
+public def JavaLang () => {}

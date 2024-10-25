@@ -1,4 +1,4 @@
-import magmaapistreamCollector;
-import javautilArrayList;
-import javautilList;
-def NativeListCollector<T> implements Collector<T, List<T>> () => {}
+import magma.api.stream.Collector;
+import java.util.ArrayList;
+import java.util.List;
+public def NativeListCollector<T> implements Collector<T, List<T>> () => {}

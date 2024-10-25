@@ -1,9 +1,9 @@
-import magmaapiTuple;
-import magmaappcompileruleSplitter;
-import magmajavaNativeListCollector;
-import javautilLinkedList;
-import javautilList;
-import javautilOptional;
-import javautilstreamCollectors;
-import javautilstreamIntStream;
-def ValueSplitter implements Splitter () => {}
+import magma.api.Tuple;
+import magma.app.compile.rule.Splitter;
+import magma.java.NativeListCollector;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+public def ValueSplitter implements Splitter () => {}

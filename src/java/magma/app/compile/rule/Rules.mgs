@@ -1,11 +1,11 @@
-import magmaapiresultErr;
-import magmaapiresultOk;
-import magmaapiresultResult;
-import magmaappcompileCompileException;
-import javatimeDuration;
-import javautilconcurrentCompletableFuture;
-import javautilconcurrentExecutionException;
-import javautilconcurrentTimeUnit;
-import javautilconcurrentTimeoutException;
-import javautilfunctionSupplier;
-def Rules () => {}
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.app.compile.CompileException;
+import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
+public def Rules () => {}

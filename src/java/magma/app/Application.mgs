@@ -1,12 +1,12 @@
-import magmaapiresultErr;
-import magmaapiresultOk;
-import magmaapiresultResult;
-import magmaappcompileCompileResult;
-import magmaappcompileCompiler;
-import javaioIOException;
-import javaniofileFiles;
-import javaniofilePath;
-import javautilIterator;
-import javautilOptional;
-import javautilSet;
-def Application () => {}
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.app.compile.CompileResult;
+import magma.app.compile.Compiler;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.Set;
+public final def Application () => {}

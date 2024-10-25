@@ -1,4 +1,4 @@
-import magmaappcompileGenerateException;
-import magmaappcompileNode;
-import magmaappcompileParseException;
-def ContextRule() => {}
+import magma.app.compile.GenerateException;
+import magma.app.compile.Node;
+import magma.app.compile.ParseException;
+public class def ContextRule() => {}

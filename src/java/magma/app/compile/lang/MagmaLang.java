@@ -4,6 +4,9 @@ import magma.app.compile.rule.*;
 
 import java.util.List;
 
+import static magma.app.compile.lang.CommonLang.MODIFIERS;
+import static magma.app.compile.lang.CommonLang.createModifiersRule;
+
 public class MagmaLang {
     public static final String FUNCTION = "function";
     public static final String TRAIT = "trait";
@@ -12,8 +15,17 @@ public class MagmaLang {
         return CommonLang.createChildrenRule(new OrRule(List.of(
                 CommonLang.createImportRule(),
                 new TypeRule("trait", new PrefixRule("trait", new EmptyRule())),
-                new TypeRule("function", new PrefixRule("def ", new SuffixRule(new ExtractRule("name"), "() => {}"))),
+                createFunctionRule(),
                 CommonLang.createWhitespaceRule()
         )));
+    }
+
+    private static TypeRule createFunctionRule() {
+        final var afterKeyword = new SuffixRule(new ExtractRule("name"), "() => {}");
+
+        final var withModifiers = new LocatingRule(createModifiersRule(), new FirstLocator(" def "), afterKeyword);
+        final var withoutModifiers = new PrefixRule("def ", afterKeyword);
+
+        return new TypeRule("function", new OptionalNodeListRule(MODIFIERS, withModifiers, withoutModifiers));
     }
 }

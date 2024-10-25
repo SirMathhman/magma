@@ -1,9 +1,9 @@
-import magmaapiresultErr;
-import magmaapiresultOk;
-import magmaapiresultResult;
-import javaioIOException;
-import javaniofileFiles;
-import javaniofilePath;
-import javautilSet;
-import javautilstreamCollectors;
-def DirectorySourceSet() => {}
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Set;
+import java.util.stream.Collectors;
+public class def DirectorySourceSet() => {}

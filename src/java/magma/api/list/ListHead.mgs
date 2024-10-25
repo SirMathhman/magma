@@ -1,4 +1,4 @@
-import magmaapioptionNone;
-import magmaapioptionOption;
-import magmaapistreamHead;
-def ListHead<T> implements Head<T> () => {}
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.stream.Head;
+public final def ListHead<T> implements Head<T> () => {}

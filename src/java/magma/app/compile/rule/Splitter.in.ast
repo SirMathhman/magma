@@ -44,6 +44,28 @@
      }]
     }
    }]
+  }, method {
+  "name": "append",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "StringBuilder"
+    }]
+   },
+  "params": [definition {
+   "name": "buffer",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "StringBuilder"
+     }]
+    }
+   }, definition {
+   "name": "str",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }
+   }]
   }, whitespace {
   }]
  }, whitespace {

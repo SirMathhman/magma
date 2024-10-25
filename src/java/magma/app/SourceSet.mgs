@@ -1,5 +1,5 @@
-import magmaapiresultResult;
-import javaioIOException;
-import javaniofilePath;
-import javautilSet;
+import magma.api.result.Result;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Set;
 trait

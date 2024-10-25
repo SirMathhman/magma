@@ -12,7 +12,7 @@ public final class OptionalNodeListRule implements Rule {
     private final Rule ifEmpty;
     private final OrRule maybe;
 
-    public OptionalNodeListRule(String propertyKey, Rule ifEmpty, Rule ifPresent) {
+    public OptionalNodeListRule(String propertyKey, Rule ifPresent, Rule ifEmpty) {
         this.propertyKey = propertyKey;
         this.ifPresent = ifPresent;
         this.ifEmpty = ifEmpty;

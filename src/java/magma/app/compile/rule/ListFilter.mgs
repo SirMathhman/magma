@@ -1,2 +1,2 @@
-import javautilList;
-def ListFilter() => {}
+import java.util.List;
+public class def ListFilter() => {}

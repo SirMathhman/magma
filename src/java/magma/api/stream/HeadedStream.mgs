@@ -1,2 +1,2 @@
-import javautilfunctionBiFunction;
-def HeadedStream() => {}
+import java.util.function.BiFunction;
+public class def HeadedStream() => {}

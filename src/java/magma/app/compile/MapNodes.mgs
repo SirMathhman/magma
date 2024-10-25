@@ -1,6 +1,6 @@
-import magmaapiTuple;
-import magmajavaNativeListCollector;
-import javautilHashMap;
-import javautilList;
-import javautilstreamStream;
-def MapNodes () => {}
+import magma.api.Tuple;
+import magma.java.NativeListCollector;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Stream;
+public def MapNodes () => {}

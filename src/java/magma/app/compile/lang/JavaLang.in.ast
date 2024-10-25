@@ -106,21 +106,6 @@
    "modifier-value": "final"
    }]
   }, declaration {
-  "name": "MODIFIERS",
-  "value": "modifiers",
-  "returns": symbol {
-   "namespace": [segment {
-    "segment": "String"
-    }]
-   },
-  "modifiers": [modifier {
-   "modifier-value": "public"
-   }, modifier {
-   "modifier-value": "static"
-   }, modifier {
-   "modifier-value": "final"
-   }]
-  }, declaration {
   "name": "METHOD",
   "value": "method",
   "returns": symbol {
@@ -3227,10 +3212,6 @@
      "value": "arguments"
      }, construction {
      "caller": symbol {
-      "content": "EmptyRule"
-      }
-     }, construction {
-     "caller": symbol {
       "content": "NodeListRule"
       },
      "arguments": [construction {
@@ -3242,6 +3223,10 @@
       }, symbol {
       "content": "value"
       }]
+     }, construction {
+     "caller": symbol {
+      "content": "EmptyRule"
+      }
      }]
     }
    }, whitespace {

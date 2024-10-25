@@ -1,5 +1,5 @@
-import magmaappcompileNode;
-import javautilOptional;
-import magmaappcompilelangJavaLangCLASS_TYPE;
-import magmaappcompilelangMagmaLangFUNCTION;
-def ClassPasser () => {}
+import magma.app.compile.Node;
+import java.util.Optional;
+import magma.app.compile.lang.JavaLang.CLASS_TYPE;
+import magma.app.compile.lang.MagmaLang.FUNCTION;
+public def ClassPasser () => {}

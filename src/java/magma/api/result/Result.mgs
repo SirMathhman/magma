@@ -1,5 +1,5 @@
-import magmaapiTuple;
-import javautilOptional;
-import javautilfunctionFunction;
-import javautilfunctionSupplier;
+import magma.api.Tuple;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 trait

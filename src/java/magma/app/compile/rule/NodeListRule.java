@@ -64,7 +64,7 @@ public final class NodeListRule implements Rule {
             }
 
             final var str = inner.findValue().orElseThrow();
-            buffer.append(str);
+            buffer = splitter.append(buffer, str);
             i++;
         }
 

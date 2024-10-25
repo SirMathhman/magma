@@ -1,2 +1,2 @@
-import magmaapioptionOption;
+import magma.api.option.Option;
 trait

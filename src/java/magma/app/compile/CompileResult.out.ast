@@ -3,6 +3,8 @@
  "name": "CompileResult",
  "modifiers": [modifier {
   "modifier-value": "public"
+  }, modifier {
+  "modifier-value": "class"
   }],
  "params": [definition {
   "name": "beforePass",

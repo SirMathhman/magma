@@ -83,7 +83,33 @@
   }, segment {
   "segment": "util"
   }, segment {
+  "segment": "Collections"
+  }]
+ }, import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
   "segment": "Optional"
+  }]
+ }, import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "CommonLang"
+  }, segment {
+  "segment": "*"
   }]
  }, function {
  "name": "RecordPasser ",
@@ -127,9 +153,37 @@
     }]
    }, invocation {
    "caller": property-access {
+    "child": "orElseGet",
+    "parent": lambda {
+     "before-arrow": "final var withModifiers = retyped.mapNodeList(MODIFIERS, modifiers ",
+     "after-arrow": " {
+            final var copy = new ArrayList<>(modifiers);
+            copy.add(createClassModifier());
+            return copy;
+        })"
+     }
+    },
+   "arguments": [quantity {
+    "value": invocation {
+     "caller": property-access {
+      "child": "singletonList",
+      "parent": lambda {
+       "before-arrow": ") ",
+       "after-arrow": " retyped.withNodeList(MODIFIERS, Collections"
+       }
+      },
+     "arguments": [invocation {
+      "caller": symbol {
+       "content": "createClassModifier"
+       }
+      }]
+     }
+    }]
+   }, invocation {
+   "caller": property-access {
     "child": "orElse",
     "parent": lambda {
-     "before-arrow": "final var withImplements = retyped.mapNodeList(CommonLang.CHILDREN, children ",
+     "before-arrow": "final var withImplements = withModifiers.mapNodeList(CommonLang.CHILDREN, children ",
      "after-arrow": " {
             var copy = new ArrayList<>(children);
             copy.add(new MapNode().retype("implements"));
@@ -138,7 +192,7 @@
      }
     },
    "arguments": [symbol {
-    "content": "retyped"
+    "content": "withModifiers"
     }]
    }, return {
    "value": invocation {
@@ -166,6 +220,44 @@
      "segment": "Node"
      }]
     }
+   }]
+  }, method {
+  "name": "createClassModifier",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "Node"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "withString",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "retype",
+       "parent": construction {
+        "caller": symbol {
+         "content": "MapNode"
+         }
+        }
+       },
+      "arguments": [symbol {
+       "content": "MODIFIER_TYPE"
+       }]
+      }
+     },
+    "arguments": [symbol {
+     "content": "MODIFIER_VALUE"
+     }, string {
+     "value": "class"
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
    }]
   }, whitespace {
   }],

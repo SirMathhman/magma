@@ -1,8 +1,8 @@
-import magmaapiTuple;
-import magmaapistreamStream;
-import magmajavaJavaList;
-import javautilArrayList;
-import javautilDeque;
-import javautilList;
-import javautilOptional;
-def BufferedState() => {}
+import magma.api.Tuple;
+import magma.api.stream.Stream;
+import magma.java.JavaList;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+import java.util.Optional;
+class def BufferedState() => {}
