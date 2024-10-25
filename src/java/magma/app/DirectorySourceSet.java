@@ -10,14 +10,21 @@ import java.nio.file.Path;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public record DirectorySourceSet(Path root) implements SourceSet {
+public final class DirectorySourceSet implements SourceSet {
+    private final Path root;
+    private final String extension;
+
+    public DirectorySourceSet(Path root, String extension) {
+        this.root = root;
+        this.extension = extension;
+    }
 
     @Override
     public Result<Set<Path>, IOException> collect() {
         try {
             var stream = Files.walk(root);
             return new Ok<>(stream
-                    .filter(path -> path.toString().endsWith(".java"))
+                    .filter(path -> path.toString().endsWith(extension))
                     .collect(Collectors.toSet()));
         } catch (IOException e) {
             return new Err<>(e);

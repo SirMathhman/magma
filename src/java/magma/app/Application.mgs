@@ -3,6 +3,8 @@ import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.CompileResult;
 import magma.app.compile.Compiler;
+import magma.app.compile.Passer;
+import magma.app.compile.rule.Rule;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

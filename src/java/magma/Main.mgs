@@ -1,4 +1,14 @@
 import magma.app.Application;
 import magma.app.DirectorySourceSet;
+import magma.app.compile.JavaToMagmaPasser;
+import magma.app.compile.MagmaToCParser;
+import magma.app.compile.Passer;
+import magma.app.compile.lang.CLang;
+import magma.app.compile.lang.MagmaLang;
+import magma.app.compile.rule.Rule;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import magma.app.Application.JAVA_EXTENSION;
+import magma.app.Application.MAGMA_EXTENSION;
+import magma.app.compile.lang.JavaLang.createRootRule;
 public def Main () => {}

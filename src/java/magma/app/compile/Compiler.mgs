@@ -1,9 +1,7 @@
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.app.compile.lang.MagmaLang;
 import magma.app.compile.rule.Rule;
 import magma.app.compile.rule.RuleResult;
 import java.util.List;
-import magma.app.compile.lang.JavaLang.*;
-export class def Compiler() => {}
+public final def Compiler () => {}

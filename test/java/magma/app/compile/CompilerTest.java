@@ -1,8 +1,10 @@
 package magma.app.compile;
 
 import magma.api.result.Result;
+import magma.app.compile.lang.MagmaLang;
 import org.junit.jupiter.api.Test;
 
+import static magma.app.compile.lang.JavaLang.createRootRule;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CompilerTest {
@@ -20,7 +22,7 @@ class CompilerTest {
     @Test
     void invalid() {
         assertThrows(CompileException.class, () -> {
-            Compiler compiler = new Compiler("test");
+            Compiler compiler = new Compiler("test", createRootRule(), new JavaToMagmaPasser(), MagmaLang.createRootRule());
             unwrap(compiler.compile()).output();
         });
     }

@@ -1,8 +1,1 @@
-import magma.app.compile.lang.JavaLang;
-import magma.app.compile.pass.ClassPasser;
-import magma.app.compile.pass.ImportPasser;
-import magma.app.compile.pass.InterfacePasser;
-import magma.app.compile.pass.RecordPasser;
-import java.util.List;
-import magma.app.compile.lang.CommonLang.CHILDREN;
-public def Passer () => {}
+trait

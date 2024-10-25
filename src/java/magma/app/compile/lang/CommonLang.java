@@ -30,8 +30,8 @@ public class CommonLang {
         return new NodeListRule(new SimpleSplitter("."), NAMESPACE, new TypeRule("segment", new StripRule(segment1)));
     }
 
-    static Rule createModifiersRule() {
-        final var modifier = new TypeRule(MODIFIER_TYPE, new StripRule(new OrRule(List.of(new FilterRule(new ListFilter(JavaLang.MODIFIERS_LIST), new ExtractRule(MODIFIER_VALUE)), new EmptyRule()))));
+    static Rule createModifiersRule(List<String> modifiers) {
+        final var modifier = new TypeRule(MODIFIER_TYPE, new StripRule(new OrRule(List.of(new FilterRule(new ListFilter(modifiers), new ExtractRule(MODIFIER_VALUE)), new EmptyRule()))));
         return new NodeListRule(new SimpleSplitter(" "), MODIFIERS, modifier);
     }
 

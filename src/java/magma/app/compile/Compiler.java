@@ -3,22 +3,29 @@ package magma.app.compile;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.app.compile.lang.MagmaLang;
 import magma.app.compile.rule.Rule;
 import magma.app.compile.rule.RuleResult;
 
 import java.util.List;
 
-import static magma.app.compile.lang.JavaLang.*;
+public final class Compiler {
+    private final String input;
+    private final Rule sourceRule;
+    private final Rule targetRule;
+    private final Passer passer;
 
-public record Compiler(String input) {
+    public Compiler(String input, Rule sourceRule, Passer passer, Rule targetRule) {
+        this.input = input;
+        this.sourceRule = sourceRule;
+        this.passer = passer;
+        this.targetRule = targetRule;
+    }
 
     public Result<CompileResult, CompileException> compile() {
-        Rule rule = createRootRule();
-        final var parsed = rule.parse(input);
+        final var parsed = sourceRule.parse(input);
         return write(parsed).flatMapValue(beforePass -> {
-            final var afterPass = Passer.pass(beforePass);
-            final var generated = MagmaLang.createRootRule().generate(afterPass);
+            final var afterPass = passer.pass(beforePass);
+            final var generated = targetRule.generate(afterPass);
             return write(generated).mapValue(output -> new CompileResult(beforePass, afterPass, output));
         });
     }
