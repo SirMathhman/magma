@@ -5,7 +5,11 @@ import magma.app.compile.Node;
 import java.util.Optional;
 
 public interface Passer {
-    Optional<Node> beforePass(Node node);
+    default Optional<Node> beforePass(Node node) {
+        return Optional.empty();
+    }
 
-    Optional<Node> afterPass(Node node);
+    default Optional<Node> afterPass(Node node) {
+        return Optional.empty();
+    }
 }

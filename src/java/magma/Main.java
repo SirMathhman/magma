@@ -6,6 +6,7 @@ import magma.app.DirectorySourceSet;
 import magma.app.compile.lang.CLang;
 import magma.app.compile.lang.JavaLang;
 import magma.app.compile.lang.MagmaLang;
+import magma.app.compile.pass.PackageRemover;
 import magma.app.compile.pass.PassingStage;
 import magma.app.compile.pass.SequentialPassingStage;
 import magma.app.compile.pass.TreePassingStage;
@@ -15,16 +16,23 @@ import magma.java.JavaList;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static magma.app.Application.*;
 
 public class Main {
-    public static final PassingStage JAVA_MAGMA_PASS = new SequentialPassingStage(new JavaList<PassingStage>().add(new TreePassingStage(Collections.emptyList())));
+
     public static final SequentialPassingStage MAGMA_C_PASS = new SequentialPassingStage(new JavaList<PassingStage>().add(new TreePassingStage(Collections.emptyList())));
     public static final Path JAVA_SOURCE = Paths.get(".", "src", "java");
     public static final Path MAGMA_SOURCE = Paths.get(".", "build", "java-magma");
     public static final Path C_SOURCE = Paths.get(".", "build", "magma-c");
+
+    private static SequentialPassingStage createJavaMagmaPasser() {
+        return new SequentialPassingStage(new JavaList<PassingStage>().add(new TreePassingStage(List.of(
+                new PackageRemover()
+        ))));
+    }
 
     public static void main(String[] args) {
         compileMagma().or(Main::compileC).ifPresent(Throwable::printStackTrace);
@@ -38,7 +46,7 @@ public class Main {
 
     private static Optional<ApplicationException> compileMagma() {
         return run(JAVA_SOURCE, JavaLang.createRootRule(), JAVA_EXTENSION,
-                JAVA_MAGMA_PASS,
+                createJavaMagmaPasser(),
                 MAGMA_SOURCE, MagmaLang.createRootRule(), MAGMA_EXTENSION);
     }
 

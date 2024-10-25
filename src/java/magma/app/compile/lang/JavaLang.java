@@ -7,7 +7,7 @@ import java.util.List;
 import static magma.app.compile.lang.CommonLang.*;
 
 public class JavaLang {
-    public static final String PACKAGE = "package";
+    public static final String PACKAGE_TYPE = "package";
     public static final String RECORD_TYPE = "record";
     public static final String CLASS_TYPE = "class";
     public static final String INTERFACE_TYPE = "interface";
@@ -16,7 +16,7 @@ public class JavaLang {
     public static final String IMPORT_STATIC_TYPE = "import-static";
 
     public static TypeRule createPackageRule() {
-        return new TypeRule(PACKAGE, new PrefixRule("package ", new SuffixRule(createNamespaceRule(), STATEMENT_END)));
+        return new TypeRule(PACKAGE_TYPE, new PrefixRule("package ", new SuffixRule(createNamespaceRule(), STATEMENT_END)));
     }
 
     public static Rule createRootRule() {
