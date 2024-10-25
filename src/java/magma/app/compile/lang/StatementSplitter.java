@@ -9,10 +9,9 @@ import java.util.stream.IntStream;
 
 public class StatementSplitter implements Splitter {
     static BufferedState splitAtChar(BufferedState state, char c) {
-        final var appended = state.append(c);
-        return splitDoubleQuotes(appended, c)
-                .or(() -> splitSingleQuotes(appended, c))
-                .orElseGet(() -> splitOther(c, appended));
+        return splitDoubleQuotes(state, c)
+                .or(() -> splitSingleQuotes(state, c))
+                .orElseGet(() -> splitOther(state, c));
     }
 
     private static Optional<BufferedState> splitDoubleQuotes(BufferedState state, char c) {
@@ -58,7 +57,7 @@ public class StatementSplitter implements Splitter {
         return escaped.popAndAppendDiscard();
     }
 
-    private static BufferedState splitOther(char c, BufferedState appended) {
+    private static BufferedState splitOther(BufferedState appended, char c) {
         if (c == ';' && appended.isLevel()) return appended.advance();
         if (c == '}' && appended.isShallow()) return appended.exit().advance();
         if (c == '{' || c == '(') return appended.enter();
@@ -81,50 +80,8 @@ public class StatementSplitter implements Splitter {
             state = splitAtChar(next.left(), next.right());
         }
 
-        return state.advance().stream().collect(JavaCollectors.asList());
-    }
-
-    static class State {
-        private final List<String> segments;
-        private final StringBuilder buffer;
-        private final int depth;
-
-        private State() {
-            this(new ArrayList<>(), new StringBuilder(), 0);
-        }
-
-        private State(List<String> segments, StringBuilder buffer, int depth) {
-            this.buffer = buffer;
-            this.segments = segments;
-            this.depth = depth;
-        }
-
-        private State append(char c) {
-            return new State(segments, buffer.append(c), depth);
-        }
-
-        private State advance() {
-            if (buffer.toString().trim().isEmpty()) return this;
-
-            final var copy = new ArrayList<>(segments);
-            copy.add(buffer.toString());
-            return new State(copy, new StringBuilder(), depth);
-        }
-
-        public boolean isLevel() {
-            return depth == 0;
-        }
-
-        public State enter() {
-            return new State(segments, buffer, depth + 1);
-        }
-
-        public State exit() {
-            return new State(segments, buffer, depth - 1);
-        }
-
-        public boolean isShallow() {
-            return depth == 1;
-        }
+        return state.advance()
+                .stream()
+                .collect(JavaCollectors.asList());
     }
 }

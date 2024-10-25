@@ -12,6 +12,6 @@ public record Some<T>(T value) implements Option<T> {
 
     @Override
     public Tuple<Boolean, T> toTuple(T other) {
-        return new Tuple<>(false, value);
+        return new Tuple<>(true, value);
     }
 }

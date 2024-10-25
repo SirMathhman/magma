@@ -62,7 +62,14 @@ public class JavaLang {
     }
 
     private static OrRule createRootMemberRule() {
-        return new OrRule(List.of(createPackageRule(), createImportRule(), createRecordRule(), createInterfaceRule(), createClassRule()));
+        return new OrRule(List.of(
+                createPackageRule(),
+                createImportRule(),
+                createRecordRule(),
+                createInterfaceRule(),
+                createClassRule(),
+                createWhitespaceRule()
+        ));
     }
 
     private static TypeRule createClassRule() {
@@ -79,7 +86,16 @@ public class JavaLang {
     }
 
     private static OrRule createClassMemberRule() {
-        return new OrRule(List.of(createMethodRule(), createDeclarationRule(createValueRule()), createDefinitionStatementRule()));
+        return new OrRule(List.of(
+                createMethodRule(),
+                createDeclarationRule(createValueRule()),
+                createDefinitionStatementRule(),
+                createWhitespaceRule()
+        ));
+    }
+
+    private static TypeRule createWhitespaceRule() {
+        return new TypeRule("whitespace", new StripRule(new EmptyRule(), "", ""));
     }
 
     private static TypeRule createDefinitionStatementRule() {
