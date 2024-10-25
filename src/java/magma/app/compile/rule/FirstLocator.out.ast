@@ -13,7 +13,7 @@
   "value": "Locator"
   },
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "slice",
@@ -78,6 +78,7 @@
      "content": "index"
      }]
     }
+   }, whitespace {
    }],
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -112,6 +113,7 @@
       }
      }
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"

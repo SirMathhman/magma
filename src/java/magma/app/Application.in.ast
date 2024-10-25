@@ -2,7 +2,13 @@
 "children": [package {
  "namespace": ["magma.app"]
  }, import {
- "namespace": ["magma.api.result.Results"]
+ "namespace": ["magma.api.result.Err"]
+ }, import {
+ "namespace": ["magma.api.result.Ok"]
+ }, import {
+ "namespace": ["magma.api.result.Result"]
+ }, import {
+ "namespace": ["magma.app.compile.CompileResult"]
  }, import {
  "namespace": ["magma.app.compile.Compiler"]
  }, import {
@@ -14,73 +20,665 @@
  }, import {
  "namespace": ["java.util.Iterator"]
  }, import {
+ "namespace": ["java.util.Optional"]
+ }, import {
  "namespace": ["java.util.Set"]
  }, class {
  "name": "Application ",
- "body": "
-    public static final String MAGMA_EXTENSION = "mgs";
-    public static final String EXTENSION_SEPARATOR = ".";
-    private final SourceSet sourceSet;
-
-    public Application(SourceSet sourceSet) {
-        this.sourceSet = sourceSet;
+ "children": [declaration {
+  "name": "MAGMA_EXTENSION",
+  "value": "mgs",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, declaration {
+  "name": "EXTENSION_SEPARATOR",
+  "value": ".",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, declaration {
+  "name": "FILE_NAME_SEPARATOR",
+  "value": ".",
+  "returns": symbol {
+   "value": "char"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, definition {
+  "name": "sourceSet",
+  "returns": symbol {
+   "value": "SourceSet"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, method {
+  "name": "Application",
+  "returns": symbol {
+   "value": "public"
+   },
+  "children": [assignment {
+   "content": "sourceSet",
+   "child": "sourceSet",
+   "parent": symbol {
+    "content": "this"
     }
-
-    private static void writeSafe(Path target, String output) throws ApplicationException {
-        try {
-            Files.writeString(target, output);
-        } catch (IOException e) {
-            throw new ApplicationException(e);
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "sourceSet",
+   "returns": symbol {
+    "value": "SourceSet"
+    }
+   }]
+  }, method {
+  "name": "writeSafe",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "ApplicationException"
+    }]
+   },
+  "children": [try {
+   "children": [invocation {
+    "caller": property-access {
+     "child": "writeString",
+     "parent": symbol {
+      "content": "Files"
+      }
+     },
+    "arguments": [symbol {
+     "content": "target"
+     }, symbol {
+     "content": "output"
+     }]
+    }, return {
+    "value": invocation {
+     "caller": property-access {
+      "child": "empty",
+      "parent": symbol {
+       "content": "Optional"
+       }
+      }
+     }
+    }, whitespace {
+    }]
+   }, catch {
+   "content": " (IOException e) {
+            return Optional.of(new ApplicationException(e));
+        }"
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "target",
+   "returns": symbol {
+    "value": "Path"
+    }
+   }, definition {
+   "name": "output",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "readSafe",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [symbol {
+    "value": "String"
+    }, symbol {
+    "value": "ApplicationException"
+    }]
+   },
+  "children": [try {
+   "children": [return {
+    "value": construction {
+     "caller": symbol {
+      "content": "Ok"
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "readString",
+       "parent": symbol {
+        "content": "Files"
         }
+       },
+      "arguments": [symbol {
+       "content": "source"
+       }]
+      }]
+     }
+    }, whitespace {
+    }]
+   }, catch {
+   "content": " (IOException e) {
+            return new Err<>(new ApplicationException(e));
+        }"
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "source",
+   "returns": symbol {
+    "value": "Path"
     }
-
-    private static String readSafe(Path source) throws ApplicationException {
-        try {
-            return Files.readString(source);
-        } catch (IOException e) {
-            throw new ApplicationException(e);
+   }]
+  }, method {
+  "name": "writeDebug",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "ApplicationException"
+    }]
+   },
+  "children": [declaration {
+   "name": "targetName",
+   "left": symbol {
+    "content": "name"
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "right": addition {
+    "left": symbol {
+     "content": "EXTENSION_SEPARATOR"
+     },
+    "right": symbol {
+     "content": "extension"
+     }
+    },
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "target",
+   "caller": property-access {
+    "child": "resolveSibling",
+    "parent": symbol {
+     "content": "source"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "targetName"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, return {
+   "value": invocation {
+    "caller": symbol {
+     "content": "writeSafe"
+     },
+    "arguments": [symbol {
+     "content": "target"
+     }, symbol {
+     "content": "output"
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "output",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "source",
+   "returns": symbol {
+    "value": "Path"
+    }
+   }, definition {
+   "name": "name",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "extension",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "compileWithInput",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "ApplicationException"
+    }]
+   },
+  "children": [declaration {
+   "name": "fileName",
+   "caller": property-access {
+    "child": "toString",
+    "parent": invocation {
+     "caller": property-access {
+      "child": "getFileName",
+      "parent": symbol {
+       "content": "source"
+       }
+      }
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "separator",
+   "caller": property-access {
+    "child": "indexOf",
+    "parent": symbol {
+     "content": "fileName"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "FILE_NAME_SEPARATOR"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (separator == -1) return Optional.empty();"
+   }, declaration {
+   "name": "fileNameWithoutExtension",
+   "caller": property-access {
+    "child": "substring",
+    "parent": symbol {
+     "content": "fileName"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [number {
+    "value": "0"
+    }, symbol {
+    "content": "separator"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, return {
+   "value": invocation {
+    "caller": symbol {
+     "content": "compileWithFileName"
+     },
+    "arguments": [symbol {
+     "content": "source"
+     }, symbol {
+     "content": "input"
+     }, symbol {
+     "content": "fileNameWithoutExtension"
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "source",
+   "returns": symbol {
+    "value": "Path"
+    }
+   }, definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "compileWithFileName",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "ApplicationException"
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "Compiler"
+     },
+    "arguments": [lambda {
+     "before-arrow": "input)
+                .compile()
+                .mapErr(err ",
+     "after-arrow": " new ApplicationException(source.toAbsolutePath().toString(), err))
+                .mapValue(result -> writeResult(result, source, fileNameWithoutExtension))
+                .match(value -> value"
+     }, method-access {
+     "child": "of",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "source",
+   "returns": symbol {
+    "value": "Path"
+    }
+   }, definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "fileNameWithoutExtension",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "writeResult",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "ApplicationException"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "or",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "or",
+       "parent": invocation {
+        "caller": symbol {
+         "content": "writeDebug"
+         },
+        "arguments": [invocation {
+         "caller": property-access {
+          "child": "output",
+          "parent": symbol {
+           "content": "result"
+           }
+          }
+         }, symbol {
+         "content": "source"
+         }, symbol {
+         "content": "name"
+         }, symbol {
+         "content": "MAGMA_EXTENSION"
+         }]
         }
-    }
-
-    private static void writeDebug(Path source, String output, String name, String extension) throws ApplicationException {
-        final var targetName = name + EXTENSION_SEPARATOR + extension;
-        final var target = source.resolveSibling(targetName);
-        writeSafe(target, output);
-    }
-
-    public void run() throws ApplicationException {
-        final var sources = collectSources();
-        Iterator<Path> iterator = sources.iterator();
-        while (iterator.hasNext()) {
-            Path source = iterator.next();
-            runWithSource(source);
+       },
+      "arguments": [quantity {
+       "value": lambda {
+        "before-arrow": ") ",
+        "after-arrow": " writeDebug(result.beforePass().toString(), source, name, "in.ast""
         }
+       }]
+      }
+     },
+    "arguments": [quantity {
+     "value": lambda {
+      "before-arrow": ") ",
+      "after-arrow": " writeDebug(result.afterPass().toString(), source, name, "out.ast""
+      }
+     }]
     }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "result",
+   "returns": symbol {
+    "value": "CompileResult"
+    }
+   }, definition {
+   "name": "source",
+   "returns": symbol {
+    "value": "Path"
+    }
+   }, definition {
+   "name": "name",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "run",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "ApplicationException"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "match",
+     "parent": invocation {
+      "caller": symbol {
+       "content": "collectSources"
+       }
+      }
+     },
+    "arguments": [lambda {
+     "before-arrow": "sources ",
+     "after-arrow": " {
+            Iterator<Path> iterator = sources.iterator();
+            while (iterator.hasNext()) {
+                Path source = iterator.next();
+                final var error = runWithSource(source);
+                if (error.isPresent()) {
+                    return error;
+                }
+            }
 
-    private Set<Path> collectSources() throws ApplicationException {
-        try {
-            return Results.unwrap(sourceSet.collect());
-        } catch (IOException e) {
-            throw new ApplicationException(e);
+            return Optional.empty();
+        }"
+     }, method-access {
+     "child": "of",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }]
+  }, method {
+  "name": "collectSources",
+  "returns": generic {
+   "base": symbol {
+    "value": "Result"
+    },
+   "children": [generic {
+    "base": symbol {
+     "value": "Set"
+     },
+    "children": [symbol {
+     "value": "Path"
+     }]
+    }, symbol {
+    "value": "ApplicationException"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "mapErr",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "collect",
+       "parent": symbol {
+        "content": "sourceSet"
         }
+       }
+      }
+     },
+    "arguments": [method-access {
+     "child": "new",
+     "parent": symbol {
+      "content": "ApplicationException"
+      }
+     }]
     }
-
-    private void runWithSource(Path source) throws ApplicationException {
-        final var input = readSafe(source);
-
-        final var fileName = source.getFileName().toString();
-        final var separator = fileName.indexOf('');
-        if (separator == -1) return;
-        final var fileNameWithoutExtension = fileName.substring(0, separator);
-
-        var compiler = new Compiler(input);
-        final var result = Results.unwrap(compiler.compile());
-
-        writeDebug(source, result.output(), fileNameWithoutExtension, MAGMA_EXTENSION);
-        writeDebug(source, result.beforePass().toString(), fileNameWithoutExtension, "in.ast");
-        writeDebug(source, result.afterPass().toString(), fileNameWithoutExtension, "out.ast");
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }]
+  }, method {
+  "name": "runWithSource",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "ApplicationException"
+    }]
+   },
+  "children": [invocation {
+   "caller": property-access {
+    "child": "println",
+    "parent": property-access {
+     "child": "out",
+     "parent": symbol {
+      "content": "System"
+      }
+     }
+    },
+   "arguments": [addition {
+    "left": string {
+     "value": "Compiling: "
+     },
+    "right": symbol {
+     "content": "source"
+     }
+    }]
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "match",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "mapValue",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "readSafe",
+         "parent": symbol {
+          "content": "Application"
+          }
+         },
+        "arguments": [symbol {
+         "content": "source"
+         }]
+        }
+       },
+      "arguments": [invocation {
+       "caller": lambda {
+        "before-arrow": "input ",
+        "after-arrow": " compileWithInput"
+        },
+       "arguments": [symbol {
+        "content": "source"
+        }, symbol {
+        "content": "input"
+        }]
+       }]
+      }
+     },
+    "arguments": [lambda {
+     "before-arrow": "value ",
+     "after-arrow": " value"
+     }, method-access {
+     "child": "of",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     }]
     }
-}",
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }],
+  "params": [definition {
+   "name": "source",
+   "returns": symbol {
+    "value": "Path"
+    }
+   }]
+  }, whitespace {
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }, modifier {

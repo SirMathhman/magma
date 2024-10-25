@@ -59,6 +59,7 @@
      "content": "sources"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"

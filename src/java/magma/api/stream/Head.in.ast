@@ -1,0 +1,25 @@
+{
+"children": [package {
+ "namespace": ["magma.api.stream"]
+ }, import {
+ "namespace": ["magma.api.option.Option"]
+ }, interface {
+ "name": "Head<T>",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }],
+ "content": [method {
+  "name": "next",
+  "returns": generic {
+   "base": symbol {
+    "value": "Option"
+    },
+   "children": [symbol {
+    "value": "T"
+    }]
+   }
+  }, whitespace {
+  }]
+ }, whitespace {
+ }]
+}

@@ -67,6 +67,7 @@
      "content": "index"
      }]
     }
+   }, whitespace {
    }],
   "modifiers": [modifier {
    "modifier-value": "private"
@@ -101,6 +102,7 @@
       }
      }
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"

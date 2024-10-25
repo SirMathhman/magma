@@ -189,45 +189,27 @@
              }]
             }
            },
-          "arguments": [invocation {
-           "caller": property-access {
-            "child": "passInterface",
-            "parent": lambda {
-             "before-arrow": "() ",
-             "after-arrow": " InterfacePasser"
-             }
-            },
-           "arguments": [symbol {
-            "content": "node"
-            }]
+          "arguments": [quantity {
+           "value": lambda {
+            "before-arrow": ") ",
+            "after-arrow": " InterfacePasser.passInterface(node"
+            }
            }]
           }
          },
-        "arguments": [invocation {
-         "caller": property-access {
-          "child": "pass",
-          "parent": lambda {
-           "before-arrow": "() ",
-           "after-arrow": " ClassPasser"
-           }
-          },
-         "arguments": [symbol {
-          "content": "node"
-          }]
+        "arguments": [quantity {
+         "value": lambda {
+          "before-arrow": ") ",
+          "after-arrow": " ClassPasser.pass(node"
+          }
          }]
         }
        },
-      "arguments": [invocation {
-       "caller": property-access {
-        "child": "pass",
-        "parent": lambda {
-         "before-arrow": "() ",
-         "after-arrow": " ImportPasser"
-         }
-        },
-       "arguments": [symbol {
-        "content": "node"
-        }]
+      "arguments": [quantity {
+       "value": lambda {
+        "before-arrow": ") ",
+        "after-arrow": " ImportPasser.pass(node"
+        }
        }]
       }
      },

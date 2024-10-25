@@ -45,42 +45,27 @@
            }]
           }
          },
-        "arguments": [invocation {
-         "caller": lambda {
-          "before-arrow": "() ",
-          "after-arrow": " processMinusSign"
-          },
-         "arguments": [symbol {
-          "content": "current"
-          }, symbol {
-          "content": "c"
-          }]
+        "arguments": [quantity {
+         "value": lambda {
+          "before-arrow": ") ",
+          "after-arrow": " processMinusSign(current, c"
+          }
          }]
         }
        },
-      "arguments": [invocation {
-       "caller": lambda {
-        "before-arrow": "() ",
-        "after-arrow": " processComma"
-        },
-       "arguments": [symbol {
-        "content": "current"
-        }, symbol {
-        "content": "c"
-        }]
+      "arguments": [quantity {
+       "value": lambda {
+        "before-arrow": ") ",
+        "after-arrow": " processComma(current, c"
+        }
        }]
       }
      },
-    "arguments": [invocation {
-     "caller": lambda {
-      "before-arrow": "() ",
-      "after-arrow": " processNormal"
-      },
-     "arguments": [symbol {
-      "content": "current"
-      }, symbol {
-      "content": "c"
-      }]
+    "arguments": [quantity {
+     "value": lambda {
+      "before-arrow": ") ",
+      "after-arrow": " processNormal(current, c"
+      }
      }]
     }
    }, whitespace {

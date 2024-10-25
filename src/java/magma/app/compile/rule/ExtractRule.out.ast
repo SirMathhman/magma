@@ -29,7 +29,7 @@
   "value": "Rule"
   },
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "propertyKey",
@@ -77,6 +77,7 @@
       }]
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -103,12 +104,36 @@
     }]
    },
   "children": [return {
-   "value": lambda {
-    "before-arrow": "node.findString(propertyKey)
+   "value": invocation {
+    "caller": property-access {
+     "child": "orElseGet",
+     "parent": lambda {
+      "before-arrow": "node.findString(propertyKey)
                 .<RuleResult<String, GenerateException>>map(s ",
-    "after-arrow": " new RuleResult<>(new Ok<>(s)))
-                .orElseGet(() -> new RuleResult<>(new Err<>(new GenerateException("String '" + propertyKey + "' not present", node))))"
+      "after-arrow": " new RuleResult<>(new Ok<>(s)))
+                "
+      }
+     },
+    "arguments": [quantity {
+     "value": invocation {
+      "caller": lambda {
+       "before-arrow": ") ",
+       "after-arrow": " new RuleResult<>(new Err<>"
+       },
+      "arguments": [construction {
+       "caller": symbol {
+        "content": "GenerateException"
+        },
+       "arguments": [string {
+        "value": "String '" + propertyKey + "' not present"
+        }, symbol {
+        "content": "node"
+        }]
+       }]
+      }
+     }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -124,5 +149,6 @@
    }]
   }, implements {
   }]
+ }, whitespace {
  }]
 }

@@ -10,5 +10,196 @@
  }, import {
  "namespace": ["java.util.List"]
  }, class {
+ "name": "OptionalNodeRule implements Rule ",
+ "children": [definition {
+  "name": "propertyKey",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, definition {
+  "name": "ifPresent",
+  "returns": symbol {
+   "value": "Rule"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, definition {
+  "name": "ifEmpty",
+  "returns": symbol {
+   "value": "Rule"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, definition {
+  "name": "maybe",
+  "returns": symbol {
+   "value": "OrRule"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, method {
+  "name": "OptionalNodeRule",
+  "returns": symbol {
+   "value": "public"
+   },
+  "children": [assignment {
+   "content": "propertyKey",
+   "child": "propertyKey",
+   "parent": symbol {
+    "content": "this"
+    }
+   }, assignment {
+   "content": "ifPresent",
+   "child": "ifPresent",
+   "parent": symbol {
+    "content": "this"
+    }
+   }, assignment {
+   "content": "ifEmpty",
+   "child": "ifEmpty",
+   "parent": symbol {
+    "content": "this"
+    }
+   }, assignment {
+   "content": "maybe",
+   "caller": symbol {
+    "content": "OrRule"
+    },
+   "arguments": [invocation {
+    "caller": property-access {
+     "child": "of",
+     "parent": symbol {
+      "content": "List"
+      }
+     },
+    "arguments": [symbol {
+     "content": "ifPresent"
+     }, symbol {
+     "content": "ifEmpty"
+     }]
+    }]
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "ifEmpty",
+   "returns": symbol {
+    "value": "Rule"
+    }
+   }, definition {
+   "name": "ifPresent",
+   "returns": symbol {
+    "value": "Rule"
+    }
+   }]
+  }, method {
+  "name": "parse",
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }, symbol {
+    "value": "ParseException"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "parse",
+     "parent": symbol {
+      "content": "maybe"
+      }
+     },
+    "arguments": [symbol {
+     "content": "input"
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "generate",
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "String"
+    }, symbol {
+    "value": "GenerateException"
+    }]
+   },
+  "children": [if {
+   "content": " (node.hasNode(propertyKey)) {
+            return ifPresent.generate(node);
+        }"
+   }, else {
+   "children": [return {
+    "value": invocation {
+     "caller": property-access {
+      "child": "generate",
+      "parent": symbol {
+       "content": "ifEmpty"
+       }
+      },
+     "arguments": [symbol {
+      "content": "node"
+      }]
+     }
+    }, whitespace {
+    }]
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }]
+  }, whitespace {
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }, modifier {
+  "modifier-value": "final"
+  }]
+ }, whitespace {
  }]
 }

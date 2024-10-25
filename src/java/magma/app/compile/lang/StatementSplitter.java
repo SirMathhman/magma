@@ -60,14 +60,17 @@ public class StatementSplitter implements Splitter {
         final var nextState = next.left();
         final var nextChar = next.right();
 
-        final BufferedState escaped;
-        if (nextChar == '\\') {
-            escaped = nextState.popAndAppendDiscard().orElse(nextState);
-        } else {
-            escaped = nextState;
-        }
+        final var escaped = splitEscapeInSingleQuotes(nextState, nextChar);
 
         return escaped.popAndAppendDiscard();
+    }
+
+    private static BufferedState splitEscapeInSingleQuotes(BufferedState nextState, char nextChar) {
+        if (nextChar == '\\') {
+            return nextState.popAndAppendDiscard().orElse(nextState);
+        } else {
+            return nextState;
+        }
     }
 
     private static BufferedState splitOther(BufferedState appended, char c) {

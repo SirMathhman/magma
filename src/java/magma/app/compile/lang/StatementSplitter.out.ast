@@ -6,11 +6,7 @@
  }, import {
  "after-import": "
 ",
- "namespace": ["java.util.ArrayList"]
- }, import {
- "after-import": "
-",
- "namespace": ["java.util.Deque"]
+ "namespace": ["magma.java.JavaCollectors"]
  }, import {
  "after-import": "
 ",
@@ -22,11 +18,539 @@
  }, import {
  "after-import": "
 ",
+ "namespace": ["java.util.Optional"]
+ }, import {
+ "after-import": "
+",
  "namespace": ["java.util.stream.Collectors"]
  }, import {
  "after-import": "
 ",
  "namespace": ["java.util.stream.IntStream"]
  }, function {
+ "name": "StatementSplitter implements Splitter ",
+ "children": [method {
+  "name": "splitAtChar",
+  "returns": symbol {
+   "value": "BufferedState"
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "orElseGet",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "or",
+       "parent": invocation {
+        "caller": symbol {
+         "content": "splitDoubleQuotes"
+         },
+        "arguments": [symbol {
+         "content": "state"
+         }, symbol {
+         "content": "c"
+         }]
+        }
+       },
+      "arguments": [quantity {
+       "value": lambda {
+        "before-arrow": ") ",
+        "after-arrow": " splitSingleQuotes(state, c"
+        }
+       }]
+      }
+     },
+    "arguments": [quantity {
+     "value": lambda {
+      "before-arrow": ") ",
+      "after-arrow": " splitOther(state, c"
+      }
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "state",
+   "returns": symbol {
+    "value": "BufferedState"
+    }
+   }, definition {
+   "name": "c",
+   "returns": symbol {
+    "value": "char"
+    }
+   }]
+  }, method {
+  "name": "splitDoubleQuotes",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "BufferedState"
+    }]
+   },
+  "children": [if {
+   "content": " (c != '\"') return Optional.empty();"
+   }, declaration {
+   "name": "current",
+   "content": "state",
+   "returns": symbol {
+    "value": "var"
+    }
+   }, while {
+   "content": " (true) {
+            final var bufferedState = splitWithinDoubleQuotes(current);
+            if (bufferedState.isPresent()) {
+                current = bufferedState.get();
+            } else {
+                break;
+            }
+        }"
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "of",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [symbol {
+     "content": "current"
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "state",
+   "returns": symbol {
+    "value": "BufferedState"
+    }
+   }, definition {
+   "name": "c",
+   "returns": symbol {
+    "value": "char"
+    }
+   }]
+  }, method {
+  "name": "splitWithinDoubleQuotes",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "BufferedState"
+    }]
+   },
+  "children": [declaration {
+   "name": "optional",
+   "caller": property-access {
+    "child": "popAndAppend",
+    "parent": symbol {
+     "content": "current"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (optional.isEmpty()) return Optional.empty();"
+   }, declaration {
+   "name": "next",
+   "caller": property-access {
+    "child": "get",
+    "parent": symbol {
+     "content": "optional"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "nextState",
+   "caller": property-access {
+    "child": "left",
+    "parent": symbol {
+     "content": "next"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "nextChar",
+   "caller": property-access {
+    "child": "right",
+    "parent": symbol {
+     "content": "next"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (nextChar == '\\') {
+            return Optional.of(nextState.popAndAppendDiscard().orElse(nextState));
+        }"
+   }, if {
+   "content": " (nextChar == '\"') {
+            return Optional.empty();
+        }"
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "of",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [symbol {
+     "content": "nextState"
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "current",
+   "returns": symbol {
+    "value": "BufferedState"
+    }
+   }]
+  }, method {
+  "name": "splitSingleQuotes",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "BufferedState"
+    }]
+   },
+  "children": [if {
+   "content": " (c != '\'') return Optional.empty();"
+   }, declaration {
+   "name": "optional",
+   "caller": property-access {
+    "child": "popAndAppend",
+    "parent": symbol {
+     "content": "state"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (optional.isEmpty()) return Optional.of(state);"
+   }, declaration {
+   "name": "next",
+   "caller": property-access {
+    "child": "get",
+    "parent": symbol {
+     "content": "optional"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "nextState",
+   "caller": property-access {
+    "child": "left",
+    "parent": symbol {
+     "content": "next"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "nextChar",
+   "caller": property-access {
+    "child": "right",
+    "parent": symbol {
+     "content": "next"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "escaped",
+   "caller": symbol {
+    "content": "splitEscapeInSingleQuotes"
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "nextState"
+    }, symbol {
+    "content": "nextChar"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "popAndAppendDiscard",
+     "parent": symbol {
+      "content": "escaped"
+      }
+     }
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "state",
+   "returns": symbol {
+    "value": "BufferedState"
+    }
+   }, definition {
+   "name": "c",
+   "returns": symbol {
+    "value": "char"
+    }
+   }]
+  }, method {
+  "name": "splitEscapeInSingleQuotes",
+  "returns": symbol {
+   "value": "BufferedState"
+   },
+  "children": [if {
+   "content": " (nextChar == '\\') {
+            return nextState.popAndAppendDiscard().orElse(nextState);
+        }"
+   }, else {
+   "children": [return {
+    "value": symbol {
+     "content": "nextState"
+     }
+    }, whitespace {
+    }]
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "nextState",
+   "returns": symbol {
+    "value": "BufferedState"
+    }
+   }, definition {
+   "name": "nextChar",
+   "returns": symbol {
+    "value": "char"
+    }
+   }]
+  }, method {
+  "name": "splitOther",
+  "returns": symbol {
+   "value": "BufferedState"
+   },
+  "children": [if {
+   "content": " (c == ';' && appended.isLevel()) return appended.advance();"
+   }, if {
+   "content": " (c == '}' && appended.isShallow()) return appended.exit().advance();"
+   }, if {
+   "content": " (c == '{' || c == '(') return appended.enter();"
+   }, if {
+   "content": " (c == '}' || c == ')') return appended.exit();"
+   }, return {
+   "value": symbol {
+    "content": "appended"
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "appended",
+   "returns": symbol {
+    "value": "BufferedState"
+    }
+   }, definition {
+   "name": "c",
+   "returns": symbol {
+    "value": "char"
+    }
+   }]
+  }, method {
+  "name": "split",
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [symbol {
+    "value": "String"
+    }]
+   },
+  "children": [declaration {
+   "name": "queue",
+   "caller": property-access {
+    "child": "collect",
+    "parent": invocation {
+     "caller": property-access {
+      "child": "mapToObj",
+      "parent": invocation {
+       "caller": property-access {
+        "child": "range",
+        "parent": symbol {
+         "content": "IntStream"
+         }
+        },
+       "arguments": [number {
+        "value": "0"
+        }, invocation {
+        "caller": property-access {
+         "child": "length",
+         "parent": symbol {
+          "content": "input"
+          }
+         }
+        }]
+       }
+      },
+     "arguments": [method-access {
+      "child": "charAt",
+      "parent": symbol {
+       "content": "input"
+       }
+      }]
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [invocation {
+    "caller": property-access {
+     "child": "toCollection",
+     "parent": symbol {
+      "content": "Collectors"
+      }
+     },
+    "arguments": [method-access {
+     "child": "new",
+     "parent": symbol {
+      "content": "LinkedList"
+      }
+     }]
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, declaration {
+   "name": "state",
+   "caller": symbol {
+    "content": "BufferedState"
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "queue"
+    }]
+   }, while {
+   "content": " (true) {
+            final var optional = state.popAndAppend();
+            if (optional.isEmpty()) break;
+
+            final var next = optional.get();
+            state = splitAtChar(next.left(), next.right());
+        }"
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "collect",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "stream",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "advance",
+         "parent": symbol {
+          "content": "state"
+          }
+         }
+        }
+       }
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "asList",
+      "parent": symbol {
+       "content": "JavaCollectors"
+       }
+      }
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, whitespace {
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

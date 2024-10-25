@@ -1,0 +1,25 @@
+{
+"children": [import {
+ "after-import": "
+",
+ "namespace": ["magma.api.option.Option"]
+ }, trait {
+ "name": "Head<T>",
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }],
+ "content": [method {
+  "name": "next",
+  "returns": generic {
+   "base": symbol {
+    "value": "Option"
+    },
+   "children": [symbol {
+    "value": "T"
+    }]
+   }
+  }, whitespace {
+  }]
+ }, whitespace {
+ }]
+}

@@ -33,7 +33,7 @@
   "value": "SourceSet"
   },
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "source",
@@ -80,6 +80,7 @@
      "content": "sources"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"

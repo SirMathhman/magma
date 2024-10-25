@@ -159,6 +159,7 @@ public class JavaLang {
         final var value = new LazyRule();
         value.setChildRule(new OrRule(List.of(
                 new TypeRule("char", new StripRule(new PrefixRule("'", new SuffixRule(new ExtractRule("value"), "'")))),
+                createQuantityRule(value),
                 createStringRule(),
                 createConstructionRule(value),
                 createInvocationRule(value),
@@ -166,11 +167,18 @@ public class JavaLang {
                 createNumberRule(),
                 createOperationRule(value, "addition", "+"),
                 createOperationRule(value, "equals", "=="),
+                createOperationRule(value, "not-equals", "!="),
+                createOperationRule(value, "or", "||"),
+                createOperationRule(value, "and", "&&"),
                 createTernaryRule(value),
                 createAccessRule(value, "property-access", "."),
                 createAccessRule(value, "method-access", "::"),
                 createLambdaRule())));
         return value;
+    }
+
+    private static TypeRule createQuantityRule(LazyRule value) {
+        return new TypeRule("quantity", new StripRule(new PrefixRule("(", new SuffixRule(new NodeRule("value", value), ")"))));
     }
 
     private static TypeRule createStringRule() {

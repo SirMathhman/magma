@@ -4,5 +4,299 @@
  }, import {
  "namespace": ["magma.app.compile.rule.*"]
  }, class {
+ "name": "CommonLang ",
+ "children": [declaration {
+  "name": "NAME",
+  "value": "name",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, declaration {
+  "name": "STATEMENT_END",
+  "value": ";",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, declaration {
+  "name": "NAMESPACE",
+  "value": "namespace",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, declaration {
+  "name": "IMPORT",
+  "value": "import",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, declaration {
+  "name": "CHILDREN",
+  "value": "children",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, declaration {
+  "name": "AFTER_IMPORT",
+  "value": "after-import",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, declaration {
+  "name": "MODIFIER_VALUE",
+  "value": "modifier-value",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, declaration {
+  "name": "MODIFIER_TYPE",
+  "value": "modifier",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, method {
+  "name": "createImportRule",
+  "returns": symbol {
+   "value": "TypeRule"
+   },
+  "children": [declaration {
+   "name": "childRule",
+   "caller": symbol {
+    "content": "SuffixRule"
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [invocation {
+    "caller": symbol {
+     "content": "createNamespaceRule"
+     }
+    }, symbol {
+    "content": "STATEMENT_END"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "TypeRule"
+     },
+    "arguments": [symbol {
+     "content": "IMPORT"
+     }, construction {
+     "caller": symbol {
+      "content": "StripRule"
+      },
+     "arguments": [construction {
+      "caller": symbol {
+       "content": "PrefixRule"
+       },
+      "arguments": [string {
+       "value": "import "
+       }, symbol {
+       "content": "childRule"
+       }]
+      }, string {
+      "value": "before-import"
+      }, symbol {
+      "content": "AFTER_IMPORT"
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }]
+  }, method {
+  "name": "createNamespaceRule",
+  "returns": symbol {
+   "value": "Rule"
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "StringListRule"
+     },
+    "arguments": [symbol {
+     "content": "NAMESPACE"
+     }, string {
+     "value": "\\."
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "static"
+   }]
+  }, method {
+  "name": "createModifiersRule",
+  "returns": symbol {
+   "value": "Rule"
+   },
+  "children": [declaration {
+   "name": "modifier",
+   "caller": symbol {
+    "content": "TypeRule"
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "MODIFIER_TYPE"
+    }, construction {
+    "caller": symbol {
+     "content": "FilterRule"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "ListFilter"
+      },
+     "arguments": [property-access {
+      "child": "MODIFIERS_LIST",
+      "parent": symbol {
+       "content": "JavaLang"
+       }
+      }]
+     }, construction {
+     "caller": symbol {
+      "content": "ExtractRule"
+      },
+     "arguments": [symbol {
+      "content": "MODIFIER_VALUE"
+      }]
+     }]
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "NodeListRule"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "SimpleSplitter"
+      },
+     "arguments": [string {
+      "value": " "
+      }]
+     }, property-access {
+     "child": "MODIFIERS",
+     "parent": symbol {
+      "content": "JavaLang"
+      }
+     }, symbol {
+     "content": "modifier"
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "static"
+   }]
+  }, method {
+  "name": "createChildrenRule",
+  "returns": symbol {
+   "value": "NodeListRule"
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "NodeListRule"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "StatementSplitter"
+      }
+     }, string {
+     "value": "children"
+     }, construction {
+     "caller": symbol {
+      "content": "StripRule"
+      },
+     "arguments": [symbol {
+      "content": "statement"
+      }, string {
+      }, string {
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "statement",
+   "returns": symbol {
+    "value": "Rule"
+    }
+   }]
+  }, whitespace {
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
+ }, whitespace {
  }]
 }

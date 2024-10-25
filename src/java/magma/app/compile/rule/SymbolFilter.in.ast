@@ -3,26 +3,117 @@
  "namespace": ["magma.app.compile.rule"]
  }, class {
  "name": "SymbolFilter implements Filter ",
- "body": "
-    private static boolean isValid(char c, int index) {
-        return Character.isLetter(c) || (index != 0 && Character.isDigit(c));
+ "children": [method {
+  "name": "isValid",
+  "returns": symbol {
+   "value": "boolean"
+   },
+  "children": [return {
+   "value": equals {
+    "left": or {
+     "left": invocation {
+      "caller": property-access {
+       "child": "isLetter",
+       "parent": symbol {
+        "content": "Character"
+        }
+       },
+      "arguments": [symbol {
+       "content": "c"
+       }]
+      },
+     "right": symbol {
+      "content": "c"
+      }
+     },
+    "right": or {
+     "left": char {
+      "value": "_"
+      },
+     "right": quantity {
+      "value": invocation {
+       "caller": not-equals {
+        "left": symbol {
+         "content": "index"
+         },
+        "right": and {
+         "left": number {
+          "value": "0"
+          },
+         "right": property-access {
+          "child": "isDigit",
+          "parent": symbol {
+           "content": "Character"
+           }
+          }
+         }
+        },
+       "arguments": [symbol {
+        "content": "c"
+        }]
+       }
+      }
+     }
     }
-
-    @Override
-    public boolean filter(String input) {
-        int i = 0;
-        while (i < input.length()) {
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "c",
+   "returns": symbol {
+    "value": "char"
+    }
+   }, definition {
+   "name": "index",
+   "returns": symbol {
+    "value": "int"
+    }
+   }]
+  }, method {
+  "name": "filter",
+  "returns": symbol {
+   "value": "boolean"
+   },
+  "children": [declaration {
+   "name": "i",
+   "value": "0",
+   "returns": symbol {
+    "value": "int"
+    }
+   }, while {
+   "content": " (i < input.length()) {
             final var c = input.charAt(i);
             if (!isValid(c, i)) return false;
 
             i++;
-        }
-
-        return true;
+        }"
+   }, return {
+   "value": symbol {
+    "content": "true"
     }
-}",
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, whitespace {
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }]
+ }, whitespace {
  }]
 }
