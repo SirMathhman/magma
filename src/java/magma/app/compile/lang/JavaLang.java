@@ -21,7 +21,7 @@ public class JavaLang {
     }
 
     public static NodeListRule createRootRule() {
-        return new NodeListRule(new StatementSplitter(), CHILDREN, new StripRule(createRootMemberRule(), "", ""));
+        return new NodeListRule(new StatementSplitter(), CHILDREN, new StripRule(createRootMemberRule()));
     }
 
     public static TypeRule createRecordRule() {
@@ -31,11 +31,11 @@ public class JavaLang {
 
         final var params = new NodeListRule(new ValueSplitter(), "params", createDefinitionRule());
         final var withChildren = createChildrenRule(createClassMemberRule());
-        final var maybeChildren = new StripRule(new OptionalNodeRule("children", new EmptyRule(), withChildren), "", "");
+        final var maybeChildren = new StripRule(new OptionalNodeRule("children", new EmptyRule(), withChildren));
 
         final var anInterface = new NodeRule("interface", createTypeRule());
-        final var implementsPresent = new StripRule(new PrefixRule("implements", new LocatingRule(anInterface, new FirstLocator("{"), new SuffixRule(maybeChildren, "}"))), "", "");
-        final var implementsEmpty = new StripRule(new PrefixRule("{", new SuffixRule(maybeChildren, "}")), "", "");
+        final var implementsPresent = new StripRule(new PrefixRule("implements", new LocatingRule(anInterface, new FirstLocator("{"), new SuffixRule(maybeChildren, "}"))));
+        final var implementsEmpty = new StripRule(new PrefixRule("{", new SuffixRule(maybeChildren, "}")));
         final var afterParams = new OptionalNodeRule("super", implementsEmpty, implementsPresent);
         final var afterKeyword = new LocatingRule(name, new FirstLocator("("), new LocatingRule(params, new FirstLocator(")"), afterParams));
         return new TypeRule(RECORD_TYPE, new LocatingRule(createModifiersRule(), new FirstLocator("record "), afterKeyword));
@@ -43,22 +43,22 @@ public class JavaLang {
 
     private static TypeRule createDefinitionRule() {
         final var content = new NodeRule("returns", createTypeRule());
-        final var typeParams = new StripRule(new PrefixRule("<", new SuffixRule(new ExtractRule("type-params"), ">")), "", "");
+        final var typeParams = new StripRule(new PrefixRule("<", new SuffixRule(new ExtractRule("type-params"), ">")));
         final var withTypeParams = new ContextRule("With type params", new LocatingRule(typeParams, new ForwardsLocator(" "), content));
         final var withoutTypeParams = new ContextRule("Without type params", content);
         final var maybeTypeParams = new OptionalNodeRule("type-params", withoutTypeParams, withTypeParams);
 
         final var withModifiers = new ContextRule("With modifiers", new LocatingRule(createModifiersRule(), new ForwardsLocator(" "), maybeTypeParams));
         final var withoutModifiers = new ContextRule("Without modifiers", maybeTypeParams);
-        final var maybeModifiers = new StripRule(new OptionalNodeRule("modifiers", withoutModifiers, withModifiers), "", "");
+        final var maybeModifiers = new StripRule(new OptionalNodeRule("modifiers", withoutModifiers, withModifiers));
 
-        final var annotation = new TypeRule("annotation", new StripRule(new PrefixRule("@", new ExtractRule("value")), "", ""));
+        final var annotation = new TypeRule("annotation", new StripRule(new PrefixRule("@", new ExtractRule("value"))));
         final var annotations = new NodeListRule(new SimpleSplitter("\n"), "annotations", annotation);
         final var withAnnotations = new ContextRule("With annotations", new LocatingRule(annotations, new LastLocator("\n"), maybeModifiers));
         final var withoutAnnotations = new ContextRule("Without annotations", maybeModifiers);
         final var maybeAnnotations = new OptionalNodeRule("annotations", withoutAnnotations, withAnnotations);
 
-        return new TypeRule("definition", new StripRule(new LocatingRule(maybeAnnotations, new LastLocator(" "), new ExtractRule("name")), "", ""));
+        return new TypeRule("definition", new StripRule(new LocatingRule(maybeAnnotations, new LastLocator(" "), new ExtractRule("name"))));
     }
 
     private static OrRule createRootMemberRule() {
@@ -80,8 +80,8 @@ public class JavaLang {
 
     private static TypeRule createInterfaceRule() {
         final var memberRule = createClassMemberRule();
-        final var content = new SuffixRule(new NodeListRule(new StatementSplitter(), "content", new StripRule(memberRule, "", "")), "}");
-        final var name = new LocatingRule(new StripRule(new ExtractRule("name"), "", ""), new FirstLocator("{"), new StripRule(content, "", ""));
+        final var content = new SuffixRule(new NodeListRule(new StatementSplitter(), "content", new StripRule(memberRule)), "}");
+        final var name = new LocatingRule(new StripRule(new ExtractRule("name")), new FirstLocator("{"), new StripRule(content));
         return new TypeRule(INTERFACE_TYPE, new LocatingRule(createModifiersRule(), new FirstLocator("interface"), name));
     }
 
@@ -95,17 +95,17 @@ public class JavaLang {
     }
 
     private static TypeRule createWhitespaceRule() {
-        return new TypeRule("whitespace", new StripRule(new EmptyRule(), "", ""));
+        return new TypeRule("whitespace", new StripRule(new EmptyRule()));
     }
 
     private static TypeRule createDefinitionStatementRule() {
-        return new TypeRule("definition", new StripRule(new SuffixRule(createDefinitionRule(), ";"), "", ""));
+        return new TypeRule("definition", new StripRule(new SuffixRule(createDefinitionRule(), ";")));
     }
 
     private static TypeRule createMethodRule() {
         final var params = new OptionalNodeRule("params", new EmptyRule(), new NodeListRule(new ValueSplitter(), "params", createDefinitionRule()));
 
-        final var children = new StripRule(new PrefixRule("{", new SuffixRule(createChildrenRule(createStatementRule()), "}")), "", "");
+        final var children = new StripRule(new PrefixRule("{", new SuffixRule(createChildrenRule(createStatementRule()), "}")));
         final var maybeChildren = new OptionalNodeRule("children", new SuffixRule(new EmptyRule(), ";"), children);
         final var withParams = new LocatingRule(params, new FirstLocator(")"), maybeChildren);
 
@@ -132,11 +132,11 @@ public class JavaLang {
     }
 
     private static TypeRule createAssignmentRule(Rule valueRule) {
-        return new TypeRule("assignment", new StripRule(new LocatingRule(valueRule, new FirstLocator("="), new SuffixRule(valueRule, ";")), "", ""));
+        return new TypeRule("assignment", new StripRule(new LocatingRule(valueRule, new FirstLocator("="), new SuffixRule(valueRule, ";"))));
     }
 
     private static TypeRule createNamedBlockRule(Rule statement, String type, String prefix) {
-        return new TypeRule(type, new PrefixRule(prefix, new StripRule(new PrefixRule("{", new SuffixRule(createChildrenRule(statement), "}")), "", "")));
+        return new TypeRule(type, new PrefixRule(prefix, new StripRule(new PrefixRule("{", new SuffixRule(createChildrenRule(statement), "}")))));
     }
 
     private static TypeRule createDeclarationRule(Rule valueRule) {
@@ -158,6 +158,7 @@ public class JavaLang {
     private static Rule createValueRule() {
         final var value = new LazyRule();
         value.setChildRule(new OrRule(List.of(
+                new TypeRule("char", new StripRule(new PrefixRule("'", new SuffixRule(new ExtractRule("value"), "'")))),
                 createStringRule(),
                 createConstructionRule(value),
                 createInvocationRule(value),
@@ -174,7 +175,7 @@ public class JavaLang {
 
     private static TypeRule createStringRule() {
         final var value = new OrRule(List.of(new ExtractRule("value"), new EmptyRule()));
-        return new TypeRule("string", new StripRule(new PrefixRule("\"", new SuffixRule(value, "\"")), "", ""));
+        return new TypeRule("string", new StripRule(new PrefixRule("\"", new SuffixRule(value, "\""))));
     }
 
     private static TypeRule createLambdaRule() {
@@ -190,7 +191,7 @@ public class JavaLang {
     }
 
     private static Rule createNumberRule() {
-        return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new ExtractRule("value")), "", ""));
+        return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new ExtractRule("value"))));
     }
 
     private static TypeRule createOperationRule(Rule value, String type, String operator) {
@@ -200,29 +201,29 @@ public class JavaLang {
     }
 
     private static TypeRule createSymbolRule() {
-        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("content")), "", ""));
+        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("content"))));
     }
 
     private static TypeRule createAccessRule(LazyRule value, String type, String separator) {
         final var parent = new NodeRule("parent", value);
-        final var child = new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("child")), "", "");
+        final var child = new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("child")));
         return new TypeRule(type, new LocatingRule(parent, new LastLocator(separator), child));
     }
 
     private static TypeRule createConstructionRule(Rule value) {
         final var caller = new NodeRule("caller", value);
         final var typeArguments = new OptionalNodeRule("type-arguments", new EmptyRule(), new NodeListRule(new ValueSplitter(), "type-arguments", createTypeRule()));
-        final var withTypeArguments = new StripRule(new LocatingRule(caller, new FirstLocator("<"), new SuffixRule(typeArguments, ">")), "", "");
+        final var withTypeArguments = new StripRule(new LocatingRule(caller, new FirstLocator("<"), new SuffixRule(typeArguments, ">")));
 
         final var beforeParams = new PrefixRule("new ", new OptionalNodeRule("type-arguments", caller, withTypeArguments));
         final var arguments = createArgumentsRule(value);
-        return new TypeRule("construction", new StripRule(new LocatingRule(beforeParams, new FirstLocator("("), new SuffixRule(arguments, ")")), "", ""));
+        return new TypeRule("construction", new StripRule(new LocatingRule(beforeParams, new FirstLocator("("), new SuffixRule(arguments, ")"))));
     }
 
     private static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
         final var arguments = createArgumentsRule(value);
-        return new TypeRule("invocation", new StripRule(new LocatingRule(caller, new OpeningLocator(), new SuffixRule(arguments, ")")), "", ""));
+        return new TypeRule("invocation", new StripRule(new LocatingRule(caller, new OpeningLocator(), new SuffixRule(arguments, ")"))));
     }
 
     private static OptionalNodeListRule createArgumentsRule(Rule value) {
@@ -231,7 +232,7 @@ public class JavaLang {
 
     private static Rule createTypeRule() {
         final var type = new LazyRule();
-        type.setChildRule(new OrRule(List.of(createGenericRule(type), new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("value")), "", "")))));
+        type.setChildRule(new OrRule(List.of(createGenericRule(type), new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("value")))))));
         return type;
     }
 
@@ -239,7 +240,7 @@ public class JavaLang {
         final var base = new NodeRule("base", type);
         final var child = new NodeListRule(new ValueSplitter(), "children", type);
 
-        return new TypeRule("generic", new StripRule(new LocatingRule(base, new FirstLocator("<"), new SuffixRule(child, ">")), "", ""));
+        return new TypeRule("generic", new StripRule(new LocatingRule(base, new FirstLocator("<"), new SuffixRule(child, ">"))));
     }
 
     private static class OpeningLocator implements Locator {

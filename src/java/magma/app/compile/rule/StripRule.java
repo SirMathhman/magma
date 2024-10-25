@@ -5,6 +5,10 @@ import magma.app.compile.Node;
 import magma.app.compile.ParseException;
 
 public record StripRule(Rule childRule, String leftPaddingKey, String rightPaddingKey) implements Rule {
+    public StripRule(Rule childRule) {
+        this(childRule, "", "");
+    }
+
     @Override
     public RuleResult<Node, ParseException> parse(String input) {
         return childRule.parse(input.strip());
