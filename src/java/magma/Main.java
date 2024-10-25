@@ -52,7 +52,7 @@ public class Main {
     private static Optional<ApplicationException> compileC() {
         return run(MAGMA_SOURCE, MagmaLang.createRootRule(), MAGMA_EXTENSION,
                 MAGMA_C_PASS,
-                C_SOURCE, CLang.createRootRule(), C_EXTENSION);
+                C_SOURCE, MagmaLang.createRootRule(), C_EXTENSION);
     }
 
     private static Optional<ApplicationException> compileMagma() {

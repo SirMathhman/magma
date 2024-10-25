@@ -89,8 +89,13 @@ public class JavaLang {
     private static TypeRule createInterfaceRule() {
         final var memberRule = createClassMemberRule();
         final var content = new SuffixRule(new NodeListRule(new StatementSplitter(), "content", new StripRule(memberRule)), "}");
-        final var name = new LocatingRule(new StripRule(new ExtractRule("name")), new FirstLocator("{"), new StripRule(content));
-        return new TypeRule(INTERFACE_TYPE, new LocatingRule(createModifiersRule(MODIFIERS_LIST), new FirstLocator("interface"), name));
+
+        final var name = new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("name")));
+        final var withTypeParams = new LocatingRule(name, new FirstLocator("<"), new StripRule(new SuffixRule(new NodeListRule(new ValueSplitter(), "type-params", createTypeRule()), ">")));
+        final var maybeTypeParams = new OptionalNodeListRule("type-params", withTypeParams, name);
+
+        final var nameAndContent = new LocatingRule(maybeTypeParams, new FirstLocator("{"), new StripRule(content));
+        return new TypeRule(INTERFACE_TYPE, new LocatingRule(createModifiersRule(MODIFIERS_LIST), new FirstLocator("interface"), nameAndContent));
     }
 
     private static OrRule createClassMemberRule() {
