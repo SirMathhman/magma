@@ -13,9 +13,11 @@ import java.util.Optional;
 import java.util.Set;
 
 public final class Application {
-    public static final String MAGMA_EXTENSION = "mgs";
-    public static final String EXTENSION_SEPARATOR = ".";
     public static final String JAVA_EXTENSION = "java";
+    public static final String MAGMA_EXTENSION = "mgs";
+    public static final String C_EXTENSION = "";
+
+    public static final String EXTENSION_SEPARATOR = ".";
     public static final String DEBUG_SUFFIX = "-debug";
     private final Path targetRoot;
     private final String targetExtension;
@@ -68,7 +70,7 @@ public final class Application {
             i++;
         }
 
-        if(!Files.exists(parent)) {
+        if (!Files.exists(parent)) {
             try {
                 Files.createDirectories(parent);
             } catch (IOException e) {
