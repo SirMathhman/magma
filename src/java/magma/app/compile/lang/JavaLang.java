@@ -12,7 +12,15 @@ public class JavaLang {
     public static final String CLASS_TYPE = "class";
     public static final String INTERFACE_TYPE = "interface";
     public static final String METHOD = "method";
-    public static final List<String> MODIFIERS_LIST = List.of("public", "private", "static", "final");
+
+    public static final List<String> MODIFIERS_LIST = List.of(
+            "public",
+            "private",
+            "static",
+            "final",
+            "default"
+    );
+
     public static final String IMPORT_STATIC_TYPE = "import-static";
 
     public static TypeRule createPackageRule() {

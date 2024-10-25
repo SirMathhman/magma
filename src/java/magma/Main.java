@@ -28,7 +28,10 @@ public class Main {
     private static SequentialPassingStage createJavaMagmaPasser() {
         return new SequentialPassingStage(new JavaList<PassingStage>().add(new TreePassingStage(List.of(
                 new PackageRemover(),
-                new InterfaceAdapter()
+                new ImportAdapter(),
+                new ClassAdapter(),
+                new InterfaceAdapter(),
+                new RecordAdapter()
         ))));
     }
 
