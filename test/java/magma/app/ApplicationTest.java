@@ -27,7 +27,7 @@ public class ApplicationTest {
     }
 
     private static void runMaybeFail() {
-        new Application(new SingleSourceSet(SOURCE), createRootRule(), new TreePassingStage(Collections.emptyList()), MagmaLang.createRootRule(), Application.JAVA_EXTENSION, Application.MAGMA_EXTENSION)
+        new Application(new SingleSourceSet(SOURCE), Application.JAVA_EXTENSION, createRootRule(), new TreePassingStage(Collections.emptyList()), Application.MAGMA_EXTENSION, MagmaLang.createRootRule(), Paths.get(".", "out"))
                 .run()
                 .ifPresent(Assertions::fail);
     }

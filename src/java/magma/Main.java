@@ -2,7 +2,6 @@ package magma;
 
 import magma.app.Application;
 import magma.app.DirectorySourceSet;
-import magma.app.compile.lang.CLang;
 import magma.app.compile.lang.MagmaLang;
 import magma.app.compile.pass.PassingStage;
 import magma.app.compile.pass.SequentialPassingStage;
@@ -19,23 +18,18 @@ import static magma.app.Application.MAGMA_EXTENSION;
 import static magma.app.compile.lang.JavaLang.createRootRule;
 
 public class Main {
-    public static final Path ROOT = Paths.get(".", "src", "java");
     public static final PassingStage JAVA_MAGMA_PASS = new SequentialPassingStage(new JavaList<PassingStage>().add(new TreePassingStage(Collections.emptyList())));
     public static final SequentialPassingStage MAGMA_C_PASS = new SequentialPassingStage(new JavaList<PassingStage>().add(new TreePassingStage(Collections.emptyList())));
 
     public static void main(String[] args) {
-        run(JAVA_EXTENSION, createRootRule(),
+        run(Paths.get(".", "src", "java"), createRootRule(), JAVA_EXTENSION,
                 JAVA_MAGMA_PASS,
-                MAGMA_EXTENSION, MagmaLang.createRootRule());
-
-        run(MAGMA_EXTENSION, MagmaLang.createRootRule(),
-                MAGMA_C_PASS,
-                "c", CLang.createRootRule());
+                Paths.get(".", "build"), MagmaLang.createRootRule(), MAGMA_EXTENSION);
     }
 
-    private static void run(String sourceExtension, Rule sourceRule, PassingStage passingStage, String targetExtension, Rule targetRule) {
-        final var sourceSet = new DirectorySourceSet(Main.ROOT, "." + sourceExtension);
-        new Application(sourceSet, sourceRule, passingStage, targetRule, sourceExtension, targetExtension)
+    private static void run(Path sourceRoot, Rule sourceRule, String sourceExtension, PassingStage passingStage, Path targetRoot, Rule targetRule, String targetExtension) {
+        final var sourceSet = new DirectorySourceSet(sourceRoot, "." + sourceExtension);
+        new Application(sourceSet, sourceExtension, sourceRule, passingStage, targetExtension, targetRule, targetRoot)
                 .run()
                 .ifPresent(Throwable::printStackTrace);
     }

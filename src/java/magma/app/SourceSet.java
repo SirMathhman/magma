@@ -7,5 +7,5 @@ import java.nio.file.Path;
 import java.util.Set;
 
 public interface SourceSet {
-    Result<Set<Path>, IOException> collect();
+    Result<Set<PathSource>, IOException> collect();
 }

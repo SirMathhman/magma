@@ -35,15 +35,21 @@ public record TreePassingStage(List<Passer> passers) implements PassingStage {
     private Node passNodeLists(Node withNodes) {
         var current = withNodes;
         final var nodeLists = withNodes.streamNodeLists().collect(new NativeListCollector<>());
-        for (var tuple : nodeLists) {
+        int i = 0;
+        while (i < nodeLists.size()) {
+            var tuple = nodeLists.get(i);
             final var propertyKey = tuple.left();
             final var oldPropertyValues = tuple.right();
             var newPropertyValues = new ArrayList<Node>();
-            for (Node oldPropertyValue : oldPropertyValues) {
+            int j = 0;
+            while (j < oldPropertyValues.size()) {
+                Node oldPropertyValue = oldPropertyValues.get(j);
                 newPropertyValues.add(pass(oldPropertyValue));
+                j++;
             }
 
             current = current.withNodeList(propertyKey, newPropertyValues);
+            i++;
         }
         return current;
     }
@@ -51,11 +57,14 @@ public record TreePassingStage(List<Passer> passers) implements PassingStage {
     private Node passNodes(Node node) {
         final var nodes = node.streamNodes().collect(new NativeListCollector<>());
         var current = node;
-        for (var tuple : nodes) {
+        int i = 0;
+        while (i < nodes.size()) {
+            var tuple = nodes.get(i);
             final var propertyKey = tuple.left();
             final var propertyValue = tuple.right();
             final var passed = pass(propertyValue);
             current = current.withNode(propertyKey, passed);
+            i++;
         }
         return current;
     }

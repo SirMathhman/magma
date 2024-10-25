@@ -11,9 +11,9 @@ import java.util.Set;
 
 public record SingleSourceSet(Path source) implements SourceSet {
     @Override
-    public Result<Set<Path>, IOException> collect() {
-        var sources = new HashSet<Path>();
-        if(Files.exists(this.source())) sources.add(this.source());
+    public Result<Set<PathSource>, IOException> collect() {
+        var sources = new HashSet<PathSource>();
+        if (Files.exists(this.source())) sources.add(new PathSource(source.getParent(), this.source()));
         return new Ok<>(sources);
     }
 }

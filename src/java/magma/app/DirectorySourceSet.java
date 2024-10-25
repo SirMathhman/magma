@@ -20,11 +20,12 @@ public final class DirectorySourceSet implements SourceSet {
     }
 
     @Override
-    public Result<Set<Path>, IOException> collect() {
+    public Result<Set<PathSource>, IOException> collect() {
         try {
             var stream = Files.walk(root);
             return new Ok<>(stream
                     .filter(path -> path.toString().endsWith(extension))
+                    .map(path -> new PathSource(root, path))
                     .collect(Collectors.toSet()));
         } catch (IOException e) {
             return new Err<>(e);
