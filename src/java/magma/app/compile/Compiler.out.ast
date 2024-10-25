@@ -87,7 +87,9 @@
   }, segment {
   "segment": "List"
   }]
- }, import-static {
+ }, import {
+ "after-import": "
+",
  "namespace": [segment {
   "segment": "magma"
   }, segment {

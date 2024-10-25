@@ -39,6 +39,34 @@
   }, segment {
   "segment": "Optional"
   }]
+ }, import-static {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "CommonLang"
+  }, segment {
+  "segment": "IMPORT_TYPE"
+  }]
+ }, import-static {
+ "namespace": [segment {
+  "segment": "magma"
+  }, segment {
+  "segment": "app"
+  }, segment {
+  "segment": "compile"
+  }, segment {
+  "segment": "lang"
+  }, segment {
+  "segment": "JavaLang"
+  }, segment {
+  "segment": "IMPORT_STATIC_TYPE"
+  }]
  }, class {
  "name": "ImportPasser ",
  "children": [method {
@@ -56,36 +84,65 @@
     }]
    },
   "children": [if {
-   "content": " (!node.is(CommonLang.IMPORT)) return Optional.empty();"
+   "content": " (node.is(IMPORT_TYPE)) {
+            return Optional.of(attachPadding(node));
+        }"
+   }, if {
+   "content": " (node.is(IMPORT_STATIC_TYPE)) {
+            return Optional.of(attachPadding(node.retype(IMPORT_TYPE)));
+        }"
    }, return {
    "value": invocation {
     "caller": property-access {
-     "child": "of",
+     "child": "empty",
      "parent": symbol {
       "content": "Optional"
       }
-     },
-    "arguments": [invocation {
-     "caller": property-access {
-      "child": "withString",
-      "parent": symbol {
-       "content": "node"
-       }
-      },
-     "arguments": [property-access {
-      "child": "AFTER_IMPORT",
-      "parent": symbol {
-       "content": "CommonLang"
-       }
-      }, string {
-      "value": "\n"
-      }]
-     }]
+     }
     }
    }, whitespace {
    }],
   "modifiers": [modifier {
    "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "Node"
+     }]
+    }
+   }]
+  }, method {
+  "name": "attachPadding",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "Node"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "withString",
+     "parent": symbol {
+      "content": "node"
+      }
+     },
+    "arguments": [property-access {
+     "child": "AFTER_IMPORT",
+     "parent": symbol {
+      "content": "CommonLang"
+      }
+     }, string {
+     "value": "\n"
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
    }, modifier {
    "modifier-value": "static"
    }],

@@ -77,41 +77,11 @@
   }, segment {
   "segment": "util"
   }, segment {
-  "segment": "ArrayList"
-  }]
- }, import {
- "after-import": "
-",
- "namespace": [segment {
-  "segment": "java"
-  }, segment {
-  "segment": "util"
-  }, segment {
   "segment": "List"
   }]
  }, import {
  "after-import": "
 ",
- "namespace": [segment {
-  "segment": "java"
-  }, segment {
-  "segment": "util"
-  }, segment {
-  "segment": "Optional"
-  }]
- }, import {
- "after-import": "
-",
- "namespace": [segment {
-  "segment": "java"
-  }, segment {
-  "segment": "util"
-  }, segment {
-  "segment": "stream"
-  }, segment {
-  "segment": "Collectors"
-  }]
- }, import-static {
  "namespace": [segment {
   "segment": "magma"
   }, segment {
@@ -123,21 +93,7 @@
   }, segment {
   "segment": "CommonLang"
   }, segment {
-  "segment": "*"
-  }]
- }, import-static {
- "namespace": [segment {
-  "segment": "magma"
-  }, segment {
-  "segment": "app"
-  }, segment {
-  "segment": "compile"
-  }, segment {
-  "segment": "lang"
-  }, segment {
-  "segment": "JavaLang"
-  }, segment {
-  "segment": "*"
+  "segment": "CHILDREN"
   }]
  }, function {
  "name": "Passer ",
@@ -331,69 +287,6 @@
    }],
   "modifiers": [modifier {
    "modifier-value": "private"
-   }, modifier {
-   "modifier-value": "static"
-   }],
-  "params": [definition {
-   "name": "node",
-   "returns": symbol {
-    "namespace": [segment {
-     "segment": "Node"
-     }]
-    }
-   }]
-  }, method {
-  "name": "passRootMemberModifiers",
-  "returns": generic {
-   "base": symbol {
-    "namespace": [segment {
-     "segment": "Optional"
-     }]
-    },
-   "children": [symbol {
-    "namespace": [segment {
-     "segment": "Node"
-     }]
-    }]
-   },
-  "children": [if {
-   "content": " (node.is(CLASS_TYPE) || node.is(INTERFACE_TYPE) || node.is(RECORD_TYPE)) return Optional.empty();"
-   }, return {
-   "value": invocation {
-    "caller": property-access {
-     "child": "mapNodeList",
-     "parent": symbol {
-      "content": "node"
-      }
-     },
-    "arguments": [symbol {
-     "content": "MODIFIERS"
-     }, subtraction {
-     "left": symbol {
-      "content": "modifiers"
-      },
-     "right": lambda {
-      "before-arrow": "> {
-            final var inputModifiers = modifiers.stream()
-                    .map(modifier ",
-      "after-arrow": " modifier.findString(MODIFIER_VALUE))
-                    .flatMap(Optional::stream)
-                    .collect(Collectors.toSet());
-
-            var newList = new ArrayList<String>();
-            if (inputModifiers.contains("public")) newList.add("export");
-
-            return newList.stream()
-                    .map(modifier -> new MapNode().retype(MODIFIER_TYPE).withString(MODIFIER_VALUE, modifier))
-                    .toList();
-        }"
-      }
-     }]
-    }
-   }, whitespace {
-   }],
-  "modifiers": [modifier {
-   "modifier-value": "public"
    }, modifier {
    "modifier-value": "static"
    }],

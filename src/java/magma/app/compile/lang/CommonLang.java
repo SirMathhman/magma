@@ -9,14 +9,14 @@ public class CommonLang {
     public static final String STATEMENT_END = ";";
     public static final String NAMESPACE = "namespace";
 
-    public static final String IMPORT = "import";
+    public static final String IMPORT_TYPE = "import";
     public static final String CHILDREN = "children";
     public static final String AFTER_IMPORT = "after-import";
     public static final String MODIFIER_VALUE = "modifier-value";
     public static final String MODIFIER_TYPE = "modifier";
 
     public static TypeRule createImportRule() {
-        return createImportRule(IMPORT, "import ");
+        return createImportRule(IMPORT_TYPE, "import ");
     }
 
     public static TypeRule createImportRule(String type, String prefix) {
@@ -34,7 +34,11 @@ public class CommonLang {
         return new NodeListRule(new SimpleSplitter(" "), JavaLang.MODIFIERS, modifier);
     }
 
-    static NodeListRule createChildrenRule(Rule statement) {
-        return new NodeListRule(new StatementSplitter(), "children", new StripRule(statement, "", ""));
+    static NodeListRule createChildrenRule(Rule child) {
+        return new NodeListRule(new StatementSplitter(), CHILDREN, new StripRule(child));
+    }
+
+    static TypeRule createWhitespaceRule() {
+        return new TypeRule("whitespace", new StripRule(new EmptyRule()));
     }
 }

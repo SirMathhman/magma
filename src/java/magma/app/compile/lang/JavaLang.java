@@ -14,13 +14,14 @@ public class JavaLang {
     public static final String MODIFIERS = "modifiers";
     public static final String METHOD = "method";
     public static final List<String> MODIFIERS_LIST = List.of("public", "private", "static", "final");
+    public static final String IMPORT_STATIC_TYPE = "import-static";
 
     public static TypeRule createPackageRule() {
         return new TypeRule(PACKAGE, new PrefixRule("package ", new SuffixRule(createNamespaceRule(), STATEMENT_END)));
     }
 
     public static NodeListRule createRootRule() {
-        return new NodeListRule(new StatementSplitter(), CHILDREN, new StripRule(createRootMemberRule()));
+        return createChildrenRule(createRootMemberRule());
     }
 
     public static TypeRule createRecordRule() {
@@ -64,7 +65,7 @@ public class JavaLang {
         return new OrRule(List.of(
                 createPackageRule(),
                 createImportRule(),
-                createImportRule("import-static", "import static "),
+                createImportRule(IMPORT_STATIC_TYPE, "import static "),
                 createRecordRule(),
                 createInterfaceRule(),
                 createClassRule(),
@@ -92,10 +93,6 @@ public class JavaLang {
                 createDefinitionStatementRule(),
                 createWhitespaceRule()
         ));
-    }
-
-    private static TypeRule createWhitespaceRule() {
-        return new TypeRule("whitespace", new StripRule(new EmptyRule()));
     }
 
     private static TypeRule createDefinitionStatementRule() {

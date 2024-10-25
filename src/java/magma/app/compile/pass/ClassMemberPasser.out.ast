@@ -11,7 +11,9 @@
   }, segment {
   "segment": "Node"
   }]
- }, import-static {
+ }, import {
+ "after-import": "
+",
  "namespace": [segment {
   "segment": "magma"
   }, segment {
@@ -25,7 +27,9 @@
   }, segment {
   "segment": "METHOD"
   }]
- }, import-static {
+ }, import {
+ "after-import": "
+",
  "namespace": [segment {
   "segment": "magma"
   }, segment {

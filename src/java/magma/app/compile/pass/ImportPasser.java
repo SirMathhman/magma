@@ -5,10 +5,22 @@ import magma.app.compile.lang.CommonLang;
 
 import java.util.Optional;
 
+import static magma.app.compile.lang.CommonLang.IMPORT_TYPE;
+import static magma.app.compile.lang.JavaLang.IMPORT_STATIC_TYPE;
+
 public class ImportPasser {
     public static Optional<Node> pass(Node node) {
-        if (!node.is(CommonLang.IMPORT)) return Optional.empty();
+        if (node.is(IMPORT_TYPE)) {
+            return Optional.of(attachPadding(node));
+        }
+        if (node.is(IMPORT_STATIC_TYPE)) {
+            return Optional.of(attachPadding(node.retype(IMPORT_TYPE)));
+        }
+        return Optional.empty();
 
-        return Optional.of(node.withString(CommonLang.AFTER_IMPORT, "\n"));
+    }
+
+    private static Node attachPadding(Node node) {
+        return node.withString(CommonLang.AFTER_IMPORT, "\n");
     }
 }

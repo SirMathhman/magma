@@ -19,19 +19,15 @@
   }, segment {
   "segment": "rule"
   }, segment {
-  "segment": "EmptyRule"
+  "segment": "*"
   }]
  }, import {
  "namespace": [segment {
-  "segment": "magma"
+  "segment": "java"
   }, segment {
-  "segment": "app"
+  "segment": "util"
   }, segment {
-  "segment": "compile"
-  }, segment {
-  "segment": "rule"
-  }, segment {
-  "segment": "Rule"
+  "segment": "List"
   }]
  }, class {
  "name": "MagmaLang ",
@@ -73,10 +69,77 @@
     }]
    },
   "children": [return {
-   "value": construction {
-    "caller": symbol {
-     "content": "EmptyRule"
-     }
+   "value": invocation {
+    "caller": property-access {
+     "child": "createChildrenRule",
+     "parent": symbol {
+      "content": "CommonLang"
+      }
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "OrRule"
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "of",
+       "parent": symbol {
+        "content": "List"
+        }
+       },
+      "arguments": [invocation {
+       "caller": property-access {
+        "child": "createImportRule",
+        "parent": symbol {
+         "content": "CommonLang"
+         }
+        }
+       }, construction {
+       "caller": symbol {
+        "content": "TypeRule"
+        },
+       "arguments": [string {
+        "value": "trait"
+        }, construction {
+        "caller": symbol {
+         "content": "PrefixRule"
+         },
+        "arguments": [string {
+         "value": "trait"
+         }, construction {
+         "caller": symbol {
+          "content": "EmptyRule"
+          }
+         }]
+        }]
+       }, construction {
+       "caller": symbol {
+        "content": "TypeRule"
+        },
+       "arguments": [string {
+        "value": "function"
+        }, construction {
+        "caller": symbol {
+         "content": "PrefixRule"
+         },
+        "arguments": [string {
+         "value": "function"
+         }, construction {
+         "caller": symbol {
+          "content": "EmptyRule"
+          }
+         }]
+        }]
+       }, invocation {
+       "caller": property-access {
+        "child": "createWhitespaceRule",
+        "parent": symbol {
+         "content": "CommonLang"
+         }
+        }
+       }]
+      }]
+     }]
     }
    }, whitespace {
    }],

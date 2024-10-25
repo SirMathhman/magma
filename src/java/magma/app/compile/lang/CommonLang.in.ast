@@ -77,7 +77,7 @@
    "modifier-value": "final"
    }]
   }, declaration {
-  "name": "IMPORT",
+  "name": "IMPORT_TYPE",
   "value": "import",
   "returns": symbol {
    "namespace": [segment {
@@ -164,7 +164,7 @@
      "content": "createImportRule"
      },
     "arguments": [symbol {
-     "content": "IMPORT"
+     "content": "IMPORT_TYPE"
      }, string {
      "value": "import "
      }]
@@ -428,16 +428,14 @@
      "caller": symbol {
       "content": "StatementSplitter"
       }
-     }, string {
-     "value": "children"
+     }, symbol {
+     "content": "CHILDREN"
      }, construction {
      "caller": symbol {
       "content": "StripRule"
       },
      "arguments": [symbol {
-      "content": "statement"
-      }, string {
-      }, string {
+      "content": "child"
       }]
      }]
     }
@@ -447,12 +445,42 @@
    "modifier-value": "static"
    }],
   "params": [definition {
-   "name": "statement",
+   "name": "child",
    "returns": symbol {
     "namespace": [segment {
      "segment": "Rule"
      }]
     }
+   }]
+  }, method {
+  "name": "createWhitespaceRule",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "TypeRule"
+    }]
+   },
+  "children": [return {
+   "value": construction {
+    "caller": symbol {
+     "content": "TypeRule"
+     },
+    "arguments": [string {
+     "value": "whitespace"
+     }, construction {
+     "caller": symbol {
+      "content": "StripRule"
+      },
+     "arguments": [construction {
+      "caller": symbol {
+       "content": "EmptyRule"
+       }
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "static"
    }]
   }, whitespace {
   }],

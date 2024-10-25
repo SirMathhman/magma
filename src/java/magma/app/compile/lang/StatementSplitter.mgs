@@ -1,0 +1,8 @@
+import magmaappcompileruleSplitter;
+import magmajavaNativeListCollector;
+import javautilLinkedList;
+import javautilList;
+import javautilOptional;
+import javautilstreamCollectors;
+import javautilstreamIntStream;
+function

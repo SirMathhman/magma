@@ -23,7 +23,9 @@
   }, segment {
   "segment": "List"
   }]
- }, import-static {
+ }, import {
+ "after-import": "
+",
  "namespace": [segment {
   "segment": "magma"
   }, segment {
@@ -165,6 +167,21 @@
    }, modifier {
    "modifier-value": "final"
    }]
+  }, declaration {
+  "name": "IMPORT_STATIC_TYPE",
+  "value": "import-static",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "String"
+    }]
+   },
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }, modifier {
+   "modifier-value": "final"
+   }]
   }, method {
   "name": "createPackageRule",
   "returns": symbol {
@@ -214,25 +231,14 @@
     }]
    },
   "children": [return {
-   "value": construction {
+   "value": invocation {
     "caller": symbol {
-     "content": "NodeListRule"
+     "content": "createChildrenRule"
      },
-    "arguments": [construction {
+    "arguments": [invocation {
      "caller": symbol {
-      "content": "StatementSplitter"
+      "content": "createRootMemberRule"
       }
-     }, symbol {
-     "content": "CHILDREN"
-     }, construction {
-     "caller": symbol {
-      "content": "StripRule"
-      },
-     "arguments": [invocation {
-      "caller": symbol {
-       "content": "createRootMemberRule"
-       }
-      }]
      }]
     }
    }, whitespace {
@@ -998,8 +1004,8 @@
       "caller": symbol {
        "content": "createImportRule"
        },
-      "arguments": [string {
-       "value": "import-static"
+      "arguments": [symbol {
+       "content": "IMPORT_STATIC_TYPE"
        }, string {
        "value": "import static "
        }]
@@ -1292,38 +1298,6 @@
       }, invocation {
       "caller": symbol {
        "content": "createWhitespaceRule"
-       }
-      }]
-     }]
-    }
-   }, whitespace {
-   }],
-  "modifiers": [modifier {
-   "modifier-value": "private"
-   }, modifier {
-   "modifier-value": "static"
-   }]
-  }, method {
-  "name": "createWhitespaceRule",
-  "returns": symbol {
-   "namespace": [segment {
-    "segment": "TypeRule"
-    }]
-   },
-  "children": [return {
-   "value": construction {
-    "caller": symbol {
-     "content": "TypeRule"
-     },
-    "arguments": [string {
-     "value": "whitespace"
-     }, construction {
-     "caller": symbol {
-      "content": "StripRule"
-      },
-     "arguments": [construction {
-      "caller": symbol {
-       "content": "EmptyRule"
        }
       }]
      }]

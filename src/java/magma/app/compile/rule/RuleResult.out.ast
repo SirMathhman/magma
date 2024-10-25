@@ -65,7 +65,9 @@
   }, segment {
   "segment": "Function"
   }]
- }, import-static {
+ }, import {
+ "after-import": "
+",
  "namespace": [segment {
   "segment": "java"
   }, segment {

@@ -21,7 +21,9 @@
   }, segment {
   "segment": "Optional"
   }]
- }, import-static {
+ }, import {
+ "after-import": "
+",
  "namespace": [segment {
   "segment": "magma"
   }, segment {
@@ -35,7 +37,9 @@
   }, segment {
   "segment": "CLASS_TYPE"
   }]
- }, import-static {
+ }, import {
+ "after-import": "
+",
  "namespace": [segment {
   "segment": "magma"
   }, segment {
