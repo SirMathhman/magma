@@ -17,6 +17,9 @@ public class CommonLang {
     public static final String MODIFIERS = "modifiers";
     public static final String ROOT_TYPE = "root";
     public static final String TYPE_PARAMS = "type-params";
+    public static final String SYMBOL_TYPE = "symbol-type";
+    public static final String NAMESPACE_SEGMENT_TYPE = "segment";
+    public static final String NAMESPACE_SEGMENT_VALUE = "segment-value";
 
     public static TypeRule createImportRule() {
         return createImportRule(IMPORT_TYPE, "import ");
@@ -28,8 +31,8 @@ public class CommonLang {
     }
 
     static Rule createNamespaceRule() {
-        final var segment1 = new FilterRule(new SymbolFilter(), new ExtractRule("segment"));
-        return new NodeListRule(new SimpleSplitter("."), NAMESPACE, new TypeRule("segment", new StripRule(segment1)));
+        final var segment1 = new FilterRule(new SymbolFilter(), new ExtractRule(NAMESPACE_SEGMENT_VALUE));
+        return new NodeListRule(new SimpleSplitter("."), NAMESPACE, new TypeRule(NAMESPACE_SEGMENT_TYPE, new StripRule(segment1)));
     }
 
     static Rule createModifiersRule(List<String> modifiers) {
@@ -58,6 +61,6 @@ public class CommonLang {
     }
 
     static TypeRule createSymbolTypeRule() {
-        return new TypeRule("symbol", new StripRule(createNamespaceRule()));
+        return new TypeRule(SYMBOL_TYPE, new StripRule(createNamespaceRule()));
     }
 }

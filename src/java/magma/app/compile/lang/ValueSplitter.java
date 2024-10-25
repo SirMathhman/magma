@@ -100,6 +100,7 @@ public class ValueSplitter implements Splitter {
 
     @Override
     public StringBuilder append(StringBuilder buffer, String str) {
-        return buffer.append(str);
+        if (buffer.isEmpty()) return buffer.append(str);
+        return buffer.append(", ").append(str);
     }
 }

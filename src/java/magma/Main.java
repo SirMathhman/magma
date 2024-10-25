@@ -7,27 +7,31 @@ import magma.app.compile.lang.JavaLang;
 import magma.app.compile.lang.MagmaLang;
 import magma.app.compile.pass.*;
 import magma.app.compile.pass.format.ImportFormatter;
+import magma.app.compile.pass.trait.TraitAdapter;
 import magma.app.compile.rule.Rule;
 import magma.java.JavaList;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static magma.app.Application.*;
 import static magma.app.compile.lang.CommonLang.IMPORT_TYPE;
+import static magma.app.compile.lang.MagmaLang.TRAIT_TYPE;
 
 public class Main {
-    private static SequentialPassingStage createMagmaCPasser() {
-        return new SequentialPassingStage(new JavaList<PassingStage>()
-                .add(createMagmaFormattingStage()));
-    }
-
     public static final Path JAVA_SOURCE = Paths.get(".", "src", "java");
     public static final Path MAGMA_SOURCE = Paths.get(".", "build", "java-magma");
     public static final Path C_SOURCE = Paths.get(".", "build", "magma-c");
+
+    private static SequentialPassingStage createMagmaCPasser() {
+        return new SequentialPassingStage(new JavaList<PassingStage>()
+                .add(new TreePassingStage(List.of(
+                        new FilteredPasser(TRAIT_TYPE, new TraitAdapter())
+                )))
+                .add(createMagmaFormattingStage()));
+    }
 
     private static SequentialPassingStage createJavaMagmaPasser() {
         return new SequentialPassingStage(new JavaList<PassingStage>()
