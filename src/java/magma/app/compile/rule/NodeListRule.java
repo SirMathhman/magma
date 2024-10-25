@@ -9,7 +9,6 @@ import magma.app.compile.ParseException;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public final class NodeListRule implements Rule {
     private final String propertyKey;
@@ -48,15 +47,19 @@ public final class NodeListRule implements Rule {
 
     @Override
     public RuleResult<String, GenerateException> generate(Node node) {
-        final var propertyValues = node.findNodeList(propertyKey);
-        if (propertyValues.isEmpty())
+        final var optional = node.findNodeList(propertyKey);
+        if (optional.isEmpty())
             return new RuleResult<>(new Err<>(new GenerateException("Node list property '" + propertyKey + "' not present", node)));
 
+        var propertyValues = optional.get();
+        if (propertyValues.isEmpty()) {
+            return new RuleResult<>(new Err<>(new GenerateException("Nothing to render for '" + propertyKey + "'", node)));
+        }
+
         var buffer = new StringBuilder();
-        List<Node> get = propertyValues.get();
         int i = 0;
-        while (i < get.size()) {
-            var value = get.get(i);
+        while (i < propertyValues.size()) {
+            var value = propertyValues.get(i);
             final var result = childRule.generate(value);
             final var inner = result.result();
             if (inner.isErr()) {
