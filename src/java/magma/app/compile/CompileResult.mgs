@@ -1,1 +1,1 @@
-public class def CompileResult() => {}
+export class def CompileResult() => {}

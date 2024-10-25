@@ -1,2 +1,2 @@
 import java.util.function.BiFunction;
-public class def HeadedStream() => {}
+export class def HeadedStream() => {}

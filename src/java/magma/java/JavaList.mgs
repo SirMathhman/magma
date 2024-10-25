@@ -5,4 +5,4 @@ import magma.api.option.Some;
 import magma.api.stream.HeadedStream;
 import magma.api.stream.Stream;
 import java.util.List;
-public class def JavaList() => {}
+export class def JavaList() => {}

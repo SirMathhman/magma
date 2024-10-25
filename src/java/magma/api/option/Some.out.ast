@@ -41,7 +41,7 @@
    }]
   }],
  "modifiers": [modifier {
-  "modifier-value": "public"
+  "modifier-value": "export"
   }, modifier {
   "modifier-value": "class"
   }],

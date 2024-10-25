@@ -5,6 +5,7 @@ import magma.app.compile.lang.JavaLang;
 import magma.app.compile.lang.MagmaLang;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import magma.app.compile.lang.CommonLang.*;
 public def RecordPasser () => {}

@@ -93,6 +93,16 @@
   }, segment {
   "segment": "util"
   }, segment {
+  "segment": "List"
+  }]
+ }, import {
+ "after-import": "
+",
+ "namespace": [segment {
+  "segment": "java"
+  }, segment {
+  "segment": "util"
+  }, segment {
   "segment": "Optional"
   }]
  }, import {
@@ -157,8 +167,12 @@
     "parent": lambda {
      "before-arrow": "final var withModifiers = retyped.mapNodeList(MODIFIERS, modifiers ",
      "after-arrow": " {
-            final var copy = new ArrayList<>(modifiers);
-            copy.add(createClassModifier());
+            final var copy = new ArrayList<Node>();
+            if (hasPublicKeyword(modifiers)) {
+                copy.add(createClassModifier("export"));
+            }
+
+            copy.add(createClassModifier("class"));
             return copy;
         })"
      }
@@ -175,7 +189,10 @@
      "arguments": [invocation {
       "caller": symbol {
        "content": "createClassModifier"
-       }
+       },
+      "arguments": [string {
+       "value": "class"
+       }]
       }]
      }
     }]
@@ -222,6 +239,83 @@
     }
    }]
   }, method {
+  "name": "hasPublicKeyword",
+  "returns": symbol {
+   "namespace": [segment {
+    "segment": "boolean"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "anyMatch",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "flatMap",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "map",
+         "parent": invocation {
+          "caller": property-access {
+           "child": "stream",
+           "parent": symbol {
+            "content": "modifiers"
+            }
+           }
+          }
+         },
+        "arguments": [invocation {
+         "caller": property-access {
+          "child": "findString",
+          "parent": lambda {
+           "before-arrow": "modifier ",
+           "after-arrow": " modifier"
+           }
+          },
+         "arguments": [symbol {
+          "content": "MODIFIER_VALUE"
+          }]
+         }]
+        }
+       },
+      "arguments": [method-access {
+       "child": "stream",
+       "parent": symbol {
+        "content": "Optional"
+        }
+       }]
+      }
+     },
+    "arguments": [method-access {
+     "child": "equals",
+     "parent": string {
+      "value": "public"
+      }
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "modifiers",
+   "returns": generic {
+    "base": symbol {
+     "namespace": [segment {
+      "segment": "List"
+      }]
+     },
+    "children": [symbol {
+     "namespace": [segment {
+      "segment": "Node"
+      }]
+     }]
+    }
+   }]
+  }, method {
   "name": "createClassModifier",
   "returns": symbol {
    "namespace": [segment {
@@ -248,8 +342,8 @@
      },
     "arguments": [symbol {
      "content": "MODIFIER_VALUE"
-     }, string {
-     "value": "class"
+     }, symbol {
+     "content": "modifier"
      }]
     }
    }, whitespace {
@@ -258,6 +352,14 @@
    "modifier-value": "private"
    }, modifier {
    "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "modifier",
+   "returns": symbol {
+    "namespace": [segment {
+     "segment": "String"
+     }]
+    }
    }]
   }, whitespace {
   }],

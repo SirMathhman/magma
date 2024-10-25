@@ -74,7 +74,6 @@
  }, function {
  "name": "BufferedState",
  "modifiers": [modifier {
-  }, modifier {
   "modifier-value": "class"
   }],
  "params": [definition {
