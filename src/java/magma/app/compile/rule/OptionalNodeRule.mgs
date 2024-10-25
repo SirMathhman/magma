@@ -2,4 +2,4 @@ import magmaappcompileGenerateException;
 import magmaappcompileNode;
 import magmaappcompileParseException;
 import javautilList;
-function
+def OptionalNodeRule implements Rule () => {}

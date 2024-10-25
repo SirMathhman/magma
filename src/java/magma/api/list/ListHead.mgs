@@ -1,4 +1,4 @@
 import magmaapioptionNone;
 import magmaapioptionOption;
 import magmaapistreamHead;
-function
+def ListHead<T> implements Head<T> () => {}

@@ -5,4 +5,4 @@ import javautilArrayList;
 import javautilDeque;
 import javautilList;
 import javautilOptional;
-function
+def BufferedState() => {}

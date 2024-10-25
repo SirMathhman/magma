@@ -3,4 +3,4 @@ import magmajavaNativeListCollector;
 import javautilHashMap;
 import javautilList;
 import javautilstreamStream;
-function
+def MapNodes () => {}

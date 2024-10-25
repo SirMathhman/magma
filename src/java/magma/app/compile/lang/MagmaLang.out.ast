@@ -117,11 +117,21 @@
          "content": "PrefixRule"
          },
         "arguments": [string {
-         "value": "function"
+         "value": "def "
          }, construction {
          "caller": symbol {
-          "content": "EmptyRule"
-          }
+          "content": "SuffixRule"
+          },
+         "arguments": [construction {
+          "caller": symbol {
+           "content": "ExtractRule"
+           },
+          "arguments": [string {
+           "value": "name"
+           }]
+          }, string {
+          "value": "() => {}"
+          }]
          }]
         }]
        }, invocation {

@@ -12,7 +12,7 @@ public class MagmaLang {
         return CommonLang.createChildrenRule(new OrRule(List.of(
                 CommonLang.createImportRule(),
                 new TypeRule("trait", new PrefixRule("trait", new EmptyRule())),
-                new TypeRule("function", new PrefixRule("function", new EmptyRule())),
+                new TypeRule("function", new PrefixRule("def ", new SuffixRule(new ExtractRule("name"), "() => {}"))),
                 CommonLang.createWhitespaceRule()
         )));
     }

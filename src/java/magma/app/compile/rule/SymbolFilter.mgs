@@ -1,1 +1,1 @@
-function
+def SymbolFilter implements Filter () => {}

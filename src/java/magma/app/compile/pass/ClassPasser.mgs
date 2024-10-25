@@ -2,4 +2,4 @@ import magmaappcompileNode;
 import javautilOptional;
 import magmaappcompilelangJavaLangCLASS_TYPE;
 import magmaappcompilelangMagmaLangFUNCTION;
-function
+def ClassPasser () => {}

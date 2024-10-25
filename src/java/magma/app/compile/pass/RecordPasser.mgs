@@ -5,4 +5,4 @@ import magmaappcompilelangJavaLang;
 import magmaappcompilelangMagmaLang;
 import javautilArrayList;
 import javautilOptional;
-function
+def RecordPasser () => {}

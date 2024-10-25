@@ -1,4 +1,4 @@
 import magmaappcompileruleSplitter;
 import javautilList;
 import javautilregexPattern;
-function
+def SimpleSplitter implements Splitter () => {}

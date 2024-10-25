@@ -5,4 +5,4 @@ import magmaappcompilepassInterfacePasser;
 import magmaappcompilepassRecordPasser;
 import javautilList;
 import magmaappcompilelangCommonLangCHILDREN;
-function
+def Passer () => {}

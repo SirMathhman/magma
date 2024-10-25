@@ -1,1 +1,1 @@
-function
+def ApplicationException extends Exception () => {}

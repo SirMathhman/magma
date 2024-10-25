@@ -5,4 +5,4 @@ import javaniofileFiles;
 import javaniofilePath;
 import javautilHashSet;
 import javautilSet;
-function
+def SingleSourceSet() => {}

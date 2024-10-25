@@ -2,4 +2,4 @@ import magmaapiTuple;
 import javautilOptional;
 import javautilfunctionFunction;
 import javautilfunctionSupplier;
-function
+def Ok<T, E> implements Result<T, E> () => {}

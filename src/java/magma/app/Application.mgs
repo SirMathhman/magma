@@ -9,4 +9,4 @@ import javaniofilePath;
 import javautilIterator;
 import javautilOptional;
 import javautilSet;
-function
+def Application () => {}

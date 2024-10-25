@@ -1,4 +1,4 @@
 import magmaappApplication;
 import magmaappDirectorySourceSet;
 import javaniofilePaths;
-function
+def Main () => {}

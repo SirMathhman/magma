@@ -3,4 +3,4 @@ import magmaappcompileGenerateException;
 import magmaappcompileNode;
 import magmaappcompileParseException;
 import javautilArrayList;
-function
+def LocatingRule implements Rule () => {}

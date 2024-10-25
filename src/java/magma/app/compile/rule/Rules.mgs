@@ -8,4 +8,4 @@ import javautilconcurrentExecutionException;
 import javautilconcurrentTimeUnit;
 import javautilconcurrentTimeoutException;
 import javautilfunctionSupplier;
-function
+def Rules () => {}

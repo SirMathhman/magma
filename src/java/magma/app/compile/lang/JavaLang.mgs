@@ -1,4 +1,4 @@
 import magmaappcompilerule*;
 import javautilList;
 import magmaappcompilelangCommonLang*;
-function
+def JavaLang () => {}

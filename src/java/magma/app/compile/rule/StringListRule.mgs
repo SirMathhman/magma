@@ -6,4 +6,4 @@ import magmaappcompileNode;
 import magmaappcompileParseException;
 import javautilArrayList;
 import javautilList;
-function
+def StringListRule() => {}

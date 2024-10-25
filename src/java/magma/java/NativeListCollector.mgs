@@ -1,4 +1,4 @@
 import magmaapistreamCollector;
 import javautilArrayList;
 import javautilList;
-function
+def NativeListCollector<T> implements Collector<T, List<T>> () => {}

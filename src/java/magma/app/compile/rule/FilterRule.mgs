@@ -2,4 +2,4 @@ import magmaapiresultErr;
 import magmaappcompileGenerateException;
 import magmaappcompileNode;
 import magmaappcompileParseException;
-function
+def FilterRule implements Rule () => {}

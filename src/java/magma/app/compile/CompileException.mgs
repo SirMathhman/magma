@@ -1,2 +1,2 @@
 import magmaappApplicationException;
-function
+def CompileException extends ApplicationException () => {}

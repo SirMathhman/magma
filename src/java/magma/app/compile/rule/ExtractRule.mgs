@@ -4,4 +4,4 @@ import magmaappcompileGenerateException;
 import magmaappcompileMapNode;
 import magmaappcompileNode;
 import magmaappcompileParseException;
-function
+def ExtractRule() => {}

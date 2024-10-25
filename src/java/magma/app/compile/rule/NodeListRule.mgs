@@ -7,4 +7,4 @@ import magmaappcompileParseException;
 import javautilArrayList;
 import javautilCollections;
 import javautilList;
-function
+def NodeListRule implements Rule () => {}

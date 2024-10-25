@@ -3,4 +3,4 @@ import magmaappcompileGenerateException;
 import magmaappcompileNode;
 import magmaappcompileParseException;
 import javautilOptional;
-function
+def LazyRule implements Rule () => {}

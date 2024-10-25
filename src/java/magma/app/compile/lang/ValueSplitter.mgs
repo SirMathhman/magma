@@ -6,4 +6,4 @@ import javautilList;
 import javautilOptional;
 import javautilstreamCollectors;
 import javautilstreamIntStream;
-function
+def ValueSplitter implements Splitter () => {}

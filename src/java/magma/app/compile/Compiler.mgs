@@ -6,4 +6,4 @@ import magmaappcompileruleRule;
 import magmaappcompileruleRuleResult;
 import javautilList;
 import magmaappcompilelangJavaLang*;
-function
+def Compiler() => {}

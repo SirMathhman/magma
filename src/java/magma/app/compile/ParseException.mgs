@@ -1,1 +1,1 @@
-function
+def ParseException extends CompileException () => {}

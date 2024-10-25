@@ -5,4 +5,4 @@ import magmaapioptionSome;
 import magmaapistreamHeadedStream;
 import magmaapistreamStream;
 import javautilList;
-function
+def JavaList() => {}

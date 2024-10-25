@@ -1,4 +1,4 @@
 import magmaappcompileNode;
 import magmaappcompilelangJavaLangMETHOD;
 import magmaappcompilelangMagmaLangFUNCTION;
-function
+def ClassMemberPasser () => {}

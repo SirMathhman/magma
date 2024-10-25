@@ -1,4 +1,4 @@
 import magmaappcompileGenerateException;
 import magmaappcompileNode;
 import magmaappcompileParseException;
-function
+def ContextRule() => {}
