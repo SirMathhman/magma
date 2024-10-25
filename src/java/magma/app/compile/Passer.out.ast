@@ -44,5 +44,267 @@
 ",
  "namespace": ["static magma.app.compile.lang.JavaLang.*"]
  }, function {
+ "name": "Passer ",
+ "children": [method {
+  "name": "pass",
+  "returns": symbol {
+   "value": "Node"
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "orElse",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "mapNodeList",
+       "parent": symbol {
+        "content": "node"
+        }
+       },
+      "arguments": [symbol {
+       "content": "CHILDREN"
+       }, method-access {
+       "child": "passChildren",
+       "parent": symbol {
+        "content": "Passer"
+        }
+       }]
+      }
+     },
+    "arguments": [symbol {
+     "content": "node"
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }]
+  }, method {
+  "name": "passChildren",
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "toList",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "map",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "filter",
+         "parent": invocation {
+          "caller": property-access {
+           "child": "stream",
+           "parent": symbol {
+            "content": "children"
+            }
+           }
+          }
+         },
+        "arguments": [invocation {
+         "caller": property-access {
+          "child": "is",
+          "parent": lambda {
+           "before-arrow": "child ",
+           "after-arrow": " !child"
+           }
+          },
+         "arguments": [property-access {
+          "child": "PACKAGE",
+          "parent": symbol {
+           "content": "JavaLang"
+           }
+          }]
+         }]
+        }
+       },
+      "arguments": [method-access {
+       "child": "passRootChild",
+       "parent": symbol {
+        "content": "Passer"
+        }
+       }]
+      }
+     }
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "children",
+   "returns": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "Node"
+     }]
+    }
+   }]
+  }, method {
+  "name": "passRootChild",
+  "returns": symbol {
+   "value": "Node"
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "orElse",
+     "parent": invocation {
+      "caller": property-access {
+       "child": "or",
+       "parent": invocation {
+        "caller": property-access {
+         "child": "or",
+         "parent": invocation {
+          "caller": property-access {
+           "child": "or",
+           "parent": invocation {
+            "caller": property-access {
+             "child": "passRecord",
+             "parent": symbol {
+              "content": "RecordPasser"
+              }
+             },
+            "arguments": [symbol {
+             "content": "node"
+             }]
+            }
+           },
+          "arguments": [invocation {
+           "caller": property-access {
+            "child": "passInterface",
+            "parent": lambda {
+             "before-arrow": "() ",
+             "after-arrow": " InterfacePasser"
+             }
+            },
+           "arguments": [symbol {
+            "content": "node"
+            }]
+           }]
+          }
+         },
+        "arguments": [invocation {
+         "caller": property-access {
+          "child": "pass",
+          "parent": lambda {
+           "before-arrow": "() ",
+           "after-arrow": " ClassPasser"
+           }
+          },
+         "arguments": [symbol {
+          "content": "node"
+          }]
+         }]
+        }
+       },
+      "arguments": [invocation {
+       "caller": property-access {
+        "child": "pass",
+        "parent": lambda {
+         "before-arrow": "() ",
+         "after-arrow": " ImportPasser"
+         }
+        },
+       "arguments": [symbol {
+        "content": "node"
+        }]
+       }]
+      }
+     },
+    "arguments": [symbol {
+     "content": "node"
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }]
+  }, method {
+  "name": "passRootMemberModifiers",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }]
+   },
+  "children": [if {
+   "content": " (node.is(CLASS_TYPE) || node.is(INTERFACE_TYPE) || node.is(RECORD_TYPE)) return Optional.empty();"
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "mapNodeList",
+     "parent": symbol {
+      "content": "node"
+      }
+     },
+    "arguments": [symbol {
+     "content": "MODIFIERS"
+     }, lambda {
+     "before-arrow": " modifiers ",
+     "after-arrow": " {
+            final var inputModifiers = modifiers.stream()
+                    .map(modifier -> modifier.findString(MODIFIER_VALUE))
+                    .flatMap(Optional::stream)
+                    .collect(Collectors.toSet());
+
+            var newList = new ArrayList<String>();
+            if (inputModifiers.contains("public")) newList.add("export");
+
+            return newList.stream()
+                    .map(modifier -> new MapNode().retype(MODIFIER_TYPE).withString(MODIFIER_VALUE, modifier))
+                    .toList();
+        }"
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }]
+  }, whitespace {
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
+ }, whitespace {
  }]
 }

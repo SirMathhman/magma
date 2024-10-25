@@ -2,5 +2,26 @@
 "children": [package {
  "namespace": ["magma.api"]
  }, record {
+ "name": "Tuple",
+ "type-params": [symbol {
+  "value": "A"
+  }, symbol {
+  "value": "B"
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }],
+ "params": [definition {
+  "name": "left",
+  "returns": symbol {
+   "value": "A"
+   }
+  }, definition {
+  "name": "right",
+  "returns": symbol {
+   "value": "B"
+   }
+  }]
+ }, whitespace {
  }]
 }

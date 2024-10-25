@@ -20,5 +20,82 @@
 ",
  "namespace": ["java.util.Optional"]
  }, function {
+ "name": "InterfacePasser ",
+ "children": [method {
+  "name": "passInterface",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }]
+   },
+  "children": [if {
+   "content": " (!node.is(JavaLang.INTERFACE_TYPE)) return Optional.empty();"
+   }, declaration {
+   "name": "retype",
+   "caller": property-access {
+    "child": "retype",
+    "parent": symbol {
+     "content": "node"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [property-access {
+    "child": "TRAIT",
+    "parent": symbol {
+     "content": "MagmaLang"
+     }
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, invocation {
+   "caller": property-access {
+    "child": "orElse",
+    "parent": lambda {
+     "before-arrow": "final var withChildren = retype.mapNodeList(CommonLang.CHILDREN, children ",
+     "after-arrow": " children.stream()
+                        .map(ClassMemberPasser::passClassMember)
+                        .toList())
+                "
+     }
+    },
+   "arguments": [symbol {
+    "content": "retype"
+    }]
+   }, return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "of",
+     "parent": symbol {
+      "content": "Optional"
+      }
+     },
+    "arguments": [symbol {
+     "content": "withChildren"
+     }]
+    }
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }]
+  }, whitespace {
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
  }]
 }

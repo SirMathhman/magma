@@ -16,5 +16,51 @@
 ",
  "namespace": ["static magma.app.compile.lang.MagmaLang.FUNCTION"]
  }, function {
+ "name": "ClassPasser ",
+ "children": [method {
+  "name": "pass",
+  "returns": generic {
+   "base": symbol {
+    "value": "Optional"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }]
+   },
+  "children": [if {
+   "content": " (node.is(CLASS_TYPE)) {
+            return Optional.of(node.retype(FUNCTION));
+        }"
+   }, else {
+   "children": [return {
+    "value": invocation {
+     "caller": property-access {
+      "child": "empty",
+      "parent": symbol {
+       "content": "Optional"
+       }
+      }
+     }
+    }, whitespace {
+    }]
+   }, whitespace {
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }, modifier {
+   "modifier-value": "static"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }]
+  }, whitespace {
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }]
+ }, whitespace {
  }]
 }

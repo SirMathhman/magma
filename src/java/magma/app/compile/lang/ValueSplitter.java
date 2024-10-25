@@ -68,11 +68,13 @@ public class ValueSplitter implements Splitter {
                     .popAndAppend()
                     .map(Tuple::left)
                     .orElse(nextState));
-        } else if (nextChar == '\"') {
-            return Optional.empty();
-        } else {
-            return Optional.of(nextState);
         }
+
+        if (nextChar == '\"') {
+            return Optional.empty();
+        }
+
+        return Optional.of(nextState);
     }
 
     @Override

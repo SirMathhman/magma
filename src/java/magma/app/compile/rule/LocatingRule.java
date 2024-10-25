@@ -37,11 +37,13 @@ public final class LocatingRule implements Rule {
 
         if (occurrences.isEmpty()) {
             return new RuleResult<>(new Err<>(new ParseException("No occurrence found of '" + locator.slice() + "'", input)));
-        } else if (occurrences.size() == 1) {
-            return errors.getFirst();
-        } else {
-            return new RuleResult<>(new Err<>(new ParseException("Failed to find a valid combination of slice '" + locator.slice() + "'", input)), errors);
         }
+
+        if (occurrences.size() == 1) {
+            return errors.getFirst();
+        }
+
+        return new RuleResult<>(new Err<>(new ParseException("Failed to find a valid combination of slice '" + locator.slice() + "'", input)), errors);
     }
 
     private RuleResult<Node, ParseException> getNodeParseExceptionRuleResult(String input, int index) {

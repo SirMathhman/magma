@@ -3,7 +3,9 @@ package magma.app.compile.lang;
 import magma.app.compile.rule.Splitter;
 import magma.java.JavaCollectors;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -19,29 +21,40 @@ public class StatementSplitter implements Splitter {
 
         var current = state;
         while (true) {
-            final var optional = state.popAndAppend();
-            if (optional.isEmpty()) break;
-
-            final var next = optional.get();
-            final var nextState = next.left();
-            final var nextChar = next.right();
-            if (nextChar == '\\') {
-                current = nextState.popAndAppendDiscard().orElse(nextState);
-            } else if (nextChar == '\"') {
-                break;
+            final var bufferedState = splitWithinDoubleQuotes(current);
+            if (bufferedState.isPresent()) {
+                current = bufferedState.get();
             } else {
-                current = nextState;
+                break;
             }
         }
 
         return Optional.of(current);
     }
 
+    private static Optional<BufferedState> splitWithinDoubleQuotes(BufferedState current) {
+        final var optional = current.popAndAppend();
+        if (optional.isEmpty()) return Optional.empty();
+
+        final var next = optional.get();
+        final var nextState = next.left();
+        final var nextChar = next.right();
+        if (nextChar == '\\') {
+            return Optional.of(nextState.popAndAppendDiscard().orElse(nextState));
+        }
+
+        if (nextChar == '\"') {
+            return Optional.empty();
+        }
+
+        return Optional.of(nextState);
+    }
+
     private static Optional<BufferedState> splitSingleQuotes(BufferedState state, char c) {
         if (c != '\'') return Optional.empty();
 
         final var optional = state.popAndAppend();
-        if(optional.isEmpty()) return Optional.of(state);
+        if (optional.isEmpty()) return Optional.of(state);
 
         final var next = optional.get();
         final var nextState = next.left();
