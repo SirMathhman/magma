@@ -33,7 +33,7 @@ public class JavaLang {
 
     public static TypeRule createRecordRule() {
         final var simpleName = new ExtractRule(NAME);
-        final var typeParams = new NodeListRule(new ValueSplitter(), "type-params", createTypeRule());
+        final var typeParams = createTypeParamsRule(createTypeRule());
         final var name = new OptionalNodeRule("type-params", simpleName, new LocatingRule(simpleName, new FirstLocator("<"), new SuffixRule(typeParams, ">")));
 
         final var params = new NodeListRule(new ValueSplitter(), "params", createDefinitionRule());
@@ -91,7 +91,7 @@ public class JavaLang {
         final var content = new SuffixRule(new NodeListRule(new StatementSplitter(), "content", new StripRule(memberRule)), "}");
 
         final var name = new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("name")));
-        final var withTypeParams = new LocatingRule(name, new FirstLocator("<"), new StripRule(new SuffixRule(new NodeListRule(new ValueSplitter(), "type-params", createTypeRule()), ">")));
+        final var withTypeParams = new LocatingRule(name, new FirstLocator("<"), new StripRule(new SuffixRule(createTypeParamsRule(createTypeRule()), ">")));
         final var maybeTypeParams = new OptionalNodeListRule("type-params", withTypeParams, name);
 
         final var nameAndContent = new LocatingRule(maybeTypeParams, new FirstLocator("{"), new StripRule(content));
@@ -178,7 +178,7 @@ public class JavaLang {
                 createStringRule(),
                 createConstructionRule(value),
                 createInvocationRule(value),
-                createSymbolRule(),
+                createSymbolValueRule(),
                 createNumberRule(),
                 createOperationRule(value, "addition", "+"),
                 createOperationRule(value, "subtraction", "-"),
@@ -224,10 +224,6 @@ public class JavaLang {
         return new TypeRule(type, new LocatingRule(left, new FirstLocator(operator), right));
     }
 
-    private static TypeRule createSymbolRule() {
-        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("content"))));
-    }
-
     private static TypeRule createAccessRule(LazyRule value, String type, String separator) {
         final var parent = new NodeRule("parent", value);
         final var child = new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("child")));
@@ -259,7 +255,7 @@ public class JavaLang {
         type.setChildRule(new OrRule(List.of(
                 createGenericRule(type),
                 new TypeRule("array", new StripRule(new SuffixRule(new NodeRule("child", type), "[]"))),
-                new TypeRule("symbol", new StripRule(createNamespaceRule())))));
+                createSymbolTypeRule())));
         return type;
     }
 

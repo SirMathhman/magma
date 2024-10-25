@@ -16,6 +16,7 @@ public class CommonLang {
     public static final String MODIFIER_TYPE = "modifier";
     public static final String MODIFIERS = "modifiers";
     public static final String ROOT_TYPE = "root";
+    public static final String TYPE_PARAMS = "type-params";
 
     public static TypeRule createImportRule() {
         return createImportRule(IMPORT_TYPE, "import ");
@@ -46,5 +47,17 @@ public class CommonLang {
 
     public static TypeRule createRootRule(Rule rootMember) {
         return new TypeRule(ROOT_TYPE, createChildrenRule(rootMember));
+    }
+
+    static NodeListRule createTypeParamsRule(Rule typeRule) {
+        return new NodeListRule(new ValueSplitter(), TYPE_PARAMS, typeRule);
+    }
+
+    static TypeRule createSymbolValueRule() {
+        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new ExtractRule("content"))));
+    }
+
+    static TypeRule createSymbolTypeRule() {
+        return new TypeRule("symbol", new StripRule(createNamespaceRule()));
     }
 }
