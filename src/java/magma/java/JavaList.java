@@ -6,8 +6,6 @@ import magma.api.option.Option;
 import magma.api.option.Some;
 import magma.api.stream.HeadedStream;
 import magma.api.stream.Stream;
-import magma.app.compile.pass.PassingStage;
-import magma.app.compile.pass.TreePassingStage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +28,7 @@ public record JavaList<T>(List<T> hidden) implements magma.api.list.List<T> {
 
     @Override
     public Option<T> get(int index) {
-        if(index >= 0 && index < hidden.size()) {
+        if (index >= 0 && index < hidden.size()) {
             return new Some<>(hidden.get(index));
         } else {
             return new None<>();

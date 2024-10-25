@@ -7,6 +7,7 @@ import magma.app.compile.lang.CLang;
 import magma.app.compile.lang.JavaLang;
 import magma.app.compile.lang.MagmaLang;
 import magma.app.compile.pass.*;
+import magma.app.compile.pass.format.ImportFormatter;
 import magma.app.compile.rule.Rule;
 import magma.java.JavaList;
 
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static magma.app.Application.*;
+import static magma.app.compile.lang.CommonLang.IMPORT_TYPE;
 
 public class Main {
 
@@ -26,13 +28,21 @@ public class Main {
     public static final Path C_SOURCE = Paths.get(".", "build", "magma-c");
 
     private static SequentialPassingStage createJavaMagmaPasser() {
-        return new SequentialPassingStage(new JavaList<PassingStage>().add(new TreePassingStage(List.of(
+        return new SequentialPassingStage(new JavaList<PassingStage>()
+                .add(getElement())
+                .add(new TreePassingStage(List.of(
+                        new FilteredPasser(IMPORT_TYPE, new ImportFormatter())
+                ))));
+    }
+
+    private static TreePassingStage getElement() {
+        return new TreePassingStage(List.of(
                 new PackageRemover(),
                 new ImportAdapter(),
                 new ClassAdapter(),
                 new InterfaceAdapter(),
                 new RecordAdapter()
-        ))));
+        ));
     }
 
     public static void main(String[] args) {

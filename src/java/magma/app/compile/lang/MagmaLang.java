@@ -7,13 +7,15 @@ import magma.app.compile.rule.TypeRule;
 
 import java.util.List;
 
+import static magma.app.compile.lang.CommonLang.createImportRule;
+
 public class MagmaLang {
     public static final String TRAIT_TYPE = "trait";
     public static final String FUNCTION_TYPE = "function";
 
     public static Rule createRootRule() {
         return CommonLang.createRootRule(new OrRule(List.of(
-                new TypeRule("import", new EmptyRule()),
+                createImportRule(),
                 new TypeRule(TRAIT_TYPE, new EmptyRule()),
                 new TypeRule(FUNCTION_TYPE, new EmptyRule()),
                 CommonLang.createWhitespaceRule()

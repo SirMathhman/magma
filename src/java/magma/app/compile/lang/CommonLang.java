@@ -11,7 +11,7 @@ public class CommonLang {
 
     public static final String IMPORT_TYPE = "import";
     public static final String CHILDREN = "children";
-    public static final String AFTER_IMPORT = "after-import";
+    public static final String PADDING_IMPORT_AFTER = "after-import";
     public static final String MODIFIER_VALUE = "modifier-value";
     public static final String MODIFIER_TYPE = "modifier";
     public static final String MODIFIERS = "modifiers";
@@ -23,7 +23,7 @@ public class CommonLang {
 
     public static TypeRule createImportRule(String type, String prefix) {
         final var childRule = new SuffixRule(createNamespaceRule(), STATEMENT_END);
-        return new TypeRule(type, new StripRule(new PrefixRule(prefix, childRule), "before-import", AFTER_IMPORT));
+        return new TypeRule(type, new StripRule(new PrefixRule(prefix, childRule), "before-import", PADDING_IMPORT_AFTER));
     }
 
     static Rule createNamespaceRule() {
