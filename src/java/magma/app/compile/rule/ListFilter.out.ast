@@ -9,7 +9,7 @@
   "value": "Filter"
   },
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "values",
@@ -41,6 +41,7 @@
      "content": "input"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"

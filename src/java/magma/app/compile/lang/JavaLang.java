@@ -3,7 +3,6 @@ package magma.app.compile.lang;
 import magma.app.compile.rule.*;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import static magma.app.compile.lang.CommonLang.*;
 
@@ -249,30 +248,5 @@ public class JavaLang {
         final var child = new NodeListRule(new ValueSplitter(), "children", type);
 
         return new TypeRule("generic", new StripRule(new LocatingRule(base, new FirstLocator("<"), new SuffixRule(child, ">"))));
-    }
-
-    private static class OpeningLocator implements Locator {
-        @Override
-        public Stream<Integer> locate(String input) {
-            var depth = 0;
-            int i = input.length() - 1;
-            while (i >= 0) {
-                var c = input.charAt(i);
-                if (c == '(' && depth == 1) {
-                    return Stream.of(i);
-                } else {
-                    if (c == ')') depth++;
-                    if (c == '(') depth--;
-                }
-                i--;
-            }
-
-            return Stream.empty();
-        }
-
-        @Override
-        public String slice() {
-            return "(";
-        }
     }
 }

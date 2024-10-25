@@ -27,6 +27,7 @@
      "content": "input"
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"

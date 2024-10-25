@@ -73,55 +73,28 @@
     "value": "ParseException"
     }]
    },
-  "children": [return {
-   "value": ternary {
-    "condition": invocation {
-     "caller": property-access {
-      "child": "filter",
-      "parent": symbol {
-       "content": "filter"
-       }
-      },
-     "arguments": [symbol {
-      "content": "input"
-      }]
+  "children": [if {
+   "content": " (filter.filter(input)) return childRule.parse(input);"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
      },
-    "ifFalse": construction {
+    "arguments": [construction {
      "caller": symbol {
-      "content": "RuleResult"
+      "content": "Err"
       },
-     "type-arguments": [symbol {
-      "value": "Node"
-      }, symbol {
-      "value": "ParseException"
-      }],
      "arguments": [construction {
       "caller": symbol {
-       "content": "Err"
+       "content": "ParseException"
        },
-      "arguments": [construction {
-       "caller": symbol {
-        "content": "ParseException"
-        },
-       "arguments": [string {
-        "value": "Invalid value"
-        }, symbol {
-        "content": "input"
-        }]
+      "arguments": [string {
+       "value": "Value did not pass filter '" + filter + "'"
+       }, symbol {
+       "content": "input"
        }]
       }]
-     },
-    "ifTrue": invocation {
-     "caller": property-access {
-      "child": "parse",
-      "parent": symbol {
-       "content": "childRule"
-       }
-      },
-     "arguments": [symbol {
-      "content": "input"
-      }]
-     }
+     }]
     }
    }, whitespace {
    }],

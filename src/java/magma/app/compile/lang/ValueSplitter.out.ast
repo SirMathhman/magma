@@ -10,7 +10,7 @@
  }, import {
  "after-import": "
 ",
- "namespace": ["magma.java.JavaCollectors"]
+ "namespace": ["magma.java.NativeListCollector"]
  }, import {
  "after-import": "
 ",
@@ -536,13 +536,13 @@
        }
       }
      },
-    "arguments": [invocation {
-     "caller": property-access {
-      "child": "asList",
-      "parent": symbol {
-       "content": "JavaCollectors"
-       }
-      }
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "NativeListCollector"
+      },
+     "type-arguments": [symbol {
+      "value": "String"
+      }]
      }]
     }
    }, whitespace {

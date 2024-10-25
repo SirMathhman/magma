@@ -2,7 +2,9 @@
 "children": [package {
  "namespace": ["magma.app.compile"]
  }, import {
- "namespace": ["magma.java.JavaCollectors"]
+ "namespace": ["magma.api.Tuple"]
+ }, import {
+ "namespace": ["magma.java.NativeListCollector"]
  }, import {
  "namespace": ["java.util.HashMap"]
  }, import {
@@ -57,13 +59,20 @@
            }
           }
          },
-        "arguments": [invocation {
-         "caller": property-access {
-          "child": "asList",
-          "parent": symbol {
-           "content": "JavaCollectors"
-           }
-          }
+        "arguments": [construction {
+         "caller": symbol {
+          "content": "NativeListCollector"
+          },
+         "type-arguments": [generic {
+          "base": symbol {
+           "value": "Tuple"
+           },
+          "children": [symbol {
+           "value": "String"
+           }, symbol {
+           "value": "String"
+           }]
+          }]
          }]
         }
        }
@@ -82,13 +91,20 @@
            }
           }
          },
-        "arguments": [invocation {
-         "caller": property-access {
-          "child": "asList",
-          "parent": symbol {
-           "content": "JavaCollectors"
-           }
-          }
+        "arguments": [construction {
+         "caller": symbol {
+          "content": "NativeListCollector"
+          },
+         "type-arguments": [generic {
+          "base": symbol {
+           "value": "Tuple"
+           },
+          "children": [symbol {
+           "value": "String"
+           }, symbol {
+           "value": "String"
+           }]
+          }]
          }]
         }
        }
@@ -165,13 +181,25 @@
            }
           }
          },
-        "arguments": [invocation {
-         "caller": property-access {
-          "child": "asList",
-          "parent": symbol {
-           "content": "JavaCollectors"
-           }
-          }
+        "arguments": [construction {
+         "caller": symbol {
+          "content": "NativeListCollector"
+          },
+         "type-arguments": [generic {
+          "base": symbol {
+           "value": "Tuple"
+           },
+          "children": [symbol {
+           "value": "String"
+           }, generic {
+           "base": symbol {
+            "value": "List"
+            },
+           "children": [symbol {
+            "value": "String"
+            }]
+           }]
+          }]
          }]
         }
        }
@@ -190,13 +218,25 @@
            }
           }
          },
-        "arguments": [invocation {
-         "caller": property-access {
-          "child": "asList",
-          "parent": symbol {
-           "content": "JavaCollectors"
-           }
-          }
+        "arguments": [construction {
+         "caller": symbol {
+          "content": "NativeListCollector"
+          },
+         "type-arguments": [generic {
+          "base": symbol {
+           "value": "Tuple"
+           },
+          "children": [symbol {
+           "value": "String"
+           }, generic {
+           "base": symbol {
+            "value": "List"
+            },
+           "children": [symbol {
+            "value": "String"
+            }]
+           }]
+          }]
          }]
         }
        }
@@ -268,13 +308,20 @@
            }
           }
          },
-        "arguments": [invocation {
-         "caller": property-access {
-          "child": "asList",
-          "parent": symbol {
-           "content": "JavaCollectors"
-           }
-          }
+        "arguments": [construction {
+         "caller": symbol {
+          "content": "NativeListCollector"
+          },
+         "type-arguments": [generic {
+          "base": symbol {
+           "value": "Tuple"
+           },
+          "children": [symbol {
+           "value": "String"
+           }, symbol {
+           "value": "Node"
+           }]
+          }]
          }]
         }
        }
@@ -293,13 +340,20 @@
            }
           }
          },
-        "arguments": [invocation {
-         "caller": property-access {
-          "child": "asList",
-          "parent": symbol {
-           "content": "JavaCollectors"
-           }
-          }
+        "arguments": [construction {
+         "caller": symbol {
+          "content": "NativeListCollector"
+          },
+         "type-arguments": [generic {
+          "base": symbol {
+           "value": "Tuple"
+           },
+          "children": [symbol {
+           "value": "String"
+           }, symbol {
+           "value": "Node"
+           }]
+          }]
          }]
         }
        }
@@ -376,13 +430,25 @@
            }
           }
          },
-        "arguments": [invocation {
-         "caller": property-access {
-          "child": "asList",
-          "parent": symbol {
-           "content": "JavaCollectors"
-           }
-          }
+        "arguments": [construction {
+         "caller": symbol {
+          "content": "NativeListCollector"
+          },
+         "type-arguments": [generic {
+          "base": symbol {
+           "value": "Tuple"
+           },
+          "children": [symbol {
+           "value": "String"
+           }, generic {
+           "base": symbol {
+            "value": "List"
+            },
+           "children": [symbol {
+            "value": "Node"
+            }]
+           }]
+          }]
          }]
         }
        }
@@ -401,13 +467,25 @@
            }
           }
          },
-        "arguments": [invocation {
-         "caller": property-access {
-          "child": "asList",
-          "parent": symbol {
-           "content": "JavaCollectors"
-           }
-          }
+        "arguments": [construction {
+         "caller": symbol {
+          "content": "NativeListCollector"
+          },
+         "type-arguments": [generic {
+          "base": symbol {
+           "value": "Tuple"
+           },
+          "children": [symbol {
+           "value": "String"
+           }, generic {
+           "base": symbol {
+            "value": "List"
+            },
+           "children": [symbol {
+            "value": "Node"
+            }]
+           }]
+          }]
          }]
         }
        }

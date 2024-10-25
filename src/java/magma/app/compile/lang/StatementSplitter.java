@@ -1,7 +1,7 @@
 package magma.app.compile.lang;
 
 import magma.app.compile.rule.Splitter;
-import magma.java.JavaCollectors;
+import magma.java.NativeListCollector;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -98,6 +98,6 @@ public class StatementSplitter implements Splitter {
 
         return state.advance()
                 .stream()
-                .collect(JavaCollectors.asList());
+                .collect(new NativeListCollector<String>());
     }
 }

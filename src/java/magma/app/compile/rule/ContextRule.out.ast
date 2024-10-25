@@ -17,7 +17,7 @@
   "value": "Rule"
   },
  "modifiers": [modifier {
-  "modifier-value": "export"
+  "modifier-value": "public"
   }],
  "params": [definition {
   "name": "message",
@@ -69,6 +69,7 @@
       }]
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -121,6 +122,7 @@
       }]
      }]
     }
+   }, whitespace {
    }],
   "annotations": [annotation {
    "value": "Override"
@@ -136,5 +138,6 @@
    }]
   }, implements {
   }]
+ }, whitespace {
  }]
 }

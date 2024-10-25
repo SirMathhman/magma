@@ -3,6 +3,10 @@
  "after-import": "
 ",
  "namespace": ["magma.app.compile.rule.*"]
+ }, import {
+ "after-import": "
+",
+ "namespace": ["java.util.List"]
  }, function {
  "name": "CommonLang ",
  "children": [declaration {
@@ -204,24 +208,46 @@
     "content": "MODIFIER_TYPE"
     }, construction {
     "caller": symbol {
-     "content": "FilterRule"
+     "content": "StripRule"
      },
     "arguments": [construction {
      "caller": symbol {
-      "content": "ListFilter"
+      "content": "OrRule"
       },
-     "arguments": [property-access {
-      "child": "MODIFIERS_LIST",
-      "parent": symbol {
-       "content": "JavaLang"
-       }
-      }]
-     }, construction {
-     "caller": symbol {
-      "content": "ExtractRule"
-      },
-     "arguments": [symbol {
-      "content": "MODIFIER_VALUE"
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "of",
+       "parent": symbol {
+        "content": "List"
+        }
+       },
+      "arguments": [construction {
+       "caller": symbol {
+        "content": "FilterRule"
+        },
+       "arguments": [construction {
+        "caller": symbol {
+         "content": "ListFilter"
+         },
+        "arguments": [property-access {
+         "child": "MODIFIERS_LIST",
+         "parent": symbol {
+          "content": "JavaLang"
+          }
+         }]
+        }, construction {
+        "caller": symbol {
+         "content": "ExtractRule"
+         },
+        "arguments": [symbol {
+         "content": "MODIFIER_VALUE"
+         }]
+        }]
+       }, construction {
+       "caller": symbol {
+        "content": "EmptyRule"
+        }
+       }]
       }]
      }]
     }],

@@ -9,20 +9,84 @@
  "namespace": ["java.util.List"]
  }, function {
  "name": "SimpleSplitter implements Splitter ",
- "body": "
-    private final String delimiter;
-
-    public SimpleSplitter(String delimiter) {
-        this.delimiter = delimiter;
+ "children": [definition {
+  "name": "delimiter",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, method {
+  "name": "SimpleSplitter",
+  "returns": symbol {
+   "value": "public"
+   },
+  "children": [assignment {
+   "content": "delimiter",
+   "child": "delimiter",
+   "parent": symbol {
+    "content": "this"
     }
-
-    @Override
-    public List<String> split(String input) {
-        return List.of(input.split(delimiter));
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "delimiter",
+   "returns": symbol {
+    "value": "String"
     }
-}",
+   }]
+  }, method {
+  "name": "split",
+  "returns": generic {
+   "base": symbol {
+    "value": "List"
+    },
+   "children": [symbol {
+    "value": "String"
+    }]
+   },
+  "children": [return {
+   "value": invocation {
+    "caller": property-access {
+     "child": "of",
+     "parent": symbol {
+      "content": "List"
+      }
+     },
+    "arguments": [invocation {
+     "caller": property-access {
+      "child": "split",
+      "parent": symbol {
+       "content": "input"
+       }
+      },
+     "arguments": [symbol {
+      "content": "delimiter"
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, whitespace {
+  }],
  "modifiers": [modifier {
   "modifier-value": "public"
   }]
+ }, whitespace {
  }]
 }

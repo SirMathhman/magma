@@ -2,7 +2,7 @@ package magma.app.compile.lang;
 
 import magma.api.Tuple;
 import magma.app.compile.rule.Splitter;
-import magma.java.JavaCollectors;
+import magma.java.NativeListCollector;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -95,6 +95,6 @@ public class ValueSplitter implements Splitter {
 
         return current.advance()
                 .stream()
-                .collect(JavaCollectors.asList());
+                .collect(new NativeListCollector<String>());
     }
 }

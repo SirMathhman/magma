@@ -2,6 +2,8 @@ package magma.app.compile.lang;
 
 import magma.app.compile.rule.*;
 
+import java.util.List;
+
 public class CommonLang {
     public static final String NAME = "name";
     public static final String STATEMENT_END = ";";
@@ -23,7 +25,7 @@ public class CommonLang {
     }
 
     static Rule createModifiersRule() {
-        final var modifier = new TypeRule(MODIFIER_TYPE, new FilterRule(new ListFilter(JavaLang.MODIFIERS_LIST), new ExtractRule(MODIFIER_VALUE)));
+        final var modifier = new TypeRule(MODIFIER_TYPE, new StripRule(new OrRule(List.of(new FilterRule(new ListFilter(JavaLang.MODIFIERS_LIST), new ExtractRule(MODIFIER_VALUE)), new EmptyRule()))));
         return new NodeListRule(new SimpleSplitter(" "), JavaLang.MODIFIERS, modifier);
     }
 

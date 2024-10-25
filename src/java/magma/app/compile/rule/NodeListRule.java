@@ -36,7 +36,7 @@ public final class NodeListRule implements Rule {
             final var result = childRule.parse(segment);
             final var inner = result.result();
             if (inner.isErr()) {
-                return new RuleResult<>(new Err<>(new ParseException("Invalid child", segment)), Collections.singletonList(result));
+                return new RuleResult<>(new Err<>(new ParseException("Invalid child for property '" + propertyKey + "'", segment)), Collections.singletonList(result));
             }
 
             children.add(inner.findValue().orElseThrow());

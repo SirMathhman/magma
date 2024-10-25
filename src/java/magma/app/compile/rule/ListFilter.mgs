@@ -1,2 +1,0 @@
-import java.util.List;
-export class def ListFilter() => {}
