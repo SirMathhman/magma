@@ -117,6 +117,7 @@ public class JavaLang {
 
         final var statement = new LazyRule();
         statement.setChildRule(new OrRule(List.of(
+                createWhitespaceRule(),
                 createReturnRule(valueRule),
                 createInvocationStatementRule(valueRule),
                 createConditionRule("if", "if"),

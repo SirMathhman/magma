@@ -20,5 +20,294 @@
  }, import {
  "namespace": ["java.util.List"]
  }, class {
+ "name": "NodeListRule implements Rule ",
+ "children": [definition {
+  "name": "propertyKey",
+  "returns": symbol {
+   "value": "String"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, definition {
+  "name": "childRule",
+  "returns": symbol {
+   "value": "Rule"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, definition {
+  "name": "splitter",
+  "returns": symbol {
+   "value": "Splitter"
+   },
+  "modifiers": [modifier {
+   "modifier-value": "private"
+   }, modifier {
+   "modifier-value": "final"
+   }]
+  }, method {
+  "name": "NodeListRule",
+  "returns": symbol {
+   "value": "public"
+   },
+  "children": [assignment {
+   "content": "propertyKey",
+   "child": "propertyKey",
+   "parent": symbol {
+    "content": "this"
+    }
+   }, assignment {
+   "content": "childRule",
+   "child": "childRule",
+   "parent": symbol {
+    "content": "this"
+    }
+   }, assignment {
+   "content": "splitter",
+   "child": "splitter",
+   "parent": symbol {
+    "content": "this"
+    }
+   }, whitespace {
+   }],
+  "params": [definition {
+   "name": "splitter",
+   "returns": symbol {
+    "value": "Splitter"
+    }
+   }, definition {
+   "name": "propertyKey",
+   "returns": symbol {
+    "value": "String"
+    }
+   }, definition {
+   "name": "childRule",
+   "returns": symbol {
+    "value": "Rule"
+    }
+   }]
+  }, method {
+  "name": "parse",
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "Node"
+    }, symbol {
+    "value": "ParseException"
+    }]
+   },
+  "children": [declaration {
+   "name": "segments",
+   "caller": property-access {
+    "child": "split",
+    "parent": symbol {
+     "content": "splitter"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "input"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (segments.isEmpty()) {
+            return new RuleResult<>(new Err<>(new ParseException("No segments present for node list '" + propertyKey + "'", input)));
+        }"
+   }, declaration {
+   "name": "children",
+   "caller": symbol {
+    "content": "ArrayList"
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "type-arguments": [symbol {
+    "value": "Node"
+    }]
+   }, declaration {
+   "name": "i",
+   "value": "0",
+   "returns": symbol {
+    "value": "int"
+    }
+   }, while {
+   "content": " (i < segments.size()) {
+            var segment = segments.get(i);
+            final var result = childRule.parse(segment);
+            final var inner = result.result();
+            if (inner.isErr()) {
+                return new RuleResult<>(new Err<>(new ParseException("Invalid child", segment)), Collections.singletonList(result));
+            }
+
+            children.add(inner.findValue().orElseThrow());
+            i++;
+        }"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "Ok"
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "withNodeList",
+       "parent": construction {
+        "caller": symbol {
+         "content": "MapNode"
+         }
+        }
+       },
+      "arguments": [symbol {
+       "content": "propertyKey"
+       }, symbol {
+       "content": "children"
+       }]
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "input",
+   "returns": symbol {
+    "value": "String"
+    }
+   }]
+  }, method {
+  "name": "generate",
+  "returns": generic {
+   "base": symbol {
+    "value": "RuleResult"
+    },
+   "children": [symbol {
+    "value": "String"
+    }, symbol {
+    "value": "GenerateException"
+    }]
+   },
+  "children": [declaration {
+   "name": "propertyValues",
+   "caller": property-access {
+    "child": "findNodeList",
+    "parent": symbol {
+     "content": "node"
+     }
+    },
+   "returns": symbol {
+    "value": "var"
+    },
+   "arguments": [symbol {
+    "content": "propertyKey"
+    }],
+   "modifiers": [modifier {
+    "modifier-value": "final"
+    }]
+   }, if {
+   "content": " (propertyValues.isEmpty())
+            return new RuleResult<>(new Err<>(new GenerateException("Node list property '" + propertyKey + "' not present", node)));"
+   }, declaration {
+   "name": "buffer",
+   "caller": symbol {
+    "content": "StringBuilder"
+    },
+   "returns": symbol {
+    "value": "var"
+    }
+   }, declaration {
+   "name": "get",
+   "caller": property-access {
+    "child": "get",
+    "parent": symbol {
+     "content": "propertyValues"
+     }
+    },
+   "returns": generic {
+    "base": symbol {
+     "value": "List"
+     },
+    "children": [symbol {
+     "value": "Node"
+     }]
+    }
+   }, declaration {
+   "name": "i",
+   "value": "0",
+   "returns": symbol {
+    "value": "int"
+    }
+   }, while {
+   "content": " (i < get.size()) {
+            var value = get.get(i);
+            final var result = childRule.generate(value);
+            final var inner = result.result();
+            if (inner.isErr()) {
+                return new RuleResult<>(new Err<>(new GenerateException("Invalid child", value)), Collections.singletonList(result));
+            }
+
+            final var str = inner.findValue().orElseThrow();
+            buffer.append(str);
+            i++;
+        }"
+   }, return {
+   "value": construction {
+    "caller": symbol {
+     "content": "RuleResult"
+     },
+    "arguments": [construction {
+     "caller": symbol {
+      "content": "Ok"
+      },
+     "arguments": [invocation {
+      "caller": property-access {
+       "child": "toString",
+       "parent": symbol {
+        "content": "buffer"
+        }
+       }
+      }]
+     }]
+    }
+   }, whitespace {
+   }],
+  "annotations": [annotation {
+   "value": "Override"
+   }],
+  "modifiers": [modifier {
+   "modifier-value": "public"
+   }],
+  "params": [definition {
+   "name": "node",
+   "returns": symbol {
+    "value": "Node"
+    }
+   }]
+  }, whitespace {
+  }],
+ "modifiers": [modifier {
+  "modifier-value": "public"
+  }, modifier {
+  "modifier-value": "final"
+  }]
  }]
 }
