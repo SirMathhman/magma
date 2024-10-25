@@ -6,10 +6,7 @@ import magma.app.DirectorySourceSet;
 import magma.app.compile.lang.CLang;
 import magma.app.compile.lang.JavaLang;
 import magma.app.compile.lang.MagmaLang;
-import magma.app.compile.pass.PackageRemover;
-import magma.app.compile.pass.PassingStage;
-import magma.app.compile.pass.SequentialPassingStage;
-import magma.app.compile.pass.TreePassingStage;
+import magma.app.compile.pass.*;
 import magma.app.compile.rule.Rule;
 import magma.java.JavaList;
 
@@ -30,7 +27,8 @@ public class Main {
 
     private static SequentialPassingStage createJavaMagmaPasser() {
         return new SequentialPassingStage(new JavaList<PassingStage>().add(new TreePassingStage(List.of(
-                new PackageRemover()
+                new PackageRemover(),
+                new InterfaceAdapter()
         ))));
     }
 
