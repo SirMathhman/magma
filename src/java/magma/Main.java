@@ -3,7 +3,6 @@ package magma;
 import magma.app.Application;
 import magma.app.ApplicationException;
 import magma.app.DirectorySourceSet;
-import magma.app.compile.lang.CLang;
 import magma.app.compile.lang.JavaLang;
 import magma.app.compile.lang.MagmaLang;
 import magma.app.compile.pass.*;
@@ -21,8 +20,11 @@ import static magma.app.Application.*;
 import static magma.app.compile.lang.CommonLang.IMPORT_TYPE;
 
 public class Main {
+    private static SequentialPassingStage createMagmaCPasser() {
+        return new SequentialPassingStage(new JavaList<PassingStage>()
+                .add(createMagmaFormattingStage()));
+    }
 
-    public static final SequentialPassingStage MAGMA_C_PASS = new SequentialPassingStage(new JavaList<PassingStage>().add(new TreePassingStage(Collections.emptyList())));
     public static final Path JAVA_SOURCE = Paths.get(".", "src", "java");
     public static final Path MAGMA_SOURCE = Paths.get(".", "build", "java-magma");
     public static final Path C_SOURCE = Paths.get(".", "build", "magma-c");
@@ -30,9 +32,13 @@ public class Main {
     private static SequentialPassingStage createJavaMagmaPasser() {
         return new SequentialPassingStage(new JavaList<PassingStage>()
                 .add(getElement())
-                .add(new TreePassingStage(List.of(
-                        new FilteredPasser(IMPORT_TYPE, new ImportFormatter())
-                ))));
+                .add(createMagmaFormattingStage()));
+    }
+
+    private static TreePassingStage createMagmaFormattingStage() {
+        return new TreePassingStage(List.of(
+                new FilteredPasser(IMPORT_TYPE, new ImportFormatter())
+        ));
     }
 
     private static TreePassingStage getElement() {
@@ -51,7 +57,7 @@ public class Main {
 
     private static Optional<ApplicationException> compileC() {
         return run(MAGMA_SOURCE, MagmaLang.createRootRule(), MAGMA_EXTENSION,
-                MAGMA_C_PASS,
+                createMagmaCPasser(),
                 C_SOURCE, MagmaLang.createRootRule(), C_EXTENSION);
     }
 
