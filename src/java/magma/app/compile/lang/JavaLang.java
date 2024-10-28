@@ -151,7 +151,7 @@ public class JavaLang {
     }
 
     private static TypeRule createNamedBlockRule(Rule statement, String type, String prefix) {
-        return new TypeRule(type, new PrefixRule(prefix, new StripRule(new PrefixRule("{", new SuffixRule(createChildrenRule(statement), "}")))));
+        return new TypeRule(type, new StripRule(new PrefixRule(prefix, new StripRule(new PrefixRule("{", new SuffixRule(createChildrenRule(statement), "}"))))));
     }
 
     private static TypeRule createDeclarationRule(Rule valueRule) {
@@ -159,7 +159,7 @@ public class JavaLang {
     }
 
     private static TypeRule createConditionRule(String type, String prefix) {
-        return new TypeRule(type, new PrefixRule(prefix, new ExtractRule("content")));
+        return new TypeRule(type, new StripRule(new PrefixRule(prefix, new ExtractRule("content"))));
     }
 
     private static TypeRule createInvocationStatementRule(Rule valueRule) {
@@ -167,7 +167,7 @@ public class JavaLang {
     }
 
     private static TypeRule createReturnRule(Rule valueRule) {
-        return new TypeRule("return", new PrefixRule("return ", new SuffixRule(new NodeRule("value", valueRule), ";")));
+        return new TypeRule("return", new StripRule(new PrefixRule("return ", new SuffixRule(new NodeRule("value", valueRule), ";"))));
     }
 
     private static Rule createValueRule() {

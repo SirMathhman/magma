@@ -40,8 +40,9 @@ public class CommonLang {
         return new NodeListRule(new SimpleSplitter(" "), MODIFIERS, modifier);
     }
 
-    static NodeListRule createChildrenRule(Rule child) {
-        return new NodeListRule(new StatementSplitter(), CHILDREN, new StripRule(child));
+    static Rule createChildrenRule(Rule child) {
+        final var withChildren = new NodeListRule(new StatementSplitter(), CHILDREN, child);
+        return new OptionalNodeListRule(CHILDREN, withChildren, new EmptyRule());
     }
 
     static TypeRule createWhitespaceRule() {
