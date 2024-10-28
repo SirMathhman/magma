@@ -1,2 +1,2 @@
 import magma.app.compile.pass.PassingStage;
-public def 
+export def 

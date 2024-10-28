@@ -7,4 +7,4 @@ import magma.api.stream.Stream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-public def 
+export def 

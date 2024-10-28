@@ -11,6 +11,7 @@ public class MagmaLang {
     public static final String FUNCTION_TYPE = "function";
     public static final String STRUCT_TYPE = "struct";
     public static final List<String> MODIFIERS_LIST = List.of(
+            "export",
             "inline"
     );
 

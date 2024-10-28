@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import static magma.app.Application.*;
 import static magma.app.compile.lang.CommonLang.IMPORT_TYPE;
+import static magma.app.compile.lang.MagmaLang.FUNCTION_TYPE;
 import static magma.app.compile.lang.MagmaLang.TRAIT_TYPE;
 
 public class Main {
@@ -35,8 +36,15 @@ public class Main {
 
     private static SequentialPassingStage createJavaMagmaPasser() {
         return new SequentialPassingStage(new JavaList<PassingStage>()
-                .add(getElement())
+                .add(createAdaptingStage())
+                .add(createAccessingStage())
                 .add(createMagmaFormattingStage()));
+    }
+
+    private static PassingStage createAccessingStage() {
+        return new TreePassingStage(List.of(
+                new FilteredPasser(FUNCTION_TYPE, new AccessModifier())
+        ));
     }
 
     private static TreePassingStage createMagmaFormattingStage() {
@@ -45,7 +53,7 @@ public class Main {
         ));
     }
 
-    private static TreePassingStage getElement() {
+    private static TreePassingStage createAdaptingStage() {
         return new TreePassingStage(List.of(
                 new PackageRemover(),
                 new ImportAdapter(),

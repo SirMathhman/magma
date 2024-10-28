@@ -5,4 +5,4 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import magma.app.compile.lang.CommonLang.*;
-publicdef
+export def 
