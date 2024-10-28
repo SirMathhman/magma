@@ -1,2 +1,2 @@
 import java.util.function.BiFunction;
-trait Stream {}
+trait Stream{}

@@ -20,6 +20,15 @@ public class MagmaLang {
     }
 
     private static TypeRule createTraitRule() {
-        return new TypeRule(TRAIT_TYPE, new StripRule(new PrefixRule("trait ", new SuffixRule(new ExtractRule("name"), " {}"))));
+        final var content = createChildrenRule(new OrRule(List.of(
+                new StripRule(new SuffixRule(createDefinitionRule(), ";")),
+                createWhitespaceRule()
+        )));
+        final var childRule = new LocatingRule(new StripRule(new ExtractRule("name")), new FirstLocator("{"), new SuffixRule(content, "}"));
+        return new TypeRule(TRAIT_TYPE, new StripRule(new PrefixRule("trait ", childRule)));
+    }
+
+    private static TypeRule createDefinitionRule() {
+        return new TypeRule("definition", new LocatingRule(new StripRule(new ExtractRule("name")), new FirstLocator(":"), new ExtractRule("type")));
     }
 }
