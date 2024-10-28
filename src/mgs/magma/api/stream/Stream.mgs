@@ -1,2 +1,0 @@
-import java.util.function.BiFunction;
-trait Stream<T>{}

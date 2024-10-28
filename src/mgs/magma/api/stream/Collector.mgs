@@ -1,1 +1,0 @@
-trait Collector<T, C>{}
