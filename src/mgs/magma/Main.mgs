@@ -1,0 +1,18 @@
+import magma.app.Application;
+import magma.app.ApplicationException;
+import magma.app.DirectorySourceSet;
+import magma.app.compile.lang.JavaLang;
+import magma.app.compile.lang.MagmaLang;
+import magma.app.compile.pass.*;
+import magma.app.compile.pass.format.ImportFormatter;
+import magma.app.compile.pass.trait.TraitAdapter;
+import magma.app.compile.rule.Rule;
+import magma.java.JavaList;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
+import magma.app.Application.*;
+import magma.app.compile.lang.CommonLang.IMPORT_TYPE;
+import magma.app.compile.lang.MagmaLang.TRAIT_TYPE;
+class def Main () => {}

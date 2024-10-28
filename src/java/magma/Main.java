@@ -22,7 +22,7 @@ import static magma.app.compile.lang.MagmaLang.TRAIT_TYPE;
 
 public class Main {
     public static final Path JAVA_SOURCE = Paths.get(".", "src", "java");
-    public static final Path MAGMA_SOURCE = Paths.get(".", "build", "java-magma");
+    public static final Path MAGMA_SOURCE = Paths.get(".", "src");
     public static final Path C_SOURCE = Paths.get(".", "build", "magma-c");
 
     private static SequentialPassingStage createMagmaCPasser() {

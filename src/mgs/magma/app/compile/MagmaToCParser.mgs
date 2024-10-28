@@ -1,0 +1,2 @@
+import magma.app.compile.pass.PassingStage;
+class def MagmaToCParser implements PassingStage () => {}
