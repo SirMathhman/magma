@@ -15,3 +15,4 @@ import java.util.Optional;
 import magma.app.Application.*;
 import magma.app.compile.lang.CommonLang.IMPORT_TYPE;
 import magma.app.compile.lang.MagmaLang.TRAIT_TYPE;
+public def 

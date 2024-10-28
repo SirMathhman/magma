@@ -1,2 +1,3 @@
 import magma.app.compile.rule.EmptyRule;
 import magma.app.compile.rule.Rule;
+public def 

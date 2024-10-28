@@ -2,3 +2,4 @@ import magma.app.compile.Node;
 import java.util.Optional;
 import magma.app.compile.lang.CommonLang.IMPORT_TYPE;
 import magma.app.compile.lang.JavaLang.IMPORT_STATIC_TYPE;
+public def 

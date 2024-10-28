@@ -5,3 +5,4 @@ import magma.app.compile.pass.PassingStage;
 import magma.app.compile.rule.Rule;
 import magma.app.compile.rule.RuleResult;
 import java.util.List;
+public finaldef

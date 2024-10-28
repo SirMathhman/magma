@@ -1,3 +1,4 @@
 import magma.app.compile.rule.Splitter;
 import java.util.List;
 import java.util.regex.Pattern;
+public def 

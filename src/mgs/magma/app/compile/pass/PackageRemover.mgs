@@ -4,3 +4,4 @@ import java.util.Optional;
 import magma.app.compile.lang.CommonLang.CHILDREN;
 import magma.app.compile.lang.CommonLang.ROOT_TYPE;
 import magma.app.compile.lang.JavaLang.PACKAGE_TYPE;
+public def 

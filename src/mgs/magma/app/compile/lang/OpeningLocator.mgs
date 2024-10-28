@@ -2,3 +2,4 @@ import magma.api.Tuple;
 import magma.app.compile.rule.Locator;
 import java.util.Optional;
 import java.util.stream.Stream;
+ def 
