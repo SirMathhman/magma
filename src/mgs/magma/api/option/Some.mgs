@@ -1,0 +1,2 @@
+import magma.api.Tuple;
+import java.util.function.Function;
