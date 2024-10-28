@@ -1,9 +1,6 @@
 package magma.app.compile.lang;
 
-import magma.app.compile.rule.EmptyRule;
-import magma.app.compile.rule.OrRule;
-import magma.app.compile.rule.Rule;
-import magma.app.compile.rule.TypeRule;
+import magma.app.compile.rule.*;
 
 import java.util.List;
 
@@ -16,9 +13,13 @@ public class MagmaLang {
     public static Rule createRootRule() {
         return createChildrenRule(new OrRule(List.of(
                 createImportRule(),
-                new TypeRule(TRAIT_TYPE, new EmptyRule()),
+                createTraitRule(),
                 new TypeRule(FUNCTION_TYPE, new EmptyRule()),
                 createWhitespaceRule()
         )));
+    }
+
+    private static TypeRule createTraitRule() {
+        return new TypeRule(TRAIT_TYPE, new StripRule(new PrefixRule("trait ", new SuffixRule(new ExtractRule("name"), " {}"))));
     }
 }

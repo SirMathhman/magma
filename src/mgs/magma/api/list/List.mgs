@@ -1,2 +1,3 @@
 import magma.api.option.Option;
 import magma.api.stream.Stream;
+trait List {}
