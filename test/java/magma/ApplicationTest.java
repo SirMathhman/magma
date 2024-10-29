@@ -42,12 +42,31 @@ public class ApplicationTest {
         }
     }
 
-    private static void createSource() {
+    private static void writeSource(String input) {
         try {
-            Files.createFile(SOURCE);
+            Files.writeString(SOURCE, input);
         } catch (IOException e) {
             fail(e);
         }
+    }
+
+    private static void runWithInput(String input) {
+        writeSource(input);
+        runOrFail();
+    }
+
+    private static Result<String, IOException> readSafe() {
+        try {
+            return new Ok<>(Files.readString(TARGET));
+        } catch (IOException e) {
+            return new Err<>(e);
+        }
+    }
+
+    @Test
+    void packageStatement() {
+        runWithInput("package magma;");
+        readSafe().consume(value -> assertEquals("", value), Assertions::fail);
     }
 
     @AfterEach
@@ -62,8 +81,7 @@ public class ApplicationTest {
 
     @Test
     void generatesTarget() {
-        createSource();
-        runOrFail();
+        runWithInput("");
         assertTrue(Files.exists(TARGET));
     }
 
