@@ -1,5 +1,11 @@
 package magma;
 
+import magma.option.None;
+import magma.option.Option;
+import magma.option.Some;
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

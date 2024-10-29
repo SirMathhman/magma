@@ -1,5 +1,9 @@
 package magma;
 
+import magma.option.None;
+import magma.option.Option;
+import magma.option.Some;
+
 public record JavaString(String fileName) {
     Option<Integer> firstIndexOfChar(char c) {
         final var index = fileName().indexOf(c);
