@@ -20,7 +20,7 @@ public final class Application {
 
     private static Option<IOException> writeOutput(Path_ source, String_ output) {
         final var nameWithoutExtension = source.computeFileNameWithoutExtension();
-        final var targetName = nameWithoutExtension.concat(MAGMA_EXTENSION);
+        final var targetName = nameWithoutExtension.appendSlice(MAGMA_EXTENSION);
         final var target = source.resolveSibling(targetName);
         return target.writeSafe(output);
     }

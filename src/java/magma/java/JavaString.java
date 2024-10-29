@@ -41,7 +41,7 @@ public final class JavaString implements String_ {
     }
 
     @Override
-    public String_ concat(String slice) {
+    public String_ appendSlice(String slice) {
         return new JavaString(unwrap() + slice);
     }
 }

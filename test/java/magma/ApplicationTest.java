@@ -39,7 +39,7 @@ public class ApplicationTest {
 
     @Test
     void importStatement() {
-        final var value = Compiler.renderImport().unwrap();
+        final var value = Compiler.renderImport(new JavaString("magma")).unwrap();
         assertRun(value, value);
     }
 
