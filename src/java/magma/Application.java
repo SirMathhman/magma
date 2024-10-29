@@ -1,6 +1,7 @@
 package magma;
 
 import magma.java.JavaPath;
+import magma.java.Path_;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
@@ -9,7 +10,7 @@ import java.io.IOException;
 import java.util.function.Function;
 
 public final class Application {
-    public static final String MAGMA_EXTENSION = JavaPath.EXTENSION_SEPARATOR + "mgs";
+    public static final String MAGMA_EXTENSION = Path_.EXTENSION_SEPARATOR + "mgs";
     private final JavaPath source;
 
     public Application(JavaPath source) {
@@ -36,7 +37,7 @@ public final class Application {
     }
 
     Option<IOException> run() {
-        if (!source.isExists()) return new None<>();
+        if (!source.exists()) return new None<>();
 
         return source.readString()
                 .mapValue(Application::compile)

@@ -1,6 +1,6 @@
 package magma;
 
-import magma.java.JavaPath;
+import magma.java.Path_;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,20 +14,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ApplicationTest {
     public static final Path TARGET = resolveByExtension(Application.MAGMA_EXTENSION);
-    public static final Path SOURCE = resolveByExtension(JavaPath.EXTENSION_SEPARATOR + "java");
+    public static final Path SOURCE = resolveByExtension(Path_.EXTENSION_SEPARATOR + "java");
 
     private static Path resolveByExtension(String extension) {
         return Paths.get(".").resolve("ApplicationTest" + extension);
     }
 
     private static void runOrFail() {
-        new Application(new JavaPath(SOURCE))
+        new Application(new Path_(SOURCE))
                 .run()
                 .ifPresent(Assertions::fail);
     }
 
     private static void runWithInput(String input) {
-        new JavaPath(SOURCE)
+        new Path_(SOURCE)
                 .writeSafe(input)
                 .ifPresent(Assertions::fail);
 
@@ -36,7 +36,7 @@ public class ApplicationTest {
 
     private static void assertRun(String input, String output) {
         runWithInput(input);
-        new JavaPath(TARGET)
+        new Path_(TARGET)
                 .readString()
                 .consume(value -> assertEquals(output, value), Assertions::fail);
     }
