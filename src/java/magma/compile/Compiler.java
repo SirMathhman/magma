@@ -1,5 +1,6 @@
 package magma.compile;
 
+import magma.compile.lang.CommonLang;
 import magma.compile.rule.Rule;
 import magma.core.String_;
 import magma.core.option.Option;

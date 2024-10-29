@@ -65,6 +65,11 @@ public final class JavaString implements String_ {
     }
 
     @Override
+    public String_ appendOwned(String_ other) {
+        return new JavaString(value + other.unwrap());
+    }
+
+    @Override
     public String_ appendSlice(String slice) {
         return new JavaString(unwrap() + slice);
     }

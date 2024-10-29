@@ -20,4 +20,6 @@ public interface String_ {
     Option<String_> truncateLeftBySlice(String slice);
 
     Option<String_> truncateRightBySlice(String slice);
+
+    String_ appendOwned(String_ other);
 }

@@ -1,6 +1,6 @@
 package magma;
 
-import magma.compile.CommonLang;
+import magma.compile.lang.CommonLang;
 import magma.compile.MapNode;
 import magma.core.String_;
 import magma.java.JavaString;
