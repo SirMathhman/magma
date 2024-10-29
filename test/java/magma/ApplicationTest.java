@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,11 +22,11 @@ public class ApplicationTest {
     }
 
     private static void runOrFail() {
-        Objects.requireNonNull(run()).ifPresent(Assertions::fail);
+        run().ifPresent(Assertions::fail);
     }
 
     private static Option<IOException> run() {
-        if (!Files.exists(SOURCE)) return null;
+        if (!Files.exists(SOURCE)) return new None<>();
 
         final var fileName = SOURCE.getFileName().toString();
         final var nameWithoutExtension = new JavaString(fileName)
