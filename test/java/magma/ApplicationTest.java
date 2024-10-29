@@ -32,17 +32,12 @@ public class ApplicationTest {
         if (!Files.exists(SOURCE)) return;
 
         final var fileName = SOURCE.getFileName().toString();
-        final var nameWithoutExtension = firstIndexOfChar(fileName, EXTENSION_SEPARATOR)
+        final var nameWithoutExtension = new JavaString(fileName)
+                .firstIndexOfChar(EXTENSION_SEPARATOR)
                 .map(index -> fileName.substring(0, index))
                 .orElse(fileName);
 
         Files.createFile(SOURCE.resolveSibling(nameWithoutExtension + MAGMA_EXTENSION));
-    }
-
-    private static Option<Integer> firstIndexOfChar(String fileName, char c) {
-        final var index = fileName.indexOf(c);
-        if (index == -1) return new None<>();
-        return new Some<>(index);
     }
 
     private static void createSource() {
