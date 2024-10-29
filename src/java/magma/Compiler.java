@@ -9,7 +9,7 @@ public record Compiler(String_ input) {
     }
 
     String_ compile() {
-        if (input.equalsTo(renderImport(new JavaString("magma")))) {
+        if (input.startsWithSlice("import ") && input.endsWithSlice(";")) {
             return input;
         } else {
             return JavaString.EMPTY;

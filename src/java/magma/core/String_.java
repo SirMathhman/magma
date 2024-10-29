@@ -14,4 +14,8 @@ public interface String_ {
     Option<String_> substring(int start, int end);
 
     String_ prependSlice(String slice);
+
+    boolean startsWithSlice(String slice);
+
+    boolean endsWithSlice(String slice);
 }

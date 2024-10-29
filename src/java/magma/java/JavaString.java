@@ -41,6 +41,21 @@ public final class JavaString implements String_ {
     }
 
     @Override
+    public String_ prependSlice(String slice) {
+        return new JavaString(slice + value);
+    }
+
+    @Override
+    public boolean startsWithSlice(String slice) {
+        return value.startsWith(slice);
+    }
+
+    @Override
+    public boolean endsWithSlice(String slice) {
+        return value.endsWith(slice);
+    }
+
+    @Override
     public String_ appendSlice(String slice) {
         return new JavaString(unwrap() + slice);
     }

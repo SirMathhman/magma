@@ -1,11 +1,13 @@
 package magma;
 
-import magma.java.io.JavaPath;
-import magma.java.JavaString;
 import magma.core.String_;
+import magma.java.JavaString;
+import magma.java.io.JavaPath;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.file.Paths;
 
@@ -37,9 +39,10 @@ public class ApplicationTest {
                 .consume(value -> assertEquals(output, value), Assertions::fail);
     }
 
-    @Test
-    void importStatement() {
-        final var value = Compiler.renderImport(new JavaString("magma")).unwrap();
+    @ParameterizedTest
+    @ValueSource(strings = {"first", "second"})
+    void importStatement(String namespace) {
+        final var value = Compiler.renderImport(new JavaString(namespace)).unwrap();
         assertRun(value, value);
     }
 
