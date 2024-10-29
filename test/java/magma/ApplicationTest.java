@@ -42,7 +42,11 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void importStatement(String namespace) {
-        final var value = Compiler.renderImport(new JavaString(namespace)).unwrap();
+        final var node = new MapNode()
+                .withString("namespace", new JavaString(namespace))
+                .orElse(new MapNode());
+
+        final var value = Compiler.generateImport(node).unwrap();
         assertRun(value, value);
     }
 
