@@ -1,4 +1,4 @@
-package magma.result;
+package magma.core.result;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

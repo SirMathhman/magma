@@ -1,4 +1,4 @@
-package magma.option;
+package magma.core.option;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

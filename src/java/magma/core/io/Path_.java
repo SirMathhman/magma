@@ -1,7 +1,8 @@
-package magma.java;
+package magma.core.io;
 
-import magma.option.Option;
-import magma.result.Result;
+import magma.core.String_;
+import magma.core.option.Option;
+import magma.core.result.Result;
 
 import java.io.IOException;
 

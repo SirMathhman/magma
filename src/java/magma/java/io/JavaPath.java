@@ -1,11 +1,14 @@
-package magma.java;
+package magma.java.io;
 
-import magma.option.None;
-import magma.option.Option;
-import magma.option.Some;
-import magma.result.Err;
-import magma.result.Ok;
-import magma.result.Result;
+import magma.core.String_;
+import magma.core.io.Path_;
+import magma.core.option.None;
+import magma.core.option.Option;
+import magma.core.option.Some;
+import magma.core.result.Err;
+import magma.core.result.Ok;
+import magma.core.result.Result;
+import magma.java.JavaString;
 
 import java.io.IOException;
 import java.nio.file.Files;

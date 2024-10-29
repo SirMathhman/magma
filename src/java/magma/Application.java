@@ -1,12 +1,12 @@
 package magma;
 
-import magma.java.JavaPath;
+import magma.java.io.JavaPath;
 import magma.java.JavaString;
-import magma.java.Path_;
-import magma.java.String_;
-import magma.option.None;
-import magma.option.Option;
-import magma.option.Some;
+import magma.core.io.Path_;
+import magma.core.String_;
+import magma.core.option.None;
+import magma.core.option.Option;
+import magma.core.option.Some;
 
 import java.io.IOException;
 import java.util.function.Function;

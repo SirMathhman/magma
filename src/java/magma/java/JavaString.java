@@ -1,8 +1,9 @@
 package magma.java;
 
-import magma.option.None;
-import magma.option.Option;
-import magma.option.Some;
+import magma.core.String_;
+import magma.core.option.None;
+import magma.core.option.Option;
+import magma.core.option.Some;
 
 public final class JavaString implements String_ {
     public static final String_ EMPTY = new JavaString("");

@@ -1,6 +1,6 @@
-package magma.java;
+package magma.core;
 
-import magma.option.Option;
+import magma.core.option.Option;
 
 public interface String_ {
     String_ concat(String slice);

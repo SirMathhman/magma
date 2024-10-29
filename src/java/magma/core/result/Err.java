@@ -1,21 +1,21 @@
-package magma.result;
+package magma.core.result;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public record Ok<T, E>(T value) implements Result<T, E> {
+public record Err<T, E>(E error) implements Result<T, E> {
     @Override
     public void consume(Consumer<T> onValid, Consumer<E> onInvalid) {
-        onValid.accept(value);
+        onInvalid.accept(error);
     }
 
     @Override
     public <R> Result<R, E> mapValue(Function<T, R> mapper) {
-        return new Ok<>(mapper.apply(value));
+        return new Err<>(error);
     }
 
     @Override
     public <R> R match(Function<T, R> onValid, Function<E, R> onInvalid) {
-        return onValid.apply(value);
+        return onInvalid.apply(error);
     }
 }

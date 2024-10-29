@@ -1,8 +1,8 @@
 package magma;
 
-import magma.java.JavaPath;
+import magma.java.io.JavaPath;
 import magma.java.JavaString;
-import magma.java.String_;
+import magma.core.String_;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
