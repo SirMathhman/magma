@@ -3,6 +3,7 @@ package magma;
 import magma.java.JavaPath;
 import magma.java.JavaString;
 import magma.java.Path_;
+import magma.java.String_;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ public class ApplicationTest {
     private static void assertRun(String input, String output) {
         runWithInput(input);
         Path_ path = new JavaPath(TARGET);
-        path.readString().mapValue(JavaString::value)
+        path.readString().mapValue(String_::unwrap)
                 .consume(value -> assertEquals(output, value), Assertions::fail);
     }
 

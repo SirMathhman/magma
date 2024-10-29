@@ -50,22 +50,22 @@ public record JavaPath(Path path) implements Path_ {
     }
 
     @Override
-    public JavaString computeFileNameWithoutExtension() {
+    public String_ computeFileNameWithoutExtension() {
         return new JavaString(computeFileNameWithoutExtension1());
     }
 
     @Override
-    public Path_ resolveSibling(JavaString siblingName) {
-        return resolveSibling0(siblingName.value());
+    public Path_ resolveSibling(String_ siblingName) {
+        return resolveSibling0(siblingName.unwrap());
     }
 
     @Override
-    public Option<IOException> writeSafe(JavaString content) {
-        return writeSafe0(content.value());
+    public Option<IOException> writeSafe(String_ content) {
+        return writeSafe0(content.unwrap());
     }
 
     @Override
-    public Result<JavaString, IOException> readString() {
+    public Result<String_, IOException> readString() {
         return readString0().mapValue(JavaString::new);
     }
 }

@@ -3,6 +3,7 @@ package magma;
 import magma.java.JavaString;
 import magma.java.Path_;
 import magma.java.JavaPath;
+import magma.java.String_;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
@@ -19,7 +20,7 @@ public final class Application {
     }
 
     private static Option<IOException> writeOutput(Path_ source, String output) {
-        final var nameWithoutExtension = source.computeFileNameWithoutExtension().value();
+        final var nameWithoutExtension = source.computeFileNameWithoutExtension().unwrap();
         final var targetName = nameWithoutExtension + MAGMA_EXTENSION;
         final var target = source.resolveSibling(new JavaString(targetName));
         return target.writeSafe(new JavaString(output));
@@ -40,7 +41,7 @@ public final class Application {
     Option<IOException> run() {
         if (!source.exists()) return new None<>();
 
-        return source.readString().mapValue(JavaString::value)
+        return source.readString().mapValue(String_::unwrap)
                 .mapValue(Application::compile)
                 .mapValue(output -> writeOutput(source, output))
                 .match(Function.identity(), Some::new);
