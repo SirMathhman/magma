@@ -6,13 +6,13 @@ import magma.result.Result;
 import java.io.IOException;
 
 public interface Path_ {
-    String computeFileNameWithoutExtension();
+    JavaString computeFileNameWithoutExtension();
 
-    Path_ resolveSibling(String siblingName);
+    Path_ resolveSibling(JavaString siblingName);
 
-    Option<IOException> writeSafe(String content);
+    Option<IOException> writeSafe(JavaString content);
 
-    Result<String, IOException> readString();
+    Result<JavaString, IOException> readString();
 
     boolean exists();
 }

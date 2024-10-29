@@ -14,8 +14,7 @@ import java.nio.file.Path;
 public record JavaPath(Path path) implements Path_ {
     public static final char EXTENSION_SEPARATOR = '.';
 
-    @Override
-    public String computeFileNameWithoutExtension() {
+    private String computeFileNameWithoutExtension1() {
         final var fileName = path().getFileName().toString();
 
         return new JavaString(fileName)
@@ -24,13 +23,11 @@ public record JavaPath(Path path) implements Path_ {
                 .orElse(fileName);
     }
 
-    @Override
-    public Path_ resolveSibling(String siblingName) {
+    private Path_ resolveSibling0(String siblingName) {
         return new JavaPath(path().resolveSibling(siblingName));
     }
 
-    @Override
-    public Option<IOException> writeSafe(String content) {
+    private Option<IOException> writeSafe0(String content) {
         try {
             Files.writeString(path(), content);
             return new None<>();
@@ -39,8 +36,7 @@ public record JavaPath(Path path) implements Path_ {
         }
     }
 
-    @Override
-    public Result<String, IOException> readString() {
+    private Result<String, IOException> readString0() {
         try {
             return new Ok<>(Files.readString(path()));
         } catch (IOException e) {
@@ -51,5 +47,25 @@ public record JavaPath(Path path) implements Path_ {
     @Override
     public boolean exists() {
         return Files.exists(path());
+    }
+
+    @Override
+    public JavaString computeFileNameWithoutExtension() {
+        return new JavaString(computeFileNameWithoutExtension1());
+    }
+
+    @Override
+    public Path_ resolveSibling(JavaString siblingName) {
+        return resolveSibling0(siblingName.value());
+    }
+
+    @Override
+    public Option<IOException> writeSafe(JavaString content) {
+        return writeSafe0(content.value());
+    }
+
+    @Override
+    public Result<JavaString, IOException> readString() {
+        return readString0().mapValue(JavaString::new);
     }
 }

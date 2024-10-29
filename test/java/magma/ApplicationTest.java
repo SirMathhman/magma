@@ -1,6 +1,8 @@
 package magma;
 
 import magma.java.JavaPath;
+import magma.java.JavaString;
+import magma.java.Path_;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,8 +29,8 @@ public class ApplicationTest {
     }
 
     private static void runWithInput(String input) {
-        new JavaPath(SOURCE)
-                .writeSafe(input)
+        Path_ path = new JavaPath(SOURCE);
+        path.writeSafe(new JavaString(input))
                 .ifPresent(Assertions::fail);
 
         runOrFail();
@@ -36,8 +38,8 @@ public class ApplicationTest {
 
     private static void assertRun(String input, String output) {
         runWithInput(input);
-        new JavaPath(TARGET)
-                .readString()
+        Path_ path = new JavaPath(TARGET);
+        path.readString().mapValue(JavaString::value)
                 .consume(value -> assertEquals(output, value), Assertions::fail);
     }
 
