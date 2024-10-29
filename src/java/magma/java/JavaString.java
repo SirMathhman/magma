@@ -14,11 +14,6 @@ public final class JavaString implements String_ {
     }
 
     @Override
-    public boolean equalsTo(String_ other) {
-        return value.equals(other.unwrap());
-    }
-
-    @Override
     public Option<Integer> firstIndexOfChar(char c) {
         final var index = value.indexOf(c);
         if (index == -1) return new None<>();
