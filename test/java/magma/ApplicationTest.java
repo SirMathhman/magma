@@ -1,12 +1,14 @@
 package magma;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,15 +23,11 @@ public class ApplicationTest {
     }
 
     private static void runOrFail() {
-        try {
-            run();
-        } catch (IOException e) {
-            fail(e);
-        }
+        Objects.requireNonNull(run()).ifPresent(Assertions::fail);
     }
 
-    private static void run() throws IOException {
-        if (!Files.exists(SOURCE)) return;
+    private static Option<IOException> run() {
+        if (!Files.exists(SOURCE)) return null;
 
         final var fileName = SOURCE.getFileName().toString();
         final var nameWithoutExtension = new JavaString(fileName)
@@ -37,7 +35,12 @@ public class ApplicationTest {
                 .map(index -> fileName.substring(0, index))
                 .orElse(fileName);
 
-        Files.createFile(SOURCE.resolveSibling(nameWithoutExtension + MAGMA_EXTENSION));
+        try {
+            Files.createFile(SOURCE.resolveSibling(nameWithoutExtension + MAGMA_EXTENSION));
+            return new None<>();
+        } catch (IOException e) {
+            return new Some<>(e);
+        }
     }
 
     private static void createSource() {
