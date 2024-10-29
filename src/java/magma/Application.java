@@ -1,5 +1,6 @@
 package magma;
 
+import magma.java.JavaPath;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
@@ -17,7 +18,9 @@ public final class Application {
 
     private static Option<IOException> writeOutput(JavaPath source, String output) {
         final var nameWithoutExtension = source.computeFileNameWithoutExtension();
-        return source.resolveSibling(nameWithoutExtension + MAGMA_EXTENSION).writeSafe(output);
+        final var targetName = nameWithoutExtension + MAGMA_EXTENSION;
+        final var target = source.resolveSibling(targetName);
+        return target.writeSafe(output);
     }
 
     private static String compile(String input) {

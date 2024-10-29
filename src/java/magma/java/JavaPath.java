@@ -1,4 +1,4 @@
-package magma;
+package magma.java;
 
 import magma.option.None;
 import magma.option.Option;
@@ -14,7 +14,7 @@ import java.nio.file.Path;
 public record JavaPath(Path path) {
     public static final char EXTENSION_SEPARATOR = '.';
 
-    String computeFileNameWithoutExtension() {
+    public String computeFileNameWithoutExtension() {
         final var fileName = path().getFileName().toString();
 
         return new JavaString(fileName)
@@ -23,11 +23,11 @@ public record JavaPath(Path path) {
                 .orElse(fileName);
     }
 
-    JavaPath resolveSibling(String siblingName) {
+    public JavaPath resolveSibling(String siblingName) {
         return new JavaPath(path().resolveSibling(siblingName));
     }
 
-    Option<IOException> writeSafe(String content) {
+    public Option<IOException> writeSafe(String content) {
         try {
             Files.writeString(path(), content);
             return new None<>();
@@ -36,7 +36,7 @@ public record JavaPath(Path path) {
         }
     }
 
-    Result<String, IOException> readString() {
+    public Result<String, IOException> readString() {
         try {
             return new Ok<>(Files.readString(path()));
         } catch (IOException e) {
@@ -44,7 +44,7 @@ public record JavaPath(Path path) {
         }
     }
 
-    boolean isExists() {
+    public boolean isExists() {
         return Files.exists(path());
     }
 }
