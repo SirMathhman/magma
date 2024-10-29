@@ -1,8 +1,8 @@
 package magma;
 
+import magma.java.JavaPath;
 import magma.java.JavaString;
 import magma.java.Path_;
-import magma.java.JavaPath;
 import magma.java.String_;
 import magma.option.None;
 import magma.option.Option;
@@ -19,18 +19,18 @@ public final class Application {
         this.source = source;
     }
 
-    private static Option<IOException> writeOutput(Path_ source, String output) {
-        final var nameWithoutExtension = source.computeFileNameWithoutExtension().unwrap();
-        final var targetName = nameWithoutExtension + MAGMA_EXTENSION;
-        final var target = source.resolveSibling(new JavaString(targetName));
-        return target.writeSafe(new JavaString(output));
+    private static Option<IOException> writeOutput(Path_ source, String_ output) {
+        final var nameWithoutExtension = source.computeFileNameWithoutExtension();
+        final var targetName = nameWithoutExtension.concat(MAGMA_EXTENSION);
+        final var target = source.resolveSibling(targetName);
+        return target.writeSafe(output);
     }
 
-    private static String compile(String input) {
-        if (input.equals(renderImport())) {
+    private static String_ compile(String_ input) {
+        if (input.equals(new JavaString(renderImport()))) {
             return input;
         } else {
-            return "";
+            return JavaString.EMPTY;
         }
     }
 
@@ -41,7 +41,7 @@ public final class Application {
     Option<IOException> run() {
         if (!source.exists()) return new None<>();
 
-        return source.readString().mapValue(String_::unwrap)
+        return source.readString()
                 .mapValue(Application::compile)
                 .mapValue(output -> writeOutput(source, output))
                 .match(Function.identity(), Some::new);
