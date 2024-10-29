@@ -11,8 +11,14 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ApplicationTest {
-    public static final Path TARGET = Paths.get(".", "ApplicationTest.mgs");
-    public static final Path SOURCE = Paths.get(".", "ApplicationTest.java");
+    public static final char EXTENSION_SEPARATOR = '.';
+    public static final String MAGMA_EXTENSION = EXTENSION_SEPARATOR + "mgs";
+    public static final Path TARGET = resolveByExtension(MAGMA_EXTENSION);
+    public static final Path SOURCE = resolveByExtension(EXTENSION_SEPARATOR + "java");
+
+    private static Path resolveByExtension(String extension) {
+        return Paths.get(".").resolve("ApplicationTest" + extension);
+    }
 
     private static void runOrFail() {
         try {
@@ -23,9 +29,20 @@ public class ApplicationTest {
     }
 
     private static void run() throws IOException {
-        if (Files.exists(SOURCE)) {
-            Files.createFile(TARGET);
-        }
+        if (!Files.exists(SOURCE)) return;
+
+        final var fileName = SOURCE.getFileName().toString();
+        final var nameWithoutExtension = firstIndexOfChar(fileName, EXTENSION_SEPARATOR)
+                .map(index -> fileName.substring(0, index))
+                .orElse(fileName);
+
+        Files.createFile(SOURCE.resolveSibling(nameWithoutExtension + MAGMA_EXTENSION));
+    }
+
+    private static Option<Integer> firstIndexOfChar(String fileName, char c) {
+        final var index = fileName.indexOf(c);
+        if (index == -1) return new None<>();
+        return new Some<>(index);
     }
 
     private static void createSource() {
