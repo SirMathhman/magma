@@ -2,6 +2,7 @@ package magma;
 
 import magma.compile.MapNode;
 import magma.compile.lang.CommonLang;
+import magma.compile.rule.Rule;
 import magma.core.String_;
 import magma.java.JavaString;
 import magma.java.io.JavaPath;
@@ -51,7 +52,8 @@ public class ApplicationTest {
                 .withString("namespace", new JavaString(namespace))
                 .orElse(new MapNode());
 
-        final var value = CommonLang.createImportRule().generate(node).orElse(JavaString.EMPTY).unwrap();
+        Rule rule = CommonLang.createImportRule();
+        final var value = rule.generate(node).findValue().orElse(JavaString.EMPTY).unwrap();
         assertRun(value, value);
     }
 

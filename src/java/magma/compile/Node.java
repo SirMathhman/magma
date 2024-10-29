@@ -7,4 +7,6 @@ public interface Node {
     Option<String_> find(String propertyKey);
 
     Option<Node> withString(String propertyKey, String_ propertyValue);
+
+    String_ format();
 }

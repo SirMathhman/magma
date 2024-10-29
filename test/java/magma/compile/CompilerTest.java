@@ -2,6 +2,7 @@ package magma.compile;
 
 import magma.compile.lang.CommonLang;
 import magma.compile.lang.JavaLang;
+import magma.compile.rule.Rule;
 import magma.java.JavaString;
 import org.junit.jupiter.api.Test;
 
@@ -21,12 +22,12 @@ class CompilerTest {
                 .withString(NAMESPACE, new JavaString("second"))
                 .orElse(new MapNode());
 
-        final var generatedPackage = JavaLang.createPackageRule()
-                .generate(packageNode)
+        Rule rule1 = JavaLang.createPackageRule();
+        final var generatedPackage = rule1.generate(packageNode).findValue()
                 .orElse(JavaString.EMPTY);
 
-        final var generatedImport = CommonLang.createImportRule()
-                .generate(importNode)
+        Rule rule = CommonLang.createImportRule();
+        final var generatedImport = rule.generate(importNode).findValue()
                 .orElse(JavaString.EMPTY);
 
         final var input = generatedPackage.appendOwned(generatedImport);

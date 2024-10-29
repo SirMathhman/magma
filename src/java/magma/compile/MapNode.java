@@ -25,4 +25,9 @@ public final class MapNode implements Node {
     public Option<Node> withString(String propertyKey, String_ propertyValue) {
         return strings.put(new JavaString(propertyKey), propertyValue).map(MapNode::new);
     }
+
+    @Override
+    public String_ format() {
+        return new JavaString(toString());
+    }
 }
