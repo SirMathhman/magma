@@ -13,10 +13,10 @@ public record Compiler(String_ input) {
         return CommonLang.createImportRule();
     }
 
-    public Result<String_, ParseError> compile() {
+    public Result<String_, Error_> compile() {
         return compileImport()
-                .<Result<String_, ParseError>>map(Ok::new)
-                .orElseGet(() -> new Err<>(new ParseError()));
+                .<Result<String_, Error_>>map(Ok::new)
+                .orElseGet(() -> new Err<>(ParseError.create("Invalid input", input)));
     }
 
     private Option<String_> compileImport() {

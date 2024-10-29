@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static magma.compile.lang.CommonLang.NAMESPACE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class CompilerTest {
 
@@ -29,11 +30,10 @@ class CompilerTest {
                 .orElse(JavaString.EMPTY);
 
         final var input = generatedPackage.appendOwned(generatedImport);
-        Compiler compiler = new Compiler(input);
-        final var actual = compiler.compile()
-                .findValue()
-                .orElse(JavaString.EMPTY);
 
-        assertEquals(generatedImport.unwrap(), actual.unwrap());
+        new Compiler(input).compile().consume(actual -> assertEquals(generatedImport.unwrap(), actual.unwrap()), err -> {
+            System.err.println(err.findMessage());
+            fail();
+        });
     }
 }

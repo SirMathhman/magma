@@ -1,7 +1,7 @@
 package magma;
 
-import magma.compile.lang.CommonLang;
 import magma.compile.MapNode;
+import magma.compile.lang.CommonLang;
 import magma.core.String_;
 import magma.java.JavaString;
 import magma.java.io.JavaPath;
@@ -26,7 +26,10 @@ public class ApplicationTest {
     private static void runOrFail() {
         new Application(SOURCE)
                 .run()
-                .ifPresent(Assertions::fail);
+                .ifPresent(err -> {
+                    System.err.println(err.findMessage().unwrap());
+                    fail();
+                });
     }
 
     private static void runWithInput(String input) {
