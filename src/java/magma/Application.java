@@ -6,6 +6,7 @@ import magma.core.io.Path_;
 import magma.core.option.None;
 import magma.core.option.Option;
 import magma.core.option.Some;
+import magma.java.JavaString;
 import magma.java.io.JavaPath;
 
 import java.io.IOException;
@@ -31,7 +32,9 @@ public final class Application {
 
         return source.readString()
                 .mapValue(Compiler::new)
-                .mapValue(Compiler::compile)
+                .mapValue(compiler -> compiler.compile()
+                        .findValue()
+                        .orElse(JavaString.EMPTY))
                 .mapValue(output -> writeOutput(source, output))
                 .match(Function.identity(), Some::new);
     }

@@ -29,7 +29,10 @@ class CompilerTest {
                 .orElse(JavaString.EMPTY);
 
         final var input = generatedPackage.appendOwned(generatedImport);
-        final var actual = new Compiler(input).compile();
+        Compiler compiler = new Compiler(input);
+        final var actual = compiler.compile()
+                .findValue()
+                .orElse(JavaString.EMPTY);
 
         assertEquals(generatedImport.unwrap(), actual.unwrap());
     }
