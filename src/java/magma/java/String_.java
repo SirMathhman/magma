@@ -8,4 +8,6 @@ public interface String_ {
     Option<Integer> firstIndexOfChar(char c);
 
     String unwrap();
+
+    Option<String_> substring(int start, int end);
 }

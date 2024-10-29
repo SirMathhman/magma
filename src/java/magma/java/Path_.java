@@ -14,5 +14,7 @@ public interface Path_ {
 
     Result<String_, IOException> readString();
 
+    Option<IOException> deleteIfExists();
+
     boolean exists();
 }

@@ -14,58 +14,50 @@ import java.nio.file.Path;
 public record JavaPath(Path path) implements Path_ {
     public static final char EXTENSION_SEPARATOR = '.';
 
-    private String computeFileNameWithoutExtension1() {
-        final var fileName = path().getFileName().toString();
-
-        return new JavaString(fileName)
-                .firstIndexOfChar(EXTENSION_SEPARATOR)
-                .map(index -> fileName.substring(0, index))
-                .orElse(fileName);
-    }
-
-    private Path_ resolveSibling0(String siblingName) {
-        return new JavaPath(path().resolveSibling(siblingName));
-    }
-
-    private Option<IOException> writeSafe0(String content) {
+    @Override
+    public Option<IOException> deleteIfExists() {
         try {
-            Files.writeString(path(), content);
+            Files.deleteIfExists(path);
             return new None<>();
         } catch (IOException e) {
             return new Some<>(e);
         }
     }
 
-    private Result<String, IOException> readString0() {
-        try {
-            return new Ok<>(Files.readString(path()));
-        } catch (IOException e) {
-            return new Err<>(e);
-        }
-    }
-
     @Override
     public boolean exists() {
-        return Files.exists(path());
+        return Files.exists(path);
     }
 
     @Override
     public String_ computeFileNameWithoutExtension() {
-        return new JavaString(computeFileNameWithoutExtension1());
+        final var name = new JavaString(path.getFileName().toString());
+        return name.firstIndexOfChar(EXTENSION_SEPARATOR)
+                .flatMap(index -> name.substring(0, index))
+                .orElse(name);
     }
 
     @Override
     public Path_ resolveSibling(String_ siblingName) {
-        return resolveSibling0(siblingName.unwrap());
+        return new JavaPath(path.resolveSibling(siblingName.unwrap()));
     }
 
     @Override
     public Option<IOException> writeSafe(String_ content) {
-        return writeSafe0(content.unwrap());
+        try {
+            Files.writeString(path, content.unwrap());
+            return new None<>();
+        } catch (IOException e) {
+            return new Some<>(e);
+        }
     }
 
     @Override
     public Result<String_, IOException> readString() {
-        return readString0().mapValue(JavaString::new);
+        try {
+            return new Ok<>(new JavaString(Files.readString(path)));
+        } catch (IOException e) {
+            return new Err<>(e);
+        }
     }
 }
