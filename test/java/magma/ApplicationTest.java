@@ -20,17 +20,24 @@ public class ApplicationTest {
     }
 
     private static void runOrFail() {
-        new Application(new JavaPath(SOURCE)).run().ifPresent(Assertions::fail);
+        new Application(new JavaPath(SOURCE))
+                .run()
+                .ifPresent(Assertions::fail);
     }
 
     private static void runWithInput(String input) {
-        new JavaPath(SOURCE).writeSafe(input).ifPresent(Assertions::fail);
+        new JavaPath(SOURCE)
+                .writeSafe(input)
+                .ifPresent(Assertions::fail);
+
         runOrFail();
     }
 
     private static void assertRun(String input, String output) {
         runWithInput(input);
-        new JavaPath(TARGET).readString().consume(value -> assertEquals(output, value), Assertions::fail);
+        new JavaPath(TARGET)
+                .readString()
+                .consume(value -> assertEquals(output, value), Assertions::fail);
     }
 
     @Test
