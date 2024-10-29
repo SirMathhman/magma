@@ -11,11 +11,15 @@ public interface String_ {
 
     String unwrap();
 
-    Option<String_> substring(int start, int end);
+    Option<String_> slice(int start, int end);
 
     String_ prependSlice(String slice);
 
     boolean startsWithSlice(String slice);
 
     boolean endsWithSlice(String slice);
+
+    Option<String_> truncateLeftBySlice(String slice);
+
+    Option<String_> truncateRightBySlice(String slice);
 }

@@ -31,9 +31,9 @@ public final class JavaString implements String_ {
     }
 
     @Override
-    public Option<String_> substring(int start, int end) {
+    public Option<String_> slice(int start, int end) {
         final var length = value.length();
-        if (start >= 0 && end >= 0 && end < length && start <= end) {
+        if (start >= 0 && end >= 0 && start <= end && end <= length) {
             return new Some<>(new JavaString(value.substring(start, end)));
         } else {
             return new None<>();
@@ -53,6 +53,20 @@ public final class JavaString implements String_ {
     @Override
     public boolean endsWithSlice(String slice) {
         return value.endsWith(slice);
+    }
+
+    @Override
+    public Option<String_> truncateLeftBySlice(String slice) {
+        return startsWithSlice(slice)
+                ? slice(slice.length(), value.length())
+                : new None<>();
+    }
+
+    @Override
+    public Option<String_> truncateRightBySlice(String slice) {
+        return endsWithSlice(slice)
+                ? slice(0, value.length() - slice.length())
+                : new None<>();
     }
 
     @Override

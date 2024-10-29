@@ -36,7 +36,7 @@ public record JavaPath(Path path) implements Path_ {
     public String_ computeFileNameWithoutExtension() {
         final var name = new JavaString(path.getFileName().toString());
         return name.firstIndexOfChar(EXTENSION_SEPARATOR)
-                .flatMap(index -> name.substring(0, index))
+                .flatMap(index -> name.slice(0, index))
                 .orElse(name);
     }
 
