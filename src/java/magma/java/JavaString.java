@@ -14,6 +14,11 @@ public final class JavaString implements String_ {
     }
 
     @Override
+    public boolean equalsTo(String_ other) {
+        return value.equals(other.unwrap());
+    }
+
+    @Override
     public Option<Integer> firstIndexOfChar(char c) {
         final var index = value.indexOf(c);
         if (index == -1) return new None<>();
@@ -23,6 +28,16 @@ public final class JavaString implements String_ {
     @Override
     public String unwrap() {
         return value;
+    }
+
+    @Override
+    public Option<String_> substring(int start, int end) {
+        final var length = value.length();
+        if (start >= 0 && end >= 0 && end < length && start <= end) {
+            return new Some<>(new JavaString(value.substring(start, end)));
+        } else {
+            return new None<>();
+        }
     }
 
     @Override

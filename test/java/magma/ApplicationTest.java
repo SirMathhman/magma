@@ -39,7 +39,7 @@ public class ApplicationTest {
 
     @Test
     void importStatement() {
-        final var value = Application.renderImport();
+        final var value = Compiler.renderImport().unwrap();
         assertRun(value, value);
     }
 

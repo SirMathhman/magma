@@ -1,12 +1,11 @@
 package magma;
 
-import magma.java.io.JavaPath;
-import magma.java.JavaString;
-import magma.core.io.Path_;
 import magma.core.String_;
+import magma.core.io.Path_;
 import magma.core.option.None;
 import magma.core.option.Option;
 import magma.core.option.Some;
+import magma.java.io.JavaPath;
 
 import java.io.IOException;
 import java.util.function.Function;
@@ -26,23 +25,11 @@ public final class Application {
         return target.writeSafe(output);
     }
 
-    private static String_ compile(String_ input) {
-        if (input.equals(new JavaString(renderImport()))) {
-            return input;
-        } else {
-            return JavaString.EMPTY;
-        }
-    }
-
-    static String renderImport() {
-        return "import magma;";
-    }
-
     Option<IOException> run() {
         if (!source.exists()) return new None<>();
 
         return source.readString()
-                .mapValue(Application::compile)
+                .mapValue(input -> new Compiler(input).compile())
                 .mapValue(output -> writeOutput(source, output))
                 .match(Function.identity(), Some::new);
     }
