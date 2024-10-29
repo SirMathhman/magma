@@ -22,4 +22,6 @@ public interface String_ {
     Option<String_> truncateRightBySlice(String slice);
 
     String_ appendOwned(String_ other);
+
+    boolean isEmpty();
 }
