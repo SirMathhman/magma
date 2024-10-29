@@ -32,7 +32,7 @@ class CompilerTest {
         final var input = generatedPackage.appendOwned(generatedImport);
 
         new Compiler(input).compile().consume(actual -> assertEquals(generatedImport.unwrap(), actual.unwrap()), err -> {
-            System.err.println(err.findMessage());
+            System.err.println(err.findMessage().unwrap());
             fail();
         });
     }
