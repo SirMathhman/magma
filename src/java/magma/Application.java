@@ -1,5 +1,6 @@
 package magma;
 
+import magma.compile.Compiler;
 import magma.core.String_;
 import magma.core.io.Path_;
 import magma.core.option.None;
@@ -29,7 +30,8 @@ public final class Application {
         if (!source.exists()) return new None<>();
 
         return source.readString()
-                .mapValue(input -> new Compiler(input).compile())
+                .mapValue(Compiler::new)
+                .mapValue(Compiler::compile)
                 .mapValue(output -> writeOutput(source, output))
                 .match(Function.identity(), Some::new);
     }
