@@ -13,24 +13,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ApplicationTest {
     public static final Path TARGET = resolveByExtension(Application.MAGMA_EXTENSION);
-    public static final Path SOURCE = resolveByExtension(Application.EXTENSION_SEPARATOR + "java");
+    public static final Path SOURCE = resolveByExtension(JavaPath.EXTENSION_SEPARATOR + "java");
 
     private static Path resolveByExtension(String extension) {
         return Paths.get(".").resolve("ApplicationTest" + extension);
     }
 
     private static void runOrFail() {
-        new Application(SOURCE).run().ifPresent(Assertions::fail);
+        new Application(new JavaPath(SOURCE)).run().ifPresent(Assertions::fail);
     }
 
     private static void runWithInput(String input) {
-        Application.writeSafe(SOURCE, input).ifPresent(Assertions::fail);
+        new JavaPath(SOURCE).writeSafe(input).ifPresent(Assertions::fail);
         runOrFail();
     }
 
     private static void assertRun(String input, String output) {
         runWithInput(input);
-        Application.readSafe(TARGET).consume(value -> assertEquals(output, value), Assertions::fail);
+        new JavaPath(TARGET).readString().consume(value -> assertEquals(output, value), Assertions::fail);
     }
 
     @Test
