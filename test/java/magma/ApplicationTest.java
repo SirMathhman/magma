@@ -1,5 +1,6 @@
 package magma;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -30,6 +31,16 @@ public class ApplicationTest {
     private static void createSource() {
         try {
             Files.createFile(SOURCE);
+        } catch (IOException e) {
+            fail(e);
+        }
+    }
+
+    @AfterEach
+    void tearDown() {
+        try {
+            Files.deleteIfExists(TARGET);
+            Files.deleteIfExists(SOURCE);
         } catch (IOException e) {
             fail(e);
         }
