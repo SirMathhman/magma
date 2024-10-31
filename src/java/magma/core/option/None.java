@@ -1,5 +1,7 @@
 package magma.core.option;
 
+import magma.core.Tuple;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -32,5 +34,15 @@ public class None<T> implements Option<T> {
     @Override
     public T orElseGet(Supplier<T> other) {
         return other.get();
+    }
+
+    @Override
+    public boolean isPresent() {
+        return false;
+    }
+
+    @Override
+    public Tuple<Boolean, T> toTuple(T other) {
+        return new Tuple<>(false, other);
     }
 }

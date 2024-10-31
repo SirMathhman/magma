@@ -36,4 +36,9 @@ public record Err<T, E>(E error) implements Result<T, E> {
     public <R> Result<R, E> flatMapValue(Function<T, Result<R, E>> mapper) {
         return new Err<>(error);
     }
+
+    @Override
+    public boolean isOk() {
+        return false;
+    }
 }

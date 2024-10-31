@@ -70,6 +70,11 @@ public final class JavaString implements String_ {
     }
 
     @Override
+    public boolean isEmpty() {
+        return value.isEmpty();
+    }
+
+    @Override
     public String_ appendSlice(String slice) {
         return new JavaString(unwrap() + slice);
     }

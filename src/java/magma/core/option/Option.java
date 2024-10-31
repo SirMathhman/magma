@@ -1,5 +1,8 @@
 package magma.core.option;
 
+import magma.core.Tuple;
+import magma.core.stream.Head;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -16,4 +19,8 @@ public interface Option<T> {
     <R> Option<R> flatMap(Function<T, Option<R>> mapper);
 
     T orElseGet(Supplier<T> other);
+
+    boolean isPresent();
+
+    Tuple<Boolean, T> toTuple(T other);
 }
