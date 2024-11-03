@@ -33,4 +33,9 @@ public class None<T> implements Option<T> {
     public boolean isPresent() {
         return false;
     }
+
+    @Override
+    public Option<T> or(Supplier<Option<T>> supplier) {
+        return supplier.get();
+    }
 }

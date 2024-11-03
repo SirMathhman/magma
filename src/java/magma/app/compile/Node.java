@@ -1,8 +1,10 @@
 package magma.app.compile;
 
+import magma.api.Tuple;
 import magma.api.option.Option;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public interface Node {
     Option<String> findString(String propertyKey);
@@ -18,4 +20,14 @@ public interface Node {
     Option<Node> retype(String type);
 
     boolean is(String type);
+
+    Option<String> findType();
+
+    Option<Node> merge(Node other);
+
+    boolean isTyped();
+
+    Stream<Tuple<String, String>> streamStrings();
+
+    Stream<Tuple<String, List<Node>>> streamNodeLists();
 }

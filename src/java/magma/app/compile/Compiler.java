@@ -28,7 +28,7 @@ public record Compiler(String input) {
     }
 
     private static TypeRule createDeclarationRule() {
-        return new TypeRule("declaration", new PrefixRule("let ", new ExtractRule("after")));
+        return new TypeRule("declaration", new FirstRule(new ExtractRule("before"), "=", new SuffixRule(new ExtractRule("value"), ";")));
     }
 
     public Result<String, CompileError> compile() {

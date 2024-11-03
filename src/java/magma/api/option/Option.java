@@ -16,4 +16,6 @@ public interface Option<T> {
     T orElseGet(Supplier<T> supplier);
 
     boolean isPresent();
+
+    Option<T> or(Supplier<Option<T>> supplier);
 }

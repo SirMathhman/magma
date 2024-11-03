@@ -34,4 +34,9 @@ public record Some<T>(T value) implements Option<T> {
     public boolean isPresent() {
         return true;
     }
+
+    @Override
+    public Option<T> or(Supplier<Option<T>> supplier) {
+        return this;
+    }
 }

@@ -1,5 +1,6 @@
 package magma.app.compile;
 
+import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
@@ -8,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public record MapNode(
         Option<String> type, Map<String, String> strings,
@@ -69,5 +71,41 @@ public record MapNode(
         return this.type
                 .map(value -> value.equals(type))
                 .orElse(false);
+    }
+
+    @Override
+    public boolean isTyped() {
+        return this.type.isPresent();
+    }
+
+    @Override
+    public Stream<Tuple<String, String>> streamStrings() {
+        return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
+    }
+
+    @Override
+    public Stream<Tuple<String, List<Node>>> streamNodeLists() {
+        return nodeLists.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
+    }
+
+    @Override
+    public Option<String> findType() {
+        return type;
+    }
+
+    @Override
+    public Option<Node> merge(Node other) {
+        if (this.type.isPresent() && other.isTyped()) return new None<>();
+        final var newType = this.type.or(other::findType);
+
+        // TODO: fix bug where same key could be applied to two values
+        // data erasure
+        final var stringsCopy = new HashMap<>(strings);
+        other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));
+
+        final var nodeListsCopy = new HashMap<>(nodeLists);
+        other.streamNodeLists().forEach(tuple -> nodeListsCopy.put(tuple.left(), tuple.right()));
+
+        return new Some<>(new MapNode(newType, stringsCopy, nodeListsCopy));
     }
 }
