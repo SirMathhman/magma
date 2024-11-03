@@ -7,9 +7,6 @@ import java.nio.file.Paths;
 
 public class Main {
     public static final Path SOURCE = Paths.get(".", "src", "magma", "main.mgs");
-    public static final String RETURN_PREFIX = "return ";
-    public static final String STATEMENT_END = ";";
-    public static final String VALUE = "value";
 
     public static void main(String[] args) {
         readSafe()
@@ -19,21 +16,9 @@ public class Main {
     }
 
     private static Option<IOException> compileAndWrite(String input) {
-        final var output = compile(input);
+        final var output = new Compiler(input).compile();
         final var target = SOURCE.resolveSibling("main.c");
         return writeSafe(target, output);
-    }
-
-    private static String compile(String input) {
-        final var result = createReturnRule().parse(input)
-                .flatMap(node -> createReturnRule().generate(node))
-                .orElse("");
-
-        return "int main(){\n\t" + result + "\n}";
-    }
-
-    private static PrefixRule createReturnRule() {
-        return new PrefixRule(RETURN_PREFIX, new SuffixRule(new ExtractRule(VALUE), STATEMENT_END));
     }
 
     private static Result<String, IOException> readSafe() {
