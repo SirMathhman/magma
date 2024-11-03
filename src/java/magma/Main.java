@@ -28,13 +28,21 @@ public class Main {
         return "int main(){\n\t" + generateReturnStatement(value) + "\n}";
     }
 
+    /*
+    TODO: extract return rule
+     */
     private static Option<String> findReturnValue(String input) {
         if (!input.startsWith(RETURN_PREFIX)) return new None<>();
 
         final var slice = input.substring(RETURN_PREFIX.length());
         if (!input.endsWith(STATEMENT_END)) return new None<>();
 
-        return new Some<>(slice.substring(0, slice.length() - 1));
+        final var value = slice.substring(0, slice.length() - 1);
+        return findString(value);
+    }
+
+    private static Option<String> findString(String value) {
+        return new Some<>(value);
     }
 
     private static String generateReturnStatement(String value) {
