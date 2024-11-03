@@ -21,7 +21,7 @@ public record Compiler(String input) {
 
     private static Rule createMagmaRootRule() {
         return new SplitRule(new StripRule(new OrRule(List.of(
-
+                new PrefixRule("declaration", new PrefixRule("let ", new ExtractRule("after"))),
                 createReturnRule()
         ))));
     }

@@ -4,7 +4,7 @@ import magma.app.Error;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.StringJoiner;
 
 public record CompileError(String message, Context context, List<CompileError> errors) implements Error {
     public CompileError(String message, Context context) {
@@ -12,16 +12,21 @@ public record CompileError(String message, Context context, List<CompileError> e
     }
 
     @Override
-    public String format(int depth) {
+    public String format(int depth, int index) {
         final var joined = errors.isEmpty() ? "" : "\n" + joinChildren(depth);
 
-        final var prefix = "\t".repeat(depth) + depth + ") ";
+        final var prefix = "\t".repeat(depth) + (index + 1) + ") ";
         return prefix + message + ": " + context.asString() + joined;
     }
 
     private String joinChildren(int depth) {
-        return errors.stream()
-                .map(error -> error.format(depth + 1))
-                .collect(Collectors.joining(""));
+        var joiner = new StringJoiner("\n");
+        for (int index = 0; index < errors.size(); index++) {
+            CompileError error = errors.get(index);
+            String format = error.format(depth + 1, index);
+            joiner.add(format);
+        }
+
+        return joiner.toString();
     }
 }
