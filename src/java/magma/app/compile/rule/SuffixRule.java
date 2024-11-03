@@ -1,8 +1,8 @@
-package magma.compile.rule;
+package magma.app.compile.rule;
 
-import magma.compile.Node;
-import magma.compile.error.CompileError;
-import magma.compile.error.StringContext;
+import magma.app.compile.Node;
+import magma.app.compile.error.CompileError;
+import magma.app.compile.error.StringContext;
 import magma.result.Err;
 import magma.result.Result;
 

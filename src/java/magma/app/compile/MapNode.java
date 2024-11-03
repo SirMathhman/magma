@@ -1,4 +1,4 @@
-package magma.compile;
+package magma.app.compile;
 
 import magma.option.None;
 import magma.option.Option;

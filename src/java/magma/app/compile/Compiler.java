@@ -1,10 +1,10 @@
-package magma.compile;
+package magma.app.compile;
 
-import magma.compile.error.CompileError;
-import magma.compile.rule.ExtractRule;
-import magma.compile.rule.PrefixRule;
-import magma.compile.rule.Rule;
-import magma.compile.rule.SuffixRule;
+import magma.app.compile.error.CompileError;
+import magma.app.compile.rule.ExtractRule;
+import magma.app.compile.rule.PrefixRule;
+import magma.app.compile.rule.Rule;
+import magma.app.compile.rule.SuffixRule;
 import magma.result.Result;
 
 public record Compiler(String input) {

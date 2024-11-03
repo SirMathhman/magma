@@ -2,7 +2,7 @@ package magma;
 
 import magma.app.ApplicationError;
 import magma.app.ThrowableError;
-import magma.compile.Compiler;
+import magma.app.compile.Compiler;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
