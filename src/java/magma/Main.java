@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 
 public class Main {
     public static final Path SOURCE = Paths.get(".", "src", "magma", "main.mgs");
+    public static final String RETURN_PREFIX = "return ";
+    public static final String STATEMENT_END = ";";
 
     public static void main(String[] args) {
         readSafe()
@@ -27,16 +29,16 @@ public class Main {
     }
 
     private static Option<String> findReturnValue(String input) {
-        if (!input.startsWith("return ")) return new None<>();
+        if (!input.startsWith(RETURN_PREFIX)) return new None<>();
 
-        final var slice = input.substring("return ".length());
-        if (!input.endsWith(";")) return new None<>();
+        final var slice = input.substring(RETURN_PREFIX.length());
+        if (!input.endsWith(STATEMENT_END)) return new None<>();
 
         return new Some<>(slice.substring(0, slice.length() - 1));
     }
 
     private static String generateReturnStatement(String value) {
-        return "return " + value + ";";
+        return RETURN_PREFIX + value + STATEMENT_END;
     }
 
     private static Result<String, IOException> readSafe() {
