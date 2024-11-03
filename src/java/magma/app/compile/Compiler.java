@@ -18,7 +18,7 @@ public record Compiler(String input) {
     }
 
     private static Rule createMagmaRootRule() {
-        return new SplitRule(createReturnRule());
+        return new SplitRule(new StripRule(createReturnRule()));
     }
 
     public Result<String, CompileError> compile() {
