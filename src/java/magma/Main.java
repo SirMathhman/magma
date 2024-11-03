@@ -9,6 +9,7 @@ public class Main {
     public static final Path SOURCE = Paths.get(".", "src", "magma", "main.mgs");
     public static final String RETURN_PREFIX = "return ";
     public static final String STATEMENT_END = ";";
+    public static final String VALUE = "value";
 
     public static void main(String[] args) {
         readSafe()
@@ -24,29 +25,15 @@ public class Main {
     }
 
     private static String compile(String input) {
-        final var value = findReturnValue(input).orElse("0");
-        return "int main(){\n\t" + generateReturnStatement(value) + "\n}";
+        final var result = createReturnRule().parse(input)
+                .flatMap(node -> createReturnRule().generate(node))
+                .orElse("");
+
+        return "int main(){\n\t" + result + "\n}";
     }
 
-    /*
-    TODO: extract return rule
-     */
-    private static Option<String> findReturnValue(String input) {
-        if (!input.startsWith(RETURN_PREFIX)) return new None<>();
-
-        final var slice = input.substring(RETURN_PREFIX.length());
-        if (!input.endsWith(STATEMENT_END)) return new None<>();
-
-        final var value = slice.substring(0, slice.length() - 1);
-        return findString(value);
-    }
-
-    private static Option<String> findString(String value) {
-        return new Some<>(value);
-    }
-
-    private static String generateReturnStatement(String value) {
-        return RETURN_PREFIX + value + STATEMENT_END;
+    private static PrefixRule createReturnRule() {
+        return new PrefixRule(RETURN_PREFIX, new SuffixRule(new ExtractRule(VALUE), STATEMENT_END));
     }
 
     private static Result<String, IOException> readSafe() {
