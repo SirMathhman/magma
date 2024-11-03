@@ -1,15 +1,16 @@
-package magma;
+package magma.result;
 
 import java.util.function.Function;
 
-public record Ok<T, E>(T value) implements Result<T, E> {
+public record Err<T, E>(E error) implements Result<T, E> {
     @Override
     public <R> Result<R, E> mapValue(Function<T, R> mapper) {
-        return new Ok<>(mapper.apply(value));
+        return new Err<>(error);
     }
 
     @Override
     public <R> R match(Function<T, R> onValid, Function<E, R> onError) {
-        return onValid.apply(value);
+        return onError.apply(error);
     }
 }
+

@@ -1,4 +1,9 @@
-package magma;
+package magma.compile;
+
+import magma.compile.rule.ExtractRule;
+import magma.compile.rule.PrefixRule;
+import magma.compile.rule.Rule;
+import magma.compile.rule.SuffixRule;
 
 public record Compiler(String input) {
     public static final String RETURN_PREFIX = "return ";
@@ -9,7 +14,7 @@ public record Compiler(String input) {
         return new PrefixRule(RETURN_PREFIX, new SuffixRule(new ExtractRule(VALUE), STATEMENT_END));
     }
 
-    String compile() {
+    public String compile() {
         final var result = createMagmaRootRule().parse(input())
                 .flatMap(node -> createCRootRule().generate(node))
                 .orElse("");
