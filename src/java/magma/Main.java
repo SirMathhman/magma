@@ -9,12 +9,12 @@ public class Main {
     public static void main(String[] args) {
         final var source = Paths.get(".", "src", "magma", "main.mgs");
         final var target = source.resolveSibling("main.c");
-        writeSafe(target).ifPresent(Throwable::printStackTrace);
+        writeSafe(target, "int main(){\n\treturn 0;\n}").ifPresent(Throwable::printStackTrace);
     }
 
-    private static Option<IOException> writeSafe(Path target) {
+    private static Option<IOException> writeSafe(Path target, String output) {
         try {
-            Files.writeString(target, "");
+            Files.writeString(target, output);
             return new None<>();
         } catch (IOException e) {
             return new Some<>(e);
