@@ -14,4 +14,8 @@ public interface Node {
     Option<Node> withNodeList(String propertyKey, List<Node> propertyValues);
 
     Option<Node> withString(String propertyKey, String propertyValue);
+
+    Option<Node> retype(String type);
+
+    boolean is(String type);
 }

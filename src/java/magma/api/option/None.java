@@ -28,4 +28,9 @@ public class None<T> implements Option<T> {
     public T orElseGet(Supplier<T> supplier) {
         return supplier.get();
     }
+
+    @Override
+    public boolean isPresent() {
+        return false;
+    }
 }

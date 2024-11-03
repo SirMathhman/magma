@@ -14,4 +14,6 @@ public interface Option<T> {
     <R> Option<R> flatMap(Function<T, Option<R>> mapper);
 
     T orElseGet(Supplier<T> supplier);
+
+    boolean isPresent();
 }

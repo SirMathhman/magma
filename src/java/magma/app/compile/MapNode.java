@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 public record MapNode(
-        Map<String, String> strings,
+        Option<String> type, Map<String, String> strings,
         Map<String, List<Node>> nodeLists
 ) implements Node {
     public MapNode() {
-        this(Collections.emptyMap(), Collections.emptyMap());
+        this(new None<>(), Collections.emptyMap(), Collections.emptyMap());
     }
 
     @Override
@@ -45,7 +45,7 @@ public record MapNode(
 
         final var copy = new HashMap<>(nodeLists);
         copy.put(propertyKey, propertyValues);
-        return new Some<>(new MapNode(strings, copy));
+        return new Some<>(new MapNode(type, strings, copy));
     }
 
     @Override
@@ -54,6 +54,20 @@ public record MapNode(
 
         final var copy = new HashMap<>(strings);
         copy.put(propertyKey, propertyValue);
-        return new Some<>(new MapNode(copy, nodeLists));
+        return new Some<>(new MapNode(type, copy, nodeLists));
+    }
+
+    @Override
+    public Option<Node> retype(String type) {
+        if (this.type.isPresent()) return new None<>();
+
+        return new Some<>(new MapNode(new Some<>(type), strings, nodeLists));
+    }
+
+    @Override
+    public boolean is(String type) {
+        return this.type
+                .map(value -> value.equals(type))
+                .orElse(false);
     }
 }

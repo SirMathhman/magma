@@ -10,9 +10,10 @@ public record Compiler(String input) {
     public static final String RETURN_PREFIX = "return ";
     public static final String STATEMENT_END = ";";
     public static final String VALUE = "value";
+    public static final String RETURN_TYPE = "return";
 
     private static Rule createReturnRule() {
-        return new PrefixRule(RETURN_PREFIX, new SuffixRule(new ExtractRule(VALUE), STATEMENT_END));
+        return new TypeRule(RETURN_TYPE, new PrefixRule(RETURN_PREFIX, new SuffixRule(new ExtractRule(VALUE), STATEMENT_END)));
     }
 
     private static Rule createCRootRule() {
@@ -21,9 +22,13 @@ public record Compiler(String input) {
 
     private static Rule createMagmaRootRule() {
         return new SplitRule(new StripRule(new OrRule(List.of(
-                new PrefixRule("declaration", new PrefixRule("let ", new ExtractRule("after"))),
+                createDeclarationRule(),
                 createReturnRule()
         ))));
+    }
+
+    private static TypeRule createDeclarationRule() {
+        return new TypeRule("declaration", new PrefixRule("let ", new ExtractRule("after")));
     }
 
     public Result<String, CompileError> compile() {
