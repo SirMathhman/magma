@@ -1,7 +1,7 @@
 package magma;
 
-public class ApplicationTest {
+public class Main {
     public static void main(String[] args) {
-        
+
     }
 }
