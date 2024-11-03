@@ -22,11 +22,21 @@ public class Main {
     }
 
     private static String compile(String input) {
-        final var value = input.startsWith("return ") && input.endsWith(";")
-                ? input.substring("return ".length(), input.length() - 1)
-                : "0";
+        final var value = findReturnValue(input).orElse("0");
+        return "int main(){\n\t" + generateReturnStatement(value) + "\n}";
+    }
 
-        return "int main(){\n\treturn " + value + ";\n}";
+    private static Option<String> findReturnValue(String input) {
+        if (!input.startsWith("return ")) return new None<>();
+
+        final var slice = input.substring("return ".length());
+        if (!input.endsWith(";")) return new None<>();
+
+        return new Some<>(slice.substring(0, slice.length() - 1));
+    }
+
+    private static String generateReturnStatement(String value) {
+        return "return " + value + ";";
     }
 
     private static Result<String, IOException> readSafe() {
