@@ -24,7 +24,7 @@ public class Main {
                 .mapErr(ApplicationError::new)
                 .mapValue(Main::compileAndWrite)
                 .match(value -> value, Some::new)
-                .ifPresent(err -> System.out.println(err.asString()));
+                .ifPresent(err -> System.err.println(err.asString()));
     }
 
     private static Option<ApplicationError> compileAndWrite(String input) {
