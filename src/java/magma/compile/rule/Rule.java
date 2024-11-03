@@ -1,6 +1,6 @@
 package magma.compile.rule;
 
-import magma.compile.CompileError;
+import magma.compile.error.CompileError;
 import magma.compile.Node;
 import magma.result.Result;
 

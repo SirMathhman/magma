@@ -1,5 +1,7 @@
 package magma;
 
+import magma.app.ApplicationError;
+import magma.app.ThrowableError;
 import magma.compile.Compiler;
 import magma.option.None;
 import magma.option.Option;
@@ -18,15 +20,26 @@ public class Main {
 
     public static void main(String[] args) {
         readSafe()
+                .mapErr(ThrowableError::new)
+                .mapErr(ApplicationError::new)
                 .mapValue(Main::compileAndWrite)
                 .match(value -> value, Some::new)
-                .ifPresent(Throwable::printStackTrace);
+                .ifPresent(err -> System.out.println(err.asString()));
     }
 
-    private static Option<IOException> compileAndWrite(String input) {
-        final var output = new Compiler(input).compile();
+    private static Option<ApplicationError> compileAndWrite(String input) {
+        return new Compiler(input)
+                .compile()
+                .mapErr(ApplicationError::new)
+                .mapValue(Main::writeOutput)
+                .match(value -> value, Some::new);
+    }
+
+    private static Option<ApplicationError> writeOutput(String output) {
         final var target = SOURCE.resolveSibling("main.c");
-        return writeSafe(target, output);
+        return writeSafe(target, output)
+                .map(ThrowableError::new)
+                .map(ApplicationError::new);
     }
 
     private static Result<String, IOException> readSafe() {

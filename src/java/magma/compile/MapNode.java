@@ -15,4 +15,12 @@ public record MapNode(Map<String, String> strings) implements Node {
             return new None<>();
         }
     }
+
+    @Override
+    public String asString() {
+        /*
+        TODO: this is a stub for now
+         */
+        return toString();
+    }
 }

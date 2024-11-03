@@ -1,9 +1,9 @@
 package magma.compile.rule;
 
-import magma.compile.CompileError;
+import magma.compile.error.CompileError;
 import magma.compile.Node;
-import magma.compile.StringContext;
-import magma.compile.context.NodeContext;
+import magma.compile.error.StringContext;
+import magma.compile.error.NodeContext;
 import magma.option.None;
 import magma.option.Option;
 import magma.result.Err;

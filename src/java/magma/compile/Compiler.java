@@ -1,9 +1,11 @@
 package magma.compile;
 
+import magma.compile.error.CompileError;
 import magma.compile.rule.ExtractRule;
 import magma.compile.rule.PrefixRule;
 import magma.compile.rule.Rule;
 import magma.compile.rule.SuffixRule;
+import magma.result.Result;
 
 public record Compiler(String input) {
     public static final String RETURN_PREFIX = "return ";
@@ -14,23 +16,20 @@ public record Compiler(String input) {
         return new PrefixRule(RETURN_PREFIX, new SuffixRule(new ExtractRule(VALUE), STATEMENT_END));
     }
 
-    public String compile() {
-        Rule rule = createMagmaRootRule();
-        final var result = rule.parse(this.input()).findValue()
-                .flatMap(node -> {
-                    Rule rule1 = createCRootRule();
-                    return rule1.generate(node).findValue();
-                })
-                .orElse("");
-
-        return "int main(){\n\t" + result + "\n}";
-    }
-
     private static Rule createCRootRule() {
         return createReturnRule();
     }
 
     private static Rule createMagmaRootRule() {
         return createReturnRule();
+    }
+
+    public Result<String, CompileError> compile() {
+        final var sourceRule = createMagmaRootRule();
+        final var targetRule = createCRootRule();
+
+        return sourceRule.parse(this.input())
+                .flatMapValue(targetRule::generate)
+                .mapValue(inner -> "int main(){\n\t" + inner + "\n}");
     }
 }
