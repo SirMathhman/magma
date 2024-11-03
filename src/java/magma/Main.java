@@ -9,16 +9,24 @@ public class Main {
     public static final Path SOURCE = Paths.get(".", "src", "magma", "main.mgs");
 
     public static void main(String[] args) {
-        readSafe().mapValue(input -> {
-            final var value = input.startsWith("return ") && input.endsWith(";")
-                    ? input.substring("return ".length(), input.length() - 1)
-                    : "0";
+        readSafe()
+                .mapValue(Main::compileAndWrite)
+                .match(value -> value, Some::new)
+                .ifPresent(Throwable::printStackTrace);
+    }
 
-            final var output = "int main(){\n\treturn " + value + ";\n}";
+    private static Option<IOException> compileAndWrite(String input) {
+        final var output = compile(input);
+        final var target = SOURCE.resolveSibling("main.c");
+        return writeSafe(target, output);
+    }
 
-            final var target = SOURCE.resolveSibling("main.c");
-            return writeSafe(target, output);
-        }).match(value -> value, Some::new).ifPresent(Throwable::printStackTrace);
+    private static String compile(String input) {
+        final var value = input.startsWith("return ") && input.endsWith(";")
+                ? input.substring("return ".length(), input.length() - 1)
+                : "0";
+
+        return "int main(){\n\treturn " + value + ";\n}";
     }
 
     private static Result<String, IOException> readSafe() {
