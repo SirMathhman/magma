@@ -3,8 +3,8 @@ package magma.app.compile.rule;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.StringContext;
-import magma.result.Err;
-import magma.result.Result;
+import magma.api.result.Err;
+import magma.api.result.Result;
 
 public record PrefixRule(String prefix, Rule childRule) implements Rule {
     @Override

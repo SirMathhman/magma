@@ -1,6 +1,6 @@
 package magma.app.compile;
 
-import magma.option.Option;
+import magma.api.option.Option;
 
 public interface Node {
     Option<String> findString(String propertyKey);

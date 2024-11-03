@@ -3,12 +3,12 @@ package magma;
 import magma.app.ApplicationError;
 import magma.app.ThrowableError;
 import magma.app.compile.Compiler;
-import magma.option.None;
-import magma.option.Option;
-import magma.option.Some;
-import magma.result.Err;
-import magma.result.Ok;
-import magma.result.Result;
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.option.Some;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
 
 import java.io.IOException;
 import java.nio.file.Files;

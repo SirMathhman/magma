@@ -4,9 +4,9 @@ import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
-import magma.result.Err;
-import magma.result.Ok;
-import magma.result.Result;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
 
 import java.util.Map;
 

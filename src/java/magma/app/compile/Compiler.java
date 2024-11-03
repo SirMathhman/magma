@@ -5,7 +5,7 @@ import magma.app.compile.rule.ExtractRule;
 import magma.app.compile.rule.PrefixRule;
 import magma.app.compile.rule.Rule;
 import magma.app.compile.rule.SuffixRule;
-import magma.result.Result;
+import magma.api.result.Result;
 
 public record Compiler(String input) {
     public static final String RETURN_PREFIX = "return ";

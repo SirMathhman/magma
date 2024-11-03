@@ -1,6 +1,6 @@
-package magma.result;
+package magma.api.result;
 
-import magma.option.Option;
+import magma.api.option.Option;
 
 import java.util.function.Function;
 
