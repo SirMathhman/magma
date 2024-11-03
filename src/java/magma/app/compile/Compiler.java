@@ -1,11 +1,8 @@
 package magma.app.compile;
 
-import magma.app.compile.error.CompileError;
-import magma.app.compile.rule.ExtractRule;
-import magma.app.compile.rule.PrefixRule;
-import magma.app.compile.rule.Rule;
-import magma.app.compile.rule.SuffixRule;
 import magma.api.result.Result;
+import magma.app.compile.error.CompileError;
+import magma.app.compile.rule.*;
 
 public record Compiler(String input) {
     public static final String RETURN_PREFIX = "return ";
@@ -17,11 +14,11 @@ public record Compiler(String input) {
     }
 
     private static Rule createCRootRule() {
-        return createReturnRule();
+        return new SplitRule(createReturnRule());
     }
 
     private static Rule createMagmaRootRule() {
-        return createReturnRule();
+        return new SplitRule(createReturnRule());
     }
 
     public Result<String, CompileError> compile() {

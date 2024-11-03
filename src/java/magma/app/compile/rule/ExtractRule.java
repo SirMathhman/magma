@@ -1,19 +1,17 @@
 package magma.app.compile.rule;
 
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
-import magma.api.result.Err;
-import magma.api.result.Ok;
-import magma.api.result.Result;
-
-import java.util.Map;
 
 public record ExtractRule(String propertyKey) implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
-        return new Ok<>(new MapNode(Map.of(this.propertyKey(), input)));
+        return new Ok<>(new MapNode().withString(propertyKey, input).orElse(new MapNode()));
     }
 
     @Override
