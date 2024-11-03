@@ -1,6 +1,7 @@
 package magma.api.result;
 
 import magma.api.Tuple;
+import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
 
@@ -36,5 +37,20 @@ public record Ok<T, E>(T value) implements Result<T, E> {
     @Override
     public <R> Result<Tuple<T, R>, E> and(Supplier<Result<R, E>> supplier) {
         return supplier.get().mapValue(other -> new Tuple<>(value, other));
+    }
+
+    @Override
+    public boolean isErr() {
+        return false;
+    }
+
+    @Override
+    public Option<E> findErr() {
+        return new None<>();
+    }
+
+    @Override
+    public boolean isOk() {
+        return true;
     }
 }

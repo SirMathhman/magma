@@ -4,6 +4,8 @@ import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.rule.*;
 
+import java.util.List;
+
 public record Compiler(String input) {
     public static final String RETURN_PREFIX = "return ";
     public static final String STATEMENT_END = ";";
@@ -18,7 +20,10 @@ public record Compiler(String input) {
     }
 
     private static Rule createMagmaRootRule() {
-        return new SplitRule(new StripRule(createReturnRule()));
+        return new SplitRule(new StripRule(new OrRule(List.of(
+
+                createReturnRule()
+        ))));
     }
 
     public Result<String, CompileError> compile() {

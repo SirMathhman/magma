@@ -1,5 +1,5 @@
 package magma.app;
 
 public interface Error {
-    String asString();
+    String format(int depth);
 }

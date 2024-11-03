@@ -3,6 +3,7 @@ package magma.api.result;
 import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
+import magma.api.option.Some;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -36,6 +37,21 @@ public record Err<T, E>(E value) implements Result<T, E> {
     @Override
     public <R> Result<Tuple<T, R>, E> and(Supplier<Result<R, E>> supplier) {
         return new Err<>(value);
+    }
+
+    @Override
+    public boolean isErr() {
+        return true;
+    }
+
+    @Override
+    public Option<E> findErr() {
+        return new Some<>(value);
+    }
+
+    @Override
+    public boolean isOk() {
+        return false;
     }
 }
 

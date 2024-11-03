@@ -2,6 +2,7 @@ package magma.api.result;
 
 import magma.api.Tuple;
 import magma.api.option.Option;
+import magma.app.compile.MapNode;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -17,5 +18,11 @@ public interface Result<T, E> {
 
     <R> Result<T, R> mapErr(Function<E, R> mapper);
 
-    <R> Result<Tuple<T, R>,E> and(Supplier<Result<R, E>> supplier);
+    <R> Result<Tuple<T, R>, E> and(Supplier<Result<R, E>> supplier);
+
+    boolean isErr();
+
+    Option<E> findErr();
+
+    boolean isOk();
 }
