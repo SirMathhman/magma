@@ -1,10 +1,11 @@
 package magma.compile.rule;
 
+import magma.compile.CompileError;
 import magma.compile.Node;
-import magma.option.Option;
+import magma.result.Result;
 
 public interface Rule {
-    Option<Node> parse(String input);
+    Result<Node, CompileError> parse(String input);
 
-    Option<String> generate(Node node);
+    Result<String, CompileError> generate(Node node);
 }

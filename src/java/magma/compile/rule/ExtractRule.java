@@ -1,20 +1,38 @@
 package magma.compile.rule;
 
+import magma.compile.CompileError;
 import magma.compile.MapNode;
 import magma.compile.Node;
+import magma.compile.StringContext;
+import magma.compile.context.NodeContext;
 import magma.option.Option;
 import magma.option.Some;
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
 
 import java.util.Map;
 
 public record ExtractRule(String propertyKey) implements Rule {
-    @Override
-    public Option<Node> parse(String input) {
+    private Option<Node> parse0(String input) {
         return new Some<>(new MapNode(Map.of(propertyKey(), input)));
     }
 
-    @Override
-    public Option<String> generate(Node node) {
+    private Option<String> generate0(Node node) {
         return node.findString(propertyKey);
+    }
+
+    @Override
+    public Result<Node, CompileError> parse(String input) {
+        return parse0(input)
+                .<Result<Node, CompileError>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileError("Invalid input", new StringContext(input))));
+    }
+
+    @Override
+    public Result<String, CompileError> generate(Node node) {
+        return generate0(node)
+                .<Result<String, CompileError>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileError("Invalid node", new NodeContext(node))));
     }
 }

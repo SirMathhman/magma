@@ -15,8 +15,12 @@ public record Compiler(String input) {
     }
 
     public String compile() {
-        final var result = createMagmaRootRule().parse(input())
-                .flatMap(node -> createCRootRule().generate(node))
+        Rule rule = createMagmaRootRule();
+        final var result = rule.parse(this.input()).findValue()
+                .flatMap(node -> {
+                    Rule rule1 = createCRootRule();
+                    return rule1.generate(node).findValue();
+                })
                 .orElse("");
 
         return "int main(){\n\t" + result + "\n}";

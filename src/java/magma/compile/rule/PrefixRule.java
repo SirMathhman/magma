@@ -1,20 +1,38 @@
 package magma.compile.rule;
 
+import magma.compile.CompileError;
 import magma.compile.Node;
+import magma.compile.StringContext;
+import magma.compile.context.NodeContext;
 import magma.option.None;
 import magma.option.Option;
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
 
 public record PrefixRule(String prefix, Rule childRule) implements Rule {
-    @Override
-    public Option<Node> parse(String input) {
+    private Option<Node> parse0(String input) {
         if (!input.startsWith(prefix())) return new None<>();
         final var slice = input.substring(prefix().length());
 
-        return childRule().parse(slice);
+        return this.childRule().parse(slice).findValue();
+    }
+
+    private Option<String> generate0(Node node) {
+        return childRule.generate(node).findValue().map(value -> prefix + value);
     }
 
     @Override
-    public Option<String> generate(Node node) {
-        return childRule.generate(node).map(value -> prefix + value);
+    public Result<Node, CompileError> parse(String input) {
+        return parse0(input)
+                .<Result<Node, CompileError>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileError("Invalid input", new StringContext(input))));
+    }
+
+    @Override
+    public Result<String, CompileError> generate(Node node) {
+        return generate0(node)
+                .<Result<String, CompileError>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileError("Invalid node", new NodeContext(node))));
     }
 }
