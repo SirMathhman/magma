@@ -13,10 +13,10 @@ import java.util.stream.Stream;
 
 public record MapNode(
         Option<String> type, Map<String, String> strings,
-        Map<String, List<Node>> nodeLists
+        Map<String, Node> nodes, Map<String, List<Node>> nodeLists
 ) implements Node {
     public MapNode() {
-        this(new None<>(), Collections.emptyMap(), Collections.emptyMap());
+        this(new None<>(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
     }
 
     @Override
@@ -47,7 +47,7 @@ public record MapNode(
 
         final var copy = new HashMap<>(nodeLists);
         copy.put(propertyKey, propertyValues);
-        return new Some<>(new MapNode(type, strings, copy));
+        return new Some<>(new MapNode(type, strings, nodes, copy));
     }
 
     @Override
@@ -56,14 +56,14 @@ public record MapNode(
 
         final var copy = new HashMap<>(strings);
         copy.put(propertyKey, propertyValue);
-        return new Some<>(new MapNode(type, copy, nodeLists));
+        return new Some<>(new MapNode(type, copy, nodes, nodeLists));
     }
 
     @Override
     public Option<Node> retype(String type) {
         if (this.type.isPresent()) return new None<>();
 
-        return new Some<>(new MapNode(new Some<>(type), strings, nodeLists));
+        return new Some<>(new MapNode(new Some<>(type), strings, nodes, nodeLists));
     }
 
     @Override
@@ -80,12 +80,39 @@ public record MapNode(
 
     @Override
     public Stream<Tuple<String, String>> streamStrings() {
-        return strings.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
+        return strings.entrySet()
+                .stream()
+                .map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
     }
 
     @Override
     public Stream<Tuple<String, List<Node>>> streamNodeLists() {
-        return nodeLists.entrySet().stream().map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
+        return nodeLists.entrySet()
+                .stream()
+                .map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
+    }
+
+    @Override
+    public Option<Node> withNode(String propertyKey, Node propertyValue) {
+        if (strings.containsKey(propertyKey)) return new None<>();
+
+        final var copy = new HashMap<>(nodes);
+        copy.put(propertyKey, propertyValue);
+        return new Some<>(new MapNode(type, strings, copy, nodeLists));
+    }
+
+    @Override
+    public Option<Node> findNode(String propertyKey) {
+        return nodes.containsKey(propertyKey)
+                ? new Some<>(nodes.get(propertyKey))
+                : new None<>();
+    }
+
+    @Override
+    public Stream<Tuple<String, Node>> streamNodes() {
+        return nodes.entrySet()
+                .stream()
+                .map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
     }
 
     @Override
@@ -103,9 +130,12 @@ public record MapNode(
         final var stringsCopy = new HashMap<>(strings);
         other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));
 
+        final var nodesCopy = new HashMap<>(nodes);
+        other.streamNodes().forEach(tuple -> nodesCopy.put(tuple.left(), tuple.right()));
+
         final var nodeListsCopy = new HashMap<>(nodeLists);
         other.streamNodeLists().forEach(tuple -> nodeListsCopy.put(tuple.left(), tuple.right()));
 
-        return new Some<>(new MapNode(newType, stringsCopy, nodeListsCopy));
+        return new Some<>(new MapNode(newType, stringsCopy, nodesCopy, nodeListsCopy));
     }
 }

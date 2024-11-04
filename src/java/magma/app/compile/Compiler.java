@@ -28,7 +28,8 @@ public record Compiler(String input) {
     }
 
     private static TypeRule createDeclarationRule() {
-        return new TypeRule("declaration", new FirstRule(new ExtractRule("before"), "=", new SuffixRule(new ExtractRule("value"), ";")));
+        final var definition = new TypeRule("definition", new ExtractRule("definition"));
+        return new TypeRule("declaration", new FirstRule(new NodeRule("definition", definition), "=", new SuffixRule(new ExtractRule("value"), ";")));
     }
 
     public Result<String, CompileError> compile() {
