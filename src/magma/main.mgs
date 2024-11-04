@@ -1,2 +1,2 @@
-let value : I16 = 420;
+let value : I32 = 420;
 return value;

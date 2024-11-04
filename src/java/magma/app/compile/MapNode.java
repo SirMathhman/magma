@@ -4,8 +4,11 @@ import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
+import magma.api.result.Result;
+import magma.app.compile.error.CompileError;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public record MapNode(
@@ -53,27 +56,22 @@ public record MapNode(
     }
 
     @Override
-    public Option<Node> withNodeList(String propertyKey, List<Node> propertyValues) {
-        if (nodeLists.containsKey(propertyKey)) return new None<>();
-
+    public Node withNodeList(String propertyKey, List<Node> propertyValues) {
         final var copy = new HashMap<>(nodeLists);
         copy.put(propertyKey, propertyValues);
-        return new Some<>(new MapNode(type, strings, nodes, copy));
+        return new MapNode(type, strings, nodes, copy);
     }
 
     @Override
-    public Option<Node> withString(String propertyKey, String propertyValue) {
-        if (strings.containsKey(propertyKey)) return new None<>();
-
+    public Node withString(String propertyKey, String propertyValue) {
         final var copy = new HashMap<>(strings);
         copy.put(propertyKey, propertyValue);
-        return new Some<>(new MapNode(type, copy, nodes, nodeLists));
+        return new MapNode(type, copy, nodes, nodeLists);
     }
 
     @Override
     public Option<Node> retype(String type) {
         if (this.type.isPresent()) return new None<>();
-
         return new Some<>(new MapNode(new Some<>(type), strings, nodes, nodeLists));
     }
 
@@ -104,12 +102,10 @@ public record MapNode(
     }
 
     @Override
-    public Option<Node> withNode(String propertyKey, Node propertyValue) {
-        if (strings.containsKey(propertyKey)) return new None<>();
-
+    public Node withNode(String propertyKey, Node propertyValue) {
         final var copy = new HashMap<>(nodes);
         copy.put(propertyKey, propertyValue);
-        return new Some<>(new MapNode(type, strings, copy, nodeLists));
+        return new MapNode(type, strings, copy, nodeLists);
     }
 
     @Override
@@ -124,6 +120,28 @@ public record MapNode(
         return nodes.entrySet()
                 .stream()
                 .map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
+    }
+
+    @Override
+    public Option<Result<Node, CompileError>> mapNodeList(String propertyKey, Function<List<Node>, Result<List<Node>, CompileError>> mapper) {
+        return findNodeList(propertyKey)
+                .map(mapper)
+                .map(result -> result.mapValue(list -> withNodeList(propertyKey, list)));
+    }
+
+
+    @Override
+    public Option<Result<Node, CompileError>> mapNode(String propertyKey, Function<Node, Result<Node, CompileError>> mapper) {
+        return findNode(propertyKey)
+                .map(mapper)
+                .map(result -> result.mapValue(node -> withNode(propertyKey, node)));
+    }
+
+    @Override
+    public Option<Result<Node, CompileError>> mapString(String propertyKey, Function<String, Result<String, CompileError>> mapper) {
+        return findString(propertyKey)
+                .map(mapper)
+                .map(result -> result.mapValue(string -> withString(propertyKey, string)));
     }
 
     @Override

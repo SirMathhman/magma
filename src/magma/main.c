@@ -1,3 +1,3 @@
 int main(){
-	let value : I16 =420;return value;
+	int value=420;return value;
 }

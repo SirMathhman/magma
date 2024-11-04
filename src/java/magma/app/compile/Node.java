@@ -2,8 +2,11 @@ package magma.app.compile;
 
 import magma.api.Tuple;
 import magma.api.option.Option;
+import magma.api.result.Result;
+import magma.app.compile.error.CompileError;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public interface Node {
@@ -15,9 +18,9 @@ public interface Node {
 
     Option<List<Node>> findNodeList(String propertyKey);
 
-    Option<Node> withNodeList(String propertyKey, List<Node> propertyValues);
+    Node withNodeList(String propertyKey, List<Node> propertyValues);
 
-    Option<Node> withString(String propertyKey, String propertyValue);
+    Node withString(String propertyKey, String propertyValue);
 
     Option<Node> retype(String type);
 
@@ -33,9 +36,15 @@ public interface Node {
 
     Stream<Tuple<String, List<Node>>> streamNodeLists();
 
-    Option<Node> withNode(String propertyKey, Node propertyValue);
+    Node withNode(String propertyKey, Node propertyValue);
 
     Option<Node> findNode(String propertyKey);
 
     Stream<Tuple<String, Node>> streamNodes();
+
+    Option<Result<Node, CompileError>> mapNodeList(String propertyKey, Function<List<Node>, Result<List<Node>, CompileError>> mapper);
+
+    Option<Result<Node, CompileError>> mapNode(String propertyKey, Function<Node, Result<Node, CompileError>> mapper);
+
+    Option<Result<Node, CompileError>> mapString(String propertyKey, Function<String, Result<String, CompileError>> mapper);
 }

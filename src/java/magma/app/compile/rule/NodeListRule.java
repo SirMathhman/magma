@@ -11,11 +11,13 @@ import magma.app.compile.error.NodeContext;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SplitRule implements Rule {
+public class NodeListRule implements Rule {
+    private final String propertyKey;
     private final Rule segmentRule;
 
-    public SplitRule(Rule segmentRule) {
+    public NodeListRule(String propertyKey, Rule segmentRule) {
         this.segmentRule = segmentRule;
+        this.propertyKey = propertyKey;
     }
 
     private static Result<String, CompileError> foldIntoString(
@@ -30,12 +32,6 @@ public class SplitRule implements Rule {
         if (!buffer.isEmpty()) list.add(buffer.toString());
         buffer = new StringBuilder();
         return buffer;
-    }
-
-    private static Node wrap(List<Node> list) {
-        return new MapNode()
-                .withNodeList("children", list)
-                .orElse(new MapNode());
     }
 
     private static Result<List<Node>, CompileError> foldIntoList(
@@ -71,13 +67,13 @@ public class SplitRule implements Rule {
 
         return segments.stream()
                 .map(segmentRule::parse)
-                .reduce(new Ok<>(new ArrayList<>()), SplitRule::foldIntoList, (_, next) -> next)
-                .mapValue(SplitRule::wrap);
+                .reduce(new Ok<>(new ArrayList<>()), NodeListRule::foldIntoList, (_, next) -> next)
+                .mapValue(list -> new MapNode().withNodeList(propertyKey, list));
     }
 
     @Override
     public Result<String, CompileError> generate(Node node) {
-        return node.findNodeList("children")
+        return node.findNodeList(propertyKey)
                 .map(this::generateList)
                 .orElseGet(() -> new Err<>(new CompileError("Node list property 'children' not present", new NodeContext(node))));
     }
@@ -85,6 +81,6 @@ public class SplitRule implements Rule {
     private Result<String, CompileError> generateList(List<Node> list) {
         return list.stream()
                 .map(segmentRule::generate)
-                .reduce(new Ok<>(""), SplitRule::foldIntoString, (_, next) -> next);
+                .reduce(new Ok<>(""), NodeListRule::foldIntoString, (_, next) -> next);
     }
 }

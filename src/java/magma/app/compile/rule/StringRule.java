@@ -8,10 +8,10 @@ import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 
-public record ExtractRule(String propertyKey) implements Rule {
+public record StringRule(String propertyKey) implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
-        return new Ok<>(new MapNode().withString(propertyKey, input).orElse(new MapNode()));
+        return new Ok<>(new MapNode().withString(propertyKey, input));
     }
 
     @Override

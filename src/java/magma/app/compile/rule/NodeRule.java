@@ -10,13 +10,7 @@ import magma.app.compile.error.NodeContext;
 public record NodeRule(String propertyKey, Rule childRule) implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
-        return childRule.parse(input).mapValue(this::wrapNode);
-    }
-
-    private Node wrapNode(Node node) {
-        return new MapNode()
-                .withNode(propertyKey, node)
-                .orElse(new MapNode());
+        return childRule.parse(input).mapValue(node -> new MapNode().withNode(propertyKey, node));
     }
 
     @Override
