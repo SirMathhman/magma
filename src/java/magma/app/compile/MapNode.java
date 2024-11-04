@@ -5,10 +5,7 @@ import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 public record MapNode(
@@ -28,10 +25,24 @@ public record MapNode(
 
     @Override
     public String asString() {
-        /*
-        TODO: this is a stub for now
-         */
-        return toString();
+        return format(0);
+    }
+
+    @Override
+    public String format(int depth) {
+        final var indent = "\n" + "\t".repeat(depth + 1);
+
+        var strings = new StringJoiner("\n");
+        for (Map.Entry<String, String> entry : this.strings.entrySet()) {
+            strings.add(indent + entry.getKey() + ": \"" + entry.getValue() + "\"");
+        }
+
+        var nodesJoiner = new StringJoiner("\n");
+        for (Map.Entry<String, Node> entry : this.nodes.entrySet()) {
+            nodesJoiner.add(indent + entry.getKey() + ": " + entry.getValue().format(depth + 1));
+        }
+
+        return "{" + strings + nodesJoiner + "\n" + "\t".repeat(depth) + "}";
     }
 
     @Override

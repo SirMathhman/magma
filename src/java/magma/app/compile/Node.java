@@ -11,6 +11,8 @@ public interface Node {
 
     String asString();
 
+    String format(int depth);
+
     Option<List<Node>> findNodeList(String propertyKey);
 
     Option<Node> withNodeList(String propertyKey, List<Node> propertyValues);
