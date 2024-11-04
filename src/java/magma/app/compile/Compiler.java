@@ -9,6 +9,7 @@ import magma.app.compile.rule.*;
 import magma.java.JavaLists;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public record Compiler(String input) {
@@ -23,6 +24,7 @@ public record Compiler(String input) {
     public static final String DECLARATION_DEFINITION = DEFINITION;
     public static final String SYMBOL_TYPE = "symbol";
     public static final String SYMBOL_VALUE = "symbol-value";
+    public static final String FUNCTION_TYPE = "function";
 
     private static Rule createReturnRule() {
         return new TypeRule(RETURN_TYPE, new PrefixRule(RETURN_PREFIX, new SuffixRule(new StringRule(VALUE), STATEMENT_END)));
@@ -30,9 +32,19 @@ public record Compiler(String input) {
 
     private static Rule createCRootRule() {
         return new NodeListRule(CHILDREN, new OrRule(List.of(
+                createFunctionRule()
+        )));
+    }
+
+    private static TypeRule createFunctionRule() {
+        return new TypeRule(FUNCTION_TYPE, new PrefixRule("int main(){", new SuffixRule(new NodeListRule(CHILDREN, createCStatementRule()), "}")));
+    }
+
+    private static Rule createCStatementRule() {
+        return new OrRule(List.of(
                 createDeclarationRule(createCDefinitionRule()),
                 createReturnRule()
-        )));
+        ));
     }
 
     private static TypeRule createCDefinitionRule() {
@@ -79,7 +91,9 @@ public record Compiler(String input) {
 
     private static Result<Node, CompileError> pass(Node node) {
         return node.mapNodeList(CHILDREN, Compiler::passRootMembers)
-                .orElse(new Ok<>(node));
+                .orElse(new Ok<>(node))
+                .mapValue(inner -> inner.retype(FUNCTION_TYPE).orElse(inner))
+                .mapValue(inner -> new MapNode().withNodeList(CHILDREN, Collections.singletonList(inner)));
     }
 
     private static Result<List<Node>, CompileError> passRootMembers(List<Node> rootMembers) {
@@ -123,7 +137,6 @@ public record Compiler(String input) {
 
         return sourceRule.parse(this.input())
                 .flatMapValue(Compiler::pass)
-                .flatMapValue(targetRule::generate)
-                .mapValue(inner -> "int main(){\n\t" + inner + "\n}");
+                .flatMapValue(targetRule::generate);
     }
 }
