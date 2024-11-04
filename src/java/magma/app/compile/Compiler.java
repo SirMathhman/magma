@@ -32,7 +32,14 @@ public record Compiler(String input) {
 
     private static TypeRule createDeclarationRule() {
         final var definition = new TypeRule("definition", new ExtractRule("definition"));
-        return new TypeRule("declaration", new FirstRule(new NodeRule("definition", definition), "=", new SuffixRule(new ExtractRule("value"), ";")));
+        final var afterAssignment = new StripRule(new SuffixRule(new NodeRule("value", createValueRule()), ";"));
+        return new TypeRule("declaration", new FirstRule(new NodeRule("definition", definition), "=", afterAssignment));
+    }
+
+    private static Rule createValueRule() {
+        return new OrRule(List.of(
+                new TypeRule("symbol", new ExtractRule("value"))
+        ));
     }
 
     public Result<String, CompileError> compile() {
