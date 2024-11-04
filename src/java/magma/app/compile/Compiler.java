@@ -17,7 +17,10 @@ public record Compiler(String input) {
     }
 
     private static Rule createCRootRule() {
-        return new SplitRule(createReturnRule());
+        return new SplitRule(new OrRule(List.of(
+                createDeclarationRule(),
+                createReturnRule()
+        )));
     }
 
     private static Rule createMagmaRootRule() {
