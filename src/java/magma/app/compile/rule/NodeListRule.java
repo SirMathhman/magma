@@ -28,12 +28,6 @@ public class NodeListRule implements Rule {
                 .mapValue(tuple -> tuple.left() + tuple.right());
     }
 
-    private static StringBuilder advance(ArrayList<String> list, StringBuilder buffer) {
-        if (!buffer.isEmpty()) list.add(buffer.toString());
-        buffer = new StringBuilder();
-        return buffer;
-    }
-
     private static Result<List<Node>, CompileError> foldIntoList(
             Result<List<Node>, CompileError> current,
             Result<Node, CompileError> next
@@ -46,19 +40,24 @@ public class NodeListRule implements Rule {
     }
 
     private static List<String> split(String input) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
+        var state = new State();
 
         for (int i = 0; i < input.length(); i++) {
             var c = input.charAt(i);
-            buffer.append(c);
-            if (c == ';') {
-                buffer = advance(segments, buffer);
-            }
+            state = splitAtChar(state, c);
         }
 
-        advance(segments, buffer);
-        return segments;
+        return state.advance().segments();
+    }
+
+    private static State splitAtChar(State state, char c) {
+        final var appended = state.append(c);
+        if (c == ';') {
+            state = appended.advance();
+        } else {
+            state = appended;
+        }
+        return state;
     }
 
     @Override
