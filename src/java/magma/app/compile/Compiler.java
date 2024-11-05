@@ -21,6 +21,7 @@ import java.util.List;
 import static magma.app.compile.lang.CLang.AFTER_STATEMENTS;
 import static magma.app.compile.lang.CLang.BEFORE_STATEMENT;
 import static magma.app.compile.lang.CommonLang.*;
+import static magma.app.compile.lang.CommonLang.FUNCTION_NAME;
 
 public record Compiler(String input) {
 
@@ -32,7 +33,10 @@ public record Compiler(String input) {
     }
 
     private static Node passFunction(Node inner) {
-        return inner.retype(CLang.FUNCTION_TYPE).orElse(inner).withString(AFTER_STATEMENTS, "\n");
+        return inner.retype(FUNCTION_TYPE)
+                .orElse(inner)
+                .withString(FUNCTION_NAME, "main")
+                .withString(AFTER_STATEMENTS, "\n");
     }
 
     private static Result<List<Node>, CompileError> passRootMembers(List<Node> rootMembers) {

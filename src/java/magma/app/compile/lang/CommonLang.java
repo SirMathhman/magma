@@ -23,6 +23,8 @@ public class CommonLang {
     public static final String OPERATION_BEFORE_RIGHT = "before-right";
     public static final String DECLARATION_VALUE = "value";
     public static final String ADD_TYPE = "add";
+    public static final String FUNCTION_TYPE = "function";
+    public static final String FUNCTION_NAME = "name";
 
     public static Rule createReturnRule() {
         final var value = new NodeRule(RETURN_VALUE, createValueRule());

@@ -6,7 +6,6 @@ import java.util.List;
 
 public class CLang {
     public static final String DEFINITION = "definition";
-    public static final String FUNCTION_TYPE = "function";
     public static final String AFTER_STATEMENTS = "after-statements";
     public static final String BEFORE_STATEMENT = "before-statement";
 
@@ -23,7 +22,7 @@ public class CLang {
 
         final var childRule = new SuffixRule(statements, "}");
         final var header = new PrefixRule("int ", new SuffixRule(new StringRule("name"), "()"));
-        functionRule.setRule(new TypeRule(FUNCTION_TYPE, new FirstRule(header, "{", childRule)));
+        functionRule.setRule(new TypeRule(CommonLang.FUNCTION_TYPE, new FirstRule(header, "{", childRule)));
         return functionRule;
     }
 

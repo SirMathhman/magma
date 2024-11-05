@@ -4,6 +4,8 @@ import magma.app.compile.rule.*;
 
 import java.util.List;
 
+import static magma.app.compile.lang.CommonLang.FUNCTION_TYPE;
+
 public class MagmaLang {
     public static Rule createMagmaStatementsRule() {
         final LazyRule statements = new LazyRule();
@@ -16,9 +18,9 @@ public class MagmaLang {
     }
 
     private static TypeRule createFunctionRule(LazyRule statements) {
-        final var beforeContent = new StringRule("before-content");
+        final var beforeContent = new SuffixRule(new StringRule(CommonLang.FUNCTION_NAME), "(): Void => ");
 
-        return new TypeRule("function", new PrefixRule("def ", new FirstRule(beforeContent, "{", new StripRule(new SuffixRule(statements, "}")))));
+        return new TypeRule(FUNCTION_TYPE, new PrefixRule("def ", new FirstRule(beforeContent, "{", new StripRule(new SuffixRule(statements, "}")))));
     }
 
     private static TypeRule createMagmaDefinitionRule() {
