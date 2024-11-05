@@ -15,13 +15,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static magma.app.compile.lang.CLang.AFTER_STATEMENTS;
+
 public record Compiler(String input) {
 
     private static Result<Node, CompileError> pass(Node node) {
         return node.mapNodeList(CommonLang.CHILDREN, Compiler::passRootMembers)
                 .orElse(new Ok<>(node))
-                .mapValue(inner -> inner.retype(CLang.FUNCTION_TYPE).orElse(inner))
+                .mapValue(inner -> passFunction(inner))
                 .mapValue(inner -> new MapNode().withNodeList(CommonLang.CHILDREN, Collections.singletonList(inner)));
+    }
+
+    private static Node passFunction(Node inner) {
+        return inner.retype(CLang.FUNCTION_TYPE).orElse(inner).withString(AFTER_STATEMENTS, "\n");
     }
 
     private static Result<List<Node>, CompileError> passRootMembers(List<Node> rootMembers) {
