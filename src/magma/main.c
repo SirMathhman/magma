@@ -1,4 +1,4 @@
 int main(){
-	int value=420;
+	int value = 420;
 	return value;
 }

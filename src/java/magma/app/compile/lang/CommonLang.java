@@ -15,6 +15,8 @@ public class CommonLang {
     public static final String SYMBOL_VALUE = "symbol-value";
     public static final String DECLARATION_TYPE = "declaration";
     public static final String DECLARATION_DEFINITION = CLang.DEFINITION;
+    public static final String DECLARATION_AFTER_DEFINITION = "after-definition";
+    public static final String DECLARATION_BEFORE_VALUE = "before-value";
 
     public static Rule createReturnRule() {
         final var value = new StringRule(RETURN_VALUE);
@@ -25,9 +27,11 @@ public class CommonLang {
         return new TypeRule(SYMBOL_TYPE, new StripRule(new StringRule(SYMBOL_VALUE)));
     }
 
-    public static TypeRule createDeclarationRule(TypeRule definition) {
-        final var afterAssignment = new StripRule(new SuffixRule(new NodeRule("value", createValueRule()), ";"));
-        return new TypeRule(DECLARATION_TYPE, new FirstRule(new NodeRule(DECLARATION_DEFINITION, definition), "=", afterAssignment));
+    public static TypeRule createDeclarationRule(TypeRule definitionRule) {
+        final var definition0 = new StripRule("", new NodeRule(DECLARATION_DEFINITION, definitionRule), DECLARATION_AFTER_DEFINITION);
+        final var value = new StripRule(DECLARATION_BEFORE_VALUE, new NodeRule("value", createValueRule()), "");
+        final var afterAssignment = new StripRule(new SuffixRule(value, STATEMENT_END));
+        return new TypeRule(DECLARATION_TYPE, new FirstRule(definition0, "=", afterAssignment));
     }
 
     private static Rule createValueRule() {

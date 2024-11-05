@@ -17,6 +17,8 @@ import java.util.List;
 
 import static magma.app.compile.lang.CLang.AFTER_STATEMENTS;
 import static magma.app.compile.lang.CLang.BEFORE_STATEMENT;
+import static magma.app.compile.lang.CommonLang.DECLARATION_AFTER_DEFINITION;
+import static magma.app.compile.lang.CommonLang.DECLARATION_BEFORE_VALUE;
 
 public record Compiler(String input) {
 
@@ -47,7 +49,10 @@ public record Compiler(String input) {
             return new Ok<>(child);
         }
 
-        return child.mapNode(CommonLang.DECLARATION_DEFINITION, Compiler::passDefinition).orElse(new Ok<>(child));
+        return child.mapNode(CommonLang.DECLARATION_DEFINITION, Compiler::passDefinition)
+                .orElse(new Ok<>(child))
+                .mapValue(value -> value.withString(DECLARATION_AFTER_DEFINITION, " "))
+                .mapValue(value -> value.withString(DECLARATION_BEFORE_VALUE, " "));
     }
 
     private static Result<Node, CompileError> passDefinition(Node definition) {
