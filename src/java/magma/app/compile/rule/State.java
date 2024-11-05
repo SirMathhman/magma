@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class State {
-    private final List<String> list;
-    private StringBuilder buffer;
+    private final List<String> segments;
+    private final StringBuilder buffer;
 
-    public State(List<String> list, StringBuilder buffer) {
-        this.list = list;
+    public State(List<String> segments, StringBuilder buffer) {
+        this.segments = segments;
         this.buffer = buffer;
     }
 
@@ -17,25 +17,18 @@ public class State {
     }
 
     State advance() {
-        if (!getBuffer().isEmpty()) list.add(getBuffer().toString());
-        setBuffer(new StringBuilder());
-        return this;
+        if (buffer.isEmpty()) return this;
+
+        final var copy = new ArrayList<>(segments);
+        copy.add(buffer.toString());
+        return new State(copy, new StringBuilder());
     }
 
     State append(char c) {
-        getBuffer().append(c);
-        return this;
+        return new State(segments, buffer.append(c));
     }
 
     public List<String> segments() {
-        return list;
-    }
-
-    public StringBuilder getBuffer() {
-        return buffer;
-    }
-
-    public void setBuffer(StringBuilder buffer) {
-        this.buffer = buffer;
+        return segments;
     }
 }

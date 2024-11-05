@@ -7,6 +7,7 @@ import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
+import magma.java.JavaStreams;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,24 +41,19 @@ public class NodeListRule implements Rule {
     }
 
     private static List<String> split(String input) {
-        var state = new State();
-
-        for (int i = 0; i < input.length(); i++) {
-            var c = input.charAt(i);
-            state = splitAtChar(state, c);
-        }
-
-        return state.advance().segments();
+        return JavaStreams.fromString(input)
+                .foldLeft(new State(), NodeListRule::splitAtChar)
+                .advance()
+                .segments();
     }
 
     private static State splitAtChar(State state, char c) {
         final var appended = state.append(c);
         if (c == ';') {
-            state = appended.advance();
+            return appended.advance();
         } else {
-            state = appended;
+            return appended;
         }
-        return state;
     }
 
     @Override
