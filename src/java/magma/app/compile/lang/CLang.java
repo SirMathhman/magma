@@ -21,7 +21,9 @@ public class CLang {
         final var statement = new StripRule(BEFORE_STATEMENT, createCStatementRule(functionRule), "");
         final var statements = new StripRule("", new NodeListRule(CommonLang.CHILDREN, statement), AFTER_STATEMENTS);
 
-        functionRule.setRule(new TypeRule(FUNCTION_TYPE, new PrefixRule("int main(){", new SuffixRule(statements, "}"))));
+        final var childRule = new SuffixRule(statements, "}");
+        final var header = new PrefixRule("int ", new SuffixRule(new StringRule("name"), "()"));
+        functionRule.setRule(new TypeRule(FUNCTION_TYPE, new FirstRule(header, "{", childRule)));
         return functionRule;
     }
 

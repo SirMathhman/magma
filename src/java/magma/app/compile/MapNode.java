@@ -9,6 +9,7 @@ import magma.app.compile.error.CompileError;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public record MapNode(
@@ -35,18 +36,31 @@ public record MapNode(
     public String format(int depth) {
         final var indent = "\n" + "\t".repeat(depth + 1);
 
-        var strings = new StringJoiner("\n");
+        var strings = new StringJoiner(",");
         for (Map.Entry<String, String> entry : this.strings.entrySet()) {
             strings.add(indent + entry.getKey() + ": \"" + entry.getValue() + "\"");
         }
 
-        var nodesJoiner = new StringJoiner("\n");
+        var nodesJoiner = new StringJoiner(",");
         for (Map.Entry<String, Node> entry : this.nodes.entrySet()) {
             nodesJoiner.add(indent + entry.getKey() + ": " + entry.getValue().format(depth + 1));
         }
 
+        var nodeListsJoiner = new StringJoiner("");
+        for (Map.Entry<String, List<Node>> entry : nodeLists.entrySet()) {
+            nodeListsJoiner.add(indent + entry.getKey() + ": " + entry.getValue()
+                    .stream()
+                    .map(value -> value.format(depth + 1))
+                    .collect(Collectors.joining(", ", "[", "]")));
+        }
+
         final var typePrefix = type.map(value -> value + " ").orElse("");
-        return typePrefix + "{" + strings + nodesJoiner + "\n" + "\t".repeat(depth) + "}";
+        final var joined = Stream.of(strings, nodesJoiner, nodeListsJoiner)
+                .map(StringJoiner::toString)
+                .filter(value -> !value.isEmpty())
+                .collect(Collectors.joining(", "));
+
+        return typePrefix + "{" + joined + "\n" + "\t".repeat(depth) + "}";
     }
 
     @Override
