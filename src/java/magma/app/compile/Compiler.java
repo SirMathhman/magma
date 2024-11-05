@@ -16,13 +16,14 @@ import java.util.Collections;
 import java.util.List;
 
 import static magma.app.compile.lang.CLang.AFTER_STATEMENTS;
+import static magma.app.compile.lang.CLang.BEFORE_STATEMENT;
 
 public record Compiler(String input) {
 
     private static Result<Node, CompileError> pass(Node node) {
         return node.mapNodeList(CommonLang.CHILDREN, Compiler::passRootMembers)
                 .orElse(new Ok<>(node))
-                .mapValue(inner -> passFunction(inner))
+                .mapValue(Compiler::passFunction)
                 .mapValue(inner -> new MapNode().withNodeList(CommonLang.CHILDREN, Collections.singletonList(inner)));
     }
 
@@ -38,6 +39,10 @@ public record Compiler(String input) {
     }
 
     private static Result<Node, CompileError> passRootMember(Node child) {
+        return passDeclaration(child).mapValue(rootMember -> rootMember.withString(BEFORE_STATEMENT, "\n\t"));
+    }
+
+    private static Result<Node, CompileError> passDeclaration(Node child) {
         if (!child.is(CommonLang.DECLARATION_TYPE)) {
             return new Ok<>(child);
         }

@@ -1,2 +1,4 @@
-int main(){int value=420;return value;
+int main(){
+	int value=420;
+	return value;
 }
