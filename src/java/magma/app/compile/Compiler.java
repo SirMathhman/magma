@@ -11,7 +11,7 @@ public record Compiler(String input) {
         final var targetRule = CLang.createCRootRule();
 
         return sourceRule.parse(this.input())
-                .flatMapValue(Passer::pass)
+                .flatMapValue(PassingStage::pass)
                 .flatMapValue(targetRule::generate);
     }
 }

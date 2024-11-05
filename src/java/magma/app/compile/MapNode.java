@@ -114,7 +114,7 @@ public record MapNode(
     }
 
     @Override
-    public Stream<Tuple<String, List<Node>>> streamNodeLists() {
+    public Stream<Tuple<String, List<Node>>> streamNodeListsToNativeStream() {
         return nodeLists.entrySet()
                 .stream()
                 .map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
@@ -135,7 +135,7 @@ public record MapNode(
     }
 
     @Override
-    public Stream<Tuple<String, Node>> streamNodes() {
+    public Stream<Tuple<String, Node>> streamNodesToNativeStream() {
         return nodes.entrySet()
                 .stream()
                 .map(pair -> new Tuple<>(pair.getKey(), pair.getValue()));
@@ -179,10 +179,10 @@ public record MapNode(
         other.streamStrings().forEach(tuple -> stringsCopy.put(tuple.left(), tuple.right()));
 
         final var nodesCopy = new HashMap<>(nodes);
-        other.streamNodes().forEach(tuple -> nodesCopy.put(tuple.left(), tuple.right()));
+        other.streamNodesToNativeStream().forEach(tuple -> nodesCopy.put(tuple.left(), tuple.right()));
 
         final var nodeListsCopy = new HashMap<>(nodeLists);
-        other.streamNodeLists().forEach(tuple -> nodeListsCopy.put(tuple.left(), tuple.right()));
+        other.streamNodeListsToNativeStream().forEach(tuple -> nodeListsCopy.put(tuple.left(), tuple.right()));
 
         return new Some<>(new MapNode(newType, stringsCopy, nodesCopy, nodeListsCopy));
     }
