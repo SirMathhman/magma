@@ -16,17 +16,20 @@ public class CLang {
         )));
     }
 
-    private static TypeRule createFunctionRule() {
-        final var statement = new StripRule(BEFORE_STATEMENT, createCStatementRule(), "");
+    private static Rule createFunctionRule() {
+        final LazyRule functionRule = new LazyRule();
+        final var statement = new StripRule(BEFORE_STATEMENT, createCStatementRule(functionRule), "");
         final var statements = new StripRule("", new NodeListRule(CommonLang.CHILDREN, statement), AFTER_STATEMENTS);
 
-        return new TypeRule(FUNCTION_TYPE, new PrefixRule("int main(){", new SuffixRule(statements, "}")));
+        functionRule.setRule(new TypeRule(FUNCTION_TYPE, new PrefixRule("int main(){", new SuffixRule(statements, "}"))));
+        return functionRule;
     }
 
-    private static Rule createCStatementRule() {
+    private static Rule createCStatementRule(LazyRule functionRule) {
         return new OrRule(List.of(
                 CommonLang.createDeclarationRule(createCDefinitionRule()),
-                CommonLang.createReturnRule()
+                CommonLang.createReturnRule(),
+                functionRule
         ));
     }
 

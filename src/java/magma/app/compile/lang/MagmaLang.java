@@ -5,11 +5,20 @@ import magma.app.compile.rule.*;
 import java.util.List;
 
 public class MagmaLang {
-    public static Rule createMagmaRootRule() {
-        return new NodeListRule(CommonLang.CHILDREN, new StripRule(new OrRule(List.of(
+    public static Rule createMagmaStatementsRule() {
+        final LazyRule statements = new LazyRule();
+        statements.setRule(new NodeListRule(CommonLang.CHILDREN, new StripRule(new OrRule(List.of(
+                createFunctionRule(statements),
                 CommonLang.createDeclarationRule(createMagmaDefinitionRule()),
                 CommonLang.createReturnRule()
-        ))));
+        )))));
+        return statements;
+    }
+
+    private static TypeRule createFunctionRule(LazyRule statements) {
+        final var beforeContent = new StringRule("before-content");
+
+        return new TypeRule("function", new PrefixRule("def ", new FirstRule(beforeContent, "{", new StripRule(new SuffixRule(statements, "}")))));
     }
 
     private static TypeRule createMagmaDefinitionRule() {

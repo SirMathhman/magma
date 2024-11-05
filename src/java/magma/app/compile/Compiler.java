@@ -94,7 +94,7 @@ public record Compiler(String input) {
     }
 
     public Result<String, CompileError> compile() {
-        final var sourceRule = MagmaLang.createMagmaRootRule();
+        final var sourceRule = MagmaLang.createMagmaStatementsRule();
         final var targetRule = CLang.createCRootRule();
 
         return sourceRule.parse(this.input())

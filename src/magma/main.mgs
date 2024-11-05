@@ -1,4 +1,4 @@
-def test() {
+def test(): Void => {
 }
 
 let x : I32 = 400;

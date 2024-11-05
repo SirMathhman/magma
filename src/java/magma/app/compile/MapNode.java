@@ -45,7 +45,8 @@ public record MapNode(
             nodesJoiner.add(indent + entry.getKey() + ": " + entry.getValue().format(depth + 1));
         }
 
-        return "{" + strings + nodesJoiner + "\n" + "\t".repeat(depth) + "}";
+        final var typePrefix = type.map(value -> value + " ").orElse("");
+        return typePrefix + "{" + strings + nodesJoiner + "\n" + "\t".repeat(depth) + "}";
     }
 
     @Override
