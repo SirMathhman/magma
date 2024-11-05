@@ -1,5 +1,8 @@
 package magma.app.compile;
 
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
@@ -17,8 +20,7 @@ import java.util.List;
 
 import static magma.app.compile.lang.CLang.AFTER_STATEMENTS;
 import static magma.app.compile.lang.CLang.BEFORE_STATEMENT;
-import static magma.app.compile.lang.CommonLang.DECLARATION_AFTER_DEFINITION;
-import static magma.app.compile.lang.CommonLang.DECLARATION_BEFORE_VALUE;
+import static magma.app.compile.lang.CommonLang.*;
 
 public record Compiler(String input) {
 
@@ -41,18 +43,35 @@ public record Compiler(String input) {
     }
 
     private static Result<Node, CompileError> passRootMember(Node child) {
-        return passDeclaration(child).mapValue(rootMember -> rootMember.withString(BEFORE_STATEMENT, "\n\t"));
+        return passDeclaration(child)
+                .or(() -> passReturn(child))
+                .orElse(new Ok<>(child))
+                .mapValue(rootMember -> rootMember.withString(BEFORE_STATEMENT, "\n\t"));
     }
 
-    private static Result<Node, CompileError> passDeclaration(Node child) {
-        if (!child.is(CommonLang.DECLARATION_TYPE)) {
-            return new Ok<>(child);
-        }
+    private static Option<Result<Node, CompileError>> passReturn(Node child) {
+        if (!child.is(RETURN_TYPE)) return new None<>();
 
-        return child.mapNode(CommonLang.DECLARATION_DEFINITION, Compiler::passDefinition)
-                .orElse(new Ok<>(child))
+        return new Some<>(child.mapNode(RETURN_VALUE, Compiler::passValue)
+                .orElse(new Ok<>(child)));
+    }
+
+    private static Option<Result<Node, CompileError>> passDeclaration(Node child) {
+        if (!child.is(CommonLang.DECLARATION_TYPE)) return new None<>();
+
+        return new Some<>(child.mapNode(CommonLang.DECLARATION_DEFINITION, Compiler::passDefinition).orElse(new Ok<>(child))
+                .flatMapValue(declaration -> declaration.mapNode(DECLARATION_VALUE, Compiler::passValue).orElse(new Ok<>(declaration)))
                 .mapValue(value -> value.withString(DECLARATION_AFTER_DEFINITION, " "))
-                .mapValue(value -> value.withString(DECLARATION_BEFORE_VALUE, " "));
+                .mapValue(value -> value.withString(DECLARATION_BEFORE_VALUE, " ")));
+    }
+
+    private static Ok<Node, CompileError> passValue(Node value) {
+        if (value.is(ADD_TYPE)) {
+            return new Ok<>(value.withString(OPERATION_AFTER_LEFT, " ")
+                    .withString(OPERATION_BEFORE_RIGHT, " "));
+        } else {
+            return new Ok<>(value);
+        }
     }
 
     private static Result<Node, CompileError> passDefinition(Node definition) {
