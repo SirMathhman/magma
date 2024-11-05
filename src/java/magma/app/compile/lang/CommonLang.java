@@ -25,6 +25,7 @@ public class CommonLang {
     public static final String ADD_TYPE = "add";
     public static final String FUNCTION_TYPE = "function";
     public static final String FUNCTION_NAME = "name";
+    public static final String FUNCTION_TYPE_PROPERTY = "type";
 
     public static Rule createReturnRule() {
         final var value = new NodeRule(RETURN_VALUE, createValueRule());

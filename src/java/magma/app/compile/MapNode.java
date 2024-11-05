@@ -16,6 +16,10 @@ public record MapNode(
         Option<String> type, Map<String, String> strings,
         Map<String, Node> nodes, Map<String, List<Node>> nodeLists
 ) implements Node {
+    public MapNode(String type) {
+        this(new Some<>(type), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+    }
+
     public MapNode() {
         this(new None<>(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
     }

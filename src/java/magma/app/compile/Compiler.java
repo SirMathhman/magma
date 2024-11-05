@@ -21,7 +21,6 @@ import java.util.List;
 import static magma.app.compile.lang.CLang.AFTER_STATEMENTS;
 import static magma.app.compile.lang.CLang.BEFORE_STATEMENT;
 import static magma.app.compile.lang.CommonLang.*;
-import static magma.app.compile.lang.CommonLang.FUNCTION_NAME;
 
 public record Compiler(String input) {
 
@@ -33,9 +32,10 @@ public record Compiler(String input) {
     }
 
     private static Node passFunction(Node inner) {
-        return inner.retype(FUNCTION_TYPE)
-                .orElse(inner)
-                .withString(FUNCTION_NAME, "main")
+        final var node = inner.retype(FUNCTION_TYPE).orElse(inner);
+
+        return node.withString(FUNCTION_NAME, "main")
+                .withNode(FUNCTION_TYPE_PROPERTY, new MapNode(SYMBOL_TYPE).withString(SYMBOL_VALUE, "int"))
                 .withString(AFTER_STATEMENTS, "\n");
     }
 

@@ -4,6 +4,8 @@ import magma.app.compile.rule.*;
 
 import java.util.List;
 
+import static magma.app.compile.lang.CommonLang.FUNCTION_TYPE_PROPERTY;
+
 public class CLang {
     public static final String DEFINITION = "definition";
     public static final String AFTER_STATEMENTS = "after-statements";
@@ -20,9 +22,9 @@ public class CLang {
         final var statement = new StripRule(BEFORE_STATEMENT, createCStatementRule(functionRule), "");
         final var statements = new StripRule("", new NodeListRule(CommonLang.CHILDREN, statement), AFTER_STATEMENTS);
 
-        final var childRule = new SuffixRule(statements, "}");
-        final var header = new PrefixRule("int ", new SuffixRule(new StringRule("name"), "()"));
-        functionRule.setRule(new TypeRule(CommonLang.FUNCTION_TYPE, new FirstRule(header, "{", childRule)));
+        final var type = new NodeRule(FUNCTION_TYPE_PROPERTY, createCTypeRule());
+        final var header = new FirstRule(type, " ", new SuffixRule(new StringRule("name"), "()"));
+        functionRule.setRule(new TypeRule(CommonLang.FUNCTION_TYPE, new FirstRule(header, "{", new SuffixRule(statements, "}"))));
         return functionRule;
     }
 

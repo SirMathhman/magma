@@ -1,5 +1,5 @@
 int main(){
-	int test(){}
+	Void test(){}
 	int x = 400;
 	int y = 20;
 	return x + y;
