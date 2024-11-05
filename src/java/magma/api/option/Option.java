@@ -1,5 +1,7 @@
 package magma.api.option;
 
+import magma.api.Tuple;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -18,4 +20,6 @@ public interface Option<T> {
     boolean isPresent();
 
     Option<T> or(Supplier<Option<T>> supplier);
+
+    Tuple<Boolean, T> toTuple(T other);
 }

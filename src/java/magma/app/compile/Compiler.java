@@ -9,6 +9,7 @@ import magma.app.compile.lang.CLang;
 import magma.app.compile.lang.CommonLang;
 import magma.app.compile.lang.MagmaLang;
 import magma.java.JavaLists;
+import magma.java.JavaStreams;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,11 +25,10 @@ public record Compiler(String input) {
     }
 
     private static Result<List<Node>, CompileError> passRootMembers(List<Node> rootMembers) {
-        return rootMembers.stream()
+        return JavaStreams.stream(rootMembers)
                 .map(Compiler::passRootMember)
-                .<Result<List<Node>, CompileError>>reduce(new Ok<>(new ArrayList<>()),
-                        (current, element) -> current.and(() -> element).mapValue(JavaLists::add),
-                        (_, value) -> value);
+                .into(ResultStream::new)
+                .foldResultsLeft(new ArrayList<>(), JavaLists::add);
     }
 
     private static Result<Node, CompileError> passRootMember(Node child) {
