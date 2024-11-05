@@ -17,6 +17,8 @@ public class CommonLang {
     public static final String DECLARATION_DEFINITION = CLang.DEFINITION;
     public static final String DECLARATION_AFTER_DEFINITION = "after-definition";
     public static final String DECLARATION_BEFORE_VALUE = "before-value";
+    public static final String NUMBER_VALUE = "value";
+    public static final String NUMBER_TYPE = "number";
 
     public static Rule createReturnRule() {
         final var value = new StringRule(RETURN_VALUE);
@@ -34,9 +36,10 @@ public class CommonLang {
         return new TypeRule(DECLARATION_TYPE, new FirstRule(definition0, "=", afterAssignment));
     }
 
-    private static Rule createValueRule() {
+    public static Rule createValueRule() {
         return new OrRule(List.of(
-                new TypeRule(SYMBOL_TYPE, new StringRule(SYMBOL_VALUE))
+                new TypeRule(NUMBER_TYPE, new StripRule(new FilterRule(new NumberFilter(), new StringRule(NUMBER_VALUE)))),
+                new TypeRule(SYMBOL_TYPE, new StripRule(new FilterRule(new SymbolFilter(), new StringRule(SYMBOL_VALUE))))
         ));
     }
 }

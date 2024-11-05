@@ -65,11 +65,11 @@ public record Compiler(String input) {
         if (!type.is(CommonLang.SYMBOL_TYPE)) return new Ok<>(type);
 
         return type
-                .mapString(CommonLang.SYMBOL_VALUE, Compiler::passSymbolValue)
+                .mapString(CommonLang.SYMBOL_VALUE, Compiler::passSymbolTypeValue)
                 .orElse(new Ok<>(type));
     }
 
-    private static Result<String, CompileError> passSymbolValue(String value) {
+    private static Result<String, CompileError> passSymbolTypeValue(String value) {
         if (value.equals("I32")) return new Ok<>("int");
         else return new Err<>(new CompileError("Unknown value", new StringContext(value)));
     }

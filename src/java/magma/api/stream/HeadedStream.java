@@ -2,6 +2,7 @@ package magma.api.stream;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     @Override
@@ -33,5 +34,10 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
         }
 
         return current;
+    }
+
+    @Override
+    public boolean allMatch(Predicate<T> predicate) {
+        return foldLeft(true, (aBoolean, t) -> aBoolean && predicate.test(t));
     }
 }

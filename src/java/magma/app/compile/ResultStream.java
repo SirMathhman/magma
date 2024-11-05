@@ -6,6 +6,7 @@ import magma.api.stream.Stream;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public record ResultStream<T, E>(Stream<Result<T, E>> stream) implements Stream<Result<T, E>> {
     public <R> Result<R, E> foldResultsLeft(R initial, BiFunction<R, T, R> folder) {
@@ -25,5 +26,10 @@ public record ResultStream<T, E>(Stream<Result<T, E>> stream) implements Stream<
     @Override
     public <R> R into(Function<Stream<Result<T, E>>, R> mapper) {
         return stream.into(mapper);
+    }
+
+    @Override
+    public boolean allMatch(Predicate<Result<T, E>> predicate) {
+        return foldLeft(true, (aBoolean, t) -> aBoolean && predicate.test(t));
     }
 }
