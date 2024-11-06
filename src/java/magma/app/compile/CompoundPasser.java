@@ -10,6 +10,14 @@ import java.util.List;
 
 public record CompoundPasser(List<Passer> passers) implements Passer {
     @Override
+    public Option<Result<Node, CompileError>> afterPass(Node node) {
+        return JavaStreams.fromList(passers)
+                .map(passer -> passer.afterPass(node))
+                .flatMap(Streams::fromOption)
+                .next();
+    }
+
+    @Override
     public Option<Result<Node, CompileError>> beforePass(Node node) {
         return JavaStreams.fromList(passers)
                 .map(passer -> passer.beforePass(node))
