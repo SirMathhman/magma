@@ -17,31 +17,31 @@ public class TreePassingStage implements PassingStage {
         this.passer = passer;
     }
 
-    private static Result<Node, CompileError> passNodeLists(Node node) {
-        return node.streamNodeLists().foldLeftToResult(node, TreePassingStage::foldNodeListsIntoNode);
+    private Result<Node, CompileError> passNodeLists(Node node) {
+        return node.streamNodeLists().foldLeftToResult(node, this::foldNodeListsIntoNode);
     }
 
-    private static Result<Node, CompileError> foldNodeListsIntoNode(Node node, Tuple<String, List<Node>> entry) {
+    private Result<Node, CompileError> foldNodeListsIntoNode(Node node, Tuple<String, List<Node>> entry) {
         return JavaStreams.fromList(entry.right())
-                .foldLeftToResult(new ArrayList<>(), TreePassingStage::passAndAnd)
+                .foldLeftToResult(new ArrayList<>(), this::passAndAnd)
                 .mapValue(list -> node.withNodeList(entry.left(), list));
     }
 
-    private static Result<List<Node>, CompileError> passAndAnd(List<Node> values, Node value) {
-        return new TreePassingStage(Compiler.createPasser()).pass(value).mapValue(passed -> JavaLists.add(values, passed));
+    private Result<List<Node>, CompileError> passAndAnd(List<Node> values, Node value) {
+        return pass(value).mapValue(passed -> JavaLists.add(values, passed));
     }
 
-    private static Result<Node, CompileError> passNodes(Node node) {
+    private Result<Node, CompileError> passNodes(Node node) {
         return node.streamNodes()
-                .foldLeftToResult(node, (current, tuple) -> new TreePassingStage(Compiler.createPasser()).pass(tuple.right())
+                .foldLeftToResult(node, (current, tuple) -> pass(tuple.right())
                         .mapValue(value -> current.withNode(tuple.left(), value)));
     }
 
     @Override
     public Result<Node, CompileError> pass(Node node) {
         final var beforePassed = passer.beforePass(node).orElse(new Ok<>(node));
-        return beforePassed.flatMapValue(TreePassingStage::passNodes)
-                .flatMapValue(TreePassingStage::passNodeLists)
+        return beforePassed.flatMapValue(this::passNodes)
+                .flatMapValue(this::passNodeLists)
                 .flatMapValue(node1 -> passer.afterPass(node1).orElse(new Ok<>(node1)));
     }
 }
