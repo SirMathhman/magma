@@ -12,15 +12,9 @@ import java.util.function.Function;
 public record CompoundPasser(List<Passer> passers) implements Passer {
     @Override
     public Option<Result<Node, CompileError>> pass(Node type) {
-        final var map = JavaStreams.fromList(passers)
-                .map(passer -> passer.pass(type));
-        return map
-                .flatMap(new Function<Option<Result<Node, CompileError>>, Stream<Result<Node, CompileError>>>() {
-                    @Override
-                    public Stream<Result<Node, CompileError>> apply(Option<Result<Node, CompileError>> resultOption) {
-                        return Stream.fromOption(resultOption);
-                    }
-                })
+        return JavaStreams.fromList(passers)
+                .map(passer -> passer.pass(type))
+                .flatMap(Stream::fromOption)
                 .next();
     }
 }
