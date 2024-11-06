@@ -3,6 +3,7 @@ package magma.app.compile;
 import magma.api.option.Option;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.api.stream.Collector;
 import magma.api.stream.Stream;
 import magma.api.stream.Streams;
 
@@ -13,6 +14,11 @@ import java.util.function.Predicate;
 public record ResultStream<T, E>(Stream<Result<T, E>> stream) implements Stream<Result<T, E>> {
     public static <T> Stream<T> fromOption(Option<T> option) {
         return Streams.fromOption(option);
+    }
+
+    @Override
+    public <C> C collect(Collector<Result<T, E>, C> collector) {
+        return stream.collect(collector);
     }
 
     @Override

@@ -10,7 +10,7 @@ import magma.java.JavaStreams;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TreePassingStage {
+public class TreePassingStage implements PassingStage {
     private final Passer passer;
 
     public TreePassingStage(Passer passer) {
@@ -37,7 +37,8 @@ public class TreePassingStage {
                         .mapValue(value -> current.withNode(tuple.left(), value)));
     }
 
-    Result<Node, CompileError> pass(Node node) {
+    @Override
+    public Result<Node, CompileError> pass(Node node) {
         final var beforePassed = passer.beforePass(node).orElse(new Ok<>(node));
         return beforePassed.flatMapValue(TreePassingStage::passNodes)
                 .flatMapValue(TreePassingStage::passNodeLists)

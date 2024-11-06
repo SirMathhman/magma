@@ -2,7 +2,9 @@ package magma.api.stream;
 
 import magma.api.option.Option;
 import magma.api.result.Result;
+import magma.app.compile.error.CompileError;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -23,4 +25,6 @@ public interface Stream<T> {
     Option<T> next();
 
     Stream<T> concat(Stream<T> other);
+
+    <C> C collect(Collector<T, C> collector);
 }

@@ -64,4 +64,9 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     public Stream<T> concat(Stream<T> other) {
         return new HeadedStream<>(() -> head.next().or(other::next));
     }
+
+    @Override
+    public <C> C collect(Collector<T, C> collector) {
+        return foldLeft(collector.createInitial(), collector::fold);
+    }
 }
