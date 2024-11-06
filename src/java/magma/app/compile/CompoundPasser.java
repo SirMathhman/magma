@@ -7,7 +7,6 @@ import magma.app.compile.error.CompileError;
 import magma.java.JavaStreams;
 
 import java.util.List;
-import java.util.function.Function;
 
 public record CompoundPasser(List<Passer> passers) implements Passer {
     @Override
