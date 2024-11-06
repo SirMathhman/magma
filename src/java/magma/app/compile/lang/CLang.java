@@ -1,11 +1,12 @@
 package magma.app.compile.lang;
 
-import magma.app.compile.rule.EmptyRule;
-import magma.app.compile.rule.PrefixRule;
-import magma.app.compile.rule.Rule;
+import magma.app.compile.rule.*;
+
+import static magma.app.compile.lang.CommonLang.createReturnRule;
 
 public class CLang {
     public static Rule createCRootRule() {
-        return new PrefixRule("int main(){\n\treturn 0;\n}", new EmptyRule());
+        final var children = new NodeRule(CommonLang.BLOCK_CHILDREN, createReturnRule());
+        return new TypeRule(CommonLang.FUNCTION_TYPE, new PrefixRule("int main(){\n\t", new SuffixRule(children, "\n}")));
     }
 }

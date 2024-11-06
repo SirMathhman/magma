@@ -31,7 +31,7 @@ public interface Node {
 
     Node withString(String propertyKey, String propertyValue);
 
-    Option<Node> retype(String type);
+    Node retype(String type);
 
     boolean is(String type);
 

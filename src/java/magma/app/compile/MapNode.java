@@ -89,9 +89,8 @@ public record MapNode(
     }
 
     @Override
-    public Option<Node> retype(String type) {
-        if (this.type.isPresent()) return new None<>();
-        return new Some<>(new MapNode(new Some<>(type), strings, nodes, nodeLists));
+    public Node retype(String type) {
+        return new MapNode(new Some<>(type), strings, nodes, nodeLists);
     }
 
     @Override
