@@ -1,6 +1,0 @@
-def test(): Void => {
-}
-
-let x : I32 = 400;
-let y : I32 = 20;
-return x + y;
