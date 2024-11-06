@@ -4,6 +4,7 @@ import magma.api.option.Option;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.api.stream.Stream;
+import magma.api.stream.Streams;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -11,7 +12,7 @@ import java.util.function.Predicate;
 
 public record ResultStream<T, E>(Stream<Result<T, E>> stream) implements Stream<Result<T, E>> {
     public static <T> Stream<T> fromOption(Option<T> option) {
-        return Stream.fromOption(option);
+        return Streams.fromOption(option);
     }
 
     @Override

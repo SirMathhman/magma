@@ -5,6 +5,9 @@ import magma.app.compile.rule.*;
 import java.util.List;
 
 public class MagmaLang {
+
+    public static final String ROOT_TYPE = "root";
+
     public static Rule createMagmaStatementsRule() {
         final LazyRule statements = new LazyRule();
         statements.setRule(new NodeListRule(CommonLang.CHILDREN, new StripRule(new OrRule(List.of(
@@ -29,5 +32,9 @@ public class MagmaLang {
 
     private static Rule createMagmaTypeRule() {
         return CommonLang.createSymbolTypeRule();
+    }
+
+    public static TypeRule createMagmaRootRule() {
+        return new TypeRule(ROOT_TYPE, createMagmaStatementsRule());
     }
 }

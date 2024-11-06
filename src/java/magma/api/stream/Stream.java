@@ -8,10 +8,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface Stream<T> {
-    static <T> Stream<T> fromOption(Option<T> option) {
-        throw new UnsupportedOperationException();
-    }
-
     <R> Stream<R> map(Function<T, R> mapper);
 
     <R> R into(Function<Stream<T>, R> mapper);
