@@ -1,5 +1,9 @@
 package magma.api.stream;
 
+import magma.api.option.Option;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -39,5 +43,25 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     @Override
     public boolean allMatch(Predicate<T> predicate) {
         return foldLeft(true, (aBoolean, t) -> aBoolean && predicate.test(t));
+    }
+
+    @Override
+    public <R, E> Result<R, E> foldLeftToResult(R initial, BiFunction<R, T, Result<R, E>> folder) {
+        return this.<Result<R, E>>foldLeft(new Ok<>(initial), (reResult, t) -> reResult.flatMapValue(current -> folder.apply(current, t)));
+    }
+
+    @Override
+    public <R> Stream<R> flatMap(Function<T, Stream<R>> mapper) {
+        return map(mapper).<Stream<R>>foldLeft(new HeadedStream<>(new EmptyHead<>()), Stream::concat);
+    }
+
+    @Override
+    public Option<T> next() {
+        return head.next();
+    }
+
+    @Override
+    public Stream<T> concat(Stream<T> other) {
+        return new HeadedStream<>(() -> head.next().or(other::next));
     }
 }

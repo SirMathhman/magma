@@ -1,19 +1,25 @@
 package magma.app.compile;
 
 import magma.api.Tuple;
+import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
 import magma.java.JavaLists;
 import magma.java.JavaStreams;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PassingStage {
     static Result<Node, CompileError> pass(Node node) {
         return passNodes(node)
                 .flatMapValue(PassingStage::passNodeLists)
-                .flatMapValue(node1 -> new RootPasser().pass(node1));
+                .flatMapValue(node1 -> createPasser().pass(node1).orElse(new Ok<>(node1)));
+    }
+
+    private static Passer createPasser() {
+        return new CompoundPasser(Collections.emptyList());
     }
 
     private static Result<Node, CompileError> passNodeLists(Node node) {

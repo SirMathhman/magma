@@ -1,5 +1,6 @@
 package magma.app.compile;
 
+import magma.api.option.Option;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.api.stream.Stream;
@@ -9,8 +10,32 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public record ResultStream<T, E>(Stream<Result<T, E>> stream) implements Stream<Result<T, E>> {
+    public static <T> Stream<T> fromOption(Option<T> option) {
+        return Stream.fromOption(option);
+    }
+
+    @Override
+    public <R, E0> Result<R, E0> foldLeftToResult(R initial, BiFunction<R, Result<T, E>, Result<R, E0>> folder) {
+        return stream.foldLeftToResult(initial, folder);
+    }
+
     public <R> Result<R, E> foldResultsLeft(R initial, BiFunction<R, T, R> folder) {
         return stream.<Result<R, E>>foldLeft(new Ok<>(initial), (reResult, teResult) -> reResult.and(() -> teResult).mapValue(tuple -> folder.apply(tuple.left(), tuple.right())));
+    }
+
+    @Override
+    public <R> Stream<R> flatMap(Function<Result<T, E>, Stream<R>> mapper) {
+        return stream.flatMap(mapper);
+    }
+
+    @Override
+    public Option<Result<T, E>> next() {
+        return stream.next();
+    }
+
+    @Override
+    public Stream<Result<T, E>> concat(Stream<Result<T, E>> other) {
+        return stream.concat(other);
     }
 
     @Override

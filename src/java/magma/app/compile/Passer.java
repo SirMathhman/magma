@@ -1,8 +1,9 @@
 package magma.app.compile;
 
+import magma.api.option.Option;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
 
 public interface Passer {
-    Result<Node, CompileError> pass(Node type);
+    Option<Result<Node, CompileError>> pass(Node type);
 }
