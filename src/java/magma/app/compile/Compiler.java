@@ -12,12 +12,6 @@ import java.util.List;
 public record Compiler(String input) {
     static Passer createPasser() {
         return new CompoundPasser(List.of(
-                new Passer() {
-                    @Override
-                    public Option<Result<Node, CompileError>> afterPass(Node node) {
-                        return new None<>();
-                    }
-                }
         ));
     }
 

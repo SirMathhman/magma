@@ -36,7 +36,7 @@ public class Main {
     }
 
     private static Option<ApplicationError> writeOutput(String output) {
-        final var target = SOURCE.resolveSibling("main.c");
+        final var target = SOURCE.resolveSibling("main.asm");
         return writeSafe(target, output)
                 .map(ThrowableError::new)
                 .map(ApplicationError::new);
