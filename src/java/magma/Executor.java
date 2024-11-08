@@ -76,15 +76,11 @@ public class Executor {
         int programCounter = 0;
 
         while (programCounter < memory.size()) {
-            print(memory);
-
             final long instructionUnsigned = memory.get(programCounter);
 
             // Decode the instruction
             int opcode = (int) ((instructionUnsigned >> 56) & 0xFF);  // First 8 bits
             long addressOrValue = instructionUnsigned & 0x00FFFFFFFFFFFFFFL;  // Remaining 56 bits
-
-            System.out.println(programCounter + " " + Long.toString(opcode, 16) + " " + Long.toString(addressOrValue, 16));
 
             programCounter++;  // Move to next instruction by default
 
@@ -120,7 +116,7 @@ public class Executor {
                     }
                     break;
                 case OUT:  // OUT
-                    System.out.println("Output: " + Long.toString(accumulator, 16));
+                    System.out.print((char) accumulator);
                     break;
                 case ADD:  // ADD
                     if (addressOrValue < memory.size()) {
@@ -194,12 +190,6 @@ public class Executor {
         System.out.println("Final Accumulator: " + accumulator);
     }
 
-    private static void print(List<Long> memory) {
-        System.out.println(memory.stream()
-                .map(value -> Long.toString(value, 16))
-                .collect(Collectors.joining(", ", "[", "]")));
-    }
-
     private static LinkedList<Long> formatInput(String content) {
         final var segments = Arrays.stream(content.split("\\R"))
                 .filter(value -> !value.isEmpty())
@@ -222,7 +212,8 @@ public class Executor {
                 if (inData) {
                     final var separator = segment.indexOf('=');
                     final var label = segment.substring(0, separator).strip();
-                    final var value = Long.parseLong(segment.substring(separator + 1).strip(), 16);
+                    final var stripped = segment.substring(separator + 1).strip();
+                    final var value = Long.parseLong(stripped, 10);
                     data.put(label, value);
                 }
                 if (inProgram) {
@@ -252,7 +243,7 @@ public class Executor {
             var instruction = program.get(i);
             list.add("inps " + (long) (BOOT_OFFSET + i + data.size()));
             final var separator = instruction.indexOf(' ');
-            if(separator == -1) {
+            if (separator == -1) {
                 list.add(instruction);
             } else {
                 final var opCode = instruction.substring(0, separator);

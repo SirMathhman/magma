@@ -1,6 +1,6 @@
 data
-x = 420
-y = 500
+x = 65
+y = 66
 
 program
 load x
