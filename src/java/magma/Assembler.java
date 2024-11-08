@@ -81,6 +81,11 @@ public class Assembler {
     private static void execute(Deque<Long> input) {
         System.out.println("Memory footprint: " + (input.size() * BYTES_PER_LONG) + " bytes");
 
+        final var memory = compute(input);
+        System.out.println("Final Memory State: " + formatHexList(memory, ", "));
+    }
+
+    private static List<Long> compute(Deque<Long> input) {
         final List<Long> memory = new ArrayList<>();
         memory.add(createInstruction(INPUT_AND_STORE, 1L));
 
@@ -163,7 +168,7 @@ public class Assembler {
                     programCounter = (int) addressOrValue;
                     break;
                 case HALT:  // HRS
-                    return;  // Halt execution
+                    return memory;
                 case SFT:  // SFT
                     int leftShift = (int) ((addressOrValue >> 8) & 0xFF);
                     int rightShift = (int) (addressOrValue & 0xFF);
@@ -197,9 +202,7 @@ public class Assembler {
                     break;
             }
         }
-
-        System.out.println("Final Memory State: " + memory);
-        System.out.println("Final Accumulator: " + accumulator);
+        return memory;
     }
 
     private static String formatHexList(List<Long> list) {
