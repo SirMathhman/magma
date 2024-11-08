@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class Executor {
     public static final Path ROOT = Paths.get(".", "src", "magma");
-    public static final Path TARGET = ROOT.resolveSibling("main.asm");
+    public static final Path TARGET = ROOT.resolve("main.asm");
     public static final int INP = 0x00;
     public static final int LOAD = 0x01;
     public static final int STO = 0x02;
@@ -29,12 +29,13 @@ public class Executor {
     public static final int DEC = 0x07;
     public static final int TAC = 0x08;
     public static final int JMP = 0x09;
-    public static final int HRS = 0x0A;
+    public static final int HALT = 0x0A;
     public static final int SFT = 0x0B;
     public static final int SHL = 0x0C;
     public static final int SHR = 0x0D;
     public static final int TS = 0x0E;
     public static final int CAS = 0x0F;
+    public static final int BYTES_PER_LONG = 8;
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -63,7 +64,9 @@ public class Executor {
         return ((long) opcode << 56) | addressOrValue;
     }
 
-    private static void execute(Deque<Integer> input) {
+    private static void execute(Deque<Long> input) {
+        System.out.println("Memory footprint: " + (input.size() * BYTES_PER_LONG) + " bytes");
+
         final List<Long> memory = new ArrayList<>();
         memory.add(createInstruction(INP, 1L));
 
@@ -71,11 +74,11 @@ public class Executor {
         int programCounter = 0;
 
         while (programCounter < memory.size()) {
-            final long instruction = memory.get(programCounter);
+            final long instructionUnsigned = memory.get(programCounter);
 
             // Decode the instruction
-            int opcode = (int) ((instruction >> 56) & 0xFF);  // First 8 bits
-            long addressOrValue = instruction & 0x00FFFFFFFFFFFFFFL;  // Remaining 56 bits
+            int opcode = (int) ((instructionUnsigned >> 56) & 0xFF);  // First 8 bits
+            long addressOrValue = instructionUnsigned & 0x00FFFFFFFFFFFFFFL;  // Remaining 56 bits
 
             programCounter++;  // Move to next instruction by default
 
@@ -133,7 +136,7 @@ public class Executor {
                 case JMP:  // JMP
                     programCounter = (int) addressOrValue;
                     break;
-                case HRS:  // HRS
+                case HALT:  // HRS
                     return;  // Halt execution
                 case SFT:  // SFT
                     int leftShift = (int) ((addressOrValue >> 8) & 0xFF);
@@ -173,11 +176,32 @@ public class Executor {
         System.out.println("Final Accumulator: " + accumulator);
     }
 
-    private static LinkedList<Integer> formatInput(String content) {
+    private static LinkedList<Long> formatInput(String content) {
         return Arrays.stream(content.split("\\R"))
                 .filter(value -> !value.isEmpty())
-                .map(Integer::parseInt)
+                .map(Executor::createInstruction)
                 .collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    private static long createInstruction(String line) {
+        final var separator = line.indexOf(' ');
+        if (separator == -1) {
+            return createInstruction(findOpCode(line.strip()), 0);
+        } else {
+            final var opInstruction = line.substring(0, separator).strip();
+            final var opCode = findOpCode(opInstruction);
+            final var addressOrValue = Long.parseLong(line.substring(separator + 1).strip());
+            return createInstruction(opCode, addressOrValue);
+        }
+    }
+
+    private static int findOpCode(String opInstruction) {
+        switch (opInstruction) {
+            case "HALT":
+                return HALT;
+            default:
+                throw new RuntimeException("Unknown instruction: " + opInstruction);
+        }
     }
 
     static Result<String, IOException> readSafe(Path path) {
