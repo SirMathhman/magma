@@ -1,20 +1,15 @@
 section data {
-    x = 'a';
-    y = 'b';
+    a = 'b';
 }
 
 section program {
     label start {
-        jmp test;
+        load a;
+        out;
+        jmp halt;
     }
 
     label halt {
         halt;
-    }
-
-    label test {
-        load x;
-        out;
-        jmp halt;
     }
 }

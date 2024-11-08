@@ -42,6 +42,8 @@ public class Executor {
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
     public static final int DATA_OFFSET = 3;
+    public static final String OP_CODE = "op-code";
+    public static final String ADDRESS_OR_VALUE = "addressOrValue";
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -200,9 +202,13 @@ public class Executor {
     }
 
     private static String formatHexList(List<Long> list) {
+        return formatHexList(list, ", ");
+    }
+
+    private static String formatHexList(List<Long> list, String delimiter) {
         return list.stream()
                 .map(value -> Long.toString(value, 16))
-                .collect(Collectors.joining(", ", "[", "]"));
+                .collect(Collectors.joining(delimiter, "[", "]"));
     }
 
     private static Result<Deque<Long>, CompileError> assemble(String content) {
@@ -241,16 +247,71 @@ public class Executor {
             dataLabels.put(label, address);
         }
 
-        final var addressOrValue = 3 + dataLabels.size();
+        final var programStart = 3 + dataLabels.size();
 
-        list.add(createInstruction(INPUT_AND_STORE, addressOrValue));
-        list.add(createInstruction(HALT));
+        final var labelList = state.labels.entrySet().stream().toList();
+
+        var programAddresses = new HashMap<String, Long>();
+        var program = new ArrayList<Node>();
+
+        for (var entry : labelList) {
+            final var name = entry.getKey();
+            final var values = entry.getValue();
+
+            final var i = DATA_OFFSET + dataLabels.size() + program.size();
+            programAddresses.put(name, (long) i);
+
+            for (Node value : values) {
+                if (value.is("instruction")) {
+                    program.add(value);
+                }
+            }
+        }
+
+        for (int i = 0; i < program.size(); i++) {
+            Node node = program.get(i);
+            final var opCode = findOpCode(node.findString(OP_CODE).orElse(""));
+
+            final var option = node.findString(ADDRESS_OR_VALUE);
+            final long instruction;
+            if (option.isPresent()) {
+                final var addressOrValue = option.orElse("");
+                final var address = find(dataLabels, addressOrValue)
+                        .or(() -> find(programAddresses, addressOrValue))
+                        .orElse(0L);
+
+                instruction = createInstruction(opCode, address);
+            } else {
+                instruction = createInstruction(opCode);
+            }
+
+            list.add(createInstruction(INPUT_AND_STORE, programStart + i));
+            list.add(instruction);
+        }
 
         list.add(createInstruction(INPUT_AND_STORE, 2));
-        list.add(createInstruction(JUMP_ADDRESS, addressOrValue));
+        list.add(createInstruction(JUMP_ADDRESS, programStart));
 
-        System.out.println(formatHexList(list));
         return new LinkedList<>(list);
+    }
+
+    private static Option<Long> find(Map<String, Long> map, String key) {
+        if (map.containsKey(key)) {
+            return new Some<>(map.get(key));
+        } else {
+            return new None<>();
+        }
+    }
+
+    private static int findOpCode(String instruction) {
+        final var lower = instruction.toLowerCase();
+        return switch (lower) {
+            case "halt" -> HALT;
+            case "load" -> LOAD;
+            case "out" -> OUT;
+            case "jmp" -> JUMP_ADDRESS;
+            default -> throw new RuntimeException("Invalid instruction: " + instruction);
+        };
     }
 
     private static long createInstruction(int opCode) {
@@ -311,13 +372,13 @@ public class Executor {
     }
 
     private static Rule createSimpleInstructionRule() {
-        final var operation = new StringRule("operation");
+        final var operation = new StringRule(OP_CODE);
         return new TypeRule("instruction", new StripRule(new SuffixRule(new FilterRule(new SymbolFilter(), operation), ";")));
     }
 
     private static Rule createComplexInstructionRule() {
-        final var operation = new StripRule(new StringRule("operation"));
-        final var address = new StripRule(new StringRule("addressOrValue"));
+        final var operation = new StripRule(new StringRule(OP_CODE));
+        final var address = new StripRule(new StringRule(ADDRESS_OR_VALUE));
         return new TypeRule("instruction", new StripRule(new FirstRule(operation, " ", new StripRule(new SuffixRule(address, ";")))));
     }
 
