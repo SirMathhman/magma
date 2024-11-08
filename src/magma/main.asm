@@ -1,11 +1,10 @@
-inps 2
-jmp 0
-inps 3
-420
-inps 4
-load 3
-inps 5
+data
+x = 420
+y = 500
+
+program
+load x
 out
-inps 6
+load y
+out
 halt
-jmp 4

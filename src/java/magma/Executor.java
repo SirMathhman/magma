@@ -37,6 +37,7 @@ public class Executor {
     public static final int TS = 0x0E;
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
+    public static final int BOOT_OFFSET = 3;
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -200,10 +201,75 @@ public class Executor {
     }
 
     private static LinkedList<Long> formatInput(String content) {
-        return Arrays.stream(content.split("\\R"))
+        final var segments = Arrays.stream(content.split("\\R"))
                 .filter(value -> !value.isEmpty())
+                .map(String::strip)
+                .toList();
+
+        final var data = new HashMap<String, Long>();
+        final var program = new ArrayList<String>();
+
+        boolean inData = false;
+        boolean inProgram = false;
+        for (String segment : segments) {
+            if (segment.equals("data")) {
+                inData = true;
+                inProgram = false;
+            } else if (segment.equals("program")) {
+                inProgram = true;
+                inData = false;
+            } else {
+                if (inData) {
+                    final var separator = segment.indexOf('=');
+                    final var label = segment.substring(0, separator).strip();
+                    final var value = Long.parseLong(segment.substring(separator + 1).strip(), 16);
+                    data.put(label, value);
+                }
+                if (inProgram) {
+                    program.add(segment);
+                }
+            }
+        }
+
+        var list = new ArrayList<String>();
+        list.add("inps 2");
+        list.add("jmp 0");
+
+        var map = new HashMap<String, Long>();
+        final var entries = data.entrySet().stream().toList();
+        for (int i = 0; i < entries.size(); i++) {
+            var entry = entries.get(i);
+
+            final var address = (long) (BOOT_OFFSET + i);
+            list.add("inps " + address);
+            list.add(Long.toString(entry.getValue(), 16));
+
+            final var label = entry.getKey();
+            map.put(label, address);
+        }
+
+        for (int i = 0; i < program.size(); i++) {
+            var instruction = program.get(i);
+            list.add("inps " + (long) (BOOT_OFFSET + i + data.size()));
+            final var separator = instruction.indexOf(' ');
+            if(separator == -1) {
+                list.add(instruction);
+            } else {
+                final var opCode = instruction.substring(0, separator);
+                final var address = instruction.substring(separator + 1);
+                final var resolved = map.get(address);
+                list.add(opCode + " " + resolved);
+            }
+        }
+
+        list.add("jmp " + (3 + data.size()));
+
+        final var collect = list.stream()
                 .map(Executor::createInstruction)
                 .collect(Collectors.toCollection(LinkedList::new));
+
+        System.out.println(collect);
+        return collect;
     }
 
     private static long createInstruction(String line) {
