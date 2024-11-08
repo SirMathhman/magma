@@ -5,6 +5,9 @@ section data {
 
 section program {
     label start {
+        load first;
+        add second;
+        out;
         halt;
     }
 }

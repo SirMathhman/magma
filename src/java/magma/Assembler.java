@@ -82,6 +82,7 @@ public class Assembler {
         System.out.println("Memory footprint: " + (input.size() * BYTES_PER_LONG) + " bytes");
 
         final var memory = compute(input);
+        System.out.println();
         System.out.println("Final Memory State: " + formatHexList(memory, ", "));
     }
 
@@ -133,7 +134,7 @@ public class Assembler {
                     }
                     break;
                 case OUT:  // OUT
-                    System.out.print((char) accumulator);
+                    System.out.print(accumulator);
                     break;
                 case ADD:  // ADD
                     if (addressOrValue < memory.size()) {
