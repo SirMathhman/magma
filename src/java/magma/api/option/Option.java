@@ -22,4 +22,6 @@ public interface Option<T> {
     Option<T> or(Supplier<Option<T>> supplier);
 
     Tuple<Boolean, T> toTuple(T other);
+
+    boolean isEmpty();
 }

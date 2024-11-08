@@ -3,31 +3,31 @@ package magma.app.compile.rule;
 import java.util.ArrayList;
 import java.util.List;
 
-public class State {
+public class SplitState {
     private final List<String> segments;
     private final StringBuilder buffer;
     private final int depth;
 
-    public State(List<String> segments, StringBuilder buffer, int depth) {
+    public SplitState(List<String> segments, StringBuilder buffer, int depth) {
         this.segments = segments;
         this.buffer = buffer;
         this.depth = depth;
     }
 
-    public State() {
+    public SplitState() {
         this(new ArrayList<>(), new StringBuilder(), 0);
     }
 
-    State advance() {
+    SplitState advance() {
         if (buffer.isEmpty()) return this;
 
         final var copy = new ArrayList<>(segments);
         copy.add(buffer.toString());
-        return new State(copy, new StringBuilder(), depth);
+        return new SplitState(copy, new StringBuilder(), depth);
     }
 
-    State append(char c) {
-        return new State(segments, buffer.append(c), depth);
+    SplitState append(char c) {
+        return new SplitState(segments, buffer.append(c), depth);
     }
 
     public List<String> segments() {
@@ -38,12 +38,12 @@ public class State {
         return depth == 0;
     }
 
-    public State enter() {
-        return new State(segments, buffer, depth + 1);
+    public SplitState enter() {
+        return new SplitState(segments, buffer, depth + 1);
     }
 
-    public State exit() {
-        return new State(segments, buffer, depth - 1);
+    public SplitState exit() {
+        return new SplitState(segments, buffer, depth - 1);
     }
 
     public boolean isShallow() {

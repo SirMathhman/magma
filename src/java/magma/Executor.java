@@ -11,15 +11,14 @@ import magma.app.ThrowableError;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.rule.*;
+import magma.java.JavaStreams;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Executor {
     public static final Path ROOT = Paths.get(".", "src", "magma");
@@ -34,7 +33,7 @@ public class Executor {
     public static final int INC = 0x06;
     public static final int DEC = 0x07;
     public static final int TAC = 0x08;
-    public static final int JUMP = 0x09;
+    public static final int JUMP_ADDRESS = 0x09;
     public static final int HALT = 0x0A;
     public static final int SFT = 0x0B;
     public static final int SHL = 0x0C;
@@ -85,6 +84,7 @@ public class Executor {
         int programCounter = 0;
 
         while (programCounter < memory.size()) {
+            System.out.println(memory.stream().map(value -> Long.toString(value, 16)).collect(Collectors.joining(", ", "[", "]")));
             final long instructionUnsigned = memory.get(programCounter);
 
             // Decode the instruction
@@ -156,7 +156,7 @@ public class Executor {
                         programCounter = (int) addressOrValue;
                     }
                     break;
-                case JUMP:  // JMP
+                case JUMP_ADDRESS:  // JMP
                     programCounter = (int) addressOrValue;
                     break;
                 case HALT:  // HRS
@@ -202,12 +202,62 @@ public class Executor {
     private static Result<Deque<Long>, CompileError> assemble(String content) {
         return createRootRule()
                 .parse(content)
-                .mapValue(Executor::getLongs);
+                .mapValue(Executor::parse);
     }
 
-    private static LinkedList<Long> getLongs(Node root) {
+    private static Deque<Long> parse(Node root) {
         System.out.println(root.format(0));
-        return new LinkedList<>();
+
+        final var state = root.findNodeList("children")
+                .map(children -> JavaStreams.fromList(children).foldLeft(new State(), Executor::foldSection))
+                .orElse(new State());
+
+        var list = new ArrayList<Long>();
+        list.add(createInstruction(INPUT_AND_STORE, 2));
+        list.add(createInstruction(JUMP_ADDRESS, 0));
+
+        list.add(createInstruction(INPUT_AND_STORE, 3));
+        list.add(createInstruction(HALT));
+
+        list.add(createInstruction(INPUT_AND_STORE, 2));
+        list.add(createInstruction(JUMP_ADDRESS, 3));
+
+        return new LinkedList<>(list);
+    }
+
+    private static long createInstruction(int opCode) {
+        return createInstruction(opCode, 0);
+    }
+
+    private static State foldSection(State state, Node node) {
+        final var name = node.findString("name").orElse("");
+        final var children = node.findNodeList("children").orElse(Collections.emptyList());
+
+        if (name.equals("data")) {
+            return JavaStreams.fromList(children).foldLeft(state, Executor::foldData);
+        } else if (name.equals("program")) {
+            return JavaStreams.fromList(children).foldLeft(state, Executor::foldProgram);
+        } else {
+            throw new RuntimeException("Unknown name: " + name);
+        }
+    }
+
+    private static State foldProgram(State state, Node instructionOrLabel) {
+        if (instructionOrLabel.is("label")) {
+            final var name = instructionOrLabel.findString("name").orElse("");
+            final var children = instructionOrLabel.findNodeList("children").orElse(Collections.emptyList());
+
+            final var labeled = state.label(name);
+            return JavaStreams.fromList(children).foldLeft(labeled, State::instruct);
+        }
+
+        return state;
+    }
+
+    private static State foldData(State state, Node datum) {
+        return datum.findString("name")
+                .flatMap(name -> datum.findNode("value").map(value -> state.define(name, value)))
+                .orElse(state);
     }
 
     private static Rule createRootRule() {
@@ -225,26 +275,28 @@ public class Executor {
         statement.setRule(new OrRule(List.of(
                 new EmptyRule(),
                 createDataRule(),
-                createOperationRule(),
-                createSimpleOperatorRule(),
+                createComplexInstructionRule(),
+                createSimpleInstructionRule(),
                 createGroupRule("label", "label", statement)
         )));
         return statement;
     }
 
-    private static Rule createSimpleOperatorRule() {
+    private static Rule createSimpleInstructionRule() {
         final var operation = new StringRule("operation");
-        return new TypeRule("single", new StripRule(new SuffixRule(new FilterRule(new SymbolFilter(), operation), ";")));
+        return new TypeRule("instruction", new StripRule(new SuffixRule(new FilterRule(new SymbolFilter(), operation), ";")));
     }
 
-    private static Rule createOperationRule() {
+    private static Rule createComplexInstructionRule() {
         final var operation = new StripRule(new StringRule("operation"));
         final var address = new StripRule(new StringRule("addressOrValue"));
-        return new TypeRule("complex", new StripRule(new FirstRule(operation, " ", new StripRule(new SuffixRule(address, ";")))));
+        return new TypeRule("instruction", new StripRule(new FirstRule(operation, " ", new StripRule(new SuffixRule(address, ";")))));
     }
 
     private static Rule createDataRule() {
-        return new TypeRule("data", new FirstRule(new StripRule(new StringRule("name")), "=", new StripRule(new SuffixRule(createValueRule(), ";"))));
+        final var name = new StripRule(new StringRule("name"));
+        final var value = new NodeRule("value", createValueRule());
+        return new TypeRule("data", new FirstRule(name, "=", new StripRule(new SuffixRule(value, ";"))));
     }
 
     private static Rule createValueRule() {
@@ -257,6 +309,38 @@ public class Executor {
             return new Ok<>(Files.readString(path));
         } catch (IOException e) {
             return new Err<>(e);
+        }
+    }
+
+    private record State(Map<String, Node> data, Map<String, List<Node>> labels, String currentLabel) {
+        public State() {
+            this(Collections.emptyMap(), Collections.emptyMap(), "");
+        }
+
+        public State define(String name, Node value) {
+            final var copy = new HashMap<>(data);
+            copy.put(name, value);
+            return new State(new HashMap<>(copy), labels, currentLabel);
+        }
+
+        public State instruct(Node instruction) {
+            if (labels.containsKey(currentLabel)) {
+                final var list = new ArrayList<>(labels.get(currentLabel));
+                list.add(instruction);
+
+                final var copy = new HashMap<>(labels);
+                copy.put(currentLabel, list);
+
+                return new State(data, copy, currentLabel);
+            } else {
+                final var copy = new HashMap<>(labels);
+                copy.put(currentLabel, Collections.singletonList(instruction));
+                return new State(data, copy, currentLabel);
+            }
+        }
+
+        public State label(String name) {
+            return new State(data, labels, name);
         }
     }
 }

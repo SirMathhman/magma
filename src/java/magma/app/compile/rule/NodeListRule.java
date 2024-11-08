@@ -42,13 +42,13 @@ public class NodeListRule implements Rule {
 
     private static List<String> split(String input) {
         return JavaStreams.fromString(input)
-                .foldLeft(new State(), NodeListRule::splitAtChar)
+                .foldLeft(new SplitState(), NodeListRule::splitAtChar)
                 .advance()
                 .segments();
     }
 
-    private static State splitAtChar(State state, char c) {
-        final var appended = state.append(c);
+    private static SplitState splitAtChar(SplitState splitSTate, char c) {
+        final var appended = splitSTate.append(c);
         if (c == ';' && appended.isLevel()) return appended.advance();
         if (c == '}' && appended.isShallow()) return appended.exit().advance();
 
