@@ -12,10 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Main {
-    public static final Path SOURCE = Executor.ROOT.resolve("main.mgs");
+    public static final Path SOURCE = Assembler.ROOT.resolve("main.mgs");
 
     public static void main(String[] args) {
-        Executor.readSafe(Main.SOURCE)
+        Assembler.readSafe(Main.SOURCE)
                 .mapErr(ThrowableError::new)
                 .mapErr(ApplicationError::new)
                 .mapValue(Main::compileAndWrite)
@@ -32,7 +32,7 @@ public class Main {
     }
 
     private static Option<ApplicationError> writeOutput(String output) {
-        return writeSafe(Executor.TARGET, output)
+        return writeSafe(Assembler.TARGET, output)
                 .map(ThrowableError::new)
                 .map(ApplicationError::new);
     }
