@@ -1,6 +1,6 @@
 data
-x = 65
-y = 66
+x = 'a'
+y = 'b'
 
 program
 load x

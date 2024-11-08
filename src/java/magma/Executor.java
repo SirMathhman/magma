@@ -213,7 +213,7 @@ public class Executor {
                     final var separator = segment.indexOf('=');
                     final var label = segment.substring(0, separator).strip();
                     final var stripped = segment.substring(separator + 1).strip();
-                    final var value = Long.parseLong(stripped, 10);
+                    final var value = parseValue(stripped);
                     data.put(label, value);
                 }
                 if (inProgram) {
@@ -261,6 +261,15 @@ public class Executor {
 
         System.out.println(collect);
         return collect;
+    }
+
+    private static long parseValue(String stripped) {
+        if (stripped.startsWith("'") && stripped.endsWith("'")) {
+            final var c = stripped.substring(1, stripped.length() - 1);
+            return c.charAt(0);
+        }
+
+        return Long.parseLong(stripped, 10);
     }
 
     private static long createInstruction(String line) {
