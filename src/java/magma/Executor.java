@@ -41,7 +41,7 @@ public class Executor {
     public static final int TS = 0x0E;
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
-    public static final int BOOT_OFFSET = 3;
+    public static final int DATA_OFFSET = 3;
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -84,7 +84,7 @@ public class Executor {
         int programCounter = 0;
 
         while (programCounter < memory.size()) {
-            System.out.println(memory.stream().map(value -> Long.toString(value, 16)).collect(Collectors.joining(", ", "[", "]")));
+            System.out.println(formatHexList(memory));
             final long instructionUnsigned = memory.get(programCounter);
 
             // Decode the instruction
@@ -199,6 +199,12 @@ public class Executor {
         System.out.println("Final Accumulator: " + accumulator);
     }
 
+    private static String formatHexList(List<Long> list) {
+        return list.stream()
+                .map(value -> Long.toString(value, 16))
+                .collect(Collectors.joining(", ", "[", "]"));
+    }
+
     private static Result<Deque<Long>, CompileError> assemble(String content) {
         return createRootRule()
                 .parse(content)
@@ -206,8 +212,6 @@ public class Executor {
     }
 
     private static Deque<Long> parse(Node root) {
-        System.out.println(root.format(0));
-
         final var state = root.findNodeList("children")
                 .map(children -> JavaStreams.fromList(children).foldLeft(new State(), Executor::foldSection))
                 .orElse(new State());
@@ -216,12 +220,36 @@ public class Executor {
         list.add(createInstruction(INPUT_AND_STORE, 2));
         list.add(createInstruction(JUMP_ADDRESS, 0));
 
-        list.add(createInstruction(INPUT_AND_STORE, 3));
+        Map<String, Long> dataLabels = new HashMap<>();
+        final var dataList = state.data.entrySet().stream().toList();
+        for (int index = 0; index < dataList.size(); index++) {
+            final var entry = dataList.get(index);
+            final var label = entry.getKey();
+            final var value = entry.getValue();
+
+            long data;
+            if (value.is("char")) {
+                data = value.findString("value").orElse("").charAt(0);
+            } else {
+                throw new RuntimeException("Unknown value: " + value);
+            }
+
+            final var address = (long) DATA_OFFSET + index;
+            list.add(createInstruction(INPUT_AND_STORE, address));
+            list.add(data);
+
+            dataLabels.put(label, address);
+        }
+
+        final var addressOrValue = 3 + dataLabels.size();
+
+        list.add(createInstruction(INPUT_AND_STORE, addressOrValue));
         list.add(createInstruction(HALT));
 
         list.add(createInstruction(INPUT_AND_STORE, 2));
-        list.add(createInstruction(JUMP_ADDRESS, 3));
+        list.add(createInstruction(JUMP_ADDRESS, addressOrValue));
 
+        System.out.println(formatHexList(list));
         return new LinkedList<>(list);
     }
 

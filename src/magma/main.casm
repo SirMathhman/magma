@@ -1,5 +1,6 @@
 section data {
     x = 'a';
+    y = 'b';
 }
 
 section program {
