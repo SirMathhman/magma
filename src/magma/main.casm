@@ -1,0 +1,17 @@
+section data {
+    x = 'a';
+}
+
+section program {
+    jmp test;
+    
+    label halt {
+        halt;
+    }
+    
+    label test {
+        load x;
+        out;
+        jmp halt;
+    }
+}

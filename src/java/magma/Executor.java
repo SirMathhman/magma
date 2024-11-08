@@ -8,17 +8,22 @@ import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.ApplicationError;
 import magma.app.ThrowableError;
+import magma.app.compile.Node;
+import magma.app.compile.error.CompileError;
+import magma.app.compile.rule.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Executor {
     public static final Path ROOT = Paths.get(".", "src", "magma");
-    public static final Path TARGET = ROOT.resolve("main.asm");
+    public static final Path TARGET = ROOT.resolve("main.casm");
     public static final int INPUT_AND_LOAD = 0x00;
     public static final int INPUT_AND_STORE = 0x10;
     public static final int LOAD = 0x01;
@@ -47,10 +52,14 @@ public class Executor {
         return readSafe(TARGET)
                 .mapErr(ThrowableError::new)
                 .mapErr(ApplicationError::new)
-                .match(input -> {
-                    execute(formatInput(input));
-                    return new None<>();
-                }, Some::new);
+                .match(Executor::assembleAndExecute, Some::new);
+    }
+
+    private static Option<ApplicationError> assembleAndExecute(String input) {
+        return assemble(input).mapErr(ApplicationError::new).match(list -> {
+            execute(list);
+            return new None<>();
+        }, Some::new);
     }
 
     // Helper function to create a valid 64-bit instruction
@@ -190,122 +199,58 @@ public class Executor {
         System.out.println("Final Accumulator: " + accumulator);
     }
 
-    private static LinkedList<Long> formatInput(String content) {
-        final var segments = Arrays.stream(content.split("\\R"))
-                .filter(value -> !value.isEmpty())
-                .map(String::strip)
-                .toList();
-
-        final var data = new HashMap<String, Long>();
-        final var program = new ArrayList<String>();
-
-        boolean inData = false;
-        boolean inProgram = false;
-        for (String segment : segments) {
-            if (segment.equals("data")) {
-                inData = true;
-                inProgram = false;
-            } else if (segment.equals("program")) {
-                inProgram = true;
-                inData = false;
-            } else {
-                if (inData) {
-                    final var separator = segment.indexOf('=');
-                    final var label = segment.substring(0, separator).strip();
-                    final var stripped = segment.substring(separator + 1).strip();
-                    final var value = parseValue(stripped);
-                    data.put(label, value);
-                }
-                if (inProgram) {
-                    program.add(segment);
-                }
-            }
-        }
-
-        var list = new ArrayList<String>();
-        list.add("inps 2");
-        list.add("jmp 0");
-
-        var map = new HashMap<String, Long>();
-        final var entries = data.entrySet().stream().toList();
-        for (int i = 0; i < entries.size(); i++) {
-            var entry = entries.get(i);
-
-            final var address = (long) (BOOT_OFFSET + i);
-            list.add("inps " + address);
-            list.add(Long.toString(entry.getValue(), 16));
-
-            final var label = entry.getKey();
-            map.put(label, address);
-        }
-
-        for (int i = 0; i < program.size(); i++) {
-            var instruction = program.get(i);
-            list.add("inps " + (long) (BOOT_OFFSET + i + data.size()));
-            final var separator = instruction.indexOf(' ');
-            if (separator == -1) {
-                list.add(instruction);
-            } else {
-                final var opCode = instruction.substring(0, separator);
-                final var address = instruction.substring(separator + 1);
-                final var resolved = map.get(address);
-                list.add(opCode + " " + resolved);
-            }
-        }
-
-        list.add("jmp " + (3 + data.size()));
-
-        final var collect = list.stream()
-                .map(Executor::createInstruction)
-                .collect(Collectors.toCollection(LinkedList::new));
-
-        System.out.println(collect);
-        return collect;
+    private static Result<Deque<Long>, CompileError> assemble(String content) {
+        return createRootRule()
+                .parse(content)
+                .mapValue(Executor::getLongs);
     }
 
-    private static long parseValue(String stripped) {
-        if (stripped.startsWith("'") && stripped.endsWith("'")) {
-            final var c = stripped.substring(1, stripped.length() - 1);
-            return c.charAt(0);
-        }
-
-        return Long.parseLong(stripped, 10);
+    private static LinkedList<Long> getLongs(Node root) {
+        System.out.println(root.format(0));
+        return new LinkedList<>();
     }
 
-    private static long createInstruction(String line) {
-        final var lineStripped = line.strip();
-        final var separator = line.indexOf(' ');
-        if (separator == -1) {
-            return findOpCode(lineStripped)
-                    .map(value -> createInstruction(value, 0))
-                    .orElseGet(() -> parse(lineStripped));
-        } else {
-            final var opInstruction = line.substring(0, separator).strip();
-            return findOpCode(opInstruction).map(opCode -> {
-                final var addressOrValue = Long.parseLong(line.substring(separator + 1).strip());
-                return createInstruction(opCode, addressOrValue);
-            }).orElseGet(() -> parse(lineStripped));
-        }
+    private static Rule createRootRule() {
+        return new NodeListRule("children", new StripRule(createGroupRule("section", "section ", createStatementRule())));
     }
 
-    private static long parse(String stripped) {
-        try {
-            return Long.parseUnsignedLong(stripped, 16);
-        } catch (NumberFormatException e) {
-            throw new RuntimeException("Unknown instruction: " + stripped);
-        }
+    private static Rule createGroupRule(String type, String prefix, Rule statement) {
+        final var name = new StripRule(new StringRule("name"));
+        final var children = new NodeListRule("children", new StripRule(statement));
+        return new TypeRule(type, new PrefixRule(prefix, new FirstRule(name, "{", new SuffixRule(children, "}"))));
     }
 
-    private static Option<Integer> findOpCode(String opInstruction) {
-        return switch (opInstruction.toUpperCase()) {
-            case "HALT" -> new Some<>(HALT);
-            case "LOAD" -> new Some<>(LOAD);
-            case "INPS" -> new Some<>(INPUT_AND_STORE);
-            case "JMP" -> new Some<>(JUMP);
-            case "OUT" -> new Some<>(OUT);
-            default -> new None<>();
-        };
+    private static Rule createStatementRule() {
+        final var statement = new LazyRule();
+        statement.setRule(new OrRule(List.of(
+                new EmptyRule(),
+                createDataRule(),
+                createOperationRule(),
+                createSimpleOperatorRule(),
+                createGroupRule("label", "label", statement)
+        )));
+        return statement;
     }
+
+    private static Rule createSimpleOperatorRule() {
+        final var operation = new StringRule("operation");
+        return new TypeRule("single", new StripRule(new SuffixRule(new FilterRule(new SymbolFilter(), operation), ";")));
+    }
+
+    private static Rule createOperationRule() {
+        final var operation = new StripRule(new StringRule("operation"));
+        final var address = new StripRule(new StringRule("addressOrValue"));
+        return new TypeRule("complex", new StripRule(new FirstRule(operation, " ", new StripRule(new SuffixRule(address, ";")))));
+    }
+
+    private static Rule createDataRule() {
+        return new TypeRule("data", new FirstRule(new StripRule(new StringRule("name")), "=", new StripRule(new SuffixRule(createValueRule(), ";"))));
+    }
+
+    private static Rule createValueRule() {
+        return new TypeRule("char", new StripRule(new PrefixRule("'", new SuffixRule(new StringRule("value"), "'"))));
+    }
+
 
     static Result<String, IOException> readSafe(Path path) {
         try {

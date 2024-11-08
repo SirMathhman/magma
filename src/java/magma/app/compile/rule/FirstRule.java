@@ -19,7 +19,7 @@ public record FirstRule(Rule leftRule, String slice, Rule rightRule) implements 
     public Result<Node, CompileError> parse(String input) {
         final var index = input.indexOf(slice);
         if (index == -1)
-            return new Err<>(new CompileError("Slice '" + slice + "' not present.", new StringContext(slice)));
+            return new Err<>(new CompileError("Slice '" + slice + "' not present.", new StringContext(input)));
 
         final var left = input.substring(0, index);
         final var right = input.substring(index + slice.length());
