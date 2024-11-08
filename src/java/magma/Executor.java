@@ -119,7 +119,7 @@ public class Executor {
                     }
                     break;
                 case OUT:  // OUT
-                    System.out.println("Output: " + accumulator);
+                    System.out.println("Output: " + Long.toString(accumulator, 16));
                     break;
                 case ADD:  // ADD
                     if (addressOrValue < memory.size()) {
@@ -236,6 +236,7 @@ public class Executor {
             case "LOAD" -> new Some<>(LOAD);
             case "INPS" -> new Some<>(INPUT_AND_STORE);
             case "JMP" -> new Some<>(JUMP);
+            case "OUT" -> new Some<>(OUT);
             default -> new None<>();
         };
     }
