@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Executor {
+public class Assembler {
     public static final Path ROOT = Paths.get(".", "src", "magma");
     public static final Path TARGET = ROOT.resolve("main.casm");
     public static final int INPUT_AND_LOAD = 0x00;
@@ -53,7 +53,7 @@ public class Executor {
         return readSafe(TARGET)
                 .mapErr(ThrowableError::new)
                 .mapErr(ApplicationError::new)
-                .match(Executor::assembleAndExecute, Some::new);
+                .match(Assembler::assembleAndExecute, Some::new);
     }
 
     private static Option<ApplicationError> assembleAndExecute(String input) {
@@ -214,12 +214,12 @@ public class Executor {
     private static Result<Deque<Long>, CompileError> assemble(String content) {
         return createRootRule()
                 .parse(content)
-                .mapValue(Executor::parse);
+                .mapValue(Assembler::parse);
     }
 
     private static Deque<Long> parse(Node root) {
         final var state = root.findNodeList("children")
-                .map(children -> JavaStreams.fromList(children).foldLeft(new State(), Executor::foldSection))
+                .map(children -> JavaStreams.fromList(children).foldLeft(new State(), Assembler::foldSection))
                 .orElse(new State());
 
         var list = new ArrayList<Long>();
@@ -323,9 +323,9 @@ public class Executor {
         final var children = node.findNodeList("children").orElse(Collections.emptyList());
 
         if (name.equals("data")) {
-            return JavaStreams.fromList(children).foldLeft(state, Executor::foldData);
+            return JavaStreams.fromList(children).foldLeft(state, Assembler::foldData);
         } else if (name.equals("program")) {
-            return JavaStreams.fromList(children).foldLeft(state, Executor::foldProgram);
+            return JavaStreams.fromList(children).foldLeft(state, Assembler::foldProgram);
         } else {
             throw new RuntimeException("Unknown name: " + name);
         }
