@@ -44,6 +44,8 @@ public class Assembler {
     public static final int DATA_OFFSET = 3;
     public static final String OP_CODE = "op-code";
     public static final String ADDRESS_OR_VALUE = "addressOrValue";
+    public static final String CHAR_TYPE = "char";
+    public static final String NUMBER_TYPE = "number";
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -86,7 +88,6 @@ public class Assembler {
         int programCounter = 0;
 
         while (programCounter < memory.size()) {
-            System.out.println(formatHexList(memory));
             final long instructionUnsigned = memory.get(programCounter);
 
             // Decode the instruction
@@ -232,10 +233,13 @@ public class Assembler {
             final var entry = dataList.get(index);
             final var label = entry.getKey();
             final var value = entry.getValue();
+            final var unwrapped = value.findString("value").orElse("");
 
             long data;
-            if (value.is("char")) {
-                data = value.findString("value").orElse("").charAt(0);
+            if (value.is(CHAR_TYPE)) {
+                data = unwrapped.charAt(0);
+            } else if (value.is(NUMBER_TYPE)) {
+                data = Long.parseLong(unwrapped, 16);
             } else {
                 throw new RuntimeException("Unknown value: " + value);
             }
@@ -292,6 +296,8 @@ public class Assembler {
         list.add(createInstruction(INPUT_AND_STORE, 2));
         list.add(createInstruction(JUMP_ADDRESS, programStart));
 
+        System.out.println(formatHexList(list, ",\n"));
+
         return new LinkedList<>(list);
     }
 
@@ -310,6 +316,7 @@ public class Assembler {
             case "load" -> LOAD;
             case "out" -> OUT;
             case "jmp" -> JUMP_ADDRESS;
+            case "add" -> ADD;
             default -> throw new RuntimeException("Invalid instruction: " + instruction);
         };
     }
@@ -350,7 +357,14 @@ public class Assembler {
     }
 
     private static Rule createRootRule() {
-        return new NodeListRule("children", new StripRule(createGroupRule("section", "section ", createStatementRule())));
+        final var label = createGroupRule("label", "label ", createStatementRule());
+        final var section = createGroupRule("section", "section ", new OrRule(List.of(
+                new EmptyRule(),
+                createDataRule(),
+                label
+        )));
+
+        return new NodeListRule("children", new StripRule(section));
     }
 
     private static Rule createGroupRule(String type, String prefix, Rule statement) {
@@ -363,10 +377,8 @@ public class Assembler {
         final var statement = new LazyRule();
         statement.setRule(new OrRule(List.of(
                 new EmptyRule(),
-                createDataRule(),
                 createComplexInstructionRule(),
-                createSimpleInstructionRule(),
-                createGroupRule("label", "label", statement)
+                createSimpleInstructionRule()
         )));
         return statement;
     }
@@ -383,13 +395,21 @@ public class Assembler {
     }
 
     private static Rule createDataRule() {
-        final var name = new StripRule(new StringRule("name"));
+        final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
         final var value = new NodeRule("value", createValueRule());
+
         return new TypeRule("data", new FirstRule(name, "=", new StripRule(new SuffixRule(value, ";"))));
     }
 
     private static Rule createValueRule() {
-        return new TypeRule("char", new StripRule(new PrefixRule("'", new SuffixRule(new StringRule("value"), "'"))));
+        return new OrRule(List.of(
+                createCharRule(),
+                new TypeRule(NUMBER_TYPE, new StripRule(new FilterRule(new NumberFilter(), new StringRule("value"))))
+        ));
+    }
+
+    private static TypeRule createCharRule() {
+        return new TypeRule(CHAR_TYPE, new StripRule(new PrefixRule("'", new SuffixRule(new StringRule("value"), "'"))));
     }
 
 
