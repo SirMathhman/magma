@@ -49,6 +49,7 @@ public class Assembler {
     public static final String NUMBER_TYPE = "number";
     public static final int STACK_POINTER_ADDRESS = 3;
     private static final int PUSH = 0x11;
+    private static final int POP = 0x12;
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -97,8 +98,6 @@ public class Assembler {
         int programCounter = 0;
 
         while (programCounter < memory.size()) {
-            System.out.println(formatHexList(memory, ", "));
-
             final long instructionUnsigned = memory.get(programCounter);
 
             // Decode the instruction
@@ -112,6 +111,10 @@ public class Assembler {
                 case PUSH:
                     set(memory, memory.get(STACK_POINTER_ADDRESS), addressOrValue);
                     set(memory, STACK_POINTER_ADDRESS, memory.get(STACK_POINTER_ADDRESS) + 1);
+                    break;
+                case POP:
+                    set(memory, STACK_POINTER_ADDRESS, Math.max(memory.get(STACK_POINTER_ADDRESS) - 1, 0));
+                    accumulator = memory.get((int) memory.get(STACK_POINTER_ADDRESS).longValue());
                     break;
                 case INPUT_AND_LOAD:  // INP
                     if (input.isEmpty()) {
@@ -236,8 +239,6 @@ public class Assembler {
     }
 
     private static Deque<Long> parse(Node root) {
-        System.out.println(root.format(0));
-
         final var state = root.findNodeList("children")
                 .map(children -> JavaStreams.fromList(children).foldLeft(new State(), Assembler::foldSection))
                 .orElse(new State());
@@ -339,6 +340,7 @@ public class Assembler {
             case "jmp" -> JUMP_ADDRESS;
             case "add" -> ADD;
             case "push" -> PUSH;
+            case "pop" -> POP;
             default -> throw new RuntimeException("Invalid instruction: " + instruction);
         };
     }
