@@ -4,7 +4,7 @@ import magma.api.Tuple;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
-import magma.java.JavaLists;
+import magma.java.JavaList;
 import magma.java.JavaStreams;
 
 import java.util.ArrayList;
@@ -28,7 +28,10 @@ public class TreePassingStage implements PassingStage {
     }
 
     private Result<List<Node>, CompileError> passAndAnd(List<Node> values, Node value) {
-        return pass(value).mapValue(passed -> JavaLists.add(values, passed));
+        return pass(value).mapValue(passed -> {
+            JavaList<Node> javaList = new JavaList<>(values);
+            return javaList.add(passed).list();
+        });
     }
 
     private Result<Node, CompileError> passNodes(Node node) {
