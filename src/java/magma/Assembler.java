@@ -250,7 +250,9 @@ public class Assembler {
                 .add(STACK_POINTER_ADDRESS, 0L)
                 .add(INCREMENT_ADDRESS, createInstruction(INCREMENT, STACK_POINTER_ADDRESS));
 
-        final var withData = initialized.add(5, 100L);
+        final var withData = initialized
+                .add(5, 100L)
+                .add(6, 200L);
 
         final var withOffset = withData
                 .add(7, createInstruction(LOAD, STACK_POINTER_ADDRESS))
@@ -260,7 +262,9 @@ public class Assembler {
         final var withProgram = withOffset
                 .add(10, createInstruction(LOAD, 5))
                 .add(11, createInstruction(OUT))
-                .add(12, createInstruction(HALT));
+                .add(12, createInstruction(LOAD, 6))
+                .add(13, createInstruction(OUT))
+                .add(14, createInstruction(HALT));
 
         return withProgram
                 .add(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, 7))
