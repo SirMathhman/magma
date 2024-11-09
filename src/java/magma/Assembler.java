@@ -248,32 +248,7 @@ public class Assembler {
         list.add(createInstruction(INPUT_AND_STORE, 2));
         list.add(createInstruction(JUMP_ADDRESS, 0));
 
-        Map<String, Long> dataLabels = new HashMap<>();
-        final var dataList = state.data.entrySet().stream().toList();
-        for (int index = 0; index < dataList.size(); index++) {
-            final var entry = dataList.get(index);
-            final var label = entry.getKey();
-            final var value = entry.getValue();
-            final var unwrapped = value.findString("value").orElse("");
-
-            long data;
-            if (value.is(CHAR_TYPE)) {
-                data = unwrapped.charAt(0);
-            } else if (value.is(NUMBER_TYPE)) {
-                data = Long.parseLong(unwrapped, 16);
-            } else {
-                throw new RuntimeException("Unknown value: " + value);
-            }
-
-            final var address = (long) GLOBAL_OFFSET + index;
-            list.add(createInstruction(INPUT_AND_STORE, address));
-            list.add(data);
-
-            dataLabels.put(label, address);
-        }
-
-        final var dataLabels0 = new JavaMap<>(dataLabels);
-
+        final var dataLabels = defineData(state, list);
         final var dataOffset = GLOBAL_OFFSET + dataLabels.size();
         final var labelList = state.labels.entrySet().stream().toList();
 
@@ -297,7 +272,7 @@ public class Assembler {
                 if (option.isPresent()) {
                     final var addressOrValueString = option.orElse("");
                     Program finalProgram = program;
-                    final var addressOrValue = dataLabels0.find(addressOrValueString)
+                    final var addressOrValue = dataLabels.find(addressOrValueString)
                             .or(() -> finalProgram.findLabelAddress(addressOrValueString))
                             .orElse(Long.parseLong(addressOrValueString, 16));
 
@@ -320,6 +295,35 @@ public class Assembler {
         System.out.println(formatHexList(list, ",\n"));
 
         return new LinkedList<>(list);
+    }
+
+    private static JavaMap<String, Long> defineData(State state, ArrayList<Long> list) {
+        var current = new JavaMap<String, Long>();
+
+        final var dataList = state.data.entrySet().stream().toList();
+        for (int index = 0; index < dataList.size(); index++) {
+            final var entry = dataList.get(index);
+            final var label = entry.getKey();
+            final var value = entry.getValue();
+            final var unwrapped = value.findString("value").orElse("");
+
+            long data;
+            if (value.is(CHAR_TYPE)) {
+                data = unwrapped.charAt(0);
+            } else if (value.is(NUMBER_TYPE)) {
+                data = Long.parseLong(unwrapped, 16);
+            } else {
+                throw new RuntimeException("Unknown value: " + value);
+            }
+
+            final var address = (long) GLOBAL_OFFSET + index;
+            list.add(createInstruction(INPUT_AND_STORE, address));
+            list.add(data);
+
+            current = current.put(label, address);
+        }
+
+        return current;
     }
 
     private static int findOpCode(String instruction) {
