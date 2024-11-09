@@ -1,5 +1,9 @@
 package magma.java;
 
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.option.Some;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,5 +17,14 @@ public record JavaList<T>(List<T> list) {
         var copy = new ArrayList<>(list());
         copy.add(element);
         return new JavaList<T>(copy);
+    }
+
+    public int size() {
+        return list.size();
+    }
+
+    public Option<T> get(int index) {
+        if (index >= 0 && index < list.size()) return new Some<>(list.get(index));
+        else return new None<>();
     }
 }
