@@ -240,9 +240,13 @@ public class Assembler {
                 .add(createInstruction(INPUT_AND_STORE, 2))
                 .add(createInstruction(JUMP_ADDRESS, 0))
                 .add(createInstruction(INPUT_AND_STORE, 3))
-                .add(createInstruction(HALT))
+                .add(createInstruction(JUMP_ADDRESS, 0))
                 .add(createInstruction(INPUT_AND_STORE, 2))
-                .add(createInstruction(JUMP_ADDRESS, 3));
+                .add(createInstruction(INCREMENT, 4))
+                .add(createInstruction(INPUT_AND_STORE, 5))
+                .add(createInstruction(HALT))
+                .add(createInstruction(INPUT_AND_STORE, 3))
+                .add(createInstruction(JUMP_ADDRESS, 5));
 
         return new LinkedList<>(list.list());
     }
