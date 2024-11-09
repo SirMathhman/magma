@@ -1,8 +1,10 @@
 package magma.java;
 
+import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
+import magma.api.stream.Stream;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,9 +27,16 @@ public record JavaMap<K, V>(Map<K, V> map) {
         return map.size();
     }
 
-    public JavaMap<K, V> put(K key, V value) {
+    public JavaMap<K, V> set(K key, V value) {
         final var copy = new HashMap<>(map);
         copy.put(key, value);
         return new JavaMap<>(copy);
+    }
+
+    public Stream<Tuple<K, V>> stream() {
+        return JavaStreams.fromList(map.entrySet()
+                .stream()
+                .map(entry -> new Tuple<>(entry.getKey(), entry.getValue()))
+                .toList());
     }
 }

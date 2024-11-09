@@ -12,6 +12,7 @@ import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.CASMLang;
 import magma.java.JavaList;
+import magma.java.JavaMap;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -245,24 +246,31 @@ public class Assembler {
 
     private static Deque<Long> parse(Node root) {
         final var initialized = new Instructions()
-                .add(INCREMENT_ADDRESS, createInstruction(JUMP_ADDRESS, INITIAL_ADDRESS))
-                .add(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, INITIAL_ADDRESS))
-                .add(STACK_POINTER_ADDRESS, 0L)
-                .add(INCREMENT_ADDRESS, createInstruction(INCREMENT, STACK_POINTER_ADDRESS));
+                .set(INCREMENT_ADDRESS, createInstruction(JUMP_ADDRESS, INITIAL_ADDRESS))
+                .set(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, INITIAL_ADDRESS))
+                .set(STACK_POINTER_ADDRESS, 0L)
+                .set(INCREMENT_ADDRESS, createInstruction(INCREMENT, STACK_POINTER_ADDRESS));
 
-        final var withData = initialized
-                .add(5, 100L)
-                .add(6, 200L);
+        final var data = new JavaMap<String, Long>()
+                .set("first", 100L)
+                .set("second", 200L);
 
-        final var withOffset = withData
-                .add(7, createInstruction(LOAD, STACK_POINTER_ADDRESS))
-                .add(8, createInstruction(ADD_VALUE, STACK_POINTER_ADDRESS_OFFSET))
-                .add(9, createInstruction(STORE, STACK_POINTER_ADDRESS));
+        final var state = new State(initialized);
+        final var withData = data.stream().foldLeft(state, (current, tuple) -> {
+            final var name = tuple.left();
+            final var value = tuple.right();
+            return current.set(name, value);
+        });
 
-        final var withProgram = withOffset.add(10, createInstruction(HALT));
+        final var withOffset = withData.instructions
+                .set(7, createInstruction(LOAD, STACK_POINTER_ADDRESS))
+                .set(8, createInstruction(ADD_VALUE, STACK_POINTER_ADDRESS_OFFSET))
+                .set(9, createInstruction(STORE, STACK_POINTER_ADDRESS));
+
+        final var withProgram = withOffset.set(10, createInstruction(HALT));
 
         return withProgram
-                .add(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, 7))
+                .set(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, 7))
                 .toDeque();
     }
 
@@ -287,10 +295,26 @@ public class Assembler {
             return new LinkedList<>(list.list());
         }
 
-        private Instructions add(int address, long value) {
+        private Instructions set(int address, long value) {
             return new Instructions(list()
                     .add(createInstruction(INPUT_AND_STORE, address))
                     .add(value));
+        }
+    }
+
+    private record State(
+            Instructions instructions,
+            JavaMap<String, Long> addresses,
+            int dataOffset) {
+        public State(Instructions instructions) {
+            this(instructions, new JavaMap<>(), 0);
+        }
+
+        public State set(String name, long value) {
+            final var address = 5 + dataOffset;
+            final var withValue = instructions.set(address, value);
+            final var withAddress = addresses.set(name, (long) address);
+            return new State(withValue, withAddress, dataOffset + 1);
         }
     }
 }
