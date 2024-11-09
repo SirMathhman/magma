@@ -47,6 +47,10 @@ public class Assembler {
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
     public static final int STACK_POINTER_ADDRESS = 4;
+    public static final int INITIAL_ADDRESS = 0;
+    public static final int INCREMENT_ADDRESS = 2;
+    public static final int REPEAT_ADDRESS = 3;
+    public static final int STACK_POINTER_ADDRESS_OFFSET = 3;
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
@@ -240,20 +244,26 @@ public class Assembler {
     }
 
     private static Deque<Long> parse(Node root) {
-        final var add = new Instructions()
-                .add(2, createInstruction(JUMP_ADDRESS, 0))
-                .add(3, createInstruction(JUMP_ADDRESS, 0))
+        final var initialized = new Instructions()
+                .add(INCREMENT_ADDRESS, createInstruction(JUMP_ADDRESS, INITIAL_ADDRESS))
+                .add(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, INITIAL_ADDRESS))
                 .add(STACK_POINTER_ADDRESS, 0L)
-                .add(2, createInstruction(INCREMENT, STACK_POINTER_ADDRESS))
-                .add(5, 100L)
-                .add(6, 200L)
-                .add(7, createInstruction(LOAD, STACK_POINTER_ADDRESS))
-                .add(8, createInstruction(ADD_VALUE, 3))
-                .add(9, createInstruction(STORE, STACK_POINTER_ADDRESS))
-                .add(10, createInstruction(HALT))
-                .add(3, createInstruction(JUMP_ADDRESS, 7));
+                .add(INCREMENT_ADDRESS, createInstruction(INCREMENT, STACK_POINTER_ADDRESS));
 
-        return add.toDeque();
+        final var withData = initialized
+                .add(5, 100L)
+                .add(6, 200L);
+
+        final var withOffset = withData
+                .add(7, createInstruction(LOAD, STACK_POINTER_ADDRESS))
+                .add(8, createInstruction(ADD_VALUE, STACK_POINTER_ADDRESS_OFFSET))
+                .add(9, createInstruction(STORE, STACK_POINTER_ADDRESS));
+
+        final var withProgram = withOffset.add(10, createInstruction(HALT));
+
+        return withProgram
+                .add(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, 7))
+                .toDeque();
     }
 
     private static long createInstruction(int opCode) {
