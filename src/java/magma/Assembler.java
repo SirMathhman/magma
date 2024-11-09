@@ -249,58 +249,71 @@ public class Assembler {
         list0.add(createInstruction(INPUT_AND_STORE, 2));
         list0.add(createInstruction(JUMP_ADDRESS, 0));
 
-        final var state0 = defineData(list0, state.data.entrySet().stream().toList());
-        final var dataOffset = GLOBAL_OFFSET + state0.data.size();
+        final var dataState = defineData(list0, state.data.entrySet().stream().toList());
+        final var dataOffset = GLOBAL_OFFSET + dataState.data.size();
 
         final var labelList = state.labels.entrySet().stream().toList();
 
-        var program = new Program();
+        var program = new ProgramState();
         for (var entry : labelList) {
             final var name = entry.getKey();
             final var values = entry.getValue();
             program = program.defineLabel(dataOffset, name, values);
         }
 
-        var counter = 0;
+        var initial = new Result0(0, dataState);
         for (Map.Entry<String, Label> entry : program.map.entrySet()) {
             final var nodes = entry.getValue().nodes;
-            for (Node node : nodes) {
-                counter++;
-
-                final var opCode = findOpCode(node.findString(OP_CODE).orElse(""));
-
-                final var option = node.findString(ADDRESS_OR_VALUE);
-                final long instruction;
-                if (option.isPresent()) {
-                    final var addressOrValueString = option.orElse("");
-                    Program finalProgram = program;
-                    final var addressOrValue = state0.data.find(addressOrValueString)
-                            .or(() -> finalProgram.findLabelAddress(addressOrValueString))
-                            .orElse(Long.parseLong(addressOrValueString, 16));
-
-                    instruction = createInstruction(opCode, addressOrValue);
-                } else {
-                    instruction = createInstruction(opCode);
-                }
-
-                state0.binary.add(createInstruction(INPUT_AND_STORE, dataOffset + counter));
-                state0.binary.add(instruction);
-            }
+            initial = getResult(initial, nodes, program, dataState, dataOffset);
         }
 
-        state0.binary.add(createInstruction(INPUT_AND_STORE, STACK_POINTER_ADDRESS));
-        state0.binary.add((long) (dataOffset + program.size()));
+        final var completed = dataState.add(createInstruction(INPUT_AND_STORE, STACK_POINTER_ADDRESS))
+                .add(dataOffset + program.size())
+                .add(createInstruction(INPUT_AND_STORE, 2))
+                .add(createInstruction(JUMP_ADDRESS, dataOffset));
 
-        state0.binary.add(createInstruction(INPUT_AND_STORE, 2));
-        state0.binary.add(createInstruction(JUMP_ADDRESS, dataOffset));
-
-        System.out.println(formatHexList(state0.binary, ",\n"));
-
-        return new LinkedList<>(state0.binary);
+        final var deque = new LinkedList<>(completed.binary);
+        System.out.println(formatHexList(deque, ",\n"));
+        return deque;
     }
 
-    private static State0 defineData(List<Long> list, List<Map.Entry<String, Node>> dataList) {
-        var state = new State0(list);
+    private static Result0 getResult(Result0 initial, List<Node> nodes, ProgramState program, DataState dataState, int dataOffset) {
+        var current = initial;
+
+        for (Node node : nodes) {
+            final var increment = current.increment();
+            final var opCode = findOpCode(node.findString(OP_CODE).orElse(""));
+
+            final var option = node.findString(ADDRESS_OR_VALUE);
+            final var instruction = computeInstruction(dataState, program, option, opCode);
+
+            current = increment.add(createInstruction(INPUT_AND_STORE, dataOffset + initial.counter)).add(instruction);
+        }
+
+        return current;
+    }
+
+    private static long computeInstruction(
+            DataState dataState,
+            ProgramState programState,
+            Option<String> option,
+            int opCode
+    ) {
+        if (option.isEmpty()) return createInstruction(opCode);
+
+        final var addressOrValueString = option.orElse("");
+        final var address = findAddress(programState, dataState, addressOrValueString);
+        return createInstruction(opCode, address);
+    }
+
+    private static long findAddress(ProgramState programState, DataState dataState, String addressOrValueString) {
+        return dataState.data.find(addressOrValueString)
+                .or(() -> programState.findLabelAddress(addressOrValueString))
+                .orElse(Long.parseLong(addressOrValueString, 16));
+    }
+
+    private static DataState defineData(List<Long> list, List<Map.Entry<String, Node>> dataList) {
+        var state = new DataState(list);
         for (int index = 0; index < dataList.size(); index++) {
             final var entry = dataList.get(index);
             state = defineDatum(state, index, entry.getKey(), parseDatum(entry.getValue()));
@@ -309,8 +322,8 @@ public class Assembler {
         return state;
     }
 
-    private static State0 defineDatum(
-            State0 state,
+    private static DataState defineDatum(
+            DataState state,
             int index,
             String label,
             long datum
@@ -442,12 +455,21 @@ public class Assembler {
         return new TypeRule(CHAR_TYPE, new StripRule(new PrefixRule("'", new SuffixRule(new StringRule("value"), "'"))));
     }
 
-
     static Result<String, IOException> readSafe(Path path) {
         try {
             return new Ok<>(Files.readString(path));
         } catch (IOException e) {
             return new Err<>(e);
+        }
+    }
+
+    private record Result0(int counter, DataState temp) {
+        public Result0 add(long instruction) {
+            return new Result0(counter, temp.add(instruction));
+        }
+
+        public Result0 increment() {
+            return new Result0(counter + 1, temp);
         }
     }
 
@@ -499,12 +521,12 @@ public class Assembler {
         }
     }
 
-    private record Program(Map<String, Label> map) {
-        public Program() {
+    private record ProgramState(Map<String, Label> map) {
+        public ProgramState() {
             this(Collections.emptyMap());
         }
 
-        private Program defineLabel(int dataOffset, String name, List<Node> values) {
+        private ProgramState defineLabel(int dataOffset, String name, List<Node> values) {
             final var programSize = size();
             final var location = dataOffset + programSize;
 
@@ -531,26 +553,26 @@ public class Assembler {
                     .sum();
         }
 
-        public Program defineLabel(String name, Label label) {
+        public ProgramState defineLabel(String name, Label label) {
             final var copy = new HashMap<>(map);
             copy.put(name, label);
-            return new Program(copy);
+            return new ProgramState(copy);
         }
     }
 
-    private record State0(List<Long> binary, JavaMap<String, Long> data) {
-        public State0(List<Long> binary) {
+    private record DataState(List<Long> binary, JavaMap<String, Long> data) {
+        public DataState(List<Long> binary) {
             this(binary, new JavaMap<>());
         }
 
-        public State0 mapData(Function<JavaMap<String, Long>, JavaMap<String, Long>> mapper) {
-            return new State0(binary, mapper.apply(data));
+        public DataState mapData(Function<JavaMap<String, Long>, JavaMap<String, Long>> mapper) {
+            return new DataState(binary, mapper.apply(data));
         }
 
-        public State0 add(long instruction) {
+        public DataState add(long instruction) {
             final var copy = new ArrayList<>(binary);
             copy.add(instruction);
-            return new State0(copy, data);
+            return new DataState(copy, data);
         }
     }
 }
