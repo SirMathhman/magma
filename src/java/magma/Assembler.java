@@ -239,14 +239,27 @@ public class Assembler {
         var list = new JavaList<Long>()
                 .add(createInstruction(INPUT_AND_STORE, 2))
                 .add(createInstruction(JUMP_ADDRESS, 0))
+
                 .add(createInstruction(INPUT_AND_STORE, 3))
                 .add(createInstruction(JUMP_ADDRESS, 0))
+
+                .add(createInstruction(INPUT_AND_STORE, 4))
+                .add(0L)
+
                 .add(createInstruction(INPUT_AND_STORE, 2))
                 .add(createInstruction(INCREMENT, 4))
+
                 .add(createInstruction(INPUT_AND_STORE, 5))
+                .add(100L)
+
+                .add(createInstruction(INPUT_AND_STORE, 6))
+                .add(200L)
+
+                .add(createInstruction(INPUT_AND_STORE, 7))
                 .add(createInstruction(HALT))
+
                 .add(createInstruction(INPUT_AND_STORE, 3))
-                .add(createInstruction(JUMP_ADDRESS, 5));
+                .add(createInstruction(JUMP_ADDRESS, 7));
 
         return new LinkedList<>(list.list());
     }
