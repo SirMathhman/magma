@@ -10,7 +10,7 @@ import magma.app.ApplicationError;
 import magma.app.ThrowableError;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
-import magma.app.compile.rule.*;
+import magma.app.compile.lang.CASMLang;
 import magma.java.JavaMap;
 import magma.java.JavaStreams;
 
@@ -45,10 +45,6 @@ public class Assembler {
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
     public static final int GLOBAL_OFFSET = 4;
-    public static final String OP_CODE = "op-code";
-    public static final String ADDRESS_OR_VALUE = "addressOrValue";
-    public static final String CHAR_TYPE = "char";
-    public static final String NUMBER_TYPE = "number";
     public static final int STACK_POINTER_ADDRESS = 3;
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
@@ -235,7 +231,7 @@ public class Assembler {
     }
 
     private static Result<Deque<Long>, CompileError> assemble(String content) {
-        return createRootRule()
+        return CASMLang.createRootRule()
                 .parse(content)
                 .mapValue(Assembler::parse);
     }
@@ -282,9 +278,9 @@ public class Assembler {
 
         for (Node node : nodes) {
             final var increment = current.increment();
-            final var opCode = findOpCode(node.findString(OP_CODE).orElse(""));
+            final var opCode = findOpCode(node.findString(CASMLang.OP_CODE).orElse(""));
 
-            final var option = node.findString(ADDRESS_OR_VALUE);
+            final var option = node.findString(CASMLang.ADDRESS_OR_VALUE);
             final var instruction = computeInstruction(dataState, program, option, opCode);
 
             current = increment.add(createInstruction(INPUT_AND_STORE, dataOffset + initial.counter)).add(instruction);
@@ -340,9 +336,9 @@ public class Assembler {
         final var unwrapped = value.findString("value").orElse("");
 
         long datum;
-        if (value.is(CHAR_TYPE)) {
+        if (value.is(CASMLang.CHAR_TYPE)) {
             datum = unwrapped.charAt(0);
-        } else if (value.is(NUMBER_TYPE)) {
+        } else if (value.is(CASMLang.NUMBER_TYPE)) {
             datum = Long.parseLong(unwrapped, 16);
         } else {
             throw new RuntimeException("Unknown value: " + value);
@@ -382,77 +378,19 @@ public class Assembler {
     }
 
     private static State foldProgram(State state, Node instructionOrLabel) {
-        if (instructionOrLabel.is("label")) {
-            final var name = instructionOrLabel.findString("name").orElse("");
-            final var children = instructionOrLabel.findNodeList("children").orElse(Collections.emptyList());
+        if (!instructionOrLabel.is("label")) return state;
 
-            final var labeled = state.label(name);
-            return JavaStreams.fromList(children).foldLeft(labeled, State::instruct);
-        }
+        final var name = instructionOrLabel.findString("name").orElse("");
+        final var children = instructionOrLabel.findNodeList("children").orElse(Collections.emptyList());
 
-        return state;
+        final var labeled = state.label(name);
+        return JavaStreams.fromList(children).foldLeft(labeled, State::instruct);
     }
 
     private static State foldData(State state, Node datum) {
         return datum.findString("name")
                 .flatMap(name -> datum.findNode("value").map(value -> state.define(name, value)))
                 .orElse(state);
-    }
-
-    private static Rule createRootRule() {
-        final var label = createGroupRule("label", "label ", createStatementRule());
-        final var section = createGroupRule("section", "section ", new OrRule(List.of(
-                new EmptyRule(),
-                createDataRule(),
-                label
-        )));
-
-        return new NodeListRule("children", new StripRule(section));
-    }
-
-    private static Rule createGroupRule(String type, String prefix, Rule statement) {
-        final var name = new StripRule(new StringRule("name"));
-        final var children = new NodeListRule("children", new StripRule(statement));
-        return new TypeRule(type, new PrefixRule(prefix, new FirstRule(name, "{", new SuffixRule(children, "}"))));
-    }
-
-    private static Rule createStatementRule() {
-        final var statement = new LazyRule();
-        statement.setRule(new OrRule(List.of(
-                new EmptyRule(),
-                createComplexInstructionRule(),
-                createSimpleInstructionRule()
-        )));
-        return statement;
-    }
-
-    private static Rule createSimpleInstructionRule() {
-        final var operation = new StringRule(OP_CODE);
-        return new TypeRule("instruction", new StripRule(new SuffixRule(new FilterRule(new SymbolFilter(), operation), ";")));
-    }
-
-    private static Rule createComplexInstructionRule() {
-        final var operation = new StripRule(new StringRule(OP_CODE));
-        final var address = new StripRule(new StringRule(ADDRESS_OR_VALUE));
-        return new TypeRule("instruction", new StripRule(new FirstRule(operation, " ", new StripRule(new SuffixRule(address, ";")))));
-    }
-
-    private static Rule createDataRule() {
-        final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
-        final var value = new NodeRule("value", createValueRule());
-
-        return new TypeRule("data", new FirstRule(name, "=", new StripRule(new SuffixRule(value, ";"))));
-    }
-
-    private static Rule createValueRule() {
-        return new OrRule(List.of(
-                createCharRule(),
-                new TypeRule(NUMBER_TYPE, new StripRule(new FilterRule(new NumberFilter(), new StringRule("value"))))
-        ));
-    }
-
-    private static TypeRule createCharRule() {
-        return new TypeRule(CHAR_TYPE, new StripRule(new PrefixRule("'", new SuffixRule(new StringRule("value"), "'"))));
     }
 
     static Result<String, IOException> readSafe(Path path) {
