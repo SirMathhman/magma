@@ -74,19 +74,6 @@ public class Assembler {
         }, Some::new);
     }
 
-    // Helper function to create a valid 64-bit instruction
-    private static long createInstruction(int opcode, long addressOrValue) {
-        if (opcode < 0x00 || opcode > 0xFF) {
-            throw new IllegalArgumentException("Opcode must be an 8-bit value (0x00 to 0xFF).");
-        }
-        if (addressOrValue < 0 || addressOrValue > 0x00FFFFFFFFFFFFFFL) {
-            throw new IllegalArgumentException("Address/Value must be a 56-bit value (0x00 to 0x00FFFFFFFFFFFFFF).");
-        }
-
-        // Shift the opcode to the top 8 bits and combine with the addressOrValue
-        return ((long) opcode << 56) | addressOrValue;
-    }
-
     private static void execute(Deque<Long> input) {
         System.out.println("Memory footprint: " + (input.size() * BYTES_PER_LONG) + " bytes");
 
@@ -97,7 +84,7 @@ public class Assembler {
     }
 
     private static void compute(List<Long> memory, Deque<Long> input) {
-        memory.add(createInstruction(INPUT_AND_STORE, 1L));
+        memory.add(new Instruction(INPUT_AND_STORE, new Constant(1L)).evaluate());
 
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
@@ -246,10 +233,10 @@ public class Assembler {
 
     private static Deque<Long> parse(Node root) {
         final var initialized = new Instructions()
-                .set(INCREMENT_ADDRESS, createInstruction(JUMP_ADDRESS, INITIAL_ADDRESS))
-                .set(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, INITIAL_ADDRESS))
+                .set(INCREMENT_ADDRESS, new Instruction(JUMP_ADDRESS, new Constant(INITIAL_ADDRESS)).evaluate())
+                .set(REPEAT_ADDRESS, new Instruction(JUMP_ADDRESS, new Constant(INITIAL_ADDRESS)).evaluate())
                 .set(STACK_POINTER_ADDRESS, 0L)
-                .set(INCREMENT_ADDRESS, createInstruction(INCREMENT, STACK_POINTER_ADDRESS));
+                .set(INCREMENT_ADDRESS, new Instruction(INCREMENT, new Constant(STACK_POINTER_ADDRESS)).evaluate());
 
         var labels = new JavaMap<String, Long>();
         final var withFirst = initialized.set(5, 100L);
@@ -258,14 +245,15 @@ public class Assembler {
         final var withData = withFirst.set(6, 200L);
         labels = labels.put("second", 6L);
 
-        var start = new JavaList<Long>().add(createInstruction(LOAD, STACK_POINTER_ADDRESS))
-                .add(createInstruction(ADD_VALUE, STACK_POINTER_ADDRESS_OFFSET))
-                .add(createInstruction(STORE, STACK_POINTER_ADDRESS))
-                .add(createInstruction(LOAD, labels.find("first").orElse(0L)))
-                .add(createInstruction(OUT))
-                .add(createInstruction(LOAD, labels.find("second").orElse(0L)))
-                .add(createInstruction(OUT))
-                .add(createInstruction(HALT));
+        var start = new JavaList<Long>()
+                .add(new Instruction(LOAD, new Constant(STACK_POINTER_ADDRESS)).evaluate())
+                .add(new Instruction(ADD_VALUE, new Constant(STACK_POINTER_ADDRESS_OFFSET)).evaluate())
+                .add(new Instruction(STORE, new Constant(STACK_POINTER_ADDRESS)).evaluate())
+                .add(new Instruction(LOAD, new Constant(labels.find("first").orElse(0L))).evaluate())
+                .add(new Instruction(OUT, new Constant(0)).evaluate())
+                .add(new Instruction(LOAD, new Constant(labels.find("second").orElse(0L))).evaluate())
+                .add(new Instruction(OUT, new Constant(0)).evaluate())
+                .add(new Instruction(HALT, new Constant(0)).evaluate());
 
         var withProgram = withData;
         for (int i = 0; i < start.size(); i++) {
@@ -273,12 +261,8 @@ public class Assembler {
         }
         labels = labels.put("start", 7L);
 
-        return withProgram.set(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, labels.find("start").orElse(0L)))
-                .toDeque();
-    }
-
-    private static long createInstruction(int opCode) {
-        return createInstruction(opCode, 0);
+        final var set = withProgram.set(REPEAT_ADDRESS, new Instruction(JUMP_ADDRESS, new Constant(labels.find("start").orElse(0L))).evaluate());
+        return set.toDeque();
     }
 
     static Result<String, IOException> readSafe(Path path) {
@@ -287,6 +271,10 @@ public class Assembler {
         } catch (IOException e) {
             return new Err<>(e);
         }
+    }
+
+    interface Evaluatable {
+        long evaluate();
     }
 
     private record Instructions(JavaList<Long> list) {
@@ -300,8 +288,28 @@ public class Assembler {
 
         private Instructions set(long address, long value) {
             return new Instructions(list()
-                    .add(createInstruction(INPUT_AND_STORE, address))
+                    .add(new Instruction(INPUT_AND_STORE, new Constant(address)).evaluate())
                     .add(value));
+        }
+    }
+
+    private record Constant(long addressOrValue) implements Evaluatable {
+        @Override
+        public long evaluate() {
+            return addressOrValue;
+        }
+    }
+
+    private record Instruction(int opcode, Evaluatable evaluatable) {
+        private long evaluate() {
+            if (opcode() < 0x00 || opcode() > 0xFF) {
+                throw new IllegalArgumentException("Opcode must be an 8-bit value (0x00 to 0xFF).");
+            }
+            if (evaluatable().evaluate() < 0 || evaluatable().evaluate() > 0x00FFFFFFFFFFFFFFL) {
+                throw new IllegalArgumentException("Address/Value must be a 56-bit value (0x00 to 0x00FFFFFFFFFFFFFF).");
+            }
+
+            return ((long) opcode() << 56) | evaluatable().evaluate();
         }
     }
 }
