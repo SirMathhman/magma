@@ -1,13 +1,9 @@
 section data {
-    first = 1;
-    second = 2;
 }
 
 section program {
     label start {
-        load first;
-        add second;
-        out;
+        push 1;
         halt;
     }
 }

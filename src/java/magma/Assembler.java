@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class Assembler {
     public static final Path ROOT = Paths.get(".", "src", "magma");
     public static final Path TARGET = ROOT.resolve("main.casm");
+
     public static final int INPUT_AND_LOAD = 0x00;
     public static final int INPUT_AND_STORE = 0x10;
     public static final int LOAD = 0x01;
@@ -46,6 +47,8 @@ public class Assembler {
     public static final String ADDRESS_OR_VALUE = "addressOrValue";
     public static final String CHAR_TYPE = "char";
     public static final String NUMBER_TYPE = "number";
+    public static final int STACK_POINTER_ADDRESS = 3;
+    private static final int PUSH = 0x11;
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -81,19 +84,21 @@ public class Assembler {
     private static void execute(Deque<Long> input) {
         System.out.println("Memory footprint: " + (input.size() * BYTES_PER_LONG) + " bytes");
 
-        final var memory = compute(input);
+        final var memory = new ArrayList<Long>();
+        compute(memory, input);
         System.out.println();
         System.out.println("Final Memory State: " + formatHexList(memory, ", "));
     }
 
-    private static List<Long> compute(Deque<Long> input) {
-        final List<Long> memory = new ArrayList<>();
+    private static void compute(List<Long> memory, Deque<Long> input) {
         memory.add(createInstruction(INPUT_AND_STORE, 1L));
 
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
 
         while (programCounter < memory.size()) {
+            System.out.println(formatHexList(memory, ", "));
+
             final long instructionUnsigned = memory.get(programCounter);
 
             // Decode the instruction
@@ -104,6 +109,10 @@ public class Assembler {
 
             // Execute based on opcode
             switch (opcode) {
+                case PUSH:
+                    set(memory, memory.get(STACK_POINTER_ADDRESS), addressOrValue);
+                    set(memory, STACK_POINTER_ADDRESS, memory.get(STACK_POINTER_ADDRESS) + 1);
+                    break;
                 case INPUT_AND_LOAD:  // INP
                     if (input.isEmpty()) {
                         throw new RuntimeException("Input queue is empty.");
@@ -116,11 +125,7 @@ public class Assembler {
                         throw new RuntimeException("Input queue is empty.");
                     } else {
                         final var polled = input.poll();
-                        while (!(addressOrValue < memory.size())) {
-                            memory.add(0L);
-                        }
-
-                        memory.set((int) addressOrValue, polled);
+                        set(memory, addressOrValue, polled);
                         break;
                     }
                 case LOAD:  // LOAD
@@ -170,7 +175,7 @@ public class Assembler {
                     programCounter = (int) addressOrValue;
                     break;
                 case HALT:  // HRS
-                    return memory;
+                    return;
                 case SFT:  // SFT
                     int leftShift = (int) ((addressOrValue >> 8) & 0xFF);
                     int rightShift = (int) (addressOrValue & 0xFF);
@@ -204,7 +209,14 @@ public class Assembler {
                     break;
             }
         }
-        return memory;
+    }
+
+    private static void set(List<Long> memory, long address, long value) {
+        while (!(address < memory.size())) {
+            memory.add(0L);
+        }
+
+        memory.set((int) address, value);
     }
 
     private static String formatHexList(List<Long> list) {
@@ -224,6 +236,8 @@ public class Assembler {
     }
 
     private static Deque<Long> parse(Node root) {
+        System.out.println(root.format(0));
+
         final var state = root.findNodeList("children")
                 .map(children -> JavaStreams.fromList(children).foldLeft(new State(), Assembler::foldSection))
                 .orElse(new State());
@@ -283,12 +297,12 @@ public class Assembler {
             final var option = node.findString(ADDRESS_OR_VALUE);
             final long instruction;
             if (option.isPresent()) {
-                final var addressOrValue = option.orElse("");
-                final var address = find(dataLabels, addressOrValue)
-                        .or(() -> find(programAddresses, addressOrValue))
-                        .orElse(0L);
+                final var addressOrValueString = option.orElse("");
+                final var addressOrValue = find(dataLabels, addressOrValueString)
+                        .or(() -> find(programAddresses, addressOrValueString))
+                        .orElse(Long.parseLong(addressOrValueString, 16));
 
-                instruction = createInstruction(opCode, address);
+                instruction = createInstruction(opCode, addressOrValue);
             } else {
                 instruction = createInstruction(opCode);
             }
@@ -297,7 +311,7 @@ public class Assembler {
             list.add(instruction);
         }
 
-        list.add(createInstruction(INPUT_AND_STORE, 3));
+        list.add(createInstruction(INPUT_AND_STORE, STACK_POINTER_ADDRESS));
         list.add((long) (programStart + program.size()));
 
         list.add(createInstruction(INPUT_AND_STORE, 2));
@@ -324,6 +338,7 @@ public class Assembler {
             case "out" -> OUT;
             case "jmp" -> JUMP_ADDRESS;
             case "add" -> ADD;
+            case "push" -> PUSH;
             default -> throw new RuntimeException("Invalid instruction: " + instruction);
         };
     }
