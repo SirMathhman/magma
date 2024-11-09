@@ -12,12 +12,16 @@ import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.CASMLang;
 import magma.java.JavaList;
+import magma.java.JavaMap;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Assembler {
@@ -247,25 +251,24 @@ public class Assembler {
                 .set(STACK_POINTER_ADDRESS, 0L)
                 .set(INCREMENT_ADDRESS, createInstruction(INCREMENT, STACK_POINTER_ADDRESS));
 
-        var labels = new HashMap<String, Long>();
+        var labels = new JavaMap<String, Long>();
         final var withFirst = initialized.set(5, 100L);
-        labels.put("first", 5L);
+        labels = labels.put("first", 5L);
 
         final var withData = withFirst.set(6, 200L);
-        labels.put("second", 6L);
+        labels = labels.put("second", 6L);
 
         final var withProgram = withData.set(7, createInstruction(LOAD, STACK_POINTER_ADDRESS))
                 .set(8, createInstruction(ADD_VALUE, STACK_POINTER_ADDRESS_OFFSET))
                 .set(9, createInstruction(STORE, STACK_POINTER_ADDRESS))
-                .set(10, createInstruction(LOAD, labels.get("first")))
+                .set(10, createInstruction(LOAD, labels.find("first").orElse(0L)))
                 .set(11, createInstruction(OUT))
-                .set(12, createInstruction(LOAD, labels.get("second")))
+                .set(12, createInstruction(LOAD, labels.find("second").orElse(0L)))
                 .set(13, createInstruction(OUT))
                 .set(14, createInstruction(HALT));
+        labels = labels.put("start", 7L);
 
-        labels.put("start", 7L);
-
-        return withProgram.set(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, labels.get("start")))
+        return withProgram.set(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, labels.find("start").orElse(0L)))
                 .toDeque();
     }
 
