@@ -250,23 +250,21 @@ public class Assembler {
                 .add(STACK_POINTER_ADDRESS, 0L)
                 .add(INCREMENT_ADDRESS, createInstruction(INCREMENT, STACK_POINTER_ADDRESS));
 
-        final var start = 5;
-
         final var withData = initialized
-                .add(start, 100L)
-                .add(start + 1, 200L);
+                .add(5, 100L)
+                .add(6, 200L);
 
         final var withOffset = withData
-                .add(start + 2, createInstruction(LOAD, STACK_POINTER_ADDRESS))
-                .add(start + 3, createInstruction(ADD_VALUE, STACK_POINTER_ADDRESS_OFFSET))
-                .add(start + 4, createInstruction(STORE, STACK_POINTER_ADDRESS));
+                .add(7, createInstruction(LOAD, STACK_POINTER_ADDRESS))
+                .add(8, createInstruction(ADD_VALUE, STACK_POINTER_ADDRESS_OFFSET))
+                .add(9, createInstruction(STORE, STACK_POINTER_ADDRESS));
 
         final var withProgram = withOffset
-                .add(start + 5, createInstruction(LOAD, 5))
-                .add(start + 6, createInstruction(OUT))
-                .add(start + 7, createInstruction(LOAD, 6))
-                .add(start + 8, createInstruction(OUT))
-                .add(start + 9, createInstruction(HALT));
+                .add(10, createInstruction(LOAD, 5))
+                .add(11, createInstruction(OUT))
+                .add(12, createInstruction(LOAD, 6))
+                .add(13, createInstruction(OUT))
+                .add(14, createInstruction(HALT));
 
         return withProgram
                 .add(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, 7))
