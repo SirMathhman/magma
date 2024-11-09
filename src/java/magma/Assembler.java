@@ -26,7 +26,7 @@ public class Assembler {
     public static final int INPUT_AND_LOAD = 0x00;
     public static final int INPUT_AND_STORE = 0x10;
     public static final int LOAD = 0x01;
-    public static final int STO = 0x02;
+    public static final int STORE = 0x02;
     public static final int OUT = 0x03;
     public static final int ADD = 0x04;
     public static final int SUB = 0x05;
@@ -41,7 +41,7 @@ public class Assembler {
     public static final int TS = 0x0E;
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
-    public static final int DATA_OFFSET = 3;
+    public static final int DATA_OFFSET = 4;
     public static final String OP_CODE = "op-code";
     public static final String ADDRESS_OR_VALUE = "addressOrValue";
     public static final String CHAR_TYPE = "char";
@@ -126,7 +126,7 @@ public class Assembler {
                 case LOAD:  // LOAD
                     accumulator = addressOrValue < memory.size() ? memory.get((int) addressOrValue) : 0;
                     break;
-                case STO:  // STO
+                case STORE:  // STO
                     if (addressOrValue < memory.size()) {
                         memory.set((int) addressOrValue, accumulator);
                     } else {
@@ -152,7 +152,8 @@ public class Assembler {
                     break;
                 case INC:  // INC
                     if (addressOrValue < memory.size()) {
-                        memory.set((int) addressOrValue, memory.get((int) addressOrValue) + 1);
+                        final var cast = (int) addressOrValue;
+                        memory.set(cast, memory.get(cast) + 1);
                     }
                     break;
                 case DEC:  // DEC
@@ -255,7 +256,7 @@ public class Assembler {
             dataLabels.put(label, address);
         }
 
-        final var programStart = 3 + dataLabels.size();
+        final var programStart = DATA_OFFSET + dataLabels.size();
 
         final var labelList = state.labels.entrySet().stream().toList();
 
