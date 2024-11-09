@@ -297,33 +297,41 @@ public class Assembler {
         return new LinkedList<>(list);
     }
 
-    private static JavaMap<String, Long> defineData(State state, ArrayList<Long> list) {
+    private static JavaMap<String, Long> defineData(State state, List<Long> list) {
         var current = new JavaMap<String, Long>();
 
         final var dataList = state.data.entrySet().stream().toList();
         for (int index = 0; index < dataList.size(); index++) {
             final var entry = dataList.get(index);
-            final var label = entry.getKey();
-            final var value = entry.getValue();
-            final var unwrapped = value.findString("value").orElse("");
-
-            long data;
-            if (value.is(CHAR_TYPE)) {
-                data = unwrapped.charAt(0);
-            } else if (value.is(NUMBER_TYPE)) {
-                data = Long.parseLong(unwrapped, 16);
-            } else {
-                throw new RuntimeException("Unknown value: " + value);
-            }
-
-            final var address = (long) GLOBAL_OFFSET + index;
-            list.add(createInstruction(INPUT_AND_STORE, address));
-            list.add(data);
-
-            current = current.put(label, address);
+            current = getStringLongJavaMap(list, current, index, entry.getKey(), entry.getValue());
         }
 
         return current;
+    }
+
+    private static JavaMap<String, Long> getStringLongJavaMap(
+            List<Long> binary,
+            JavaMap<String, Long> data,
+            int index,
+            String label,
+            Node value
+    ) {
+        final var unwrapped = value.findString("value").orElse("");
+
+        long datum;
+        if (value.is(CHAR_TYPE)) {
+            datum = unwrapped.charAt(0);
+        } else if (value.is(NUMBER_TYPE)) {
+            datum = Long.parseLong(unwrapped, 16);
+        } else {
+            throw new RuntimeException("Unknown value: " + value);
+        }
+
+        final var address = (long) GLOBAL_OFFSET + index;
+        binary.add(createInstruction(INPUT_AND_STORE, address));
+        binary.add(datum);
+
+        return data.put(label, address);
     }
 
     private static int findOpCode(String instruction) {
