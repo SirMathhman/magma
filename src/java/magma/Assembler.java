@@ -42,7 +42,7 @@ public class Assembler {
     public static final int TS = 0x0E;
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
-    public static final int DATA_OFFSET = 4;
+    public static final int GLOBAL_OFFSET = 4;
     public static final String OP_CODE = "op-code";
     public static final String ADDRESS_OR_VALUE = "addressOrValue";
     public static final String CHAR_TYPE = "char";
@@ -264,71 +264,61 @@ public class Assembler {
                 throw new RuntimeException("Unknown value: " + value);
             }
 
-            final var address = (long) DATA_OFFSET + index;
+            final var address = (long) GLOBAL_OFFSET + index;
             list.add(createInstruction(INPUT_AND_STORE, address));
             list.add(data);
 
             dataLabels.put(label, address);
         }
 
-        final var programStart = DATA_OFFSET + dataLabels.size();
+        final var dataLabels0 = new JavaMap<>(dataLabels);
+
+        final var dataOffset = GLOBAL_OFFSET + dataLabels.size();
         final var labelList = state.labels.entrySet().stream().toList();
 
-        var programAddresses = new HashMap<String, Long>();
-        var program = new ArrayList<Node>();
-
+        var program = new Program();
         for (var entry : labelList) {
             final var name = entry.getKey();
             final var values = entry.getValue();
-
-            final var i = DATA_OFFSET + dataLabels.size() + program.size();
-            programAddresses.put(name, (long) i);
-
-            for (Node value : values) {
-                if (value.is("instruction")) {
-                    program.add(value);
-                }
-            }
+            program = program.defineLabel(dataOffset, name, values);
         }
 
-        for (int i = 0; i < program.size(); i++) {
-            Node node = program.get(i);
-            final var opCode = findOpCode(node.findString(OP_CODE).orElse(""));
+        var counter = 0;
+        for (Map.Entry<String, Label> entry : program.map.entrySet()) {
+            final var nodes = entry.getValue().nodes;
+            for (Node node : nodes) {
+                counter++;
 
-            final var option = node.findString(ADDRESS_OR_VALUE);
-            final long instruction;
-            if (option.isPresent()) {
-                final var addressOrValueString = option.orElse("");
-                final var addressOrValue = find(dataLabels, addressOrValueString)
-                        .or(() -> find(programAddresses, addressOrValueString))
-                        .orElse(Long.parseLong(addressOrValueString, 16));
+                final var opCode = findOpCode(node.findString(OP_CODE).orElse(""));
 
-                instruction = createInstruction(opCode, addressOrValue);
-            } else {
-                instruction = createInstruction(opCode);
+                final var option = node.findString(ADDRESS_OR_VALUE);
+                final long instruction;
+                if (option.isPresent()) {
+                    final var addressOrValueString = option.orElse("");
+                    Program finalProgram = program;
+                    final var addressOrValue = dataLabels0.find(addressOrValueString)
+                            .or(() -> finalProgram.findLabelAddress(addressOrValueString))
+                            .orElse(Long.parseLong(addressOrValueString, 16));
+
+                    instruction = createInstruction(opCode, addressOrValue);
+                } else {
+                    instruction = createInstruction(opCode);
+                }
+
+                list.add(createInstruction(INPUT_AND_STORE, dataOffset + counter));
+                list.add(instruction);
             }
-
-            list.add(createInstruction(INPUT_AND_STORE, programStart + i));
-            list.add(instruction);
         }
 
         list.add(createInstruction(INPUT_AND_STORE, STACK_POINTER_ADDRESS));
-        list.add((long) (programStart + program.size()));
+        list.add((long) (dataOffset + program.size()));
 
         list.add(createInstruction(INPUT_AND_STORE, 2));
-        list.add(createInstruction(JUMP_ADDRESS, programStart));
+        list.add(createInstruction(JUMP_ADDRESS, dataOffset));
 
         System.out.println(formatHexList(list, ",\n"));
 
         return new LinkedList<>(list);
-    }
-
-    private static Option<Long> find(Map<String, Long> map, String key) {
-        if (map.containsKey(key)) {
-            return new Some<>(map.get(key));
-        } else {
-            return new None<>();
-        }
     }
 
     private static int findOpCode(String instruction) {
@@ -474,6 +464,61 @@ public class Assembler {
 
         public State label(String name) {
             return new State(data, labels, name);
+        }
+    }
+
+    private record Label(long location, List<Node> nodes) {
+        public Label(long location) {
+            this(location, Collections.emptyList());
+        }
+
+        public int size() {
+            return nodes.size();
+        }
+
+        public Label add(Node node) {
+            final var copy = new ArrayList<>(nodes);
+            copy.add(node);
+            return new Label(location, copy);
+        }
+    }
+
+    private record Program(Map<String, Label> map) {
+        public Program() {
+            this(Collections.emptyMap());
+        }
+
+        private Program defineLabel(int dataOffset, String name, List<Node> values) {
+            final var programSize = size();
+            final var location = dataOffset + programSize;
+
+            var label = new Label(location);
+            for (Node value : values) {
+                if (value.is("instruction")) {
+                    label = label.add(value);
+                }
+            }
+
+            return defineLabel(name, label);
+        }
+
+        private Option<Long> findLabelAddress(String name) {
+            return new JavaMap<>(map)
+                    .find(name)
+                    .map(label -> label.location);
+        }
+
+        private int size() {
+            return map().values()
+                    .stream()
+                    .mapToInt(Label::size)
+                    .sum();
+        }
+
+        public Program defineLabel(String name, Label label) {
+            final var copy = new HashMap<>(map);
+            copy.put(name, label);
+            return new Program(copy);
         }
     }
 }

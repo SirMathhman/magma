@@ -3,15 +3,10 @@ section data {
 
 section program {
     label start {
-        push 1;
-        push 2;
-        push 3;
-        pop;
-        out;
-        pop;
-        out;
-        pop;
-        out;
         halt;
+    }
+
+    label print {
+        
     }
 }
