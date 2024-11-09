@@ -11,6 +11,7 @@ import magma.app.ThrowableError;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.rule.*;
+import magma.java.JavaMap;
 import magma.java.JavaStreams;
 
 import java.io.IOException;
