@@ -17,10 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Assembler {
@@ -250,20 +247,25 @@ public class Assembler {
                 .set(STACK_POINTER_ADDRESS, 0L)
                 .set(INCREMENT_ADDRESS, createInstruction(INCREMENT, STACK_POINTER_ADDRESS));
 
-        final var withData = initialized
-                .set(5, 100L)
-                .set(6, 200L);
+        var labels = new HashMap<String, Long>();
+        final var withFirst = initialized.set(5, 100L);
+        labels.put("first", 5L);
+
+        final var withData = withFirst.set(6, 200L);
+        labels.put("second", 6L);
 
         final var withProgram = withData.set(7, createInstruction(LOAD, STACK_POINTER_ADDRESS))
                 .set(8, createInstruction(ADD_VALUE, STACK_POINTER_ADDRESS_OFFSET))
                 .set(9, createInstruction(STORE, STACK_POINTER_ADDRESS))
-                .set(10, createInstruction(LOAD, 5))
+                .set(10, createInstruction(LOAD, labels.get("first")))
                 .set(11, createInstruction(OUT))
-                .set(12, createInstruction(LOAD, 6))
+                .set(12, createInstruction(LOAD, labels.get("second")))
                 .set(13, createInstruction(OUT))
                 .set(14, createInstruction(HALT));
 
-        return withProgram.set(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, 7))
+        labels.put("start", 7L);
+
+        return withProgram.set(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, labels.get("start")))
                 .toDeque();
     }
 
@@ -288,7 +290,7 @@ public class Assembler {
             return new LinkedList<>(list.list());
         }
 
-        private Instructions set(int address, long value) {
+        private Instructions set(long address, long value) {
             return new Instructions(list()
                     .add(createInstruction(INPUT_AND_STORE, address))
                     .add(value));
