@@ -11,6 +11,7 @@ import magma.app.ThrowableError;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.CASMLang;
+import magma.java.JavaList;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -232,7 +233,19 @@ public class Assembler {
     }
 
     private static Deque<Long> parse(Node root) {
-        return new LinkedList<>();
+        var list = new JavaList<Long>()
+                .add(createInstruction(INPUT_AND_STORE, 2))
+                .add(createInstruction(JUMP_ADDRESS, 0))
+                .add(createInstruction(INPUT_AND_STORE, 3))
+                .add(createInstruction(HALT))
+                .add(createInstruction(INPUT_AND_STORE, 2))
+                .add(createInstruction(JUMP_ADDRESS, 3));
+
+        return new LinkedList<>(list.list());
+    }
+
+    private static long createInstruction(int opCode) {
+        return createInstruction(opCode, 0);
     }
 
     static Result<String, IOException> readSafe(Path path) {
