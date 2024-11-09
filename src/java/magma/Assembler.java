@@ -17,10 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Assembler {
@@ -251,25 +248,40 @@ public class Assembler {
                 .add(INCREMENT_ADDRESS, createInstruction(INCREMENT, STACK_POINTER_ADDRESS));
 
         final var start = 5;
+        final var data = Map.<String, Datum>of("first", new ConstantDatum(100L),
+                "second", new ConstantDatum(200L),
+                "third", new ArrayDatum(300L, 400L));
 
-        final var withData = initialized
-                .add(start, 100L)
-                .add(start + 1, 200L);
+        final var entryList = data.keySet().stream().sorted().toList();
+
+        var labels = new HashMap<String, Long>();
+        var withData = initialized;
+        var offset = start;
+
+        for (var label : entryList) {
+            final var values = data.get(label);
+
+            labels.put(label, (long) offset);
+            for (var value : values.list()) {
+                withData = withData.add(offset, value);
+                offset++;
+            }
+        }
 
         final var withOffset = withData
-                .add(start + 2, createInstruction(LOAD, STACK_POINTER_ADDRESS))
-                .add(start + 3, createInstruction(ADD_VALUE, STACK_POINTER_ADDRESS_OFFSET))
-                .add(start + 4, createInstruction(STORE, STACK_POINTER_ADDRESS));
+                .add(offset, createInstruction(LOAD, STACK_POINTER_ADDRESS))
+                .add(offset + 1, createInstruction(ADD_VALUE, STACK_POINTER_ADDRESS_OFFSET))
+                .add(offset + 2, createInstruction(STORE, STACK_POINTER_ADDRESS));
 
         final var withProgram = withOffset
-                .add(start + 5, createInstruction(LOAD, 5))
-                .add(start + 6, createInstruction(OUT))
-                .add(start + 7, createInstruction(LOAD, 6))
-                .add(start + 8, createInstruction(OUT))
-                .add(start + 9, createInstruction(HALT));
+                .add(offset + 3, createInstruction(LOAD, labels.get("first")))
+                .add(offset + 4, createInstruction(OUT))
+                .add(offset + 5, createInstruction(LOAD, labels.get("second")))
+                .add(offset + 6, createInstruction(OUT))
+                .add(offset + 7, createInstruction(HALT));
 
         return withProgram
-                .add(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, 7))
+                .add(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, offset))
                 .toDeque();
     }
 
