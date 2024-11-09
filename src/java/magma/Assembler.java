@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Assembler {
@@ -244,12 +245,13 @@ public class Assembler {
                 .map(children -> JavaStreams.fromList(children).foldLeft(new State(), Assembler::foldSection))
                 .orElse(new State());
 
-        var list = new ArrayList<Long>();
-        list.add(createInstruction(INPUT_AND_STORE, 2));
-        list.add(createInstruction(JUMP_ADDRESS, 0));
+        List<Long> list0 = new ArrayList<>();
+        list0.add(createInstruction(INPUT_AND_STORE, 2));
+        list0.add(createInstruction(JUMP_ADDRESS, 0));
 
-        final var dataLabels = defineData(state, list);
-        final var dataOffset = GLOBAL_OFFSET + dataLabels.size();
+        final var state0 = defineData(list0, state.data.entrySet().stream().toList());
+        final var dataOffset = GLOBAL_OFFSET + state0.data.size();
+
         final var labelList = state.labels.entrySet().stream().toList();
 
         var program = new Program();
@@ -272,7 +274,7 @@ public class Assembler {
                 if (option.isPresent()) {
                     final var addressOrValueString = option.orElse("");
                     Program finalProgram = program;
-                    final var addressOrValue = dataLabels.find(addressOrValueString)
+                    final var addressOrValue = state0.data.find(addressOrValueString)
                             .or(() -> finalProgram.findLabelAddress(addressOrValueString))
                             .orElse(Long.parseLong(addressOrValueString, 16));
 
@@ -281,41 +283,47 @@ public class Assembler {
                     instruction = createInstruction(opCode);
                 }
 
-                list.add(createInstruction(INPUT_AND_STORE, dataOffset + counter));
-                list.add(instruction);
+                state0.binary.add(createInstruction(INPUT_AND_STORE, dataOffset + counter));
+                state0.binary.add(instruction);
             }
         }
 
-        list.add(createInstruction(INPUT_AND_STORE, STACK_POINTER_ADDRESS));
-        list.add((long) (dataOffset + program.size()));
+        state0.binary.add(createInstruction(INPUT_AND_STORE, STACK_POINTER_ADDRESS));
+        state0.binary.add((long) (dataOffset + program.size()));
 
-        list.add(createInstruction(INPUT_AND_STORE, 2));
-        list.add(createInstruction(JUMP_ADDRESS, dataOffset));
+        state0.binary.add(createInstruction(INPUT_AND_STORE, 2));
+        state0.binary.add(createInstruction(JUMP_ADDRESS, dataOffset));
 
-        System.out.println(formatHexList(list, ",\n"));
+        System.out.println(formatHexList(state0.binary, ",\n"));
 
-        return new LinkedList<>(list);
+        return new LinkedList<>(state0.binary);
     }
 
-    private static JavaMap<String, Long> defineData(State state, List<Long> list) {
-        var current = new JavaMap<String, Long>();
-
-        final var dataList = state.data.entrySet().stream().toList();
+    private static State0 defineData(List<Long> list, List<Map.Entry<String, Node>> dataList) {
+        var state = new State0(list);
         for (int index = 0; index < dataList.size(); index++) {
             final var entry = dataList.get(index);
-            current = getStringLongJavaMap(list, current, index, entry.getKey(), entry.getValue());
+            state = defineDatum(state, index, entry.getKey(), parseDatum(entry.getValue()));
         }
 
-        return current;
+        return state;
     }
 
-    private static JavaMap<String, Long> getStringLongJavaMap(
-            List<Long> binary,
-            JavaMap<String, Long> data,
+    private static State0 defineDatum(
+            State0 state,
             int index,
             String label,
-            Node value
+            long datum
     ) {
+        final var address = (long) GLOBAL_OFFSET + index;
+
+        return state
+                .add(createInstruction(INPUT_AND_STORE, address))
+                .add(datum)
+                .mapData(data -> data.put(label, address));
+    }
+
+    private static long parseDatum(Node value) {
         final var unwrapped = value.findString("value").orElse("");
 
         long datum;
@@ -326,12 +334,7 @@ public class Assembler {
         } else {
             throw new RuntimeException("Unknown value: " + value);
         }
-
-        final var address = (long) GLOBAL_OFFSET + index;
-        binary.add(createInstruction(INPUT_AND_STORE, address));
-        binary.add(datum);
-
-        return data.put(label, address);
+        return datum;
     }
 
     private static int findOpCode(String instruction) {
@@ -532,6 +535,22 @@ public class Assembler {
             final var copy = new HashMap<>(map);
             copy.put(name, label);
             return new Program(copy);
+        }
+    }
+
+    private record State0(List<Long> binary, JavaMap<String, Long> data) {
+        public State0(List<Long> binary) {
+            this(binary, new JavaMap<>());
+        }
+
+        public State0 mapData(Function<JavaMap<String, Long>, JavaMap<String, Long>> mapper) {
+            return new State0(binary, mapper.apply(data));
+        }
+
+        public State0 add(long instruction) {
+            final var copy = new ArrayList<>(binary);
+            copy.add(instruction);
+            return new State0(copy, data);
         }
     }
 }
