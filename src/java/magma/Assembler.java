@@ -245,29 +245,22 @@ public class Assembler {
 
     private static Deque<Long> parse(Node root) {
         final var initialized = new Instructions()
-                .add(INCREMENT_ADDRESS, createInstruction(JUMP_ADDRESS, INITIAL_ADDRESS))
-                .add(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, INITIAL_ADDRESS))
-                .add(STACK_POINTER_ADDRESS, 0L)
-                .add(INCREMENT_ADDRESS, createInstruction(INCREMENT, STACK_POINTER_ADDRESS));
+                .set(INCREMENT_ADDRESS, createInstruction(JUMP_ADDRESS, INITIAL_ADDRESS))
+                .set(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, INITIAL_ADDRESS))
+                .set(STACK_POINTER_ADDRESS, 0L)
+                .set(INCREMENT_ADDRESS, createInstruction(INCREMENT, STACK_POINTER_ADDRESS));
 
-        final var withData = initialized
-                .add(5, 100L)
-                .add(6, 200L);
-
-        final var withOffset = withData
-                .add(7, createInstruction(LOAD, STACK_POINTER_ADDRESS))
-                .add(8, createInstruction(ADD_VALUE, STACK_POINTER_ADDRESS_OFFSET))
-                .add(9, createInstruction(STORE, STACK_POINTER_ADDRESS));
-
-        final var withProgram = withOffset
-                .add(10, createInstruction(LOAD, 5))
-                .add(11, createInstruction(OUT))
-                .add(12, createInstruction(LOAD, 6))
-                .add(13, createInstruction(OUT))
-                .add(14, createInstruction(HALT));
-
-        return withProgram
-                .add(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, 7))
+        return initialized.set(5, 100L)
+                .set(6, 200L)
+                .set(7, createInstruction(LOAD, STACK_POINTER_ADDRESS))
+                .set(8, createInstruction(ADD_VALUE, STACK_POINTER_ADDRESS_OFFSET))
+                .set(9, createInstruction(STORE, STACK_POINTER_ADDRESS))
+                .set(10, createInstruction(LOAD, 5))
+                .set(11, createInstruction(OUT))
+                .set(12, createInstruction(LOAD, 6))
+                .set(13, createInstruction(OUT))
+                .set(14, createInstruction(HALT))
+                .set(REPEAT_ADDRESS, createInstruction(JUMP_ADDRESS, 7))
                 .toDeque();
     }
 
@@ -292,7 +285,7 @@ public class Assembler {
             return new LinkedList<>(list.list());
         }
 
-        private Instructions add(int address, long value) {
+        private Instructions set(int address, long value) {
             return new Instructions(list()
                     .add(createInstruction(INPUT_AND_STORE, address))
                     .add(value));
