@@ -257,7 +257,6 @@ public class Assembler {
         }
 
         final var programStart = DATA_OFFSET + dataLabels.size();
-
         final var labelList = state.labels.entrySet().stream().toList();
 
         var programAddresses = new HashMap<String, Long>();
@@ -297,6 +296,9 @@ public class Assembler {
             list.add(createInstruction(INPUT_AND_STORE, programStart + i));
             list.add(instruction);
         }
+
+        list.add(createInstruction(INPUT_AND_STORE, 3));
+        list.add((long) (programStart + program.size()));
 
         list.add(createInstruction(INPUT_AND_STORE, 2));
         list.add(createInstruction(JUMP_ADDRESS, programStart));
