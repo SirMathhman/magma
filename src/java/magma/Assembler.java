@@ -32,7 +32,7 @@ public class Assembler {
     public static final int LOAD = 0x01;
     public static final int STORE = 0x02;
     public static final int OUT = 0x03;
-    public static final int ADD_ADDRESS = 0x04;
+    public static final int ADD_ADDRESS = 4;
     public static final int ADD_VALUE = 0x14;
     public static final int SUB = 0x05;
     public static final int INCREMENT = 0x06;
@@ -46,7 +46,7 @@ public class Assembler {
     public static final int TS = 0x0E;
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
-    public static final int STACK_POINTER_ADDRESS = 3;
+    public static final int STACK_POINTER_ADDRESS = 4;
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
@@ -247,11 +247,11 @@ public class Assembler {
                 .add(createInstruction(INPUT_AND_STORE, 3))
                 .add(createInstruction(JUMP_ADDRESS, 0))
 
-                .add(createInstruction(INPUT_AND_STORE, 4))
+                .add(createInstruction(INPUT_AND_STORE, STACK_POINTER_ADDRESS))
                 .add(0L)
 
                 .add(createInstruction(INPUT_AND_STORE, 2))
-                .add(createInstruction(INCREMENT, 4))
+                .add(createInstruction(INCREMENT, STACK_POINTER_ADDRESS))
 
                 .add(createInstruction(INPUT_AND_STORE, 5))
                 .add(100L)
@@ -260,13 +260,13 @@ public class Assembler {
                 .add(200L)
 
                 .add(createInstruction(INPUT_AND_STORE, 7))
-                .add(createInstruction(LOAD, 4))
+                .add(createInstruction(LOAD, STACK_POINTER_ADDRESS))
 
                 .add(createInstruction(INPUT_AND_STORE, 8))
                 .add(createInstruction(ADD_VALUE, 3))
 
                 .add(createInstruction(INPUT_AND_STORE, 9))
-                .add(createInstruction(STORE, 4))
+                .add(createInstruction(STORE, STACK_POINTER_ADDRESS))
 
                 .add(createInstruction(INPUT_AND_STORE, 10))
                 .add(createInstruction(HALT))
