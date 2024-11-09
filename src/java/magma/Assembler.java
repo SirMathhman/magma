@@ -34,7 +34,7 @@ public class Assembler {
     public static final int OUT = 0x03;
     public static final int ADD = 0x04;
     public static final int SUB = 0x05;
-    public static final int INC = 0x06;
+    public static final int INCREMENT = 0x06;
     public static final int DEC = 0x07;
     public static final int TAC = 0x08;
     public static final int JUMP_ADDRESS = 0x09;
@@ -48,6 +48,7 @@ public class Assembler {
     public static final int STACK_POINTER_ADDRESS = 3;
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
+    private static final int NO_OPERATION = 0x13;
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -106,6 +107,8 @@ public class Assembler {
 
             // Execute based on opcode
             switch (opcode) {
+                case NO_OPERATION:
+                    break;
                 case PUSH:
                     set(memory, memory.get(STACK_POINTER_ADDRESS), addressOrValue);
                     set(memory, STACK_POINTER_ADDRESS, memory.get(STACK_POINTER_ADDRESS) + 1);
@@ -156,7 +159,7 @@ public class Assembler {
                         System.err.println("Address out of bounds.");
                     }
                     break;
-                case INC:  // INC
+                case INCREMENT:  // INC
                     if (addressOrValue < memory.size()) {
                         final var cast = (int) addressOrValue;
                         memory.set(cast, memory.get(cast) + 1);
