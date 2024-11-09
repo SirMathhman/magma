@@ -240,41 +240,20 @@ public class Assembler {
     }
 
     private static Deque<Long> parse(Node root) {
-        var list = new JavaList<Long>()
-                .add(createInstruction(INPUT_AND_STORE, 2))
-                .add(createInstruction(JUMP_ADDRESS, 0))
+        final var add = new Instructions()
+                .add(2, createInstruction(JUMP_ADDRESS, 0))
+                .add(3, createInstruction(JUMP_ADDRESS, 0))
+                .add(STACK_POINTER_ADDRESS, 0L)
+                .add(2, createInstruction(INCREMENT, STACK_POINTER_ADDRESS))
+                .add(5, 100L)
+                .add(6, 200L)
+                .add(7, createInstruction(LOAD, STACK_POINTER_ADDRESS))
+                .add(8, createInstruction(ADD_VALUE, 3))
+                .add(9, createInstruction(STORE, STACK_POINTER_ADDRESS))
+                .add(10, createInstruction(HALT))
+                .add(3, createInstruction(JUMP_ADDRESS, 7));
 
-                .add(createInstruction(INPUT_AND_STORE, 3))
-                .add(createInstruction(JUMP_ADDRESS, 0))
-
-                .add(createInstruction(INPUT_AND_STORE, STACK_POINTER_ADDRESS))
-                .add(0L)
-
-                .add(createInstruction(INPUT_AND_STORE, 2))
-                .add(createInstruction(INCREMENT, STACK_POINTER_ADDRESS))
-
-                .add(createInstruction(INPUT_AND_STORE, 5))
-                .add(100L)
-
-                .add(createInstruction(INPUT_AND_STORE, 6))
-                .add(200L)
-
-                .add(createInstruction(INPUT_AND_STORE, 7))
-                .add(createInstruction(LOAD, STACK_POINTER_ADDRESS))
-
-                .add(createInstruction(INPUT_AND_STORE, 8))
-                .add(createInstruction(ADD_VALUE, 3))
-
-                .add(createInstruction(INPUT_AND_STORE, 9))
-                .add(createInstruction(STORE, STACK_POINTER_ADDRESS))
-
-                .add(createInstruction(INPUT_AND_STORE, 10))
-                .add(createInstruction(HALT))
-
-                .add(createInstruction(INPUT_AND_STORE, 3))
-                .add(createInstruction(JUMP_ADDRESS, 7));
-
-        return new LinkedList<>(list.list());
+        return add.toDeque();
     }
 
     private static long createInstruction(int opCode) {
@@ -286,6 +265,22 @@ public class Assembler {
             return new Ok<>(Files.readString(path));
         } catch (IOException e) {
             return new Err<>(e);
+        }
+    }
+
+    private record Instructions(JavaList<Long> list) {
+        public Instructions() {
+            this(new JavaList<>());
+        }
+
+        private Deque<Long> toDeque() {
+            return new LinkedList<>(list.list());
+        }
+
+        private Instructions add(int address, long value) {
+            return new Instructions(list()
+                    .add(createInstruction(INPUT_AND_STORE, address))
+                    .add(value));
         }
     }
 }
