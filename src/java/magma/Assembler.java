@@ -32,7 +32,8 @@ public class Assembler {
     public static final int LOAD = 0x01;
     public static final int STORE = 0x02;
     public static final int OUT = 0x03;
-    public static final int ADD = 0x04;
+    public static final int ADD_ADDRESS = 0x04;
+    public static final int ADD_VALUE = 0x14;
     public static final int SUB = 0x05;
     public static final int INCREMENT = 0x06;
     public static final int DEC = 0x07;
@@ -145,12 +146,15 @@ public class Assembler {
                 case OUT:  // OUT
                     System.out.print(accumulator);
                     break;
-                case ADD:  // ADD
+                case ADD_ADDRESS:  // ADD
                     if (addressOrValue < memory.size()) {
                         accumulator += memory.get((int) addressOrValue);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
+                    break;
+                case ADD_VALUE:
+                    accumulator += addressOrValue;
                     break;
                 case SUB:  // SUB
                     if (addressOrValue < memory.size()) {
@@ -256,6 +260,15 @@ public class Assembler {
                 .add(200L)
 
                 .add(createInstruction(INPUT_AND_STORE, 7))
+                .add(createInstruction(LOAD, 4))
+
+                .add(createInstruction(INPUT_AND_STORE, 8))
+                .add(createInstruction(ADD_VALUE, 3))
+
+                .add(createInstruction(INPUT_AND_STORE, 9))
+                .add(createInstruction(STORE, 4))
+
+                .add(createInstruction(INPUT_AND_STORE, 10))
                 .add(createInstruction(HALT))
 
                 .add(createInstruction(INPUT_AND_STORE, 3))
