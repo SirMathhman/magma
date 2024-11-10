@@ -241,10 +241,30 @@ public class Assembler {
 
         final var list = new ArrayList<Node>();
         set(list, 2, JUMP_ADDRESS, "init");
-        set(list, 3, 100);
 
-        labels.put("start", 4L);
-        set(list, 4, HALT, 0);
+        final var data = Map.of(
+                "first", 100L,
+                "second", 200L,
+                "third", 300L
+        );
+
+        final var entryList = data.keySet()
+                .stream()
+                .sorted()
+                .toList();
+
+        for (int i = 0; i < entryList.size(); i++) {
+            final var label = entryList.get(i);
+            final var value = data.get(label);
+
+            final var address = 3 + i;
+            labels.put(label, (long) address);
+            set(list, address, value);
+        }
+
+        final var address = 3 + data.size();
+        labels.put("start", (long) address);
+        set(list, address, HALT, 0);
 
         set(list, 2, JUMP_ADDRESS, "start");
 
