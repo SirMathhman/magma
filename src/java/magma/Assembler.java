@@ -235,29 +235,31 @@ public class Assembler {
     }
 
     private static Deque<Long> parse(Node root) {
-        final var list = new LinkedList<Long>();
-        list.add(createInstruction(new MapNode()
+        final var list = new ArrayList<Node>();
+        list.add(new MapNode()
                 .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(2, 16))));
-
-        list.add(createInstruction(new MapNode()
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(2, 16)));
+        list.add(new MapNode()
                 .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))));
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16)));
 
-        list.add(createInstruction(new MapNode()
+        list.add(new MapNode()
                 .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16))));
-        list.add(createInstruction(new MapNode()
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)));
+        list.add(new MapNode()
                 .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))));
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16)));
 
-        list.add(createInstruction(new MapNode()
+        list.add(new MapNode()
                 .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(2, 16))));
-        list.add(createInstruction(new MapNode()
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(2, 16)));
+        list.add(new MapNode()
                 .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16))));
-        return list;
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)));
+
+        return list.stream()
+                .map(Assembler::createInstruction)
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 
     static Result<String, IOException> readSafe(Path path) {
