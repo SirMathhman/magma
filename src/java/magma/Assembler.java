@@ -8,6 +8,7 @@ import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.ApplicationError;
 import magma.app.ThrowableError;
+import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.CASMLang;
@@ -50,6 +51,8 @@ public class Assembler {
     public static final int INCREMENT_ADDRESS = 2;
     public static final int REPEAT_ADDRESS = 3;
     public static final int STACK_POINTER_ADDRESS_OFFSET = 3;
+    public static final String OP_CODE = "op-code";
+    public static final String ADDRESS_OR_VALUE = "address-or-value";
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
@@ -82,7 +85,9 @@ public class Assembler {
     }
 
     private static void compute(List<Long> memory, Deque<Long> input) {
-        memory.add(createInstruction(INPUT_AND_STORE, 1L));
+        memory.add(createInstruction(new MapNode()
+                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(1L, 16))));
 
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
@@ -231,14 +236,27 @@ public class Assembler {
 
     private static Deque<Long> parse(Node root) {
         final var list = new LinkedList<Long>();
-        list.add(createInstruction(INPUT_AND_STORE, 2));
-        list.add(createInstruction(JUMP_ADDRESS, 0));
+        list.add(createInstruction(new MapNode()
+                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(2, 16))));
 
-        list.add(createInstruction(INPUT_AND_STORE, 3));
-        list.add(createInstruction(HALT, 0));
+        list.add(createInstruction(new MapNode()
+                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))));
 
-        list.add(createInstruction(INPUT_AND_STORE, 2));
-        list.add(createInstruction(JUMP_ADDRESS, 3));
+        list.add(createInstruction(new MapNode()
+                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16))));
+        list.add(createInstruction(new MapNode()
+                .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))));
+
+        list.add(createInstruction(new MapNode()
+                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(2, 16))));
+        list.add(createInstruction(new MapNode()
+                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16))));
         return list;
     }
 
@@ -250,7 +268,10 @@ public class Assembler {
         }
     }
 
-    private static long createInstruction(int opCode, long addressOrValue) {
+    private static long createInstruction(Node node) {
+        final var opCode = Integer.parseUnsignedInt(node.findString("op-code").orElse(""), 16);
+        final var addressOrValue = Long.parseUnsignedLong(node.findString("address-or-value").orElse(""), 16);
+
         if (opCode < 0x00 || opCode > 0xFF) {
             throw new IllegalArgumentException("Opcode must be an 8-bit value (0x00 to 0xFF).");
         }
