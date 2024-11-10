@@ -242,6 +242,14 @@ public class Assembler {
         final var list = new ArrayList<Node>();
         set(list, 2, JUMP_ADDRESS, "init");
 
+        labels.put("program-counter", 4L);
+        set(list, 4, 0);
+
+        set(list, 3, JUMP_ADDRESS, "init");
+        set(list, 2, INCREMENT, "program-counter");
+
+        final var LOOP_OFFSET = 5;
+
         final var data = Map.of(
                 "first", 100L,
                 "second", 200L,
@@ -257,16 +265,16 @@ public class Assembler {
             final var label = entryList.get(i);
             final var value = data.get(label);
 
-            final var address = 3 + i;
+            final var address = LOOP_OFFSET + i;
             labels.put(label, (long) address);
             set(list, address, value);
         }
 
-        final var address = 3 + data.size();
+        final var address = LOOP_OFFSET + data.size();
         labels.put("start", (long) address);
         set(list, address, HALT, 0);
 
-        set(list, 2, JUMP_ADDRESS, "start");
+        set(list, 3, JUMP_ADDRESS, "start");
 
         return list.stream()
                 .map(node -> resolveLabel(labels, node))
