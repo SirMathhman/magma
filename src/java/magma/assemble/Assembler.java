@@ -95,56 +95,61 @@ public class Assembler {
             final var option = switchOk(state1, opcode, addressOrValue);
             if (option.isEmpty()) return;
 
-            state = option.orElse(state);
+            final var result = option.orElse(new Ok<>(state));
+            if (result.isErr()) {
+                final var err = result.findErr().orElse(null);
+                System.err.println(err.message);
+                return;
+            }
+
+            state = result.findValue().orElse(null);
         }
     }
 
-    private static Option<State> switchOk(State state, int opcode, long addressOrValue) {
-        switch (opcode) {
-            case HALT:
-                return new None<>();
-            case NO_OPERATION:
-                return new Some<>(state);
-            case PUSH:
-                return new Some<>(push(state, addressOrValue));
-            case POP:
-                return new Some<>(state.setAccumulator(pop(state.memory())));
-            case INPUT_AND_LOAD:
-                return new Some<>(state.setAccumulator(inputAndLoad(state.input())));
-            case INPUT_AND_STORE:
-                return new Some<>(inputAndStore(state, state.memory(), state.input(), addressOrValue));
-            case LOAD:
-                return new Some<>(state.setAccumulator(load(state.memory(), addressOrValue)));
-            case STORE:
-                return new Some<>(store(state, state.memory(), addressOrValue, state.accumulator()));
-            case OUT:
-                return new Some<>(out(state, state.accumulator()));
-            case ADD_ADDRESS:
-                return new Some<>(state.setAccumulator(add(state.memory(), addressOrValue, state.accumulator())));
-            case ADD_VALUE:
-                return new Some<>(state.setAccumulator(addValue(state.accumulator(), addressOrValue)));
-            case SUB:
-                return new Some<>(state.setAccumulator(sub(state.memory(), addressOrValue, state.accumulator())));
-            case INCREMENT:
-                return new Some<>(increment(state, state.memory(), addressOrValue));
-            case DEC:
-                return new Some<>(decrement(state, state.memory(), addressOrValue));
-            case TAC:
-                return new Some<>(state.setProgramCounter(testConditional(state.accumulator(), state.programCounter(), (int) addressOrValue)));
-            case JUMP_ADDRESS:
-                return new Some<>(state.setProgramCounter(jump((int) addressOrValue)));
-            case SHIFT_LEFT:
-                return new Some<>(state.setAccumulator(shiftLeft(state.accumulator(), addressOrValue)));
-            case SHIFT_RIGHT:
-                return new Some<>(state.setAccumulator(shiftRight(state.accumulator(), addressOrValue)));
-            case TS:
-                return new Some<>(state.setProgramCounter(testAndSet(state.memory(), addressOrValue, state.programCounter())));
-            case CAS:
-                return new Some<>(compareAndSwap(state, state.memory(), addressOrValue));
-            default:
-                System.err.println("Unknown opcode: " + opcode);
-                return new None<>();
+    private static Option<Result<State, InterpretError>> switchOk(State state, int opcode, long addressOrValue) {
+        if (opcode == HALT) {
+            return new None<>();
+        } else if (opcode == NO_OPERATION) {
+            return new Some<>(new Ok<>(state));
+        } else if (opcode == PUSH) {
+            return new Some<>(new Ok<>(push(state, addressOrValue)));
+        } else if (opcode == POP) {
+            return new Some<>(new Ok<>(state.setAccumulator(pop(state.memory()))));
+        } else if (opcode == INPUT_AND_LOAD) {
+            return new Some<>(new Ok<>(state.setAccumulator(inputAndLoad(state.input()))));
+        } else if (opcode == INPUT_AND_STORE) {
+            return new Some<>(new Ok<>(inputAndStore(state, state.memory(), state.input(), addressOrValue)));
+        } else if (opcode == LOAD) {
+            return new Some<>(new Ok<>(state.setAccumulator(load(state.memory(), addressOrValue))));
+        } else if (opcode == STORE) {
+            return new Some<>(new Ok<>(store(state, state.memory(), addressOrValue, state.accumulator())));
+        } else if (opcode == OUT) {
+            return new Some<>(new Ok<>(out(state, state.accumulator())));
+        } else if (opcode == ADD_ADDRESS) {
+            return new Some<>(new Ok<>(state.setAccumulator(add(state.memory(), addressOrValue, state.accumulator()))));
+        } else if (opcode == ADD_VALUE) {
+            return new Some<>(new Ok<>(state.setAccumulator(addValue(state.accumulator(), addressOrValue))));
+        } else if (opcode == SUB) {
+            return new Some<>(new Ok<>(state.setAccumulator(sub(state.memory(), addressOrValue, state.accumulator()))));
+        } else if (opcode == INCREMENT) {
+            return new Some<>(new Ok<>(increment(state, state.memory(), addressOrValue)));
+        } else if (opcode == DEC) {
+            return new Some<>(new Ok<>(decrement(state, state.memory(), addressOrValue)));
+        } else if (opcode == TAC) {
+            return new Some<>(new Ok<>(state.setProgramCounter(testConditional(state.accumulator(), state.programCounter(), (int) addressOrValue))));
+        } else if (opcode == JUMP_ADDRESS) {
+            return new Some<>(new Ok<>(state.setProgramCounter(jump((int) addressOrValue))));
+        } else if (opcode == SHIFT_LEFT) {
+            return new Some<>(new Ok<>(state.setAccumulator(shiftLeft(state.accumulator(), addressOrValue))));
+        } else if (opcode == SHIFT_RIGHT) {
+            return new Some<>(new Ok<>(state.setAccumulator(shiftRight(state.accumulator(), addressOrValue))));
+        } else if (opcode == TS) {
+            return new Some<>(new Ok<>(state.setProgramCounter(testAndSet(state.memory(), addressOrValue, state.programCounter()))));
+        } else if (opcode == CAS) {
+            return new Some<>(new Ok<>(compareAndSwap(state, state.memory(), addressOrValue)));
         }
+
+        return new Some<>(new Err<>(new InterpretError("Unknown opcode: " + opcode)));
     }
 
     private static State compareAndSwap(State state, List<Long> memory, long addressOrValue) {
