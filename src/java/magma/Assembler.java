@@ -50,6 +50,7 @@ public class Assembler {
     public static final int STACK_POINTER_ADDRESS_OFFSET = 3;
     public static final String OP_CODE = "op-code";
     public static final String ADDRESS_OR_VALUE = "address-or-value";
+    public static final String LABEL = "address";
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
@@ -239,20 +240,35 @@ public class Assembler {
         set(list, 3, HALT, 0);
         labels.put("start", 3L);
 
-        set(list, 2, JUMP_ADDRESS, (int) labels.get("start").longValue());
+        set(list, 2, new MapNode()
+                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(LABEL, "start"));
 
         return list.stream()
+                .map(node -> {
+                    final var option = node.findString(LABEL);
+                    if (option.isEmpty()) return node;
+
+                    final var label = option.orElse("");
+                    final var addressOrValue = labels.get(label);
+                    return node.withString(ADDRESS_OR_VALUE, Long.toUnsignedString(addressOrValue, 16));
+                })
                 .map(Assembler::createInstruction)
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 
     private static void set(ArrayList<Node> list, int instructionAddress, int opCode, int addressOrValue) {
+        set(list, instructionAddress, new MapNode()
+                .withString(OP_CODE, Integer.toUnsignedString(opCode, 16))
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(addressOrValue, 16)));
+    }
+
+    private static void set(ArrayList<Node> list, int instructionAddress, Node instruction) {
         list.add(new MapNode()
                 .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
                 .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(instructionAddress, 16)));
-        list.add(new MapNode()
-                .withString(OP_CODE, Integer.toUnsignedString(opCode, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(addressOrValue, 16)));
+
+        list.add(instruction);
     }
 
     static Result<String, IOException> readSafe(Path path) {
