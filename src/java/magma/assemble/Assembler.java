@@ -84,89 +84,77 @@ public class Assembler {
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
 
+        var state = new State(memory, input, programCounter, accumulator);
         while (programCounter < memory.size()) {
             final long instructionUnsigned = memory.get(programCounter);
 
-            // Decode the instruction
-            int opcode = (int) ((instructionUnsigned >> 56) & 0xFF);  // First 8 bits
-            long addressOrValue = instructionUnsigned & 0x00FFFFFFFFFFFFFFL;  // Remaining 56 bits
+            int opcode = (int) ((instructionUnsigned >> 56) & 0xFF);
+            long addressOrValue = instructionUnsigned & 0x00FFFFFFFFFFFFFFL;
 
-            programCounter++;  // Move to next instruction by default
+            final var state1 = state.setProgramCounter(state.programCounter + 1);
+            final var option = switchOk(state1, opcode, addressOrValue);
+            if (option.isEmpty()) return;
 
-            // Execute based on opcode
-            switch (opcode) {
-                case NO_OPERATION:
-                    break;
-                case PUSH:
-                    push(memory, addressOrValue);
-                    break;
-                case POP:
-                    accumulator = pop(memory);
-                    break;
-                case INPUT_AND_LOAD:
-                    accumulator = inputAndLoad(input);
-                    break;
-                case INPUT_AND_STORE:
-                    inputAndStore(memory, input, addressOrValue);
-                    break;
-                case LOAD:
-                    accumulator = load(memory, addressOrValue);
-                    break;
-                case STORE:
-                    store(memory, addressOrValue, accumulator);
-                    break;
-                case OUT:
-                    out(accumulator);
-                    break;
-                case ADD_ADDRESS:
-                    accumulator = add(memory, addressOrValue, accumulator);
-                    break;
-                case ADD_VALUE:
-                    accumulator = addValue(accumulator, addressOrValue);
-                    break;
-                case SUB:
-                    accumulator = sub(memory, addressOrValue, accumulator);
-                    break;
-                case INCREMENT:
-                    increment(memory, addressOrValue);
-                    break;
-                case DEC:
-                    decrement(memory, addressOrValue);
-                    break;
-                case TAC:
-                    programCounter = testConditional(accumulator, programCounter, (int) addressOrValue);
-                    break;
-                case JUMP_ADDRESS:
-                    programCounter = jump((int) addressOrValue);
-                    break;
-                case HALT:
-                    return;
-                case SHIFT_LEFT:
-                    accumulator = shiftLeft(accumulator, addressOrValue);
-                    break;
-                case SHIFT_RIGHT:
-                    accumulator = shiftRight(accumulator, addressOrValue);
-                    break;
-                case TS:
-                    programCounter = testAndSet(memory, addressOrValue, programCounter);
-                    break;
-                case CAS:
-                    compareAndSwap(memory, addressOrValue);
-                    break;
-                default:
-                    System.err.println("Unknown opcode: " + opcode);
-                    break;
-            }
+            state = option.orElse(state);
         }
     }
 
-    private static void compareAndSwap(List<Long> memory, long addressOrValue) {
+    private static Option<State> switchOk(State state, int opcode, long addressOrValue) {
+        switch (opcode) {
+            case HALT:
+                return new None<>();
+            case NO_OPERATION:
+                return new Some<>(state);
+            case PUSH:
+                return new Some<>(push(state, addressOrValue));
+            case POP:
+                return new Some<>(state.setAccumulator(pop(state.memory())));
+            case INPUT_AND_LOAD:
+                return new Some<>(state.setAccumulator(inputAndLoad(state.input())));
+            case INPUT_AND_STORE:
+                return new Some<>(inputAndStore(state, state.memory(), state.input(), addressOrValue));
+            case LOAD:
+                return new Some<>(state.setAccumulator(load(state.memory(), addressOrValue)));
+            case STORE:
+                return new Some<>(store(state, state.memory(), addressOrValue, state.accumulator()));
+            case OUT:
+                return new Some<>(out(state, state.accumulator()));
+            case ADD_ADDRESS:
+                return new Some<>(state.setAccumulator(add(state.memory(), addressOrValue, state.accumulator())));
+            case ADD_VALUE:
+                return new Some<>(state.setAccumulator(addValue(state.accumulator(), addressOrValue)));
+            case SUB:
+                return new Some<>(state.setAccumulator(sub(state.memory(), addressOrValue, state.accumulator())));
+            case INCREMENT:
+                return new Some<>(increment(state, state.memory(), addressOrValue));
+            case DEC:
+                return new Some<>(decrement(state, state.memory(), addressOrValue));
+            case TAC:
+                return new Some<>(state.setProgramCounter(testConditional(state.accumulator(), state.programCounter(), (int) addressOrValue)));
+            case JUMP_ADDRESS:
+                return new Some<>(state.setProgramCounter(jump((int) addressOrValue)));
+            case SHIFT_LEFT:
+                return new Some<>(state.setAccumulator(shiftLeft(state.accumulator(), addressOrValue)));
+            case SHIFT_RIGHT:
+                return new Some<>(state.setAccumulator(shiftRight(state.accumulator(), addressOrValue)));
+            case TS:
+                return new Some<>(state.setProgramCounter(testAndSet(state.memory(), addressOrValue, state.programCounter())));
+            case CAS:
+                return new Some<>(compareAndSwap(state, state.memory(), addressOrValue));
+            default:
+                System.err.println("Unknown opcode: " + opcode);
+                return new None<>();
+        }
+    }
+
+    private static State compareAndSwap(State state, List<Long> memory, long addressOrValue) {
         long oldValue = memory.get((int) addressOrValue);
         long compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
         long newValue = addressOrValue & 0xFFFFFFFFL;
         if (oldValue == compareValue) {
             memory.set((int) addressOrValue, newValue);
         }
+        return state;
     }
 
     private static int testAndSet(List<Long> memory, long addressOrValue, int programCounter) {
@@ -203,17 +191,19 @@ public class Assembler {
         return programCounter;
     }
 
-    private static void decrement(List<Long> memory, long addressOrValue) {
+    private static State decrement(State state, List<Long> memory, long addressOrValue) {
         if (addressOrValue < memory.size()) {
             memory.set((int) addressOrValue, memory.get((int) addressOrValue) - 1);
         }
+        return state;
     }
 
-    private static void increment(List<Long> memory, long addressOrValue) {
+    private static State increment(State state, List<Long> memory, long addressOrValue) {
         if (addressOrValue < memory.size()) {
             final var cast = (int) addressOrValue;
             memory.set(cast, memory.get(cast) + 1);
         }
+        return state;
     }
 
     private static long sub(List<Long> memory, long addressOrValue, long accumulator) {
@@ -239,16 +229,18 @@ public class Assembler {
         return accumulator;
     }
 
-    private static void out(long accumulator) {
+    private static State out(State state, long accumulator) {
         System.out.print(accumulator);
+        return state;
     }
 
-    private static void store(List<Long> memory, long addressOrValue, long accumulator) {
+    private static State store(State state, List<Long> memory, long addressOrValue, long accumulator) {
         if (addressOrValue < memory.size()) {
             memory.set((int) addressOrValue, accumulator);
         } else {
             System.err.println("Address out of bounds.");
         }
+        return state;
     }
 
     private static long load(List<Long> memory, long addressOrValue) {
@@ -257,13 +249,14 @@ public class Assembler {
         return accumulator;
     }
 
-    private static void inputAndStore(List<Long> memory, Deque<Long> input, long addressOrValue) {
+    private static State inputAndStore(State state, List<Long> memory, Deque<Long> input, long addressOrValue) {
         if (input.isEmpty()) {
             throw new RuntimeException("Input queue is empty.");
         } else {
             final var polled = input.poll();
             set(memory, addressOrValue, polled);
         }
+        return state;
     }
 
     private static long inputAndLoad(Deque<Long> input) {
@@ -283,9 +276,10 @@ public class Assembler {
         return accumulator;
     }
 
-    private static void push(List<Long> memory, long addressOrValue) {
-        set(memory, memory.get(STACK_POINTER_ADDRESS), addressOrValue);
-        set(memory, STACK_POINTER_ADDRESS, memory.get(STACK_POINTER_ADDRESS) + 1);
+    private static State push(State state, long addressOrValue) {
+        set(state.memory, state.memory.get(STACK_POINTER_ADDRESS), addressOrValue);
+        set(state.memory, STACK_POINTER_ADDRESS, state.memory.get(STACK_POINTER_ADDRESS) + 1);
+        return state;
     }
 
     private static void set(List<Long> memory, long address, long value) {
@@ -357,6 +351,46 @@ public class Assembler {
             }
 
             return ((long) opcode() << 56) | evaluatable().evaluate();
+        }
+    }
+
+    private static class State {
+        private final List<Long> memory;
+        private final Deque<Long> input;
+        private int programCounter;
+        private long accumulator;
+
+        private State(List<Long> memory, Deque<Long> input, int programCounter, long accumulator) {
+            this.memory = memory;
+            this.input = input;
+            this.programCounter = programCounter;
+            this.accumulator = accumulator;
+        }
+
+        public List<Long> memory() {
+            return memory;
+        }
+
+        public Deque<Long> input() {
+            return input;
+        }
+
+        public int programCounter() {
+            return programCounter;
+        }
+
+        public long accumulator() {
+            return accumulator;
+        }
+
+        public State setProgramCounter(int programCounter) {
+            this.programCounter = programCounter;
+            return this;
+        }
+
+        public State setAccumulator(long accumulator) {
+            this.accumulator = accumulator;
+            return this;
         }
     }
 }
