@@ -1,6 +1,5 @@
 package magma;
 
-import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
@@ -13,14 +12,17 @@ import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.CASMLang;
 import magma.java.JavaList;
+import magma.java.JavaMap;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.StringJoiner;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Assembler {
     public static final Path ROOT = Paths.get(".", "src", "magma");
@@ -72,32 +74,23 @@ public class Assembler {
         }, Some::new);
     }
 
-    private static void execute(JavaList<Long> input) {
+    private static void execute(Deque<Long> input) {
         System.out.println("Memory footprint: " + (input.size() * BYTES_PER_LONG) + " bytes");
 
-        final var memory = compute(input);
-        System.out.println();
-        System.out.println("Final Memory State: " + formatHexList(memory));
-    }
-
-    private static JavaList<Long> compute(JavaList<Long> input) {
-        final var memory = new JavaList<Long>();
+        final var memory = new ArrayList<Long>();
         compute(memory, input);
-        return memory;
+        System.out.println();
+        System.out.println("Final Memory State: " + formatHexList(memory, ", "));
     }
 
-    private static void compute(JavaList<Long> initialMemory, JavaList<Long> initialInput) {
-        var input = initialInput;
-        var memory = initialMemory.add(new Instruction(INPUT_AND_STORE, new Constant(1L)).evaluate());
+    private static void compute(List<Long> memory, Deque<Long> input) {
+        memory.add(new Instruction(INPUT_AND_STORE, new Constant(1L)).evaluate());
 
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
 
         while (programCounter < memory.size()) {
-            final var option = memory.get(programCounter);
-            if (option.isEmpty()) break;
-
-            final long instructionUnsigned = option.orElse(0L);
+            final long instructionUnsigned = memory.get(programCounter);
 
             // Decode the instruction
             int opcode = (int) ((instructionUnsigned >> 56) & 0xFF);  // First 8 bits
@@ -106,101 +99,140 @@ public class Assembler {
             programCounter++;  // Move to next instruction by default
 
             // Execute based on opcode
-            if (opcode == NO_OPERATION) continue;
-
-            if (opcode == PUSH) {
-                final var stackPointer = memory.get(STACK_POINTER_ADDRESS).orElse(0L);
-                memory = set(memory, stackPointer, addressOrValue);
-                memory = set(memory, STACK_POINTER_ADDRESS, stackPointer + 1);
-            } else if (opcode == POP) {
-                final var stackPointer = (long) memory.get(STACK_POINTER_ADDRESS).orElse(0L);
-                final var max = Math.max(stackPointer - 1, 0);
-
-                memory = set(memory, STACK_POINTER_ADDRESS, max);
-                accumulator = memory.get((int) stackPointer).orElse(0L);
-            } else if (opcode == INPUT_AND_LOAD) {
-                final var polled = input.poll().orElse(new Tuple<>(0L, input));
-                accumulator = polled.left();
-                input = polled.right();
-            } else if (opcode == INPUT_AND_STORE) {  // INP
-                final var polled = input.poll().orElse(new Tuple<>(0L, input));
-                final var left = polled.left();
-                memory = set(memory, addressOrValue, left);
-                input = polled.right();
-            } else if (opcode == LOAD) {
-                accumulator = memory.get((int) addressOrValue).orElse(0L);
-            } else if (opcode == STORE) {
-                memory = memory.set((int) addressOrValue, accumulator);
-            } else if (opcode == OUT) {
-                System.out.print(accumulator);
-            } else if (opcode == ADD_ADDRESS) {
-                accumulator += memory.get((int) addressOrValue).orElse(0L);
-            } else if (opcode == ADD_VALUE) {
-                accumulator += addressOrValue;
-            } else if (opcode == SUB) {
-                accumulator -= memory.get((int) addressOrValue).orElse(0L);
-            } else if (opcode == INCREMENT) {
-                final var cast = (int) addressOrValue;
-                memory = memory.set(cast, memory.get(cast).orElse(0L) + 1);
-            } else if (opcode == DEC) {
-                final var value = memory.get((int) addressOrValue).orElse(0L);
-                memory = memory.set((int) addressOrValue, value - 1);
-            } else if (opcode == TAC) {
-                if (accumulator < 0) programCounter = (int) addressOrValue;
-            } else if (opcode == JUMP_ADDRESS) {  // JMP
-                programCounter = (int) addressOrValue;
-            } else if (opcode == HALT) {  // HRS
-                return;
-            } else if (opcode == SFT) {  // SFT
-                int leftShift = (int) ((addressOrValue >> 8) & 0xFF);
-                int rightShift = (int) (addressOrValue & 0xFF);
-                accumulator = (accumulator << leftShift) >> rightShift;
-            } else if (opcode == SHL) {  // SHL
-                accumulator <<= addressOrValue;
-            } else if (opcode == SHR) {  // SHR
-                accumulator >>= addressOrValue;
-            } else if (opcode == TS) {  // TS
-                if (addressOrValue >= memory.size()) continue;
-
-                if (memory.get((int) addressOrValue).orElse(0L) == 0) {
-                    memory = memory.set((int) addressOrValue, 1L);
-                } else {
-                    programCounter--;  // Retry this instruction if lock isn't available
-                }
-            } else if (opcode == CAS) {  // CAS
-                var oldValue = memory.get((int) addressOrValue).orElse(0L);
-
-                var compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
-                var newValue = addressOrValue & 0xFFFFFFFFL;
-                if (oldValue == compareValue) {
-                    memory = memory.set((int) addressOrValue, newValue);
-                }
-            } else {
-                System.err.println("Unknown opcode: " + opcode);
+            switch (opcode) {
+                case NO_OPERATION:
+                    break;
+                case PUSH:
+                    set(memory, memory.get(STACK_POINTER_ADDRESS), addressOrValue);
+                    set(memory, STACK_POINTER_ADDRESS, memory.get(STACK_POINTER_ADDRESS) + 1);
+                    break;
+                case POP:
+                    set(memory, STACK_POINTER_ADDRESS, Math.max(memory.get(STACK_POINTER_ADDRESS) - 1, 0));
+                    accumulator = memory.get((int) memory.get(STACK_POINTER_ADDRESS).longValue());
+                    break;
+                case INPUT_AND_LOAD:  // INP
+                    if (input.isEmpty()) {
+                        throw new RuntimeException("Input queue is empty.");
+                    } else {
+                        accumulator = input.poll();
+                    }
+                    break;
+                case INPUT_AND_STORE:  // INP
+                    if (input.isEmpty()) {
+                        throw new RuntimeException("Input queue is empty.");
+                    } else {
+                        final var polled = input.poll();
+                        set(memory, addressOrValue, polled);
+                        break;
+                    }
+                case LOAD:  // LOAD
+                    accumulator = addressOrValue < memory.size() ? memory.get((int) addressOrValue) : 0;
+                    break;
+                case STORE:  // STO
+                    if (addressOrValue < memory.size()) {
+                        memory.set((int) addressOrValue, accumulator);
+                    } else {
+                        System.err.println("Address out of bounds.");
+                    }
+                    break;
+                case OUT:  // OUT
+                    System.out.print(accumulator);
+                    break;
+                case ADD_ADDRESS:  // ADD
+                    if (addressOrValue < memory.size()) {
+                        accumulator += memory.get((int) addressOrValue);
+                    } else {
+                        System.err.println("Address out of bounds.");
+                    }
+                    break;
+                case ADD_VALUE:
+                    accumulator += addressOrValue;
+                    break;
+                case SUB:  // SUB
+                    if (addressOrValue < memory.size()) {
+                        accumulator -= memory.get((int) addressOrValue);
+                    } else {
+                        System.err.println("Address out of bounds.");
+                    }
+                    break;
+                case INCREMENT:  // INC
+                    if (addressOrValue < memory.size()) {
+                        final var cast = (int) addressOrValue;
+                        memory.set(cast, memory.get(cast) + 1);
+                    }
+                    break;
+                case DEC:  // DEC
+                    if (addressOrValue < memory.size()) {
+                        memory.set((int) addressOrValue, memory.get((int) addressOrValue) - 1);
+                    }
+                    break;
+                case TAC:  // TAC
+                    if (accumulator < 0) {
+                        programCounter = (int) addressOrValue;
+                    }
+                    break;
+                case JUMP_ADDRESS:  // JMP
+                    programCounter = (int) addressOrValue;
+                    break;
+                case HALT:  // HRS
+                    return;
+                case SFT:  // SFT
+                    int leftShift = (int) ((addressOrValue >> 8) & 0xFF);
+                    int rightShift = (int) (addressOrValue & 0xFF);
+                    accumulator = (accumulator << leftShift) >> rightShift;
+                    break;
+                case SHL:  // SHL
+                    accumulator <<= addressOrValue;
+                    break;
+                case SHR:  // SHR
+                    accumulator >>= addressOrValue;
+                    break;
+                case TS:  // TS
+                    if (addressOrValue < memory.size()) {
+                        if (memory.get((int) addressOrValue) == 0) {
+                            memory.set((int) addressOrValue, 1L);
+                        } else {
+                            programCounter--;  // Retry this instruction if lock isn't available
+                        }
+                    }
+                    break;
+                case CAS:  // CAS
+                    long oldValue = memory.get((int) addressOrValue);
+                    long compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
+                    long newValue = addressOrValue & 0xFFFFFFFFL;
+                    if (oldValue == compareValue) {
+                        memory.set((int) addressOrValue, newValue);
+                    }
+                    break;
+                default:
+                    System.err.println("Unknown opcode: " + opcode);
+                    break;
             }
         }
     }
 
-    private static JavaList<Long> set(JavaList<Long> memory, long address, long value) {
-        return memory.set((int) address, value);
+    private static void set(List<Long> memory, long address, long value) {
+        while (!(address < memory.size())) {
+            memory.add(0L);
+        }
+
+        memory.set((int) address, value);
     }
 
-    private static String formatHexList(JavaList<Long> list) {
-        final var string = list.stream()
+    private static String formatHexList(List<Long> list, String delimiter) {
+        return list.stream()
                 .map(value -> Long.toString(value, 16))
-                .foldLeft(new StringJoiner(", "), StringJoiner::add);
-
-        return "[" + string + "]";
+                .collect(Collectors.joining(delimiter, "[", "]"));
     }
 
-    private static Result<JavaList<Long>, CompileError> assemble(String content) {
+    private static Result<Deque<Long>, CompileError> assemble(String content) {
         return CASMLang.createRootRule()
                 .parse(content)
                 .mapValue(Assembler::parse);
     }
 
-    private static JavaList<Long> parse(Node root) {
-        return new JavaList<>();
+    private static Deque<Long> parse(Node root) {
+        return new LinkedList<>();
     }
 
     static Result<String, IOException> readSafe(Path path) {
