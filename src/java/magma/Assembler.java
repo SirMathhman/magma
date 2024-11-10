@@ -17,10 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Assembler {
@@ -235,10 +232,14 @@ public class Assembler {
     }
 
     private static Deque<Long> parse(Node root) {
+        var labels = new HashMap<String, Long>();
         final var list = new ArrayList<Node>();
         set(list, 2, JUMP_ADDRESS, 0);
+
         set(list, 3, HALT, 0);
-        set(list, 2, JUMP_ADDRESS, 3);
+        labels.put("start", 3L);
+
+        set(list, 2, JUMP_ADDRESS, (int) labels.get("start").longValue());
 
         return list.stream()
                 .map(Assembler::createInstruction)
