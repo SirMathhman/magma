@@ -4,7 +4,6 @@ import magma.api.Tuple;
 import magma.api.option.Option;
 import magma.app.compile.MapNode;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -26,6 +25,4 @@ public interface Result<T, E> {
     Option<E> findErr();
 
     boolean isOk();
-
-    void consume(Consumer<T> withValue, Consumer<E> withError);
 }

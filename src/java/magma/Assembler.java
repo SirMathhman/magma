@@ -1,4 +1,4 @@
-package magma.assemble;
+package magma;
 
 import magma.api.Tuple;
 import magma.api.option.None;
@@ -73,20 +73,20 @@ public class Assembler {
     private static void execute(JavaList<Long> input) {
         System.out.println("Memory footprint: " + (input.size() * BYTES_PER_LONG) + " bytes");
 
-        interpret(input).consume(memory -> {
-            System.out.println();
-            System.out.println("Final Memory State: " + formatHexList(memory));
-        }, err -> System.err.println(err.message));
+        final var memory = compute(input);
+        System.out.println();
+        System.out.println("Final Memory State: " + formatHexList(memory));
     }
 
-    private static Result<JavaList<Long>, RuntimeError> interpret(JavaList<Long> input) {
-        return computeInstruction(INPUT_AND_STORE, 1)
-                .mapValue(new JavaList<Long>()::add)
-                .flatMapValue(result -> interpretWithInitial(result, input));
+    private static JavaList<Long> compute(JavaList<Long> input) {
+        final var memory = new JavaList<Long>();
+        compute(memory, input);
+        return memory;
     }
 
-    private static Result<JavaList<Long>, RuntimeError> interpretWithInitial(JavaList<Long> initialMemory, JavaList<Long> input) {
-        var memory = initialMemory;
+    private static void compute(JavaList<Long> initialMemory, JavaList<Long> initialInput) {
+        var input = initialInput;
+        var memory = initialMemory.add(computeInstruction(INPUT_AND_STORE, 1));
 
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
@@ -108,13 +108,13 @@ public class Assembler {
 
             if (opcode == PUSH) {
                 final var stackPointer = memory.get(STACK_POINTER_ADDRESS).orElse(0L);
-                memory = memory.set((int) stackPointer.longValue(), addressOrValue);
-                memory = memory.set(STACK_POINTER_ADDRESS, stackPointer + 1);
+                memory = set(memory, stackPointer, addressOrValue);
+                memory = set(memory, STACK_POINTER_ADDRESS, stackPointer + 1);
             } else if (opcode == POP) {
                 final var stackPointer = (long) memory.get(STACK_POINTER_ADDRESS).orElse(0L);
                 final var max = Math.max(stackPointer - 1, 0);
 
-                memory = memory.set(STACK_POINTER_ADDRESS, max);
+                memory = set(memory, STACK_POINTER_ADDRESS, max);
                 accumulator = memory.get((int) stackPointer).orElse(0L);
             } else if (opcode == INPUT_AND_LOAD) {
                 final var polled = input.poll().orElse(new Tuple<>(0L, input));
@@ -123,7 +123,7 @@ public class Assembler {
             } else if (opcode == INPUT_AND_STORE) {  // INP
                 final var polled = input.poll().orElse(new Tuple<>(0L, input));
                 final var left = polled.left();
-                memory = memory.set((int) addressOrValue, left);
+                memory = set(memory, addressOrValue, left);
                 input = polled.right();
             } else if (opcode == LOAD) {
                 accumulator = memory.get((int) addressOrValue).orElse(0L);
@@ -148,7 +148,7 @@ public class Assembler {
             } else if (opcode == JUMP_ADDRESS) {  // JMP
                 programCounter = (int) addressOrValue;
             } else if (opcode == HALT) {  // HRS
-                return new Ok<>(memory);
+                return;
             } else if (opcode == SFT) {  // SFT
                 int leftShift = (int) ((addressOrValue >> 8) & 0xFF);
                 int rightShift = (int) (addressOrValue & 0xFF);
@@ -174,11 +174,13 @@ public class Assembler {
                     memory = memory.set((int) addressOrValue, newValue);
                 }
             } else {
-                return new Err<>(new RuntimeError("Unknown opcode: " + opcode));
+                System.err.println("Unknown opcode: " + opcode);
             }
         }
+    }
 
-        return new Ok<>(memory);
+    private static JavaList<Long> set(JavaList<Long> memory, long address, long value) {
+        return memory.set((int) address, value);
     }
 
     private static String formatHexList(JavaList<Long> list) {
@@ -207,14 +209,14 @@ public class Assembler {
         }
     }
 
-    private static Result<Long, RuntimeError> computeInstruction(int opCode, long addressOrValue) {
+    private static long computeInstruction(int opCode, long addressOrValue) {
         if (opCode < 0x00 || opCode > 0xFF) {
-            return new Err<>(new RuntimeError("Opcode must be an 8-bit value (0x00 to 0xFF)."));
+            throw new IllegalArgumentException("Opcode must be an 8-bit value (0x00 to 0xFF).");
         }
         if (addressOrValue < 0 || addressOrValue > 0x00FFFFFFFFFFFFFFL) {
-            return new Err<>(new RuntimeError("Address/Value must be a 56-bit value (0x00 to 0x00FFFFFFFFFFFFFF)."));
+            throw new IllegalArgumentException("Address/Value must be a 56-bit value (0x00 to 0x00FFFFFFFFFFFFFF).");
         }
 
-        return new Ok<>(((long) opCode << 56) | addressOrValue);
+        return ((long) opCode << 56) | addressOrValue;
     }
 }
