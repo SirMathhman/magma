@@ -109,15 +109,14 @@ public class Assembler {
             if (opcode == PUSH) {
                 final var stackPointer = withProgramCounter.memory.get(STACK_POINTER_ADDRESS).orElse(0L);
                 current = withProgramCounter
-                        .set((int) stackPointer.longValue(), addressOrValue)
-                        .set(STACK_POINTER_ADDRESS, stackPointer + 1);
+                        .withMemory(withProgramCounter.memory.set((int) stackPointer.longValue(), addressOrValue))
+                        .withMemory(withProgramCounter.memory.set(STACK_POINTER_ADDRESS, stackPointer + 1));
 
             } else if (opcode == POP) {
                 final var stackPointer = (long) withProgramCounter.memory.get(STACK_POINTER_ADDRESS).orElse(0L);
                 final var max = Math.max(stackPointer - 1, 0);
 
-                current = withProgramCounter
-                        .set(STACK_POINTER_ADDRESS, max)
+                current = withProgramCounter.withMemory(withProgramCounter.memory.set(STACK_POINTER_ADDRESS, max))
                         .withAccumulator(withProgramCounter.memory.get((int) stackPointer).orElse(0L));
             } else if (opcode == INPUT_AND_LOAD) {
                 final var polled = withProgramCounter.input.poll().orElse(new Tuple<>(0L, withProgramCounter.input));
@@ -135,7 +134,7 @@ public class Assembler {
             } else if (opcode == LOAD) {
                 current = withProgramCounter.withAccumulator(withProgramCounter.memory.get((int) addressOrValue).orElse(0L));
             } else if (opcode == STORE) {
-                current = withProgramCounter.set((int) addressOrValue, withProgramCounter.accumulator);
+                current = withProgramCounter.withMemory(withProgramCounter.memory.set((int) addressOrValue, withProgramCounter.accumulator));
             } else if (opcode == OUT) {
                 System.out.print(withProgramCounter.accumulator);
             } else if (opcode == ADD_ADDRESS) {
@@ -146,10 +145,10 @@ public class Assembler {
                 current = withProgramCounter.withAccumulator(withProgramCounter.accumulator - withProgramCounter.memory.get((int) addressOrValue).orElse(0L));
             } else if (opcode == INCREMENT) {
                 final var cast = (int) addressOrValue;
-                current = withProgramCounter.set(cast, withProgramCounter.memory.get(cast).orElse(0L) + 1);
+                current = withProgramCounter.withMemory(withProgramCounter.memory.set(cast, withProgramCounter.memory.get(cast).orElse(0L) + 1));
             } else if (opcode == DEC) {
                 final var value = withProgramCounter.memory.get((int) addressOrValue).orElse(0L);
-                current = withProgramCounter.set((int) addressOrValue, value - 1);
+                current = withProgramCounter.withMemory(withProgramCounter.memory.set((int) addressOrValue, value - 1));
             } else if (opcode == TAC) {
                 if (withProgramCounter.accumulator < 0) withProgramCounter.withProgramCounter((int) addressOrValue);
             } else if (opcode == JUMP_ADDRESS) {  // JMP
@@ -168,7 +167,7 @@ public class Assembler {
                 if (addressOrValue >= withProgramCounter.memory.size()) continue;
 
                 if (withProgramCounter.memory.get((int) addressOrValue).orElse(0L) == 0) {
-                    current = withProgramCounter.set((int) addressOrValue, 1L);
+                    current = withProgramCounter.withMemory(withProgramCounter.memory.set((int) addressOrValue, 1L));
                 } else {
                     current = withProgramCounter.withProgramCounter(withProgramCounter.programCounter - 1);  // Retry this instruction if lock isn't available
                 }
@@ -178,7 +177,7 @@ public class Assembler {
                 var compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
                 var newValue = addressOrValue & 0xFFFFFFFFL;
                 if (oldValue == compareValue) {
-                    current = withProgramCounter.set((int) addressOrValue, newValue);
+                    current = withProgramCounter.withMemory(withProgramCounter.memory.set((int) addressOrValue, newValue));
                 }
             } else {
                 return new Err<>(new RuntimeError("Unknown opcode: " + opcode));
@@ -236,10 +235,6 @@ public class Assembler {
             this.withMemory(memory);
             this.withProgramCounter(programCounter);
             this.withAccumulator(accumulator);
-        }
-
-        private State set(int addressOrValue, long newValue) {
-            return withMemory(memory.set(addressOrValue, newValue));
         }
 
         public State withInput(JavaList<Long> input) {
