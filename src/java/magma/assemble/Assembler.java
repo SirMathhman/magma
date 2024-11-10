@@ -40,7 +40,7 @@ public class Assembler {
     public static final int SFT = 0x0B;
     public static final int SHL = 0x0C;
     public static final int SHR = 0x0D;
-    public static final int TS = 0x0E;
+    public static final int TEST_AND_SET = 0x0E;
     public static final int COMPARE_AND_SWAP = 0x0F;
     public static final int BYTES_PER_LONG = 8;
     public static final int STACK_POINTER_ADDRESS = 4;
@@ -197,30 +197,36 @@ public class Assembler {
         if (opcode == SHR) {  // SHR
             return new Some<>(new Ok<>(withProgramCounter.withAccumulator(withProgramCounter.accumulator >> addressOrValue)));
         }
-        if (opcode == TS) {
-            if (withProgramCounter.memory.get((int) addressOrValue).orElse(0L) == 0) {
-                return new Some<>(new Ok<>(withProgramCounter.set((int) addressOrValue, 1L)));
-            } else {
-                return new Some<>(new Ok<>(withProgramCounter.withProgramCounter(withProgramCounter.programCounter - 1)));  // Retry this instruction if lock isn't available
-            }
-        }
+
+        final var withProgramCounter1 = testAndSet(withProgramCounter, opcode, (int) addressOrValue);
+        if (withProgramCounter1 != null) return withProgramCounter1;
 
         return compareAndSwap(withProgramCounter, opcode, addressOrValue)
                 .or(() -> new Some<>(new Err<>(new RuntimeError("Unknown opcode: " + opcode))));
     }
 
-    private static Option<Result<State, RuntimeError>> compareAndSwap(State state, int opcode, long addressOrValue) {
+    private static Option<Result<State, RuntimeError>> testAndSet(State state, int opcode, int addressOrValue) {
+        if (opcode != TEST_AND_SET) return new None<>();
+
+        if (state.memory.get(addressOrValue).orElse(0L) == 0) {
+            return new Some<>(new Ok<>(state.set(addressOrValue, 1L)));
+        } else {
+            return new Some<>(new Ok<>(state.withProgramCounter(state.programCounter - 1)));
+        }
+    }
+
+    private static Option<Result<State, RuntimeError>> compareAndSwap(State state, int opcode, long combinedValue) {
         if (opcode != COMPARE_AND_SWAP) return new None<>();
 
-        final var casted = (int) addressOrValue;
-        var oldValue = state.memory.get(casted).orElse(0L);
+        final var casted = (int) combinedValue;
+        return state.get(casted).match(oldValue -> {
+            var compareValue = (combinedValue >> 32) & 0xFFFFFFFFL;
+            if (oldValue != compareValue) return new None<>();
 
-        var compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
-        var newValue = addressOrValue & 0xFFFFFFFFL;
-        if (oldValue != compareValue) return new None<>();
-
-        final var set = state.set(casted, newValue);
-        return new Some<>(new Ok<>(set));
+            var newValue = combinedValue & 0xFFFFFFFFL;
+            final var set = state.set(casted, newValue);
+            return new Some<>(new Ok<>(set));
+        }, err -> new Some<>(new Err<>(err)));
     }
 
     private static String formatHexList(JavaList<Long> list) {
@@ -291,6 +297,12 @@ public class Assembler {
 
         public State withAccumulator(long accumulator) {
             return new State(input, memory, programCounter, accumulator);
+        }
+
+        public Result<Long, RuntimeError> get(int address) {
+            return memory.get(address)
+                    .<Result<Long, RuntimeError>>map(Ok::new)
+                    .orElseGet(() -> new Err<>(new RuntimeError("Value at '" + address + "' not defined.")));
         }
     }
 }
