@@ -232,37 +232,7 @@ public class Assembler {
     }
 
     private static Deque<Long> parse(Node root) {
-        final var initialized = new Instructions()
-                .set(INCREMENT_ADDRESS, new Instruction(JUMP_ADDRESS, new Constant(INITIAL_ADDRESS)).evaluate())
-                .set(REPEAT_ADDRESS, new Instruction(JUMP_ADDRESS, new Constant(INITIAL_ADDRESS)).evaluate())
-                .set(STACK_POINTER_ADDRESS, 0L)
-                .set(INCREMENT_ADDRESS, new Instruction(INCREMENT, new Constant(STACK_POINTER_ADDRESS)).evaluate());
-
-        var labels = new JavaMap<String, Long>();
-        final var withFirst = initialized.set(5, 100L);
-        labels = labels.put("first", 5L);
-
-        final var withData = withFirst.set(6, 200L);
-        labels = labels.put("second", 6L);
-
-        var start = new JavaList<Long>()
-                .add(new Instruction(LOAD, new Constant(STACK_POINTER_ADDRESS)).evaluate())
-                .add(new Instruction(ADD_VALUE, new Constant(STACK_POINTER_ADDRESS_OFFSET)).evaluate())
-                .add(new Instruction(STORE, new Constant(STACK_POINTER_ADDRESS)).evaluate())
-                .add(new Instruction(LOAD, new Constant(labels.find("first").orElse(0L))).evaluate())
-                .add(new Instruction(OUT, new Constant(0)).evaluate())
-                .add(new Instruction(LOAD, new Constant(labels.find("second").orElse(0L))).evaluate())
-                .add(new Instruction(OUT, new Constant(0)).evaluate())
-                .add(new Instruction(HALT, new Constant(0)).evaluate());
-
-        var withProgram = withData;
-        for (int i = 0; i < start.size(); i++) {
-            withProgram = withProgram.set(7 + i, start.get(i).orElse(0L));
-        }
-        labels = labels.put("start", 7L);
-
-        final var set = withProgram.set(REPEAT_ADDRESS, new Instruction(JUMP_ADDRESS, new Constant(labels.find("start").orElse(0L))).evaluate());
-        return set.toDeque();
+        return new LinkedList<>();
     }
 
     static Result<String, IOException> readSafe(Path path) {
