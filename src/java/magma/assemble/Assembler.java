@@ -198,7 +198,7 @@ public class Assembler {
         return new JavaList<>();
     }
 
-    static Result<String, IOException> readSafe(Path path) {
+    public static Result<String, IOException> readSafe(Path path) {
         try {
             return new Ok<>(Files.readString(path));
         } catch (IOException e) {
