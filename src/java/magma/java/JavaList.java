@@ -33,10 +33,6 @@ public record JavaList<T>(List<T> list) {
 
     public JavaList<T> set(int index, T value) {
         final var copy = new ArrayList<>(list);
-        while (!(index < copy.size())) {
-            copy.add(null);
-        }
-
         copy.set(index, value);
         return new JavaList<>(copy);
     }

@@ -5,7 +5,6 @@ import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -53,11 +52,6 @@ public record Err<T, E>(E value) implements Result<T, E> {
     @Override
     public boolean isOk() {
         return false;
-    }
-
-    @Override
-    public void consume(Consumer<T> withValue, Consumer<E> withError) {
-        withError.accept(value);
     }
 }
 
