@@ -6,6 +6,7 @@ import magma.api.option.Some;
 import magma.app.ApplicationError;
 import magma.app.ThrowableError;
 import magma.app.compile.Compiler;
+import magma.assemble.Assembler;
 
 import java.io.IOException;
 import java.nio.file.Files;
