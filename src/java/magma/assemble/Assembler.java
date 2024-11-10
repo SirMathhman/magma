@@ -41,7 +41,7 @@ public class Assembler {
     public static final int SHL = 0x0C;
     public static final int SHR = 0x0D;
     public static final int TS = 0x0E;
-    public static final int COMPARE_AND_SWAP = 0x0F;
+    public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
     public static final int STACK_POINTER_ADDRESS = 4;
     public static final int INITIAL_ADDRESS = 0;
@@ -204,23 +204,17 @@ public class Assembler {
                 return new Some<>(new Ok<>(withProgramCounter.withProgramCounter(withProgramCounter.programCounter - 1)));  // Retry this instruction if lock isn't available
             }
         }
+        if (opcode == CAS) {  // CAS
+            var oldValue = withProgramCounter.memory.get((int) addressOrValue).orElse(0L);
 
-        return compareAndSwap(withProgramCounter, opcode, addressOrValue)
-                .or(() -> new Some<>(new Err<>(new RuntimeError("Unknown opcode: " + opcode))));
-    }
+            var compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
+            var newValue = addressOrValue & 0xFFFFFFFFL;
+            if (oldValue == compareValue) {
+                return new Some<>(new Ok<>(withProgramCounter.set((int) addressOrValue, newValue)));
+            }
+        }
 
-    private static Option<Result<State, RuntimeError>> compareAndSwap(State state, int opcode, long addressOrValue) {
-        if (opcode != COMPARE_AND_SWAP) return new None<>();
-
-        final var casted = (int) addressOrValue;
-        var oldValue = state.memory.get(casted).orElse(0L);
-
-        var compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
-        var newValue = addressOrValue & 0xFFFFFFFFL;
-        if (oldValue != compareValue) return new None<>();
-
-        final var set = state.set(casted, newValue);
-        return new Some<>(new Ok<>(set));
+        return new Some<>(new Err<>(new RuntimeError("Unknown opcode: " + opcode)));
     }
 
     private static String formatHexList(JavaList<Long> list) {
