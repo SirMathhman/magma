@@ -86,13 +86,14 @@ public class Assembler {
     }
 
     private static Result<JavaList<Long>, RuntimeError> interpretWithInitial(JavaList<Long> initialMemory, JavaList<Long> input) {
-        var memory = initialMemory;
-
-        long accumulator = 0;  // Holds current value for operations
+        long accumulator = 0;
         int programCounter = 0;
+        return interpretWithState(new State(input, initialMemory, programCounter, accumulator));
+    }
 
-        while (programCounter < memory.size()) {
-            final var option = memory.get(programCounter);
+    private static Result<JavaList<Long>, RuntimeError> interpretWithState(State state) {
+        while (state.programCounter < state.memory.size()) {
+            final var option = state.memory.get(state.programCounter);
             if (option.isEmpty()) break;
 
             final long instructionUnsigned = option.orElse(0L);
@@ -101,84 +102,82 @@ public class Assembler {
             int opcode = (int) ((instructionUnsigned >> 56) & 0xFF);  // First 8 bits
             long addressOrValue = instructionUnsigned & 0x00FFFFFFFFFFFFFFL;  // Remaining 56 bits
 
-            programCounter++;  // Move to next instruction by default
+            state.programCounter++;  // Move to next instruction by default
 
-            // Execute based on opcode
             if (opcode == NO_OPERATION) continue;
-
             if (opcode == PUSH) {
-                final var stackPointer = memory.get(STACK_POINTER_ADDRESS).orElse(0L);
-                memory = memory.set((int) stackPointer.longValue(), addressOrValue);
-                memory = memory.set(STACK_POINTER_ADDRESS, stackPointer + 1);
+                final var stackPointer = state.memory.get(STACK_POINTER_ADDRESS).orElse(0L);
+                state.memory = state.memory.set((int) stackPointer.longValue(), addressOrValue);
+                state.memory = state.memory.set(STACK_POINTER_ADDRESS, stackPointer + 1);
             } else if (opcode == POP) {
-                final var stackPointer = (long) memory.get(STACK_POINTER_ADDRESS).orElse(0L);
+                final var stackPointer = (long) state.memory.get(STACK_POINTER_ADDRESS).orElse(0L);
                 final var max = Math.max(stackPointer - 1, 0);
 
-                memory = memory.set(STACK_POINTER_ADDRESS, max);
-                accumulator = memory.get((int) stackPointer).orElse(0L);
+                state.memory = state.memory.set(STACK_POINTER_ADDRESS, max);
+                state.accumulator = state.memory.get((int) stackPointer).orElse(0L);
             } else if (opcode == INPUT_AND_LOAD) {
-                final var polled = input.poll().orElse(new Tuple<>(0L, input));
-                accumulator = polled.left();
-                input = polled.right();
+                final var polled = state.input.poll().orElse(new Tuple<>(0L, state.input));
+                state.accumulator = polled.left();
+                state.input = polled.right();
             } else if (opcode == INPUT_AND_STORE) {  // INP
-                final var polled = input.poll().orElse(new Tuple<>(0L, input));
+                final var polled = state.input.poll().orElse(new Tuple<>(0L, state.input));
                 final var left = polled.left();
-                memory = memory.set((int) addressOrValue, left);
-                input = polled.right();
+                state.memory = state.memory.set((int) addressOrValue, left);
+                state.input = polled.right();
             } else if (opcode == LOAD) {
-                accumulator = memory.get((int) addressOrValue).orElse(0L);
+                state.accumulator = state.memory.get((int) addressOrValue).orElse(0L);
             } else if (opcode == STORE) {
-                memory = memory.set((int) addressOrValue, accumulator);
+                state.memory = state.memory.set((int) addressOrValue, state.accumulator);
             } else if (opcode == OUT) {
-                System.out.print(accumulator);
+                System.out.print(state.accumulator);
             } else if (opcode == ADD_ADDRESS) {
-                accumulator += memory.get((int) addressOrValue).orElse(0L);
+                state.accumulator += state.memory.get((int) addressOrValue).orElse(0L);
             } else if (opcode == ADD_VALUE) {
-                accumulator += addressOrValue;
+                state.accumulator += addressOrValue;
             } else if (opcode == SUB) {
-                accumulator -= memory.get((int) addressOrValue).orElse(0L);
+                state.accumulator -= state.memory.get((int) addressOrValue).orElse(0L);
             } else if (opcode == INCREMENT) {
                 final var cast = (int) addressOrValue;
-                memory = memory.set(cast, memory.get(cast).orElse(0L) + 1);
+                state.memory = state.memory.set(cast, state.memory.get(cast).orElse(0L) + 1);
             } else if (opcode == DEC) {
-                final var value = memory.get((int) addressOrValue).orElse(0L);
-                memory = memory.set((int) addressOrValue, value - 1);
+                final var value = state.memory.get((int) addressOrValue).orElse(0L);
+                state.memory = state.memory.set((int) addressOrValue, value - 1);
             } else if (opcode == TAC) {
-                if (accumulator < 0) programCounter = (int) addressOrValue;
+                if (state.accumulator < 0) state.programCounter = (int) addressOrValue;
             } else if (opcode == JUMP_ADDRESS) {  // JMP
-                programCounter = (int) addressOrValue;
+                state.programCounter = (int) addressOrValue;
             } else if (opcode == HALT) {  // HRS
-                return new Ok<>(memory);
+                return new Ok<>(state.memory);
             } else if (opcode == SFT) {  // SFT
                 int leftShift = (int) ((addressOrValue >> 8) & 0xFF);
                 int rightShift = (int) (addressOrValue & 0xFF);
-                accumulator = (accumulator << leftShift) >> rightShift;
+                state.accumulator = (state.accumulator << leftShift) >> rightShift;
             } else if (opcode == SHL) {  // SHL
-                accumulator <<= addressOrValue;
+                state.accumulator <<= addressOrValue;
             } else if (opcode == SHR) {  // SHR
-                accumulator >>= addressOrValue;
+                state.accumulator >>= addressOrValue;
             } else if (opcode == TS) {  // TS
-                if (addressOrValue >= memory.size()) continue;
+                if (addressOrValue >= state.memory.size()) continue;
 
-                if (memory.get((int) addressOrValue).orElse(0L) == 0) {
-                    memory = memory.set((int) addressOrValue, 1L);
+                if (state.memory.get((int) addressOrValue).orElse(0L) == 0) {
+                    state.memory = state.memory.set((int) addressOrValue, 1L);
                 } else {
-                    programCounter = programCounter - 1;  // Retry this instruction if lock isn't available
+                    state.programCounter = state.programCounter - 1;  // Retry this instruction if lock isn't available
                 }
             } else if (opcode == CAS) {  // CAS
-                var oldValue = memory.get((int) addressOrValue).orElse(0L);
+                var oldValue = state.memory.get((int) addressOrValue).orElse(0L);
 
                 var compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
                 var newValue = addressOrValue & 0xFFFFFFFFL;
                 if (oldValue == compareValue) {
-                    memory = memory.set((int) addressOrValue, newValue);
+                    state.memory = state.memory.set((int) addressOrValue, newValue);
                 }
             } else {
                 return new Err<>(new RuntimeError("Unknown opcode: " + opcode));
             }
         }
 
-        return new Ok<>(memory);
+        return new Ok<>(state.memory);
     }
 
     private static String formatHexList(JavaList<Long> list) {
@@ -216,5 +215,19 @@ public class Assembler {
         }
 
         return new Ok<>(((long) opCode << 56) | addressOrValue);
+    }
+
+    public static final class State {
+        public JavaList<Long> input;
+        public JavaList<Long> memory;
+        public int programCounter;
+        public long accumulator;
+
+        private State(JavaList<Long> input, JavaList<Long> memory, int programCounter, long accumulator) {
+            this.input = input;
+            this.memory = memory;
+            this.programCounter = programCounter;
+            this.accumulator = accumulator;
+        }
     }
 }
