@@ -51,6 +51,9 @@ public class Assembler {
     public static final String OP_CODE = "op-code";
     public static final String ADDRESS_OR_VALUE = "address-or-value";
     public static final String LABEL = "address";
+    public static final String DATA_VALUE = "data";
+    public static final String DATA_TYPE = "data";
+    public static final String INSTRUCTION_TYPE = "instruction";
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
@@ -234,37 +237,59 @@ public class Assembler {
 
     private static Deque<Long> parse(Node root) {
         var labels = new HashMap<String, Long>();
+        labels.put("init", 0L);
+
         final var list = new ArrayList<Node>();
-        set(list, 2, JUMP_ADDRESS, 0);
+        set(list, 2, JUMP_ADDRESS, "init");
+        set(list, 3, 100);
 
-        set(list, 3, HALT, 0);
-        labels.put("start", 3L);
+        labels.put("start", 4L);
+        set(list, 4, HALT, 0);
 
-        set(list, 2, new MapNode()
-                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(LABEL, "start"));
+        set(list, 2, JUMP_ADDRESS, "start");
 
         return list.stream()
-                .map(node -> {
-                    final var option = node.findString(LABEL);
-                    if (option.isEmpty()) return node;
-
-                    final var label = option.orElse("");
-                    final var addressOrValue = labels.get(label);
-                    return node.withString(ADDRESS_OR_VALUE, Long.toUnsignedString(addressOrValue, 16));
-                })
-                .map(Assembler::createInstruction)
+                .map(node -> resolveLabel(labels, node))
+                .map(Assembler::computeBinary)
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 
-    private static void set(ArrayList<Node> list, int instructionAddress, int opCode, int addressOrValue) {
-        set(list, instructionAddress, new MapNode()
+    private static void set(List<Node> list, int instructionAddress, int opCode, String label) {
+        set(list, instructionAddress, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(opCode, 16))
+                .withString(LABEL, label));
+    }
+
+    private static long computeBinary(Node node) {
+        if (node.is(INSTRUCTION_TYPE)) return createInstruction(node);
+        if (node.is(DATA_TYPE)) return Long.parseUnsignedLong(node.findString(DATA_VALUE).orElse(""), 16);
+        throw new UnsupportedOperationException("Unknown node: " + node);
+    }
+
+    private static Node resolveLabel(Map<String, Long> labels, Node node) {
+        if (!node.is(INSTRUCTION_TYPE)) return node;
+
+        final var option = node.findString(LABEL);
+        if (option.isEmpty()) return node;
+
+        final var label = option.orElse("");
+        final var addressOrValue = labels.get(label);
+        return node.withString(ADDRESS_OR_VALUE, Long.toUnsignedString(addressOrValue, 16));
+    }
+
+    private static void set(List<Node> list, int instructionAddress, int opCode, int addressOrValue) {
+        set(list, instructionAddress, new MapNode(INSTRUCTION_TYPE)
                 .withString(OP_CODE, Integer.toUnsignedString(opCode, 16))
                 .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(addressOrValue, 16)));
     }
 
-    private static void set(ArrayList<Node> list, int instructionAddress, Node instruction) {
-        list.add(new MapNode()
+    private static void set(List<Node> list, int instructionAddress, long data) {
+        set(list, instructionAddress, new MapNode(DATA_TYPE)
+                .withString(DATA_VALUE, Long.toUnsignedString(data, 16)));
+    }
+
+    private static void set(List<Node> list, int instructionAddress, Node instruction) {
+        list.add(new MapNode(INSTRUCTION_TYPE)
                 .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
                 .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(instructionAddress, 16)));
 
