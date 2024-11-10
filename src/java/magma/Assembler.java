@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.StringJoiner;
 
 public class Assembler {
@@ -88,7 +86,7 @@ public class Assembler {
 
     private static void compute(JavaList<Long> initialMemory, JavaList<Long> initialInput) {
         var input = initialInput;
-        var memory = initialMemory.add(new Instruction(INPUT_AND_STORE, new Constant(1L)).evaluate());
+        var memory = initialMemory.add(computeInstruction(INPUT_AND_STORE, 1));
 
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
@@ -165,7 +163,7 @@ public class Assembler {
                 if (memory.get((int) addressOrValue).orElse(0L) == 0) {
                     memory = memory.set((int) addressOrValue, 1L);
                 } else {
-                    programCounter--;  // Retry this instruction if lock isn't available
+                    programCounter = programCounter - 1;  // Retry this instruction if lock isn't available
                 }
             } else if (opcode == CAS) {  // CAS
                 var oldValue = memory.get((int) addressOrValue).orElse(0L);
@@ -211,43 +209,14 @@ public class Assembler {
         }
     }
 
-    interface Evaluatable {
-        long evaluate();
-    }
-
-    private record Instructions(JavaList<Long> list) {
-        public Instructions() {
-            this(new JavaList<>());
+    private static long computeInstruction(int opCode, long addressOrValue) {
+        if (opCode < 0x00 || opCode > 0xFF) {
+            throw new IllegalArgumentException("Opcode must be an 8-bit value (0x00 to 0xFF).");
+        }
+        if (addressOrValue < 0 || addressOrValue > 0x00FFFFFFFFFFFFFFL) {
+            throw new IllegalArgumentException("Address/Value must be a 56-bit value (0x00 to 0x00FFFFFFFFFFFFFF).");
         }
 
-        private Deque<Long> toDeque() {
-            return new LinkedList<>(list.list());
-        }
-
-        private Instructions set(long address, long value) {
-            return new Instructions(list()
-                    .add(new Instruction(INPUT_AND_STORE, new Constant(address)).evaluate())
-                    .add(value));
-        }
-    }
-
-    private record Constant(long addressOrValue) implements Evaluatable {
-        @Override
-        public long evaluate() {
-            return addressOrValue;
-        }
-    }
-
-    private record Instruction(int opcode, Evaluatable evaluatable) {
-        private long evaluate() {
-            if (opcode() < 0x00 || opcode() > 0xFF) {
-                throw new IllegalArgumentException("Opcode must be an 8-bit value (0x00 to 0xFF).");
-            }
-            if (evaluatable().evaluate() < 0 || evaluatable().evaluate() > 0x00FFFFFFFFFFFFFFL) {
-                throw new IllegalArgumentException("Address/Value must be a 56-bit value (0x00 to 0x00FFFFFFFFFFFFFF).");
-            }
-
-            return ((long) opcode() << 56) | evaluatable().evaluate();
-        }
+        return ((long) opCode << 56) | addressOrValue;
     }
 }
