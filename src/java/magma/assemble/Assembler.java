@@ -208,11 +208,9 @@ public class Assembler {
     private static Option<Result<State, RuntimeError>> testAndSet(State state, int opcode, int addressOrValue) {
         if (opcode != TEST_AND_SET) return new None<>();
 
-        if (state.memory.get(addressOrValue).orElse(0L) == 0) {
-            return new Some<>(new Ok<>(state.set(addressOrValue, 1L)));
-        } else {
-            return new Some<>(new Ok<>(state.withProgramCounter(state.programCounter - 1)));
-        }
+        return new Some<>(state.get(addressOrValue).mapValue(value -> value == 0
+                ? state.set(addressOrValue, 1L)
+                : state.withProgramCounter(state.programCounter - 1)));
     }
 
     private static Option<Result<State, RuntimeError>> compareAndSwap(State state, int opcode, long combinedValue) {
