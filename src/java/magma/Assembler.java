@@ -236,30 +236,22 @@ public class Assembler {
 
     private static Deque<Long> parse(Node root) {
         final var list = new ArrayList<Node>();
-        list.add(new MapNode()
-                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(2, 16)));
-        list.add(new MapNode()
-                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16)));
-
-        list.add(new MapNode()
-                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)));
-        list.add(new MapNode()
-                .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16)));
-
-        list.add(new MapNode()
-                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(2, 16)));
-        list.add(new MapNode()
-                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)));
+        set(list, 2, JUMP_ADDRESS, 0);
+        set(list, 3, HALT, 0);
+        set(list, 2, JUMP_ADDRESS, 3);
 
         return list.stream()
                 .map(Assembler::createInstruction)
                 .collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    private static void set(ArrayList<Node> list, int instructionAddress, int opCode, int addressOrValue) {
+        list.add(new MapNode()
+                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(instructionAddress, 16)));
+        list.add(new MapNode()
+                .withString(OP_CODE, Integer.toUnsignedString(opCode, 16))
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(addressOrValue, 16)));
     }
 
     static Result<String, IOException> readSafe(Path path) {
