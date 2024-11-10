@@ -230,7 +230,16 @@ public class Assembler {
     }
 
     private static Deque<Long> parse(Node root) {
-        return new LinkedList<>();
+        final var list = new LinkedList<Long>();
+        list.add(createInstruction(INPUT_AND_STORE, 2));
+        list.add(createInstruction(JUMP_ADDRESS, 0));
+
+        list.add(createInstruction(INPUT_AND_STORE, 3));
+        list.add(createInstruction(HALT, 0));
+
+        list.add(createInstruction(INPUT_AND_STORE, 2));
+        list.add(createInstruction(JUMP_ADDRESS, 3));
+        return list;
     }
 
     static Result<String, IOException> readSafe(Path path) {
