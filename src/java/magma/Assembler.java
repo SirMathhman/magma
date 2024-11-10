@@ -11,8 +11,6 @@ import magma.app.ThrowableError;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.CASMLang;
-import magma.java.JavaList;
-import magma.java.JavaMap;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -84,7 +82,7 @@ public class Assembler {
     }
 
     private static void compute(List<Long> memory, Deque<Long> input) {
-        memory.add(new Instruction(INPUT_AND_STORE, new Constant(1L)).evaluate());
+        memory.add(createInstruction(INPUT_AND_STORE, 1L));
 
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
@@ -243,43 +241,14 @@ public class Assembler {
         }
     }
 
-    interface Evaluatable {
-        long evaluate();
-    }
-
-    private record Instructions(JavaList<Long> list) {
-        public Instructions() {
-            this(new JavaList<>());
+    private static long createInstruction(int opCode, long addressOrValue) {
+        if (opCode < 0x00 || opCode > 0xFF) {
+            throw new IllegalArgumentException("Opcode must be an 8-bit value (0x00 to 0xFF).");
+        }
+        if (addressOrValue < 0 || addressOrValue > 0x00FFFFFFFFFFFFFFL) {
+            throw new IllegalArgumentException("Address/Value must be a 56-bit value (0x00 to 0x00FFFFFFFFFFFFFF).");
         }
 
-        private Deque<Long> toDeque() {
-            return new LinkedList<>(list.list());
-        }
-
-        private Instructions set(long address, long value) {
-            return new Instructions(list()
-                    .add(new Instruction(INPUT_AND_STORE, new Constant(address)).evaluate())
-                    .add(value));
-        }
-    }
-
-    private record Constant(long addressOrValue) implements Evaluatable {
-        @Override
-        public long evaluate() {
-            return addressOrValue;
-        }
-    }
-
-    private record Instruction(int opcode, Evaluatable evaluatable) {
-        private long evaluate() {
-            if (opcode() < 0x00 || opcode() > 0xFF) {
-                throw new IllegalArgumentException("Opcode must be an 8-bit value (0x00 to 0xFF).");
-            }
-            if (evaluatable().evaluate() < 0 || evaluatable().evaluate() > 0x00FFFFFFFFFFFFFFL) {
-                throw new IllegalArgumentException("Address/Value must be a 56-bit value (0x00 to 0x00FFFFFFFFFFFFFF).");
-            }
-
-            return ((long) opcode() << 56) | evaluatable().evaluate();
-        }
+        return ((long) opCode << 56) | addressOrValue;
     }
 }
