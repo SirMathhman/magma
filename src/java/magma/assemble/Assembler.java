@@ -127,65 +127,84 @@ public class Assembler {
                     .set((int) stackPointer.longValue(), addressOrValue)
                     .set(STACK_POINTER_ADDRESS, stackPointer + 1)));
 
-        } else if (opcode == POP) {
+        }
+        if (opcode == POP) {
             final var stackPointer = (long) withProgramCounter.memory.get(STACK_POINTER_ADDRESS).orElse(0L);
             final var max = Math.max(stackPointer - 1, 0);
 
             return new Some<>(new Ok<>(withProgramCounter
                     .set(STACK_POINTER_ADDRESS, max)
                     .withAccumulator(withProgramCounter.memory.get((int) stackPointer).orElse(0L))));
-        } else if (opcode == INPUT_AND_LOAD) {
+        }
+        if (opcode == INPUT_AND_LOAD) {
             final var polled = withProgramCounter.input.poll().orElse(new Tuple<>(0L, withProgramCounter.input));
 
             return new Some<>(new Ok<>(withProgramCounter
                     .withAccumulator(polled.left())
                     .withInput(polled.right())));
-        } else if (opcode == INPUT_AND_STORE) {  // INP
+        }
+        if (opcode == INPUT_AND_STORE) {  // INP
             final var polled = withProgramCounter.input.poll().orElse(new Tuple<>(0L, withProgramCounter.input));
             final var left = polled.left();
 
             return new Some<>(new Ok<>(withProgramCounter
                     .withMemory(withProgramCounter.memory.set((int) addressOrValue, left))
                     .withInput(polled.right())));
-        } else if (opcode == LOAD) {
+        }
+        if (opcode == LOAD) {
             return new Some<>(new Ok<>(withProgramCounter.withAccumulator(withProgramCounter.memory.get((int) addressOrValue).orElse(0L))));
-        } else if (opcode == STORE) {
+        }
+        if (opcode == STORE) {
             return new Some<>(new Ok<>(withProgramCounter.set((int) addressOrValue, withProgramCounter.accumulator)));
-        } else if (opcode == OUT) {
+        }
+        if (opcode == OUT) {
             System.out.print(withProgramCounter.accumulator);
-        } else if (opcode == ADD_ADDRESS) {
+        }
+        if (opcode == ADD_ADDRESS) {
             return new Some<>(new Ok<>(withProgramCounter.withAccumulator(withProgramCounter.accumulator + withProgramCounter.memory.get((int) addressOrValue).orElse(0L))));
-        } else if (opcode == ADD_VALUE) {
+        }
+        if (opcode == ADD_VALUE) {
             return new Some<>(new Ok<>(withProgramCounter.withAccumulator(withProgramCounter.accumulator + addressOrValue)));
-        } else if (opcode == SUB) {
+        }
+        if (opcode == SUB) {
             return new Some<>(new Ok<>(withProgramCounter.withAccumulator(withProgramCounter.accumulator - withProgramCounter.memory.get((int) addressOrValue).orElse(0L))));
-        } else if (opcode == INCREMENT) {
+        }
+        if (opcode == INCREMENT) {
             final var cast = (int) addressOrValue;
             return new Some<>(new Ok<>(withProgramCounter.set(cast, withProgramCounter.memory.get(cast).orElse(0L) + 1)));
-        } else if (opcode == DEC) {
+        }
+        if (opcode == DEC) {
             final var value = withProgramCounter.memory.get((int) addressOrValue).orElse(0L);
             return new Some<>(new Ok<>(withProgramCounter.set((int) addressOrValue, value - 1)));
-        } else if (opcode == TAC) {
+        }
+        if (opcode == TAC) {
             if (withProgramCounter.accumulator < 0) withProgramCounter.withProgramCounter((int) addressOrValue);
-        } else if (opcode == JUMP_ADDRESS) {
+        }
+        if (opcode == JUMP_ADDRESS) {
             return new Some<>(new Ok<>(withProgramCounter.withProgramCounter((int) addressOrValue)));
-        } else if (opcode == HALT) {
+        }
+        if (opcode == HALT) {
             return new None<>();
-        } else if (opcode == SFT) {  // SFT
+        }
+        if (opcode == SFT) {  // SFT
             int leftShift = (int) ((addressOrValue >> 8) & 0xFF);
             int rightShift = (int) (addressOrValue & 0xFF);
             return new Some<>(new Ok<>(withProgramCounter.withAccumulator((withProgramCounter.accumulator << leftShift) >> rightShift)));
-        } else if (opcode == SHL) {  // SHL
+        }
+        if (opcode == SHL) {  // SHL
             return new Some<>(new Ok<>(withProgramCounter.withAccumulator(withProgramCounter.accumulator << addressOrValue)));
-        } else if (opcode == SHR) {  // SHR
+        }
+        if (opcode == SHR) {  // SHR
             return new Some<>(new Ok<>(withProgramCounter.withAccumulator(withProgramCounter.accumulator >> addressOrValue)));
-        } else if (opcode == TS) {
+        }
+        if (opcode == TS) {
             if (withProgramCounter.memory.get((int) addressOrValue).orElse(0L) == 0) {
                 return new Some<>(new Ok<>(withProgramCounter.set((int) addressOrValue, 1L)));
             } else {
                 return new Some<>(new Ok<>(withProgramCounter.withProgramCounter(withProgramCounter.programCounter - 1)));  // Retry this instruction if lock isn't available
             }
-        } else if (opcode == CAS) {  // CAS
+        }
+        if (opcode == CAS) {  // CAS
             var oldValue = withProgramCounter.memory.get((int) addressOrValue).orElse(0L);
 
             var compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
