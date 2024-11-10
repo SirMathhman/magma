@@ -54,6 +54,8 @@ public class Assembler {
     public static final String DATA_VALUE = "data";
     public static final String DATA_TYPE = "data";
     public static final String INSTRUCTION_TYPE = "instruction";
+    public static final long PROGRAM_COUNTER_ADDRESS = 4L;
+    public static final String PROGRAM_COUNTER = "program-counter";
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
@@ -242,8 +244,8 @@ public class Assembler {
         final var list = new ArrayList<Node>();
         set(list, 2, JUMP_ADDRESS, "init");
 
-        labels.put("program-counter", 4L);
-        set(list, 4, 0);
+        labels.put(PROGRAM_COUNTER, PROGRAM_COUNTER_ADDRESS);
+        set(list, (int) PROGRAM_COUNTER_ADDRESS, 0);
 
         set(list, 3, JUMP_ADDRESS, "init");
         set(list, 2, INCREMENT, "program-counter");
@@ -272,7 +274,10 @@ public class Assembler {
 
         final var address = LOOP_OFFSET + data.size();
         labels.put("start", (long) address);
-        set(list, address, HALT, 0);
+        set(list, address, LOAD, PROGRAM_COUNTER);
+        set(list, address + 1, ADD_VALUE, 3);
+        set(list, address + 2, STORE, PROGRAM_COUNTER);
+        set(list, address + 3, HALT, 0);
 
         set(list, 3, JUMP_ADDRESS, "start");
 
