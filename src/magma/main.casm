@@ -1,8 +1,13 @@
 section data {
+    first = 100;
+    second = 200;
 }
 
 section program {
     label __main__ {
+        lda first;
+        add second;
+        out;
         halt;
     }
 }
