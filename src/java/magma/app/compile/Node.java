@@ -62,4 +62,6 @@ public interface Node {
     Node withInt(String propertyKey, int propertyValue);
 
     Option<Integer> findInt(String propertyKey);
+
+    boolean hasInteger(String propertyKey);
 }

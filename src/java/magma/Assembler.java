@@ -336,6 +336,7 @@ public class Assembler {
         set(list, 3, new MapNode(CASMLang.INSTRUCTION_TYPE)
                 .withInt(OP_CODE, JUMP_ADDRESS)
                 .withString(INSTRUCTION_LABEL, INIT));
+
         set(list, 2, new MapNode(CASMLang.INSTRUCTION_TYPE)
                 .withInt(OP_CODE, INCREMENT)
                 .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER));
@@ -386,9 +387,8 @@ public class Assembler {
     private static Result<Node, CompileError> parseMnemonic(Node instruction, String mnemonic) {
         return resolveMnemonic(mnemonic).mapValue(opCode -> {
             final var withOpCode = instruction.withString(OP_CODE, Long.toString(opCode, 16));
-            return withOpCode.hasString(ADDRESS_OR_VALUE)
-                    ? withOpCode
-                    : withOpCode.withString(ADDRESS_OR_VALUE, "0");
+            if (withOpCode.hasInteger(ADDRESS_OR_VALUE)) return withOpCode;
+            return withOpCode.withInt(ADDRESS_OR_VALUE, 0);
         });
     }
 

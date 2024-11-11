@@ -184,6 +184,11 @@ public record MapNode(
     }
 
     @Override
+    public boolean hasInteger(String propertyKey) {
+        return integers.containsKey(propertyKey);
+    }
+
+    @Override
     public Option<String> findType() {
         return type;
     }
