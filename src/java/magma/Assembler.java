@@ -37,8 +37,9 @@ public class Assembler {
     public static final int LOAD_ACCUMULATOR = 0x17;
     public static final int STORE_INDIRECT = 0x02;
     public static final int OUT = 0x03;
-    public static final int ADD = 4;
-    public static final int SUBTRACT = 0x05;
+    public static final int ADD_ADDRESS = 4;
+    public static final int SUBTRACT_ADDRESS = 0x05;
+    public static final int SUBTRACT_VALUE = 0x1b;
     public static final int INCREMENT = 0x06;
     public static final int DEC = 0x07;
     public static final int TAC = 0x08;
@@ -55,6 +56,7 @@ public class Assembler {
     public static final String INIT = "__init__";
     public static final int LOOP_OFFSET = 5;
     public static final String MAIN = "__main__";
+    private static final int ADD_VALUE = 0x1a;
     private static final int LOAD_INDIRECT = 0x19;
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
@@ -119,7 +121,7 @@ public class Assembler {
                     final var pushed = memory.get((int) STACK_POINTER_ADDRESS);
                     final var next = pushed + 1;
 
-                    while(!(next < memory.size())) memory.add(0L);
+                    while (!(next < memory.size())) memory.add(0L);
                     memory.set((int) next, accumulator);
                     memory.set((int) STACK_POINTER_ADDRESS, next);
                     break;
@@ -179,19 +181,25 @@ public class Assembler {
                 case OUT:  // OUT
                     System.out.print(accumulator);
                     break;
-                case ADD:  // ADD
+                case ADD_ADDRESS:  // ADD
                     if (addressOrValue < memory.size()) {
                         accumulator += memory.get((int) addressOrValue);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
                     break;
-                case SUBTRACT:  // SUB
+                case ADD_VALUE:
+                    accumulator += addressOrValue;
+                    break;
+                case SUBTRACT_ADDRESS:  // SUB
                     if (addressOrValue < memory.size()) {
                         accumulator -= memory.get((int) addressOrValue);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
+                    break;
+                case SUBTRACT_VALUE:
+                    accumulator -= addressOrValue;
                     break;
                 case INCREMENT:  // INC
                     if (addressOrValue < memory.size()) {
@@ -366,7 +374,7 @@ public class Assembler {
                             .withInt(OP_CODE, LOAD_DIRECT)
                             .withString(INSTRUCTION_LABEL, STACK_POINTER_COUNTER),
                     new MapNode(INSTRUCTION_TYPE)
-                            .withInt(OP_CODE, ADD)
+                            .withInt(OP_CODE, ADD_ADDRESS)
                             .withString(INSTRUCTION_LABEL, "__offset__"),
                     new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, STORE_DIRECT)
@@ -463,9 +471,11 @@ public class Assembler {
             case "stoi" -> new Ok<>(STORE_INDIRECT);
             case "push" -> new Ok<>(PUSH);
             case "pop" -> new Ok<>(POP);
-            case "add" -> new Ok<>(ADD);
+            case "adda" -> new Ok<>(ADD_ADDRESS);
+            case "addv" -> new Ok<>(ADD_VALUE);
             case "ldac" -> new Ok<>(LOAD_ACCUMULATOR);
-            case "sub" -> new Ok<>(SUBTRACT);
+            case "suba" -> new Ok<>(SUBTRACT_ADDRESS);
+            case "subv" -> new Ok<>(SUBTRACT_VALUE);
             default -> new Err<>(new CompileError("Unknown mnemonic", new StringContext(mnemonic)));
         };
     }

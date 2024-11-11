@@ -3,39 +3,26 @@ section data {
 
     first = 100;
     second = 200;
-
-    ZERO = 0;
-    ONE = 1;
-    TWO = 2;
-
-    SUM = 300;
 }
 
 section program {
     label __main__ {
         ldd $sp;
-        add ONE;
-        stod $sp;
-
-        ldd ZERO;
-        stoi $sp;
-
-        ldd $sp;
-        add ONE;
+        addv 2;
         stod $sp;
 
         ldv main0;
         stoi $sp;
 
         ldd $sp;
-        add ONE;
+        addv 1;
         stod $sp;
 
         ldd second;
         stoi $sp;
 
         ldd $sp;
-        add ONE;
+        addv 1;
         stod $sp;
 
         ldd first;
@@ -47,7 +34,7 @@ section program {
 
     label main0 {
         ldd $sp;
-        sub ONE;
+        subv 1;
         stod $sp;
 
         ldi $sp;
@@ -61,23 +48,23 @@ section program {
         stod temp;
 
         ldd $sp;
-        sub ONE;
+        subv 1;
         stod $sp;
 
         ldi $sp;
-        add temp;
+        adda temp;
         stod temp;
 
         ldd $sp;
-        sub ONE;
-        sub ONE;
+        subv 1;
+        subv 1;
         stod $sp;
 
         ldd temp;
         stoi $sp;
 
         ldd $sp;
-        add ONE;
+        addv 1;
         stod $sp;
 
         ldi $sp;
