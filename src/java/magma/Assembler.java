@@ -275,15 +275,12 @@ public class Assembler {
                             .filter(value -> value.is(INSTRUCTION_TYPE))
                             .map(instruction -> {
                                 final var code = instruction.findString(OP_CODE).orElse("");
-                                final var codeNumeric = switch (code) {
-                                    case "jump" -> JUMP_ADDRESS;
-                                    case "load" -> LOAD;
-                                    case "out" -> OUT;
-                                    case "halt" -> HALT;
-                                    default -> throw new IllegalArgumentException("Unknown code: " + code);
-                                };
+                                final var codeNumeric = resolveCode(code);
 
-                                return instruction.withString(OP_CODE, Long.toString(codeNumeric, 16));
+                                final var withOpCode = instruction.withString(OP_CODE, Long.toString(codeNumeric, 16));
+                                return withOpCode.hasString(ADDRESS_OR_VALUE)
+                                        ? withOpCode
+                                        : withOpCode.withString(ADDRESS_OR_VALUE, "0");
                             })
                             .toList();
 
@@ -372,6 +369,16 @@ public class Assembler {
                     longs.add(aLong);
                     return longs;
                 });
+    }
+
+    private static int resolveCode(String code) {
+        return switch (code) {
+            case "jump" -> JUMP_ADDRESS;
+            case "load" -> LOAD;
+            case "out" -> OUT;
+            case "halt" -> HALT;
+            default -> throw new IllegalArgumentException("Unknown code: " + code);
+        };
     }
 
     private static Result<Long, CompileError> computeBinary(Node node) {

@@ -163,6 +163,11 @@ public record MapNode(
     }
 
     @Override
+    public boolean hasString(String propertyKey) {
+        return strings.containsKey(propertyKey);
+    }
+
+    @Override
     public Option<String> findType() {
         return type;
     }

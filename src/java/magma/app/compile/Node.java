@@ -56,4 +56,6 @@ public interface Node {
     Option<Result<Node, CompileError>> mapNode(String propertyKey, Function<Node, Result<Node, CompileError>> mapper);
 
     Option<Result<Node, CompileError>> mapString(String propertyKey, Function<String, Result<String, CompileError>> mapper);
+
+    boolean hasString(String propertyKey);
 }
