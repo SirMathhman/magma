@@ -1,17 +1,8 @@
 section data {
-    first = 100;
-    second = 200;
-    third = 300;
 }
 
 section program {
     label __main__ {
-        push 100;
-        push 150;
-        pop;
-        adda %sp;
-
-        out;
         halt;
     }
 }

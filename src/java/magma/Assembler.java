@@ -34,8 +34,9 @@ public class Assembler {
 
     public static final int INPUT_AND_LOAD = 0x00;
     public static final int INPUT_AND_STORE = 0x10;
-    public static final int LOAD = 0x01;
-    public static final int STORE = 0x02;
+    public static final int LOAD_ADDRESS = 0x01;
+    public static final int LOAD_VALUE = 0x15;
+    public static final int STORE_INDIRECT = 0x02;
     public static final int OUT = 0x03;
     public static final int ADD_ADDRESS = 4;
     public static final int ADD_VALUE = 0x14;
@@ -60,6 +61,7 @@ public class Assembler {
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
+    private static final int STORE_DIRECT = 0x16;
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -135,12 +137,23 @@ public class Assembler {
                         set(memory, addressOrValue, polled);
                         break;
                     }
-                case LOAD:  // LOAD
+                case LOAD_ADDRESS:  // LOAD
                     accumulator = addressOrValue < memory.size() ? memory.get((int) addressOrValue) : 0;
                     break;
-                case STORE:  // STO
+                case LOAD_VALUE:
+                    accumulator = addressOrValue;
+                    break;
+                case STORE_DIRECT:  // STO
                     if (addressOrValue < memory.size()) {
                         memory.set((int) addressOrValue, accumulator);
+                    } else {
+                        System.err.println("Address out of bounds.");
+                    }
+                    break;
+                case STORE_INDIRECT:
+                    if (addressOrValue < memory.size()) {
+                        final var resolved = memory.get((int) addressOrValue);
+                        memory.set((int) resolved.longValue(), accumulator);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
@@ -298,13 +311,13 @@ public class Assembler {
 
         final var newFirst = programCopy.get(entryIndex).<List<Node>>mapRight(right -> {
             final var copy = new ArrayList<>(List.of(new MapNode(INSTRUCTION_TYPE)
-                            .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
+                            .withString(OP_CODE, Integer.toUnsignedString(LOAD_ADDRESS, 16))
                             .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER),
                     new MapNode(INSTRUCTION_TYPE)
                             .withString(OP_CODE, Integer.toUnsignedString(ADD_VALUE, 16))
-                            .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)),
+                            .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(2, 16)),
                     new MapNode(INSTRUCTION_TYPE)
-                            .withString(OP_CODE, Integer.toUnsignedString(STORE, 16))
+                            .withString(OP_CODE, Integer.toUnsignedString(STORE_INDIRECT, 16))
                             .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER)));
             copy.addAll(right);
             return copy;
@@ -380,9 +393,12 @@ public class Assembler {
     private static Result<Integer, CompileError> resolveCode(String code) {
         return switch (code) {
             case "jump" -> new Ok<>(JUMP_ADDRESS);
-            case "load" -> new Ok<>(LOAD);
+            case "lda" -> new Ok<>(LOAD_ADDRESS);
+            case "ldv" -> new Ok<>(LOAD_VALUE);
             case "out" -> new Ok<>(OUT);
             case "halt" -> new Ok<>(HALT);
+            case "stod" -> new Ok<>(STORE_DIRECT);
+            case "stoi" -> new Ok<>(STORE_INDIRECT);
             case "push" -> new Ok<>(PUSH);
             case "pop" -> new Ok<>(POP);
             case "adda" -> new Ok<>(ADD_ADDRESS);
@@ -414,7 +430,7 @@ public class Assembler {
         final var label = option.orElse("");
 
         final Long addressOrValue;
-        if (label.equals("%sp")) {
+        if (label.equals("$sp")) {
             addressOrValue = (long) STACK_POINTER_ADDRESS;
         } else if (labels.containsKey(label)) {
             addressOrValue = labels.get(label);
