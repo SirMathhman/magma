@@ -1,5 +1,4 @@
 section data {
-    x = 100;
 }
 
 section program {

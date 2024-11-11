@@ -333,17 +333,17 @@ public class Assembler {
             }
         }
 
-        data.put("__offset__", 2L);
         final var newFirst = programCopy.get(entryIndex).<List<Node>>mapRight(right -> {
-            final var copy = new ArrayList<>(List.of(new MapNode(INSTRUCTION_TYPE)
+            final var list = List.of(new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, LOAD_ADDRESS)
                             .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER),
                     new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, ADD)
-                            .withString(INSTRUCTION_LABEL, "__offset__"),
+                            .withInt(ADDRESS_OR_VALUE, 0),
                     new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, STORE_INDIRECT)
-                            .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER)));
+                            .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER));
+            final var copy = new ArrayList<Node>();
             copy.addAll(right);
             return copy;
         });
