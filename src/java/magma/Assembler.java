@@ -84,9 +84,12 @@ public class Assembler {
     }
 
     private static void compute(List<Long> memory, Deque<Long> input) {
-        memory.add(createInstruction(new MapNode()
+        Node node = new MapNode()
                 .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
-                .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(1L, 16))));
+                .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(1L, 16));
+        memory.add(createInstruction(node).match(value -> value, err -> {
+            throw err;
+        }));
 
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
@@ -382,7 +385,9 @@ public class Assembler {
     }
 
     private static long computeBinary(Node node) {
-        if (node.is(CASMLang.INSTRUCTION_TYPE)) return createInstruction(node);
+        if (node.is(CASMLang.INSTRUCTION_TYPE)) return createInstruction(node).match(value -> value, err -> {
+            throw err;
+        });
         if (node.is(CASMLang.DATA_TYPE))
             return Long.parseUnsignedLong(node.findString(CASMLang.DATA_VALUE).orElse(""), 16);
         throw new UnsupportedOperationException("Unknown node: " + node);
@@ -420,14 +425,14 @@ public class Assembler {
         }
     }
 
-    private static long createInstruction(Node node) {
+    private static Result<Long, IllegalArgumentException> createInstruction(Node node) {
         final var opCodeOption = node.findString(OP_CODE);
-        if (opCodeOption.isEmpty()) throw new IllegalArgumentException("No op code present.");
+        if (opCodeOption.isEmpty()) return new Err<>(new IllegalArgumentException("No op code present."));
 
         final var opCode = Integer.parseUnsignedInt(opCodeOption.orElse(""), 16);
 
         final var option = node.findString(ADDRESS_OR_VALUE);
-        if (option.isEmpty()) throw new IllegalArgumentException("No address or value present: " + node);
+        if (option.isEmpty()) return new Err<>(new IllegalArgumentException("No address or value present: " + node));
 
         final var addressOrValue = option
                 .map(value -> Long.parseUnsignedLong(value, 16))
@@ -440,6 +445,6 @@ public class Assembler {
             throw new IllegalArgumentException("Address/Value must be a 56-bit value (0x00 to 0x00FFFFFFFFFFFFFF).");
         }
 
-        return ((long) opCode << 56) | addressOrValue;
+        return new Ok<>(((long) opCode << 56) | addressOrValue);
     }
 }
