@@ -11,8 +11,11 @@ import magma.app.ApplicationError;
 import magma.app.ThrowableError;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
+import magma.app.compile.ResultStream;
 import magma.app.compile.error.CompileError;
+import magma.app.compile.error.NodeContext;
 import magma.app.compile.lang.CASMLang;
+import magma.java.JavaStreams;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -88,7 +91,7 @@ public class Assembler {
                 .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
                 .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(1L, 16));
         memory.add(createInstruction(node).match(value -> value, err -> {
-            throw err;
+            throw new IllegalStateException(err.message());
         }));
 
         long accumulator = 0;  // Holds current value for operations
@@ -233,10 +236,10 @@ public class Assembler {
     private static Result<Deque<Long>, CompileError> assemble(String content) {
         return CASMLang.createRootRule()
                 .parse(content)
-                .mapValue(Assembler::parse);
+                .flatMapValue(Assembler::parse);
     }
 
-    private static Deque<Long> parse(Node root) {
+    private static Result<Deque<Long>, CompileError> parse(Node root) {
         final var data = new HashMap<String, Long>();
         final var program = new ArrayList<Tuple<String, List<Node>>>();
 
@@ -288,23 +291,6 @@ public class Assembler {
                 }
             }
         }
-
-/*        program.add(new Tuple<>(MAIN, List.of(
-                new MapNode(CASMLang.INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                        .withString(INSTRUCTION_LABEL, "exit")
-        )));
-
-        program.add(new Tuple<>("exit", List.of(
-                new MapNode(CASMLang.INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
-                        .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER),
-                new MapNode(CASMLang.INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(OUT, 16)),
-                new MapNode(CASMLang.INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
-                        .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))
-        )));*/
 
         int entryIndex = -1;
         final var programCopy = new ArrayList<>(program);
@@ -378,26 +364,28 @@ public class Assembler {
                 .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
                 .withString(INSTRUCTION_LABEL, MAIN));
 
-        return list.stream()
+        return JavaStreams.fromList(list)
                 .map(node -> resolveLabel(labels, node))
-                .map(node1 -> computeBinary(node1).match(value -> value, err -> {
-                    throw err;
-                }))
-                .collect(Collectors.toCollection(LinkedList::new));
+                .map(node1 -> computeBinary(node1))
+                .into(ResultStream::new)
+                .foldResultsLeft(new LinkedList<Long>(), (longs, aLong) -> {
+                    longs.add(aLong);
+                    return longs;
+                });
     }
 
-    private static Result<Long, IllegalArgumentException> computeBinary(Node node) {
+    private static Result<Long, CompileError> computeBinary(Node node) {
         if (node.is(CASMLang.INSTRUCTION_TYPE)) return createInstruction(node);
 
         if (node.is(CASMLang.DATA_TYPE)) {
             final var dataValue = node.findString(DATA_VALUE);
             if (dataValue.isEmpty())
-                return new Err<>(new IllegalArgumentException("No data value present: " + node.format(0)));
+                return new Err<>(new CompileError("No data value present", new NodeContext(node)));
 
             return new Ok<>(Long.parseUnsignedLong(dataValue.orElse(""), 16));
         }
 
-        return new Err<>(new IllegalArgumentException("Unknown node: " + node.format(0)));
+        return new Err<>(new CompileError("Unknown node", new NodeContext(node)));
     }
 
     private static Node resolveLabel(Map<String, Long> labels, Node node) {
@@ -432,15 +420,15 @@ public class Assembler {
         }
     }
 
-    private static Result<Long, IllegalArgumentException> createInstruction(Node node) {
+    private static Result<Long, CompileError> createInstruction(Node node) {
         final var opCodeOption = node.findString(OP_CODE);
-        if (opCodeOption.isEmpty()) return new Err<>(new IllegalArgumentException("No op code present."));
+        if (opCodeOption.isEmpty()) return new Err<>(new CompileError("No op code present", new NodeContext(node)));
 
         final var opCode = Integer.parseUnsignedInt(opCodeOption.orElse(""), 16);
 
         final var option = node.findString(ADDRESS_OR_VALUE);
         if (option.isEmpty())
-            return new Err<>(new IllegalArgumentException("No address or value present: " + node.format(0)));
+            return new Err<>(new CompileError("No address or value present", new NodeContext(node)));
 
         final var addressOrValue = option
                 .map(value -> Long.parseUnsignedLong(value, 16))
