@@ -7,10 +7,19 @@ section data {
     ZERO = 0;
     ONE = 1;
     TWO = 2;
+
+    SUM = 300;
 }
 
 section program {
     label __main__ {
+        ldd $sp;
+        add ONE;
+        stod $sp;
+
+        ldd ZERO;
+        stoi $sp;
+
         ldd $sp;
         add ONE;
         stod $sp;
@@ -23,10 +32,28 @@ section program {
     }
 
     label main0 {
+        ldd $sp;
+        sub ONE;
+        stod $sp;
+
+        ldi $sp;
+        out;
+
         halt;
     }
 
     label add {
+        ldd $sp;
+        sub ONE;
+        stod $sp;
+
+        ldd SUM;
+        stoi $sp;
+
+        ldd $sp;
+        add ONE;
+        stod $sp;
+
         ldi $sp;
         jpac;
     }
