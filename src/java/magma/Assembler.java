@@ -430,7 +430,7 @@ public class Assembler {
 
     private static Result<Integer, CompileError> resolveMnemonic(String mnemonic) {
         return switch (mnemonic) {
-            case "jump" -> new Ok<>(JUMP_ADDRESS);
+            case "jmp" -> new Ok<>(JUMP_ADDRESS);
             case "lda" -> new Ok<>(LOAD_ADDRESS);
             case "ldv" -> new Ok<>(LOAD_VALUE);
             case "out" -> new Ok<>(OUT);

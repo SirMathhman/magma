@@ -5,9 +5,14 @@ section data {
 
 section program {
     label __main__ {
-        lda first;
-        add second;
-        out;
+        jmp add;
+    }
+
+    label main_end {
         halt;
+    }
+
+    label add {
+        jmp main_end;
     }
 }
