@@ -100,8 +100,8 @@ public class Assembler {
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
 
-        while (programCounter < ((List<Long>) memory).size()) {
-            final long instructionUnsigned = ((List<Long>) memory).get(programCounter);
+        while (programCounter < memory.size()) {
+            final long instructionUnsigned = memory.get(programCounter);
 
             // Decode the instruction
             int opcode = (int) ((instructionUnsigned >> 56) & 0xFF);  // First 8 bits
@@ -114,12 +114,12 @@ public class Assembler {
                 case NO_OPERATION:
                     break;
                 case PUSH:
-                    set(memory, ((List<Long>) memory).get(STACK_POINTER_ADDRESS), addressOrValue);
-                    set(memory, STACK_POINTER_ADDRESS, ((List<Long>) memory).get(STACK_POINTER_ADDRESS) + 1);
+                    set(memory, memory.get(STACK_POINTER_ADDRESS), addressOrValue);
+                    set(memory, STACK_POINTER_ADDRESS, memory.get(STACK_POINTER_ADDRESS) + 1);
                     break;
                 case POP:
-                    set(memory, STACK_POINTER_ADDRESS, Math.max(((List<Long>) memory).get(STACK_POINTER_ADDRESS) - 1, 0));
-                    accumulator = ((List<Long>) memory).get((int) ((List<Long>) memory).get(STACK_POINTER_ADDRESS).longValue());
+                    set(memory, STACK_POINTER_ADDRESS, Math.max(memory.get(STACK_POINTER_ADDRESS) - 1, 0));
+                    accumulator = memory.get((int) memory.get(STACK_POINTER_ADDRESS).longValue());
                     break;
                 case INPUT_AND_LOAD:  // INP
                     if (((Deque<Long>) input).isEmpty()) {
@@ -137,22 +137,28 @@ public class Assembler {
                         break;
                     }
                 case LOAD_ADDRESS:  // LOAD
-                    accumulator = addressOrValue < ((List<Long>) memory).size() ? ((List<Long>) memory).get((int) addressOrValue) : 0;
+                    accumulator = addressOrValue < memory.size() ? memory.get((int) addressOrValue) : 0;
                     break;
                 case LOAD_VALUE:
                     accumulator = addressOrValue;
                     break;
                 case STORE_DIRECT:  // STO
-                    if (addressOrValue < ((List<Long>) memory).size()) {
-                        ((List<Long>) memory).set((int) addressOrValue, accumulator);
+                    if (addressOrValue < memory.size()) {
+                        memory.set((int) addressOrValue, accumulator);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
                     break;
                 case STORE_INDIRECT:
-                    if (addressOrValue < ((List<Long>) memory).size()) {
-                        final var resolved = ((List<Long>) memory).get((int) addressOrValue);
-                        ((List<Long>) memory).set((int) resolved.longValue(), accumulator);
+                    if (addressOrValue < memory.size()) {
+                        final var resolved = memory.get((int) addressOrValue);
+                        final var index = resolved;
+
+                        while(!(index < memory.size())) {
+                            memory.add(0L);
+                        }
+
+                        memory.set((int) index.longValue(), accumulator);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
@@ -161,28 +167,28 @@ public class Assembler {
                     System.out.print(accumulator);
                     break;
                 case ADD:  // ADD
-                    if (addressOrValue < ((List<Long>) memory).size()) {
-                        accumulator += ((List<Long>) memory).get((int) addressOrValue);
+                    if (addressOrValue < memory.size()) {
+                        accumulator += memory.get((int) addressOrValue);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
                     break;
                 case SUB:  // SUB
-                    if (addressOrValue < ((List<Long>) memory).size()) {
-                        accumulator -= ((List<Long>) memory).get((int) addressOrValue);
+                    if (addressOrValue < memory.size()) {
+                        accumulator -= memory.get((int) addressOrValue);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
                     break;
                 case INCREMENT:  // INC
-                    if (addressOrValue < ((List<Long>) memory).size()) {
+                    if (addressOrValue < memory.size()) {
                         final var cast = (int) addressOrValue;
-                        ((List<Long>) memory).set(cast, ((List<Long>) memory).get(cast) + 1);
+                        memory.set(cast, memory.get(cast) + 1);
                     }
                     break;
                 case DEC:  // DEC
-                    if (addressOrValue < ((List<Long>) memory).size()) {
-                        ((List<Long>) memory).set((int) addressOrValue, ((List<Long>) memory).get((int) addressOrValue) - 1);
+                    if (addressOrValue < memory.size()) {
+                        memory.set((int) addressOrValue, memory.get((int) addressOrValue) - 1);
                     }
                     break;
                 case TAC:  // TAC
@@ -208,20 +214,20 @@ public class Assembler {
                     accumulator >>= addressOrValue;
                     break;
                 case TS:  // TS
-                    if (addressOrValue < ((List<Long>) memory).size()) {
-                        if (((List<Long>) memory).get((int) addressOrValue) == 0) {
-                            ((List<Long>) memory).set((int) addressOrValue, 1L);
+                    if (addressOrValue < memory.size()) {
+                        if (memory.get((int) addressOrValue) == 0) {
+                            memory.set((int) addressOrValue, 1L);
                         } else {
                             programCounter--;  // Retry this instruction if lock isn't available
                         }
                     }
                     break;
                 case CAS:  // CAS
-                    long oldValue = ((List<Long>) memory).get((int) addressOrValue);
+                    long oldValue = memory.get((int) addressOrValue);
                     long compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
                     long newValue = addressOrValue & 0xFFFFFFFFL;
                     if (oldValue == compareValue) {
-                        ((List<Long>) memory).set((int) addressOrValue, newValue);
+                        memory.set((int) addressOrValue, newValue);
                     }
                     break;
                 default:

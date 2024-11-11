@@ -1,10 +1,17 @@
 section data {
     first = 100;
     second = 200;
+    ONE = 1;
 }
 
 section program {
     label __main__ {
+        lda $sp;
+        add ONE;
+        stod $sp;
+
+        ldv main_end;
+        stoi $sp;
         jmp add;
     }
 
