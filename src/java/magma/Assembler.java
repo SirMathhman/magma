@@ -45,11 +45,6 @@ public class Assembler {
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
     public static final int STACK_POINTER_ADDRESS = 4;
-    public static final int INITIAL_ADDRESS = 0;
-    public static final int INCREMENT_ADDRESS = 2;
-    public static final int REPEAT_ADDRESS = 3;
-    public static final int STACK_POINTER_ADDRESS_OFFSET = 3;
-    public static final String OP_CODE = "op-code";
     public static final String ADDRESS_OR_VALUE = "address-or-value";
     public static final String LABEL = "address";
     public static final String DATA_VALUE = "data";
@@ -92,7 +87,7 @@ public class Assembler {
 
     private static void compute(List<Long> memory, Deque<Long> input) {
         memory.add(createInstruction(new MapNode()
-                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
+                .withString(CASMLang.OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
                 .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(1L, 16))));
 
         long accumulator = 0;  // Holds current value for operations
@@ -249,25 +244,25 @@ public class Assembler {
 
         final var program = List.of(new Tuple<>("start", List.of(
                 new MapNode(INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
+                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(LOAD, 16))
                         .withString(LABEL, PROGRAM_COUNTER),
                 new MapNode(INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(ADD_VALUE, 16))
+                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(ADD_VALUE, 16))
                         .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)),
                 new MapNode(INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(STORE, 16))
+                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(STORE, 16))
                         .withString(LABEL, PROGRAM_COUNTER),
                 new MapNode(INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
                         .withString(LABEL, "exit")
         )), new Tuple<>("exit", List.of(
                 new MapNode(INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
+                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(LOAD, 16))
                         .withString(LABEL, PROGRAM_COUNTER),
                 new MapNode(INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(OUT, 16)),
+                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(OUT, 16)),
                 new MapNode(INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
+                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(HALT, 16))
                         .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))
         )));
 
@@ -276,18 +271,18 @@ public class Assembler {
 
         final var list = new ArrayList<Node>();
         set(list, 2, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(CASMLang.OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
                 .withString(LABEL, INIT));
 
         labels.put(PROGRAM_COUNTER, PROGRAM_COUNTER_ADDRESS);
         set(list, (int) PROGRAM_COUNTER_ADDRESS, 0);
 
         set(list, 3, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(CASMLang.OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
                 .withString(LABEL, INIT));
         set(list, 2, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(INCREMENT, 16))
-                .withString(LABEL, "program-counter"));
+                .withString(CASMLang.OP_CODE, Integer.toUnsignedString(INCREMENT, 16))
+                .withString(LABEL, PROGRAM_COUNTER));
 
         final var entryList = data.keySet()
                 .stream()
@@ -313,7 +308,7 @@ public class Assembler {
         }
 
         set(list, 3, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(CASMLang.OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
                 .withString(LABEL, "start"));
 
         return list.stream()
@@ -346,7 +341,7 @@ public class Assembler {
 
     private static void set(List<Node> list, int instructionAddress, Node instruction) {
         list.add(new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
+                .withString(CASMLang.OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
                 .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(instructionAddress, 16)));
 
         list.add(instruction);
