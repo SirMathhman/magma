@@ -283,21 +283,25 @@ public class Assembler {
         final var initialAddress = LOOP_OFFSET + data.size();
 
         labels.put("start", (long) initialAddress);
-        set(list, initialAddress, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
-                .withString(LABEL, PROGRAM_COUNTER));
+        final var start = List.of(
+                new MapNode(INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
+                        .withString(LABEL, PROGRAM_COUNTER),
+                new MapNode(INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(ADD_VALUE, 16))
+                        .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)),
+                new MapNode(INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(STORE, 16))
+                        .withString(LABEL, PROGRAM_COUNTER),
+                new MapNode(INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                        .withString(LABEL, "exit")
+        );
 
-        set(list, initialAddress + 1, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(ADD_VALUE, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)));
-
-        set(list, initialAddress + 2, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(STORE, 16))
-                .withString(LABEL, PROGRAM_COUNTER));
-
-        set(list, initialAddress + 3, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(LABEL, "exit"));
+        for (int i = 0; i < start.size(); i++) {
+            Node node = start.get(i);
+            set(list, initialAddress + i, node);
+        }
 
         var haltStart = initialAddress + 4;
         labels.put("exit", (long) haltStart);
