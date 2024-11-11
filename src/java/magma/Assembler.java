@@ -23,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static magma.app.compile.lang.CASMLang.*;
 
@@ -85,7 +84,7 @@ public class Assembler {
         final var memory = new ArrayList<Long>();
         compute(memory, input);
         System.out.println();
-        System.out.println("Final Memory State: " + formatHexList(memory, ", "));
+        System.out.println("Final Memory State:\n" + formatHexList(memory));
     }
 
     private static void compute(List<Long> memory, Deque<Long> input) {
@@ -238,10 +237,14 @@ public class Assembler {
         memory.set((int) address, value);
     }
 
-    private static String formatHexList(List<Long> list, String delimiter) {
-        return list.stream()
-                .map(value -> Long.toString(value, 16))
-                .collect(Collectors.joining(delimiter, "[", "]"));
+    private static String formatHexList(List<Long> list) {
+        StringJoiner joiner = new StringJoiner(",", "{", "\n}");
+        for (int i = 0; i < list.size(); i++) {
+            Long value = list.get(i);
+            String string = Long.toString(value, 16);
+            joiner.add("\n " + i + ": " + string);
+        }
+        return joiner.toString();
     }
 
     private static Result<Deque<Long>, CompileError> assemble(String content) {
