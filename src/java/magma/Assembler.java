@@ -51,7 +51,7 @@ public class Assembler {
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
     public static final long STACK_POINTER_ADDRESS = 4L;
-    public static final String STACK_POINTER_COUNTER = "%pc";
+    public static final String STACK_POINTER_COUNTER = "%sp";
     public static final String INIT = "__init__";
     public static final int LOOP_OFFSET = 5;
     public static final String MAIN = "__main__";
@@ -114,6 +114,19 @@ public class Assembler {
             // Execute based on opcode
             switch (opcode) {
                 case NO_OPERATION:
+                    break;
+                case PUSH:
+                    final var pushed = memory.get((int) STACK_POINTER_ADDRESS);
+                    final var next = pushed + 1;
+
+                    while(!(next < memory.size())) memory.add(0L);
+                    memory.set((int) next, accumulator);
+                    memory.set((int) STACK_POINTER_ADDRESS, next);
+                    break;
+                case POP:
+                    final var popped = memory.get((int) STACK_POINTER_ADDRESS);
+                    accumulator = memory.get(Math.toIntExact(popped));
+                    memory.set((int) STACK_POINTER_ADDRESS, popped - 1);
                     break;
                 case INPUT_AND_LOAD:  // INP
                     if (((Deque<Long>) input).isEmpty()) {

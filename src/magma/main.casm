@@ -1,41 +1,39 @@
 section data {
     first = 100;
     second = 200;
+
+    ZERO = 0;
     ONE = 1;
+    TWO = 2;
 }
 
 section program {
     label __main__ {
-        ldd $sp;
-        add ONE;
-        stod $sp;
+        ldv main0;
+        push;
 
-        ldv main_end;
-        stoi $sp;
+        ldd ZERO;
+        push;
 
-        ldd $sp;
-        add ONE;
-        stod $sp;
+        ldd second;
+        push;
 
         ldd first;
-        stoi $sp;
+        push;
 
         jp add;
     }
 
-    label main_end {
+    label main0 {
         ldd first;
         out;
         halt;
     }
 
     label add {
-        ldd $sp;
-        sub ONE;
-        stod $sp;
+        ldd %sp;
+        out;
 
-        ldd $sp;
-        ldac;
         jpac;
     }
 }
