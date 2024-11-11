@@ -56,6 +56,7 @@ public class Assembler {
     public static final String INSTRUCTION_TYPE = "instruction";
     public static final long PROGRAM_COUNTER_ADDRESS = 4L;
     public static final String PROGRAM_COUNTER = "program-counter";
+    public static final String INIT = "__init__";
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
@@ -239,15 +240,15 @@ public class Assembler {
 
     private static Deque<Long> parse(Node root) {
         var labels = new HashMap<String, Long>();
-        labels.put("init", 0L);
+        labels.put(INIT, 0L);
 
         final var list = new ArrayList<Node>();
-        set(list, 2, JUMP_ADDRESS, "init");
+        set(list, 2, JUMP_ADDRESS, INIT);
 
         labels.put(PROGRAM_COUNTER, PROGRAM_COUNTER_ADDRESS);
         set(list, (int) PROGRAM_COUNTER_ADDRESS, 0);
 
-        set(list, 3, JUMP_ADDRESS, "init");
+        set(list, 3, JUMP_ADDRESS, INIT);
         set(list, 2, INCREMENT, "program-counter");
 
         final var LOOP_OFFSET = 5;
@@ -277,7 +278,11 @@ public class Assembler {
         set(list, address, LOAD, PROGRAM_COUNTER);
         set(list, address + 1, ADD_VALUE, 3);
         set(list, address + 2, STORE, PROGRAM_COUNTER);
-        set(list, address + 3, HALT, 0);
+        set(list, address + 3, JUMP_ADDRESS, "exit");
+
+        var haltStart = address + 4;
+        labels.put("exit", (long) haltStart);
+        set(list, haltStart, HALT, 0);
 
         set(list, 3, JUMP_ADDRESS, "start");
 
