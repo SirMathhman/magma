@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static magma.app.compile.lang.CASMLang.OP_CODE;
+import static magma.app.compile.lang.CASMLang.*;
 
 public class Assembler {
     public static final Path ROOT = Paths.get(".", "src", "magma");
@@ -233,11 +233,30 @@ public class Assembler {
     }
 
     private static Deque<Long> parse(Node root) {
-        final var data = Map.of(
-                "first", 100L,
-                "second", 200L,
-                "third", 300L
-        );
+        final var data = new HashMap<String, Long>();
+        final var children = root.findNodeList(CHILDREN).orElse(Collections.emptyList());
+        for (Node section : children) {
+            if (!section.is(SECTION_TYPE)) continue;
+
+            final var name = section.findString(GROUP_NAME).orElse("");
+
+            final var sectionChildren = section.findNodeList(CHILDREN).orElse(Collections.emptyList());
+            if (name.equals("data")) {
+                for (var dataNode : sectionChildren) {
+                    if (!dataNode.is(DATA_TYPE)) continue;
+
+                    final var dataName = dataNode.findString(DATA_NAME).orElse("");
+                    final var value = dataNode.findNode(DATA_VALUE).orElse(new MapNode());
+                    long actualValue = 0L;
+                    if(value.is(NUMBER_TYPE)) {
+                        final var numberValue = value.findString(NUMBER_VALUE).orElse("");
+                        actualValue = Long.parseLong(numberValue, 10);
+                    }
+
+                    data.put(dataName, actualValue);
+                }
+            }
+        }
 
         final var program = List.of(new Tuple<>("start", List.of(
                 new MapNode(CASMLang.INSTRUCTION_TYPE)
@@ -316,7 +335,8 @@ public class Assembler {
 
     private static long computeBinary(Node node) {
         if (node.is(CASMLang.INSTRUCTION_TYPE)) return createInstruction(node);
-        if (node.is(CASMLang.DATA_TYPE)) return Long.parseUnsignedLong(node.findString(CASMLang.DATA_VALUE).orElse(""), 16);
+        if (node.is(CASMLang.DATA_TYPE))
+            return Long.parseUnsignedLong(node.findString(CASMLang.DATA_VALUE).orElse(""), 16);
         throw new UnsupportedOperationException("Unknown node: " + node);
     }
 
