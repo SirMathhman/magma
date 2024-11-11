@@ -38,7 +38,7 @@ public class Assembler {
     public static final int STORE_INDIRECT = 0x02;
     public static final int OUT = 0x03;
     public static final int ADD = 4;
-    public static final int SUB = 0x05;
+    public static final int SUBTRACT = 0x05;
     public static final int INCREMENT = 0x06;
     public static final int DEC = 0x07;
     public static final int TAC = 0x08;
@@ -50,9 +50,8 @@ public class Assembler {
     public static final int TS = 0x0E;
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
-    public static final int STACK_POINTER_ADDRESS = 4;
-    public static final long PROGRAM_COUNTER_ADDRESS = 4L;
-    public static final String PROGRAM_COUNTER = "%pc";
+    public static final long STACK_POINTER_ADDRESS = 4L;
+    public static final String STACK_POINTER_COUNTER = "%pc";
     public static final String INIT = "__init__";
     public static final int LOOP_OFFSET = 5;
     public static final String MAIN = "__main__";
@@ -115,14 +114,6 @@ public class Assembler {
             switch (opcode) {
                 case NO_OPERATION:
                     break;
-                case PUSH:
-                    set(memory, memory.get(STACK_POINTER_ADDRESS), addressOrValue);
-                    set(memory, STACK_POINTER_ADDRESS, memory.get(STACK_POINTER_ADDRESS) + 1);
-                    break;
-                case POP:
-                    set(memory, STACK_POINTER_ADDRESS, Math.max(memory.get(STACK_POINTER_ADDRESS) - 1, 0));
-                    accumulator = memory.get((int) memory.get(STACK_POINTER_ADDRESS).longValue());
-                    break;
                 case INPUT_AND_LOAD:  // INP
                     if (((Deque<Long>) input).isEmpty()) {
                         throw new RuntimeException("Input queue is empty.");
@@ -178,7 +169,7 @@ public class Assembler {
                         System.err.println("Address out of bounds.");
                     }
                     break;
-                case SUB:  // SUB
+                case SUBTRACT:  // SUB
                     if (addressOrValue < memory.size()) {
                         accumulator -= memory.get((int) addressOrValue);
                     } else {
@@ -356,13 +347,13 @@ public class Assembler {
             final var list = List.of(
                     new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, LOAD_ADDRESS)
-                            .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER),
+                            .withString(INSTRUCTION_LABEL, STACK_POINTER_COUNTER),
                     new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, ADD)
                             .withString(INSTRUCTION_LABEL, "__offset__"),
                     new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, STORE_DIRECT)
-                            .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER)
+                            .withString(INSTRUCTION_LABEL, STACK_POINTER_COUNTER)
             );
             final var copy = new ArrayList<Node>(list);
             copy.addAll(right);
@@ -379,8 +370,8 @@ public class Assembler {
                 .withInt(OP_CODE, JUMP_ADDRESS)
                 .withString(INSTRUCTION_LABEL, INIT));
 
-        labels.put(PROGRAM_COUNTER, PROGRAM_COUNTER_ADDRESS);
-        set(list, (int) PROGRAM_COUNTER_ADDRESS, 0);
+        labels.put(STACK_POINTER_COUNTER, STACK_POINTER_ADDRESS);
+        set(list, (int) STACK_POINTER_ADDRESS, 0);
 
         set(list, 3, new MapNode(INSTRUCTION_TYPE)
                 .withInt(OP_CODE, JUMP_ADDRESS)
@@ -388,7 +379,7 @@ public class Assembler {
 
         set(list, 2, new MapNode(INSTRUCTION_TYPE)
                 .withInt(OP_CODE, INCREMENT)
-                .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER));
+                .withString(INSTRUCTION_LABEL, STACK_POINTER_COUNTER));
 
         final var entryList = data.keySet()
                 .stream()
@@ -456,6 +447,7 @@ public class Assembler {
             case "pop" -> new Ok<>(POP);
             case "add" -> new Ok<>(ADD);
             case "ldac" -> new Ok<>(LOAD_ACCUMULATOR);
+            case "sub" -> new Ok<>(SUBTRACT);
             default -> new Err<>(new CompileError("Unknown mnemonic", new StringContext(mnemonic)));
         };
     }
