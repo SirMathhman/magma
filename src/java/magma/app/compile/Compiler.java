@@ -11,6 +11,8 @@ import magma.app.compile.lang.MagmaLang;
 import java.util.Collections;
 import java.util.List;
 
+import static magma.app.compile.lang.CASMLang.MNEMONIC;
+
 public record Compiler(String input) {
     static Passer createPasser() {
         return new CompoundPasser(List.of(
@@ -18,7 +20,18 @@ public record Compiler(String input) {
                     @Override
                     public Option<Result<Node, CompileError>> afterPass(Node node) {
                         return new Some<>(new Ok<>(new MapNode()
-                                .withNodeList("children", Collections.emptyList())));
+                                .withNodeList("children", List.of(
+                                        new MapNode("section")
+                                                .withString("name", "program")
+                                                .withNodeList("children", List.of(
+                                                        new MapNode("label")
+                                                                .withString("name", "__main__")
+                                                                .withNodeList("children", List.of(
+                                                                        new MapNode("instruction")
+                                                                                .withString(MNEMONIC, "halt")
+                                                                ))
+                                                ))
+                                ))));
                     }
                 }
         ));

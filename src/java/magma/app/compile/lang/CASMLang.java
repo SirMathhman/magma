@@ -26,7 +26,6 @@ public class CASMLang {
     public static Rule createRootRule() {
         final var label = createGroupRule(LABEL_TYPE, "label ", createStatementRule());
         final var section = createGroupRule(SECTION_TYPE, "section ", new OrRule(List.of(
-                new EmptyRule(),
                 createDataRule(),
                 label
         )));
@@ -43,7 +42,6 @@ public class CASMLang {
     private static Rule createStatementRule() {
         final var statement = new LazyRule();
         statement.setRule(new OrRule(List.of(
-                new EmptyRule(),
                 createInstructionRule()
         )));
         return statement;
