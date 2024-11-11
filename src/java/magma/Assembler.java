@@ -1,5 +1,6 @@
 package magma;
 
+import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
@@ -278,7 +279,8 @@ public class Assembler {
             labels.put(label, (long) address);
             set(list, address, value);
         }
-        final var start = List.of(
+
+        final var program = List.of(new Tuple<>("start", List.of(
                 new MapNode(INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
                         .withString(LABEL, PROGRAM_COUNTER),
@@ -291,10 +293,7 @@ public class Assembler {
                 new MapNode(INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
                         .withString(LABEL, "exit")
-        );
-
-
-        var exit = List.of(
+        )), new Tuple<>("exit", List.of(
                 new MapNode(INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
                         .withString(LABEL, PROGRAM_COUNTER),
@@ -303,20 +302,15 @@ public class Assembler {
                 new MapNode(INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
                         .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))
-        );
-
+        )));
 
         var pointer = LOOP_OFFSET + data.size();
-        labels.put("start", (long) pointer);
-        for (Node item : start) {
-            set(list, pointer, item);
-            pointer++;
-        }
-
-        labels.put("exit", (long) pointer);
-        for (Node value : exit) {
-            set(list, pointer, value);
-            pointer++;
+        for (Tuple<String, List<Node>> tuple : program) {
+            labels.put(tuple.left(), (long) pointer);
+            for (Node item : tuple.right()) {
+                set(list, pointer, item);
+                pointer++;
+            }
         }
 
         set(list, 3, new MapNode(INSTRUCTION_TYPE)
