@@ -380,17 +380,24 @@ public class Assembler {
 
         return list.stream()
                 .map(node -> resolveLabel(labels, node))
-                .map(Assembler::computeBinary)
+                .map(node1 -> computeBinary(node1).match(value -> value, err -> {
+                    throw err;
+                }))
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 
-    private static long computeBinary(Node node) {
-        if (node.is(CASMLang.INSTRUCTION_TYPE)) return createInstruction(node).match(value -> value, err -> {
-            throw err;
-        });
-        if (node.is(CASMLang.DATA_TYPE))
-            return Long.parseUnsignedLong(node.findString(CASMLang.DATA_VALUE).orElse(""), 16);
-        throw new UnsupportedOperationException("Unknown node: " + node);
+    private static Result<Long, IllegalArgumentException> computeBinary(Node node) {
+        if (node.is(CASMLang.INSTRUCTION_TYPE)) return createInstruction(node);
+
+        if (node.is(CASMLang.DATA_TYPE)) {
+            final var dataValue = node.findString(DATA_VALUE);
+            if (dataValue.isEmpty())
+                return new Err<>(new IllegalArgumentException("No data value present: " + node.format(0)));
+
+            return new Ok<>(Long.parseUnsignedLong(dataValue.orElse(""), 16));
+        }
+
+        return new Err<>(new IllegalArgumentException("Unknown node: " + node.format(0)));
     }
 
     private static Node resolveLabel(Map<String, Long> labels, Node node) {
@@ -432,7 +439,8 @@ public class Assembler {
         final var opCode = Integer.parseUnsignedInt(opCodeOption.orElse(""), 16);
 
         final var option = node.findString(ADDRESS_OR_VALUE);
-        if (option.isEmpty()) return new Err<>(new IllegalArgumentException("No address or value present: " + node));
+        if (option.isEmpty())
+            return new Err<>(new IllegalArgumentException("No address or value present: " + node.format(0)));
 
         final var addressOrValue = option
                 .map(value -> Long.parseUnsignedLong(value, 16))
