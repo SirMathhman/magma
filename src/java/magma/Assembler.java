@@ -48,7 +48,7 @@ public class Assembler {
     public static final int BYTES_PER_LONG = 8;
     public static final int STACK_POINTER_ADDRESS = 4;
     public static final long PROGRAM_COUNTER_ADDRESS = 4L;
-    public static final String PROGRAM_COUNTER = "program-counter";
+    public static final String PROGRAM_COUNTER = "%pc";
     public static final String INIT = "__init__";
     public static final int LOOP_OFFSET = 5;
     public static final String MAIN = "__main__";
@@ -259,11 +259,14 @@ public class Assembler {
             }
         }
 
-        final var program = new ArrayList<>(List.of(new Tuple<>(MAIN, List.of(
+        final var program = new ArrayList<Tuple<String, List<Node>>>();
+        program.add(new Tuple<>(MAIN, List.of(
                 new MapNode(CASMLang.INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
                         .withString(CASMLang.LABEL, "exit")
-        )), new Tuple<>("exit", List.of(
+        )));
+
+        program.add(new Tuple<>("exit", List.of(
                 new MapNode(CASMLang.INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
                         .withString(CASMLang.LABEL, PROGRAM_COUNTER),
@@ -272,7 +275,7 @@ public class Assembler {
                 new MapNode(CASMLang.INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
                         .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))
-        ))));
+        )));
 
         int entryIndex = -1;
         final var programCopy = new ArrayList<>(program);

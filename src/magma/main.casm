@@ -3,3 +3,15 @@ section data {
     second = 200;
     third = 300;
 }
+
+section program {
+    label __main__ {
+        jump exit;
+    }
+
+    label exit {
+        load %pc;
+        out;
+        halt;
+    }
+}
