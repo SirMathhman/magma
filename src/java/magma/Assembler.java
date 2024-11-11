@@ -21,6 +21,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static magma.app.compile.lang.CASMLang.OP_CODE;
+
 public class Assembler {
     public static final Path ROOT = Paths.get(".", "src", "magma");
     public static final Path TARGET = ROOT.resolve("main.casm");
@@ -45,11 +47,6 @@ public class Assembler {
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
     public static final int STACK_POINTER_ADDRESS = 4;
-    public static final String ADDRESS_OR_VALUE = "address-or-value";
-    public static final String LABEL = "address";
-    public static final String DATA_VALUE = "data";
-    public static final String DATA_TYPE = "data";
-    public static final String INSTRUCTION_TYPE = "instruction";
     public static final long PROGRAM_COUNTER_ADDRESS = 4L;
     public static final String PROGRAM_COUNTER = "program-counter";
     public static final String INIT = "__init__";
@@ -87,8 +84,8 @@ public class Assembler {
 
     private static void compute(List<Long> memory, Deque<Long> input) {
         memory.add(createInstruction(new MapNode()
-                .withString(CASMLang.OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(1L, 16))));
+                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
+                .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(1L, 16))));
 
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
@@ -243,46 +240,46 @@ public class Assembler {
         );
 
         final var program = List.of(new Tuple<>("start", List.of(
-                new MapNode(INSTRUCTION_TYPE)
-                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(LOAD, 16))
-                        .withString(LABEL, PROGRAM_COUNTER),
-                new MapNode(INSTRUCTION_TYPE)
-                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(ADD_VALUE, 16))
-                        .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)),
-                new MapNode(INSTRUCTION_TYPE)
-                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(STORE, 16))
-                        .withString(LABEL, PROGRAM_COUNTER),
-                new MapNode(INSTRUCTION_TYPE)
-                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                        .withString(LABEL, "exit")
+                new MapNode(CASMLang.INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
+                        .withString(CASMLang.LABEL, PROGRAM_COUNTER),
+                new MapNode(CASMLang.INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(ADD_VALUE, 16))
+                        .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)),
+                new MapNode(CASMLang.INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(STORE, 16))
+                        .withString(CASMLang.LABEL, PROGRAM_COUNTER),
+                new MapNode(CASMLang.INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                        .withString(CASMLang.LABEL, "exit")
         )), new Tuple<>("exit", List.of(
-                new MapNode(INSTRUCTION_TYPE)
-                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(LOAD, 16))
-                        .withString(LABEL, PROGRAM_COUNTER),
-                new MapNode(INSTRUCTION_TYPE)
-                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(OUT, 16)),
-                new MapNode(INSTRUCTION_TYPE)
-                        .withString(CASMLang.OP_CODE, Integer.toUnsignedString(HALT, 16))
-                        .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))
+                new MapNode(CASMLang.INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
+                        .withString(CASMLang.LABEL, PROGRAM_COUNTER),
+                new MapNode(CASMLang.INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(OUT, 16)),
+                new MapNode(CASMLang.INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
+                        .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))
         )));
 
         var labels = new HashMap<String, Long>();
         labels.put(INIT, 0L);
 
         final var list = new ArrayList<Node>();
-        set(list, 2, new MapNode(INSTRUCTION_TYPE)
-                .withString(CASMLang.OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(LABEL, INIT));
+        set(list, 2, new MapNode(CASMLang.INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(CASMLang.LABEL, INIT));
 
         labels.put(PROGRAM_COUNTER, PROGRAM_COUNTER_ADDRESS);
         set(list, (int) PROGRAM_COUNTER_ADDRESS, 0);
 
-        set(list, 3, new MapNode(INSTRUCTION_TYPE)
-                .withString(CASMLang.OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(LABEL, INIT));
-        set(list, 2, new MapNode(INSTRUCTION_TYPE)
-                .withString(CASMLang.OP_CODE, Integer.toUnsignedString(INCREMENT, 16))
-                .withString(LABEL, PROGRAM_COUNTER));
+        set(list, 3, new MapNode(CASMLang.INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(CASMLang.LABEL, INIT));
+        set(list, 2, new MapNode(CASMLang.INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(INCREMENT, 16))
+                .withString(CASMLang.LABEL, PROGRAM_COUNTER));
 
         final var entryList = data.keySet()
                 .stream()
@@ -307,9 +304,9 @@ public class Assembler {
             }
         }
 
-        set(list, 3, new MapNode(INSTRUCTION_TYPE)
-                .withString(CASMLang.OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(LABEL, "start"));
+        set(list, 3, new MapNode(CASMLang.INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(CASMLang.LABEL, "start"));
 
         return list.stream()
                 .map(node -> resolveLabel(labels, node))
@@ -318,31 +315,31 @@ public class Assembler {
     }
 
     private static long computeBinary(Node node) {
-        if (node.is(INSTRUCTION_TYPE)) return createInstruction(node);
-        if (node.is(DATA_TYPE)) return Long.parseUnsignedLong(node.findString(DATA_VALUE).orElse(""), 16);
+        if (node.is(CASMLang.INSTRUCTION_TYPE)) return createInstruction(node);
+        if (node.is(CASMLang.DATA_TYPE)) return Long.parseUnsignedLong(node.findString(CASMLang.DATA_VALUE).orElse(""), 16);
         throw new UnsupportedOperationException("Unknown node: " + node);
     }
 
     private static Node resolveLabel(Map<String, Long> labels, Node node) {
-        if (!node.is(INSTRUCTION_TYPE)) return node;
+        if (!node.is(CASMLang.INSTRUCTION_TYPE)) return node;
 
-        final var option = node.findString(LABEL);
+        final var option = node.findString(CASMLang.LABEL);
         if (option.isEmpty()) return node;
 
         final var label = option.orElse("");
         final var addressOrValue = labels.get(label);
-        return node.withString(ADDRESS_OR_VALUE, Long.toUnsignedString(addressOrValue, 16));
+        return node.withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(addressOrValue, 16));
     }
 
     private static void set(List<Node> list, int instructionAddress, long data) {
-        set(list, instructionAddress, new MapNode(DATA_TYPE)
-                .withString(DATA_VALUE, Long.toUnsignedString(data, 16)));
+        set(list, instructionAddress, new MapNode(CASMLang.DATA_TYPE)
+                .withString(CASMLang.DATA_VALUE, Long.toUnsignedString(data, 16)));
     }
 
     private static void set(List<Node> list, int instructionAddress, Node instruction) {
-        list.add(new MapNode(INSTRUCTION_TYPE)
-                .withString(CASMLang.OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(instructionAddress, 16)));
+        list.add(new MapNode(CASMLang.INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
+                .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(instructionAddress, 16)));
 
         list.add(instruction);
     }
@@ -356,8 +353,8 @@ public class Assembler {
     }
 
     private static long createInstruction(Node node) {
-        final var opCode = Integer.parseUnsignedInt(node.findString("op-code").orElse(""), 16);
-        final var addressOrValue = node.findString("address-or-value")
+        final var opCode = Integer.parseUnsignedInt(node.findString(OP_CODE).orElse(""), 16);
+        final var addressOrValue = node.findString(CASMLang.ADDRESS_OR_VALUE)
                 .map(value -> Long.parseUnsignedLong(value, 16))
                 .orElse(0L);
 

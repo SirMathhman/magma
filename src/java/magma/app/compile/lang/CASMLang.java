@@ -9,6 +9,10 @@ public class CASMLang {
     public static final String ADDRESS_OR_VALUE = "addressOrValue";
     public static final String CHAR_TYPE = "char";
     public static final String NUMBER_TYPE = "number";
+    public static final String LABEL = "label";
+    public static final String DATA_VALUE = "data";
+    public static final String DATA_TYPE = "data";
+    public static final String INSTRUCTION_TYPE = "instruction";
 
     public static Rule createRootRule() {
         final var label = createGroupRule("label", "label ", createStatementRule());
