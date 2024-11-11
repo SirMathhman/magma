@@ -8,7 +8,6 @@ import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.CASMLang;
 import magma.app.compile.lang.MagmaLang;
 
-import java.util.Collections;
 import java.util.List;
 
 import static magma.app.compile.lang.CASMLang.ADDRESS_OR_VALUE;
@@ -31,6 +30,8 @@ public record Compiler(String input) {
                                                                         new MapNode("instruction")
                                                                                 .withString(MNEMONIC, "ldv")
                                                                                 .withInt(ADDRESS_OR_VALUE, 0),
+                                                                        new MapNode("instruction")
+                                                                                .withString(MNEMONIC, "out"),
                                                                         new MapNode("instruction")
                                                                                 .withString(MNEMONIC, "halt")
                                                                 ))
