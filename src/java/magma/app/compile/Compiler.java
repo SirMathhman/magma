@@ -11,6 +11,7 @@ import magma.app.compile.lang.MagmaLang;
 import java.util.Collections;
 import java.util.List;
 
+import static magma.app.compile.lang.CASMLang.ADDRESS_OR_VALUE;
 import static magma.app.compile.lang.CASMLang.MNEMONIC;
 
 public record Compiler(String input) {
@@ -27,6 +28,9 @@ public record Compiler(String input) {
                                                         new MapNode("label")
                                                                 .withString("name", "__main__")
                                                                 .withNodeList("children", List.of(
+                                                                        new MapNode("instruction")
+                                                                                .withString(MNEMONIC, "ldv")
+                                                                                .withInt(ADDRESS_OR_VALUE, 0),
                                                                         new MapNode("instruction")
                                                                                 .withString(MNEMONIC, "halt")
                                                                 ))

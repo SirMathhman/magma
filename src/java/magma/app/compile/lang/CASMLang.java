@@ -50,7 +50,10 @@ public class CASMLang {
     private static TypeRule createInstructionRule() {
         final var opCode = new StringRule(MNEMONIC);
         return new TypeRule(INSTRUCTION_TYPE, new SuffixRule(new OrRule(List.of(
-                new FirstRule(opCode, " ", new StringRule(INSTRUCTION_LABEL)),
+                new FirstRule(opCode, " ", new OrRule(List.of(
+                        new StringRule(INSTRUCTION_LABEL),
+                        new IntRule(ADDRESS_OR_VALUE)
+                        ))),
                 opCode
         )), ";"));
     }
