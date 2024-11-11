@@ -72,19 +72,22 @@ public class Assembler {
     }
 
     private static Option<ApplicationError> assembleAndExecute(String input) {
-        return assemble(input).mapErr(ApplicationError::new).match(list -> {
-            execute(list);
+        return assemble(input).mapErr(ApplicationError::new).match(tuple -> {
+            execute(tuple);
             return new None<>();
         }, Some::new);
     }
 
-    private static void execute(Deque<Long> input) {
+    private static void execute(Tuple<LinkedList<Long>, Map<String, Long>> tuple) {
+        var input = tuple.left();
+        final var labels = tuple.right();
+
         System.out.println("Memory footprint: " + (input.size() * BYTES_PER_LONG) + " bytes");
 
         final var memory = new ArrayList<Long>();
         compute(memory, input);
         System.out.println();
-        System.out.println("Final Memory State:\n" + formatHexList(memory));
+        System.out.println("Final Memory State:\n" + formatHexList(memory, labels));
     }
 
     private static void compute(List<Long> memory, Deque<Long> input) {
@@ -237,23 +240,45 @@ public class Assembler {
         memory.set((int) address, value);
     }
 
-    private static String formatHexList(List<Long> list) {
+    private static String formatHexList(List<Long> list, Map<String, Long> labels) {
+        var inverted = new HashMap<Long, String>();
+        for (Map.Entry<String, Long> entry : labels.entrySet()) {
+            inverted.put(entry.getValue(), entry.getKey());
+        }
+
+        final var maxLabelLength = inverted.values()
+                .stream()
+                .mapToInt(String::length)
+                .max()
+                .orElse(0);
+
         StringJoiner joiner = new StringJoiner(",", "{", "\n}");
         for (int i = 0; i < list.size(); i++) {
             Long value = list.get(i);
             String string = Long.toString(value, 16);
-            joiner.add("\n " + i + ": " + string);
+
+            final String labelText;
+            final var casted = (long) i;
+            if (inverted.containsKey(casted)) {
+                final var label = inverted.get(casted);
+                final var paddingLength = maxLabelLength - label.length();
+                labelText = " ".repeat(paddingLength) + label + " - ";
+            } else {
+                labelText = " ".repeat(maxLabelLength + 3);
+            }
+
+            joiner.add("\n " + labelText + i + ": " + string);
         }
         return joiner.toString();
     }
 
-    private static Result<Deque<Long>, CompileError> assemble(String content) {
+    private static Result<Tuple<LinkedList<Long>, Map<String, Long>>, CompileError> assemble(String content) {
         return createRootRule()
                 .parse(content)
                 .flatMapValue(Assembler::parse);
     }
 
-    private static Result<Deque<Long>, CompileError> parse(Node root) {
+    private static Result<Tuple<LinkedList<Long>, Map<String, Long>>, CompileError> parse(Node root) {
         final var data = new HashMap<String, Long>();
         final var program = new ArrayList<Tuple<String, List<Node>>>();
 
@@ -378,7 +403,8 @@ public class Assembler {
                 .foldResultsLeft(new LinkedList<Long>(), (longs, aLong) -> {
                     longs.add(aLong);
                     return longs;
-                });
+                })
+                .mapValue(value -> new Tuple<>(value, labels));
     }
 
     private static Result<Node, CompileError> getNode(Node instruction) {
