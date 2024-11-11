@@ -58,4 +58,8 @@ public interface Node {
     Option<Result<Node, CompileError>> mapString(String propertyKey, Function<String, Result<String, CompileError>> mapper);
 
     boolean hasString(String propertyKey);
+
+    Node withInt(String propertyKey, int propertyValue);
+
+    Option<Integer> findInt(String propertyKey);
 }

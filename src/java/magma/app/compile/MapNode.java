@@ -13,15 +13,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public record MapNode(
-        Option<String> type, Map<String, String> strings,
-        Map<String, Node> nodes, Map<String, List<Node>> nodeLists
-) implements Node {
+        Option<String> type,
+        Map<String, String> strings,
+        Map<String, Node> nodes,
+        Map<String, List<Node>> nodeLists,
+        Map<String, Integer> integers) implements Node {
     public MapNode(String type) {
-        this(new Some<>(type), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+        this(new Some<>(type), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
     }
 
     public MapNode() {
-        this(new None<>(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+        this(new None<>(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
     }
 
     @Override
@@ -78,19 +80,19 @@ public record MapNode(
     public Node withNodeList(String propertyKey, List<Node> propertyValues) {
         final var copy = new HashMap<>(nodeLists);
         copy.put(propertyKey, propertyValues);
-        return new MapNode(type, strings, nodes, copy);
+        return new MapNode(type, strings, nodes, copy, integers);
     }
 
     @Override
     public Node withString(String propertyKey, String propertyValue) {
         final var copy = new HashMap<>(strings);
         copy.put(propertyKey, propertyValue);
-        return new MapNode(type, copy, nodes, nodeLists);
+        return new MapNode(type, copy, nodes, nodeLists, integers);
     }
 
     @Override
     public Node retype(String type) {
-        return new MapNode(new Some<>(type), strings, nodes, nodeLists);
+        return new MapNode(new Some<>(type), strings, nodes, nodeLists, integers);
     }
 
     @Override
@@ -123,7 +125,7 @@ public record MapNode(
     public Node withNode(String propertyKey, Node propertyValue) {
         final var copy = new HashMap<>(nodes);
         copy.put(propertyKey, propertyValue);
-        return new MapNode(type, strings, copy, nodeLists);
+        return new MapNode(type, strings, copy, nodeLists, integers);
     }
 
     @Override
@@ -168,6 +170,20 @@ public record MapNode(
     }
 
     @Override
+    public Node withInt(String propertyKey, int propertyValue) {
+        final var copy = new HashMap<>(integers);
+        copy.put(propertyKey, propertyValue);
+        return new MapNode(type, strings, nodes, nodeLists, copy);
+    }
+
+    @Override
+    public Option<Integer> findInt(String propertyKey) {
+        return integers.containsKey(propertyKey)
+                ? new Some<>(integers.get(propertyKey))
+                : new None<>();
+    }
+
+    @Override
     public Option<String> findType() {
         return type;
     }
@@ -188,6 +204,6 @@ public record MapNode(
         final var nodeListsCopy = new HashMap<>(nodeLists);
         other.streamNodeListsToNativeStream().forEach(tuple -> nodeListsCopy.put(tuple.left(), tuple.right()));
 
-        return new Some<>(new MapNode(newType, stringsCopy, nodesCopy, nodeListsCopy));
+        return new Some<>(new MapNode(newType, stringsCopy, nodesCopy, nodeListsCopy, integers));
     }
 }

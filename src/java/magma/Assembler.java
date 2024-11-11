@@ -308,13 +308,13 @@ public class Assembler {
         data.put("__offset__", 2L);
         final var newFirst = programCopy.get(entryIndex).<List<Node>>mapRight(right -> {
             final var copy = new ArrayList<>(List.of(new MapNode(INSTRUCTION_TYPE)
-                            .withString(OP_CODE, Integer.toUnsignedString(LOAD_ADDRESS, 16))
+                            .withInt(OP_CODE, LOAD_ADDRESS)
                             .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER),
                     new MapNode(INSTRUCTION_TYPE)
-                            .withString(OP_CODE, Integer.toUnsignedString(ADD, 16))
+                            .withInt(OP_CODE, ADD)
                             .withString(INSTRUCTION_LABEL, "__offset__"),
                     new MapNode(INSTRUCTION_TYPE)
-                            .withString(OP_CODE, Integer.toUnsignedString(STORE_INDIRECT, 16))
+                            .withInt(OP_CODE, STORE_INDIRECT)
                             .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER)));
             copy.addAll(right);
             return copy;
@@ -327,17 +327,17 @@ public class Assembler {
 
         final var list = new ArrayList<Node>();
         set(list, 2, new MapNode(CASMLang.INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withInt(OP_CODE, JUMP_ADDRESS)
                 .withString(INSTRUCTION_LABEL, INIT));
 
         labels.put(PROGRAM_COUNTER, PROGRAM_COUNTER_ADDRESS);
         set(list, (int) PROGRAM_COUNTER_ADDRESS, 0);
 
         set(list, 3, new MapNode(CASMLang.INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withInt(OP_CODE, JUMP_ADDRESS)
                 .withString(INSTRUCTION_LABEL, INIT));
         set(list, 2, new MapNode(CASMLang.INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(INCREMENT, 16))
+                .withInt(OP_CODE, INCREMENT)
                 .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER));
 
         final var entryList = data.keySet()
@@ -378,17 +378,22 @@ public class Assembler {
     }
 
     private static Result<Node, CompileError> getNode(Node instruction) {
-        final var code = instruction.findString(OP_CODE).orElse("");
-        return resolveCode(code).mapValue(codeNumeric -> {
-            final var withOpCode = instruction.withString(OP_CODE, Long.toString(codeNumeric, 16));
+        return instruction.findString(MNEMONIC)
+                .map(mnemonic -> parseMnemonic(instruction, mnemonic))
+                .orElseGet(() -> new Err<>(new CompileError("No mnemonic present", new NodeContext(instruction))));
+    }
+
+    private static Result<Node, CompileError> parseMnemonic(Node instruction, String mnemonic) {
+        return resolveMnemonic(mnemonic).mapValue(opCode -> {
+            final var withOpCode = instruction.withString(OP_CODE, Long.toString(opCode, 16));
             return withOpCode.hasString(ADDRESS_OR_VALUE)
                     ? withOpCode
                     : withOpCode.withString(ADDRESS_OR_VALUE, "0");
         });
     }
 
-    private static Result<Integer, CompileError> resolveCode(String code) {
-        return switch (code) {
+    private static Result<Integer, CompileError> resolveMnemonic(String mnemonic) {
+        return switch (mnemonic) {
             case "jump" -> new Ok<>(JUMP_ADDRESS);
             case "lda" -> new Ok<>(LOAD_ADDRESS);
             case "ldv" -> new Ok<>(LOAD_VALUE);
@@ -399,7 +404,7 @@ public class Assembler {
             case "push" -> new Ok<>(PUSH);
             case "pop" -> new Ok<>(POP);
             case "add" -> new Ok<>(ADD);
-            default -> new Err<>(new CompileError("Unknown code", new StringContext(code)));
+            default -> new Err<>(new CompileError("Unknown mnemonic", new StringContext(mnemonic)));
         };
     }
 
