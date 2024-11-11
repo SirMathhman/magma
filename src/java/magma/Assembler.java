@@ -303,11 +303,22 @@ public class Assembler {
             set(list, initialAddress + i, node);
         }
 
+        var exit = List.of(
+                new MapNode(INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
+                        .withString(LABEL, PROGRAM_COUNTER),
+                new MapNode(INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(OUT, 16)),
+                new MapNode(INSTRUCTION_TYPE)
+                        .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
+                        .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))
+        );
+
         var haltStart = initialAddress + 4;
         labels.put("exit", (long) haltStart);
-        set(list, haltStart, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16)));
+        for (int i = 0; i < exit.size(); i++) {
+            set(list, haltStart + i, exit.get(i));
+        }
 
         set(list, 3, new MapNode(INSTRUCTION_TYPE)
                 .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
@@ -359,7 +370,9 @@ public class Assembler {
 
     private static long createInstruction(Node node) {
         final var opCode = Integer.parseUnsignedInt(node.findString("op-code").orElse(""), 16);
-        final var addressOrValue = Long.parseUnsignedLong(node.findString("address-or-value").orElse(""), 16);
+        final var addressOrValue = node.findString("address-or-value")
+                .map(value -> Long.parseUnsignedLong(value, 16))
+                .orElse(0L);
 
         if (opCode < 0x00 || opCode > 0xFF) {
             throw new IllegalArgumentException("Opcode must be an 8-bit value (0x00 to 0xFF).");
