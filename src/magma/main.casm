@@ -11,6 +11,13 @@ section data {
 
 section program {
     label __main__ {
+        ldd $sp;
+        add ONE;
+        stod $sp;
+
+        ldv main0;
+        stoi $sp;
+
         ldv add;
         jpac;
     }
@@ -20,7 +27,7 @@ section program {
     }
 
     label add {
-        ldv main0;
+        ldi $sp;
         jpac;
     }
 }
