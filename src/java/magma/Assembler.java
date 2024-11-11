@@ -83,14 +83,12 @@ public class Assembler {
         final var labels = tuple.right();
 
         System.out.println("Memory footprint: " + (input.size() * BYTES_PER_LONG) + " bytes");
-
-        final var memory = new ArrayList<Long>();
-        compute(memory, input);
-        System.out.println();
-        System.out.println("Final Memory State:\n" + formatHexList(memory, labels));
+        compute(input, labels);
     }
 
-    private static void compute(List<Long> memory, Deque<Long> input) {
+    private static void compute(LinkedList<Long> input, Map<String, Long> labels) {
+        final var memory = new ArrayList<Long>();
+        boolean finished = false;
         var node = new MapNode()
                 .withInt(OP_CODE, INPUT_AND_STORE)
                 .withInt(ADDRESS_OR_VALUE, 1);
@@ -102,8 +100,8 @@ public class Assembler {
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
 
-        while (programCounter < memory.size()) {
-            final long instructionUnsigned = memory.get(programCounter);
+        while (programCounter < ((List<Long>) memory).size()) {
+            final long instructionUnsigned = ((List<Long>) memory).get(programCounter);
 
             // Decode the instruction
             int opcode = (int) ((instructionUnsigned >> 56) & 0xFF);  // First 8 bits
@@ -116,45 +114,45 @@ public class Assembler {
                 case NO_OPERATION:
                     break;
                 case PUSH:
-                    set(memory, memory.get(STACK_POINTER_ADDRESS), addressOrValue);
-                    set(memory, STACK_POINTER_ADDRESS, memory.get(STACK_POINTER_ADDRESS) + 1);
+                    set(memory, ((List<Long>) memory).get(STACK_POINTER_ADDRESS), addressOrValue);
+                    set(memory, STACK_POINTER_ADDRESS, ((List<Long>) memory).get(STACK_POINTER_ADDRESS) + 1);
                     break;
                 case POP:
-                    set(memory, STACK_POINTER_ADDRESS, Math.max(memory.get(STACK_POINTER_ADDRESS) - 1, 0));
-                    accumulator = memory.get((int) memory.get(STACK_POINTER_ADDRESS).longValue());
+                    set(memory, STACK_POINTER_ADDRESS, Math.max(((List<Long>) memory).get(STACK_POINTER_ADDRESS) - 1, 0));
+                    accumulator = ((List<Long>) memory).get((int) ((List<Long>) memory).get(STACK_POINTER_ADDRESS).longValue());
                     break;
                 case INPUT_AND_LOAD:  // INP
-                    if (input.isEmpty()) {
+                    if (((Deque<Long>) input).isEmpty()) {
                         throw new RuntimeException("Input queue is empty.");
                     } else {
-                        accumulator = input.poll();
+                        accumulator = ((Deque<Long>) input).poll();
                     }
                     break;
                 case INPUT_AND_STORE:  // INP
-                    if (input.isEmpty()) {
+                    if (((Deque<Long>) input).isEmpty()) {
                         throw new RuntimeException("Input queue is empty.");
                     } else {
-                        final var polled = input.poll();
+                        final var polled = ((Deque<Long>) input).poll();
                         set(memory, addressOrValue, polled);
                         break;
                     }
                 case LOAD_ADDRESS:  // LOAD
-                    accumulator = addressOrValue < memory.size() ? memory.get((int) addressOrValue) : 0;
+                    accumulator = addressOrValue < ((List<Long>) memory).size() ? ((List<Long>) memory).get((int) addressOrValue) : 0;
                     break;
                 case LOAD_VALUE:
                     accumulator = addressOrValue;
                     break;
                 case STORE_DIRECT:  // STO
-                    if (addressOrValue < memory.size()) {
-                        memory.set((int) addressOrValue, accumulator);
+                    if (addressOrValue < ((List<Long>) memory).size()) {
+                        ((List<Long>) memory).set((int) addressOrValue, accumulator);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
                     break;
                 case STORE_INDIRECT:
-                    if (addressOrValue < memory.size()) {
-                        final var resolved = memory.get((int) addressOrValue);
-                        memory.set((int) resolved.longValue(), accumulator);
+                    if (addressOrValue < ((List<Long>) memory).size()) {
+                        final var resolved = ((List<Long>) memory).get((int) addressOrValue);
+                        ((List<Long>) memory).set((int) resolved.longValue(), accumulator);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
@@ -163,28 +161,28 @@ public class Assembler {
                     System.out.print(accumulator);
                     break;
                 case ADD:  // ADD
-                    if (addressOrValue < memory.size()) {
-                        accumulator += memory.get((int) addressOrValue);
+                    if (addressOrValue < ((List<Long>) memory).size()) {
+                        accumulator += ((List<Long>) memory).get((int) addressOrValue);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
                     break;
                 case SUB:  // SUB
-                    if (addressOrValue < memory.size()) {
-                        accumulator -= memory.get((int) addressOrValue);
+                    if (addressOrValue < ((List<Long>) memory).size()) {
+                        accumulator -= ((List<Long>) memory).get((int) addressOrValue);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
                     break;
                 case INCREMENT:  // INC
-                    if (addressOrValue < memory.size()) {
+                    if (addressOrValue < ((List<Long>) memory).size()) {
                         final var cast = (int) addressOrValue;
-                        memory.set(cast, memory.get(cast) + 1);
+                        ((List<Long>) memory).set(cast, ((List<Long>) memory).get(cast) + 1);
                     }
                     break;
                 case DEC:  // DEC
-                    if (addressOrValue < memory.size()) {
-                        memory.set((int) addressOrValue, memory.get((int) addressOrValue) - 1);
+                    if (addressOrValue < ((List<Long>) memory).size()) {
+                        ((List<Long>) memory).set((int) addressOrValue, ((List<Long>) memory).get((int) addressOrValue) - 1);
                     }
                     break;
                 case TAC:  // TAC
@@ -196,7 +194,8 @@ public class Assembler {
                     programCounter = (int) addressOrValue;
                     break;
                 case HALT:  // HRS
-                    return;
+                    finished = true;
+                    break;
                 case SFT:  // SFT
                     int leftShift = (int) ((addressOrValue >> 8) & 0xFF);
                     int rightShift = (int) (addressOrValue & 0xFF);
@@ -209,27 +208,32 @@ public class Assembler {
                     accumulator >>= addressOrValue;
                     break;
                 case TS:  // TS
-                    if (addressOrValue < memory.size()) {
-                        if (memory.get((int) addressOrValue) == 0) {
-                            memory.set((int) addressOrValue, 1L);
+                    if (addressOrValue < ((List<Long>) memory).size()) {
+                        if (((List<Long>) memory).get((int) addressOrValue) == 0) {
+                            ((List<Long>) memory).set((int) addressOrValue, 1L);
                         } else {
                             programCounter--;  // Retry this instruction if lock isn't available
                         }
                     }
                     break;
                 case CAS:  // CAS
-                    long oldValue = memory.get((int) addressOrValue);
+                    long oldValue = ((List<Long>) memory).get((int) addressOrValue);
                     long compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
                     long newValue = addressOrValue & 0xFFFFFFFFL;
                     if (oldValue == compareValue) {
-                        memory.set((int) addressOrValue, newValue);
+                        ((List<Long>) memory).set((int) addressOrValue, newValue);
                     }
                     break;
                 default:
                     System.err.println("Unknown opcode: " + opcode);
                     break;
             }
+            if (finished) break;
         }
+
+        System.out.println();
+        System.out.println("Accumulator: " + Long.toHexString(accumulator));
+        System.out.println("Final Memory State:\n" + formatHexList(memory, labels));
     }
 
     private static void set(List<Long> memory, long address, long value) {
@@ -267,7 +271,7 @@ public class Assembler {
                 labelText = " ".repeat(maxLabelLength + 3);
             }
 
-            joiner.add("\n " + labelText + i + ": " + string);
+            joiner.add("\n " + labelText + Integer.toString(i, 16) + ": " + string);
         }
         return joiner.toString();
     }
@@ -333,17 +337,20 @@ public class Assembler {
             }
         }
 
+        data.put("__offset__", 3L);
         final var newFirst = programCopy.get(entryIndex).<List<Node>>mapRight(right -> {
-            final var list = List.of(new MapNode(INSTRUCTION_TYPE)
+            final var list = List.of(
+                    new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, LOAD_ADDRESS)
                             .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER),
                     new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, ADD)
-                            .withInt(ADDRESS_OR_VALUE, 0),
+                            .withString(INSTRUCTION_LABEL, "__offset__"),
                     new MapNode(INSTRUCTION_TYPE)
-                            .withInt(OP_CODE, STORE_INDIRECT)
-                            .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER));
-            final var copy = new ArrayList<Node>();
+                            .withInt(OP_CODE, STORE_DIRECT)
+                            .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER)
+            );
+            final var copy = new ArrayList<Node>(list);
             copy.addAll(right);
             return copy;
         });
