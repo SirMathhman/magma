@@ -54,6 +54,7 @@ public class Assembler {
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
+    public static final String MAIN = "__main__";
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -258,7 +259,7 @@ public class Assembler {
             }
         }
 
-        final var program = List.of(new Tuple<>("start", List.of(
+        final var program = new ArrayList<>(List.of(new Tuple<>(MAIN, List.of(
                 new MapNode(CASMLang.INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
                         .withString(CASMLang.LABEL, PROGRAM_COUNTER),
@@ -280,7 +281,9 @@ public class Assembler {
                 new MapNode(CASMLang.INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
                         .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))
-        )));
+        ))));
+
+        program.get(0);
 
         var labels = new HashMap<String, Long>();
         labels.put(INIT, 0L);
@@ -325,7 +328,7 @@ public class Assembler {
 
         set(list, 3, new MapNode(CASMLang.INSTRUCTION_TYPE)
                 .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(CASMLang.LABEL, "start"));
+                .withString(CASMLang.LABEL, MAIN));
 
         return list.stream()
                 .map(node -> resolveLabel(labels, node))
