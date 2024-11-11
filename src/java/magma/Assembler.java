@@ -15,7 +15,6 @@ import magma.app.compile.ResultStream;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 import magma.app.compile.error.StringContext;
-import magma.app.compile.lang.CASMLang;
 import magma.java.JavaList;
 import magma.java.JavaStreams;
 
@@ -90,9 +89,10 @@ public class Assembler {
     }
 
     private static void compute(List<Long> memory, Deque<Long> input) {
-        Node node = new MapNode()
-                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
-                .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(1L, 16));
+        var node = new MapNode()
+                .withInt(OP_CODE, INPUT_AND_STORE)
+                .withInt(ADDRESS_OR_VALUE, 1);
+
         memory.add(createInstruction(node).match(value -> value, err -> {
             throw new IllegalStateException(err.message());
         }));
@@ -245,7 +245,7 @@ public class Assembler {
     }
 
     private static Result<Deque<Long>, CompileError> assemble(String content) {
-        return CASMLang.createRootRule()
+        return createRootRule()
                 .parse(content)
                 .flatMapValue(Assembler::parse);
     }
@@ -326,18 +326,18 @@ public class Assembler {
         labels.put(INIT, 0L);
 
         final var list = new ArrayList<Node>();
-        set(list, 2, new MapNode(CASMLang.INSTRUCTION_TYPE)
+        set(list, 2, new MapNode(INSTRUCTION_TYPE)
                 .withInt(OP_CODE, JUMP_ADDRESS)
                 .withString(INSTRUCTION_LABEL, INIT));
 
         labels.put(PROGRAM_COUNTER, PROGRAM_COUNTER_ADDRESS);
         set(list, (int) PROGRAM_COUNTER_ADDRESS, 0);
 
-        set(list, 3, new MapNode(CASMLang.INSTRUCTION_TYPE)
+        set(list, 3, new MapNode(INSTRUCTION_TYPE)
                 .withInt(OP_CODE, JUMP_ADDRESS)
                 .withString(INSTRUCTION_LABEL, INIT));
 
-        set(list, 2, new MapNode(CASMLang.INSTRUCTION_TYPE)
+        set(list, 2, new MapNode(INSTRUCTION_TYPE)
                 .withInt(OP_CODE, INCREMENT)
                 .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER));
 
@@ -364,8 +364,8 @@ public class Assembler {
             }
         }
 
-        set(list, 3, new MapNode(CASMLang.INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+        set(list, 3, new MapNode(INSTRUCTION_TYPE)
+                .withInt(OP_CODE, JUMP_ADDRESS)
                 .withString(INSTRUCTION_LABEL, MAIN));
 
         return JavaStreams.fromList(list)
@@ -386,7 +386,7 @@ public class Assembler {
 
     private static Result<Node, CompileError> parseMnemonic(Node instruction, String mnemonic) {
         return resolveMnemonic(mnemonic).mapValue(opCode -> {
-            final var withOpCode = instruction.withString(OP_CODE, Long.toString(opCode, 16));
+            final var withOpCode = instruction.withInt(OP_CODE, opCode);
             if (withOpCode.hasInteger(ADDRESS_OR_VALUE)) return withOpCode;
             return withOpCode.withInt(ADDRESS_OR_VALUE, 0);
         });
@@ -409,9 +409,9 @@ public class Assembler {
     }
 
     private static Result<Long, CompileError> computeBinary(Node node) {
-        if (node.is(CASMLang.INSTRUCTION_TYPE)) return createInstruction(node);
+        if (node.is(INSTRUCTION_TYPE)) return createInstruction(node);
 
-        if (node.is(CASMLang.DATA_TYPE)) {
+        if (node.is(DATA_TYPE)) {
             final var dataValue = node.findString(DATA_VALUE);
             if (dataValue.isEmpty())
                 return new Err<>(new CompileError("No data value present", new NodeContext(node)));
@@ -423,16 +423,16 @@ public class Assembler {
     }
 
     private static Result<Node, CompileError> resolveLabel(Map<String, Long> labels, Node node) {
-        if (!node.is(CASMLang.INSTRUCTION_TYPE)) return new Ok<>(node);
+        if (!node.is(INSTRUCTION_TYPE)) return new Ok<>(node);
 
         final var option = node.findString(INSTRUCTION_LABEL);
         if (option.isEmpty()) return new Ok<>(node);
 
         final var label = option.orElse("");
 
-        final Long addressOrValue;
+        final long addressOrValue;
         if (label.equals("$sp")) {
-            addressOrValue = (long) STACK_POINTER_ADDRESS;
+            addressOrValue = STACK_POINTER_ADDRESS;
         } else if (labels.containsKey(label)) {
             addressOrValue = labels.get(label);
         } else {
@@ -445,19 +445,18 @@ public class Assembler {
             }
         }
 
-        final var unsignedString = Long.toUnsignedString(addressOrValue, 16);
-        return new Ok<>(node.withString(CASMLang.ADDRESS_OR_VALUE, unsignedString));
+        return new Ok<>(node.withInt(ADDRESS_OR_VALUE, (int) addressOrValue));
     }
 
     private static void set(List<Node> list, int instructionAddress, long data) {
-        set(list, instructionAddress, new MapNode(CASMLang.DATA_TYPE)
-                .withString(CASMLang.DATA_VALUE, Long.toUnsignedString(data, 16)));
+        set(list, instructionAddress, new MapNode(DATA_TYPE)
+                .withString(DATA_VALUE, Long.toUnsignedString(data, 16)));
     }
 
     private static void set(List<Node> list, int instructionAddress, Node instruction) {
-        list.add(new MapNode(CASMLang.INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(INPUT_AND_STORE, 16))
-                .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(instructionAddress, 16)));
+        list.add(new MapNode(INSTRUCTION_TYPE)
+                .withInt(OP_CODE, INPUT_AND_STORE)
+                .withInt(ADDRESS_OR_VALUE, instructionAddress));
 
         list.add(instruction);
     }
@@ -471,18 +470,15 @@ public class Assembler {
     }
 
     private static Result<Long, CompileError> createInstruction(Node node) {
-        final var opCodeOption = node.findString(OP_CODE);
+        final var opCodeOption = node.findInt(OP_CODE);
         if (opCodeOption.isEmpty()) return new Err<>(new CompileError("No op code present", new NodeContext(node)));
+        final var opCode = opCodeOption.orElse(0);
 
-        final var opCode = Integer.parseUnsignedInt(opCodeOption.orElse(""), 16);
-
-        final var option = node.findString(ADDRESS_OR_VALUE);
+        final var option = node.findInt(ADDRESS_OR_VALUE);
         if (option.isEmpty())
             return new Err<>(new CompileError("No address or value present", new NodeContext(node)));
 
-        final var addressOrValue = option
-                .map(value -> Long.parseUnsignedLong(value, 16))
-                .orElse(0L);
+        final var addressOrValue = (long) option.orElse(0);
 
         if (opCode < 0x00 || opCode > 0xFF) {
             throw new IllegalArgumentException("Opcode must be an 8-bit value (0x00 to 0xFF).");

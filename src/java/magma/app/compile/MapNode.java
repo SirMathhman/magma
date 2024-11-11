@@ -42,6 +42,11 @@ public record MapNode(
     public String format(int depth) {
         final var indent = "\n" + "\t".repeat(depth + 1);
 
+        var integers = new StringJoiner(",");
+        for (Map.Entry<String, Integer> entry : this.integers.entrySet()) {
+            integers.add(indent + entry.getKey() + ": " + entry.getValue());
+        }
+
         var strings = new StringJoiner(",");
         for (Map.Entry<String, String> entry : this.strings.entrySet()) {
             strings.add(indent + entry.getKey() + ": \"" + entry.getValue() + "\"");
@@ -61,7 +66,7 @@ public record MapNode(
         }
 
         final var typePrefix = type.map(value -> value + " ").orElse("");
-        final var joined = Stream.of(strings, nodesJoiner, nodeListsJoiner)
+        final var joined = Stream.of(integers, strings, nodesJoiner, nodeListsJoiner)
                 .map(StringJoiner::toString)
                 .filter(value -> !value.isEmpty())
                 .collect(Collectors.joining(", "));
