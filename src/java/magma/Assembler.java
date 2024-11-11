@@ -38,8 +38,7 @@ public class Assembler {
     public static final int LOAD_VALUE = 0x15;
     public static final int STORE_INDIRECT = 0x02;
     public static final int OUT = 0x03;
-    public static final int ADD_ADDRESS = 4;
-    public static final int ADD_VALUE = 0x14;
+    public static final int ADD = 4;
     public static final int SUB = 0x05;
     public static final int INCREMENT = 0x06;
     public static final int DEC = 0x07;
@@ -161,15 +160,12 @@ public class Assembler {
                 case OUT:  // OUT
                     System.out.print(accumulator);
                     break;
-                case ADD_ADDRESS:  // ADD
+                case ADD:  // ADD
                     if (addressOrValue < memory.size()) {
                         accumulator += memory.get((int) addressOrValue);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
-                    break;
-                case ADD_VALUE:
-                    accumulator += addressOrValue;
                     break;
                 case SUB:  // SUB
                     if (addressOrValue < memory.size()) {
@@ -309,13 +305,14 @@ public class Assembler {
             }
         }
 
+        data.put("__offset__", 2L);
         final var newFirst = programCopy.get(entryIndex).<List<Node>>mapRight(right -> {
             final var copy = new ArrayList<>(List.of(new MapNode(INSTRUCTION_TYPE)
                             .withString(OP_CODE, Integer.toUnsignedString(LOAD_ADDRESS, 16))
                             .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER),
                     new MapNode(INSTRUCTION_TYPE)
-                            .withString(OP_CODE, Integer.toUnsignedString(ADD_VALUE, 16))
-                            .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(2, 16)),
+                            .withString(OP_CODE, Integer.toUnsignedString(ADD, 16))
+                            .withString(INSTRUCTION_LABEL, "__offset__"),
                     new MapNode(INSTRUCTION_TYPE)
                             .withString(OP_CODE, Integer.toUnsignedString(STORE_INDIRECT, 16))
                             .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER)));
@@ -401,8 +398,7 @@ public class Assembler {
             case "stoi" -> new Ok<>(STORE_INDIRECT);
             case "push" -> new Ok<>(PUSH);
             case "pop" -> new Ok<>(POP);
-            case "adda" -> new Ok<>(ADD_ADDRESS);
-            case "addv" -> new Ok<>(ADD_VALUE);
+            case "add" -> new Ok<>(ADD);
             default -> new Err<>(new CompileError("Unknown code", new StringContext(code)));
         };
     }
