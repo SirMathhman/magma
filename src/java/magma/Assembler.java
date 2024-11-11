@@ -32,7 +32,7 @@ public class Assembler {
 
     public static final int INPUT_AND_LOAD = 0x00;
     public static final int INPUT_AND_STORE = 0x10;
-    public static final int LOAD_ADDRESS = 0x01;
+    public static final int LOAD_DIRECT = 0x01;
     public static final int LOAD_VALUE = 0x15;
     public static final int LOAD_ACCUMULATOR = 0x17;
     public static final int STORE_INDIRECT = 0x02;
@@ -55,6 +55,7 @@ public class Assembler {
     public static final String INIT = "__init__";
     public static final int LOOP_OFFSET = 5;
     public static final String MAIN = "__main__";
+    private static final int LOAD_INDIRECT = 0x19;
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
@@ -129,8 +130,12 @@ public class Assembler {
                         set(memory, addressOrValue, polled);
                         break;
                     }
-                case LOAD_ADDRESS:  // LOAD
+                case LOAD_DIRECT:  // LOAD
                     accumulator = addressOrValue < memory.size() ? memory.get((int) addressOrValue) : 0;
+                    break;
+                case LOAD_INDIRECT:
+                    final var first = memory.get((int) addressOrValue);
+                    accumulator = memory.get(Math.toIntExact(first));
                     break;
                 case LOAD_VALUE:
                     accumulator = addressOrValue;
@@ -147,8 +152,7 @@ public class Assembler {
                     break;
                 case STORE_INDIRECT:
                     if (addressOrValue < memory.size()) {
-                        final var resolved = memory.get((int) addressOrValue);
-                        final var index = resolved;
+                        final var index = memory.get((int) addressOrValue);
 
                         while (!(index < memory.size())) {
                             memory.add(0L);
@@ -346,7 +350,7 @@ public class Assembler {
         final var newFirst = programCopy.get(entryIndex).<List<Node>>mapRight(right -> {
             final var list = List.of(
                     new MapNode(INSTRUCTION_TYPE)
-                            .withInt(OP_CODE, LOAD_ADDRESS)
+                            .withInt(OP_CODE, LOAD_DIRECT)
                             .withString(INSTRUCTION_LABEL, STACK_POINTER_COUNTER),
                     new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, ADD)
@@ -437,7 +441,8 @@ public class Assembler {
         return switch (mnemonic) {
             case "jp" -> new Ok<>(JUMP_ADDRESS);
             case "jpac" -> new Ok<>(JUMP_ACCUMULATOR);
-            case "lda" -> new Ok<>(LOAD_ADDRESS);
+            case "ldd" -> new Ok<>(LOAD_DIRECT);
+            case "ldi" -> new Ok<>(LOAD_INDIRECT);
             case "ldv" -> new Ok<>(LOAD_VALUE);
             case "out" -> new Ok<>(OUT);
             case "halt" -> new Ok<>(HALT);

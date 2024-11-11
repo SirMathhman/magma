@@ -6,24 +6,35 @@ section data {
 
 section program {
     label __main__ {
-        lda $sp;
+        ldd $sp;
         add ONE;
         stod $sp;
 
         ldv main_end;
         stoi $sp;
 
+        ldd $sp;
+        add ONE;
+        stod $sp;
+
+        ldd first;
+        stoi $sp;
+
         jp add;
     }
 
     label main_end {
-        lda first;
+        ldd first;
         out;
         halt;
     }
 
     label add {
-        lda $sp;
+        ldd $sp;
+        sub ONE;
+        stod $sp;
+
+        ldd $sp;
         ldac;
         jpac;
     }
