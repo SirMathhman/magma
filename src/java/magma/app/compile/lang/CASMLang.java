@@ -49,13 +49,13 @@ public class CASMLang {
 
     private static Rule createSimpleInstructionRule() {
         final var operation = new StringRule(OP_CODE);
-        return new TypeRule("instruction", new StripRule(new SuffixRule(new FilterRule(new SymbolFilter(), operation), ";")));
+        return new TypeRule(INSTRUCTION_TYPE, new StripRule(new SuffixRule(new FilterRule(new SymbolFilter(), operation), ";")));
     }
 
     private static Rule createComplexInstructionRule() {
         final var operation = new StripRule(new StringRule(OP_CODE));
         final var address = new StripRule(new StringRule(ADDRESS_OR_VALUE));
-        return new TypeRule("instruction", new StripRule(new FirstRule(operation, " ", new StripRule(new SuffixRule(address, ";")))));
+        return new TypeRule(INSTRUCTION_TYPE, new StripRule(new FirstRule(operation, " ", new StripRule(new SuffixRule(address, ";")))));
     }
 
     private static Rule createDataRule() {
