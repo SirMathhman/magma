@@ -1,8 +1,0 @@
-const first = 100;
-const second = 200;
-
-def add(value0 : u64, value1 : u64): u64 => {
-    return value0 + value1;
-}
-
-return add(first, second);
