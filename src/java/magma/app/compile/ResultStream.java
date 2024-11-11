@@ -64,4 +64,8 @@ public record ResultStream<T, E>(Stream<Result<T, E>> stream) implements Stream<
     public boolean allMatch(Predicate<Result<T, E>> predicate) {
         return foldLeft(true, (aBoolean, t) -> aBoolean && predicate.test(t));
     }
+
+    public <R> ResultStream<R, E> flatMapResult(Function<T, Result<R, E>> mapper) {
+        return new ResultStream<>(map(inner -> inner.flatMapValue(mapper)));
+    }
 }

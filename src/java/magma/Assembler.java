@@ -363,8 +363,8 @@ public class Assembler {
 
         return JavaStreams.fromList(list)
                 .map(node -> resolveLabel(labels, node))
-                .map(node1 -> computeBinary(node1))
                 .into(ResultStream::new)
+                .flatMapResult(Assembler::computeBinary)
                 .foldResultsLeft(new LinkedList<Long>(), (longs, aLong) -> {
                     longs.add(aLong);
                     return longs;
@@ -377,6 +377,8 @@ public class Assembler {
             case "load" -> LOAD;
             case "out" -> OUT;
             case "halt" -> HALT;
+            case "push" -> PUSH;
+            case "pop" -> POP;
             default -> throw new IllegalArgumentException("Unknown code: " + code);
         };
     }
@@ -395,15 +397,27 @@ public class Assembler {
         return new Err<>(new CompileError("Unknown node", new NodeContext(node)));
     }
 
-    private static Node resolveLabel(Map<String, Long> labels, Node node) {
-        if (!node.is(CASMLang.INSTRUCTION_TYPE)) return node;
+    private static Result<Node, CompileError> resolveLabel(Map<String, Long> labels, Node node) {
+        if (!node.is(CASMLang.INSTRUCTION_TYPE)) return new Ok<>(node);
 
         final var option = node.findString(INSTRUCTION_LABEL);
-        if (option.isEmpty()) return node;
+        if (option.isEmpty()) return new Ok<>(node);
 
         final var label = option.orElse("");
-        final var addressOrValue = labels.get(label);
-        return node.withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(addressOrValue, 16));
+
+        final Long addressOrValue;
+        if (labels.containsKey(label)) {
+            addressOrValue = labels.get(label);
+        } else {
+            try {
+                addressOrValue = Long.parseUnsignedLong(label, 10);
+            } catch (NumberFormatException e) {
+                return new Err<>(new CompileError("Label '" + label + "' not present", new NodeContext(node)));
+            }
+        }
+
+        final var unsignedString = Long.toUnsignedString(addressOrValue, 16);
+        return new Ok<>(node.withString(CASMLang.ADDRESS_OR_VALUE, unsignedString));
     }
 
     private static void set(List<Node> list, int instructionAddress, long data) {

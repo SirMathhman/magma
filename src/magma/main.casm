@@ -10,7 +10,8 @@ section program {
     }
 
     label exit {
-        load %pc;
+        push 420;
+        pop;
         out;
         halt;
     }
