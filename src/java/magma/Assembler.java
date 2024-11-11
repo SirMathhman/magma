@@ -1,5 +1,6 @@
 package magma;
 
+import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
@@ -243,13 +244,19 @@ public class Assembler {
         labels.put(INIT, 0L);
 
         final var list = new ArrayList<Node>();
-        set(list, 2, JUMP_ADDRESS, INIT);
+        set(list, 2, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(LABEL, INIT));
 
         labels.put(PROGRAM_COUNTER, PROGRAM_COUNTER_ADDRESS);
         set(list, (int) PROGRAM_COUNTER_ADDRESS, 0);
 
-        set(list, 3, JUMP_ADDRESS, INIT);
-        set(list, 2, INCREMENT, "program-counter");
+        set(list, 3, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(LABEL, INIT));
+        set(list, 2, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(INCREMENT, 16))
+                .withString(LABEL, "program-counter"));
 
         final var LOOP_OFFSET = 5;
 
@@ -273,29 +280,39 @@ public class Assembler {
             set(list, address, value);
         }
 
-        final var address = LOOP_OFFSET + data.size();
-        labels.put("start", (long) address);
-        set(list, address, LOAD, PROGRAM_COUNTER);
-        set(list, address + 1, ADD_VALUE, 3);
-        set(list, address + 2, STORE, PROGRAM_COUNTER);
-        set(list, address + 3, JUMP_ADDRESS, "exit");
+        final var initialAddress = LOOP_OFFSET + data.size();
 
-        var haltStart = address + 4;
+        labels.put("start", (long) initialAddress);
+        set(list, initialAddress, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
+                .withString(LABEL, PROGRAM_COUNTER));
+
+        set(list, initialAddress + 1, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(ADD_VALUE, 16))
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)));
+
+        set(list, initialAddress + 2, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(STORE, 16))
+                .withString(LABEL, PROGRAM_COUNTER));
+
+        set(list, initialAddress + 3, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(LABEL, "exit"));
+
+        var haltStart = initialAddress + 4;
         labels.put("exit", (long) haltStart);
-        set(list, haltStart, HALT, 0);
+        set(list, haltStart, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
+                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16)));
 
-        set(list, 3, JUMP_ADDRESS, "start");
+        set(list, 3, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(LABEL, "start"));
 
         return list.stream()
                 .map(node -> resolveLabel(labels, node))
                 .map(Assembler::computeBinary)
                 .collect(Collectors.toCollection(LinkedList::new));
-    }
-
-    private static void set(List<Node> list, int instructionAddress, int opCode, String label) {
-        set(list, instructionAddress, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(opCode, 16))
-                .withString(LABEL, label));
     }
 
     private static long computeBinary(Node node) {
@@ -313,12 +330,6 @@ public class Assembler {
         final var label = option.orElse("");
         final var addressOrValue = labels.get(label);
         return node.withString(ADDRESS_OR_VALUE, Long.toUnsignedString(addressOrValue, 16));
-    }
-
-    private static void set(List<Node> list, int instructionAddress, int opCode, int addressOrValue) {
-        set(list, instructionAddress, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(opCode, 16))
-                .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(addressOrValue, 16)));
     }
 
     private static void set(List<Node> list, int instructionAddress, long data) {
