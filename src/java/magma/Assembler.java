@@ -58,6 +58,7 @@ public class Assembler {
     public static final long PROGRAM_COUNTER_ADDRESS = 4L;
     public static final String PROGRAM_COUNTER = "program-counter";
     public static final String INIT = "__init__";
+    public static final int LOOP_OFFSET = 5;
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
@@ -240,45 +241,11 @@ public class Assembler {
     }
 
     private static Deque<Long> parse(Node root) {
-        var labels = new HashMap<String, Long>();
-        labels.put(INIT, 0L);
-
-        final var list = new ArrayList<Node>();
-        set(list, 2, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(LABEL, INIT));
-
-        labels.put(PROGRAM_COUNTER, PROGRAM_COUNTER_ADDRESS);
-        set(list, (int) PROGRAM_COUNTER_ADDRESS, 0);
-
-        set(list, 3, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(LABEL, INIT));
-        set(list, 2, new MapNode(INSTRUCTION_TYPE)
-                .withString(OP_CODE, Integer.toUnsignedString(INCREMENT, 16))
-                .withString(LABEL, "program-counter"));
-
-        final var LOOP_OFFSET = 5;
-
         final var data = Map.of(
                 "first", 100L,
                 "second", 200L,
                 "third", 300L
         );
-
-        final var entryList = data.keySet()
-                .stream()
-                .sorted()
-                .toList();
-
-        for (int i = 0; i < entryList.size(); i++) {
-            final var label = entryList.get(i);
-            final var value = data.get(label);
-
-            final var address = LOOP_OFFSET + i;
-            labels.put(label, (long) address);
-            set(list, address, value);
-        }
 
         final var program = List.of(new Tuple<>("start", List.of(
                 new MapNode(INSTRUCTION_TYPE)
@@ -303,6 +270,38 @@ public class Assembler {
                         .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
                         .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))
         )));
+
+        var labels = new HashMap<String, Long>();
+        labels.put(INIT, 0L);
+
+        final var list = new ArrayList<Node>();
+        set(list, 2, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(LABEL, INIT));
+
+        labels.put(PROGRAM_COUNTER, PROGRAM_COUNTER_ADDRESS);
+        set(list, (int) PROGRAM_COUNTER_ADDRESS, 0);
+
+        set(list, 3, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
+                .withString(LABEL, INIT));
+        set(list, 2, new MapNode(INSTRUCTION_TYPE)
+                .withString(OP_CODE, Integer.toUnsignedString(INCREMENT, 16))
+                .withString(LABEL, "program-counter"));
+
+        final var entryList = data.keySet()
+                .stream()
+                .sorted()
+                .toList();
+
+        for (int i = 0; i < entryList.size(); i++) {
+            final var label = entryList.get(i);
+            final var value = data.get(label);
+
+            final var address = LOOP_OFFSET + i;
+            labels.put(label, (long) address);
+            set(list, address, value);
+        }
 
         var pointer = LOOP_OFFSET + data.size();
         for (Tuple<String, List<Node>> tuple : program) {
