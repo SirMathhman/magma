@@ -69,4 +69,11 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     public <C> C collect(Collector<T, C> collector) {
         return foldLeft(collector.createInitial(), collector::fold);
     }
+
+    @Override
+    public Stream<T> filter(Predicate<T> filter) {
+        return flatMap(value -> filter.test(value)
+                ? new HeadedStream<>(new SingleHead<>(value))
+                : new HeadedStream<>(new EmptyHead<>()));
+    }
 }

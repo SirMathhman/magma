@@ -22,6 +22,11 @@ public record ResultStream<T, E>(Stream<Result<T, E>> stream) implements Stream<
     }
 
     @Override
+    public Stream<Result<T, E>> filter(Predicate<Result<T, E>> filter) {
+        return stream.filter(filter);
+    }
+
+    @Override
     public <R, E0> Result<R, E0> foldLeftToResult(R initial, BiFunction<R, Result<T, E>, Result<R, E0>> folder) {
         return stream.foldLeftToResult(initial, folder);
     }

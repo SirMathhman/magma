@@ -14,7 +14,9 @@ import magma.app.compile.Node;
 import magma.app.compile.ResultStream;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
+import magma.app.compile.error.StringContext;
 import magma.app.compile.lang.CASMLang;
+import magma.java.JavaList;
 import magma.java.JavaStreams;
 
 import java.io.IOException;
@@ -269,22 +271,16 @@ public class Assembler {
                     if (!label.is(LABEL_TYPE)) continue;
 
                     final var labelName = label.findString(GROUP_NAME).orElse("");
-                    final var labelChildren = label.findNodeList(CHILDREN)
-                            .orElse(Collections.emptyList())
-                            .stream()
+                    final var labelChildrenPreprocessed = label.findNodeList(CHILDREN).orElse(Collections.emptyList());
+
+                    final var labelChildren = JavaStreams.fromList(labelChildrenPreprocessed)
                             .filter(value -> value.is(INSTRUCTION_TYPE))
-                            .map(instruction -> {
-                                final var code = instruction.findString(OP_CODE).orElse("");
-                                final var codeNumeric = resolveCode(code);
+                            .map(Assembler::getNode)
+                            .into(ResultStream::new)
+                            .foldResultsLeft(new JavaList<Node>(), JavaList::add);
 
-                                final var withOpCode = instruction.withString(OP_CODE, Long.toString(codeNumeric, 16));
-                                return withOpCode.hasString(ADDRESS_OR_VALUE)
-                                        ? withOpCode
-                                        : withOpCode.withString(ADDRESS_OR_VALUE, "0");
-                            })
-                            .toList();
-
-                    program.add(new Tuple<>(labelName, labelChildren));
+                    if (labelChildren.isErr()) return new Err<>(labelChildren.findErr().orElse(null));
+                    program.add(new Tuple<>(labelName, labelChildren.findValue().orElse(new JavaList<>()).list()));
                 }
             }
         }
@@ -371,15 +367,27 @@ public class Assembler {
                 });
     }
 
-    private static int resolveCode(String code) {
+    private static Result<Node, CompileError> getNode(Node instruction) {
+        final var code = instruction.findString(OP_CODE).orElse("");
+        return resolveCode(code).mapValue(codeNumeric -> {
+            final var withOpCode = instruction.withString(OP_CODE, Long.toString(codeNumeric, 16));
+            return withOpCode.hasString(ADDRESS_OR_VALUE)
+                    ? withOpCode
+                    : withOpCode.withString(ADDRESS_OR_VALUE, "0");
+        });
+    }
+
+    private static Result<Integer, CompileError> resolveCode(String code) {
         return switch (code) {
-            case "jump" -> JUMP_ADDRESS;
-            case "load" -> LOAD;
-            case "out" -> OUT;
-            case "halt" -> HALT;
-            case "push" -> PUSH;
-            case "pop" -> POP;
-            default -> throw new IllegalArgumentException("Unknown code: " + code);
+            case "jump" -> new Ok<>(JUMP_ADDRESS);
+            case "load" -> new Ok<>(LOAD);
+            case "out" -> new Ok<>(OUT);
+            case "halt" -> new Ok<>(HALT);
+            case "push" -> new Ok<>(PUSH);
+            case "pop" -> new Ok<>(POP);
+            case "adda" -> new Ok<>(ADD_ADDRESS);
+            case "addv" -> new Ok<>(ADD_VALUE);
+            default -> new Err<>(new CompileError("Unknown code", new StringContext(code)));
         };
     }
 
@@ -406,13 +414,17 @@ public class Assembler {
         final var label = option.orElse("");
 
         final Long addressOrValue;
-        if (labels.containsKey(label)) {
+        if (label.equals("%sp")) {
+            addressOrValue = (long) STACK_POINTER_ADDRESS;
+        } else if (labels.containsKey(label)) {
             addressOrValue = labels.get(label);
         } else {
             try {
                 addressOrValue = Long.parseUnsignedLong(label, 10);
             } catch (NumberFormatException e) {
-                return new Err<>(new CompileError("Label '" + label + "' not present", new NodeContext(node)));
+                final var format = "Label '%s' not present";
+                final var message = format.formatted(label);
+                return new Err<>(new CompileError(message, new NodeContext(node)));
             }
         }
 

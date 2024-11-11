@@ -6,12 +6,11 @@ section data {
 
 section program {
     label __main__ {
-        jump exit;
-    }
-
-    label exit {
-        push 420;
+        push 100;
+        push 150;
         pop;
+        adda %sp;
+
         out;
         halt;
     }
