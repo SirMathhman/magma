@@ -12,14 +12,18 @@ section program {
 
         ldv main_end;
         stoi $sp;
-        jmp add;
+        jp add;
     }
 
     label main_end {
+        lda first;
+        out;
         halt;
     }
 
     label add {
-        jmp main_end;
+        lda $sp;
+        ldac;
+        jpac;
     }
 }

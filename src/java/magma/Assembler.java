@@ -34,6 +34,7 @@ public class Assembler {
     public static final int INPUT_AND_STORE = 0x10;
     public static final int LOAD_ADDRESS = 0x01;
     public static final int LOAD_VALUE = 0x15;
+    public static final int LOAD_ACCUMULATOR = 0x17;
     public static final int STORE_INDIRECT = 0x02;
     public static final int OUT = 0x03;
     public static final int ADD = 4;
@@ -59,6 +60,7 @@ public class Assembler {
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
     private static final int STORE_DIRECT = 0x16;
+    private static final int JUMP_ACCUMULATOR = 0x18;
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -142,6 +144,9 @@ public class Assembler {
                 case LOAD_VALUE:
                     accumulator = addressOrValue;
                     break;
+                case LOAD_ACCUMULATOR:
+                    accumulator = memory.get((int) accumulator);
+                    break;
                 case STORE_DIRECT:  // STO
                     if (addressOrValue < memory.size()) {
                         memory.set((int) addressOrValue, accumulator);
@@ -154,7 +159,7 @@ public class Assembler {
                         final var resolved = memory.get((int) addressOrValue);
                         final var index = resolved;
 
-                        while(!(index < memory.size())) {
+                        while (!(index < memory.size())) {
                             memory.add(0L);
                         }
 
@@ -198,6 +203,9 @@ public class Assembler {
                     break;
                 case JUMP_ADDRESS:  // JMP
                     programCounter = (int) addressOrValue;
+                    break;
+                case JUMP_ACCUMULATOR:
+                    programCounter = (int) accumulator;
                     break;
                 case HALT:  // HRS
                     finished = true;
@@ -436,7 +444,8 @@ public class Assembler {
 
     private static Result<Integer, CompileError> resolveMnemonic(String mnemonic) {
         return switch (mnemonic) {
-            case "jmp" -> new Ok<>(JUMP_ADDRESS);
+            case "jp" -> new Ok<>(JUMP_ADDRESS);
+            case "jpac" -> new Ok<>(JUMP_ACCUMULATOR);
             case "lda" -> new Ok<>(LOAD_ADDRESS);
             case "ldv" -> new Ok<>(LOAD_VALUE);
             case "out" -> new Ok<>(OUT);
@@ -446,6 +455,7 @@ public class Assembler {
             case "push" -> new Ok<>(PUSH);
             case "pop" -> new Ok<>(POP);
             case "add" -> new Ok<>(ADD);
+            case "ldac" -> new Ok<>(LOAD_ACCUMULATOR);
             default -> new Err<>(new CompileError("Unknown mnemonic", new StringContext(mnemonic)));
         };
     }
