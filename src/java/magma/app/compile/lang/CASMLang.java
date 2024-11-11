@@ -9,7 +9,6 @@ public class CASMLang {
     public static final String ADDRESS_OR_VALUE = "addressOrValue";
     public static final String CHAR_TYPE = "char";
     public static final String NUMBER_TYPE = "number";
-    public static final String LABEL = "label";
     public static final String DATA_VALUE = "value";
     public static final String DATA_TYPE = "data";
     public static final String INSTRUCTION_TYPE = "instruction";
@@ -19,9 +18,11 @@ public class CASMLang {
     public static final String NUMBER_VALUE = "value";
     public static final String CHAR_VALUE = "value";
     public static final String DATA_NAME = "name";
+    public static final String INSTRUCTION_LABEL = "label";
+    public static final String LABEL_TYPE = "label";
 
     public static Rule createRootRule() {
-        final var label = createGroupRule("label", "label ", createStatementRule());
+        final var label = createGroupRule(LABEL_TYPE, "label ", createStatementRule());
         final var section = createGroupRule(SECTION_TYPE, "section ", new OrRule(List.of(
                 new EmptyRule(),
                 createDataRule(),
@@ -41,21 +42,17 @@ public class CASMLang {
         final var statement = new LazyRule();
         statement.setRule(new OrRule(List.of(
                 new EmptyRule(),
-                createComplexInstructionRule(),
-                createSimpleInstructionRule()
+                createInstructionRule()
         )));
         return statement;
     }
 
-    private static Rule createSimpleInstructionRule() {
-        final var operation = new StringRule(OP_CODE);
-        return new TypeRule(INSTRUCTION_TYPE, new StripRule(new SuffixRule(new FilterRule(new SymbolFilter(), operation), ";")));
-    }
-
-    private static Rule createComplexInstructionRule() {
-        final var operation = new StripRule(new StringRule(OP_CODE));
-        final var address = new StripRule(new StringRule(ADDRESS_OR_VALUE));
-        return new TypeRule(INSTRUCTION_TYPE, new StripRule(new FirstRule(operation, " ", new StripRule(new SuffixRule(address, ";")))));
+    private static TypeRule createInstructionRule() {
+        final var opCode = new StringRule(OP_CODE);
+        return new TypeRule(INSTRUCTION_TYPE, new SuffixRule(new OrRule(List.of(
+                new FirstRule(opCode, " ", new StringRule(INSTRUCTION_LABEL)),
+                opCode
+        )), ";"));
     }
 
     private static Rule createDataRule() {

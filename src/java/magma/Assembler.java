@@ -235,6 +235,8 @@ public class Assembler {
 
     private static Deque<Long> parse(Node root) {
         final var data = new HashMap<String, Long>();
+        final var program = new ArrayList<Tuple<String, List<Node>>>();
+
         final var children = root.findNodeList(CHILDREN).orElse(Collections.emptyList());
         for (Node section : children) {
             if (!section.is(SECTION_TYPE)) continue;
@@ -256,26 +258,50 @@ public class Assembler {
 
                     data.put(dataName, actualValue);
                 }
+            } else if (name.equals("program")) {
+                for (Node label : sectionChildren) {
+                    if (!label.is(LABEL_TYPE)) continue;
+
+                    final var labelName = label.findString(GROUP_NAME).orElse("");
+                    final var labelChildren = label.findNodeList(CHILDREN)
+                            .orElse(Collections.emptyList())
+                            .stream()
+                            .filter(value -> value.is(INSTRUCTION_TYPE))
+                            .map(instruction -> {
+                                final var code = instruction.findString(OP_CODE).orElse("");
+                                final var codeNumeric = switch (code) {
+                                    case "jump" -> JUMP_ADDRESS;
+                                    case "load" -> LOAD;
+                                    case "out" -> OUT;
+                                    case "halt" -> HALT;
+                                    default -> throw new IllegalArgumentException("Unknown code: " + code);
+                                };
+
+                                return instruction.withString(OP_CODE, Long.toString(codeNumeric, 16));
+                            })
+                            .toList();
+
+                    program.add(new Tuple<>(labelName, labelChildren));
+                }
             }
         }
 
-        final var program = new ArrayList<Tuple<String, List<Node>>>();
-        program.add(new Tuple<>(MAIN, List.of(
+/*        program.add(new Tuple<>(MAIN, List.of(
                 new MapNode(CASMLang.INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                        .withString(CASMLang.LABEL, "exit")
+                        .withString(INSTRUCTION_LABEL, "exit")
         )));
 
         program.add(new Tuple<>("exit", List.of(
                 new MapNode(CASMLang.INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
-                        .withString(CASMLang.LABEL, PROGRAM_COUNTER),
+                        .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER),
                 new MapNode(CASMLang.INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(OUT, 16)),
                 new MapNode(CASMLang.INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(HALT, 16))
                         .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))
-        )));
+        )));*/
 
         int entryIndex = -1;
         final var programCopy = new ArrayList<>(program);
@@ -291,13 +317,13 @@ public class Assembler {
         final var newFirst = programCopy.get(entryIndex).<List<Node>>mapRight(right -> {
             final var copy = new ArrayList<>(List.of(new MapNode(INSTRUCTION_TYPE)
                             .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
-                            .withString(LABEL, PROGRAM_COUNTER),
+                            .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER),
                     new MapNode(INSTRUCTION_TYPE)
                             .withString(OP_CODE, Integer.toUnsignedString(ADD_VALUE, 16))
                             .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)),
                     new MapNode(INSTRUCTION_TYPE)
                             .withString(OP_CODE, Integer.toUnsignedString(STORE, 16))
-                            .withString(LABEL, PROGRAM_COUNTER)));
+                            .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER)));
             copy.addAll(right);
             return copy;
         });
@@ -310,17 +336,17 @@ public class Assembler {
         final var list = new ArrayList<Node>();
         set(list, 2, new MapNode(CASMLang.INSTRUCTION_TYPE)
                 .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(CASMLang.LABEL, INIT));
+                .withString(INSTRUCTION_LABEL, INIT));
 
         labels.put(PROGRAM_COUNTER, PROGRAM_COUNTER_ADDRESS);
         set(list, (int) PROGRAM_COUNTER_ADDRESS, 0);
 
         set(list, 3, new MapNode(CASMLang.INSTRUCTION_TYPE)
                 .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(CASMLang.LABEL, INIT));
+                .withString(INSTRUCTION_LABEL, INIT));
         set(list, 2, new MapNode(CASMLang.INSTRUCTION_TYPE)
                 .withString(OP_CODE, Integer.toUnsignedString(INCREMENT, 16))
-                .withString(CASMLang.LABEL, PROGRAM_COUNTER));
+                .withString(INSTRUCTION_LABEL, PROGRAM_COUNTER));
 
         final var entryList = data.keySet()
                 .stream()
@@ -347,7 +373,7 @@ public class Assembler {
 
         set(list, 3, new MapNode(CASMLang.INSTRUCTION_TYPE)
                 .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
-                .withString(CASMLang.LABEL, MAIN));
+                .withString(INSTRUCTION_LABEL, MAIN));
 
         return list.stream()
                 .map(node -> resolveLabel(labels, node))
@@ -365,7 +391,7 @@ public class Assembler {
     private static Node resolveLabel(Map<String, Long> labels, Node node) {
         if (!node.is(CASMLang.INSTRUCTION_TYPE)) return node;
 
-        final var option = node.findString(CASMLang.LABEL);
+        final var option = node.findString(INSTRUCTION_LABEL);
         if (option.isEmpty()) return node;
 
         final var label = option.orElse("");
@@ -395,8 +421,15 @@ public class Assembler {
     }
 
     private static long createInstruction(Node node) {
-        final var opCode = Integer.parseUnsignedInt(node.findString(OP_CODE).orElse(""), 16);
-        final var addressOrValue = node.findString(CASMLang.ADDRESS_OR_VALUE)
+        final var opCodeOption = node.findString(OP_CODE);
+        if (opCodeOption.isEmpty()) throw new IllegalArgumentException("No op code present.");
+
+        final var opCode = Integer.parseUnsignedInt(opCodeOption.orElse(""), 16);
+
+        final var option = node.findString(ADDRESS_OR_VALUE);
+        if (option.isEmpty()) throw new IllegalArgumentException("No address or value present: " + node);
+
+        final var addressOrValue = option
                 .map(value -> Long.parseUnsignedLong(value, 16))
                 .orElse(0L);
 
