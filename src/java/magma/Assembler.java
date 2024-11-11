@@ -266,9 +266,9 @@ public class Assembler {
             if (inverted.containsKey(casted)) {
                 final var label = inverted.get(casted);
                 final var paddingLength = maxLabelLength - label.length();
-                labelText = " ".repeat(paddingLength) + label + " - ";
+                labelText = " ".repeat(paddingLength) + label + " ";
             } else {
-                labelText = " ".repeat(maxLabelLength + 3);
+                labelText = " ".repeat(maxLabelLength + 1);
             }
 
             joiner.add("\n " + labelText + Integer.toString(i, 16) + ": " + string);
@@ -337,7 +337,7 @@ public class Assembler {
             }
         }
 
-        data.put("__offset__", 3L);
+        data.put("__offset__", 2L);
         final var newFirst = programCopy.get(entryIndex).<List<Node>>mapRight(right -> {
             final var list = List.of(
                     new MapNode(INSTRUCTION_TYPE)
