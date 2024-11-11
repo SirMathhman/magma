@@ -27,6 +27,20 @@ section program {
         ldv main0;
         stoi $sp;
 
+        ldd $sp;
+        add ONE;
+        stod $sp;
+
+        ldd second;
+        stoi $sp;
+
+        ldd $sp;
+        add ONE;
+        stod $sp;
+
+        ldd first;
+        stoi $sp;
+
         ldv add;
         jpac;
     }
@@ -43,11 +57,23 @@ section program {
     }
 
     label add {
+        ldi $sp;
+        stod temp;
+
         ldd $sp;
         sub ONE;
         stod $sp;
 
-        ldd SUM;
+        ldi $sp;
+        add temp;
+        stod temp;
+
+        ldd $sp;
+        sub ONE;
+        sub ONE;
+        stod $sp;
+
+        ldd temp;
         stoi $sp;
 
         ldd $sp;
@@ -56,5 +82,7 @@ section program {
 
         ldi $sp;
         jpac;
+
+        halt;
     }
 }
