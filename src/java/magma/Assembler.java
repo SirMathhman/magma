@@ -1,6 +1,5 @@
 package magma;
 
-import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
@@ -279,10 +278,6 @@ public class Assembler {
             labels.put(label, (long) address);
             set(list, address, value);
         }
-
-        final var initialAddress = LOOP_OFFSET + data.size();
-
-        labels.put("start", (long) initialAddress);
         final var start = List.of(
                 new MapNode(INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
@@ -298,10 +293,6 @@ public class Assembler {
                         .withString(LABEL, "exit")
         );
 
-        for (int i = 0; i < start.size(); i++) {
-            Node node = start.get(i);
-            set(list, initialAddress + i, node);
-        }
 
         var exit = List.of(
                 new MapNode(INSTRUCTION_TYPE)
@@ -314,10 +305,18 @@ public class Assembler {
                         .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))
         );
 
-        var haltStart = initialAddress + 4;
-        labels.put("exit", (long) haltStart);
+
+        final var startAddress = LOOP_OFFSET + data.size();
+        final var haltAddress = startAddress + start.size();
+
+        labels.put("start", (long) startAddress);
+        for (int i = 0; i < start.size(); i++) {
+            set(list, startAddress + i, start.get(i));
+        }
+
+        labels.put("exit", (long) haltAddress);
         for (int i = 0; i < exit.size(); i++) {
-            set(list, haltStart + i, exit.get(i));
+            set(list, haltAddress + i, exit.get(i));
         }
 
         set(list, 3, new MapNode(INSTRUCTION_TYPE)
