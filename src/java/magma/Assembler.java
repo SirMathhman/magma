@@ -306,17 +306,17 @@ public class Assembler {
         );
 
 
-        final var startAddress = LOOP_OFFSET + data.size();
-        final var haltAddress = startAddress + start.size();
-
-        labels.put("start", (long) startAddress);
-        for (int i = 0; i < start.size(); i++) {
-            set(list, startAddress + i, start.get(i));
+        var pointer = LOOP_OFFSET + data.size();
+        labels.put("start", (long) pointer);
+        for (Node item : start) {
+            set(list, pointer, item);
+            pointer++;
         }
 
-        labels.put("exit", (long) haltAddress);
-        for (int i = 0; i < exit.size(); i++) {
-            set(list, haltAddress + i, exit.get(i));
+        labels.put("exit", (long) pointer);
+        for (Node value : exit) {
+            set(list, pointer, value);
+            pointer++;
         }
 
         set(list, 3, new MapNode(INSTRUCTION_TYPE)
