@@ -1,4 +1,6 @@
 section data {
+    temp = 0;
+
     first = 100;
     second = 200;
 
@@ -9,31 +11,16 @@ section data {
 
 section program {
     label __main__ {
-        ldv main0;
-        push;
-
-        ldd ZERO;
-        push;
-
-        ldd second;
-        push;
-
-        ldd first;
-        push;
-
-        jp add;
+        ldv add;
+        jpac;
     }
 
     label main0 {
-        ldd first;
-        out;
         halt;
     }
 
     label add {
-        ldd %sp;
-        out;
-
+        ldv main0;
         jpac;
     }
 }
