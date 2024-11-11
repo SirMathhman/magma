@@ -51,10 +51,10 @@ public class Assembler {
     public static final String PROGRAM_COUNTER = "program-counter";
     public static final String INIT = "__init__";
     public static final int LOOP_OFFSET = 5;
+    public static final String MAIN = "__main__";
     private static final int PUSH = 0x11;
     private static final int POP = 0x12;
     private static final int NO_OPERATION = 0x13;
-    public static final String MAIN = "__main__";
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -249,7 +249,7 @@ public class Assembler {
                     final var dataName = dataNode.findString(DATA_NAME).orElse("");
                     final var value = dataNode.findNode(DATA_VALUE).orElse(new MapNode());
                     long actualValue = 0L;
-                    if(value.is(NUMBER_TYPE)) {
+                    if (value.is(NUMBER_TYPE)) {
                         final var numberValue = value.findString(NUMBER_VALUE).orElse("");
                         actualValue = Long.parseLong(numberValue, 10);
                     }
@@ -260,15 +260,6 @@ public class Assembler {
         }
 
         final var program = new ArrayList<>(List.of(new Tuple<>(MAIN, List.of(
-                new MapNode(CASMLang.INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
-                        .withString(CASMLang.LABEL, PROGRAM_COUNTER),
-                new MapNode(CASMLang.INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(ADD_VALUE, 16))
-                        .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)),
-                new MapNode(CASMLang.INSTRUCTION_TYPE)
-                        .withString(OP_CODE, Integer.toUnsignedString(STORE, 16))
-                        .withString(CASMLang.LABEL, PROGRAM_COUNTER),
                 new MapNode(CASMLang.INSTRUCTION_TYPE)
                         .withString(OP_CODE, Integer.toUnsignedString(JUMP_ADDRESS, 16))
                         .withString(CASMLang.LABEL, "exit")
@@ -283,7 +274,32 @@ public class Assembler {
                         .withString(CASMLang.ADDRESS_OR_VALUE, Long.toUnsignedString(0, 16))
         ))));
 
-        program.get(0);
+        int entryIndex = -1;
+        final var programCopy = new ArrayList<>(program);
+        for (int i = 0; i < programCopy.size(); i++) {
+            Tuple<String, List<Node>> tuple = programCopy.get(i);
+            final var label = tuple.left();
+            if (label.equals(MAIN)) {
+                entryIndex = i;
+                break;
+            }
+        }
+
+        final var newFirst = programCopy.get(entryIndex).<List<Node>>mapRight(right -> {
+            final var copy = new ArrayList<>(List.of(new MapNode(INSTRUCTION_TYPE)
+                            .withString(OP_CODE, Integer.toUnsignedString(LOAD, 16))
+                            .withString(LABEL, PROGRAM_COUNTER),
+                    new MapNode(INSTRUCTION_TYPE)
+                            .withString(OP_CODE, Integer.toUnsignedString(ADD_VALUE, 16))
+                            .withString(ADDRESS_OR_VALUE, Long.toUnsignedString(3, 16)),
+                    new MapNode(INSTRUCTION_TYPE)
+                            .withString(OP_CODE, Integer.toUnsignedString(STORE, 16))
+                            .withString(LABEL, PROGRAM_COUNTER)));
+            copy.addAll(right);
+            return copy;
+        });
+
+        programCopy.set(entryIndex, newFirst);
 
         var labels = new HashMap<String, Long>();
         labels.put(INIT, 0L);
@@ -318,7 +334,7 @@ public class Assembler {
         }
 
         var pointer = LOOP_OFFSET + data.size();
-        for (Tuple<String, List<Node>> tuple : program) {
+        for (Tuple<String, List<Node>> tuple : programCopy) {
             labels.put(tuple.left(), (long) pointer);
             for (Node item : tuple.right()) {
                 set(list, pointer, item);
