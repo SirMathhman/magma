@@ -1,4 +1,2 @@
-let x : u64 = 100;
-let y : u64 = 200;
-let z : u64 = 300;
-return 150;
+let x = 100;
+return x;

@@ -21,17 +21,28 @@ public class MagmaLang {
     }
 
     private static TypeRule createDeclarationRule() {
-        final var name = new StringRule("name");
-        final var value = new NodeRule(DECLARATION_VALUE, createNumberRule());
+        final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
+        final var value = new NodeRule(DECLARATION_VALUE, createValueRule());
         return new TypeRule(DECLARATION_TYPE, new PrefixRule("let ", new SuffixRule(new FirstRule(name, "=", value), ";")));
     }
 
     private static TypeRule createReturnRule() {
-        final var value = new NodeRule(RETURN_VALUE, createNumberRule());
+        final var value = new NodeRule(RETURN_VALUE, createValueRule());
         return new TypeRule(RETURN_TYPE, new PrefixRule("return", new SuffixRule(new OrRule(List.of(
                 new PrefixRule(" ", value),
                 new EmptyRule()
         )), ";")));
+    }
+
+    private static Rule createValueRule() {
+        return new OrRule(List.of(
+                createSymbolRule(),
+                createNumberRule()
+        ));
+    }
+
+    private static TypeRule createSymbolRule() {
+        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
     }
 
     private static TypeRule createNumberRule() {
