@@ -9,8 +9,8 @@ import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
+import magma.java.JavaList;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -45,53 +45,14 @@ class RootTransformer implements Passer {
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
         if (!node.is(ROOT_TYPE)) return new None<>();
 
-        final var list = new ArrayList<Node>();
-        final var children = node.findNodeList(ROOT_CHILDREN).orElse(Collections.emptyList());
+        final var rootChildrenOption = node.findNodeList(ROOT_CHILDREN);
+        if (rootChildrenOption.isEmpty())
+            return new Some<>(new Err<>(new CompileError("No root children present", new NodeContext(node))));
 
-        var labels = new ArrayList<Tuple<String, Integer>>();
+        final var rootChildren = new JavaList<>(rootChildrenOption.orElse(Collections.emptyList()));
+        var instructions = rootChildren.stream().foldLeft(new JavaList<Node>(), this::foldRootChild);
 
-        for (Node child : children) {
-            if (child.is(DECLARATION_TYPE)) {
-                final var name = child.findString(DECLARATION_NAME).orElse("");
-
-                final var sum = labels.stream()
-                        .map(Tuple::right)
-                        .mapToInt(value -> value)
-                        .sum();
-
-                labels.add(new Tuple<>(name, 1));
-
-                addStackPointer(list, sum);
-                final var value = child.findNode(DECLARATION_VALUE).orElse(new MapNode());
-
-                final var resolved = resolveValue(value, labels);
-                if (resolved.isErr()) return resolved.findErr().map(Err::new);
-                final var valueInstructions = resolved.findValue().orElse(Collections.emptyList());
-
-                list.addAll(valueInstructions);
-                list.add(new MapNode("instruction").withString(MNEMONIC, "stoi").withString(INSTRUCTION_LABEL, STACK_POINTER));
-
-                subtractStackPointer(list, sum);
-            } else if (child.is(RETURN_TYPE)) {
-                final var returnValueOption = child.findNode(RETURN_VALUE);
-                if (returnValueOption.isEmpty()) return new None<>();
-                final var returnValue = returnValueOption.orElse(new MapNode());
-
-                final var resolved = resolveValue(returnValue, labels);
-                if (resolved.isErr()) return resolved.findErr().map(Err::new);
-                final var valueInstructions = resolved.findValue().orElse(Collections.emptyList());
-                list.addAll(valueInstructions);
-                list.addAll(List.of(
-                        new MapNode("instruction").withString(MNEMONIC, "out"),
-                        new MapNode("instruction").withString(MNEMONIC, "halt")
-                ));
-            } else {
-                return new Some<>(new Err<>(new CompileError("Unknown child", new NodeContext(child))));
-            }
-        }
-
-
-        final var labelBlock = new MapNode("block").withNodeList("children", list);
+        final var labelBlock = new MapNode("block").withNodeList("children", instructions.list());
 
         final var label = new MapNode("label")
                 .withString("name", "__main__")
@@ -113,6 +74,10 @@ class RootTransformer implements Passer {
 
         final var root = new MapNode().withNodeList("children", List.of(dataSection, programSection));
         return new Some<>(new Ok<>(new Tuple<>(state, root)));
+    }
+
+    private JavaList<Node> foldRootChild(JavaList<Node> current, Node node) {
+        return current;
     }
 
     private Result<List<Node>, CompileError> resolveValue(Node value, List<Tuple<String, Integer>> labels) {

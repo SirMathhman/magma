@@ -3,6 +3,8 @@ package magma.java;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
+import magma.api.stream.HeadedStream;
+import magma.api.stream.Stream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,5 +28,9 @@ public record JavaList<T>(List<T> list) {
     public Option<T> get(int index) {
         if (index >= 0 && index < list.size()) return new Some<>(list.get(index));
         else return new None<>();
+    }
+
+    public Stream<T> stream() {
+        return new HeadedStream<>(new NativeListHead<>(list));
     }
 }
