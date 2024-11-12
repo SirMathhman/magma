@@ -11,14 +11,11 @@ public class CASMLang {
     public static final String ADDRESS_OR_VALUE = "addressOrValue";
     public static final String CHAR_TYPE = "char";
     public static final String NUMBER_TYPE = "number";
-    public static final String DATA_VALUE = "value";
     public static final String DATA_TYPE = "data";
     public static final String INSTRUCTION_TYPE = "instruction";
     public static final String CHILDREN = "children";
     public static final String SECTION_TYPE = "section";
     public static final String GROUP_NAME = "name";
-    public static final String NUMBER_VALUE = "value";
-    public static final String CHAR_VALUE = "value";
     public static final String DATA_NAME = "name";
     public static final String INSTRUCTION_LABEL = "label";
     public static final String LABEL_TYPE = "label";
@@ -26,6 +23,10 @@ public class CASMLang {
     public static final String BLOCK_BEFORE_CHILD = "before-child";
     public static final String BLOCK_TYPE = "block";
     public static final String BLOCK_AFTER_CHILDREN = "after-children";
+    public static final String GROUP_VALUE = "value";
+    public static final String DATA_VALUE = GROUP_VALUE;
+    public static final String NUMBER_VALUE = GROUP_VALUE;
+    public static final String CHAR_VALUE = GROUP_VALUE;
 
     public static Rule createRootRule() {
         final var label = createGroupRule(LABEL_TYPE, "label ", createStatementRule());
@@ -39,7 +40,7 @@ public class CASMLang {
 
     private static Rule createGroupRule(String type, String prefix, Rule statement) {
         final var name = new StripRule("", new StringRule(GROUP_NAME), GROUP_AFTER_NAME);
-        final var block = new NodeRule("value", createBlockRule(statement));
+        final var block = new NodeRule(GROUP_VALUE, createBlockRule(statement));
         return new TypeRule(type, new PrefixRule(prefix, new FirstRule(name, "{", new SuffixRule(block, "}"))));
     }
 

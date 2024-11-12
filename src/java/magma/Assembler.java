@@ -416,7 +416,12 @@ public class Assembler {
             return new Err<>(new CompileError("No section name present", new NodeContext(section)));
         final var name = nameOption.orElse("");
 
-        final var childrenOption = section.findNodeList(CHILDREN);
+        final var valueOption = section.findNode(GROUP_VALUE);
+        if(valueOption.isEmpty())
+            return new Err<>(new CompileError("No section value present", new NodeContext(section)));
+        final var value = valueOption.orElse(new MapNode());
+
+        final var childrenOption = value.findNodeList(CHILDREN);
         if (childrenOption.isEmpty())
             return new Err<>(new CompileError("No section children present", new NodeContext(section)));
         final var children = childrenOption.orElse(Collections.emptyList());
