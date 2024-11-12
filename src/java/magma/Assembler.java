@@ -404,52 +404,59 @@ public class Assembler {
     }
 
     private static Result<SplitResult, CompileError> split(Node root) {
-        final var data = new HashMap<String, Long>();
-        final var program = new ArrayList<Tuple<String, List<Node>>>();
-
-        final var result = new SplitResult(data, program);
-
         final var children = root.findNodeList(CHILDREN).orElse(Collections.emptyList());
-        for (Node section : children) {
-            if (!section.is(SECTION_TYPE)) continue;
+        return JavaStreams.fromList(children).foldLeftToResult(new SplitResult(), Assembler::foldSection);
+    }
 
-            final var name = section.findString(GROUP_NAME).orElse("");
+    private static Result<SplitResult, CompileError> foldSection(SplitResult result, Node section) {
+        if (!section.is(SECTION_TYPE)) return new Err<>(new CompileError("Not a section", new NodeContext(section)));
 
-            final var sectionChildren = section.findNodeList(CHILDREN).orElse(Collections.emptyList());
-            if (name.equals("data")) {
-                for (var dataNode : sectionChildren) {
-                    if (!dataNode.is(DATA_TYPE)) continue;
+        final var name = section.findString(GROUP_NAME).orElse("");
+        final var sectionChildren = section.findNodeList(CHILDREN).orElse(Collections.emptyList());
 
-                    final var dataName = dataNode.findString(DATA_NAME).orElse("");
-                    final var value = dataNode.findNode(DATA_VALUE).orElse(new MapNode());
-                    long actualValue = 0L;
-                    if (value.is(NUMBER_TYPE)) {
-                        final var numberValue = value.findString(NUMBER_VALUE).orElse("");
-                        actualValue = Long.parseLong(numberValue, 10);
-                    }
+        if (name.equals("data")) return foldData(result, sectionChildren);
+        if (name.equals("program")) return foldProgram(result, sectionChildren);
+        return new Err<>(new CompileError("Invalid section", new NodeContext(section)));
+    }
 
-                    data.put(dataName, actualValue);
-                }
-            } else if (name.equals("program")) {
-                for (Node label : sectionChildren) {
-                    if (!label.is(LABEL_TYPE)) continue;
+    private static Result<SplitResult, CompileError> foldProgram(SplitResult result, List<Node> sectionChildren) {
+        var current = result;
+        for (Node label : sectionChildren) {
+            if (!label.is(LABEL_TYPE)) continue;
 
-                    final var labelName = label.findString(GROUP_NAME).orElse("");
-                    final var labelChildrenPreprocessed = label.findNodeList(CHILDREN).orElse(Collections.emptyList());
+            final var labelName = label.findString(GROUP_NAME).orElse("");
+            final var labelChildrenPreprocessed = label.findNodeList(CHILDREN).orElse(Collections.emptyList());
 
-                    final var labelChildren = JavaStreams.fromList(labelChildrenPreprocessed)
-                            .filter(value -> value.is(INSTRUCTION_TYPE))
-                            .map(Assembler::getNode)
-                            .into(ResultStream::new)
-                            .foldResultsLeft(new JavaList<Node>(), JavaList::add);
+            final var labelChildren = JavaStreams.fromList(labelChildrenPreprocessed)
+                    .filter(value -> value.is(INSTRUCTION_TYPE))
+                    .map(Assembler::getNode)
+                    .into(ResultStream::new)
+                    .foldResultsLeft(new JavaList<Node>(), JavaList::add);
 
-                    if (labelChildren.isErr()) return new Err<>(labelChildren.findErr().orElse(null));
-                    program.add(new Tuple<>(labelName, labelChildren.findValue().orElse(new JavaList<>()).list()));
-                }
-            }
+            if (labelChildren.isErr()) return new Err<>(labelChildren.findErr().orElse(null));
+            current = current.putLabel(labelName, labelChildren.findValue().orElse(new JavaList<>()).list());
         }
 
-        return new Ok<>(result);
+        return new Ok<>(current);
+    }
+
+    private static Result<SplitResult, CompileError> foldData(SplitResult result, List<Node> sectionChildren) {
+        var current = result;
+        for (var dataNode : sectionChildren) {
+            if (!dataNode.is(DATA_TYPE)) continue;
+
+            final var dataName = dataNode.findString(DATA_NAME).orElse("");
+            final var value = dataNode.findNode(DATA_VALUE).orElse(new MapNode());
+            long actualValue = 0L;
+            if (value.is(NUMBER_TYPE)) {
+                final var numberValue = value.findString(NUMBER_VALUE).orElse("");
+                actualValue = Long.parseLong(numberValue, 10);
+            }
+
+            current = current.putData(dataName, actualValue);
+        }
+
+        return new Ok<>(current);
     }
 
     private static Option<Integer> findMainIndex(List<Tuple<String, List<Node>>> labels) {
@@ -583,5 +590,20 @@ public class Assembler {
     }
 
     private record SplitResult(Map<String, Long> data, List<Tuple<String, List<Node>>> program) {
+        public SplitResult() {
+            this(new HashMap<>(), new ArrayList<>());
+        }
+
+        private SplitResult putData(String dataName, long actualValue) {
+            final var copy = new HashMap<>(data);
+            copy.put(dataName, actualValue);
+            return new SplitResult(copy, program);
+        }
+
+        private SplitResult putLabel(String labelName, List<Node> labelInstructions) {
+            final var copy = new ArrayList<>(program);
+            copy.add(new Tuple<>(labelName, labelInstructions));
+            return new SplitResult(data, copy);
+        }
     }
 }
