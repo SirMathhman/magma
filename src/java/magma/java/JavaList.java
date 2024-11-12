@@ -33,4 +33,8 @@ public record JavaList<T>(List<T> list) {
     public Stream<T> stream() {
         return new HeadedStream<>(new NativeListHead<>(list));
     }
+
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
 }

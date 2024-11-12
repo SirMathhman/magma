@@ -7,6 +7,7 @@ import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
+import magma.java.JavaList;
 import magma.java.JavaStreams;
 
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class NodeListRule implements Rule {
 
     @Override
     public Result<String, CompileError> generate(Node node) {
-        return node.findNodeList(propertyKey)
+        return node.findNodeList(propertyKey).map(JavaList::list)
                 .map(this::generateList)
                 .orElseGet(() -> new Err<>(new CompileError("Node list property 'children' not present", new NodeContext(node))));
     }

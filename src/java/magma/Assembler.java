@@ -405,7 +405,7 @@ public class Assembler {
     }
 
     private static Result<SplitResult, CompileError> split(Node root) {
-        final var children = root.findNodeList(CHILDREN).orElse(Collections.emptyList());
+        final var children = root.findNodeList(CHILDREN).map(JavaList::list).orElse(Collections.emptyList());
         return JavaStreams.fromList(children).foldLeftToResult(new SplitResult(), Assembler::foldSection);
     }
 
@@ -422,7 +422,7 @@ public class Assembler {
             return new Err<>(new CompileError("No section value present", new NodeContext(section)));
         final var value = valueOption.orElse(new MapNode());
 
-        final var childrenOption = value.findNodeList(CHILDREN);
+        final var childrenOption = value.findNodeList(CHILDREN).map(JavaList::list);
         if (childrenOption.isEmpty())
             return new Err<>(new CompileError("No section children present", new NodeContext(section)));
         final var children = childrenOption.orElse(Collections.emptyList());
@@ -445,7 +445,7 @@ public class Assembler {
             if (valueOption.isEmpty()) return new Err<>(new CompileError("No value present.", new NodeContext(label)));
             var value = valueOption.orElse(new MapNode());
 
-            final var childrenOption = value.findNodeList(CHILDREN);
+            final var childrenOption = value.findNodeList(CHILDREN).map(JavaList::list);
             if(childrenOption.isEmpty()) return new Err<>(new CompileError("No children present.", new NodeContext(value)));
             final var labelChildrenPreprocessed = childrenOption.orElse(Collections.emptyList());
 

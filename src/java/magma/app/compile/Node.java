@@ -4,6 +4,7 @@ import magma.api.Tuple;
 import magma.api.option.Option;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
+import magma.java.JavaList;
 import magma.java.JavaStreams;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface Node {
 
     String format(int depth);
 
-    Option<List<Node>> findNodeList(String propertyKey);
+    Option<JavaList<Node>> findNodeList(String propertyKey);
 
     Node withNodeList(String propertyKey, List<Node> propertyValues);
 

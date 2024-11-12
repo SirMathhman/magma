@@ -6,6 +6,7 @@ import magma.api.option.Option;
 import magma.api.option.Some;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
+import magma.java.JavaList;
 
 import java.util.*;
 import java.util.function.Function;
@@ -74,8 +75,7 @@ public record MapNode(
         return typePrefix + "{" + joined + "\n" + "\t".repeat(depth) + "}";
     }
 
-    @Override
-    public Option<List<Node>> findNodeList(String propertyKey) {
+    private Option<List<Node>> findNodeList0(String propertyKey) {
         return nodeLists.containsKey(propertyKey)
                 ? new Some<>(nodeLists.get(propertyKey))
                 : new None<>();
@@ -149,7 +149,7 @@ public record MapNode(
 
     @Override
     public Option<Result<Node, CompileError>> mapNodeList(String propertyKey, Function<List<Node>, Result<List<Node>, CompileError>> mapper) {
-        return findNodeList(propertyKey)
+        return findNodeList(propertyKey).map(JavaList::list)
                 .map(mapper)
                 .map(result -> result.mapValue(list -> withNodeList(propertyKey, list)));
     }
@@ -215,5 +215,10 @@ public record MapNode(
         other.streamNodeListsToNativeStream().forEach(tuple -> nodeListsCopy.put(tuple.left(), tuple.right()));
 
         return new Some<>(new MapNode(newType, stringsCopy, nodesCopy, nodeListsCopy, integers));
+    }
+
+    @Override
+    public Option<JavaList<Node>> findNodeList(String propertyKey) {
+        return findNodeList0(propertyKey).map(JavaList::new);
     }
 }
