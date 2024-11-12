@@ -356,16 +356,11 @@ public class Assembler {
             }
         }
 
-        int entryIndex = -1;
         final var programCopy = new ArrayList<>(program);
-        for (int i = 0; i < programCopy.size(); i++) {
-            Tuple<String, List<Node>> tuple = programCopy.get(i);
-            final var label = tuple.left();
-            if (label.equals(MAIN)) {
-                entryIndex = i;
-                break;
-            }
-        }
+        final var entryIndexOption = findMainIndex(programCopy);
+        if (entryIndexOption.isEmpty())
+            return new Err<>(new CompileError("No main entry point found", new NodeContext(root)));
+        final var entryIndex = entryIndexOption.orElse(0);
 
         data.put("__offset__", 2L);
         final var newFirst = programCopy.get(entryIndex).<List<Node>>mapRight(right -> {
@@ -442,6 +437,18 @@ public class Assembler {
                     return longs;
                 })
                 .mapValue(value -> new Tuple<>(value, labels));
+    }
+
+    private static Option<Integer> findMainIndex(List<Tuple<String, List<Node>>> labels) {
+        for (int index = 0; index < labels.size(); index++) {
+            var tuple = labels.get(index);
+            final var label = tuple.left();
+            if (label.equals(MAIN)) {
+                return new Some<>(index);
+            }
+        }
+
+        return new None<>();
     }
 
     private static Result<Node, CompileError> getNode(Node instruction) {
