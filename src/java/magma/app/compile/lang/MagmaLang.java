@@ -12,6 +12,10 @@ public class MagmaLang {
     public static final String RETURN_TYPE = "return";
     public static final String DECLARATION_TYPE = "declaration";
     public static final String DECLARATION_VALUE = "value";
+    public static final String DECLARATION_NAME = "name";
+    public static final String SYMBOL_TYPE = "symbol";
+    public static final String NUMBER_TYPE = "number";
+    public static final String SYMBOL_VALUE = "value";
 
     public static Rule createMagmaRootRule() {
         return new TypeRule(ROOT_TYPE, new NodeListRule(ROOT_CHILDREN, new StripRule(new OrRule(List.of(
@@ -21,7 +25,7 @@ public class MagmaLang {
     }
 
     private static TypeRule createDeclarationRule() {
-        final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
+        final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule(DECLARATION_NAME)));
         final var value = new NodeRule(DECLARATION_VALUE, createValueRule());
         return new TypeRule(DECLARATION_TYPE, new PrefixRule("let ", new SuffixRule(new FirstRule(name, "=", value), ";")));
     }
@@ -42,10 +46,10 @@ public class MagmaLang {
     }
 
     private static TypeRule createSymbolRule() {
-        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
+        return new TypeRule(SYMBOL_TYPE, new StripRule(new FilterRule(new SymbolFilter(), new StringRule(SYMBOL_VALUE))));
     }
 
     private static TypeRule createNumberRule() {
-        return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new IntRule(NUMBER_VALUE))));
+        return new TypeRule(NUMBER_TYPE, new StripRule(new FilterRule(new NumberFilter(), new IntRule(NUMBER_VALUE))));
     }
 }
