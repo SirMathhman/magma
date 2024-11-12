@@ -1,6 +1,6 @@
 section program {
 	label __main__{
-		ldv 100;
+		ldv 150;
 		out;
 		halt;
 	}

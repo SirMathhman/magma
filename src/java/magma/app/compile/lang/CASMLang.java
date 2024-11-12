@@ -24,9 +24,9 @@ public class CASMLang {
     public static final String BLOCK_TYPE = "block";
     public static final String BLOCK_AFTER_CHILDREN = "after-children";
     public static final String GROUP_VALUE = "value";
-    public static final String DATA_VALUE = GROUP_VALUE;
-    public static final String NUMBER_VALUE = GROUP_VALUE;
-    public static final String CHAR_VALUE = GROUP_VALUE;
+    public static final String DATA_VALUE = "value";
+    public static final String NUMBER_VALUE = "value";
+    public static final String CHAR_VALUE = "value";
 
     public static Rule createRootRule() {
         final var label = createGroupRule(LABEL_TYPE, "label ", createStatementRule());
