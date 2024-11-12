@@ -3,5 +3,5 @@ section program {
 	ldv 0;
 	out;
 	halt;
-}
-}
+		}
+	}

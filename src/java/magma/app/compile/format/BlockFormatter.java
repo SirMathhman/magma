@@ -3,6 +3,7 @@ package magma.app.compile.format;
 import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
+import magma.api.option.Some;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.Node;
@@ -22,11 +23,18 @@ public class BlockFormatter implements Passer {
     }
 
     @Override
+    public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
+        if (!node.is(BLOCK_TYPE)) return new None<>();
+
+        return new Some<>(new Ok<>(new Tuple<>(state.enter(), node)));
+    }
+
+    @Override
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
         if (!node.is(BLOCK_TYPE)) return new None<>();
 
-        return node.withString(BLOCK_AFTER_CHILDREN, "\n")
+        return node.withString(BLOCK_AFTER_CHILDREN, "\n" + "\t".repeat(state.depth()))
                 .mapNodeList(CHILDREN, BlockFormatter::attachPadding)
-                .map(result -> result.mapValue(value -> new Tuple<>(state, value)));
+                .map(result -> result.mapValue(value -> new Tuple<>(state.exit(), value)));
     }
 }
