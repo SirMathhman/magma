@@ -1,11 +1,24 @@
-section program {
+section data {
+	temp=0;
+}section program {
 	label __main__{
 		ldd $sp;
 		addv 1;
 		stod $sp;
 		ldv 100;
 		stoi $sp;
-		ldi $sp;
+		ldd $sp;
+		subv 1;
+		stod $sp;
+		ldd $sp;
+		addv 2;
+		stod $sp;
+		ldv 200;
+		stoi $sp;
+		ldd $sp;
+		subv 2;
+		stod $sp;
+		ldv 0;
 		out;
 		halt;
 	}

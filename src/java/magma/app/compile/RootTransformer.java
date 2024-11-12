@@ -13,6 +13,7 @@ import magma.app.compile.error.NodeContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static magma.Assembler.STACK_POINTER;
 import static magma.app.compile.lang.CASMLang.*;
@@ -29,14 +30,21 @@ class RootTransformer implements Passer {
         final var children = node.findNodeList(ROOT_CHILDREN).orElse(Collections.emptyList());
 
         var labels = new ArrayList<Tuple<String, Integer>>();
+
         for (Node child : children) {
             if (child.is(DECLARATION_TYPE)) {
                 final var name = child.findString(DECLARATION_NAME).orElse("");
                 labels.add(new Tuple<>(name, 1));
 
+                final var sum = labels.stream()
+                        .map(Tuple::right)
+                        .mapToInt(value -> value)
+                        .sum();
+
+                final var offset = sum;
                 list.addAll(List.of(
                         new MapNode("instruction").withString(MNEMONIC, "ldd").withString(INSTRUCTION_LABEL, STACK_POINTER),
-                        new MapNode("instruction").withString(MNEMONIC, "addv").withInt(ADDRESS_OR_VALUE, 1),
+                        new MapNode("instruction").withString(MNEMONIC, "addv").withInt(ADDRESS_OR_VALUE, offset),
                         new MapNode("instruction").withString(MNEMONIC, "stod").withString(INSTRUCTION_LABEL, STACK_POINTER)
                 ));
 
@@ -48,6 +56,12 @@ class RootTransformer implements Passer {
 
                 list.addAll(valueInstructions);
                 list.add(new MapNode("instruction").withString(MNEMONIC, "stoi").withString(INSTRUCTION_LABEL, STACK_POINTER));
+
+                list.addAll(List.of(
+                        new MapNode("instruction").withString(MNEMONIC, "ldd").withString(INSTRUCTION_LABEL, STACK_POINTER),
+                        new MapNode("instruction").withString(MNEMONIC, "subv").withInt(ADDRESS_OR_VALUE, offset),
+                        new MapNode("instruction").withString(MNEMONIC, "stod").withString(INSTRUCTION_LABEL, STACK_POINTER)
+                ));
             } else if (child.is(RETURN_TYPE)) {
                 final var returnValueOption = child.findNode(RETURN_VALUE);
                 if (returnValueOption.isEmpty()) return new None<>();
@@ -74,11 +88,20 @@ class RootTransformer implements Passer {
                 .withNode("value", labelBlock);
 
         final var sectionBlock = new MapNode("block").withNodeList("children", List.of(label));
-        final var section = new MapNode("section")
+        final var dataSection = new MapNode("section")
+                .withString("name", "data")
+                .withNode("value", new MapNode("block").withNodeList("children", List.of(
+                        new MapNode("data")
+                                .withString("name", "temp")
+                                .withNode("value", new MapNode("number")
+                                        .withString("value", "0"))
+                )));
+
+        final var programSection = new MapNode("section")
                 .withString("name", "program")
                 .withNode("value", sectionBlock);
 
-        final var root = new MapNode().withNodeList("children", List.of(section));
+        final var root = new MapNode().withNodeList("children", List.of(dataSection, programSection));
         return new Some<>(new Ok<>(new Tuple<>(state, root)));
     }
 
@@ -97,16 +120,26 @@ class RootTransformer implements Passer {
             if (valueOption.isEmpty()) return new Err<>(new CompileError("No value in symbol", new NodeContext(value)));
             final var name = valueOption.orElse("");
 
-            final var tuple = labels.stream()
-                    .filter(label -> label.left().equals(name))
+            final var indexOptional = IntStream.range(0, labels.size())
+                    .filter(maybeIndex -> labels.get(maybeIndex).left().equals(name))
                     .findFirst();
 
-            if (tuple.isEmpty()) {
+            if (indexOptional.isEmpty()) {
                 return new Err<>(new CompileError("Symbol not defined - " + name, new NodeContext(value)));
             }
 
+            final var startingIndex = indexOptional.getAsInt();
+            var bytesTotal = 0;
+            for (int i = 0; i < startingIndex; i++) {
+                bytesTotal += labels.get(i).right();
+            }
+
             final var list = List.of(
-                    new MapNode("instruction").withString(MNEMONIC, "ldi").withString(INSTRUCTION_LABEL, STACK_POINTER)
+                    new MapNode("instruction").withString(MNEMONIC, "ldd").withString(INSTRUCTION_LABEL, STACK_POINTER),
+                    new MapNode("instruction").withString(MNEMONIC, "addv").withInt(ADDRESS_OR_VALUE, bytesTotal),
+                    new MapNode("instruction").withString(MNEMONIC, "stod").withString(INSTRUCTION_LABEL, STACK_POINTER),
+                    new MapNode("instruction").withString(MNEMONIC, "ldi").withString(INSTRUCTION_LABEL, STACK_POINTER),
+                    new MapNode("instruction").withString(MNEMONIC, "stod").withString(INSTRUCTION_LABEL, "temp")
             );
 
             return new Ok<>(list);
