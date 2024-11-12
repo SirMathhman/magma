@@ -417,7 +417,7 @@ public class Assembler {
         final var name = nameOption.orElse("");
 
         final var valueOption = section.findNode(GROUP_VALUE);
-        if(valueOption.isEmpty())
+        if (valueOption.isEmpty())
             return new Err<>(new CompileError("No section value present", new NodeContext(section)));
         final var value = valueOption.orElse(new MapNode());
 
@@ -436,17 +436,26 @@ public class Assembler {
         for (Node label : sectionChildren) {
             if (!label.is(LABEL_TYPE)) continue;
 
-            final var labelName = label.findString(GROUP_NAME).orElse("");
-            final var labelChildrenPreprocessed = label.findNodeList(CHILDREN).orElse(Collections.emptyList());
+            final var nameOption = label.findString(GROUP_NAME);
+            if (nameOption.isEmpty()) return new Err<>(new CompileError("No name present.", new NodeContext(label)));
+            final var name = nameOption.orElse("");
+
+            final var valueOption = label.findNode(GROUP_VALUE);
+            if (valueOption.isEmpty()) return new Err<>(new CompileError("No value present.", new NodeContext(label)));
+            var value = valueOption.orElse(new MapNode());
+
+            final var childrenOption = value.findNodeList(CHILDREN);
+            if(childrenOption.isEmpty()) return new Err<>(new CompileError("No children present.", new NodeContext(value)));
+            final var labelChildrenPreprocessed = childrenOption.orElse(Collections.emptyList());
 
             final var labelChildren = JavaStreams.fromList(labelChildrenPreprocessed)
-                    .filter(value -> value.is(INSTRUCTION_TYPE))
+                    .filter(instruction -> instruction.is(INSTRUCTION_TYPE))
                     .map(Assembler::getNode)
                     .into(ResultStream::new)
                     .foldResultsLeft(new JavaList<Node>(), JavaList::add);
 
             if (labelChildren.isErr()) return new Err<>(labelChildren.findErr().orElse(null));
-            current = current.putLabel(labelName, labelChildren.findValue().orElse(new JavaList<>()).list());
+            current = current.putLabel(name, labelChildren.findValue().orElse(new JavaList<>()).list());
         }
 
         return new Ok<>(current);
