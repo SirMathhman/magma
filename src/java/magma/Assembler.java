@@ -52,7 +52,7 @@ public class Assembler {
     public static final int CAS = 0x0F;
     public static final int BYTES_PER_LONG = 8;
     public static final long STACK_POINTER_ADDRESS = 4L;
-    public static final String STACK_POINTER_COUNTER = "%sp";
+    public static final String STACK_POINTER = "$sp";
     public static final String INIT = "__init__";
     public static final int LOOP_OFFSET = 5;
     public static final String MAIN = "__main__";
@@ -331,13 +331,13 @@ public class Assembler {
             final var list = List.of(
                     new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, LOAD_DIRECT)
-                            .withString(INSTRUCTION_LABEL, STACK_POINTER_COUNTER),
+                            .withString(INSTRUCTION_LABEL, STACK_POINTER),
                     new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, ADD_ADDRESS)
                             .withString(INSTRUCTION_LABEL, "__offset__"),
                     new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, STORE_DIRECT)
-                            .withString(INSTRUCTION_LABEL, STACK_POINTER_COUNTER)
+                            .withString(INSTRUCTION_LABEL, STACK_POINTER)
             );
             final var copy = new ArrayList<Node>(list);
             copy.addAll(right);
@@ -354,7 +354,7 @@ public class Assembler {
                 .withInt(OP_CODE, JUMP_ADDRESS)
                 .withString(INSTRUCTION_LABEL, INIT));
 
-        labels.put(STACK_POINTER_COUNTER, STACK_POINTER_ADDRESS);
+        labels.put(STACK_POINTER, STACK_POINTER_ADDRESS);
         set(list, (int) STACK_POINTER_ADDRESS, 0);
 
         set(list, 3, new MapNode(INSTRUCTION_TYPE)
@@ -363,7 +363,7 @@ public class Assembler {
 
         set(list, 2, new MapNode(INSTRUCTION_TYPE)
                 .withInt(OP_CODE, INCREMENT)
-                .withString(INSTRUCTION_LABEL, STACK_POINTER_COUNTER));
+                .withString(INSTRUCTION_LABEL, STACK_POINTER));
 
         final var entryList = data.keySet()
                 .stream()
@@ -551,7 +551,7 @@ public class Assembler {
         final var label = option.orElse("");
 
         final long addressOrValue;
-        if (label.equals("$sp")) {
+        if (label.equals(STACK_POINTER)) {
             addressOrValue = STACK_POINTER_ADDRESS;
         } else if (labels.containsKey(label)) {
             addressOrValue = labels.get(label);
