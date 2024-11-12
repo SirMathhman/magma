@@ -16,7 +16,11 @@ section data {
 		subv 1;
 		stod $sp;
 		ldd temp;
-		ldv 0;
+		ldd $sp;
+		addv 0;
+		stod $sp;
+		ldi $sp;
+		stod temp;
 		out;
 		halt;
 	}
