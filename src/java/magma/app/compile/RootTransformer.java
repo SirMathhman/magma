@@ -16,7 +16,8 @@ import java.util.List;
 
 import static magma.Assembler.STACK_POINTER;
 import static magma.app.compile.lang.CASMLang.*;
-import static magma.app.compile.lang.MagmaLang.*;
+import static magma.app.compile.lang.MagmaLang.ROOT_CHILDREN;
+import static magma.app.compile.lang.MagmaLang.ROOT_TYPE;
 
 class RootTransformer implements Passer {
     private static void addStackPointer(List<Node> instructions, int amount) {
@@ -45,12 +46,13 @@ class RootTransformer implements Passer {
         final var rootChildrenOption = node.findNodeList(ROOT_CHILDREN);
         if (rootChildrenOption.isEmpty())
             return new Some<>(new Err<>(new CompileError("No root children present", new NodeContext(node))));
-
         final var rootChildren = new JavaList<>(rootChildrenOption.orElse(Collections.emptyList()));
-        var instructions = rootChildren.stream().foldLeft(new JavaList<Node>(), this::foldRootChild);
+
+        var instructionsResult = rootChildren.stream().foldLeftToResult(new JavaList<>(), this::foldRootChild);
+        if (instructionsResult.isErr()) return instructionsResult.findErr().map(Err::new);
+        var instructions = instructionsResult.findValue().orElse(new JavaList<>());
 
         final var labelBlock = new MapNode("block").withNodeList("children", instructions.list());
-
         final var label = new MapNode("label")
                 .withString("name", "__main__")
                 .withNode("value", labelBlock);
@@ -73,7 +75,7 @@ class RootTransformer implements Passer {
         return new Some<>(new Ok<>(new Tuple<>(state, root)));
     }
 
-    private JavaList<Node> foldRootChild(JavaList<Node> current, Node node) {
-        return current;
+    private Result<JavaList<Node>, CompileError> foldRootChild(JavaList<Node> current, Node node) {
+        return new Err<>(new CompileError("Unknown node:", new NodeContext(node)));
     }
 }
