@@ -63,6 +63,7 @@ public class Assembler {
     private static final int NO_OPERATION = 0x13;
     private static final int STORE_DIRECT = 0x16;
     private static final int JUMP_ACCUMULATOR = 0x18;
+    public static final long OFFSET = 3L;
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -326,7 +327,7 @@ public class Assembler {
             return new Err<>(new CompileError("No main entry point found", new NodeContext(root)));
         final var entryIndex = entryIndexOption.orElse(0);
 
-        data.put("__offset__", 2L);
+        data.put("__offset__", OFFSET);
         final var newFirst = programCopy.get(entryIndex).<List<Node>>mapRight(right -> {
             final var list = List.of(
                     new MapNode(INSTRUCTION_TYPE)

@@ -22,6 +22,25 @@ import static magma.app.compile.lang.MagmaLang.NUMBER_VALUE;
 import static magma.app.compile.lang.MagmaLang.*;
 
 class RootTransformer implements Passer {
+    private static void addStackPointer(List<Node> instructions, int amount) {
+        moveStackPointer(instructions, amount, new MapNode("instruction").withString(MNEMONIC, "addv"));
+    }
+
+    private static void subtractStackPointer(List<Node> instructions, int amount) {
+        moveStackPointer(instructions, amount, new MapNode("instruction").withString(MNEMONIC, "subv"));
+    }
+
+    private static void moveStackPointer(List<Node> instructions, int amount, Node instruction) {
+        if (amount == 0) return;
+        instructions.addAll(List.of(
+                new MapNode("instruction").withString(MNEMONIC, "stod").withString(INSTRUCTION_LABEL, "temp"),
+                new MapNode("instruction").withString(MNEMONIC, "ldd").withString(INSTRUCTION_LABEL, STACK_POINTER),
+                instruction.withInt(ADDRESS_OR_VALUE, amount),
+                new MapNode("instruction").withString(MNEMONIC, "stod").withString(INSTRUCTION_LABEL, STACK_POINTER),
+                new MapNode("instruction").withString(MNEMONIC, "ldd").withString(INSTRUCTION_LABEL, "temp")
+        ));
+    }
+
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
         if (!node.is(ROOT_TYPE)) return new None<>();
@@ -34,20 +53,15 @@ class RootTransformer implements Passer {
         for (Node child : children) {
             if (child.is(DECLARATION_TYPE)) {
                 final var name = child.findString(DECLARATION_NAME).orElse("");
-                labels.add(new Tuple<>(name, 1));
 
                 final var sum = labels.stream()
                         .map(Tuple::right)
                         .mapToInt(value -> value)
                         .sum();
 
-                final var offset = sum;
-                list.addAll(List.of(
-                        new MapNode("instruction").withString(MNEMONIC, "ldd").withString(INSTRUCTION_LABEL, STACK_POINTER),
-                        new MapNode("instruction").withString(MNEMONIC, "addv").withInt(ADDRESS_OR_VALUE, offset),
-                        new MapNode("instruction").withString(MNEMONIC, "stod").withString(INSTRUCTION_LABEL, STACK_POINTER)
-                ));
+                labels.add(new Tuple<>(name, 1));
 
+                addStackPointer(list, sum);
                 final var value = child.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
                 final var resolved = resolveValue(value, labels);
@@ -57,11 +71,7 @@ class RootTransformer implements Passer {
                 list.addAll(valueInstructions);
                 list.add(new MapNode("instruction").withString(MNEMONIC, "stoi").withString(INSTRUCTION_LABEL, STACK_POINTER));
 
-                list.addAll(List.of(
-                        new MapNode("instruction").withString(MNEMONIC, "ldd").withString(INSTRUCTION_LABEL, STACK_POINTER),
-                        new MapNode("instruction").withString(MNEMONIC, "subv").withInt(ADDRESS_OR_VALUE, offset),
-                        new MapNode("instruction").withString(MNEMONIC, "stod").withString(INSTRUCTION_LABEL, STACK_POINTER)
-                ));
+                subtractStackPointer(list, sum);
             } else if (child.is(RETURN_TYPE)) {
                 final var returnValueOption = child.findNode(RETURN_VALUE);
                 if (returnValueOption.isEmpty()) return new None<>();
