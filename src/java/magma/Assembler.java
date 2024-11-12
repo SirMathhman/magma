@@ -313,48 +313,12 @@ public class Assembler {
     }
 
     private static Result<Tuple<LinkedList<Long>, Map<String, Long>>, CompileError> parse(Node root) {
-        final var data = new HashMap<String, Long>();
-        final var program = new ArrayList<Tuple<String, List<Node>>>();
+        var result = split(root);
+        if (result.isErr()) return new Err<>(result.findErr().orElse(null));
 
-        final var children = root.findNodeList(CHILDREN).orElse(Collections.emptyList());
-        for (Node section : children) {
-            if (!section.is(SECTION_TYPE)) continue;
-
-            final var name = section.findString(GROUP_NAME).orElse("");
-
-            final var sectionChildren = section.findNodeList(CHILDREN).orElse(Collections.emptyList());
-            if (name.equals("data")) {
-                for (var dataNode : sectionChildren) {
-                    if (!dataNode.is(DATA_TYPE)) continue;
-
-                    final var dataName = dataNode.findString(DATA_NAME).orElse("");
-                    final var value = dataNode.findNode(DATA_VALUE).orElse(new MapNode());
-                    long actualValue = 0L;
-                    if (value.is(NUMBER_TYPE)) {
-                        final var numberValue = value.findString(NUMBER_VALUE).orElse("");
-                        actualValue = Long.parseLong(numberValue, 10);
-                    }
-
-                    data.put(dataName, actualValue);
-                }
-            } else if (name.equals("program")) {
-                for (Node label : sectionChildren) {
-                    if (!label.is(LABEL_TYPE)) continue;
-
-                    final var labelName = label.findString(GROUP_NAME).orElse("");
-                    final var labelChildrenPreprocessed = label.findNodeList(CHILDREN).orElse(Collections.emptyList());
-
-                    final var labelChildren = JavaStreams.fromList(labelChildrenPreprocessed)
-                            .filter(value -> value.is(INSTRUCTION_TYPE))
-                            .map(Assembler::getNode)
-                            .into(ResultStream::new)
-                            .foldResultsLeft(new JavaList<Node>(), JavaList::add);
-
-                    if (labelChildren.isErr()) return new Err<>(labelChildren.findErr().orElse(null));
-                    program.add(new Tuple<>(labelName, labelChildren.findValue().orElse(new JavaList<>()).list()));
-                }
-            }
-        }
+        final var splitState = result.findValue().orElse(null);
+        var data = splitState.data;
+        var program = splitState.program;
 
         final var programCopy = new ArrayList<>(program);
         final var entryIndexOption = findMainIndex(programCopy);
@@ -437,6 +401,55 @@ public class Assembler {
                     return longs;
                 })
                 .mapValue(value -> new Tuple<>(value, labels));
+    }
+
+    private static Result<SplitResult, CompileError> split(Node root) {
+        final var data = new HashMap<String, Long>();
+        final var program = new ArrayList<Tuple<String, List<Node>>>();
+
+        final var result = new SplitResult(data, program);
+
+        final var children = root.findNodeList(CHILDREN).orElse(Collections.emptyList());
+        for (Node section : children) {
+            if (!section.is(SECTION_TYPE)) continue;
+
+            final var name = section.findString(GROUP_NAME).orElse("");
+
+            final var sectionChildren = section.findNodeList(CHILDREN).orElse(Collections.emptyList());
+            if (name.equals("data")) {
+                for (var dataNode : sectionChildren) {
+                    if (!dataNode.is(DATA_TYPE)) continue;
+
+                    final var dataName = dataNode.findString(DATA_NAME).orElse("");
+                    final var value = dataNode.findNode(DATA_VALUE).orElse(new MapNode());
+                    long actualValue = 0L;
+                    if (value.is(NUMBER_TYPE)) {
+                        final var numberValue = value.findString(NUMBER_VALUE).orElse("");
+                        actualValue = Long.parseLong(numberValue, 10);
+                    }
+
+                    data.put(dataName, actualValue);
+                }
+            } else if (name.equals("program")) {
+                for (Node label : sectionChildren) {
+                    if (!label.is(LABEL_TYPE)) continue;
+
+                    final var labelName = label.findString(GROUP_NAME).orElse("");
+                    final var labelChildrenPreprocessed = label.findNodeList(CHILDREN).orElse(Collections.emptyList());
+
+                    final var labelChildren = JavaStreams.fromList(labelChildrenPreprocessed)
+                            .filter(value -> value.is(INSTRUCTION_TYPE))
+                            .map(Assembler::getNode)
+                            .into(ResultStream::new)
+                            .foldResultsLeft(new JavaList<Node>(), JavaList::add);
+
+                    if (labelChildren.isErr()) return new Err<>(labelChildren.findErr().orElse(null));
+                    program.add(new Tuple<>(labelName, labelChildren.findValue().orElse(new JavaList<>()).list()));
+                }
+            }
+        }
+
+        return new Ok<>(result);
     }
 
     private static Option<Integer> findMainIndex(List<Tuple<String, List<Node>>> labels) {
@@ -567,5 +580,8 @@ public class Assembler {
         }
 
         return new Ok<>(((long) opCode << 56) | addressOrValue);
+    }
+
+    private record SplitResult(Map<String, Long> data, List<Tuple<String, List<Node>>> program) {
     }
 }
