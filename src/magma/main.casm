@@ -3,6 +3,8 @@ section program {
 		ldd $sp;
 		addv 1;
 		stod $sp;
+		ldv 300;
+		stoi $sp;
 		ldv 150;
 		out;
 		halt;

@@ -61,10 +61,15 @@ public record Compiler(String input) {
             final var children = node.findNodeList(ROOT_CHILDREN).orElse(Collections.emptyList());
             for (Node child : children) {
                 if (child.is(DECLARATION_TYPE)) {
+                    final var value = child.findNode(DECLARATION_VALUE).orElse(new MapNode());
+                    final var numericValue = value.findInt(NUMBER_VALUE).orElse(0);
+
                     list.addAll(List.of(
                             new MapNode("instruction").withString(MNEMONIC, "ldd").withString(INSTRUCTION_LABEL, STACK_POINTER),
                             new MapNode("instruction").withString(MNEMONIC, "addv").withInt(ADDRESS_OR_VALUE, 1),
-                            new MapNode("instruction").withString(MNEMONIC, "stod").withString(INSTRUCTION_LABEL, STACK_POINTER)
+                            new MapNode("instruction").withString(MNEMONIC, "stod").withString(INSTRUCTION_LABEL, STACK_POINTER),
+                            new MapNode("instruction").withString(MNEMONIC, "ldv").withInt(ADDRESS_OR_VALUE, numericValue),
+                            new MapNode("instruction").withString(MNEMONIC, "stoi").withString(INSTRUCTION_LABEL, STACK_POINTER)
                     ));
                 }
                 if (child.is(RETURN_TYPE)) {
