@@ -1,5 +1,6 @@
 package magma.app.compile;
 
+import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
 import magma.api.result.Ok;
@@ -10,8 +11,7 @@ import magma.app.compile.lang.MagmaLang;
 
 import java.util.List;
 
-import static magma.app.compile.lang.CASMLang.ADDRESS_OR_VALUE;
-import static magma.app.compile.lang.CASMLang.MNEMONIC;
+import static magma.app.compile.lang.CASMLang.*;
 
 public record Compiler(String input) {
     static Passer createPasser() {
@@ -51,6 +51,12 @@ public record Compiler(String input) {
 
     private static Passer createFormattingPasser() {
         return new Passer() {
+            @Override
+            public Option<Result<Node, CompileError>> afterPass(Node node) {
+                if(!node.is(SECTION_TYPE)) return new None<>();
+
+                return new Some<>(new Ok<>(node.withString(GROUP_AFTER_NAME, " ")));
+            }
         };
     }
 
