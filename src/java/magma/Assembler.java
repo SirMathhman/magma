@@ -411,11 +411,18 @@ public class Assembler {
     private static Result<SplitResult, CompileError> foldSection(SplitResult result, Node section) {
         if (!section.is(SECTION_TYPE)) return new Err<>(new CompileError("Not a section", new NodeContext(section)));
 
-        final var name = section.findString(GROUP_NAME).orElse("");
-        final var sectionChildren = section.findNodeList(CHILDREN).orElse(Collections.emptyList());
+        final var nameOption = section.findString(GROUP_NAME);
+        if (nameOption.isEmpty())
+            return new Err<>(new CompileError("No section name present", new NodeContext(section)));
+        final var name = nameOption.orElse("");
 
-        if (name.equals("data")) return foldData(result, sectionChildren);
-        if (name.equals("program")) return foldProgram(result, sectionChildren);
+        final var childrenOption = section.findNodeList(CHILDREN);
+        if (childrenOption.isEmpty())
+            return new Err<>(new CompileError("No section children present", new NodeContext(section)));
+        final var children = childrenOption.orElse(Collections.emptyList());
+
+        if (name.equals("data")) return foldData(result, children);
+        if (name.equals("program")) return foldProgram(result, children);
         return new Err<>(new CompileError("Invalid section", new NodeContext(section)));
     }
 
