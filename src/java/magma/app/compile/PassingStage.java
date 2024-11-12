@@ -1,8 +1,9 @@
 package magma.app.compile;
 
+import magma.api.Tuple;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
 
 public interface PassingStage {
-    Result<Node, CompileError> pass(Node node);
+    Result<Tuple<State, Node>, CompileError> pass(State state, Node node);
 }

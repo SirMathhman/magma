@@ -1,5 +1,6 @@
 package magma.app.compile;
 
+import magma.api.Tuple;
 import magma.api.option.Option;
 import magma.api.result.Result;
 import magma.api.stream.Streams;
@@ -10,17 +11,17 @@ import java.util.List;
 
 public record CompoundPasser(List<Passer> passers) implements Passer {
     @Override
-    public Option<Result<Node, CompileError>> afterPass(Node node) {
+    public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
         return JavaStreams.fromList(passers)
-                .map(passer -> passer.afterPass(node))
+                .map(passer -> passer.afterPass(state, node))
                 .flatMap(Streams::fromOption)
                 .next();
     }
 
     @Override
-    public Option<Result<Node, CompileError>> beforePass(Node node) {
+    public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
         return JavaStreams.fromList(passers)
-                .map(passer -> passer.beforePass(node))
+                .map(passer -> passer.beforePass(state, node))
                 .flatMap(Streams::fromOption)
                 .next();
     }
