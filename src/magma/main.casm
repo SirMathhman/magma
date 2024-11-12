@@ -2,4 +2,6 @@ section program {
 	label __main__{
 	ldv 0;
 	out;
-	halt;}}
+	halt;
+}
+}

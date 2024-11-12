@@ -23,8 +23,9 @@ public class CASMLang {
     public static final String INSTRUCTION_LABEL = "label";
     public static final String LABEL_TYPE = "label";
     public static final String GROUP_AFTER_NAME = "after-name";
-    public static final String GROUP_BEFORE_CHILD = "before-child";
+    public static final String BLOCK_BEFORE_CHILD = "before-child";
     public static final String BLOCK_TYPE = "block";
+    public static final String BLOCK_AFTER_CHILDREN = "after-children";
 
     public static Rule createRootRule() {
         final var label = createGroupRule(LABEL_TYPE, "label ", createStatementRule());
@@ -38,8 +39,12 @@ public class CASMLang {
 
     private static Rule createGroupRule(String type, String prefix, Rule statement) {
         final var name = new StripRule("", new StringRule(GROUP_NAME), GROUP_AFTER_NAME);
-        final var children = new NodeRule("value", new TypeRule(BLOCK_TYPE, new NodeListRule(CHILDREN, new StripRule(GROUP_BEFORE_CHILD, statement, ""))));
-        return new TypeRule(type, new PrefixRule(prefix, new FirstRule(name, "{", new SuffixRule(children, "}"))));
+        final var block = new NodeRule("value", createBlockRule(statement));
+        return new TypeRule(type, new PrefixRule(prefix, new FirstRule(name, "{", new SuffixRule(block, "}"))));
+    }
+
+    private static TypeRule createBlockRule(Rule statement) {
+        return new TypeRule(BLOCK_TYPE, new StripRule("", new NodeListRule(CHILDREN, new StripRule(BLOCK_BEFORE_CHILD, statement, "")), BLOCK_AFTER_CHILDREN));
     }
 
     private static Rule createStatementRule() {
