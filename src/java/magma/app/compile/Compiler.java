@@ -11,6 +11,7 @@ import java.util.List;
 public record Compiler(String input) {
     private static CompoundPassingStage createPassingStage() {
         return new CompoundPassingStage(List.of(
+                
         ));
     }
 

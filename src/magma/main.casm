@@ -1,6 +1,0 @@
-section data {
-	temp=0;
-}section program {
-	label __main__{
-	}
-}
