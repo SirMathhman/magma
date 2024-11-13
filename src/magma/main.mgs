@@ -1,3 +1,5 @@
+def empty() => {}
+
 let x = 200;
 let y = 300;
 return x + y;

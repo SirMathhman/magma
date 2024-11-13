@@ -65,7 +65,7 @@ public class RootPasser implements Passer {
         }
 
         final var context = new NodeContext(node);
-        final var message = new CompileError("Unknown root child", context);
+        final var message = new CompileError("Cannot create instructions for root child", context);
         return new Err<>(message);
     }
 

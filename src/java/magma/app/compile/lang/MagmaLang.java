@@ -23,7 +23,8 @@ public class MagmaLang {
     public static Rule createMagmaRootRule() {
         return new TypeRule(ROOT_TYPE, new NodeListRule("children", new StripRule(new OrRule(List.of(
                 createDeclarationRule(),
-                createReturnRule()
+                createReturnRule(),
+                new TypeRule("function", new StripRule(new PrefixRule("def empty() => {}", new EmptyRule())))
         )))));
     }
 
