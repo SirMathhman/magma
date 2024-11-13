@@ -10,12 +10,18 @@ public class MagmaLang {
     public static final String DECLARATION_TYPE = "declaration";
     public static final String RETURN_TYPE = "return";
     public static final String ROOT_TYPE = "root";
+    public static final String DECLARATION_VALUE = "value";
 
     public static Rule createMagmaRootRule() {
         return new TypeRule(ROOT_TYPE, new NodeListRule("children", new StripRule(new OrRule(List.of(
-                new TypeRule(DECLARATION_TYPE, new PrefixRule("let x = 200;", new EmptyRule())),
+                createDeclarationRule(),
                 createReturnRule()
         )))));
+    }
+
+    private static TypeRule createDeclarationRule() {
+        final var value = new StringRule(DECLARATION_VALUE);
+        return new TypeRule(DECLARATION_TYPE, new PrefixRule("let x = ", new SuffixRule(value, ";")));
     }
 
     private static Rule createReturnRule() {

@@ -1,6 +1,6 @@
 section program {
 	label __main__ {
-		ldv 0;
+		ldv 200;
 		stoi $sp;
 		ldv 100;
 		out;

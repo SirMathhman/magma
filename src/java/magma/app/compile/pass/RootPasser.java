@@ -28,8 +28,12 @@ public class RootPasser implements Passer {
 
     private static Result<JavaList<Node>, CompileError> parseRootMember(Node node) {
         if (node.is(DECLARATION_TYPE)) {
+            final var valueOption = node.findString(DECLARATION_VALUE);
+            if(valueOption.isEmpty()) return new Err<>(new CompileError("No value present", new NodeContext(node)));
+            final var value = Integer.parseInt(valueOption.orElse(""), 10);
+
             return new Ok<>(new JavaList<Node>()
-                    .add(instruct("ldv", 0))
+                    .add(instruct("ldv", value))
                     .add(instructStackPointer("stoi")));
         }
 
