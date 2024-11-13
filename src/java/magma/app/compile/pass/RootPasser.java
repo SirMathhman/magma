@@ -38,9 +38,16 @@ public class RootPasser implements Passer {
             final var name = node.findString(DECLARATION_NAME).orElse("");
             final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
+            final var sum = state.stream()
+                    .map(Tuple::right)
+                    .foldLeft(0L, Long::sum);
+
             final var added = state.put(name, 1L);
             return loadValue(value, state)
-                    .mapValue(list -> list.add(instructStackPointer("stoi")))
+                    .mapValue(list -> list
+                            .addAll(moveStackPointerRight(sum))
+                            .add(instructStackPointer("stoi"))
+                            .addAll(moveStackPointerLeft(sum)))
                     .mapValue(list -> new Tuple<>(added, list));
         }
 
@@ -98,9 +105,7 @@ public class RootPasser implements Passer {
         final var instructions = new JavaList<Node>()
                 .addAll(moveStackPointerRight(addressesToShift))
                 .add(instructStackPointer("ldi"))
-                .add(instruct("stod", "temp"))
-                .addAll(moveStackPointerLeft(addressesToShift))
-                .add(instruct("ldd", "temp"));
+                .addAll(moveStackPointerLeft(addressesToShift));
 
         return new Some<>(new Ok<>(instructions));
     }
@@ -110,18 +115,21 @@ public class RootPasser implements Passer {
     }
 
     private static JavaList<Node> moveStackPointerLeft(long addressesToShift) {
-        return moveStackPointer(instruct("subv", addressesToShift));
+        return moveStackPointer("subv", addressesToShift);
+    }
+
+    private static JavaList<Node> moveStackPointer(String instruction, long addressesToShift) {
+        if (addressesToShift == 0) return new JavaList<>();
+        return new JavaList<Node>()
+                .add(instruct("stod", "temp"))
+                .add(instructStackPointer("ldd"))
+                .add(instruct(instruction, addressesToShift))
+                .add(instructStackPointer("stod"))
+                .add(instruct("ldd", "temp"));
     }
 
     private static JavaList<Node> moveStackPointerRight(long addressesToShift) {
-        return moveStackPointer(instruct("addv", addressesToShift));
-    }
-
-    private static JavaList<Node> moveStackPointer(Node adjustInstruction) {
-        return new JavaList<Node>()
-                .add(instructStackPointer("ldd"))
-                .add(adjustInstruction)
-                .add(instructStackPointer("stod"));
+        return moveStackPointer("addv", addressesToShift);
     }
 
     private static Node instructStackPointer(String mnemonic) {
