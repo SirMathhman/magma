@@ -118,14 +118,41 @@ public class RootPasser implements Passer {
     private static Option<Result<JavaList<Node>, CompileError>> loadArrayValue(JavaOrderedMap<String, Long> state, Node node) {
         if (!node.is(ARRAY_TYPE)) return new None<>();
 
-        final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>());
-        final var first = values.get(0).orElse(new MapNode());
-        final var loaded = loadValue(state, first).findValue().orElse(new JavaList<>());
+        final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>()).list();
 
-        return new Some<>(new Ok<>(new JavaList<Node>()
+        final var init = new JavaList<Node>()
+                .addAll(moveStackPointerRight(1L));
+
+        JavaList<Node> list;
+        list = init;
+
+        var sum = 0;
+        for (int i = 0; i < values.size(); i++) {
+            var value = values.get(i);
+            final var loaded = loadValue(state, value)
+                    .findValue()
+                    .orElse(new JavaList<>());
+
+            final var length = computeLength(value).findValue().orElse(0L);
+            sum += length;
+
+            final var list1 = list.addAll(loaded)
+                    .add(instructStackPointer("stoi"));
+
+            if (i != values.size() - 1) {
+                list = list1.addAll(moveStackPointerRight(length));
+            } else {
+                list = list1;
+            }
+        }
+
+        list = list.addAll(moveStackPointerLeft(sum - 1));
+
+        final var withArrayPointer = list
                 .add(instructStackPointer("ldd"))
-                .add(instruct("addv", 1))
-                .add(instructStackPointer("stoi"))));
+                .addAll(moveStackPointerLeft(1L));
+
+        return new Some<>(new Ok<>(withArrayPointer));
     }
 
     private static Option<Result<JavaList<Node>, CompileError>> parseAddValue(JavaOrderedMap<String, Long> state, Node node) {
