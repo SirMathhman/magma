@@ -13,6 +13,8 @@ public class MagmaLang {
     public static final String DECLARATION_VALUE = "value";
     public static final String NUMBER_TYPE = "number";
     public static final String NUMBER_VALUE = "value";
+    public static final String SYMBOL_TYPE = "symbol";
+    public static final String SYMBOL_VALUE = "value";
 
     public static Rule createMagmaRootRule() {
         return new TypeRule(ROOT_TYPE, new NodeListRule("children", new StripRule(new OrRule(List.of(
@@ -34,7 +36,7 @@ public class MagmaLang {
     }
 
     private static TypeRule createSymbolRule() {
-        return new TypeRule("symbol", new FilterRule(new SymbolFilter(), new StringRule("value")));
+        return new TypeRule(SYMBOL_TYPE, new FilterRule(new SymbolFilter(), new StringRule(SYMBOL_VALUE)));
     }
 
     private static Rule createNumberRule() {

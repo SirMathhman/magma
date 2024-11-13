@@ -39,7 +39,8 @@ public class RootPasser implements Passer {
         }
 
         if (node.is(RETURN_TYPE)) {
-            return loadValue(node).mapValue(list -> list
+            final var value = node.findNode(RETURN_VALUE).orElse(new MapNode());
+            return loadValue(value).mapValue(list -> list
                     .add(instruct("out"))
                     .add(instruct("halt")));
         }
@@ -53,6 +54,9 @@ public class RootPasser implements Passer {
         if (node.is(NUMBER_TYPE)) {
             final var value = node.findInt(MagmaLang.NUMBER_VALUE).orElse(0);
             return new Ok<>(new JavaList<Node>().add(instruct("ldv", value)));
+        } else if (node.is(SYMBOL_TYPE)) {
+            final var value = node.findString(SYMBOL_VALUE).orElse("");
+            return new Ok<>(new JavaList<Node>().add(instructStackPointer("ldi")));
         } else {
             final var context = new NodeContext(node);
             final var error = new CompileError("Unknown value present", context);
@@ -124,8 +128,8 @@ public class RootPasser implements Passer {
             return new Err<>(error);
         }
 
-        final var children = childrenOption.orElse(new JavaList<Node>());
-        return children.stream()
+        return childrenOption.orElse(new JavaList<>())
+                .stream()
                 .map(RootPasser::parseRootMember)
                 .into(ResultStream::new)
                 .foldResultsLeft(new JavaList<Node>(), JavaList::addAll)
