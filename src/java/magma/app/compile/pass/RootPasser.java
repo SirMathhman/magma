@@ -73,7 +73,27 @@ public class RootPasser implements Passer {
         return parseNumberValue(node)
                 .or(() -> parseSymbolValue(state, node))
                 .or(() -> parseAddValue(state, node))
+                .or(() -> parseArrayValue(state, node))
                 .orElseGet(() -> createUnknownValueError(node));
+    }
+
+    private static Option<Result<JavaList<Node>, CompileError>> parseArrayValue(JavaOrderedMap<String, Long> state, Node node) {
+        if (!node.is(ARRAY_TYPE)) return new None<>();
+
+        final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>());
+        final var initial = new Tuple<>(state, new JavaList<Node>());
+        final var result = values.stream().foldLeftToResult(initial, (tuple, node1) -> {
+            final var state1 = tuple.left();
+            final var list = tuple.right();
+            return loadValue(state1, node1).mapValue(instructions -> new Tuple<>(state1, list.addAll(instructions)
+                    .add(instructStackPointer("stoi"))
+                    .addAll(moveStackPointerRight(1))));
+        }).mapValue(Tuple::right).mapValue(list -> {
+            return list.add(instructStackPointer("ldd"))
+                    .add(instruct("subv", values.size()));
+        });
+
+        return new Some<>(result);
     }
 
     private static Option<Result<JavaList<Node>, CompileError>> parseAddValue(JavaOrderedMap<String, Long> state, Node node) {
