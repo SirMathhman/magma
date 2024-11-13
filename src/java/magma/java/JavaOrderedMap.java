@@ -29,4 +29,11 @@ public record JavaOrderedMap<K, V>(JavaList<Tuple<K, V>> tuples) {
     public Stream<Tuple<K, V>> stream() {
         return tuples.stream();
     }
+
+    public Option<V> find(K propertyKey) {
+        return tuples.stream()
+                .filter(tuple -> tuple.left().equals(propertyKey))
+                .map(Tuple::right)
+                .next();
+    }
 }

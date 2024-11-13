@@ -21,6 +21,8 @@ public class MagmaLang {
     public static final String ADD_RIGHT = "right";
     public static final String ARRAY_TYPE = "array";
     public static final String ARRAY_VALUES = "values";
+    public static final String REFERENCE_TYPE = "reference";
+    public static final String REFERENCE_VALUE = "value";
 
     public static Rule createMagmaRootRule() {
         return new TypeRule(ROOT_TYPE, new NodeListRule(new BracketSplitter(), "children", new StripRule(new OrRule(List.of(
@@ -44,7 +46,8 @@ public class MagmaLang {
                 createSymbolRule(),
                 createAddRule(value),
                 createArrayRule(value),
-                createIndexRule(value)
+                createIndexRule(value),
+                new TypeRule(REFERENCE_TYPE, new StripRule(new PrefixRule("&", new NodeRule(REFERENCE_VALUE, value))))
         )));
         return value;
     }

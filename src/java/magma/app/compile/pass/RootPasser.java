@@ -47,13 +47,18 @@ public class RootPasser implements Passer {
                     .map(Tuple::right)
                     .foldLeft(0L, Long::sum);
 
-            final var added = state.put(name, 1L);
-            return loadValue(state, value)
-                    .mapValue(list -> list
-                            .addAll(moveStackPointerRight(sum))
-                            .add(instructStackPointer("stoi"))
-                            .addAll(moveStackPointerLeft(sum)))
-                    .mapValue(list -> new Tuple<>(added, list));
+            return computeLength(value).flatMapValue(length -> {
+                final var added = state.put(name, length);
+                return loadValue(state, value)
+                        .mapValue(list -> {
+                            final var moved = list
+                                    .addAll(moveStackPointerRight(sum))
+                                    .add(instructStackPointer("stoi"));
+
+                            return moved.addAll(moveStackPointerLeft(sum));
+                        })
+                        .mapValue(list -> new Tuple<>(added, list));
+            });
         }
 
         if (node.is(RETURN_TYPE)) {
@@ -69,31 +74,50 @@ public class RootPasser implements Passer {
         return new Err<>(message);
     }
 
+    private static Result<Long, CompileError> computeLength(Node node) {
+        if (node.is(ARRAY_TYPE)) {
+            final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>());
+            return values.stream().foldLeftToResult(1L, (sum, node1) -> computeLength(node1).mapValue(length -> sum + length));
+        }
+
+        if (node.is(NUMBER_TYPE)) return new Ok<>(1L);
+        if (node.is(REFERENCE_TYPE)) return new Ok<>(1L);
+
+        return new Err<>(new CompileError("Cannot compute length", new NodeContext(node)));
+    }
+
     private static Result<JavaList<Node>, CompileError> loadValue(JavaOrderedMap<String, Long> state, Node node) {
         return parseNumberValue(node)
                 .or(() -> parseSymbolValue(state, node))
                 .or(() -> parseAddValue(state, node))
-                .or(() -> parseArrayValue(state, node))
+                .or(() -> loadArrayValue(state, node))
+                .or(() -> loadReferenceValue(state, node))
                 .orElseGet(() -> createUnknownValueError(node));
     }
 
-    private static Option<Result<JavaList<Node>, CompileError>> parseArrayValue(JavaOrderedMap<String, Long> state, Node node) {
+    private static Option<Result<JavaList<Node>, CompileError>> loadReferenceValue(JavaOrderedMap<String, Long> state, Node node) {
+        if (!node.is(REFERENCE_TYPE)) return new None<>();
+
+        final var value = node.findNode(REFERENCE_VALUE).orElse(new MapNode());
+        if (!value.is(SYMBOL_TYPE))
+            return new Some<>(new Err<>(new CompileError("Cannot reference", new NodeContext(value))));
+
+        final var textValue = value.findString(SYMBOL_VALUE).orElse("");
+        final var addressOption = state.find(textValue);
+        if (addressOption.isEmpty())
+            return new Some<>(new Err<>(new CompileError("No address present", new NodeContext(value))));
+        final var address = addressOption.orElse(0L);
+
+        return new Some<>(new Ok<>(new JavaList<Node>()
+                .add(instructStackPointer("ldd"))));
+    }
+
+    private static Option<Result<JavaList<Node>, CompileError>> loadArrayValue(JavaOrderedMap<String, Long> state, Node node) {
         if (!node.is(ARRAY_TYPE)) return new None<>();
 
         final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>());
-        final var initial = new Tuple<>(state, new JavaList<Node>());
-        final var result = values.stream().foldLeftToResult(initial, (tuple, node1) -> {
-            final var state1 = tuple.left();
-            final var list = tuple.right();
-            return loadValue(state1, node1).mapValue(instructions -> new Tuple<>(state1, list.addAll(instructions)
-                    .add(instructStackPointer("stoi"))
-                    .addAll(moveStackPointerRight(1))));
-        }).mapValue(Tuple::right).mapValue(list -> {
-            return list.add(instructStackPointer("ldd"))
-                    .add(instruct("subv", values.size()));
-        });
-
-        return new Some<>(result);
+        return new Some<>(new Ok<>(new JavaList<Node>()
+                .add(instruct("ldv", 16))));
     }
 
     private static Option<Result<JavaList<Node>, CompileError>> parseAddValue(JavaOrderedMap<String, Long> state, Node node) {
