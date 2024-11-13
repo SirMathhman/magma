@@ -56,6 +56,7 @@ public class Assembler {
     public static final String INIT = "__init__";
     public static final int LOOP_OFFSET = 5;
     public static final String MAIN = "__main__";
+    public static final long OFFSET = 3L;
     private static final int ADD_VALUE = 0x1a;
     private static final int LOAD_INDIRECT = 0x19;
     private static final int PUSH = 0x11;
@@ -63,7 +64,6 @@ public class Assembler {
     private static final int NO_OPERATION = 0x13;
     private static final int STORE_DIRECT = 0x16;
     private static final int JUMP_ACCUMULATOR = 0x18;
-    public static final long OFFSET = 3L;
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -318,15 +318,16 @@ public class Assembler {
         if (result.isErr()) return new Err<>(result.findErr().orElse(null));
 
         final var splitState = result.findValue().orElse(null);
-        var data = splitState.data;
-        var program = splitState.program;
-
-        final var programCopy = new ArrayList<>(program);
+        final var programCopy = new ArrayList<>(splitState.program);
         final var entryIndexOption = findMainIndex(programCopy);
-        if (entryIndexOption.isEmpty())
-            return new Err<>(new CompileError("No main entry point found", new NodeContext(root)));
-        final var entryIndex = entryIndexOption.orElse(0);
+        if (entryIndexOption.isEmpty()) {
+            final var format = "No entry-point label with name '%s' present";
+            final var message = format.formatted(MAIN);
+            return new Err<>(new CompileError(message, new NodeContext(root)));
+        }
 
+        final var entryIndex = entryIndexOption.orElse(0);
+        var data = splitState.data;
         data.put("__offset__", OFFSET);
         final var newFirst = programCopy.get(entryIndex).<List<Node>>mapRight(right -> {
             final var list = List.of(
@@ -446,7 +447,8 @@ public class Assembler {
             var value = valueOption.orElse(new MapNode());
 
             final var childrenOption = value.findNodeList(CHILDREN).map(JavaList::list);
-            if(childrenOption.isEmpty()) return new Err<>(new CompileError("No children present.", new NodeContext(value)));
+            if (childrenOption.isEmpty())
+                return new Err<>(new CompileError("No children present.", new NodeContext(value)));
             final var labelChildrenPreprocessed = childrenOption.orElse(Collections.emptyList());
 
             final var labelChildren = JavaStreams.fromList(labelChildrenPreprocessed)

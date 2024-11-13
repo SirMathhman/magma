@@ -11,7 +11,12 @@ import java.util.List;
 public record Compiler(String input) {
     private static CompoundPassingStage createPassingStage() {
         return new CompoundPassingStage(List.of(
-                
+                new PassingStage() {
+                    @Override
+                    public Result<Tuple<State, Node>, CompileError> pass(State state, Node node) {
+                        return null;
+                    }
+                }
         ));
     }
 
