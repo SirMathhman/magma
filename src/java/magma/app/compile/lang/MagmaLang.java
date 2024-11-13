@@ -25,7 +25,9 @@ public class MagmaLang {
 
     private static TypeRule createDeclarationRule() {
         final var value = new NodeRule(DECLARATION_VALUE, createValueRule());
-        return new TypeRule(DECLARATION_TYPE, new PrefixRule("let x = ", new SuffixRule(value, ";")));
+        final var name = new StripRule(new StringRule("name"));
+        final var definition = new PrefixRule("let ", name);
+        return new TypeRule(DECLARATION_TYPE, new FirstRule(definition, "=", new SuffixRule(value, ";")));
     }
 
     private static Rule createValueRule() {
@@ -40,7 +42,7 @@ public class MagmaLang {
     }
 
     private static Rule createNumberRule() {
-        return new TypeRule(NUMBER_TYPE, new FilterRule(new NumberFilter(), new IntRule(NUMBER_VALUE)));
+        return new TypeRule(NUMBER_TYPE, new StripRule(new FilterRule(new NumberFilter(), new IntRule(NUMBER_VALUE))));
     }
 
     private static Rule createReturnRule() {
