@@ -314,7 +314,7 @@ public class Assembler {
     }
 
     private static Result<Tuple<LinkedList<Long>, Map<String, Long>>, CompileError> parse(Node root) {
-        return split(root).flatMapValue(splitState -> parseWithState(root, splitState));
+        return splitRoot(root).flatMapValue(splitState -> parseWithState(root, splitState));
     }
 
     private static Result<Tuple<LinkedList<Long>, Map<String, Long>>, CompileError> parseWithState(Node root, SplitResult splitState) {
@@ -405,9 +405,17 @@ public class Assembler {
                 .mapValue(value -> new Tuple<>(value, labels));
     }
 
-    private static Result<SplitResult, CompileError> split(Node root) {
+    private static Result<SplitResult, CompileError> splitRoot(Node root) {
         final var children = root.findNodeList(CHILDREN).map(JavaList::list).orElse(Collections.emptyList());
-        return JavaStreams.fromList(children).foldLeftToResult(new SplitResult(), Assembler::foldSection);
+        return JavaStreams.fromList(children)
+                .foldLeftToResult(new SplitResult(), Assembler::foldSection)
+                .flatMapValue(result -> validateSplitRoot(root, result));
+    }
+
+    private static Result<SplitResult, CompileError> validateSplitRoot(Node root, SplitResult result) {
+        if (result.program.isEmpty())
+            return new Err<>(new CompileError("No section 'program' present", new NodeContext(root)));
+        return new Ok<>(result);
     }
 
     private static Result<SplitResult, CompileError> foldSection(SplitResult result, Node section) {

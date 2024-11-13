@@ -1,6 +1,7 @@
 package magma.app.compile;
 
 import magma.api.Tuple;
+import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.CASMLang;
@@ -14,7 +15,7 @@ public record Compiler(String input) {
                 new PassingStage() {
                     @Override
                     public Result<Tuple<State, Node>, CompileError> pass(State state, Node node) {
-                        return null;
+                        return new Ok<>(new Tuple<>(state, node));
                     }
                 }
         ));
