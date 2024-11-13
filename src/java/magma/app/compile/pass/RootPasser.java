@@ -14,6 +14,7 @@ import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 import magma.app.compile.error.StringContext;
+import magma.app.compile.lang.CASMLang;
 import magma.app.compile.lang.MagmaLang;
 import magma.java.JavaList;
 import magma.java.JavaOrderedMap;
@@ -27,6 +28,10 @@ import static magma.app.compile.lang.MagmaLang.ROOT_TYPE;
 import static magma.app.compile.lang.MagmaLang.*;
 
 public class RootPasser implements Passer {
+    public static final String CACHE = "cache";
+    public static final String PROGRAM_SECTION = SECTION_PROGRAM;
+    public static final String DATA_SECTION = "data";
+
     private static Node instruct(String mnemonic) {
         return new MapNode(INSTRUCTION_TYPE)
                 .withString(BLOCK_BEFORE_CHILD, "\n\t\t")
@@ -121,11 +126,11 @@ public class RootPasser implements Passer {
     private static JavaList<Node> moveStackPointer(String instruction, long addressesToShift) {
         if (addressesToShift == 0) return new JavaList<>();
         return new JavaList<Node>()
-                .add(instruct("stod", "temp"))
+                .add(instruct("stod", CACHE))
                 .add(instructStackPointer("ldd"))
                 .add(instruct(instruction, addressesToShift))
                 .add(instructStackPointer("stod"))
-                .add(instruct("ldd", "temp"));
+                .add(instruct("ldd", CACHE));
     }
 
     private static JavaList<Node> moveStackPointerRight(long addressesToShift) {
@@ -151,16 +156,34 @@ public class RootPasser implements Passer {
                 .withString(BLOCK_BEFORE_CHILD, "\n\t")
                 .withNode(GROUP_VALUE, labelValue);
 
-        final var sectionValue = new MapNode(BLOCK_TYPE)
+        final var programValue = new MapNode(BLOCK_TYPE)
                 .withNodeList(CHILDREN, List.of(label))
                 .withString(BLOCK_AFTER_CHILDREN, "\n");
 
-        final var section = new MapNode(SECTION_TYPE)
-                .withString(GROUP_NAME, SECTION_PROGRAM)
+        final var programSection = new MapNode(SECTION_TYPE)
+                .withString(GROUP_NAME, PROGRAM_SECTION)
                 .withString(GROUP_AFTER_NAME, " ")
-                .withNode(GROUP_VALUE, sectionValue);
+                .withNode(GROUP_VALUE, programValue);
 
-        return new Ok<>(new Tuple<>(state, new MapNode(ROOT_TYPE).withNodeList(CHILDREN, List.of(section))));
+        final var cacheValue = new MapNode(CASMLang.NUMBER_TYPE)
+                .withString(CASMLang.NUMBER_VALUE, "0");
+
+        final var cache = new MapNode(DATA_TYPE)
+                .withString(DATA_NAME, "cache")
+                .withNode(DATA_VALUE, cacheValue);
+
+        final var dataValue = new MapNode(BLOCK_TYPE)
+                .withNodeList(CHILDREN, List.of(cache));
+
+        final var dataSection = new MapNode(SECTION_TYPE)
+                .withString(GROUP_NAME, DATA_SECTION)
+                .withString(GROUP_AFTER_NAME, " ")
+                .withNode(GROUP_VALUE, dataValue);
+
+        final var node = new MapNode(ROOT_TYPE)
+                .withNodeList(CHILDREN, List.of(dataSection, programSection));
+
+        return new Ok<>(new Tuple<>(state, node));
     }
 
     private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> foldRootMember(

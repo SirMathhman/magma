@@ -1,30 +1,30 @@
-section program {
+section data {cache=0;}section program {
 	label __main__ {
 		ldv 200;
 		stoi $sp;
 		ldv 300;
-		stod temp;
+		stod cache;
 		ldd $sp;
 		addv 1;
 		stod $sp;
-		ldd temp;
+		ldd cache;
 		stoi $sp;
-		stod temp;
+		stod cache;
 		ldd $sp;
 		subv 1;
 		stod $sp;
-		ldd temp;
-		stod temp;
+		ldd cache;
+		stod cache;
 		ldd $sp;
 		addv 1;
 		stod $sp;
-		ldd temp;
+		ldd cache;
 		ldi $sp;
-		stod temp;
+		stod cache;
 		ldd $sp;
 		subv 1;
 		stod $sp;
-		ldd temp;
+		ldd cache;
 		out;
 		halt;
 	}
