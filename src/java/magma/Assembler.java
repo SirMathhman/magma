@@ -314,10 +314,10 @@ public class Assembler {
     }
 
     private static Result<Tuple<LinkedList<Long>, Map<String, Long>>, CompileError> parse(Node root) {
-        var result = split(root);
-        if (result.isErr()) return new Err<>(result.findErr().orElse(null));
+        return split(root).flatMapValue(splitState -> parseWithState(root, splitState));
+    }
 
-        final var splitState = result.findValue().orElse(null);
+    private static Result<Tuple<LinkedList<Long>, Map<String, Long>>, CompileError> parseWithState(Node root, SplitResult splitState) {
         final var programCopy = new ArrayList<>(splitState.program);
         final var entryIndexOption = findMainIndex(programCopy);
         if (entryIndexOption.isEmpty()) {
