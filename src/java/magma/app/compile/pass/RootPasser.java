@@ -21,8 +21,12 @@ import static magma.app.compile.lang.CASMLang.*;
 public class RootPasser implements Passer {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
+        final var halt = new MapNode(INSTRUCTION_TYPE)
+                .withString(BLOCK_BEFORE_CHILD, "\n\t\t")
+                .withString(MNEMONIC, "halt");
+
         final var labelValue = new MapNode(BLOCK_TYPE)
-                .withNodeList(CHILDREN, Collections.emptyList())
+                .withNodeList(CHILDREN, List.of(halt))
                 .withString(BLOCK_AFTER_CHILDREN, "\n\t");
 
         final var label = new MapNode(LABEL_TYPE)

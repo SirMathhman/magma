@@ -1,4 +1,5 @@
 section program {
 	label __main__ {
+		halt;
 	}
 }
