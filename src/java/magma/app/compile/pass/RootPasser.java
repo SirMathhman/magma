@@ -29,10 +29,8 @@ public class RootPasser implements Passer {
     private static Result<JavaList<Node>, CompileError> parseRootMember(Node node) {
         if (node.is(DECLARATION_TYPE)) {
             return new Ok<>(new JavaList<Node>()
-                    .addAll(moveStackPointerRight())
                     .add(instruct("ldv", 0))
-                    .add(instructStackPointer("stoi"))
-                    .addAll(moveStackPointerLeft()));
+                    .add(instructStackPointer("stoi")));
         }
 
         if (node.is(RETURN_TYPE)) {
