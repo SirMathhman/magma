@@ -37,7 +37,7 @@ public class Assembler {
     public static final int LOAD_ACCUMULATOR = 0x17;
     public static final int STORE_INDIRECT = 0x02;
     public static final int OUT = 0x03;
-    public static final int ADD_ADDRESS = 4;
+    public static final int ADD_DIRECT = 4;
     public static final int SUBTRACT_ADDRESS = 0x05;
     public static final int SUBTRACT_VALUE = 0x1b;
     public static final int INCREMENT = 0x06;
@@ -65,6 +65,7 @@ public class Assembler {
     private static final int NO_OPERATION = 0x13;
     private static final int STORE_DIRECT = 0x16;
     private static final int JUMP_ACCUMULATOR = 0x18;
+    private static final int ADD_INDIRECT = 0x1c;
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -183,15 +184,22 @@ public class Assembler {
                 case OUT:  // OUT
                     System.out.print(accumulator);
                     break;
-                case ADD_ADDRESS:  // ADD
+                case ADD_VALUE:
+                    accumulator += addressOrValue;
+                    break;
+                case ADD_DIRECT:  // ADD
                     if (addressOrValue < memory.size()) {
                         accumulator += memory.get((int) addressOrValue);
                     } else {
                         System.err.println("Address out of bounds.");
                     }
                     break;
-                case ADD_VALUE:
-                    accumulator += addressOrValue;
+                case ADD_INDIRECT:  // ADD
+                    if (addressOrValue < memory.size()) {
+                        accumulator += memory.get(Math.toIntExact(memory.get((int) addressOrValue)));
+                    } else {
+                        System.err.println("Address out of bounds.");
+                    }
                     break;
                 case SUBTRACT_ADDRESS:  // SUB
                     if (addressOrValue < memory.size()) {
@@ -336,7 +344,7 @@ public class Assembler {
                             .withInt(OP_CODE, LOAD_DIRECT)
                             .withString(INSTRUCTION_LABEL, STACK_POINTER),
                     new MapNode(INSTRUCTION_TYPE)
-                            .withInt(OP_CODE, ADD_ADDRESS)
+                            .withInt(OP_CODE, ADD_DIRECT)
                             .withString(INSTRUCTION_LABEL, "__offset__"),
                     new MapNode(INSTRUCTION_TYPE)
                             .withInt(OP_CODE, STORE_DIRECT)
@@ -531,7 +539,8 @@ public class Assembler {
             case "stoi" -> new Ok<>(STORE_INDIRECT);
             case "push" -> new Ok<>(PUSH);
             case "pop" -> new Ok<>(POP);
-            case "adda" -> new Ok<>(ADD_ADDRESS);
+            case "addd" -> new Ok<>(ADD_DIRECT);
+            case "addi" -> new Ok<>(ADD_INDIRECT);
             case "addv" -> new Ok<>(ADD_VALUE);
             case "ldac" -> new Ok<>(LOAD_ACCUMULATOR);
             case "suba" -> new Ok<>(SUBTRACT_ADDRESS);

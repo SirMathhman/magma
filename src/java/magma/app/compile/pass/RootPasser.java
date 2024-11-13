@@ -82,12 +82,15 @@ public class RootPasser implements Passer {
         final var leftNode = node.findNode(ADD_LEFT).orElse(new MapNode());
         final var rightNode = node.findNode(ADD_RIGHT).orElse(new MapNode());
 
-        return new Some<>(loadValue(state, leftNode).mapValue(list -> {
+        return new Some<>(loadValue(state, leftNode).flatMapValue(list -> {
             if (rightNode.is(NUMBER_TYPE)) {
                 final var numberValue = rightNode.findInt(MagmaLang.NUMBER_VALUE).orElse(0);
-                return list.add(instruct("addv", numberValue));
+                return new Ok<>(list.add(instruct("addv", numberValue)));
+            } else if (rightNode.is(SYMBOL_TYPE)) {
+                final var value = rightNode.findString(SYMBOL_VALUE).orElse("");
+                return handleWithinSymbol(state, value, instructStackPointer("addi")).mapValue(list::addAll);
             } else {
-                return list;
+                return new Ok<>(list);
             }
         }));
     }
@@ -113,11 +116,15 @@ public class RootPasser implements Passer {
         if (!node.is(SYMBOL_TYPE)) return new None<>();
 
         final var value = node.findString(SYMBOL_VALUE).orElse("");
+        return new Some<>(handleWithinSymbol(state, value, instructStackPointer("ldi")));
+    }
+
+    private static Result<JavaList<Node>, CompileError> handleWithinSymbol(JavaOrderedMap<String, Long> state, String value, Node instruction) {
         final var indexOption = state.findIndexOfKey(value);
         if (indexOption.isEmpty()) {
             final var context = new StringContext(value);
             final var error = new CompileError("Symbol not defined", context);
-            return new Some<>(new Err<>(error));
+            return new Err<>(error);
         }
 
         final var index = indexOption.orElse(0);
@@ -126,10 +133,10 @@ public class RootPasser implements Passer {
 
         final var instructions = new JavaList<Node>()
                 .addAll(moveStackPointerRight(addressesToShift))
-                .add(instructStackPointer("ldi"))
+                .add(instruction)
                 .addAll(moveStackPointerLeft(addressesToShift));
 
-        return new Some<>(new Ok<>(instructions));
+        return new Ok<>(instructions);
     }
 
     private static Node instruct(String mnemonic, String label) {
