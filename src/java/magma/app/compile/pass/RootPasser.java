@@ -10,12 +10,14 @@ import magma.api.result.Result;
 import magma.app.compile.*;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
+import magma.app.compile.lang.MagmaLang;
 import magma.java.JavaList;
 
 import java.util.List;
 
 import static magma.Assembler.*;
 import static magma.app.compile.lang.CASMLang.*;
+import static magma.app.compile.lang.MagmaLang.NUMBER_TYPE;
 import static magma.app.compile.lang.MagmaLang.ROOT_TYPE;
 import static magma.app.compile.lang.MagmaLang.*;
 
@@ -28,22 +30,16 @@ public class RootPasser implements Passer {
 
     private static Result<JavaList<Node>, CompileError> parseRootMember(Node node) {
         if (node.is(DECLARATION_TYPE)) {
-            final var valueOption = node.findString(DECLARATION_VALUE);
-            if(valueOption.isEmpty()) return new Err<>(new CompileError("No value present", new NodeContext(node)));
-            final var value = Integer.parseInt(valueOption.orElse(""), 10);
+            final var valueOption = node.findNode(DECLARATION_VALUE);
+            if (valueOption.isEmpty()) return new Err<>(new CompileError("No value present", new NodeContext(node)));
+            final var value = valueOption.orElse(new MapNode());
 
-            return new Ok<>(new JavaList<Node>()
-                    .add(instruct("ldv", value))
-                    .add(instructStackPointer("stoi")));
+            return loadValue(value)
+                    .mapValue(list -> list.add(instructStackPointer("stoi")));
         }
 
         if (node.is(RETURN_TYPE)) {
-            final var value = node.findString(RETURN_VALUE)
-                    .map(Integer::parseUnsignedInt)
-                    .orElse(0);
-
-            return new Ok<>(new JavaList<Node>()
-                    .add(instruct("ldv", value))
+            return loadValue(node).mapValue(list -> list
                     .add(instruct("out"))
                     .add(instruct("halt")));
         }
@@ -51,6 +47,17 @@ public class RootPasser implements Passer {
         final var context = new NodeContext(node);
         final var message = new CompileError("Unknown root child", context);
         return new Err<>(message);
+    }
+
+    private static Result<JavaList<Node>, CompileError> loadValue(Node node) {
+        if (node.is(NUMBER_TYPE)) {
+            final var value = node.findInt(MagmaLang.NUMBER_VALUE).orElse(0);
+            return new Ok<>(new JavaList<Node>().add(instruct("ldv", value)));
+        } else {
+            final var context = new NodeContext(node);
+            final var error = new CompileError("Unknown value present", context);
+            return new Err<>(error);
+        }
     }
 
     private static Node instruct(String mnemonic, String label) {
