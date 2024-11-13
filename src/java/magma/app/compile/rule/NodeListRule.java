@@ -8,7 +8,6 @@ import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 import magma.java.JavaList;
-import magma.java.JavaStreams;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +15,12 @@ import java.util.List;
 public class NodeListRule implements Rule {
     private final String propertyKey;
     private final Rule segmentRule;
+    private final Splitter splitter;
 
-    public NodeListRule(String propertyKey, Rule segmentRule) {
+    public NodeListRule(Splitter splitter, String propertyKey, Rule segmentRule) {
         this.segmentRule = segmentRule;
         this.propertyKey = propertyKey;
+        this.splitter = splitter;
     }
 
     private static Result<String, CompileError> foldIntoString(
@@ -41,26 +42,9 @@ public class NodeListRule implements Rule {
         });
     }
 
-    private static List<String> split(String input) {
-        return JavaStreams.fromString(input)
-                .foldLeft(new SplitState(), NodeListRule::splitAtChar)
-                .advance()
-                .segments();
-    }
-
-    private static SplitState splitAtChar(SplitState splitSTate, char c) {
-        final var appended = splitSTate.append(c);
-        if (c == ';' && appended.isLevel()) return appended.advance();
-        if (c == '}' && appended.isShallow()) return appended.exit().advance();
-
-        if (c == '{') return appended.enter();
-        if (c == '}') return appended.exit();
-        return appended;
-    }
-
     @Override
     public Result<Node, CompileError> parse(String input) {
-        final var segments = split(input);
+        final var segments = splitter.split(input);
 
         return segments.stream()
                 .map(segmentRule::parse)

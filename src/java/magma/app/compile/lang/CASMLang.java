@@ -36,7 +36,7 @@ public class CASMLang {
                 label
         )));
 
-        return new TypeRule(ROOT_TYPE, new NodeListRule(CHILDREN, new StripRule(section)));
+        return new TypeRule(ROOT_TYPE, new NodeListRule(new BracketSplitter(), CHILDREN, new StripRule(section)));
     }
 
     private static Rule createGroupRule(String type, String prefix, Rule statement) {
@@ -46,7 +46,7 @@ public class CASMLang {
     }
 
     private static TypeRule createBlockRule(Rule statement) {
-        return new TypeRule(BLOCK_TYPE, new StripRule("", new NodeListRule(CHILDREN, new StripRule(BLOCK_BEFORE_CHILD, statement, "")), BLOCK_AFTER_CHILDREN));
+        return new TypeRule(BLOCK_TYPE, new StripRule("", new NodeListRule(new BracketSplitter(), CHILDREN, new StripRule(BLOCK_BEFORE_CHILD, statement, "")), BLOCK_AFTER_CHILDREN));
     }
 
     private static Rule createStatementRule() {

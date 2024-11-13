@@ -18,6 +18,6 @@ public class CommonLang {
     }
 
     static Rule createBlockRule(List<Rule> list) {
-        return new TypeRule(BLOCK_TYPE, new NodeListRule(BLOCK_CHILDREN, new StripRule(BLOCK_BEFORE_CHILD, new OrRule(list), "after-child")));
+        return new TypeRule(BLOCK_TYPE, new NodeListRule(new BracketSplitter(), BLOCK_CHILDREN, new StripRule(BLOCK_BEFORE_CHILD, new OrRule(list), "after-child")));
     }
 }

@@ -1,5 +1,2 @@
-def empty() => {}
-
-let x = 200;
-let y = 300;
-return x + y;
+let values = [3, 4];
+return values[0] + values[1];
