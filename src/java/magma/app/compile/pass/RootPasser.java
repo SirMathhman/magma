@@ -28,6 +28,7 @@ public class RootPasser implements Passer {
         final var labelValue = new MapNode(BLOCK_TYPE)
                 .withNodeList(CHILDREN, List.of(
                         instruct("ldv").withInt(ADDRESS_OR_VALUE, value),
+                        instruct("out"),
                         instruct("halt")
                 ))
                 .withString(BLOCK_AFTER_CHILDREN, "\n\t");
