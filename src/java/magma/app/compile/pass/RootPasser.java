@@ -30,6 +30,8 @@ public class RootPasser implements Passer {
         if (node.is(DECLARATION_TYPE)) {
             return new Ok<>(new JavaList<Node>()
                     .addAll(moveStackPointerRight())
+                    .add(instruct("ldv", 0))
+                    .add(instructStackPointer("stoi"))
                     .addAll(moveStackPointerLeft()));
         }
 
@@ -49,6 +51,10 @@ public class RootPasser implements Passer {
         return new Err<>(message);
     }
 
+    private static Node instruct(String mnemonic, String label) {
+        return instruct(mnemonic).withString(INSTRUCTION_LABEL, label);
+    }
+
     private static JavaList<Node> moveStackPointerLeft() {
         return moveStackPointer(instruct("subv", 1));
     }
@@ -59,9 +65,13 @@ public class RootPasser implements Passer {
 
     private static JavaList<Node> moveStackPointer(Node adjustInstruction) {
         return new JavaList<Node>()
-                .add(instruct("ldd").withString(INSTRUCTION_LABEL, STACK_POINTER))
+                .add(instructStackPointer("ldd"))
                 .add(adjustInstruction)
-                .add(instruct("stod").withString(INSTRUCTION_LABEL, STACK_POINTER));
+                .add(instructStackPointer("stod"));
+    }
+
+    private static Node instructStackPointer(String mnemonic) {
+        return instruct(mnemonic, STACK_POINTER);
     }
 
     private static Node instruct(String mnemonic, int addressOrValue) {
