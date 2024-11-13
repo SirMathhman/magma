@@ -4,7 +4,15 @@ section program {
 		stoi $sp;
 		ldv 300;
 		stoi $sp;
+		ldd $sp;
+		addv 0;
+		stod $sp;
 		ldi $sp;
+		stod temp;
+		ldd $sp;
+		subv 0;
+		stod $sp;
+		ldd temp;
 		out;
 		halt;
 	}

@@ -49,4 +49,10 @@ public record JavaList<T>(List<T> list) {
         return new HeadedStream<>(new RangeStream(list.size()))
                 .map(index -> new Tuple<>(index, list.get(index)));
     }
+
+    public Option<JavaList<T>> sliceToIndex(int index) {
+        if (index < 0 || index >= list.size()) return new None<>();
+        final var slice = list.subList(0, index);
+        return new Some<>(new JavaList<>(slice));
+    }
 }

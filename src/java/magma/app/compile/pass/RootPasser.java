@@ -84,14 +84,24 @@ public class RootPasser implements Passer {
         if (!node.is(SYMBOL_TYPE)) return new None<>();
 
         final var value = node.findString(SYMBOL_VALUE).orElse("");
-        final var index = state.findIndexOfKey(value);
-        if (index.isEmpty()) {
+        final var indexOption = state.findIndexOfKey(value);
+        if (indexOption.isEmpty()) {
             final var context = new StringContext(value);
             final var error = new CompileError("Symbol not defined", context);
             return new Some<>(new Err<>(error));
         }
 
-        final var instructions = new JavaList<Node>().add(instructStackPointer("ldi"));
+        final var index = indexOption.orElse(0);
+        final var map = state.sliceToIndex(index).orElse(new JavaOrderedMap<>());
+        final var addressesToShift = map.stream().map(Tuple::right).foldLeft(0L, Long::sum);
+
+        final var instructions = new JavaList<Node>()
+                .addAll(moveStackPointerRight(addressesToShift))
+                .add(instructStackPointer("ldi"))
+                .add(instruct("stod", "temp"))
+                .addAll(moveStackPointerLeft(addressesToShift))
+                .add(instruct("ldd", "temp"));
+
         return new Some<>(new Ok<>(instructions));
     }
 
@@ -99,12 +109,12 @@ public class RootPasser implements Passer {
         return instruct(mnemonic).withString(INSTRUCTION_LABEL, label);
     }
 
-    private static JavaList<Node> moveStackPointerLeft() {
-        return moveStackPointer(instruct("subv", 1));
+    private static JavaList<Node> moveStackPointerLeft(long addressesToShift) {
+        return moveStackPointer(instruct("subv", addressesToShift));
     }
 
-    private static JavaList<Node> moveStackPointerRight() {
-        return moveStackPointer(instruct("addv", 1));
+    private static JavaList<Node> moveStackPointerRight(long addressesToShift) {
+        return moveStackPointer(instruct("addv", addressesToShift));
     }
 
     private static JavaList<Node> moveStackPointer(Node adjustInstruction) {
@@ -118,8 +128,8 @@ public class RootPasser implements Passer {
         return instruct(mnemonic, STACK_POINTER);
     }
 
-    private static Node instruct(String mnemonic, int addressOrValue) {
-        return instruct(mnemonic).withInt(INSTRUCTION_ADDRESS_OR_VALUE, addressOrValue);
+    private static Node instruct(String mnemonic, long addressOrValue) {
+        return instruct(mnemonic).withInt(INSTRUCTION_ADDRESS_OR_VALUE, (int) addressOrValue);
     }
 
     private static Ok<Tuple<State, Node>, CompileError> wrapInstructions(State state, JavaList<Node> instructions) {
