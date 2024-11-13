@@ -11,22 +11,25 @@ import magma.app.compile.Passer;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 
-import java.util.Collections;
 import java.util.List;
 
 import static magma.Assembler.MAIN;
 import static magma.Assembler.SECTION_PROGRAM;
 import static magma.app.compile.lang.CASMLang.*;
+import static magma.app.compile.lang.MagmaLang.RETURN_VALUE;
 
 public class RootPasser implements Passer {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
-        final var halt = new MapNode(INSTRUCTION_TYPE)
-                .withString(BLOCK_BEFORE_CHILD, "\n\t\t")
-                .withString(MNEMONIC, "halt");
+        final var value = node.findString(RETURN_VALUE)
+                .map(Integer::parseUnsignedInt)
+                .orElse(0);
 
         final var labelValue = new MapNode(BLOCK_TYPE)
-                .withNodeList(CHILDREN, List.of(halt))
+                .withNodeList(CHILDREN, List.of(
+                        instruct("ldv").withInt(ADDRESS_OR_VALUE, value),
+                        instruct("halt")
+                ))
                 .withString(BLOCK_AFTER_CHILDREN, "\n\t");
 
         final var label = new MapNode(LABEL_TYPE)
@@ -45,5 +48,11 @@ public class RootPasser implements Passer {
                 .withNode(GROUP_VALUE, sectionValue);
 
         return new Some<>(new Ok<>(new Tuple<>(state, new MapNode(ROOT_TYPE).withNodeList(CHILDREN, List.of(section)))));
+    }
+
+    private static Node instruct(String mnemonic) {
+        return new MapNode(INSTRUCTION_TYPE)
+                .withString(BLOCK_BEFORE_CHILD, "\n\t\t")
+                .withString(MNEMONIC, mnemonic);
     }
 }
