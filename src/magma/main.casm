@@ -1,5 +1,11 @@
 section program {
 	label __main__ {
+		ldd $sp;
+		addv 1;
+		stod $sp;
+		ldd $sp;
+		subv 1;
+		stod $sp;
 		ldv 100;
 		out;
 		halt;

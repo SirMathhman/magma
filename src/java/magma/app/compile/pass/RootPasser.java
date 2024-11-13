@@ -14,8 +14,7 @@ import magma.java.JavaList;
 
 import java.util.List;
 
-import static magma.Assembler.MAIN;
-import static magma.Assembler.SECTION_PROGRAM;
+import static magma.Assembler.*;
 import static magma.app.compile.lang.CASMLang.*;
 import static magma.app.compile.lang.MagmaLang.ROOT_TYPE;
 import static magma.app.compile.lang.MagmaLang.*;
@@ -29,7 +28,9 @@ public class RootPasser implements Passer {
 
     private static Result<JavaList<Node>, CompileError> parseRootMember(Node node) {
         if (node.is(DECLARATION_TYPE)) {
-            return new Ok<>(new JavaList<>());
+            return new Ok<>(new JavaList<Node>()
+                    .addAll(moveStackPointerRight())
+                    .addAll(moveStackPointerLeft()));
         }
 
         if (node.is(RETURN_TYPE)) {
@@ -38,7 +39,7 @@ public class RootPasser implements Passer {
                     .orElse(0);
 
             return new Ok<>(new JavaList<Node>()
-                    .add(instruct("ldv").withInt(ADDRESS_OR_VALUE, value))
+                    .add(instruct("ldv", value))
                     .add(instruct("out"))
                     .add(instruct("halt")));
         }
@@ -46,6 +47,25 @@ public class RootPasser implements Passer {
         final var context = new NodeContext(node);
         final var message = new CompileError("Unknown root child", context);
         return new Err<>(message);
+    }
+
+    private static JavaList<Node> moveStackPointerLeft() {
+        return moveStackPointer(instruct("subv", 1));
+    }
+
+    private static JavaList<Node> moveStackPointerRight() {
+        return moveStackPointer(instruct("addv", 1));
+    }
+
+    private static JavaList<Node> moveStackPointer(Node adjustInstruction) {
+        return new JavaList<Node>()
+                .add(instruct("ldd").withString(INSTRUCTION_LABEL, STACK_POINTER))
+                .add(adjustInstruction)
+                .add(instruct("stod").withString(INSTRUCTION_LABEL, STACK_POINTER));
+    }
+
+    private static Node instruct(String mnemonic, int addressOrValue) {
+        return instruct(mnemonic).withInt(INSTRUCTION_ADDRESS_OR_VALUE, addressOrValue);
     }
 
     private static Ok<Tuple<State, Node>, CompileError> getTupleCompileErrorOk(State state, JavaList<Node> instructions) {

@@ -8,7 +8,7 @@ public class CASMLang {
     public static final String OP_CODE = "op-code";
     public static final String MNEMONIC = "mnemonic";
 
-    public static final String ADDRESS_OR_VALUE = "addressOrValue";
+    public static final String INSTRUCTION_ADDRESS_OR_VALUE = "addressOrValue";
     public static final String CHAR_TYPE = "char";
     public static final String NUMBER_TYPE = "number";
     public static final String DATA_TYPE = "data";
@@ -62,7 +62,7 @@ public class CASMLang {
         return new TypeRule(INSTRUCTION_TYPE, new SuffixRule(new OrRule(List.of(
                 new FirstRule(opCode, " ", new OrRule(List.of(
                         new StringRule(INSTRUCTION_LABEL),
-                        new IntRule(ADDRESS_OR_VALUE)
+                        new IntRule(INSTRUCTION_ADDRESS_OR_VALUE)
                 ))),
                 opCode
         )), ";"));

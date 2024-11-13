@@ -97,7 +97,7 @@ public class Assembler {
         boolean finished = false;
         var node = new MapNode()
                 .withInt(OP_CODE, INPUT_AND_STORE)
-                .withInt(ADDRESS_OR_VALUE, 1);
+                .withInt(INSTRUCTION_ADDRESS_OR_VALUE, 1);
 
         memory.add(createInstruction(node).match(value -> value, err -> {
             throw new IllegalStateException(err.message());
@@ -513,8 +513,8 @@ public class Assembler {
     private static Result<Node, CompileError> parseMnemonic(Node instruction, String mnemonic) {
         return resolveMnemonic(mnemonic).mapValue(opCode -> {
             final var withOpCode = instruction.withInt(OP_CODE, opCode);
-            if (withOpCode.hasInteger(ADDRESS_OR_VALUE)) return withOpCode;
-            return withOpCode.withInt(ADDRESS_OR_VALUE, 0);
+            if (withOpCode.hasInteger(INSTRUCTION_ADDRESS_OR_VALUE)) return withOpCode;
+            return withOpCode.withInt(INSTRUCTION_ADDRESS_OR_VALUE, 0);
         });
     }
 
@@ -577,7 +577,7 @@ public class Assembler {
             }
         }
 
-        return new Ok<>(node.withInt(ADDRESS_OR_VALUE, (int) addressOrValue));
+        return new Ok<>(node.withInt(INSTRUCTION_ADDRESS_OR_VALUE, (int) addressOrValue));
     }
 
     private static void set(List<Node> list, int instructionAddress, long data) {
@@ -588,7 +588,7 @@ public class Assembler {
     private static void set(List<Node> list, int instructionAddress, Node instruction) {
         list.add(new MapNode(INSTRUCTION_TYPE)
                 .withInt(OP_CODE, INPUT_AND_STORE)
-                .withInt(ADDRESS_OR_VALUE, instructionAddress));
+                .withInt(INSTRUCTION_ADDRESS_OR_VALUE, instructionAddress));
 
         list.add(instruction);
     }
@@ -606,7 +606,7 @@ public class Assembler {
         if (opCodeOption.isEmpty()) return new Err<>(new CompileError("No op code present", new NodeContext(node)));
         final var opCode = opCodeOption.orElse(0);
 
-        final var option = node.findInt(ADDRESS_OR_VALUE);
+        final var option = node.findInt(INSTRUCTION_ADDRESS_OR_VALUE);
         if (option.isEmpty())
             return new Err<>(new CompileError("No address or value present", new NodeContext(node)));
 
