@@ -22,17 +22,22 @@ public class RootPasser implements Passer {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
         final var labelValue = new MapNode(BLOCK_TYPE)
-                .withNodeList(CHILDREN, Collections.emptyList());
+                .withNodeList(CHILDREN, Collections.emptyList())
+                .withString(BLOCK_AFTER_CHILDREN, "\n\t");
 
         final var label = new MapNode(LABEL_TYPE)
                 .withString(GROUP_NAME, MAIN)
+                .withString(GROUP_AFTER_NAME, " ")
+                .withString(BLOCK_BEFORE_CHILD, "\n\t")
                 .withNode(GROUP_VALUE, labelValue);
 
         final var sectionValue = new MapNode(BLOCK_TYPE)
-                .withNodeList(CHILDREN, List.of(label));
+                .withNodeList(CHILDREN, List.of(label))
+                .withString(BLOCK_AFTER_CHILDREN, "\n");
 
         final var section = new MapNode(SECTION_TYPE)
                 .withString(GROUP_NAME, SECTION_PROGRAM)
+                .withString(GROUP_AFTER_NAME, " ")
                 .withNode(GROUP_VALUE, sectionValue);
 
         return new Some<>(new Ok<>(new Tuple<>(state, new MapNode(ROOT_TYPE).withNodeList(CHILDREN, List.of(section)))));
