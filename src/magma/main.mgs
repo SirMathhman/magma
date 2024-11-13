@@ -1,3 +1,2 @@
 let x = 200;
-let y = 300;
-return y;
+return x + 1;

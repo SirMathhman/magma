@@ -48,7 +48,7 @@ public class RootPasser implements Passer {
                     .foldLeft(0L, Long::sum);
 
             final var added = state.put(name, 1L);
-            return loadValue(value, state)
+            return loadValue(state, value)
                     .mapValue(list -> list
                             .addAll(moveStackPointerRight(sum))
                             .add(instructStackPointer("stoi"))
@@ -58,7 +58,7 @@ public class RootPasser implements Passer {
 
         if (node.is(RETURN_TYPE)) {
             final var value = node.findNode(RETURN_VALUE).orElse(new MapNode());
-            return loadValue(value, state).mapValue(list -> list
+            return loadValue(state, value).mapValue(list -> list
                             .add(instruct("out"))
                             .add(instruct("halt")))
                     .mapValue(list -> new Tuple<>(state, list));
@@ -69,10 +69,27 @@ public class RootPasser implements Passer {
         return new Err<>(message);
     }
 
-    private static Result<JavaList<Node>, CompileError> loadValue(Node node, JavaOrderedMap<String, Long> state) {
+    private static Result<JavaList<Node>, CompileError> loadValue(JavaOrderedMap<String, Long> state, Node node) {
         return parseNumberValue(node)
                 .or(() -> parseSymbolValue(state, node))
+                .or(() -> parseAddValue(state, node))
                 .orElseGet(() -> createUnknownValueError(node));
+    }
+
+    private static Option<Result<JavaList<Node>, CompileError>> parseAddValue(JavaOrderedMap<String, Long> state, Node node) {
+        if (!node.is(ADD_TYPE)) return new None<>();
+
+        final var leftNode = node.findNode(ADD_LEFT).orElse(new MapNode());
+        final var rightNode = node.findNode(ADD_RIGHT).orElse(new MapNode());
+
+        return new Some<>(loadValue(state, leftNode).mapValue(list -> {
+            if (rightNode.is(NUMBER_TYPE)) {
+                final var numberValue = rightNode.findInt(MagmaLang.NUMBER_VALUE).orElse(0);
+                return list.add(instruct("addv", numberValue));
+            } else {
+                return list;
+            }
+        }));
     }
 
     private static Err<JavaList<Node>, CompileError> createUnknownValueError(Node node) {
