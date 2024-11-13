@@ -37,4 +37,10 @@ public record JavaList<T>(List<T> list) {
     public boolean isEmpty() {
         return list.isEmpty();
     }
+
+    public JavaList<T> addAll(JavaList<T> other) {
+        final var copy = new ArrayList<>(list);
+        copy.addAll(other.list);
+        return new JavaList<>(copy);
+    }
 }
