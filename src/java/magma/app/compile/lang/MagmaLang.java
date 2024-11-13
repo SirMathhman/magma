@@ -15,6 +15,7 @@ public class MagmaLang {
     public static final String NUMBER_VALUE = "value";
     public static final String SYMBOL_TYPE = "symbol";
     public static final String SYMBOL_VALUE = "value";
+    public static final String DECLARATION_NAME = "name";
 
     public static Rule createMagmaRootRule() {
         return new TypeRule(ROOT_TYPE, new NodeListRule("children", new StripRule(new OrRule(List.of(
@@ -25,7 +26,7 @@ public class MagmaLang {
 
     private static TypeRule createDeclarationRule() {
         final var value = new NodeRule(DECLARATION_VALUE, createValueRule());
-        final var name = new StripRule(new StringRule("name"));
+        final var name = new StripRule(new StringRule(DECLARATION_NAME));
         final var definition = new PrefixRule("let ", name);
         return new TypeRule(DECLARATION_TYPE, new FirstRule(definition, "=", new SuffixRule(value, ";")));
     }

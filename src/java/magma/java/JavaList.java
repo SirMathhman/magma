@@ -1,5 +1,6 @@
 package magma.java;
 
+import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
@@ -42,5 +43,10 @@ public record JavaList<T>(List<T> list) {
         final var copy = new ArrayList<>(list);
         copy.addAll(other.list);
         return new JavaList<>(copy);
+    }
+
+    public Stream<Tuple<Integer, T>> streamWithIndex() {
+        return new HeadedStream<>(new RangeStream(list.size()))
+                .map(index -> new Tuple<>(index, list.get(index)));
     }
 }
