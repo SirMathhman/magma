@@ -57,6 +57,7 @@ public class Assembler {
     public static final int LOOP_OFFSET = 5;
     public static final String MAIN = "__main__";
     public static final long OFFSET = 3L;
+    public static final String SECTION_PROGRAM = "program";
     private static final int ADD_VALUE = 0x1a;
     private static final int LOAD_INDIRECT = 0x19;
     private static final int PUSH = 0x11;
@@ -437,7 +438,7 @@ public class Assembler {
         final var children = childrenOption.orElse(Collections.emptyList());
 
         if (name.equals("data")) return foldData(result, children);
-        if (name.equals("program")) return foldProgram(result, children);
+        if (name.equals(SECTION_PROGRAM)) return foldProgram(result, children);
         return new Err<>(new CompileError("Invalid section", new NodeContext(section)));
     }
 

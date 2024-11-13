@@ -27,6 +27,7 @@ public class CASMLang {
     public static final String DATA_VALUE = "value";
     public static final String NUMBER_VALUE = "value";
     public static final String CHAR_VALUE = "value";
+    public static final String ROOT_TYPE = "root";
 
     public static Rule createRootRule() {
         final var label = createGroupRule(LABEL_TYPE, "label ", createStatementRule());
@@ -35,7 +36,7 @@ public class CASMLang {
                 label
         )));
 
-        return new NodeListRule(CHILDREN, new StripRule(section));
+        return new TypeRule(ROOT_TYPE, new NodeListRule(CHILDREN, new StripRule(section)));
     }
 
     private static Rule createGroupRule(String type, String prefix, Rule statement) {
