@@ -50,4 +50,9 @@ public class None<T> implements Option<T> {
     public boolean isEmpty() {
         return true;
     }
+
+    @Override
+    public void ifPresentOrElse(Consumer<T> whenPresent, Runnable whenEmpty) {
+        whenEmpty.run();
+    }
 }

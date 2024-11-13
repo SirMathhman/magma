@@ -20,9 +20,9 @@ public class Main {
                 .mapErr(ApplicationError::new)
                 .mapValue(Main::compileAndWrite)
                 .match(value -> value, Some::new)
-                .ifPresent(err -> System.err.println(err.format(0, 0)));
-
-        Assembler.main(new String[]{});
+                .ifPresentOrElse(
+                        err -> System.err.println(err.format(0, 0)),
+                        () -> Assembler.main(new String[]{}));
     }
 
     private static Option<ApplicationError> compileAndWrite(String input) {

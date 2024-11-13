@@ -24,4 +24,6 @@ public interface Option<T> {
     Tuple<Boolean, T> toTuple(T other);
 
     boolean isEmpty();
+
+    void ifPresentOrElse(Consumer<T> whenPresent, Runnable whenEmpty);
 }

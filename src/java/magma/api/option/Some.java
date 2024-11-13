@@ -51,4 +51,9 @@ public record Some<T>(T value) implements Option<T> {
     public boolean isEmpty() {
         return false;
     }
+
+    @Override
+    public void ifPresentOrElse(Consumer<T> whenPresent, Runnable whenEmpty) {
+        whenPresent.accept(value);
+    }
 }
