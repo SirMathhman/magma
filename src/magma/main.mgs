@@ -1,2 +1,2 @@
-let first = [3, 4];
+let first = [100];
 return 0;

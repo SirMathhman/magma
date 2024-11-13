@@ -43,19 +43,15 @@ public class RootPasser implements Passer {
             final var name = node.findString(DECLARATION_NAME).orElse("");
             final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
-            final var sum = state.stream()
-                    .map(Tuple::right)
-                    .foldLeft(0L, Long::sum);
-
             return computeLength(value).flatMapValue(length -> {
                 final var added = state.put(name, length);
                 return loadValue(state, value)
-                        .mapValue(list -> {
-                            final var moved = list
-                                    .addAll(moveStackPointerRight(sum))
-                                    .add(instructStackPointer("stoi"));
+                        .mapValue(loadInstructions -> {
+                            final var offset = state.stream()
+                                    .map(Tuple::right)
+                                    .foldLeft(0L, Long::sum);
 
-                            return moved.addAll(moveStackPointerLeft(sum));
+                            return loadInstructions.addAll(pushToStack(offset));
                         })
                         .mapValue(list -> new Tuple<>(added, list));
             });
@@ -72,6 +68,13 @@ public class RootPasser implements Passer {
         final var context = new NodeContext(node);
         final var message = new CompileError("Cannot create instructions for root child", context);
         return new Err<>(message);
+    }
+
+    private static JavaList<Node> pushToStack(Long offset) {
+        return new JavaList<Node>()
+                .addAll(moveStackPointerRight(offset))
+                .add(instructStackPointer("stoi"))
+                .addAll(moveStackPointerLeft(offset));
     }
 
     private static Result<Long, CompileError> computeLength(Node node) {
@@ -116,8 +119,13 @@ public class RootPasser implements Passer {
         if (!node.is(ARRAY_TYPE)) return new None<>();
 
         final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>());
+        final var first = values.get(0).orElse(new MapNode());
+        final var loaded = loadValue(state, first).findValue().orElse(new JavaList<>());
+
         return new Some<>(new Ok<>(new JavaList<Node>()
-                .add(instruct("ldv", 16))));
+                .add(instructStackPointer("ldd"))
+                .add(instruct("addv", 1))
+                .add(instructStackPointer("stoi"))));
     }
 
     private static Option<Result<JavaList<Node>, CompileError>> parseAddValue(JavaOrderedMap<String, Long> state, Node node) {

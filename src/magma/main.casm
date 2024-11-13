@@ -1,6 +1,8 @@
 section data {cache=0;}section program {
 	label __main__ {
-		ldv 16;
+		ldd $sp;
+		addv 1;
+		stoi $sp;
 		stoi $sp;
 		ldv 0;
 		out;
