@@ -15,7 +15,6 @@ import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 import magma.app.compile.error.StringContext;
 import magma.app.compile.lang.CASMLang;
-import magma.app.compile.lang.MagmaLang;
 import magma.java.JavaList;
 import magma.java.JavaOrderedMap;
 
@@ -23,9 +22,7 @@ import java.util.List;
 
 import static magma.Assembler.*;
 import static magma.app.compile.lang.CASMLang.*;
-import static magma.app.compile.lang.MagmaLang.NUMBER_TYPE;
 import static magma.app.compile.lang.MagmaLang.ROOT_TYPE;
-import static magma.app.compile.lang.MagmaLang.*;
 
 public class RootPasser implements Passer {
     public static final String CACHE = "cache";
@@ -39,165 +36,9 @@ public class RootPasser implements Passer {
     }
 
     private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> parseRootMember(JavaOrderedMap<String, Long> state, Node node) {
-        if (node.is(DECLARATION_TYPE)) {
-            final var name = node.findString(DECLARATION_NAME).orElse("");
-            final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
-
-            return computeLength(value).flatMapValue(length -> {
-                final var added = state.put(name, length);
-                return loadValue(state, value)
-                        .mapValue(loadInstructions -> {
-                            final var offset = state.stream()
-                                    .map(Tuple::right)
-                                    .foldLeft(0L, Long::sum);
-
-                            return loadInstructions.addAll(pushToStack(offset));
-                        })
-                        .mapValue(list -> new Tuple<>(added, list));
-            });
-        }
-
-        if (node.is(RETURN_TYPE)) {
-            final var value = node.findNode(RETURN_VALUE).orElse(new MapNode());
-            return loadValue(state, value).mapValue(list -> list
-                            .add(instruct("out"))
-                            .add(instruct("halt")))
-                    .mapValue(list -> new Tuple<>(state, list));
-        }
-
         final var context = new NodeContext(node);
         final var message = new CompileError("Cannot create instructions for root child", context);
         return new Err<>(message);
-    }
-
-    private static JavaList<Node> pushToStack(Long offset) {
-        return new JavaList<Node>()
-                .addAll(moveStackPointerRight(offset))
-                .add(instructStackPointer("stoi"))
-                .addAll(moveStackPointerLeft(offset));
-    }
-
-    private static Result<Long, CompileError> computeLength(Node node) {
-        if (node.is(ARRAY_TYPE)) {
-            final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>());
-            return values.stream().foldLeftToResult(1L, (sum, node1) -> computeLength(node1).mapValue(length -> sum + length));
-        }
-
-        if (node.is(NUMBER_TYPE)) return new Ok<>(1L);
-        if (node.is(REFERENCE_TYPE)) return new Ok<>(1L);
-
-        return new Err<>(new CompileError("Cannot compute length", new NodeContext(node)));
-    }
-
-    private static Result<JavaList<Node>, CompileError> loadValue(JavaOrderedMap<String, Long> state, Node node) {
-        return parseNumberValue(node)
-                .or(() -> parseSymbolValue(state, node))
-                .or(() -> parseAddValue(state, node))
-                .or(() -> loadArrayValue(state, node))
-                .or(() -> loadReferenceValue(state, node))
-                .orElseGet(() -> createUnknownValueError(node));
-    }
-
-    private static Option<Result<JavaList<Node>, CompileError>> loadReferenceValue(JavaOrderedMap<String, Long> state, Node node) {
-        if (!node.is(REFERENCE_TYPE)) return new None<>();
-
-        final var value = node.findNode(REFERENCE_VALUE).orElse(new MapNode());
-        if (!value.is(SYMBOL_TYPE))
-            return new Some<>(new Err<>(new CompileError("Cannot reference", new NodeContext(value))));
-
-        final var textValue = value.findString(SYMBOL_VALUE).orElse("");
-        final var length = state.find(textValue);
-        if (length.isEmpty())
-            return new Some<>(new Err<>(new CompileError("No address present", new NodeContext(value))));
-        final var address = length.orElse(0L);
-
-        return new Some<>(new Ok<>(new JavaList<Node>()
-                .addAll(moveStackPointerRight(address))
-                .add(instructStackPointer("ldd"))
-                .addAll(moveStackPointerLeft(address))));
-    }
-
-    private static Option<Result<JavaList<Node>, CompileError>> loadArrayValue(JavaOrderedMap<String, Long> state, Node node) {
-        if (!node.is(ARRAY_TYPE)) return new None<>();
-
-        final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>()).list();
-
-        final var init = new JavaList<Node>()
-                .addAll(moveStackPointerRight(1L));
-
-        JavaList<Node> list;
-        list = init;
-
-        var sum = 0;
-        for (int i = 0; i < values.size(); i++) {
-            var value = values.get(i);
-            final var loaded = loadValue(state, value)
-                    .findValue()
-                    .orElse(new JavaList<>());
-
-            final var length = computeLength(value).findValue().orElse(0L);
-            sum += length;
-
-            final var list1 = list.addAll(loaded)
-                    .add(instructStackPointer("stoi"));
-
-            if (i != values.size() - 1) {
-                list = list1.addAll(moveStackPointerRight(length));
-            } else {
-                list = list1;
-            }
-        }
-
-        list = list.addAll(moveStackPointerLeft(sum - 1));
-
-        final var withArrayPointer = list
-                .add(instructStackPointer("ldd"))
-                .addAll(moveStackPointerLeft(1L));
-
-        return new Some<>(new Ok<>(withArrayPointer));
-    }
-
-    private static Option<Result<JavaList<Node>, CompileError>> parseAddValue(JavaOrderedMap<String, Long> state, Node node) {
-        if (!node.is(ADD_TYPE)) return new None<>();
-
-        final var leftNode = node.findNode(ADD_LEFT).orElse(new MapNode());
-        final var rightNode = node.findNode(ADD_RIGHT).orElse(new MapNode());
-
-        return new Some<>(loadValue(state, leftNode).flatMapValue(list -> {
-            if (rightNode.is(NUMBER_TYPE)) {
-                final var numberValue = rightNode.findInt(MagmaLang.NUMBER_VALUE).orElse(0);
-                return new Ok<>(list.add(instruct("addv", numberValue)));
-            } else if (rightNode.is(SYMBOL_TYPE)) {
-                final var value = rightNode.findString(SYMBOL_VALUE).orElse("");
-                return handleWithinSymbol(state, value, instructStackPointer("addi")).mapValue(list::addAll);
-            } else {
-                return new Ok<>(list);
-            }
-        }));
-    }
-
-    private static Err<JavaList<Node>, CompileError> createUnknownValueError(Node node) {
-        final var context = new NodeContext(node);
-        final var error = new CompileError("Unknown value present", context);
-        return new Err<>(error);
-    }
-
-    private static Option<Result<JavaList<Node>, CompileError>> parseNumberValue(Node node) {
-        if (!node.is(NUMBER_TYPE)) return new None<>();
-
-        final var value = node.findInt(MagmaLang.NUMBER_VALUE).orElse(0);
-        final var instructions = new JavaList<Node>().add(instruct("ldv", value));
-        return new Some<>(new Ok<>(instructions));
-    }
-
-    private static Option<Result<JavaList<Node>, CompileError>> parseSymbolValue(
-            JavaOrderedMap<String, Long> state,
-            Node node
-    ) {
-        if (!node.is(SYMBOL_TYPE)) return new None<>();
-
-        final var value = node.findString(SYMBOL_VALUE).orElse("");
-        return new Some<>(handleWithinSymbol(state, value, instructStackPointer("ldi")));
     }
 
     private static Result<JavaList<Node>, CompileError> handleWithinSymbol(JavaOrderedMap<String, Long> state, String value, Node instruction) {
@@ -316,7 +157,7 @@ public class RootPasser implements Passer {
             return new Err<>(error);
         }
 
-        return childrenOption.orElse(new JavaList<Node>())
+        return childrenOption.orElse(new JavaList<>())
                 .stream()
                 .foldLeftToResult(new Tuple<>(new JavaOrderedMap<>(), new JavaList<>()), RootPasser::foldRootMember)
                 .mapValue(Tuple::right)
