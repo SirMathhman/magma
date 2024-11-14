@@ -15,6 +15,7 @@ import magma.app.compile.ResultStream;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 import magma.app.compile.error.StringContext;
+import magma.java.JavaBinding;
 import magma.java.JavaList;
 import magma.java.JavaStreams;
 
@@ -66,6 +67,24 @@ public class Assembler {
     private static final int STORE_DIRECT = 0x16;
     private static final int JUMP_ACCUMULATOR = 0x18;
     private static final int ADD_INDIRECT = 0x1c;
+    public static final JavaBinding<String, Integer> MNEMONICS = new JavaBinding<String, Integer>()
+            .set("jp", JUMP_ADDRESS)
+            .set("jpac", JUMP_ACCUMULATOR)
+            .set("ldd", LOAD_DIRECT)
+            .set("ldi", LOAD_INDIRECT)
+            .set("ldv", LOAD_VALUE)
+            .set("out", OUT)
+            .set("halt", HALT)
+            .set("stod", STORE_DIRECT)
+            .set("stoi", STORE_INDIRECT)
+            .set("push", PUSH)
+            .set("pop", POP)
+            .set("addd", ADD_DIRECT)
+            .set("addi", ADD_INDIRECT)
+            .set("addv", ADD_VALUE)
+            .set("ldac", LOAD_ACCUMULATOR)
+            .set("suba", SUBTRACT_ADDRESS)
+            .set("subv", SUBTRACT_VALUE);
 
     public static void main(String[] args) {
         readAndExecute().ifPresent(error -> System.err.println(error.format(0, 0)));
@@ -100,7 +119,7 @@ public class Assembler {
                 .withInt(OP_CODE, INPUT_AND_STORE)
                 .withInt(INSTRUCTION_ADDRESS_OR_VALUE, 1);
 
-        memory.add(createInstruction(node).match(value -> value, err -> {
+        memory.add(createInstructionFromNode(node).match(value -> value, err -> {
             throw new IllegalStateException(err.message());
         }));
 
@@ -301,8 +320,10 @@ public class Assembler {
 
         StringJoiner joiner = new StringJoiner(",", "{", "\n}");
         for (int i = 0; i < list.size(); i++) {
-            Long value = list.get(i);
-            String string = Long.toString(value, 16);
+            Long maybeInstruction = list.get(i);
+            final var parsed = parseInstruction(maybeInstruction);
+            final var opCode = parsed.left();
+            var mnemonic = MNEMONICS.findByRight(opCode).map(value -> value + " ").orElse("");
 
             final String labelText;
             final var casted = (long) i;
@@ -314,10 +335,10 @@ public class Assembler {
                 labelText = " ".repeat(maxLabelLength + 1);
             }
 
-            final var format = "\n %s%s %s: %s";
+            final var format = "\n %s%s %s: %s%s";
             final var decimalIndex = Integer.toString(i, 10);
             final var hexIndex = Integer.toString(i, 16);
-            joiner.add(format.formatted(labelText, decimalIndex, hexIndex, string));
+            joiner.add(format.formatted(labelText, decimalIndex, hexIndex, mnemonic, parsed.right()));
         }
         return joiner.toString();
     }
@@ -533,30 +554,13 @@ public class Assembler {
     }
 
     private static Result<Integer, CompileError> resolveMnemonic(String mnemonic) {
-        return switch (mnemonic) {
-            case "jp" -> new Ok<>(JUMP_ADDRESS);
-            case "jpac" -> new Ok<>(JUMP_ACCUMULATOR);
-            case "ldd" -> new Ok<>(LOAD_DIRECT);
-            case "ldi" -> new Ok<>(LOAD_INDIRECT);
-            case "ldv" -> new Ok<>(LOAD_VALUE);
-            case "out" -> new Ok<>(OUT);
-            case "halt" -> new Ok<>(HALT);
-            case "stod" -> new Ok<>(STORE_DIRECT);
-            case "stoi" -> new Ok<>(STORE_INDIRECT);
-            case "push" -> new Ok<>(PUSH);
-            case "pop" -> new Ok<>(POP);
-            case "addd" -> new Ok<>(ADD_DIRECT);
-            case "addi" -> new Ok<>(ADD_INDIRECT);
-            case "addv" -> new Ok<>(ADD_VALUE);
-            case "ldac" -> new Ok<>(LOAD_ACCUMULATOR);
-            case "suba" -> new Ok<>(SUBTRACT_ADDRESS);
-            case "subv" -> new Ok<>(SUBTRACT_VALUE);
-            default -> new Err<>(new CompileError("Unknown mnemonic", new StringContext(mnemonic)));
-        };
+        return MNEMONICS.findByLeft(mnemonic)
+                .<Result<Integer, CompileError>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileError("Unknown mnemonic", new StringContext(mnemonic))));
     }
 
     private static Result<Long, CompileError> computeBinary(Node node) {
-        if (node.is(INSTRUCTION_TYPE)) return createInstruction(node);
+        if (node.is(INSTRUCTION_TYPE)) return createInstructionFromNode(node);
 
         if (node.is(DATA_TYPE)) {
             final var dataValue = node.findString(DATA_VALUE);
@@ -616,7 +620,7 @@ public class Assembler {
         }
     }
 
-    private static Result<Long, CompileError> createInstruction(Node node) {
+    private static Result<Long, CompileError> createInstructionFromNode(Node node) {
         final var opCodeOption = node.findInt(OP_CODE);
         if (opCodeOption.isEmpty()) return new Err<>(new CompileError("No op code present", new NodeContext(node)));
         final var opCode = opCodeOption.orElse(0);
@@ -625,13 +629,24 @@ public class Assembler {
         if (option.isEmpty())
             return new Err<>(new CompileError("No address or value present", new NodeContext(node)));
 
-        final var addressOrValue = (long) option.orElse(0);
+        return createInstruction(opCode, (long) option.orElse(0));
+    }
 
+    private static Tuple<Integer, Long> parseInstruction(long instruction) {
+        // Mask and extract the opcode by shifting the bits to the right
+        int opCode = (int) (instruction >>> 56) & 0xFF;
+        // Mask and extract the addressOrValue by isolating the lower 56 bits
+        long addressOrValue = instruction & 0x00FFFFFFFFFFFFFFL;
+
+        return new Tuple<>(opCode, addressOrValue);
+    }
+
+    private static Result<Long, CompileError> createInstruction(int opCode, long addressOrValue) {
         if (opCode < 0x00 || opCode > 0xFF) {
-            throw new IllegalArgumentException("Opcode must be an 8-bit value (0x00 to 0xFF).");
+            return new Err<>(new CompileError("Opcode must be an 8-bit value (0x00 to 0xFF).", new StringContext(Integer.toHexString(opCode))));
         }
         if (addressOrValue < 0 || addressOrValue > 0x00FFFFFFFFFFFFFFL) {
-            throw new IllegalArgumentException("Address/Value must be a 56-bit value (0x00 to 0x00FFFFFFFFFFFFFF).");
+            return new Err<>(new CompileError("Address/Value must be a 56-bit value (0x00 to 0x00FFFFFFFFFFFFFF).", new StringContext(Long.toHexString(addressOrValue))));
         }
 
         return new Ok<>(((long) opCode << 56) | addressOrValue);
