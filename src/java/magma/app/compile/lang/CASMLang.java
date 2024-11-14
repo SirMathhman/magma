@@ -28,6 +28,10 @@ public class CASMLang {
     public static final String NUMBER_VALUE = "value";
     public static final String CHAR_VALUE = "value";
     public static final String ROOT_TYPE = "root";
+    public static final String ROOT_AFTER_SECTION = "";
+    public static final String GROUP_AFTER = "after";
+    public static final String DATA_AFTER_NAME = "after-name";
+    public static final String DATA_BEFORE_VALUE = "before-value";
 
     public static Rule createRootRule() {
         final var label = createGroupRule(LABEL_TYPE, "label ", createStatementRule());
@@ -36,13 +40,14 @@ public class CASMLang {
                 label
         )));
 
-        return new TypeRule(ROOT_TYPE, new NodeListRule(new BracketSplitter(), CHILDREN, new StripRule(section)));
+        return new TypeRule(ROOT_TYPE, new NodeListRule(new BracketSplitter(), CHILDREN, new StripRule("", section, "")));
     }
 
     private static Rule createGroupRule(String type, String prefix, Rule statement) {
         final var name = new StripRule("", new StringRule(GROUP_NAME), GROUP_AFTER_NAME);
         final var block = new NodeRule(GROUP_VALUE, createBlockRule(statement));
-        return new TypeRule(type, new PrefixRule(prefix, new FirstRule(name, "{", new SuffixRule(block, "}"))));
+        final var childRule = new PrefixRule(prefix, new FirstRule(name, "{", new SuffixRule(block, "}")));
+        return new TypeRule(type, new StripRule("", childRule, GROUP_AFTER));
     }
 
     private static TypeRule createBlockRule(Rule statement) {
@@ -69,8 +74,9 @@ public class CASMLang {
     }
 
     private static Rule createDataRule() {
-        final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule(DATA_NAME)));
-        final var value = new NodeRule(DATA_VALUE, createValueRule());
+        final var nameFilter = new FilterRule(new SymbolFilter(), new StringRule(DATA_NAME));
+        final var name = new StripRule("", nameFilter, DATA_AFTER_NAME);
+        final var value = new StripRule(DATA_BEFORE_VALUE, new NodeRule(DATA_VALUE, createValueRule()), "");
 
         return new TypeRule(DATA_TYPE, new FirstRule(name, "=", new StripRule(new SuffixRule(value, ";"))));
     }

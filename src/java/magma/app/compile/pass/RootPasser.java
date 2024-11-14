@@ -48,6 +48,7 @@ public class RootPasser implements Passer {
 
     private static Node createInstruction(String mnemonic) {
         return new MapNode(INSTRUCTION_TYPE)
+                .withString(BLOCK_BEFORE_CHILD, "\n\t\t")
                 .withString(INSTRUCTION_MNEMONIC, mnemonic);
     }
 
@@ -91,15 +92,20 @@ public class RootPasser implements Passer {
                 .withString(CASMLang.NUMBER_VALUE, "0");
 
         final var cache = new MapNode(DATA_TYPE)
+                .withString(BLOCK_BEFORE_CHILD, "\n\t")
+                .withString(DATA_AFTER_NAME, " ")
+                .withString(DATA_BEFORE_VALUE, " ")
                 .withString(DATA_NAME, "cache")
                 .withNode(DATA_VALUE, cacheValue);
 
         final var dataValue = new MapNode(BLOCK_TYPE)
-                .withNodeList(CHILDREN, List.of(cache));
+                .withNodeList(CHILDREN, List.of(cache))
+                .withString(BLOCK_AFTER_CHILDREN, "\n");
 
         final var dataSection = new MapNode(SECTION_TYPE)
                 .withString(GROUP_NAME, DATA_SECTION)
                 .withString(GROUP_AFTER_NAME, " ")
+                .withString(GROUP_AFTER, "\n")
                 .withNode(GROUP_VALUE, dataValue);
 
         final var node = new MapNode(ROOT_TYPE)
