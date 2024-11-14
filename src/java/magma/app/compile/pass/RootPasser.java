@@ -7,10 +7,7 @@ import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.app.compile.MapNode;
-import magma.app.compile.Node;
-import magma.app.compile.Passer;
-import magma.app.compile.State;
+import magma.app.compile.*;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 import magma.app.compile.lang.CASMLang;
@@ -53,8 +50,19 @@ public class RootPasser implements Passer {
         final var name = node.findString(DECLARATION_NAME).orElse("");
         final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
-        return new Some<>(pushValueToStack(definitions, value, 0L)
-                .mapValue(list -> new Tuple<>(definitions.put(name, 1L), list)));
+        return new Some<>(computeLength(value).flatMapValue(length -> pushValueToStack(definitions, value, 0L)
+                .mapValue(list -> new Tuple<>(definitions.put(name, length), list))));
+    }
+
+    private static Result<Long, CompileError> computeLength(Node value) {
+        if (value.is(NUMBER_TYPE)) return new Ok<>(1L);
+        if (value.is(ARRAY_TYPE)) return value.findNodeList(ARRAY_VALUES).orElse(new JavaList<>())
+                .stream()
+                .map(RootPasser::computeLength)
+                .into(ResultStream::new)
+                .foldResultsLeft(1L, Long::sum);
+
+        return new Err<>(new CompileError("Unknown value to compute length", new NodeContext(value)));
     }
 
     private static Result<JavaList<Node>, CompileError> pushValueToStack(JavaOrderedMap<String, Long> definitions, Node value, long initialOffset) {
@@ -63,8 +71,9 @@ public class RootPasser implements Passer {
                     .map(Tuple::right)
                     .foldLeft(initialOffset, Long::sum);
 
-            return instructions
+            return new JavaList<Node>()
                     .addAll(moveStackPointerRight(totalOffset))
+                    .addAll(instructions)
                     .add(instructStackPointer("stoi"))
                     .addAll(moveStackPointerLeft(totalOffset));
         });
@@ -120,13 +129,9 @@ public class RootPasser implements Passer {
                     final var value = tuple.right();
 
                     return loadValue(definitions, value).mapValue(instructions -> {
-                        final var totalOffset = definitions.stream()
-                                .map(Tuple::right)
-                                .foldLeft((long) 1, Long::sum);
-
                         return instructions
                                 .add(instructStackPointer("stoi"))
-                                .addAll(moveStackPointerRight(totalOffset));
+                                .addAll(moveStackPointerRight(1));
                     }).mapValue(current::addAll);
                 })
                 .mapValue(value -> {
