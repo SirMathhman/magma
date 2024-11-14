@@ -28,7 +28,7 @@ public interface Node {
 
     Option<JavaList<Node>> findNodeList(String propertyKey);
 
-    Node withNodeList(String propertyKey, List<Node> propertyValues);
+    Node withNodeList(String propertyKey, JavaList<Node> propertyValues);
 
     Node withString(String propertyKey, String propertyValue);
 

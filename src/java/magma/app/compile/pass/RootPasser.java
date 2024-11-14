@@ -7,6 +7,7 @@ import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.api.stream.Streams;
 import magma.app.compile.*;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
@@ -26,6 +27,7 @@ public class RootPasser implements Passer {
     public static final String PROGRAM_SECTION = SECTION_PROGRAM;
     public static final String DATA_SECTION = "data";
     public static final String DATA_CACHE = "cache";
+    public static final String TYPE_LENGTH = "length";
 
     private static Result<Tuple<Stack, JavaList<Node>>, CompileError> writeRootMember(Stack definitions, Node node) {
         return writeDeclaration(definitions, node)
@@ -50,24 +52,47 @@ public class RootPasser implements Passer {
         final var name = node.findString(DECLARATION_NAME).orElse("");
         final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
-        final var type = new MapNode("primitive")
-                .withString("sign", "false")
-                .withInt("bits", 64);
-        return new Some<>(loadValue(definitions, value).flatMapValue(instructions -> {
-                    return definitions.computeFrameSize().mapValue(totalOffset -> {
-                        return new JavaList<Node>()
-                                .addAll(moveStackPointerRight(totalOffset))
-                                .addAll(instructions)
-                                .add(instructStackPointer("stoi"))
-                                .addAll(moveStackPointerLeft(totalOffset));
+        return new Some<>(loadValue(definitions, value)
+                .flatMapValue(instructions -> formatInstructions(definitions, instructions))
+                .flatMapValue(instructions -> resolveType(value)
+                        .mapValue(type -> definitions.define(name, type))
+                        .mapValue(stack -> new Tuple<>(stack, instructions))));
+    }
+
+    private static Result<JavaList<Node>, CompileError> formatInstructions(Stack stack, JavaList<Node> instructions) {
+        return stack.computeCurrentFrameSize().mapValue(frameSize -> new JavaList<Node>()
+                .addAll(moveStackPointerRight(frameSize))
+                .addAll(instructions)
+                .add(instructStackPointer("stoi"))
+                .addAll(moveStackPointerLeft(frameSize)));
+    }
+
+    private static Result<Node, CompileError> resolveType(Node type) {
+        if (type.is(NUMBER_TYPE)) {
+            return new Ok<>(new MapNode("primitive")
+                    .withString("sign", "false")
+                    .withInt("bits", 64)
+                    .withInt(TYPE_LENGTH, 1));
+        }
+        if (type.is(TUPLE_TYPE)) {
+            return type.findNodeList(TUPLE_VALUES).orElse(new JavaList<>()).stream().foldLeftToResult(new JavaList<Node>(), (list, child) -> resolveType(child).mapValue(list::add))
+                    .mapValue(values -> {
+                        final var length = values.stream()
+                                .map(value -> value.findInt(TYPE_LENGTH))
+                                .flatMap(Streams::fromOption)
+                                .foldLeft(0, Integer::sum);
+
+                        return new MapNode("tuple")
+                                .withNodeList(TUPLE_VALUES, values)
+                                .withInt(TYPE_LENGTH, length);
                     });
-                })
-                .mapValue(list -> new Tuple<>(definitions.define(name, type), list)));
+        }
+        return new Err<>(new CompileError("Unknown type", new NodeContext(type)));
     }
 
     private static Result<Long, CompileError> computeLength(Node value) {
         if (value.is(NUMBER_TYPE)) return new Ok<>(1L);
-        if (value.is(ARRAY_TYPE)) return value.findNodeList(ARRAY_VALUES).orElse(new JavaList<>())
+        if (value.is(TUPLE_TYPE)) return value.findNodeList(TUPLE_VALUES).orElse(new JavaList<>())
                 .stream()
                 .map(RootPasser::computeLength)
                 .into(ResultStream::new)
@@ -136,9 +161,9 @@ public class RootPasser implements Passer {
     }
 
     private static Option<Result<JavaList<Node>, CompileError>> loadTuple(Stack definitions, Node node) {
-        if (!node.is(ARRAY_TYPE)) return new None<>();
+        if (!node.is(TUPLE_TYPE)) return new None<>();
 
-        final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>());
+        final var values = node.findNodeList(TUPLE_VALUES).orElse(new JavaList<>());
         final var list = values.streamWithIndex()
                 .foldLeftToResult(new JavaList<Node>().addAll(moveStackPointerRight(1)), (current, tuple) -> {
                     final var index = tuple.left();
@@ -195,8 +220,8 @@ public class RootPasser implements Passer {
     }
 
     private static Ok<Tuple<State, Node>, CompileError> wrapInstructions(State state, JavaList<Node> instructions) {
-        final var labelValue = new MapNode(BLOCK_TYPE)
-                .withNodeList(CHILDREN, instructions.list())
+        Node node4 = new MapNode(BLOCK_TYPE);
+        final var labelValue = node4.withNodeList(CHILDREN, new JavaList<>(instructions.list()))
                 .withString(BLOCK_AFTER_CHILDREN, "\n\t");
 
         final var label = new MapNode(LABEL_TYPE)
@@ -205,8 +230,8 @@ public class RootPasser implements Passer {
                 .withString(BLOCK_BEFORE_CHILD, "\n\t")
                 .withNode(GROUP_VALUE, labelValue);
 
-        final var programValue = new MapNode(BLOCK_TYPE)
-                .withNodeList(CHILDREN, List.of(label))
+        Node node3 = new MapNode(BLOCK_TYPE);
+        final var programValue = node3.withNodeList(CHILDREN, new JavaList<>(List.of(label)))
                 .withString(BLOCK_AFTER_CHILDREN, "\n");
 
         final var programSection = new MapNode(SECTION_TYPE)
@@ -224,8 +249,8 @@ public class RootPasser implements Passer {
                 .withString(DATA_NAME, DATA_CACHE)
                 .withNode(DATA_VALUE, cacheValue);
 
-        final var dataValue = new MapNode(BLOCK_TYPE)
-                .withNodeList(CHILDREN, List.of(cache))
+        Node node2 = new MapNode(BLOCK_TYPE);
+        final var dataValue = node2.withNodeList(CHILDREN, new JavaList<>(List.of(cache)))
                 .withString(BLOCK_AFTER_CHILDREN, "\n");
 
         final var dataSection = new MapNode(SECTION_TYPE)
@@ -234,8 +259,8 @@ public class RootPasser implements Passer {
                 .withString(GROUP_AFTER, "\n")
                 .withNode(GROUP_VALUE, dataValue);
 
-        final var node = new MapNode(ROOT_TYPE)
-                .withNodeList(CHILDREN, List.of(dataSection, programSection));
+        Node node1 = new MapNode(ROOT_TYPE);
+        final var node = node1.withNodeList(CHILDREN, new JavaList<>(List.of(dataSection, programSection)));
 
         return new Ok<>(new Tuple<>(state, node));
     }
@@ -278,7 +303,7 @@ public class RootPasser implements Passer {
         }
 
         private static Result<Long, CompileError> findLengthOfType(Node type) {
-            return type.findInt("length")
+            return type.findInt(TYPE_LENGTH)
                     .<Result<Long, CompileError>>map(length -> new Ok<>((long) length))
                     .orElseGet(() -> new Err<>(new CompileError("No length present", new NodeContext(type))));
         }
@@ -297,7 +322,7 @@ public class RootPasser implements Passer {
                     .foldResultsLeft(0L, Long::sum);
         }
 
-        private Result<Long, CompileError> computeFrameSize() {
+        private Result<Long, CompileError> computeCurrentFrameSize() {
             return sumTypes(definitions);
         }
 

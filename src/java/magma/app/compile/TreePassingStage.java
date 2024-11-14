@@ -4,6 +4,7 @@ import magma.api.Tuple;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
+import magma.java.JavaList;
 import magma.java.JavaStreams;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class TreePassingStage implements PassingStage {
         final var oldRoot = tuple.right();
         return JavaStreams.fromList(propertyValues)
                 .foldLeftToResult(new Tuple<>(oldState, new ArrayList<>()), this::passNodeWithinList)
-                .mapValue(list -> list.mapRight(right -> oldRoot.withNodeList(propertyKey, right)));
+                .mapValue(list -> list.mapRight(right -> oldRoot.withNodeList(propertyKey, new JavaList<>(right))));
     }
 
     private Result<Tuple<State, List<Node>>, CompileError> passNodeWithinList(Tuple<State, List<Node>> tuple, Node child) {

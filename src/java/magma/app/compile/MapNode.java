@@ -82,13 +82,6 @@ public record MapNode(
     }
 
     @Override
-    public Node withNodeList(String propertyKey, List<Node> propertyValues) {
-        final var copy = new HashMap<>(nodeLists);
-        copy.put(propertyKey, propertyValues);
-        return new MapNode(type, strings, nodes, copy, integers);
-    }
-
-    @Override
     public Node withString(String propertyKey, String propertyValue) {
         final var copy = new HashMap<>(strings);
         copy.put(propertyKey, propertyValue);
@@ -156,7 +149,7 @@ public record MapNode(
     public Option<Result<Node, CompileError>> mapNodeList(String propertyKey, Function<List<Node>, Result<List<Node>, CompileError>> mapper) {
         return findNodeList(propertyKey).map(JavaList::list)
                 .map(mapper)
-                .map(result -> result.mapValue(list -> withNodeList(propertyKey, list)));
+                .map(result -> result.mapValue(list -> withNodeList(propertyKey, new JavaList<>(list))));
     }
 
 
@@ -225,5 +218,12 @@ public record MapNode(
     @Override
     public Option<JavaList<Node>> findNodeList(String propertyKey) {
         return findNodeList0(propertyKey).map(JavaList::new);
+    }
+
+    @Override
+    public Node withNodeList(String propertyKey, JavaList<Node> propertyValues) {
+        final var copy = new HashMap<>(nodeLists);
+        copy.put(propertyKey, propertyValues.list());
+        return new MapNode(type, strings, nodes, copy, integers);
     }
 }

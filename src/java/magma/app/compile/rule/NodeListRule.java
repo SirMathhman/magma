@@ -49,7 +49,10 @@ public class NodeListRule implements Rule {
         return segments.stream()
                 .map(segmentRule::parse)
                 .reduce(new Ok<>(new ArrayList<>()), NodeListRule::foldIntoList, (_, next) -> next)
-                .mapValue(list -> new MapNode().withNodeList(propertyKey, list));
+                .mapValue(list -> {
+                    Node node = new MapNode();
+                    return node.withNodeList(propertyKey, new JavaList<>(list));
+                });
     }
 
     @Override

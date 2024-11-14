@@ -19,8 +19,8 @@ public class MagmaLang {
     public static final String ADD_TYPE = "add";
     public static final String ADD_LEFT = "left";
     public static final String ADD_RIGHT = "right";
-    public static final String ARRAY_TYPE = "array";
-    public static final String ARRAY_VALUES = "values";
+    public static final String TUPLE_TYPE = "tuple";
+    public static final String TUPLE_VALUES = "values";
     public static final String REFERENCE_TYPE = "reference";
     public static final String REFERENCE_VALUE = "value";
     public static final String INDEX_TYPE = "index";
@@ -62,8 +62,8 @@ public class MagmaLang {
     }
 
     private static TypeRule createArrayRule(LazyRule value) {
-        final var values = new NodeListRule(new ValueSplitter(), ARRAY_VALUES, value);
-        return new TypeRule(ARRAY_TYPE, new StripRule(new PrefixRule("[", new SuffixRule(values, "]"))));
+        final var values = new NodeListRule(new ValueSplitter(), TUPLE_VALUES, value);
+        return new TypeRule(TUPLE_TYPE, new StripRule(new PrefixRule("[", new SuffixRule(values, "]"))));
     }
 
     private static TypeRule createAddRule(Rule value) {
