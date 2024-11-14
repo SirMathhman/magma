@@ -5,5 +5,8 @@ section program {
 	label __main__ {
 		ldv 5;
 		stoi $sp;
+		ldv 100;
+		out;
+		halt;
 	}
 }

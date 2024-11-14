@@ -30,7 +30,20 @@ public class RootPasser implements Passer {
     public static final String DATA_SECTION = "data";
 
     private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> writeRootMember(JavaOrderedMap<String, Long> definitions, Node node) {
-        return writeDeclaration(definitions, node).orElseGet(() -> invalidateRootMember(node));
+        return writeDeclaration(definitions, node)
+                .or(() -> writeReturn(definitions, node))
+                .orElseGet(() -> invalidateRootMember(node));
+    }
+
+    private static Option<Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError>> writeReturn(JavaOrderedMap<String, Long> definitions, Node node) {
+        if (!node.is(RETURN_TYPE)) return new None<>();
+
+        final var returnValue = node.findNode(RETURN_VALUE).orElse(new MapNode());
+        return new Some<>(loadValue(returnValue).mapValue(list -> {
+            return list.addAll(new JavaList<Node>()
+                    .add(createInstruction("out"))
+                    .add(createInstruction("halt")));
+        }).mapValue(instructions -> new Tuple<>(definitions, instructions)));
     }
 
     private static Option<Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError>> writeDeclaration(JavaOrderedMap<String, Long> definitions, Node node) {
