@@ -11,6 +11,7 @@ import magma.api.stream.Streams;
 import magma.app.compile.*;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
+import magma.app.compile.error.StringContext;
 import magma.app.compile.lang.CASMLang;
 import magma.app.compile.lang.MagmaLang;
 import magma.java.JavaList;
@@ -46,17 +47,17 @@ public class RootPasser implements Passer {
                 .mapValue(instructions -> new Tuple<>(definitions, instructions)));
     }
 
-    private static Option<Result<Tuple<Stack, JavaList<Node>>, CompileError>> writeDeclaration(Stack definitions, Node node) {
+    private static Option<Result<Tuple<Stack, JavaList<Node>>, CompileError>> writeDeclaration(Stack stack, Node node) {
         if (!node.is(DECLARATION_TYPE)) return new None<>();
 
         final var name = node.findString(DECLARATION_NAME).orElse("");
         final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
-        return new Some<>(loadValue(definitions, value)
-                .flatMapValue(instructions -> formatInstructions(definitions, instructions))
-                .flatMapValue(instructions -> resolveType(value)
-                        .mapValue(type -> definitions.define(name, type))
-                        .mapValue(stack -> new Tuple<>(stack, instructions))));
+        return new Some<>(loadValue(stack, value)
+                .flatMapValue(instructions -> formatInstructions(stack, instructions))
+                .flatMapValue(instructions -> resolveType(stack, value)
+                        .mapValue(type -> stack.define(name, type))
+                        .mapValue(newStack -> new Tuple<>(newStack, instructions))));
     }
 
     private static Result<JavaList<Node>, CompileError> formatInstructions(Stack stack, JavaList<Node> instructions) {
@@ -67,7 +68,7 @@ public class RootPasser implements Passer {
                 .addAll(moveStackPointerLeft(frameSize)));
     }
 
-    private static Result<Node, CompileError> resolveType(Node type) {
+    private static Result<Node, CompileError> resolveType(Stack stack, Node type) {
         if (type.is(NUMBER_TYPE)) {
             return new Ok<>(new MapNode("primitive")
                     .withString("sign", "false")
@@ -75,18 +76,25 @@ public class RootPasser implements Passer {
                     .withInt(TYPE_LENGTH, 1));
         }
         if (type.is(TUPLE_TYPE)) {
-            return type.findNodeList(TUPLE_VALUES).orElse(new JavaList<>()).stream().foldLeftToResult(new JavaList<Node>(), (list, child) -> resolveType(child).mapValue(list::add))
+            return type.findNodeList(TUPLE_VALUES).orElse(new JavaList<>()).stream().foldLeftToResult(new JavaList<Node>(), (list, child) -> resolveType(stack, child).mapValue(list::add))
                     .mapValue(values -> {
                         final var length = values.stream()
                                 .map(value -> value.findInt(TYPE_LENGTH))
                                 .flatMap(Streams::fromOption)
-                                .foldLeft(0, Integer::sum);
+                                .foldLeft(1, Integer::sum);
 
                         return new MapNode("tuple")
                                 .withNodeList(TUPLE_VALUES, values)
                                 .withInt(TYPE_LENGTH, length);
                     });
         }
+        if (type.is(SYMBOL_TYPE)) {
+            final var symbol = type.findString(SYMBOL_VALUE).orElse("");
+            return stack.find(symbol)
+                    .<Result<Node, CompileError>>map(Ok::new)
+                    .orElseGet(() -> new Err<>(new CompileError("Symbol not defined", new StringContext(symbol))));
+        }
+
         return new Err<>(new CompileError("Unknown type", new NodeContext(type)));
     }
 
@@ -328,6 +336,10 @@ public class RootPasser implements Passer {
 
         public Stack define(String name, Node type) {
             return new Stack(definitions.put(name, type));
+        }
+
+        public Option<Node> find(String symbol) {
+            return definitions.find(symbol);
         }
     }
 }
