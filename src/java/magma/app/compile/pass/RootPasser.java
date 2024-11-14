@@ -7,7 +7,6 @@ import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.api.stream.Streams;
 import magma.app.compile.*;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
@@ -54,14 +53,14 @@ public class RootPasser implements Passer {
         final var type = new MapNode("primitive")
                 .withString("sign", "false")
                 .withInt("bits", 64);
-        return new Some<>(loadValue(definitions, value).mapValue(instructions -> {
-                    final var totalOffset = definitions.computeFrameSize();
-
-                    return new JavaList<Node>()
-                            .addAll(moveStackPointerRight(totalOffset))
-                            .addAll(instructions)
-                            .add(instructStackPointer("stoi"))
-                            .addAll(moveStackPointerLeft(totalOffset));
+        return new Some<>(loadValue(definitions, value).flatMapValue(instructions -> {
+                    return definitions.computeFrameSize().mapValue(totalOffset -> {
+                        return new JavaList<Node>()
+                                .addAll(moveStackPointerRight(totalOffset))
+                                .addAll(instructions)
+                                .add(instructStackPointer("stoi"))
+                                .addAll(moveStackPointerLeft(totalOffset));
+                    });
                 })
                 .mapValue(list -> new Tuple<>(definitions.define(name, type), list)));
     }
@@ -169,9 +168,7 @@ public class RootPasser implements Passer {
         if (!node.is(SYMBOL_TYPE)) return new None<>();
 
         final var value = node.findString(SYMBOL_VALUE).orElse("");
-        final var offset = definitions.computeFrameSizeToSymbol(value);
-
-        return new Some<>(new Ok<>(new JavaList<Node>()
+        return new Some<>(definitions.computeFrameSizeToSymbol(value).mapValue(offset -> new JavaList<Node>()
                 .addAll(moveStackPointerRight(offset))
                 .add(instructStackPointer("ldi"))
                 .addAll(moveStackPointerLeft(offset))));
@@ -280,22 +277,28 @@ public class RootPasser implements Passer {
             this(new JavaOrderedMap<>());
         }
 
-        private long computeFrameSizeToSymbol(String symbol) {
-            final var index = definitions.findIndexOfKey(symbol).orElse(0);
-            final var slice = definitions.sliceToIndex(index).orElse(new JavaOrderedMap<>());
-            return slice.stream()
-                    .map(Tuple::right)
-                    .map(child -> child.findInt("length"))
-                    .flatMap(Streams::fromOption)
-                    .foldLeft(0L, Long::sum);
+        private static Result<Long, CompileError> findLengthOfType(Node type) {
+            return type.findInt("length")
+                    .<Result<Long, CompileError>>map(length -> new Ok<>((long) length))
+                    .orElseGet(() -> new Err<>(new CompileError("No length present", new NodeContext(type))));
         }
 
-        private long computeFrameSize() {
+        private Result<Long, CompileError> computeFrameSizeToSymbol(String symbol) {
+            final var index = definitions.findIndexOfKey(symbol).orElse(0);
+            final var slice = definitions.sliceToIndex(index).orElse(new JavaOrderedMap<>());
+            return sumTypes(slice);
+        }
+
+        private Result<Long, CompileError> sumTypes(JavaOrderedMap<String, Node> definitions) {
             return definitions.stream()
                     .map(Tuple::right)
-                    .map(node -> node.findInt("length"))
-                    .flatMap(Streams::fromOption)
-                    .foldLeft(0L, Long::sum);
+                    .map(Stack::findLengthOfType)
+                    .into(ResultStream::new)
+                    .foldResultsLeft(0L, Long::sum);
+        }
+
+        private Result<Long, CompileError> computeFrameSize() {
+            return sumTypes(definitions);
         }
 
         public Stack define(String name, Node type) {
