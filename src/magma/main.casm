@@ -39,7 +39,17 @@ section program {
 		subv 2;
 		stod $sp;
 		ldd cache;
-		ldv 100;
+		stod cache;
+		ldd $sp;
+		addv 2;
+		stod $sp;
+		ldd cache;
+		ldi $sp;
+		stod cache;
+		ldd $sp;
+		subv 2;
+		stod $sp;
+		ldd cache;
 		out;
 		halt;
 	}

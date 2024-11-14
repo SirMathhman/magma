@@ -40,10 +40,10 @@ public class RootPasser implements Passer {
         if (!node.is(RETURN_TYPE)) return new None<>();
 
         final var returnValue = node.findNode(RETURN_VALUE).orElse(new MapNode());
-        return new Some<>(loadValue(returnValue).mapValue(list -> {
+        return new Some<>(loadValue(definitions, returnValue).mapValue(list -> {
             return list.addAll(new JavaList<Node>()
-                    .add(createInstruction("out"))
-                    .add(createInstruction("halt")));
+                    .add(instruct("out"))
+                    .add(instruct("halt")));
         }).mapValue(instructions -> new Tuple<>(definitions, instructions)));
     }
 
@@ -53,45 +53,73 @@ public class RootPasser implements Passer {
         final var name = node.findString(DECLARATION_NAME).orElse("");
         final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
-        return new Some<>(loadValue(value).mapValue(instructions -> {
+        return new Some<>(loadValue(definitions, value).mapValue(instructions -> {
             final var offset = definitions.stream()
                     .map(Tuple::right)
                     .foldLeft(0L, Long::sum);
 
             final var list = instructions
-                    .addAll(moveStackPointer(createInstruction("addv", offset)))
-                    .add(createInstruction("stoi", STACK_POINTER))
-                    .addAll(moveStackPointer(createInstruction("subv", offset)));
+                    .addAll(moveStackPointerLeft(offset))
+                    .add(instructStackPointer("stoi"))
+                    .addAll(moveStackPointerRight(offset));
 
             return new Tuple<>(definitions.put(name, 1L), list);
         }));
     }
 
+    private static JavaList<Node> moveStackPointerRight(Long offset) {
+        return moveStackPointer(instruct("subv", offset));
+    }
+
+    private static JavaList<Node> moveStackPointerLeft(Long offset) {
+        return moveStackPointer(instruct("addv", offset));
+    }
+
     private static JavaList<Node> moveStackPointer(Node instruction) {
         return new JavaList<Node>()
-                .add(createInstruction("stod", DATA_CACHE))
-                .add(createInstruction("ldd", STACK_POINTER))
+                .add(instruct("stod", DATA_CACHE))
+                .add(instructStackPointer("ldd"))
                 .add(instruction)
-                .add(createInstruction("stod", STACK_POINTER))
-                .add(createInstruction("ldd", DATA_CACHE));
+                .add(instructStackPointer("stod"))
+                .add(instruct("ldd", DATA_CACHE));
     }
 
-    private static Node createInstruction(String mnemonic, long addresOrValue) {
-        return createInstruction(mnemonic).withInt(INSTRUCTION_ADDRESS_OR_VALUE, Math.toIntExact(addresOrValue));
+    private static Node instruct(String mnemonic, long addressOrValue) {
+        return instruct(mnemonic).withInt(INSTRUCTION_ADDRESS_OR_VALUE, Math.toIntExact(addressOrValue));
     }
 
-    private static Node createInstruction(String mnemonic, String label) {
-        return createInstruction(mnemonic).withString(INSTRUCTION_LABEL, label);
+    private static Node instruct(String mnemonic, String label) {
+        return instruct(mnemonic).withString(INSTRUCTION_LABEL, label);
     }
 
-    private static Node createInstruction(String mnemonic) {
+    private static Node instruct(String mnemonic) {
         return new MapNode(INSTRUCTION_TYPE)
                 .withString(BLOCK_BEFORE_CHILD, "\n\t\t")
                 .withString(INSTRUCTION_MNEMONIC, mnemonic);
     }
 
-    private static Result<JavaList<Node>, CompileError> loadValue(Node node) {
-        return loadNumber(node).orElseGet(() -> new Err<>(new CompileError("Unknown value", new NodeContext(node))));
+    private static Result<JavaList<Node>, CompileError> loadValue(JavaOrderedMap<String, Long> definitions, Node node) {
+        return loadNumber(node)
+                .or(() -> loadSymbol(definitions, node))
+                .orElseGet(() -> new Err<>(new CompileError("Unknown value", new NodeContext(node))));
+    }
+
+    private static Option<Result<JavaList<Node>, CompileError>> loadSymbol(JavaOrderedMap<String, Long> definitions, Node node) {
+        if (!node.is(SYMBOL_TYPE)) return new None<>();
+
+        final var value = node.findString(SYMBOL_VALUE).orElse("");
+        final var index = definitions.findIndexOfKey(value).orElse(0);
+        final var slice = definitions.sliceToIndex(index).orElse(new JavaOrderedMap<>());
+        final var offset = slice.stream().map(Tuple::right).foldLeft(0L, Long::sum);
+
+        return new Some<>(new Ok<>(new JavaList<Node>()
+                .addAll(moveStackPointerLeft(offset))
+                .add(instructStackPointer("ldi"))
+                .addAll(moveStackPointerRight(offset))));
+    }
+
+    private static Node instructStackPointer(String mnemonic) {
+        return instruct(mnemonic, STACK_POINTER);
     }
 
     private static Option<Result<JavaList<Node>, CompileError>> loadNumber(Node node) {
@@ -99,7 +127,7 @@ public class RootPasser implements Passer {
 
         final var value = node.findInt(NUMERIC_VALUE).orElse(0);
         final var instructions = new JavaList<Node>()
-                .add(createInstruction("ldv").withInt(INSTRUCTION_ADDRESS_OR_VALUE, value));
+                .add(instruct("ldv").withInt(INSTRUCTION_ADDRESS_OR_VALUE, value));
 
         return new Some<>(new Ok<>(instructions));
     }
