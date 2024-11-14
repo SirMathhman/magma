@@ -54,18 +54,20 @@ public class RootPasser implements Passer {
         final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
         return new Some<>(loadValue(stack, value)
-                .flatMapValue(instructions -> formatInstructions(stack, instructions.addFirst(comment("load value of declaration '" + name + "'"))))
+                .flatMapValue(instructions -> formatInstructions(stack, instructions, name))
                 .flatMapValue(instructions -> resolveType(stack, value)
                         .mapValue(type -> stack.define(name, type))
                         .mapValue(newStack -> new Tuple<>(newStack, instructions))));
     }
 
-    private static Result<JavaList<Node>, CompileError> formatInstructions(Stack stack, JavaList<Node> instructions) {
+    private static Result<JavaList<Node>, CompileError> formatInstructions(Stack stack, JavaList<Node> instructions, String name) {
         return stack.computeCurrentFrameSize().mapValue(frameSize -> new JavaList<Node>()
-                .addAll(moveStackPointerRight(frameSize))
+                .addLast(comment("load '" + name + "'"))
                 .addAll(instructions)
+                .addAll(moveStackPointerRight(frameSize, "move to '" + name + "'"))
+                .addLast(comment("store '" + name + "'"))
                 .addLast(instructStackPointer("stoi"))
-                .addAll(moveStackPointerLeft(frameSize)));
+                .addAll(moveStackPointerLeft(frameSize, "move from '" + name + "'")));
     }
 
     private static Result<Node, CompileError> resolveType(Stack stack, Node type) {
@@ -110,17 +112,26 @@ public class RootPasser implements Passer {
     }
 
     private static JavaList<Node> moveStackPointerLeft(long offset) {
+        return moveStackPointerLeft(offset, "");
+    }
+
+    private static JavaList<Node> moveStackPointerLeft(long offset, String comment) {
         if (offset == 0) return new JavaList<>();
-        return new JavaList<Node>()
-                .addLast(comment("move stack pointer left " + offset))
-                .addAll(moveStackPointer(instruct("subv", offset)));
+        final var list = comment.isEmpty() ? new JavaList<Node>() : new JavaList<Node>().addLast(comment(comment));
+        return list.addAll(moveStackPointer(instruct("subv", offset)));
     }
 
     private static JavaList<Node> moveStackPointerRight(long offset) {
+        return moveStackPointerRight(offset, "");
+    }
+
+    private static JavaList<Node> moveStackPointerRight(long offset, String message) {
         if (offset == 0) return new JavaList<>();
-        return new JavaList<Node>()
-                .addLast(comment("move stack pointer right " + offset))
-                .addAll(moveStackPointer(instruct("addv", offset)));
+        final var list = message.isEmpty()
+                ? new JavaList<Node>()
+                : new JavaList<Node>().addLast(comment(message));
+
+        return list.addAll(moveStackPointer(instruct("addv", offset)));
     }
 
     private static Node comment(String message) {
@@ -207,7 +218,7 @@ public class RootPasser implements Passer {
                             .into(ResultStream::new)
                             .foldResultsLeft(-1L, Long::sum).mapValue(sum -> instructions
                                     .addAll(moveStackPointerLeft(sum))
-                                    .addLast(comment("store tuple head"))
+                                    .addLast(comment("load tuple head"))
                                     .addLast(instructStackPointer("ldd"))
                                     .addAll(moveStackPointerLeft(1)));
                 });
@@ -219,10 +230,15 @@ public class RootPasser implements Passer {
         if (!node.is(SYMBOL_TYPE)) return new None<>();
 
         final var value = node.findString(SYMBOL_VALUE).orElse("");
-        return new Some<>(definitions.computeFrameSizeToSymbol(value).mapValue(offset -> new JavaList<Node>()
+        return new Some<>(definitions.computeFrameSizeToSymbol(value).mapValue(offset -> getLdi(offset, value)));
+    }
+
+    private static JavaList<Node> getLdi(long offset, String value) {
+        return new JavaList<Node>()
+                .addFirst(comment("load symbol '" + value + "'"))
                 .addAll(moveStackPointerRight(offset))
                 .addLast(instructStackPointer("ldi"))
-                .addAll(moveStackPointerLeft(offset))));
+                .addAll(moveStackPointerLeft(offset));
     }
 
     private static Node instructStackPointer(String mnemonic) {

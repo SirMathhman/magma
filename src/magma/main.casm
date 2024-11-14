@@ -3,8 +3,8 @@ section data {
 }
 section program {
 	label __main__ {
-		// load value of declaration 'array';
-		// move stack pointer right 1;
+		// write 'array';
+		// load 'array';
 		stod cache;
 		ldd $sp;
 		addv 1;
@@ -14,25 +14,28 @@ section program {
 		// load number 100;
 		ldv 100;
 		stoi $sp;
-		// store tuple head;
+		// load tuple head;
 		ldd $sp;
-		// move stack pointer left 1;
 		stod cache;
 		ldd $sp;
 		subv 1;
 		stod $sp;
 		ldd cache;
+		// store 'array';
 		stoi $sp;
-		// move stack pointer right 2;
+		// write 'copy';
+		// load 'copy';
+		// load symbol 'array';
+		ldi $sp;
+		// move to 'copy';
 		stod cache;
 		ldd $sp;
 		addv 2;
 		stod $sp;
 		ldd cache;
-		// load value of declaration 'copy';
-		ldi $sp;
+		// store 'copy';
 		stoi $sp;
-		// move stack pointer left 2;
+		// move from 'copy';
 		stod cache;
 		ldd $sp;
 		subv 2;

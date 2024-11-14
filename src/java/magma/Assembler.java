@@ -292,7 +292,7 @@ public class Assembler {
             }
         } finally {
             System.out.println();
-            System.out.println("Program Counter: " + Long.toHexString(programCounter));
+            System.out.println("Program Counter: " + Long.toHexString(programCounter - 1));
             System.out.println("Accumulator: " + Long.toHexString(accumulator));
             System.out.println("Final Memory State:\n" + formatHexList(memory, labels));
         }
