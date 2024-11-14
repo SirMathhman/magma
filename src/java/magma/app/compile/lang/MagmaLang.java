@@ -39,7 +39,7 @@ public class MagmaLang {
         final var value = new NodeRule(DECLARATION_VALUE, createValueRule());
         final var name = new StripRule(new StringRule(DECLARATION_NAME));
         final var definition = new PrefixRule("let ", name);
-        return new TypeRule(DECLARATION_TYPE, new FirstRule(definition, "=", new SuffixRule(value, ";")));
+        return new TypeRule(DECLARATION_TYPE, new FirstRule(new FirstLocator("="), definition, "=", new SuffixRule(value, ";")));
     }
 
     private static Rule createValueRule() {
@@ -58,7 +58,7 @@ public class MagmaLang {
     private static TypeRule createIndexRule(LazyRule value) {
         final var indexValue = new NodeRule(INDEX_VALUE, value);
         final var indexOffset = new NodeRule(INDEX_OFFSET, value);
-        return new TypeRule(INDEX_TYPE, new FirstRule(indexValue, "[", new StripRule(new SuffixRule(indexOffset, "]"))));
+        return new TypeRule(INDEX_TYPE, new FirstRule(new LastLocator("["), indexValue, "[", new StripRule(new SuffixRule(indexOffset, "]"))));
     }
 
     private static TypeRule createArrayRule(LazyRule value) {
@@ -67,7 +67,7 @@ public class MagmaLang {
     }
 
     private static TypeRule createAddRule(Rule value) {
-        return new TypeRule(ADD_TYPE, new FirstRule(new NodeRule(ADD_LEFT, value), "+", new NodeRule(ADD_RIGHT, value)));
+        return new TypeRule(ADD_TYPE, new FirstRule(new FirstLocator("+"), new NodeRule(ADD_LEFT, value), "+", new NodeRule(ADD_RIGHT, value)));
     }
 
     private static TypeRule createSymbolRule() {

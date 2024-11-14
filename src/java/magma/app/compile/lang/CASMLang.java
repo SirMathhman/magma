@@ -46,7 +46,7 @@ public class CASMLang {
     private static Rule createGroupRule(String type, String prefix, Rule statement) {
         final var name = new StripRule("", new StringRule(GROUP_NAME), GROUP_AFTER_NAME);
         final var block = new NodeRule(GROUP_VALUE, createBlockRule(statement));
-        final var childRule = new PrefixRule(prefix, new FirstRule(name, "{", new SuffixRule(block, "}")));
+        final var childRule = new PrefixRule(prefix, new FirstRule(new FirstLocator("{"), name, "{", new SuffixRule(block, "}")));
         return new TypeRule(type, new StripRule("", childRule, GROUP_AFTER));
     }
 
@@ -65,7 +65,7 @@ public class CASMLang {
     private static TypeRule createInstructionRule() {
         final var opCode = new StringRule(INSTRUCTION_MNEMONIC);
         return new TypeRule(INSTRUCTION_TYPE, new SuffixRule(new OrRule(List.of(
-                new FirstRule(opCode, " ", new OrRule(List.of(
+                new FirstRule(new FirstLocator(" "), opCode, " ", new OrRule(List.of(
                         new StringRule(INSTRUCTION_LABEL),
                         new IntRule(INSTRUCTION_ADDRESS_OR_VALUE)
                 ))),
@@ -78,7 +78,7 @@ public class CASMLang {
         final var name = new StripRule("", nameFilter, DATA_AFTER_NAME);
         final var value = new StripRule(DATA_BEFORE_VALUE, new NodeRule(DATA_VALUE, createValueRule()), "");
 
-        return new TypeRule(DATA_TYPE, new FirstRule(name, "=", new StripRule(new SuffixRule(value, ";"))));
+        return new TypeRule(DATA_TYPE, new FirstRule(new FirstLocator("="), name, "=", new StripRule(new SuffixRule(value, ";"))));
     }
 
     private static Rule createValueRule() {

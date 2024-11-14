@@ -113,7 +113,17 @@ section program {
 		stod $sp;
 		ldd cache;
 		stoi $sp;
-		ldv 0;
+		ldi $sp;
+		stod cache;
+		ldv 2;
+		addd cache;
+		stod cache;
+		ldi cache;
+		stod cache;
+		ldv 2;
+		addd cache;
+		stod cache;
+		ldi cache;
 		out;
 		halt;
 	}
