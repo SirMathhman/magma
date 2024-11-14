@@ -45,7 +45,6 @@ public class RootPasser implements Passer {
 
             return computeLength(value).flatMapValue(length -> {
                 final var added = state.put(name, length);
-
                 return loadValue(state, value)
                         .mapValue(loadInstructions -> {
                             final var offset = state.stream()
@@ -54,7 +53,6 @@ public class RootPasser implements Passer {
 
                             return loadInstructions.addAll(pushToStack(offset));
                         })
-                        .mapValue(list -> moveStackPointerRight(1L).addAll(list))
                         .mapValue(list -> new Tuple<>(added, list));
             });
         }

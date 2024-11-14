@@ -56,7 +56,7 @@ public class Assembler {
     public static final String INIT = "__init__";
     public static final int LOOP_OFFSET = 5;
     public static final String MAIN = "__main__";
-    public static final long OFFSET = 2L;
+    public static final long OFFSET = 3L;
     public static final String SECTION_PROGRAM = "program";
     private static final int ADD_VALUE = 0x1a;
     private static final int LOAD_INDIRECT = 0x19;
