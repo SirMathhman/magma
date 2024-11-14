@@ -107,173 +107,175 @@ public class Assembler {
         long accumulator = 0;  // Holds current value for operations
         int programCounter = 0;
 
-        while (programCounter < memory.size()) {
-            final long instructionUnsigned = memory.get(programCounter);
+        try {
+            while (programCounter < memory.size()) {
+                final long instructionUnsigned = memory.get(programCounter);
 
-            // Decode the instruction
-            int opcode = (int) ((instructionUnsigned >> 56) & 0xFF);  // First 8 bits
-            long addressOrValue = instructionUnsigned & 0x00FFFFFFFFFFFFFFL;  // Remaining 56 bits
+                // Decode the instruction
+                int opcode = (int) ((instructionUnsigned >> 56) & 0xFF);  // First 8 bits
+                long addressOrValue = instructionUnsigned & 0x00FFFFFFFFFFFFFFL;  // Remaining 56 bits
 
-            programCounter++;  // Move to next instruction by default
+                programCounter++;  // Move to next instruction by default
 
-            // Execute based on opcode
-            switch (opcode) {
-                case NO_OPERATION:
-                    break;
-                case PUSH:
-                    final var pushed = memory.get((int) STACK_POINTER_ADDRESS);
-                    final var next = pushed + 1;
-
-                    while (!(next < memory.size())) memory.add(0L);
-                    memory.set((int) next, accumulator);
-                    memory.set((int) STACK_POINTER_ADDRESS, next);
-                    break;
-                case POP:
-                    final var popped = memory.get((int) STACK_POINTER_ADDRESS);
-                    accumulator = memory.get(Math.toIntExact(popped));
-                    memory.set((int) STACK_POINTER_ADDRESS, popped - 1);
-                    break;
-                case INPUT_AND_LOAD:  // INP
-                    if (((Deque<Long>) input).isEmpty()) {
-                        throw new RuntimeException("Input queue is empty.");
-                    } else {
-                        accumulator = ((Deque<Long>) input).poll();
-                    }
-                    break;
-                case INPUT_AND_STORE:  // INP
-                    if (((Deque<Long>) input).isEmpty()) {
-                        throw new RuntimeException("Input queue is empty.");
-                    } else {
-                        final var polled = ((Deque<Long>) input).poll();
-                        set(memory, addressOrValue, polled);
+                // Execute based on opcode
+                switch (opcode) {
+                    case NO_OPERATION:
                         break;
-                    }
-                case LOAD_DIRECT:  // LOAD
-                    accumulator = addressOrValue < memory.size() ? memory.get((int) addressOrValue) : 0;
-                    break;
-                case LOAD_INDIRECT:
-                    final var first = memory.get((int) addressOrValue);
-                    accumulator = memory.get(Math.toIntExact(first));
-                    break;
-                case LOAD_VALUE:
-                    accumulator = addressOrValue;
-                    break;
-                case LOAD_ACCUMULATOR:
-                    accumulator = memory.get((int) accumulator);
-                    break;
-                case STORE_DIRECT:  // STO
-                    if (addressOrValue < memory.size()) {
-                        memory.set((int) addressOrValue, accumulator);
-                    } else {
-                        System.err.println("Address out of bounds.");
-                    }
-                    break;
-                case STORE_INDIRECT:
-                    if (addressOrValue < memory.size()) {
-                        final var index = memory.get((int) addressOrValue);
+                    case PUSH:
+                        final var pushed = memory.get((int) STACK_POINTER_ADDRESS);
+                        final var next = pushed + 1;
 
-                        while (!(index < memory.size())) {
-                            memory.add(0L);
-                        }
-
-                        memory.set((int) index.longValue(), accumulator);
-                    } else {
-                        System.err.println("Address out of bounds.");
-                    }
-                    break;
-                case OUT:  // OUT
-                    System.out.print(accumulator);
-                    break;
-                case ADD_VALUE:
-                    accumulator += addressOrValue;
-                    break;
-                case ADD_DIRECT:  // ADD
-                    if (addressOrValue < memory.size()) {
-                        accumulator += memory.get((int) addressOrValue);
-                    } else {
-                        System.err.println("Address out of bounds.");
-                    }
-                    break;
-                case ADD_INDIRECT:  // ADD
-                    if (addressOrValue < memory.size()) {
-                        accumulator += memory.get(Math.toIntExact(memory.get((int) addressOrValue)));
-                    } else {
-                        System.err.println("Address out of bounds.");
-                    }
-                    break;
-                case SUBTRACT_ADDRESS:  // SUB
-                    if (addressOrValue < memory.size()) {
-                        accumulator -= memory.get((int) addressOrValue);
-                    } else {
-                        System.err.println("Address out of bounds.");
-                    }
-                    break;
-                case SUBTRACT_VALUE:
-                    accumulator -= addressOrValue;
-                    break;
-                case INCREMENT:  // INC
-                    if (addressOrValue < memory.size()) {
-                        final var cast = (int) addressOrValue;
-                        memory.set(cast, memory.get(cast) + 1);
-                    }
-                    break;
-                case DEC:  // DEC
-                    if (addressOrValue < memory.size()) {
-                        memory.set((int) addressOrValue, memory.get((int) addressOrValue) - 1);
-                    }
-                    break;
-                case TAC:  // TAC
-                    if (accumulator < 0) {
-                        programCounter = (int) addressOrValue;
-                    }
-                    break;
-                case JUMP_ADDRESS:  // JMP
-                    programCounter = (int) addressOrValue;
-                    break;
-                case JUMP_ACCUMULATOR:
-                    programCounter = (int) accumulator;
-                    break;
-                case HALT:  // HRS
-                    finished = true;
-                    break;
-                case SFT:  // SFT
-                    int leftShift = (int) ((addressOrValue >> 8) & 0xFF);
-                    int rightShift = (int) (addressOrValue & 0xFF);
-                    accumulator = (accumulator << leftShift) >> rightShift;
-                    break;
-                case SHL:  // SHL
-                    accumulator <<= addressOrValue;
-                    break;
-                case SHR:  // SHR
-                    accumulator >>= addressOrValue;
-                    break;
-                case TS:  // TS
-                    if (addressOrValue < memory.size()) {
-                        if (memory.get((int) addressOrValue) == 0) {
-                            memory.set((int) addressOrValue, 1L);
+                        while (!(next < memory.size())) memory.add(0L);
+                        memory.set((int) next, accumulator);
+                        memory.set((int) STACK_POINTER_ADDRESS, next);
+                        break;
+                    case POP:
+                        final var popped = memory.get((int) STACK_POINTER_ADDRESS);
+                        accumulator = memory.get(Math.toIntExact(popped));
+                        memory.set((int) STACK_POINTER_ADDRESS, popped - 1);
+                        break;
+                    case INPUT_AND_LOAD:  // INP
+                        if (((Deque<Long>) input).isEmpty()) {
+                            throw new RuntimeException("Input queue is empty.");
                         } else {
-                            programCounter--;  // Retry this instruction if lock isn't available
+                            accumulator = ((Deque<Long>) input).poll();
                         }
-                    }
-                    break;
-                case CAS:  // CAS
-                    long oldValue = memory.get((int) addressOrValue);
-                    long compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
-                    long newValue = addressOrValue & 0xFFFFFFFFL;
-                    if (oldValue == compareValue) {
-                        memory.set((int) addressOrValue, newValue);
-                    }
-                    break;
-                default:
-                    System.err.println("Unknown opcode: " + opcode);
-                    break;
-            }
-            if (finished) break;
-        }
+                        break;
+                    case INPUT_AND_STORE:  // INP
+                        if (((Deque<Long>) input).isEmpty()) {
+                            throw new RuntimeException("Input queue is empty.");
+                        } else {
+                            final var polled = ((Deque<Long>) input).poll();
+                            set(memory, addressOrValue, polled);
+                            break;
+                        }
+                    case LOAD_DIRECT:  // LOAD
+                        accumulator = addressOrValue < memory.size() ? memory.get((int) addressOrValue) : 0;
+                        break;
+                    case LOAD_INDIRECT:
+                        final var first = memory.get((int) addressOrValue);
+                        accumulator = memory.get(Math.toIntExact(first));
+                        break;
+                    case LOAD_VALUE:
+                        accumulator = addressOrValue;
+                        break;
+                    case LOAD_ACCUMULATOR:
+                        accumulator = memory.get((int) accumulator);
+                        break;
+                    case STORE_DIRECT:  // STO
+                        if (addressOrValue < memory.size()) {
+                            memory.set((int) addressOrValue, accumulator);
+                        } else {
+                            System.err.println("Address out of bounds.");
+                        }
+                        break;
+                    case STORE_INDIRECT:
+                        if (addressOrValue < memory.size()) {
+                            final var index = memory.get((int) addressOrValue);
 
-        System.out.println();
-        System.out.println("Accumulator: " + Long.toHexString(accumulator));
-        System.out.println("Final Memory State:\n" + formatHexList(memory, labels));
+                            while (!(index < memory.size())) {
+                                memory.add(0L);
+                            }
+
+                            memory.set((int) index.longValue(), accumulator);
+                        } else {
+                            System.err.println("Address out of bounds.");
+                        }
+                        break;
+                    case OUT:  // OUT
+                        System.out.print(accumulator);
+                        break;
+                    case ADD_VALUE:
+                        accumulator += addressOrValue;
+                        break;
+                    case ADD_DIRECT:  // ADD
+                        if (addressOrValue < memory.size()) {
+                            accumulator += memory.get((int) addressOrValue);
+                        } else {
+                            System.err.println("Address out of bounds.");
+                        }
+                        break;
+                    case ADD_INDIRECT:  // ADD
+                        if (addressOrValue < memory.size()) {
+                            accumulator += memory.get(Math.toIntExact(memory.get((int) addressOrValue)));
+                        } else {
+                            System.err.println("Address out of bounds.");
+                        }
+                        break;
+                    case SUBTRACT_ADDRESS:  // SUB
+                        if (addressOrValue < memory.size()) {
+                            accumulator -= memory.get((int) addressOrValue);
+                        } else {
+                            System.err.println("Address out of bounds.");
+                        }
+                        break;
+                    case SUBTRACT_VALUE:
+                        accumulator -= addressOrValue;
+                        break;
+                    case INCREMENT:  // INC
+                        if (addressOrValue < memory.size()) {
+                            final var cast = (int) addressOrValue;
+                            memory.set(cast, memory.get(cast) + 1);
+                        }
+                        break;
+                    case DEC:  // DEC
+                        if (addressOrValue < memory.size()) {
+                            memory.set((int) addressOrValue, memory.get((int) addressOrValue) - 1);
+                        }
+                        break;
+                    case TAC:  // TAC
+                        if (accumulator < 0) {
+                            programCounter = (int) addressOrValue;
+                        }
+                        break;
+                    case JUMP_ADDRESS:  // JMP
+                        programCounter = (int) addressOrValue;
+                        break;
+                    case JUMP_ACCUMULATOR:
+                        programCounter = (int) accumulator;
+                        break;
+                    case HALT:  // HRS
+                        finished = true;
+                        break;
+                    case SFT:  // SFT
+                        int leftShift = (int) ((addressOrValue >> 8) & 0xFF);
+                        int rightShift = (int) (addressOrValue & 0xFF);
+                        accumulator = (accumulator << leftShift) >> rightShift;
+                        break;
+                    case SHL:  // SHL
+                        accumulator <<= addressOrValue;
+                        break;
+                    case SHR:  // SHR
+                        accumulator >>= addressOrValue;
+                        break;
+                    case TS:  // TS
+                        if (addressOrValue < memory.size()) {
+                            if (memory.get((int) addressOrValue) == 0) {
+                                memory.set((int) addressOrValue, 1L);
+                            } else {
+                                programCounter--;  // Retry this instruction if lock isn't available
+                            }
+                        }
+                        break;
+                    case CAS:  // CAS
+                        long oldValue = memory.get((int) addressOrValue);
+                        long compareValue = (addressOrValue >> 32) & 0xFFFFFFFFL;
+                        long newValue = addressOrValue & 0xFFFFFFFFL;
+                        if (oldValue == compareValue) {
+                            memory.set((int) addressOrValue, newValue);
+                        }
+                        break;
+                    default:
+                        System.err.println("Unknown opcode: " + opcode);
+                        break;
+                }
+                if (finished) break;
+            }
+        } finally {
+            System.out.println();
+            System.out.println("Accumulator: " + Long.toHexString(accumulator));
+            System.out.println("Final Memory State:\n" + formatHexList(memory, labels));
+        }
     }
 
     private static void set(List<Long> memory, long address, long value) {
