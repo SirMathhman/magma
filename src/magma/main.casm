@@ -3,7 +3,7 @@ section data {
 }
 section program {
 	label __main__ {
-		ldv 5;
+		ldv 100;
 		stod cache;
 		ldd $sp;
 		addv 0;
@@ -15,7 +15,17 @@ section program {
 		subv 0;
 		stod $sp;
 		ldd cache;
-		ldv 6;
+		stod cache;
+		ldd $sp;
+		addv 0;
+		stod $sp;
+		ldd cache;
+		ldi $sp;
+		stod cache;
+		ldd $sp;
+		subv 0;
+		stod $sp;
+		ldd cache;
 		stod cache;
 		ldd $sp;
 		addv 1;
@@ -27,27 +37,15 @@ section program {
 		subv 1;
 		stod $sp;
 		ldd cache;
-		ldv 7;
 		stod cache;
 		ldd $sp;
-		addv 2;
-		stod $sp;
-		ldd cache;
-		stoi $sp;
-		stod cache;
-		ldd $sp;
-		subv 2;
-		stod $sp;
-		ldd cache;
-		stod cache;
-		ldd $sp;
-		addv 2;
+		addv 1;
 		stod $sp;
 		ldd cache;
 		ldi $sp;
 		stod cache;
 		ldd $sp;
-		subv 2;
+		subv 1;
 		stod $sp;
 		ldd cache;
 		out;
