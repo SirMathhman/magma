@@ -6,7 +6,7 @@ import java.util.List;
 
 public class CASMLang {
     public static final String OP_CODE = "op-code";
-    public static final String MNEMONIC = "mnemonic";
+    public static final String INSTRUCTION_MNEMONIC = "mnemonic";
 
     public static final String INSTRUCTION_ADDRESS_OR_VALUE = "addressOrValue";
     public static final String CHAR_TYPE = "char";
@@ -58,7 +58,7 @@ public class CASMLang {
     }
 
     private static TypeRule createInstructionRule() {
-        final var opCode = new StringRule(MNEMONIC);
+        final var opCode = new StringRule(INSTRUCTION_MNEMONIC);
         return new TypeRule(INSTRUCTION_TYPE, new SuffixRule(new OrRule(List.of(
                 new FirstRule(opCode, " ", new OrRule(List.of(
                         new StringRule(INSTRUCTION_LABEL),

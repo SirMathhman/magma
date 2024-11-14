@@ -14,21 +14,54 @@ import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 import magma.app.compile.lang.CASMLang;
+import magma.app.compile.lang.MagmaLang;
 import magma.java.JavaList;
 import magma.java.JavaOrderedMap;
 
 import java.util.List;
 
-import static magma.Assembler.MAIN;
-import static magma.Assembler.SECTION_PROGRAM;
+import static magma.Assembler.*;
 import static magma.app.compile.lang.CASMLang.*;
+import static magma.app.compile.lang.MagmaLang.*;
 import static magma.app.compile.lang.MagmaLang.ROOT_TYPE;
 
 public class RootPasser implements Passer {
     public static final String PROGRAM_SECTION = SECTION_PROGRAM;
     public static final String DATA_SECTION = "data";
 
-    private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> parseRootMember(JavaOrderedMap<String, Long> definitions, Node node) {
+    private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> writeRootMember(JavaOrderedMap<String, Long> definitions, Node node) {
+        return writeDeclaration(definitions, node).orElseGet(() -> invalidateRootMember(node));
+    }
+
+    private static Option<Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError>> writeDeclaration(JavaOrderedMap<String, Long> definitions, Node node) {
+        if (!node.is(DECLARATION_TYPE)) return new None<>();
+
+        final var name = node.findString(DECLARATION_NAME).orElse("");
+        final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
+
+        return new Some<>(loadValue(value).mapValue(valueInstructions -> {
+            final var list = valueInstructions.add(createInstruction("stoi")
+                    .withString(INSTRUCTION_LABEL, STACK_POINTER));
+            return new Tuple<>(definitions, list);
+        }));
+    }
+
+    private static Node createInstruction(String mnemonic) {
+        return new MapNode(INSTRUCTION_TYPE)
+                .withString(INSTRUCTION_MNEMONIC, mnemonic);
+    }
+
+    private static Result<JavaList<Node>, CompileError> loadValue(Node node) {
+        if (node.is(MagmaLang.NUMERIC_TYPE)) {
+            final var value = node.findInt(NUMERIC_VALUE).orElse(0);
+            return new Ok<>(new JavaList<Node>()
+                    .add(createInstruction("ldv").withInt(INSTRUCTION_ADDRESS_OR_VALUE, value)));
+        }
+
+        return new Err<>(new CompileError("Unknown value", new NodeContext(node)));
+    }
+
+    private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> invalidateRootMember(Node node) {
         final var context = new NodeContext(node);
         final var message = new CompileError("Cannot create instructions for root child", context);
         return new Err<>(message);
@@ -82,7 +115,7 @@ public class RootPasser implements Passer {
         final var oldState = tuple.left();
         final var oldList = tuple.right();
 
-        return parseRootMember(oldState, node)
+        return writeRootMember(oldState, node)
                 .mapValue(newStateAndInstructions -> newStateAndInstructions.mapRight(oldList::addAll));
     }
 

@@ -513,7 +513,7 @@ public class Assembler {
     }
 
     private static Result<Node, CompileError> getNode(Node instruction) {
-        return instruction.findString(MNEMONIC)
+        return instruction.findString(INSTRUCTION_MNEMONIC)
                 .map(mnemonic -> parseMnemonic(instruction, mnemonic))
                 .orElseGet(() -> new Err<>(new CompileError("No mnemonic present", new NodeContext(instruction))));
     }

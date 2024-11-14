@@ -11,8 +11,8 @@ public class MagmaLang {
     public static final String RETURN_TYPE = "return";
     public static final String ROOT_TYPE = "root";
     public static final String DECLARATION_VALUE = "value";
-    public static final String NUMBER_TYPE = "number";
-    public static final String NUMBER_VALUE = "value";
+    public static final String NUMERIC_TYPE = "number";
+    public static final String NUMERIC_VALUE = "value";
     public static final String SYMBOL_TYPE = "symbol";
     public static final String SYMBOL_VALUE = "value";
     public static final String DECLARATION_NAME = "name";
@@ -72,7 +72,7 @@ public class MagmaLang {
     }
 
     private static Rule createNumberRule() {
-        return new TypeRule(NUMBER_TYPE, new StripRule(new FilterRule(new NumberFilter(), new IntRule(NUMBER_VALUE))));
+        return new TypeRule(NUMERIC_TYPE, new StripRule(new FilterRule(new NumberFilter(), new IntRule(NUMERIC_VALUE))));
     }
 
     private static Rule createReturnRule() {
