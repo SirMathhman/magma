@@ -28,6 +28,7 @@ import static magma.app.compile.lang.MagmaLang.*;
 public class RootPasser implements Passer {
     public static final String PROGRAM_SECTION = SECTION_PROGRAM;
     public static final String DATA_SECTION = "data";
+    public static final String DATA_CACHE = "cache";
 
     private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> writeRootMember(JavaOrderedMap<String, Long> definitions, Node node) {
         return writeDeclaration(definitions, node)
@@ -52,11 +53,35 @@ public class RootPasser implements Passer {
         final var name = node.findString(DECLARATION_NAME).orElse("");
         final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
-        return new Some<>(loadValue(value).mapValue(valueInstructions -> {
-            final var list = valueInstructions.add(createInstruction("stoi")
-                    .withString(INSTRUCTION_LABEL, STACK_POINTER));
-            return new Tuple<>(definitions, list);
+        return new Some<>(loadValue(value).mapValue(instructions -> {
+            final var offset = definitions.stream()
+                    .map(Tuple::right)
+                    .foldLeft(0L, Long::sum);
+
+            final var list = instructions
+                    .addAll(moveStackPointer(createInstruction("addv", offset)))
+                    .add(createInstruction("stoi", STACK_POINTER))
+                    .addAll(moveStackPointer(createInstruction("subv", offset)));
+
+            return new Tuple<>(definitions.put(name, 1L), list);
         }));
+    }
+
+    private static JavaList<Node> moveStackPointer(Node instruction) {
+        return new JavaList<Node>()
+                .add(createInstruction("stod", DATA_CACHE))
+                .add(createInstruction("ldd", STACK_POINTER))
+                .add(instruction)
+                .add(createInstruction("stod", STACK_POINTER))
+                .add(createInstruction("ldd", DATA_CACHE));
+    }
+
+    private static Node createInstruction(String mnemonic, long addresOrValue) {
+        return createInstruction(mnemonic).withInt(INSTRUCTION_ADDRESS_OR_VALUE, Math.toIntExact(addresOrValue));
+    }
+
+    private static Node createInstruction(String mnemonic, String label) {
+        return createInstruction(mnemonic).withString(INSTRUCTION_LABEL, label);
     }
 
     private static Node createInstruction(String mnemonic) {
@@ -112,7 +137,7 @@ public class RootPasser implements Passer {
                 .withString(BLOCK_BEFORE_CHILD, "\n\t")
                 .withString(DATA_AFTER_NAME, " ")
                 .withString(DATA_BEFORE_VALUE, " ")
-                .withString(DATA_NAME, "cache")
+                .withString(DATA_NAME, DATA_CACHE)
                 .withNode(DATA_VALUE, cacheValue);
 
         final var dataValue = new MapNode(BLOCK_TYPE)
