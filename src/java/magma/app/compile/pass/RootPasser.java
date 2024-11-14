@@ -40,11 +40,11 @@ public class RootPasser implements Passer {
         if (!node.is(RETURN_TYPE)) return new None<>();
 
         final var returnValue = node.findNode(RETURN_VALUE).orElse(new MapNode());
-        return new Some<>(loadValue(definitions, returnValue).mapValue(list -> {
-            return list.addAll(new JavaList<Node>()
-                    .add(instruct("out"))
-                    .add(instruct("halt")));
-        }).mapValue(instructions -> new Tuple<>(definitions, instructions)));
+        return new Some<>(loadValue(definitions, returnValue)
+                .mapValue(list -> list.addAll(new JavaList<Node>()
+                        .add(instruct("out"))
+                        .add(instruct("halt"))))
+                .mapValue(instructions -> new Tuple<>(definitions, instructions)));
     }
 
     private static Option<Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError>> writeDeclaration(JavaOrderedMap<String, Long> definitions, Node node) {
@@ -53,25 +53,30 @@ public class RootPasser implements Passer {
         final var name = node.findString(DECLARATION_NAME).orElse("");
         final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
-        return new Some<>(loadValue(definitions, value).mapValue(instructions -> {
-            final var offset = definitions.stream()
-                    .map(Tuple::right)
-                    .foldLeft(0L, Long::sum);
-
-            final var list = instructions
-                    .addAll(moveStackPointerLeft(offset))
-                    .add(instructStackPointer("stoi"))
-                    .addAll(moveStackPointerRight(offset));
-
-            return new Tuple<>(definitions.put(name, 1L), list);
-        }));
+        return new Some<>(pushValueToStack(definitions, value, 0L)
+                .mapValue(list -> new Tuple<>(definitions.put(name, 1L), list)));
     }
 
-    private static JavaList<Node> moveStackPointerRight(Long offset) {
+    private static Result<JavaList<Node>, CompileError> pushValueToStack(JavaOrderedMap<String, Long> definitions, Node value, long initialOffset) {
+        return loadValue(definitions, value).mapValue(instructions -> {
+            final var totalOffset = definitions.stream()
+                    .map(Tuple::right)
+                    .foldLeft(initialOffset, Long::sum);
+
+            return instructions
+                    .addAll(moveStackPointerRight(totalOffset))
+                    .add(instructStackPointer("stoi"))
+                    .addAll(moveStackPointerLeft(totalOffset));
+        });
+    }
+
+    private static JavaList<Node> moveStackPointerLeft(long offset) {
+        if (offset == 0) return new JavaList<>();
         return moveStackPointer(instruct("subv", offset));
     }
 
-    private static JavaList<Node> moveStackPointerLeft(Long offset) {
+    private static JavaList<Node> moveStackPointerRight(long offset) {
+        if (offset == 0) return new JavaList<>();
         return moveStackPointer(instruct("addv", offset));
     }
 
@@ -101,7 +106,37 @@ public class RootPasser implements Passer {
     private static Result<JavaList<Node>, CompileError> loadValue(JavaOrderedMap<String, Long> definitions, Node node) {
         return loadNumber(node)
                 .or(() -> loadSymbol(definitions, node))
+                .or(() -> loadArray(definitions, node))
                 .orElseGet(() -> new Err<>(new CompileError("Unknown value", new NodeContext(node))));
+    }
+
+    private static Option<Result<JavaList<Node>, CompileError>> loadArray(JavaOrderedMap<String, Long> definitions, Node node) {
+        if (!node.is(ARRAY_TYPE)) return new None<>();
+
+        final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>());
+        final var list = values.streamWithIndex()
+                .foldLeftToResult(new JavaList<Node>(), (current, tuple) -> {
+                    final var index = tuple.left();
+                    final var value = tuple.right();
+
+                    return loadValue(definitions, value).mapValue(instructions -> {
+                        final var totalOffset = definitions.stream()
+                                .map(Tuple::right)
+                                .foldLeft((long) 1, Long::sum);
+
+                        return instructions
+                                .add(instructStackPointer("stoi"))
+                                .addAll(moveStackPointerRight(totalOffset));
+                    }).mapValue(current::addAll);
+                })
+                .mapValue(value -> {
+                    return value
+                            .addAll(moveStackPointerLeft(values.size()))
+                            .add(instructStackPointer("ldd"))
+                            .addAll(moveStackPointerRight(values.size()));
+                });
+
+        return new Some<>(list);
     }
 
     private static Option<Result<JavaList<Node>, CompileError>> loadSymbol(JavaOrderedMap<String, Long> definitions, Node node) {
@@ -113,9 +148,9 @@ public class RootPasser implements Passer {
         final var offset = slice.stream().map(Tuple::right).foldLeft(0L, Long::sum);
 
         return new Some<>(new Ok<>(new JavaList<Node>()
-                .addAll(moveStackPointerLeft(offset))
+                .addAll(moveStackPointerRight(offset))
                 .add(instructStackPointer("ldi"))
-                .addAll(moveStackPointerRight(offset))));
+                .addAll(moveStackPointerLeft(offset))));
     }
 
     private static Node instructStackPointer(String mnemonic) {
