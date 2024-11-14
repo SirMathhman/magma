@@ -147,13 +147,22 @@ public class RootPasser implements Passer {
                     final var index = tuple.left();
                     final var value = tuple.right();
 
-                    return loadValue(definitions, value).mapValue(instructions -> instructions
-                            .add(instructStackPointer("stoi"))
-                            .addAll(moveStackPointerRight(1))).mapValue(current::addAll);
+                    return computeLength(value).flatMapValue(valueLength -> {
+                        return loadValue(definitions, value).mapValue(instructions -> instructions
+                                .add(instructStackPointer("stoi"))
+                                .addAll(moveStackPointerRight(valueLength))).mapValue(current::addAll);
+                    });
                 })
-                .mapValue(value -> value.addAll(moveStackPointerLeft(values.size()))
-                        .add(instructStackPointer("ldd"))
-                        .addAll(moveStackPointerLeft(1)));
+                .flatMapValue(instructions -> {
+                    return values.stream()
+                            .map(RootPasser::computeLength)
+                            .into(ResultStream::new)
+                            .foldResultsLeft(0L, Long::sum).mapValue(sum -> {
+                                return instructions.addAll(moveStackPointerLeft(sum))
+                                        .add(instructStackPointer("ldd"))
+                                        .addAll(moveStackPointerLeft(1));
+                            });
+                });
 
         return new Some<>(list);
     }

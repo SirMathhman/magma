@@ -134,6 +134,11 @@ public record MapNode(
     }
 
     @Override
+    public String toString() {
+        return format(0);
+    }
+
+    @Override
     public Option<Node> findNode(String propertyKey) {
         return nodes.containsKey(propertyKey)
                 ? new Some<>(nodes.get(propertyKey))
