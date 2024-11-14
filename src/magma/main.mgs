@@ -1,2 +1,3 @@
 let first = [1, 2, 3, 4, 5];
-return first[3];
+let second = [6, 7, 8, 9, 10];
+return second[2];
