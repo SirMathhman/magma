@@ -16,7 +16,7 @@ public record JavaList<T>(List<T> list) {
         this(Collections.emptyList());
     }
 
-    public JavaList<T> add(T element) {
+    public JavaList<T> addLast(T element) {
         var copy = new ArrayList<>(list());
         copy.add(element);
         return new JavaList<T>(copy);
@@ -54,5 +54,12 @@ public record JavaList<T>(List<T> list) {
         if (index < 0 || index >= list.size()) return new None<>();
         final var slice = list.subList(0, index);
         return new Some<>(new JavaList<>(slice));
+    }
+
+    public JavaList<T> addFirst(T element) {
+        var copy = new ArrayList<T>();
+        copy.add(element);
+        copy.addAll(list);
+        return new JavaList<T>(copy);
     }
 }

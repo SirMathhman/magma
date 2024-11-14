@@ -32,6 +32,8 @@ public class CASMLang {
     public static final String GROUP_AFTER = "after";
     public static final String DATA_AFTER_NAME = "after-name";
     public static final String DATA_BEFORE_VALUE = "before-value";
+    public static final String COMMENT_TYPE = "comment";
+    public static final String COMMENT_VALUE = "value";
 
     public static Rule createRootRule() {
         final var label = createGroupRule(LABEL_TYPE, "label ", createStatementRule());
@@ -57,9 +59,15 @@ public class CASMLang {
     private static Rule createStatementRule() {
         final var statement = new LazyRule();
         statement.setRule(new OrRule(List.of(
+                createCommentRule(),
                 createInstructionRule()
         )));
         return statement;
+    }
+
+    private static TypeRule createCommentRule() {
+        final var value = new StringRule(COMMENT_VALUE);
+        return new TypeRule(COMMENT_TYPE, new StripRule(new PrefixRule("// ", new SuffixRule(value, ";"))));
     }
 
     private static TypeRule createInstructionRule() {

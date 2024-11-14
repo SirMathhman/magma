@@ -273,6 +273,7 @@ public class Assembler {
             }
         } finally {
             System.out.println();
+            System.out.println("Program Counter: " + Long.toHexString(programCounter));
             System.out.println("Accumulator: " + Long.toHexString(accumulator));
             System.out.println("Final Memory State:\n" + formatHexList(memory, labels));
         }
@@ -477,7 +478,7 @@ public class Assembler {
                     .filter(instruction -> instruction.is(INSTRUCTION_TYPE))
                     .map(Assembler::getNode)
                     .into(ResultStream::new)
-                    .foldResultsLeft(new JavaList<Node>(), JavaList::add);
+                    .foldResultsLeft(new JavaList<Node>(), JavaList::addLast);
 
             if (labelChildren.isErr()) return new Err<>(labelChildren.findErr().orElse(null));
             current = current.putLabel(name, labelChildren.findValue().orElse(new JavaList<>()).list());

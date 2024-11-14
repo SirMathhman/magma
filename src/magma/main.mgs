@@ -1,3 +1,3 @@
-let first = [100];
-let value = first;
+let array = [100];
+let copy = array;
 return 0;

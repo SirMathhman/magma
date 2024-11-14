@@ -1,9 +1,7 @@
 package magma.java;
 
 import magma.api.Tuple;
-import magma.api.option.None;
 import magma.api.option.Option;
-import magma.api.stream.HeadedStream;
 import magma.api.stream.Stream;
 
 public record JavaOrderedMap<K, V>(JavaList<Tuple<K, V>> tuples) {
@@ -12,7 +10,7 @@ public record JavaOrderedMap<K, V>(JavaList<Tuple<K, V>> tuples) {
     }
 
     public JavaOrderedMap<K, V> put(K key, V value) {
-        return new JavaOrderedMap<>(tuples.add(new Tuple<>(key, value)));
+        return new JavaOrderedMap<>(tuples.addLast(new Tuple<>(key, value)));
     }
 
     public Option<Integer> findIndexOfKey(K key) {

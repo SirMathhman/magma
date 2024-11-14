@@ -42,8 +42,8 @@ public class RootPasser implements Passer {
         final var returnValue = node.findNode(RETURN_VALUE).orElse(new MapNode());
         return new Some<>(loadValue(definitions, returnValue)
                 .mapValue(list -> list.addAll(new JavaList<Node>()
-                        .add(instruct("out"))
-                        .add(instruct("halt"))))
+                        .addLast(instruct("out"))
+                        .addLast(instruct("halt"))))
                 .mapValue(instructions -> new Tuple<>(definitions, instructions)));
     }
 
@@ -54,7 +54,7 @@ public class RootPasser implements Passer {
         final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
         return new Some<>(loadValue(stack, value)
-                .flatMapValue(instructions -> formatInstructions(stack, instructions))
+                .flatMapValue(instructions -> formatInstructions(stack, instructions.addFirst(comment("load value of declaration '" + name + "'"))))
                 .flatMapValue(instructions -> resolveType(stack, value)
                         .mapValue(type -> stack.define(name, type))
                         .mapValue(newStack -> new Tuple<>(newStack, instructions))));
@@ -64,7 +64,7 @@ public class RootPasser implements Passer {
         return stack.computeCurrentFrameSize().mapValue(frameSize -> new JavaList<Node>()
                 .addAll(moveStackPointerRight(frameSize))
                 .addAll(instructions)
-                .add(instructStackPointer("stoi"))
+                .addLast(instructStackPointer("stoi"))
                 .addAll(moveStackPointerLeft(frameSize)));
     }
 
@@ -76,7 +76,7 @@ public class RootPasser implements Passer {
                     .withInt(TYPE_LENGTH, 1));
         }
         if (type.is(TUPLE_TYPE)) {
-            return type.findNodeList(TUPLE_VALUES).orElse(new JavaList<>()).stream().foldLeftToResult(new JavaList<Node>(), (list, child) -> resolveType(stack, child).mapValue(list::add))
+            return type.findNodeList(TUPLE_VALUES).orElse(new JavaList<>()).stream().foldLeftToResult(new JavaList<Node>(), (list, child) -> resolveType(stack, child).mapValue(list::addLast))
                     .mapValue(values -> {
                         final var length = values.stream()
                                 .map(value -> value.findInt(TYPE_LENGTH))
@@ -111,21 +111,31 @@ public class RootPasser implements Passer {
 
     private static JavaList<Node> moveStackPointerLeft(long offset) {
         if (offset == 0) return new JavaList<>();
-        return moveStackPointer(instruct("subv", offset));
+        return new JavaList<Node>()
+                .addLast(comment("move stack pointer left " + offset))
+                .addAll(moveStackPointer(instruct("subv", offset)));
     }
 
     private static JavaList<Node> moveStackPointerRight(long offset) {
         if (offset == 0) return new JavaList<>();
-        return moveStackPointer(instruct("addv", offset));
+        return new JavaList<Node>()
+                .addLast(comment("move stack pointer right " + offset))
+                .addAll(moveStackPointer(instruct("addv", offset)));
+    }
+
+    private static Node comment(String message) {
+        return new MapNode(COMMENT_TYPE)
+                .withString(BLOCK_BEFORE_CHILD, "\n\t\t")
+                .withString(COMMENT_VALUE, message);
     }
 
     private static JavaList<Node> moveStackPointer(Node instruction) {
         return new JavaList<Node>()
-                .add(instruct("stod", DATA_CACHE))
-                .add(instructStackPointer("ldd"))
-                .add(instruction)
-                .add(instructStackPointer("stod"))
-                .add(instruct("ldd", DATA_CACHE));
+                .addLast(instruct("stod", DATA_CACHE))
+                .addLast(instructStackPointer("ldd"))
+                .addLast(instruction)
+                .addLast(instructStackPointer("stod"))
+                .addLast(instruct("ldd", DATA_CACHE));
     }
 
     private static Node instruct(String mnemonic, long addressOrValue) {
@@ -159,11 +169,12 @@ public class RootPasser implements Passer {
         return new Some<>(loadValue(definitions, value).flatMapValue(loadedValue -> {
             return loadValue(definitions, offset).mapValue(loadedOffset -> {
                 return loadedValue
-                        .add(instruct("stod", DATA_CACHE))
+                        .addLast(comment("load index"))
+                        .addLast(instruct("stod", DATA_CACHE))
                         .addAll(loadedOffset)
-                        .add(instruct("addd", DATA_CACHE))
-                        .add(instruct("stod", DATA_CACHE))
-                        .add(instruct("ldi", DATA_CACHE));
+                        .addLast(instruct("addd", DATA_CACHE))
+                        .addLast(instruct("stod", DATA_CACHE))
+                        .addLast(instruct("ldi", DATA_CACHE));
             });
         }));
     }
@@ -178,7 +189,10 @@ public class RootPasser implements Passer {
                     final var value = tuple.right();
 
                     return computeLength(value).flatMapValue(valueLength -> loadValue(definitions, value).mapValue(instructions -> {
-                        final var stored = instructions.add(instructStackPointer("stoi"));
+                        final var stored = new JavaList<Node>()
+                                .addLast(comment("load tuple element index " + index))
+                                .addAll(instructions)
+                                .addLast(instructStackPointer("stoi"));
 
                         if (index == values.size() - 1) {
                             return stored;
@@ -191,8 +205,10 @@ public class RootPasser implements Passer {
                     return values.stream()
                             .map(RootPasser::computeLength)
                             .into(ResultStream::new)
-                            .foldResultsLeft(-1L, Long::sum).mapValue(sum -> instructions.addAll(moveStackPointerLeft(sum))
-                                    .add(instructStackPointer("ldd"))
+                            .foldResultsLeft(-1L, Long::sum).mapValue(sum -> instructions
+                                    .addAll(moveStackPointerLeft(sum))
+                                    .addLast(comment("store tuple head"))
+                                    .addLast(instructStackPointer("ldd"))
                                     .addAll(moveStackPointerLeft(1)));
                 });
 
@@ -205,7 +221,7 @@ public class RootPasser implements Passer {
         final var value = node.findString(SYMBOL_VALUE).orElse("");
         return new Some<>(definitions.computeFrameSizeToSymbol(value).mapValue(offset -> new JavaList<Node>()
                 .addAll(moveStackPointerRight(offset))
-                .add(instructStackPointer("ldi"))
+                .addLast(instructStackPointer("ldi"))
                 .addAll(moveStackPointerLeft(offset))));
     }
 
@@ -218,7 +234,8 @@ public class RootPasser implements Passer {
 
         final var value = node.findInt(NUMERIC_VALUE).orElse(0);
         final var instructions = new JavaList<Node>()
-                .add(instruct("ldv").withInt(INSTRUCTION_ADDRESS_OR_VALUE, value));
+                .addLast(comment("load number " + value))
+                .addLast(instruct("ldv").withInt(INSTRUCTION_ADDRESS_OR_VALUE, value));
 
         return new Some<>(new Ok<>(instructions));
     }
@@ -259,7 +276,7 @@ public class RootPasser implements Passer {
                 .withString(DATA_NAME, DATA_CACHE)
                 .withNode(DATA_VALUE, cacheValue);
 
-        Node node2 = new MapNode(BLOCK_TYPE);
+        var node2 = new MapNode(BLOCK_TYPE);
         final var dataValue = node2.withNodeList(CHILDREN, new JavaList<>(List.of(cache)))
                 .withString(BLOCK_AFTER_CHILDREN, "\n");
 
