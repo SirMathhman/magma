@@ -311,7 +311,10 @@ public class Assembler {
                 labelText = " ".repeat(maxLabelLength + 1);
             }
 
-            joiner.add("\n " + labelText + Integer.toString(i, 16) + ": " + string);
+            final var format = "\n %s%s %s: %s";
+            final var decimalIndex = Integer.toString(i, 10);
+            final var hexIndex = Integer.toString(i, 16);
+            joiner.add(format.formatted(labelText, decimalIndex, hexIndex, string));
         }
         return joiner.toString();
     }

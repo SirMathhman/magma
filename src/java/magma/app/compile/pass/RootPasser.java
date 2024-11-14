@@ -126,8 +126,15 @@ public class RootPasser implements Passer {
         final var value = node.findNode(INDEX_VALUE).orElse(new MapNode());
         final var offset = node.findNode(INDEX_OFFSET).orElse(new MapNode());
 
-        return new Some<>(loadValue(definitions, value).mapValue(list -> {
-            return list.add(instruct("stod", DATA_CACHE)).add(instruct("ldi", DATA_CACHE));
+        return new Some<>(loadValue(definitions, value).flatMapValue(loadedValue -> {
+            return loadValue(definitions, offset).mapValue(loadedOffset -> {
+                return loadedValue
+                        .add(instruct("stod", DATA_CACHE))
+                        .addAll(loadedOffset)
+                        .add(instruct("addd", DATA_CACHE))
+                        .add(instruct("stod", DATA_CACHE))
+                        .add(instruct("ldi", DATA_CACHE));
+            });
         }));
     }
 

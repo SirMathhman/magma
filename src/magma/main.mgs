@@ -1,2 +1,2 @@
-let first = [6, 7];
-return first[0];
+let first = [1, 2, 3, 4, 5];
+return first[3];
