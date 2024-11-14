@@ -7,6 +7,7 @@ import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.api.stream.Streams;
 import magma.app.compile.*;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
@@ -27,13 +28,13 @@ public class RootPasser implements Passer {
     public static final String DATA_SECTION = "data";
     public static final String DATA_CACHE = "cache";
 
-    private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> writeRootMember(JavaOrderedMap<String, Long> definitions, Node node) {
+    private static Result<Tuple<Stack, JavaList<Node>>, CompileError> writeRootMember(Stack definitions, Node node) {
         return writeDeclaration(definitions, node)
                 .or(() -> writeReturn(definitions, node))
                 .orElseGet(() -> invalidateRootMember(node));
     }
 
-    private static Option<Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError>> writeReturn(JavaOrderedMap<String, Long> definitions, Node node) {
+    private static Option<Result<Tuple<Stack, JavaList<Node>>, CompileError>> writeReturn(Stack definitions, Node node) {
         if (!node.is(RETURN_TYPE)) return new None<>();
 
         final var returnValue = node.findNode(RETURN_VALUE).orElse(new MapNode());
@@ -44,14 +45,25 @@ public class RootPasser implements Passer {
                 .mapValue(instructions -> new Tuple<>(definitions, instructions)));
     }
 
-    private static Option<Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError>> writeDeclaration(JavaOrderedMap<String, Long> definitions, Node node) {
+    private static Option<Result<Tuple<Stack, JavaList<Node>>, CompileError>> writeDeclaration(Stack definitions, Node node) {
         if (!node.is(DECLARATION_TYPE)) return new None<>();
 
         final var name = node.findString(DECLARATION_NAME).orElse("");
         final var value = node.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
-        return new Some<>(computeLength(value).flatMapValue(length -> pushValueToStack(definitions, value, 0L)
-                .mapValue(list -> new Tuple<>(definitions.put(name, length), list))));
+        final var type = new MapNode("primitive")
+                .withString("sign", "false")
+                .withInt("bits", 64);
+        return new Some<>(loadValue(definitions, value).mapValue(instructions -> {
+                    final var totalOffset = definitions.computeFrameSize();
+
+                    return new JavaList<Node>()
+                            .addAll(moveStackPointerRight(totalOffset))
+                            .addAll(instructions)
+                            .add(instructStackPointer("stoi"))
+                            .addAll(moveStackPointerLeft(totalOffset));
+                })
+                .mapValue(list -> new Tuple<>(definitions.define(name, type), list)));
     }
 
     private static Result<Long, CompileError> computeLength(Node value) {
@@ -63,20 +75,6 @@ public class RootPasser implements Passer {
                 .foldResultsLeft(1L, Long::sum);
 
         return new Err<>(new CompileError("Unknown value to compute length", new NodeContext(value)));
-    }
-
-    private static Result<JavaList<Node>, CompileError> pushValueToStack(JavaOrderedMap<String, Long> definitions, Node value, long initialOffset) {
-        return loadValue(definitions, value).mapValue(instructions -> {
-            final var totalOffset = definitions.stream()
-                    .map(Tuple::right)
-                    .foldLeft(initialOffset, Long::sum);
-
-            return new JavaList<Node>()
-                    .addAll(moveStackPointerRight(totalOffset))
-                    .addAll(instructions)
-                    .add(instructStackPointer("stoi"))
-                    .addAll(moveStackPointerLeft(totalOffset));
-        });
     }
 
     private static JavaList<Node> moveStackPointerLeft(long offset) {
@@ -112,7 +110,7 @@ public class RootPasser implements Passer {
                 .withString(INSTRUCTION_MNEMONIC, mnemonic);
     }
 
-    private static Result<JavaList<Node>, CompileError> loadValue(JavaOrderedMap<String, Long> definitions, Node node) {
+    private static Result<JavaList<Node>, CompileError> loadValue(Stack definitions, Node node) {
         return loadNumber(node)
                 .or(() -> loadSymbol(definitions, node))
                 .or(() -> loadTuple(definitions, node))
@@ -120,7 +118,7 @@ public class RootPasser implements Passer {
                 .orElseGet(() -> new Err<>(new CompileError("Unknown value", new NodeContext(node))));
     }
 
-    private static Option<Result<JavaList<Node>, CompileError>> loadIndex(JavaOrderedMap<String, Long> definitions, Node node) {
+    private static Option<Result<JavaList<Node>, CompileError>> loadIndex(Stack definitions, Node node) {
         if (!node.is(INDEX_TYPE)) return new None<>();
 
         final var value = node.findNode(INDEX_VALUE).orElse(new MapNode());
@@ -138,7 +136,7 @@ public class RootPasser implements Passer {
         }));
     }
 
-    private static Option<Result<JavaList<Node>, CompileError>> loadTuple(JavaOrderedMap<String, Long> definitions, Node node) {
+    private static Option<Result<JavaList<Node>, CompileError>> loadTuple(Stack definitions, Node node) {
         if (!node.is(ARRAY_TYPE)) return new None<>();
 
         final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>());
@@ -167,13 +165,11 @@ public class RootPasser implements Passer {
         return new Some<>(list);
     }
 
-    private static Option<Result<JavaList<Node>, CompileError>> loadSymbol(JavaOrderedMap<String, Long> definitions, Node node) {
+    private static Option<Result<JavaList<Node>, CompileError>> loadSymbol(Stack definitions, Node node) {
         if (!node.is(SYMBOL_TYPE)) return new None<>();
 
         final var value = node.findString(SYMBOL_VALUE).orElse("");
-        final var index = definitions.findIndexOfKey(value).orElse(0);
-        final var slice = definitions.sliceToIndex(index).orElse(new JavaOrderedMap<>());
-        final var offset = slice.stream().map(Tuple::right).foldLeft(0L, Long::sum);
+        final var offset = definitions.computeFrameSizeToSymbol(value);
 
         return new Some<>(new Ok<>(new JavaList<Node>()
                 .addAll(moveStackPointerRight(offset))
@@ -195,7 +191,7 @@ public class RootPasser implements Passer {
         return new Some<>(new Ok<>(instructions));
     }
 
-    private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> invalidateRootMember(Node node) {
+    private static Result<Tuple<Stack, JavaList<Node>>, CompileError> invalidateRootMember(Node node) {
         final var context = new NodeContext(node);
         final var message = new CompileError("Cannot create instructions for root child", context);
         return new Err<>(message);
@@ -247,8 +243,8 @@ public class RootPasser implements Passer {
         return new Ok<>(new Tuple<>(state, node));
     }
 
-    private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> foldRootMember(
-            Tuple<JavaOrderedMap<String, Long>, JavaList<Node>> tuple,
+    private static Result<Tuple<Stack, JavaList<Node>>, CompileError> foldRootMember(
+            Tuple<Stack, JavaList<Node>> tuple,
             Node node
     ) {
         final var oldState = tuple.left();
@@ -274,8 +270,36 @@ public class RootPasser implements Passer {
 
         return childrenOption.orElse(new JavaList<>())
                 .stream()
-                .foldLeftToResult(new Tuple<>(new JavaOrderedMap<>(), new JavaList<>()), RootPasser::foldRootMember)
+                .foldLeftToResult(new Tuple<>(new Stack(), new JavaList<>()), RootPasser::foldRootMember)
                 .mapValue(Tuple::right)
                 .flatMapValue(instructions -> wrapInstructions(state, instructions));
+    }
+
+    record Stack(JavaOrderedMap<String, Node> definitions) {
+        public Stack() {
+            this(new JavaOrderedMap<>());
+        }
+
+        private long computeFrameSizeToSymbol(String symbol) {
+            final var index = definitions.findIndexOfKey(symbol).orElse(0);
+            final var slice = definitions.sliceToIndex(index).orElse(new JavaOrderedMap<>());
+            return slice.stream()
+                    .map(Tuple::right)
+                    .map(child -> child.findInt("length"))
+                    .flatMap(Streams::fromOption)
+                    .foldLeft(0L, Long::sum);
+        }
+
+        private long computeFrameSize() {
+            return definitions.stream()
+                    .map(Tuple::right)
+                    .map(node -> node.findInt("length"))
+                    .flatMap(Streams::fromOption)
+                    .foldLeft(0L, Long::sum);
+        }
+
+        public Stack define(String name, Node type) {
+            return new Stack(definitions.put(name, type));
+        }
     }
 }
