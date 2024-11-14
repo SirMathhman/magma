@@ -13,82 +13,25 @@ import magma.app.compile.Passer;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
-import magma.app.compile.error.StringContext;
 import magma.app.compile.lang.CASMLang;
 import magma.java.JavaList;
 import magma.java.JavaOrderedMap;
 
 import java.util.List;
 
-import static magma.Assembler.*;
+import static magma.Assembler.MAIN;
+import static magma.Assembler.SECTION_PROGRAM;
 import static magma.app.compile.lang.CASMLang.*;
 import static magma.app.compile.lang.MagmaLang.ROOT_TYPE;
 
 public class RootPasser implements Passer {
-    public static final String CACHE = "cache";
     public static final String PROGRAM_SECTION = SECTION_PROGRAM;
     public static final String DATA_SECTION = "data";
 
-    private static Node instruct(String mnemonic) {
-        return new MapNode(INSTRUCTION_TYPE)
-                .withString(BLOCK_BEFORE_CHILD, "\n\t\t")
-                .withString(MNEMONIC, mnemonic);
-    }
-
-    private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> parseRootMember(JavaOrderedMap<String, Long> state, Node node) {
+    private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> parseRootMember(JavaOrderedMap<String, Long> definitions, Node node) {
         final var context = new NodeContext(node);
         final var message = new CompileError("Cannot create instructions for root child", context);
         return new Err<>(message);
-    }
-
-    private static Result<JavaList<Node>, CompileError> handleWithinSymbol(JavaOrderedMap<String, Long> state, String value, Node instruction) {
-        final var indexOption = state.findIndexOfKey(value);
-        if (indexOption.isEmpty()) {
-            final var context = new StringContext(value);
-            final var error = new CompileError("Symbol not defined", context);
-            return new Err<>(error);
-        }
-
-        final var index = indexOption.orElse(0);
-        final var map = state.sliceToIndex(index).orElse(new JavaOrderedMap<>());
-        final var addressesToShift = map.stream().map(Tuple::right).foldLeft(0L, Long::sum);
-
-        final var instructions = new JavaList<Node>()
-                .addAll(moveStackPointerRight(addressesToShift))
-                .add(instruction)
-                .addAll(moveStackPointerLeft(addressesToShift));
-
-        return new Ok<>(instructions);
-    }
-
-    private static Node instruct(String mnemonic, String label) {
-        return instruct(mnemonic).withString(INSTRUCTION_LABEL, label);
-    }
-
-    private static JavaList<Node> moveStackPointerLeft(long addressesToShift) {
-        return moveStackPointer("subv", addressesToShift);
-    }
-
-    private static JavaList<Node> moveStackPointer(String instruction, long addressesToShift) {
-        if (addressesToShift == 0) return new JavaList<>();
-        return new JavaList<Node>()
-                .add(instruct("stod", CACHE))
-                .add(instructStackPointer("ldd"))
-                .add(instruct(instruction, addressesToShift))
-                .add(instructStackPointer("stod"))
-                .add(instruct("ldd", CACHE));
-    }
-
-    private static JavaList<Node> moveStackPointerRight(long addressesToShift) {
-        return moveStackPointer("addv", addressesToShift);
-    }
-
-    private static Node instructStackPointer(String mnemonic) {
-        return instruct(mnemonic, STACK_POINTER);
-    }
-
-    private static Node instruct(String mnemonic, long addressOrValue) {
-        return instruct(mnemonic).withInt(INSTRUCTION_ADDRESS_OR_VALUE, (int) addressOrValue);
     }
 
     private static Ok<Tuple<State, Node>, CompileError> wrapInstructions(State state, JavaList<Node> instructions) {
