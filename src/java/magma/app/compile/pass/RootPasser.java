@@ -71,33 +71,49 @@ public class RootPasser implements Passer {
     }
 
     private static Result<Node, CompileError> resolveType(Stack stack, Node type) {
-        if (type.is(NUMBER_TYPE)) {
-            return new Ok<>(new MapNode("primitive")
-                    .withString("sign", "false")
-                    .withInt("bits", 64)
-                    .withInt(TYPE_LENGTH, 1));
-        }
-        if (type.is(TUPLE_TYPE)) {
-            return type.findNodeList(TUPLE_VALUES).orElse(new JavaList<>()).stream().foldLeftToResult(new JavaList<Node>(), (list, child) -> resolveType(stack, child).mapValue(list::addLast))
-                    .mapValue(values -> {
-                        final var length = values.stream()
-                                .map(value -> value.findInt(TYPE_LENGTH))
-                                .flatMap(Streams::fromOption)
-                                .foldLeft(1, Integer::sum);
+        return resolveNumberType(type)
+                .or(() -> resolveTupleType(stack, type))
+                .or(() -> resolveSymbolType(stack, type))
+                .orElseGet(() -> new Err<>(new CompileError("Unknown type", new NodeContext(type))));
+    }
 
-                        return new MapNode("tuple")
-                                .withNodeList(TUPLE_VALUES, values)
-                                .withInt(TYPE_LENGTH, length);
-                    });
-        }
-        if (type.is(SYMBOL_TYPE)) {
-            final var symbol = type.findString(SYMBOL_VALUE).orElse("");
-            return stack.find(symbol)
-                    .<Result<Node, CompileError>>map(Ok::new)
-                    .orElseGet(() -> new Err<>(new CompileError("Symbol not defined", new StringContext(symbol))));
-        }
+    private static Option<Result<Node, CompileError>> resolveSymbolType(Stack stack, Node type) {
+        if (!type.is(SYMBOL_TYPE)) return new None<>();
 
-        return new Err<>(new CompileError("Unknown type", new NodeContext(type)));
+        final var symbol = type.findString(SYMBOL_VALUE).orElse("");
+        return new Some<>(stack.find(symbol)
+                .<Result<Node, CompileError>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileError("Symbol not defined", new StringContext(symbol)))));
+    }
+
+    private static Option<Result<Node, CompileError>> resolveTupleType(Stack stack, Node type) {
+        if (!type.is(TUPLE_TYPE)) return new None<>();
+
+        return new Some<>(type.findNodeList(TUPLE_VALUES)
+                .orElse(new JavaList<>())
+                .stream()
+                .foldLeftToResult(new JavaList<Node>(), (list, child) -> resolveType(stack, child).mapValue(list::addLast))
+                .mapValue(RootPasser::mapTupleTypes));
+    }
+
+    private static Node mapTupleTypes(JavaList<Node> values) {
+        final var length = values.stream()
+                .map(value -> value.findInt(TYPE_LENGTH))
+                .flatMap(Streams::fromOption)
+                .foldLeft(1, Integer::sum);
+
+        return new MapNode("tuple")
+                .withNodeList(TUPLE_VALUES, values)
+                .withInt(TYPE_LENGTH, length);
+    }
+
+    private static Option<Result<Node, CompileError>> resolveNumberType(Node type) {
+        if (!type.is(NUMBER_TYPE)) return new None<>();
+
+        return new Some<>(new Ok<>(new MapNode("primitive")
+                .withString("sign", "false")
+                .withInt("bits", 64)
+                .withInt(TYPE_LENGTH, 1)));
     }
 
     private static Result<Long, CompileError> computeLength(Node value) {
