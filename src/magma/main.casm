@@ -3,7 +3,6 @@ section data {
 }
 section program {
 	label __main__ {
-		// write 'array';
 		// load 'array';
 		stod cache;
 		ldd $sp;
@@ -23,7 +22,6 @@ section program {
 		ldd cache;
 		// store 'array';
 		stoi $sp;
-		// write 'copy';
 		// load 'copy';
 		// load symbol 'array';
 		ldi $sp;
@@ -41,8 +39,25 @@ section program {
 		subv 2;
 		stod $sp;
 		ldd cache;
+		// load symbol 'copy';
+		stod cache;
+		ldd $sp;
+		addv 2;
+		stod $sp;
+		ldd cache;
+		ldi $sp;
+		stod cache;
+		ldd $sp;
+		subv 2;
+		stod $sp;
+		ldd cache;
+		// load index;
+		stod cache;
 		// load number 0;
 		ldv 0;
+		addd cache;
+		stod cache;
+		ldi cache;
 		out;
 		halt;
 	}
