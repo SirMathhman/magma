@@ -1,2 +1,3 @@
-let first = [1, 2, 3, 4, 5];
-return 0;
+let first = 5;
+let second = 10;
+return &second;

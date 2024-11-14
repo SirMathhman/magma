@@ -106,13 +106,15 @@ public class RootPasser implements Passer {
             return new Some<>(new Err<>(new CompileError("Cannot reference", new NodeContext(value))));
 
         final var textValue = value.findString(SYMBOL_VALUE).orElse("");
-        final var addressOption = state.find(textValue);
-        if (addressOption.isEmpty())
+        final var length = state.find(textValue);
+        if (length.isEmpty())
             return new Some<>(new Err<>(new CompileError("No address present", new NodeContext(value))));
-        final var address = addressOption.orElse(0L);
+        final var address = length.orElse(0L);
 
         return new Some<>(new Ok<>(new JavaList<Node>()
-                .add(instructStackPointer("ldd"))));
+                .addAll(moveStackPointerRight(address))
+                .add(instructStackPointer("ldd"))
+                .addAll(moveStackPointerLeft(address))));
     }
 
     private static Option<Result<JavaList<Node>, CompileError>> loadArrayValue(JavaOrderedMap<String, Long> state, Node node) {
