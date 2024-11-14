@@ -115,7 +115,7 @@ public class RootPasser implements Passer {
 
         final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>());
         final var list = values.streamWithIndex()
-                .foldLeftToResult(new JavaList<Node>(), (current, tuple) -> {
+                .foldLeftToResult(new JavaList<Node>().addAll(moveStackPointerRight(1)), (current, tuple) -> {
                     final var index = tuple.left();
                     final var value = tuple.right();
 
@@ -130,10 +130,9 @@ public class RootPasser implements Passer {
                     }).mapValue(current::addAll);
                 })
                 .mapValue(value -> {
-                    return value
-                            .addAll(moveStackPointerLeft(values.size()))
+                    return value.addAll(moveStackPointerLeft(values.size()))
                             .add(instructStackPointer("ldd"))
-                            .addAll(moveStackPointerRight(values.size()));
+                            .addAll(moveStackPointerLeft(1));
                 });
 
         return new Some<>(list);
