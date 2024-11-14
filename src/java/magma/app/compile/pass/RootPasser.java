@@ -115,11 +115,23 @@ public class RootPasser implements Passer {
     private static Result<JavaList<Node>, CompileError> loadValue(JavaOrderedMap<String, Long> definitions, Node node) {
         return loadNumber(node)
                 .or(() -> loadSymbol(definitions, node))
-                .or(() -> loadArray(definitions, node))
+                .or(() -> loadTuple(definitions, node))
+                .or(() -> loadIndex(definitions, node))
                 .orElseGet(() -> new Err<>(new CompileError("Unknown value", new NodeContext(node))));
     }
 
-    private static Option<Result<JavaList<Node>, CompileError>> loadArray(JavaOrderedMap<String, Long> definitions, Node node) {
+    private static Option<Result<JavaList<Node>, CompileError>> loadIndex(JavaOrderedMap<String, Long> definitions, Node node) {
+        if (!node.is(INDEX_TYPE)) return new None<>();
+
+        final var value = node.findNode(INDEX_VALUE).orElse(new MapNode());
+        final var offset = node.findNode(INDEX_OFFSET).orElse(new MapNode());
+
+        return new Some<>(loadValue(definitions, value).mapValue(list -> {
+            return list.add(instruct("stod", DATA_CACHE)).add(instruct("ldi", DATA_CACHE));
+        }));
+    }
+
+    private static Option<Result<JavaList<Node>, CompileError>> loadTuple(JavaOrderedMap<String, Long> definitions, Node node) {
         if (!node.is(ARRAY_TYPE)) return new None<>();
 
         final var values = node.findNodeList(ARRAY_VALUES).orElse(new JavaList<>());
@@ -128,17 +140,13 @@ public class RootPasser implements Passer {
                     final var index = tuple.left();
                     final var value = tuple.right();
 
-                    return loadValue(definitions, value).mapValue(instructions -> {
-                        return instructions
-                                .add(instructStackPointer("stoi"))
-                                .addAll(moveStackPointerRight(1));
-                    }).mapValue(current::addAll);
+                    return loadValue(definitions, value).mapValue(instructions -> instructions
+                            .add(instructStackPointer("stoi"))
+                            .addAll(moveStackPointerRight(1))).mapValue(current::addAll);
                 })
-                .mapValue(value -> {
-                    return value.addAll(moveStackPointerLeft(values.size()))
-                            .add(instructStackPointer("ldd"))
-                            .addAll(moveStackPointerLeft(1));
-                });
+                .mapValue(value -> value.addAll(moveStackPointerLeft(values.size()))
+                        .add(instructStackPointer("ldd"))
+                        .addAll(moveStackPointerLeft(1)));
 
         return new Some<>(list);
     }

@@ -23,6 +23,9 @@ public class MagmaLang {
     public static final String ARRAY_VALUES = "values";
     public static final String REFERENCE_TYPE = "reference";
     public static final String REFERENCE_VALUE = "value";
+    public static final String INDEX_TYPE = "index";
+    public static final String INDEX_VALUE = "value";
+    public static final String INDEX_OFFSET = "offset";
 
     public static Rule createMagmaRootRule() {
         return new TypeRule(ROOT_TYPE, new NodeListRule(new BracketSplitter(), "children", new StripRule(new OrRule(List.of(
@@ -53,9 +56,9 @@ public class MagmaLang {
     }
 
     private static TypeRule createIndexRule(LazyRule value) {
-        final var address = new NodeRule("address", value);
-        final var index = new NodeRule("index", value);
-        return new TypeRule("index", new FirstRule(address, "[", new StripRule(new SuffixRule(index, "]"))));
+        final var indexValue = new NodeRule(INDEX_VALUE, value);
+        final var indexOffset = new NodeRule(INDEX_OFFSET, value);
+        return new TypeRule(INDEX_TYPE, new FirstRule(indexValue, "[", new StripRule(new SuffixRule(indexOffset, "]"))));
     }
 
     private static TypeRule createArrayRule(LazyRule value) {
