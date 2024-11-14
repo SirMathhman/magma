@@ -79,15 +79,16 @@ public class RootPasser implements Passer {
     }
 
     private static Option<Result<Node, CompileError>> resolveIndexType(Stack stack, Node type) {
-        if(!type.is(INDEX_TYPE)) return new None<>();
+        if (!type.is(INDEX_TYPE)) return new None<>();
 
         final var offset = type.findNode(INDEX_OFFSET).orElse(new MapNode());
         final var offsetValue = offset.findInt(NUMERIC_VALUE).orElse(0);
 
         final var value = type.findNode(INDEX_VALUE).orElse(new MapNode());
-        return new Some<>(resolveType(stack, value).mapValue(indexType -> {
+        return new Some<>(resolveType(stack, value).<Node>mapValue(indexType -> {
             final var values = indexType.findNodeList(TUPLE_VALUES).orElse(new JavaList<>());
-            return values.get(offsetValue).orElse(new MapNode());
+            final var option = values.get(offsetValue);
+            return option.orElse(new MapNode());
         }));
     }
 
