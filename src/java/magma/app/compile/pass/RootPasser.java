@@ -22,8 +22,8 @@ import java.util.List;
 
 import static magma.Assembler.*;
 import static magma.app.compile.lang.CASMLang.*;
-import static magma.app.compile.lang.MagmaLang.*;
 import static magma.app.compile.lang.MagmaLang.ROOT_TYPE;
+import static magma.app.compile.lang.MagmaLang.*;
 
 public class RootPasser implements Passer {
     public static final String PROGRAM_SECTION = SECTION_PROGRAM;
@@ -53,13 +53,17 @@ public class RootPasser implements Passer {
     }
 
     private static Result<JavaList<Node>, CompileError> loadValue(Node node) {
-        if (node.is(MagmaLang.NUMERIC_TYPE)) {
-            final var value = node.findInt(NUMERIC_VALUE).orElse(0);
-            return new Ok<>(new JavaList<Node>()
-                    .add(createInstruction("ldv").withInt(INSTRUCTION_ADDRESS_OR_VALUE, value)));
-        }
+        return loadNumber(node).orElseGet(() -> new Err<>(new CompileError("Unknown value", new NodeContext(node))));
+    }
 
-        return new Err<>(new CompileError("Unknown value", new NodeContext(node)));
+    private static Option<Result<JavaList<Node>, CompileError>> loadNumber(Node node) {
+        if (!node.is(MagmaLang.NUMERIC_TYPE)) return new None<>();
+
+        final var value = node.findInt(NUMERIC_VALUE).orElse(0);
+        final var instructions = new JavaList<Node>()
+                .add(createInstruction("ldv").withInt(INSTRUCTION_ADDRESS_OR_VALUE, value));
+
+        return new Some<>(new Ok<>(instructions));
     }
 
     private static Result<Tuple<JavaOrderedMap<String, Long>, JavaList<Node>>, CompileError> invalidateRootMember(Node node) {
