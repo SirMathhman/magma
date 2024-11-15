@@ -59,8 +59,8 @@ public class InstructionWrapper implements Passer {
             final var loadInstructions = tuple.right();
             return new Tuple<>(newState, new JavaList<Node>()
                     .addAll(loadInstructions)
-                    .addLast(instruct("out"))
-                    .addLast(instruct("halt")));
+                    .addLast(Instructions.instruct("out"))
+                    .addLast(Instructions.instruct("halt")));
         }));
     }
 
@@ -74,40 +74,25 @@ public class InstructionWrapper implements Passer {
         if (!node.is(SYMBOL_TYPE)) return new None<>();
 
         final var label = node.findString(SYMBOL_VALUE).orElse("");
-        return state.loadLabel(label).map(tuple -> {
-            final var newState = tuple.left();
-            final var movingInstructions = tuple.right();
-            final var instructions = movingInstructions.addLast(instruct("ldi", STACK_POINTER));
-            return new Ok<>(new Tuple<>(newState, instructions));
-        });
+        final var tuple = state.loadLabel(label);
+        final var newState = tuple.left();
+        final var movingInstructions = tuple.right();
+        final var instructions = movingInstructions.addLast(Instructions.instruct("ldi", STACK_POINTER));
+        return new Some<>(new Ok<>(new Tuple<>(newState, instructions)));
     }
 
     private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> loadNumericValue(State state, Node node) {
         if (!node.is(NUMERIC_TYPE)) return new None<>();
 
         final var value = node.findInt(NUMERIC_VALUE).orElse(0);
-        final var instructions = new JavaList<Node>().addLast(instruct("ldv", value));
+        final var instructions = new JavaList<Node>().addLast(Instructions.instruct("ldv", value));
         return new Some<>(new Ok<>(new Tuple<>(state, instructions)));
-    }
-
-    private static Node instruct(String mnemonic, long value) {
-        return instruct(mnemonic)
-                .withInt(INSTRUCTION_ADDRESS_OR_VALUE, (int) value);
-    }
-
-    private static Node instruct(String mnemonic) {
-        return new MapNode(INSTRUCTION_TYPE)
-                .withString(INSTRUCTION_MNEMONIC, mnemonic);
     }
 
     private static Err<Tuple<State, JavaList<Node>>, CompileError> invalidateRootMember(Node node) {
         final var context = new NodeContext(node);
         final var error = new CompileError("Unknown root member", context);
         return new Err<>(error);
-    }
-
-    private static Node instruct(String mnemonic, String label) {
-        return instruct(mnemonic).withString(INSTRUCTION_LABEL, label);
     }
 
     @Override

@@ -34,4 +34,8 @@ public record JavaOrderedMap<K, V>(JavaList<Tuple<K, V>> tuples) {
                 .map(Tuple::right)
                 .next();
     }
+
+    public int size() {
+        return tuples.size();
+    }
 }

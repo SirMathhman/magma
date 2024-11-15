@@ -11,6 +11,7 @@ import magma.api.stream.Stream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public record JavaList<T>(List<T> list) {
     public JavaList() {
@@ -68,5 +69,21 @@ public record JavaList<T>(List<T> list) {
         if (list.isEmpty()) return new None<>();
         final var slice = list.subList(0, list.size() - 1);
         return new Some<>(new JavaList<>(slice));
+    }
+
+    public Option<JavaList<T>> mapLast(Function<T, T> mapper) {
+        if (!list.isEmpty()) return new None<>();
+
+        final var copy = new ArrayList<>(list);
+        final var lastIndex = copy.size() - 1;
+        final var last = copy.get(lastIndex);
+        final var newLast = mapper.apply(last);
+        copy.set(lastIndex, newLast);
+        return new Some<>(new JavaList<>(copy));
+    }
+
+    public Option<T> findLast() {
+        if (list.isEmpty()) return new None<>();
+        return new Some<>(list.getLast());
     }
 }
