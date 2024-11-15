@@ -5,14 +5,18 @@ import magma.api.option.Option;
 import magma.api.result.Result;
 import magma.api.stream.Streams;
 import magma.app.compile.error.CompileError;
-import magma.java.JavaStreams;
+import magma.java.JavaList;
 
-import java.util.List;
+public final class CompoundPasser implements Passer {
+    private final JavaList<Passer> passers;
 
-public record CompoundPasser(List<Passer> passers) implements Passer {
+    public CompoundPasser(JavaList<Passer> passers) {
+        this.passers = passers;
+    }
+
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
-        return JavaStreams.fromList(passers)
+        return passers.stream()
                 .map(passer -> passer.afterPass(state, node))
                 .flatMap(Streams::fromOption)
                 .next();
@@ -20,7 +24,7 @@ public record CompoundPasser(List<Passer> passers) implements Passer {
 
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
-        return JavaStreams.fromList(passers)
+        return passers.stream()
                 .map(passer -> passer.beforePass(state, node))
                 .flatMap(Streams::fromOption)
                 .next();

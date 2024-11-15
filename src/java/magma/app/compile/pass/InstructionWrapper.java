@@ -50,23 +50,24 @@ public class InstructionWrapper implements Passer {
 
         final var cache = new MapNode(DATA_TYPE)
                 .withString(BLOCK_BEFORE_CHILD, "\n\t")
-                .withString(DATA_AFTER_NAME, " ")
-                .withString(DATA_BEFORE_VALUE, " ")
                 .withString(DATA_NAME, DATA_CACHE)
                 .withNode(DATA_VALUE, cacheValue);
 
         final var dataValue = new MapNode(BLOCK_TYPE)
-                .withNodeList(CHILDREN, new JavaList<Node>().addLast(cache))
-                .withString(BLOCK_AFTER_CHILDREN, "\n");
+                .withString(BLOCK_AFTER_CHILDREN, "\n")
+                .withNodeList(CHILDREN, new JavaList<Node>().addLast(cache));
 
         final var dataSection = new MapNode(SECTION_TYPE)
-                .withString(GROUP_NAME, DATA_SECTION)
                 .withString(GROUP_AFTER_NAME, " ")
                 .withString(GROUP_AFTER, "\n")
+                .withString(GROUP_NAME, DATA_SECTION)
                 .withNode(GROUP_VALUE, dataValue);
 
-        final var sectionList = new JavaList<Node>().addLast(dataSection);
-        final var node = new MapNode(ROOT_TYPE).withNodeList(CHILDREN, sectionList.addLast(programSection));
+        final var sectionList = new JavaList<Node>()
+                .addLast(dataSection)
+                .addLast(programSection);
+
+        final var node = new MapNode(ROOT_TYPE).withNodeList(CHILDREN, sectionList);
         return new Tuple<>(state, node);
     }
 
