@@ -46,7 +46,7 @@ public class NodeListRule implements Rule {
     public Result<Node, CompileError> parse(String input) {
         return splitter.split(input)
                 .stream()
-                .map(input1 -> segmentRule.parse(input1))
+                .map(segmentRule::parse)
                 .reduce(new Ok<>(new ArrayList<>()), NodeListRule::foldIntoList, (_, next) -> next)
                 .mapValue(list -> new MapNode().withNodeList(propertyKey, new JavaList<>(list)));
     }
