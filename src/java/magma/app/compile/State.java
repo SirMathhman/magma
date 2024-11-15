@@ -32,7 +32,7 @@ public record State(JavaList<JavaOrderedMap<String, Node>> frames, long stackPoi
         if (option.isEmpty()) return new Err<>(new CompileError("Label not defined", new StringContext(label)));
 
         final var index = option.orElse(0);
-        return new Ok<>(moveToIndex(index));
+        return new Ok<>(moveByIndex(index));
     }
 
     public Tuple<State, JavaList<Node>> define(String name, Node type) {
@@ -40,17 +40,21 @@ public record State(JavaList<JavaOrderedMap<String, Node>> frames, long stackPoi
         final var newLast = last.put(name, type);
         final var withLast = frames.setLast(newLast);
         final var copy = new State(withLast, stackPointer);
-        return copy.moveToIndex(last.size());
+        return copy.moveByIndex(last.size());
     }
 
-    private Tuple<State, JavaList<Node>> moveToIndex(long definitionIndex) {
-        final var state = new State(frames, definitionIndex);
-
+    private Tuple<State, JavaList<Node>> moveByIndex(long definitionIndex) {
         final var last = frames.findLast().orElse(new JavaOrderedMap<>());
         final var frame = last.sliceToIndex((int) definitionIndex).orElse(new JavaOrderedMap<>());
         final var size = computeFrameSize(frame);
+        return moveByOffset(size);
+    }
 
-        final var delta = size - this.stackPointer;
+    private Tuple<State, JavaList<Node>> moveByOffset(long offset) {
+        return moveByDelta(offset - this.stackPointer);
+    }
+
+    public Tuple<State, JavaList<Node>> moveByDelta(long delta) {
         final JavaList<Node> instructions;
         if (delta == 0) {
             instructions = new JavaList<>();
@@ -67,7 +71,7 @@ public record State(JavaList<JavaOrderedMap<String, Node>> frames, long stackPoi
                     .addLast(instruct("ldd", "cache"));
         }
 
-        return new Tuple<>(state, instructions);
+        return new Tuple<>(new State(frames, stackPointer + delta), instructions);
     }
 
     private int computeFrameSize(JavaOrderedMap<String, Node> frame) {

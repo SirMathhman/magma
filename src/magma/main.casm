@@ -4,19 +4,19 @@ section data {
 section program {
 	label __main__ {
 		ldv 100;
-		stoi $sp;
-		ldv 200;
 		stod cache;
 		ldd $sp;
 		addv 1;
 		stod $sp;
 		ldd cache;
-		stoi $sp;
+		ldd $sp;
+		addv 1;
 		stod cache;
 		ldd $sp;
 		subv 1;
 		stod $sp;
 		ldd cache;
+		stoi $sp;
 		ldi $sp;
 		out;
 		halt;

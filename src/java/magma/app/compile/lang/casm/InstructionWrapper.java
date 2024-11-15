@@ -16,6 +16,8 @@ import magma.app.compile.lang.CASMLang;
 import magma.app.compile.pass.Passer;
 import magma.java.JavaList;
 
+import java.util.function.BiFunction;
+
 import static magma.Assembler.*;
 import static magma.app.compile.lang.CASMLang.ROOT_TYPE;
 import static magma.app.compile.lang.CASMLang.*;
@@ -75,10 +77,21 @@ public class InstructionWrapper implements Passer {
     private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> loadTupleType(State state, Node node) {
         if (!node.is(TUPLE_TYPE)) return new None<>();
 
+        final var values = node.findNodeList(TUPLE_VALUES).orElse(new JavaList<>());
+        final var initial = new Tuple<>(state, new JavaList<Node>());
+        return new Some<Result<Tuple<State, JavaList<Node>>, CompileError>>(values.stream().foldLeftToResult(initial, (tuple, node1) -> {
+            final var currentState = tuple.left();
+            final var currentInstructions = tuple.right();
+            return loadValue(currentState, node1).mapValue(loaded -> loaded.mapRight(currentInstructions::addAll));
+        }).flatMapValue(result -> {
+            final var moved = result.left().moveByDelta(values.size());
 
-        return new Some<>(new Ok<>(new Tuple<>(state, new JavaList<Node>()
-                .addLast(instruct("ldd", STACK_POINTER))
-                .addLast(instruct("addv", 1)))));
+            return new Ok<>(new Tuple<>(moved.left(), new JavaList<Node>()
+                    .addAll(result.right())
+                    .addAll(moved.right())
+                    .addLast(instruct("ldd", STACK_POINTER))
+                    .addLast(instruct("addv", 1))));
+        }));
     }
 
     private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> loadSymbolValue(State state, Node node) {
