@@ -10,7 +10,7 @@ import magma.app.compile.pass.Folder;
 
 import static magma.app.compile.lang.CASMLang.BLOCK_AFTER_CHILDREN;
 
-public class BlockPasser implements Folder {
+public class BlockFormatter implements Folder {
     @Override
     public Result<Tuple<State, Node>, CompileError> beforeModify(State state, Node node) {
         return new Ok<>(new Tuple<>(state.enter(), node));

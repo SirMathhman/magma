@@ -30,7 +30,6 @@ public class InstructionWrapper implements Passer {
 
         final var label = new MapNode(LABEL_TYPE)
                 .withString(GROUP_NAME, MAIN)
-                .withString(BLOCK_BEFORE_CHILD, "\n\t")
                 .withNode(GROUP_VALUE, labelValue);
 
         final var programValue = new MapNode(BLOCK_TYPE).withNodeList(CHILDREN, new JavaList<Node>().addLast(label));
@@ -43,7 +42,6 @@ public class InstructionWrapper implements Passer {
                 .withString(CASMLang.NUMBER_VALUE, "0");
 
         final var cache = new MapNode(DATA_TYPE)
-                .withString(BLOCK_BEFORE_CHILD, "\n\t")
                 .withString(DATA_NAME, DATA_CACHE)
                 .withNode(DATA_VALUE, cacheValue);
 
