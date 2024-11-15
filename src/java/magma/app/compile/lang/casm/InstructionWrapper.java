@@ -121,7 +121,11 @@ public class InstructionWrapper implements Passer {
         return new Some<>(loadValue(rootMember.findNode(DECLARATION_VALUE).orElse(new MapNode())).mapValue(loadInstructions -> {
             return new Tuple<>(current, new JavaList<Node>()
                     .addAll(loadInstructions)
-                    .addLast(instruct("stoi", STACK_POINTER)));
+                    .addLast(instruct("stoi", STACK_POINTER))
+                    .addLast(instruct("ldd", STACK_POINTER))
+                    .addLast(instruct("addv", 1))
+                    .addLast(instruct("stod", STACK_POINTER))
+            );
         }));
     }
 
