@@ -1,11 +1,8 @@
-package magma.app.compile;
+package magma.api.stream;
 
 import magma.api.option.Option;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.api.stream.Collector;
-import magma.api.stream.Stream;
-import magma.api.stream.Streams;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;

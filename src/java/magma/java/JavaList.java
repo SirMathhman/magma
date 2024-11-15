@@ -5,6 +5,7 @@ import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
 import magma.api.stream.HeadedStream;
+import magma.api.stream.RangeStream;
 import magma.api.stream.Stream;
 
 import java.util.ArrayList;

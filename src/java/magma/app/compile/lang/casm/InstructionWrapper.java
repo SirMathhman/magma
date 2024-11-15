@@ -1,4 +1,4 @@
-package magma.app.compile.pass;
+package magma.app.compile.lang.casm;
 
 import magma.api.Tuple;
 import magma.api.option.None;
@@ -9,7 +9,7 @@ import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
-import magma.app.compile.Passer;
+import magma.app.compile.pass.Passer;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;

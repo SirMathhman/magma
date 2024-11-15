@@ -11,7 +11,7 @@ import magma.app.ApplicationError;
 import magma.app.ThrowableError;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
-import magma.app.compile.ResultStream;
+import magma.api.stream.ResultStream;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 import magma.app.compile.error.StringContext;
