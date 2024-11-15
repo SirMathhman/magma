@@ -26,34 +26,26 @@ public class InstructionWrapper implements Passer {
 
     private static Node wrapInstructions(JavaList<Node> instructions) {
         final var labelValue = new MapNode(BLOCK_TYPE).withNodeList(CHILDREN, instructions);
-
         final var label = new MapNode(LABEL_TYPE)
                 .withString(GROUP_NAME, MAIN)
                 .withNode(GROUP_VALUE, labelValue);
 
         final var programValue = new MapNode(BLOCK_TYPE).withNodeList(CHILDREN, new JavaList<Node>().addLast(label));
-
         final var programSection = new MapNode(SECTION_TYPE)
                 .withString(GROUP_NAME, SECTION_PROGRAM)
                 .withNode(GROUP_VALUE, programValue);
 
-        final var cacheValue = new MapNode(CASMLang.NUMBER_TYPE)
-                .withString(CASMLang.NUMBER_VALUE, "0");
-
+        final var cacheValue = new MapNode(CASMLang.NUMBER_TYPE).withString(CASMLang.NUMBER_VALUE, "0");
         final var cache = new MapNode(DATA_TYPE)
                 .withString(DATA_NAME, DATA_CACHE)
                 .withNode(DATA_VALUE, cacheValue);
 
         final var dataValue = new MapNode(BLOCK_TYPE).withNodeList(CHILDREN, new JavaList<Node>().addLast(cache));
-
         final var dataSection = new MapNode(SECTION_TYPE)
                 .withString(GROUP_NAME, DATA_SECTION)
                 .withNode(GROUP_VALUE, dataValue);
 
-        final var sectionList = new JavaList<Node>()
-                .addLast(dataSection)
-                .addLast(programSection);
-
+        final var sectionList = new JavaList<Node>().addLast(dataSection).addLast(programSection);
         return new MapNode(ROOT_TYPE).withNodeList(CHILDREN, sectionList);
     }
 
