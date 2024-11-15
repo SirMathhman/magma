@@ -4,6 +4,7 @@ section data {
 section program {
 	label __main__ {
 		ldv 20;
+		stoi $sp;
 		ldv 100;
 		out;
 		halt;

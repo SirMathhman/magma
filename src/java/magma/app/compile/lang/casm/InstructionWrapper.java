@@ -16,8 +16,7 @@ import magma.app.compile.lang.CASMLang;
 import magma.app.compile.pass.Passer;
 import magma.java.JavaList;
 
-import static magma.Assembler.MAIN;
-import static magma.Assembler.SECTION_PROGRAM;
+import static magma.Assembler.*;
 import static magma.app.compile.lang.CASMLang.ROOT_TYPE;
 import static magma.app.compile.lang.CASMLang.*;
 import static magma.app.compile.lang.MagmaLang.*;
@@ -121,7 +120,12 @@ public class InstructionWrapper implements Passer {
 
         return new Some<>(loadValue(rootMember.findNode(DECLARATION_VALUE).orElse(new MapNode())).mapValue(loadInstructions -> {
             return new Tuple<>(current, new JavaList<Node>()
-                    .addAll(loadInstructions));
+                    .addAll(loadInstructions)
+                    .addLast(instruct("stoi", STACK_POINTER)));
         }));
+    }
+
+    private Node instruct(String mnemonic, String label) {
+        return instruct(mnemonic).withString(INSTRUCTION_LABEL, label);
     }
 }
