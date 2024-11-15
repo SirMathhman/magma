@@ -20,6 +20,7 @@ import static magma.Assembler.*;
 import static magma.app.compile.lang.CASMLang.ROOT_TYPE;
 import static magma.app.compile.lang.CASMLang.*;
 import static magma.app.compile.lang.MagmaLang.*;
+import static magma.app.compile.lang.casm.Instructions.instruct;
 
 public class InstructionWrapper implements Passer {
     public static final String DATA_SECTION = "data";
@@ -59,8 +60,8 @@ public class InstructionWrapper implements Passer {
             final var loadInstructions = tuple.right();
             return new Tuple<>(newState, new JavaList<Node>()
                     .addAll(loadInstructions)
-                    .addLast(Instructions.instruct("out"))
-                    .addLast(Instructions.instruct("halt")));
+                    .addLast(instruct("out"))
+                    .addLast(instruct("halt")));
         }));
     }
 
@@ -77,7 +78,7 @@ public class InstructionWrapper implements Passer {
         final var tuple = state.loadLabel(label);
         final var newState = tuple.left();
         final var movingInstructions = tuple.right();
-        final var instructions = movingInstructions.addLast(Instructions.instruct("ldi", STACK_POINTER));
+        final var instructions = movingInstructions.addLast(instruct("ldi", STACK_POINTER));
         return new Some<>(new Ok<>(new Tuple<>(newState, instructions)));
     }
 
@@ -85,7 +86,7 @@ public class InstructionWrapper implements Passer {
         if (!node.is(NUMERIC_TYPE)) return new None<>();
 
         final var value = node.findInt(NUMERIC_VALUE).orElse(0);
-        final var instructions = new JavaList<Node>().addLast(Instructions.instruct("ldv", value));
+        final var instructions = new JavaList<Node>().addLast(instruct("ldv", value));
         return new Some<>(new Ok<>(new Tuple<>(state, instructions)));
     }
 
@@ -145,6 +146,7 @@ public class InstructionWrapper implements Passer {
             return new Tuple<>(definedState, new JavaList<Node>()
                     .addAll(definedInstructions)
                     .addAll(loadedInstructions)
+                    .addLast(instruct("stoi", STACK_POINTER))
             );
         }));
     }

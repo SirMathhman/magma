@@ -4,9 +4,18 @@ section data {
 section program {
 	label __main__ {
 		ldv 1;
+		stoi $sp;
+		ldd $sp;
+		addv 1;
+		stod $sp;
 		ldv 2;
+		stoi $sp;
+		ldd $sp;
+		addv 1;
+		stod $sp;
 		ldv 3;
-		ldi $sp;
+		stoi $sp;
+		ldv 0;
 		out;
 		halt;
 	}

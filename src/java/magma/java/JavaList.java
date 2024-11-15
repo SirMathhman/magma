@@ -86,4 +86,12 @@ public record JavaList<T>(List<T> list) {
         if (list.isEmpty()) return new None<>();
         return new Some<>(list.getLast());
     }
+
+    public JavaList<T> setLast(T last) {
+        if (list.isEmpty()) return new JavaList<>();
+
+        final var copy = new ArrayList<>(list);
+        copy.set(copy.size() - 1, last);
+        return new JavaList<>(copy);
+    }
 }
