@@ -333,7 +333,7 @@ public class RootPasser implements Passer {
                 .withString(GROUP_AFTER, "\n")
                 .withNode(GROUP_VALUE, dataValue);
 
-        Node node1 = new MapNode(ROOT_TYPE);
+        var node1 = new MapNode(ROOT_TYPE);
         final var node = node1.withNodeList(CHILDREN, new JavaList<>(List.of(dataSection, programSection)));
 
         return new Ok<>(new Tuple<>(state, node));
