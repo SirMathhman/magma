@@ -26,20 +26,16 @@ public class InstructionWrapper implements Passer {
     public static final String DATA_CACHE = "cache";
 
     private static Tuple<State, Node> wrapInstructions(State state, JavaList<Node> instructions) {
-        final var labelValue = new MapNode(BLOCK_TYPE)
-                .withNodeList(CHILDREN, instructions)
-                .withString(BLOCK_AFTER_CHILDREN, "\n\t");
+        final var labelValue = new MapNode(BLOCK_TYPE).withNodeList(CHILDREN, instructions);
 
         final var label = new MapNode(LABEL_TYPE)
                 .withString(GROUP_NAME, MAIN)
-                .withString(GROUP_AFTER_NAME, " ")
                 .withString(BLOCK_BEFORE_CHILD, "\n\t")
                 .withNode(GROUP_VALUE, labelValue);
 
         final var programValue = new MapNode(BLOCK_TYPE).withNodeList(CHILDREN, new JavaList<Node>().addLast(label));
 
         final var programSection = new MapNode(SECTION_TYPE)
-                .withString(GROUP_AFTER_NAME, " ")
                 .withString(GROUP_NAME, SECTION_PROGRAM)
                 .withNode(GROUP_VALUE, programValue);
 
@@ -54,8 +50,6 @@ public class InstructionWrapper implements Passer {
         final var dataValue = new MapNode(BLOCK_TYPE).withNodeList(CHILDREN, new JavaList<Node>().addLast(cache));
 
         final var dataSection = new MapNode(SECTION_TYPE)
-                .withString(GROUP_AFTER_NAME, " ")
-                .withString(GROUP_AFTER, "\n")
                 .withString(GROUP_NAME, DATA_SECTION)
                 .withNode(GROUP_VALUE, dataValue);
 

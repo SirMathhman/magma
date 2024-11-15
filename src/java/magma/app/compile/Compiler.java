@@ -22,6 +22,7 @@ public record Compiler(String input) {
         final var passers = new JavaList<Passer>()
                 .addLast(new TypePasser(DATA_TYPE, new StatelessFolder(new DataFormatter())))
                 .addLast(new TypePasser(SECTION_TYPE, new StatelessFolder(new SectionFormatter())))
+                .addLast(new TypePasser(LABEL_TYPE, new StatelessFolder(new LabelFormatter())))
                 .addLast(new TypePasser(BLOCK_TYPE, new BlockPasser()));
 
         return new TreePassingStage(new CompoundPasser(passers));
