@@ -5,15 +5,14 @@ import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
 import magma.api.result.Err;
-import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
-import magma.app.compile.pass.Passer;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 import magma.app.compile.lang.CASMLang;
+import magma.app.compile.pass.Passer;
 import magma.java.JavaList;
 
 import static magma.Assembler.MAIN;
@@ -25,7 +24,7 @@ public class InstructionWrapper implements Passer {
     public static final String DATA_SECTION = "data";
     public static final String DATA_CACHE = "cache";
 
-    private static Tuple<State, Node> wrapInstructions(State state, JavaList<Node> instructions) {
+    private static Node wrapInstructions(JavaList<Node> instructions) {
         final var labelValue = new MapNode(BLOCK_TYPE).withNodeList(CHILDREN, instructions);
 
         final var label = new MapNode(LABEL_TYPE)
@@ -56,7 +55,7 @@ public class InstructionWrapper implements Passer {
                 .addLast(programSection);
 
         final var node = new MapNode(ROOT_TYPE).withNodeList(CHILDREN, sectionList);
-        return new Tuple<>(state, node);
+        return node;
     }
 
     @Override
@@ -73,6 +72,17 @@ public class InstructionWrapper implements Passer {
             return new Err<>(error);
         }
 
-        return new Ok<>(wrapInstructions(state, new JavaList<>()));
+        return childrenOption.orElse(new JavaList<>())
+                .stream()
+                .foldLeftToResult(new Tuple<>(state, new JavaList<>()), this::fold)
+                .mapValue(tuple -> tuple.mapRight(InstructionWrapper::wrapInstructions));
+    }
+
+    private Result<Tuple<State, JavaList<Node>>, CompileError> fold(Tuple<State, JavaList<Node>> current, Node node) {
+
+
+        final var context = new NodeContext(node);
+        final var error = new CompileError("Unknown root member", context);
+        return new Err<>(error);
     }
 }
