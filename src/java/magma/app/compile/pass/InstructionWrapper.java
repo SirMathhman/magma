@@ -16,8 +16,6 @@ import magma.app.compile.error.NodeContext;
 import magma.app.compile.lang.CASMLang;
 import magma.java.JavaList;
 
-import java.util.List;
-
 import static magma.Assembler.MAIN;
 import static magma.Assembler.SECTION_PROGRAM;
 import static magma.app.compile.lang.CASMLang.*;
@@ -27,9 +25,9 @@ public class InstructionWrapper implements Passer {
     public static final String DATA_SECTION = "data";
     public static final String DATA_CACHE = "cache";
 
-    private static Result<Tuple<State, Node>, CompileError> wrapInstructions(State state, JavaList<Node> instructions) {
-        var node4 = new MapNode(BLOCK_TYPE);
-        final var labelValue = node4.withNodeList(CHILDREN, new JavaList<>(instructions.list()))
+    private static Tuple<State, Node> wrapInstructions(State state, JavaList<Node> instructions) {
+        final var labelValue = new MapNode(BLOCK_TYPE)
+                .withNodeList(CHILDREN, instructions)
                 .withString(BLOCK_AFTER_CHILDREN, "\n\t");
 
         final var label = new MapNode(LABEL_TYPE)
@@ -38,8 +36,8 @@ public class InstructionWrapper implements Passer {
                 .withString(BLOCK_BEFORE_CHILD, "\n\t")
                 .withNode(GROUP_VALUE, labelValue);
 
-        Node node3 = new MapNode(BLOCK_TYPE);
-        final var programValue = node3.withNodeList(CHILDREN, new JavaList<>(List.of(label)))
+        final var programValue = new MapNode(BLOCK_TYPE)
+                .withNodeList(CHILDREN, new JavaList<Node>().addLast(label))
                 .withString(BLOCK_AFTER_CHILDREN, "\n");
 
         final var programSection = new MapNode(SECTION_TYPE)
@@ -57,8 +55,8 @@ public class InstructionWrapper implements Passer {
                 .withString(DATA_NAME, DATA_CACHE)
                 .withNode(DATA_VALUE, cacheValue);
 
-        var node2 = new MapNode(BLOCK_TYPE);
-        final var dataValue = node2.withNodeList(CHILDREN, new JavaList<>(List.of(cache)))
+        final var dataValue = new MapNode(BLOCK_TYPE)
+                .withNodeList(CHILDREN, new JavaList<Node>().addLast(cache))
                 .withString(BLOCK_AFTER_CHILDREN, "\n");
 
         final var dataSection = new MapNode(SECTION_TYPE)
@@ -67,10 +65,9 @@ public class InstructionWrapper implements Passer {
                 .withString(GROUP_AFTER, "\n")
                 .withNode(GROUP_VALUE, dataValue);
 
-        var node1 = new MapNode(ROOT_TYPE);
-        final var node = node1.withNodeList(CHILDREN, new JavaList<>(List.of(dataSection, programSection)));
-
-        return new Ok<>(new Tuple<>(state, node));
+        final var sectionList = new JavaList<Node>().addLast(dataSection);
+        final var node = new MapNode(ROOT_TYPE).withNodeList(CHILDREN, sectionList.addLast(programSection));
+        return new Tuple<>(state, node);
     }
 
     @Override
@@ -87,6 +84,6 @@ public class InstructionWrapper implements Passer {
             return new Err<>(error);
         }
 
-        return wrapInstructions(state, new JavaList<>());
+        return new Ok<>(wrapInstructions(state, new JavaList<>()));
     }
 }
