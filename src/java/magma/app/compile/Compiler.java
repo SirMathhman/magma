@@ -3,18 +3,13 @@ package magma.app.compile;
 import magma.api.Tuple;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
-import magma.app.compile.lang.casm.SectionFormatter;
+import magma.app.compile.lang.casm.*;
 import magma.app.compile.lang.CASMLang;
 import magma.app.compile.lang.MagmaLang;
-import magma.app.compile.lang.casm.DataFormatter;
-import magma.app.compile.lang.casm.StatelessFolder;
-import magma.app.compile.lang.casm.TypePasser;
-import magma.app.compile.lang.casm.InstructionWrapper;
 import magma.app.compile.pass.*;
 import magma.java.JavaList;
 
-import static magma.app.compile.lang.CASMLang.DATA_TYPE;
-import static magma.app.compile.lang.CASMLang.SECTION_TYPE;
+import static magma.app.compile.lang.CASMLang.*;
 
 public record Compiler(String input) {
     private static CompoundPassingStage createPassingStage() {
@@ -24,9 +19,12 @@ public record Compiler(String input) {
     }
 
     private static TreePassingStage createFormattingStage() {
-        return new TreePassingStage(new CompoundPasser(new JavaList<Passer>()
+        final var passers = new JavaList<Passer>()
                 .addLast(new TypePasser(DATA_TYPE, new StatelessFolder(new DataFormatter())))
-                .addLast(new TypePasser(SECTION_TYPE, new StatelessFolder(new SectionFormatter())))));
+                .addLast(new TypePasser(SECTION_TYPE, new StatelessFolder(new SectionFormatter())))
+                .addLast(new TypePasser(BLOCK_TYPE, new BlockPasser()));
+
+        return new TreePassingStage(new CompoundPasser(passers));
     }
 
     private static TreePassingStage createAssemblyStage() {

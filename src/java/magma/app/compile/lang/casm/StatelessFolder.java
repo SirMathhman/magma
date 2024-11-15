@@ -16,7 +16,7 @@ public class StatelessFolder implements Folder {
     }
 
     @Override
-    public Result<Tuple<State, Node>, CompileError> modify(State state, Node node) {
+    public Result<Tuple<State, Node>, CompileError> afterModify(State state, Node node) {
         return new Ok<>(new Tuple<>(state, modifier.modify(node)));
     }
 }

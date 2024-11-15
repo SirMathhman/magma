@@ -21,9 +21,16 @@ public class TypePasser implements Passer {
     }
 
     @Override
+    public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
+        return node.is(type)
+                ? new Some<>(folder.beforeModify(state, node))
+                : new None<>();
+    }
+
+    @Override
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
         return node.is(type)
-                ? new Some<>(folder.modify(state, node))
+                ? new Some<>(folder.afterModify(state, node))
                 : new None<>();
     }
 }

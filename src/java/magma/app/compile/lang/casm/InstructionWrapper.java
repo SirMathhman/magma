@@ -36,9 +36,7 @@ public class InstructionWrapper implements Passer {
                 .withString(BLOCK_BEFORE_CHILD, "\n\t")
                 .withNode(GROUP_VALUE, labelValue);
 
-        final var programValue = new MapNode(BLOCK_TYPE)
-                .withNodeList(CHILDREN, new JavaList<Node>().addLast(label))
-                .withString(BLOCK_AFTER_CHILDREN, "\n");
+        final var programValue = new MapNode(BLOCK_TYPE).withNodeList(CHILDREN, new JavaList<Node>().addLast(label));
 
         final var programSection = new MapNode(SECTION_TYPE)
                 .withString(GROUP_AFTER_NAME, " ")
@@ -53,9 +51,7 @@ public class InstructionWrapper implements Passer {
                 .withString(DATA_NAME, DATA_CACHE)
                 .withNode(DATA_VALUE, cacheValue);
 
-        final var dataValue = new MapNode(BLOCK_TYPE)
-                .withString(BLOCK_AFTER_CHILDREN, "\n")
-                .withNodeList(CHILDREN, new JavaList<Node>().addLast(cache));
+        final var dataValue = new MapNode(BLOCK_TYPE).withNodeList(CHILDREN, new JavaList<Node>().addLast(cache));
 
         final var dataSection = new MapNode(SECTION_TYPE)
                 .withString(GROUP_AFTER_NAME, " ")
