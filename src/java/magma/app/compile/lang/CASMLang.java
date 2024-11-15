@@ -43,8 +43,8 @@ public class CASMLang {
         )));
 
         return new TypeRule(ROOT_TYPE, new NodeListRule(new BracketSplitter(), CHILDREN, new StripRule(new OrRule(List.of(
-                new StripRule(new EmptyRule()),
-                section
+                section,
+                new StripRule(new EmptyRule())
         )))));
     }
 
