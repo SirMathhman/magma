@@ -15,7 +15,10 @@ section program {
 		stod $sp;
 		ldv 3;
 		stoi $sp;
-		ldv 0;
+		ldd $sp;
+		subv 2;
+		stod $sp;
+		ldi $sp;
 		out;
 		halt;
 	}

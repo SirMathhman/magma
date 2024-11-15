@@ -75,11 +75,12 @@ public class InstructionWrapper implements Passer {
         if (!node.is(SYMBOL_TYPE)) return new None<>();
 
         final var label = node.findString(SYMBOL_VALUE).orElse("");
-        final var tuple = state.loadLabel(label);
-        final var newState = tuple.left();
-        final var movingInstructions = tuple.right();
-        final var instructions = movingInstructions.addLast(instruct("ldi", STACK_POINTER));
-        return new Some<>(new Ok<>(new Tuple<>(newState, instructions)));
+        return new Some<>(state.loadLabel(label).mapValue(tuple -> {
+            final var newState = tuple.left();
+            final var movingInstructions = tuple.right();
+            final var instructions = movingInstructions.addLast(instruct("ldi", STACK_POINTER));
+            return new Tuple<>(newState, instructions);
+        }));
     }
 
     private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> loadNumericValue(State state, Node node) {

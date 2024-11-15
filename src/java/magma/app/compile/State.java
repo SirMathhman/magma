@@ -1,7 +1,12 @@
 package magma.app.compile;
 
 import magma.api.Tuple;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
 import magma.api.stream.Streams;
+import magma.app.compile.error.CompileError;
+import magma.app.compile.error.StringContext;
 import magma.java.JavaList;
 import magma.java.JavaOrderedMap;
 
@@ -21,8 +26,13 @@ public record State(JavaList<JavaOrderedMap<String, Node>> frames, long frameInd
         return new State(frames.popLastAndDrop().orElse(frames), frameIndex, definitionIndex);
     }
 
-    public Tuple<State, JavaList<Node>> loadLabel(String label) {
-        return new Tuple<>(this, new JavaList<>());
+    public Result<Tuple<State, JavaList<Node>>, CompileError> loadLabel(String label) {
+        final var last = frames.findLast().orElse(new JavaOrderedMap<>());
+        final var option = last.findIndexOfKey(label);
+        if (option.isEmpty()) return new Err<>(new CompileError("Label not defined", new StringContext(label)));
+
+        final var index = option.orElse(0);
+        return new Ok<>(moveToIndex(index));
     }
 
     public Tuple<State, JavaList<Node>> define(String name, Node type) {
@@ -43,7 +53,7 @@ public record State(JavaList<JavaOrderedMap<String, Node>> frames, long frameInd
         } else {
             final var instruction = delta > 0
                     ? instruct("addv", delta)
-                    : instruct("subv", delta);
+                    : instruct("subv", -delta);
 
             instructions = new JavaList<Node>()
                     .addLast(instruct("ldd", STACK_POINTER))
