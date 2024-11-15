@@ -68,7 +68,16 @@ public class InstructionWrapper implements Passer {
     private static Result<Tuple<State, JavaList<Node>>, CompileError> loadValue(State state, Node node) {
         return loadNumericValue(state, node)
                 .or(() -> loadSymbolValue(state, node))
-                .orElseGet(() -> new Err<>(new CompileError("Unknown value", new NodeContext(node))));
+                .or(() -> loadTupleType(state, node))
+                .orElseGet(() -> new Err<>(new CompileError("Value not loadable", new NodeContext(node))));
+    }
+
+    private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> loadTupleType(State state, Node node) {
+        if (!node.is(TUPLE_TYPE)) return new None<>();
+
+        return new Some<>(new Ok<>(new Tuple<>(state, new JavaList<Node>()
+                .addLast(instruct("ldd", STACK_POINTER))
+                .addLast(instruct("addv", 1)))));
     }
 
     private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> loadSymbolValue(State state, Node node) {
