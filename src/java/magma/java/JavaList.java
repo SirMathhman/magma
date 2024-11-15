@@ -72,7 +72,7 @@ public record JavaList<T>(List<T> list) {
     }
 
     public Option<JavaList<T>> mapLast(Function<T, T> mapper) {
-        if (!list.isEmpty()) return new None<>();
+        if (list.isEmpty()) return new None<>();
 
         final var copy = new ArrayList<>(list);
         final var lastIndex = copy.size() - 1;

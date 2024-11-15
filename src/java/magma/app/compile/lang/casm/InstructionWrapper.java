@@ -12,6 +12,7 @@ import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
+import magma.app.compile.error.StringContext;
 import magma.app.compile.lang.CASMLang;
 import magma.app.compile.pass.Passer;
 import magma.java.JavaList;
@@ -65,7 +66,23 @@ public class InstructionWrapper implements Passer {
 
     private static Result<JavaList<JavaList<Node>>, CompileError> loadValue(State state, Node node) {
         return loadNumericValue(state, node)
+                .or(() -> loadSymbolValue(state, node))
                 .orElseGet(() -> new Err<>(new CompileError("Value not loadable", new NodeContext(node))));
+    }
+
+    private static Option<Result<JavaList<JavaList<Node>>, CompileError>> loadSymbolValue(State state, Node node) {
+        if (!node.is(SYMBOL_TYPE)) return new None<>();
+
+        final var value = node.findString(SYMBOL_VALUE).orElse("");
+        final var addressOption = state.lookup(value);
+        if (addressOption.isEmpty())
+            return new Some<>(new Err<>(new CompileError("Symbol not defined", new StringContext(value))));
+
+        final var address = addressOption.orElse(0L);
+        final var instructions = state.stack().moveToAddress(address).right()
+                .addLast(instruct("ldi", STACK_POINTER));
+
+        return new Some<>(new Ok<>(new JavaList<JavaList<Node>>().addLast(instructions)));
     }
 
     private static Option<Result<JavaList<JavaList<Node>>, CompileError>> loadNumericValue(State state, Node node) {

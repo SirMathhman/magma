@@ -39,16 +39,16 @@ public record AssemblyStack(long count, long address) {
         return new AssemblyStack(count + 1, address);
     }
 
-    private Tuple<AssemblyStack, JavaList<Node>> moveToAddress(long address) {
+    public Tuple<AssemblyStack, JavaList<Node>> moveToAddress(long address) {
         return moveByOffset(address - this.address);
     }
 
-    public Tuple<AssemblyStack, JavaList<Node>> moveByOffset(long offset) {
-        if (offset == 0) return new Tuple<>(this, new JavaList<>());
+    public Tuple<AssemblyStack, JavaList<Node>> moveByOffset(long delta) {
+        if (delta == 0) return new Tuple<>(this, new JavaList<>());
 
-        var deltaInstruction = offset > 0
-                ? instruct("addv", offset)
-                : instruct("subv", -offset);
+        var deltaInstruction = delta > 0
+                ? instruct("addv", delta)
+                : instruct("subv", -delta);
 
         var instructions = new JavaList<Node>()
                 .addLast(instruct("stod", CACHE))
@@ -57,6 +57,6 @@ public record AssemblyStack(long count, long address) {
                 .addLast(instruct("stod", STACK_POINTER))
                 .addLast(instruct("ldd", CACHE));
 
-        return new Tuple<>(new AssemblyStack(count, address + offset), instructions);
+        return new Tuple<>(new AssemblyStack(count, address + delta), instructions);
     }
 }
