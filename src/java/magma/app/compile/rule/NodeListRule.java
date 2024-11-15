@@ -44,15 +44,11 @@ public class NodeListRule implements Rule {
 
     @Override
     public Result<Node, CompileError> parse(String input) {
-        final var segments = splitter.split(input);
-
-        return segments.stream()
+        return splitter.split(input)
+                .stream()
                 .map(segmentRule::parse)
                 .reduce(new Ok<>(new ArrayList<>()), NodeListRule::foldIntoList, (_, next) -> next)
-                .mapValue(list -> {
-                    Node node = new MapNode();
-                    return node.withNodeList(propertyKey, new JavaList<>(list));
-                });
+                .mapValue(list -> new MapNode().withNodeList(propertyKey, new JavaList<>(list)));
     }
 
     @Override

@@ -1,19 +1,23 @@
 package magma.app.compile.rule;
 
+import magma.api.result.Err;
+import magma.api.result.Result;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.StringContext;
-import magma.api.result.Err;
-import magma.api.result.Result;
 
 public record PrefixRule(String prefix, Rule childRule) implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
-        if (!input.startsWith(this.prefix()))
-            return new Err<>(new CompileError("Prefix '" + prefix + "' not present", new StringContext(input)));
-        final var slice = input.substring(this.prefix().length());
+        if (input.startsWith(prefix)) {
+            final var slice = input.substring(prefix.length());
+            return childRule.parse(slice);
+        }
 
-        return this.childRule().parse(slice);
+        final var format = "Prefix '%s' not present";
+        final var message = format.formatted(prefix);
+        final var context = new StringContext(input);
+        return new Err<>(new CompileError(message, context));
     }
 
     @Override

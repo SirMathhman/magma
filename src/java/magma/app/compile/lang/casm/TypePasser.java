@@ -9,20 +9,21 @@ import magma.app.compile.Node;
 import magma.app.compile.Passer;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
+import magma.app.compile.pass.Folder;
 
 public class TypePasser implements Passer {
     private final String type;
-    private final Modifier modifier;
+    private final Folder folder;
 
-    public TypePasser(String type, Modifier modifier) {
+    public TypePasser(String type, Folder folder) {
         this.type = type;
-        this.modifier = modifier;
+        this.folder = folder;
     }
 
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
         return node.is(type)
-                ? new Some<>(modifier.modify(state, node))
+                ? new Some<>(folder.modify(state, node))
                 : new None<>();
     }
 }
