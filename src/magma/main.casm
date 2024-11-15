@@ -3,6 +3,7 @@ section data {
 }
 section program {
 	label __main__ {
+		ldv 20;
 		ldv 100;
 		out;
 		halt;

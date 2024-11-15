@@ -18,8 +18,8 @@ import magma.java.JavaList;
 
 import static magma.Assembler.MAIN;
 import static magma.Assembler.SECTION_PROGRAM;
-import static magma.app.compile.lang.CASMLang.*;
 import static magma.app.compile.lang.CASMLang.ROOT_TYPE;
+import static magma.app.compile.lang.CASMLang.*;
 import static magma.app.compile.lang.MagmaLang.*;
 
 public class InstructionWrapper implements Passer {
@@ -55,21 +55,17 @@ public class InstructionWrapper implements Passer {
         if (!node.is(RETURN_TYPE)) return new None<>();
 
         final var value = node.findNode(RETURN_VALUE).orElse(new MapNode());
-        return new Some<>(loadValue(value).mapValue(loadInstructions -> {
-            final var instruction = instruct("halt");
-
-            return new Tuple<>(state, new JavaList<Node>()
-                    .addAll(loadInstructions)
-                    .addLast(instruction));
-        }));
+        return new Some<>(loadValue(value).mapValue(loadInstructions -> new Tuple<>(state, new JavaList<Node>()
+                .addAll(loadInstructions)
+                .addLast(instruct("out"))
+                .addLast(instruct("halt")))));
     }
 
     private static Result<JavaList<Node>, CompileError> loadValue(Node node) {
-        if(node.is(NUMERIC_TYPE)) {
+        if (node.is(NUMERIC_TYPE)) {
             final var value = node.findInt(NUMERIC_VALUE).orElse(0);
             return new Ok<>(new JavaList<Node>()
-                    .addLast(instruct("ldv", value))
-                    .addLast(instruct("out")));
+                    .addLast(instruct("ldv", value)));
         }
 
         return new Err<>(new CompileError("Unknown value", new NodeContext(node)));
@@ -112,8 +108,20 @@ public class InstructionWrapper implements Passer {
     }
 
     private Result<Tuple<State, JavaList<Node>>, CompileError> foldRootMember(Tuple<State, JavaList<Node>> current, Node rootMember) {
-        return foldReturnStatement(current.left(), rootMember)
+        final var state = current.left();
+        final var instructions = current.right();
+        return foldDeclaration(state, rootMember)
+                .or(() -> foldReturnStatement(state, rootMember))
                 .orElseGet(() -> invalidateRootMember(rootMember))
-                .mapValue(tuple -> tuple.mapRight(current.right()::addAll));
+                .mapValue(tuple -> tuple.mapRight(instructions::addAll));
+    }
+
+    private Option<Result<Tuple<State, JavaList<Node>>, CompileError>> foldDeclaration(State current, Node rootMember) {
+        if (!rootMember.is(DECLARATION_TYPE)) return new None<>();
+
+        return new Some<>(loadValue(rootMember.findNode(DECLARATION_VALUE).orElse(new MapNode())).mapValue(loadInstructions -> {
+            return new Tuple<>(current, new JavaList<Node>()
+                    .addAll(loadInstructions));
+        }));
     }
 }
