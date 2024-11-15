@@ -40,10 +40,14 @@ public class RootPasser implements Passer {
 
         final var returnValue = node.findNode(RETURN_VALUE).orElse(new MapNode());
         return new Some<>(loadValue(definitions, returnValue)
-                .mapValue(list -> list.addAll(new JavaList<Node>()
-                        .addLast(instruct("out"))
-                        .addLast(instruct("halt"))))
+                .mapValue(RootPasser::writeReturnInstructions)
                 .mapValue(instructions -> new Tuple<>(definitions, instructions)));
+    }
+
+    private static JavaList<Node> writeReturnInstructions(JavaList<Node> list) {
+        return list.addAll(new JavaList<Node>()
+                .addLast(instruct("out"))
+                .addLast(instruct("halt")));
     }
 
     private static Option<Result<Tuple<Stack, JavaList<Node>>, CompileError>> writeDeclaration(Stack stack, Node node) {
