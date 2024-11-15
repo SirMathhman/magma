@@ -16,8 +16,6 @@ import magma.app.compile.lang.CASMLang;
 import magma.app.compile.pass.Passer;
 import magma.java.JavaList;
 
-import java.util.function.BiFunction;
-
 import static magma.Assembler.*;
 import static magma.app.compile.lang.CASMLang.ROOT_TYPE;
 import static magma.app.compile.lang.CASMLang.*;
@@ -58,60 +56,27 @@ public class InstructionWrapper implements Passer {
 
         final var value = node.findNode(RETURN_VALUE).orElse(new MapNode());
         return new Some<>(loadValue(state, value).mapValue(tuple -> {
-            final var newState = tuple.left();
-            final var loadInstructions = tuple.right();
-            return new Tuple<>(newState, new JavaList<Node>()
-                    .addAll(loadInstructions)
+            return new Tuple<>(state, new JavaList<Node>()
+                    .addAll(tuple.findFirst().orElse(new JavaList<>()))
                     .addLast(instruct("out"))
                     .addLast(instruct("halt")));
         }));
     }
 
-    private static Result<Tuple<State, JavaList<Node>>, CompileError> loadValue(State state, Node node) {
+    private static Result<JavaList<JavaList<Node>>, CompileError> loadValue(State state, Node node) {
         return loadNumericValue(state, node)
-                .or(() -> loadSymbolValue(state, node))
-                .or(() -> loadTupleType(state, node))
                 .orElseGet(() -> new Err<>(new CompileError("Value not loadable", new NodeContext(node))));
     }
 
-    private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> loadTupleType(State state, Node node) {
-        if (!node.is(TUPLE_TYPE)) return new None<>();
-
-        final var values = node.findNodeList(TUPLE_VALUES).orElse(new JavaList<>());
-        final var initial = new Tuple<>(state, new JavaList<Node>());
-        return new Some<Result<Tuple<State, JavaList<Node>>, CompileError>>(values.stream().foldLeftToResult(initial, (tuple, node1) -> {
-            final var currentState = tuple.left();
-            final var currentInstructions = tuple.right();
-            return loadValue(currentState, node1).mapValue(loaded -> loaded.mapRight(currentInstructions::addAll));
-        }).flatMapValue(result -> {
-            final var moved = result.left().moveByDelta(values.size());
-
-            return new Ok<>(new Tuple<>(moved.left(), new JavaList<Node>()
-                    .addAll(result.right())
-                    .addAll(moved.right())
-                    .addLast(instruct("ldd", STACK_POINTER))
-                    .addLast(instruct("addv", 1))));
-        }));
-    }
-
-    private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> loadSymbolValue(State state, Node node) {
-        if (!node.is(SYMBOL_TYPE)) return new None<>();
-
-        final var label = node.findString(SYMBOL_VALUE).orElse("");
-        return new Some<>(state.loadLabel(label).mapValue(tuple -> {
-            final var newState = tuple.left();
-            final var movingInstructions = tuple.right();
-            final var instructions = movingInstructions.addLast(instruct("ldi", STACK_POINTER));
-            return new Tuple<>(newState, instructions);
-        }));
-    }
-
-    private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> loadNumericValue(State state, Node node) {
+    private static Option<Result<JavaList<JavaList<Node>>, CompileError>> loadNumericValue(State state, Node node) {
         if (!node.is(NUMERIC_TYPE)) return new None<>();
 
         final var value = node.findInt(NUMERIC_VALUE).orElse(0);
-        final var instructions = new JavaList<Node>().addLast(instruct("ldv", value));
-        return new Some<>(new Ok<>(new Tuple<>(state, instructions)));
+        final var instructions = new JavaList<Node>()
+                .addLast(instruct("ldv", value));
+
+        return new Some<>(new Ok<>(new JavaList<JavaList<Node>>()
+                .addLast(instructions)));
     }
 
     private static Err<Tuple<State, JavaList<Node>>, CompileError> invalidateRootMember(Node node) {
@@ -154,24 +119,14 @@ public class InstructionWrapper implements Passer {
 
         final var name = declaration.findString(DECLARATION_NAME).orElse("");
         final var value = declaration.findNode(DECLARATION_VALUE).orElse(new MapNode());
-        return new Some<>(loadValue(state, value).mapValue(tuple -> {
-            final var u64Type = new MapNode("numeric")
-                    .withInt("length", 1)
-                    .withInt("sign", 0)
-                    .withInt("bits", 64);
 
-            final var loadedState = tuple.left();
-            final var loadedInstructions = tuple.right();
-
-            final var defined = loadedState.define(name, u64Type);
-            final var definedState = defined.left();
-            final var definedInstructions = defined.right();
-
-            return new Tuple<>(definedState, new JavaList<Node>()
-                    .addAll(loadedInstructions)
-                    .addAll(definedInstructions)
-                    .addLast(instruct("stoi", STACK_POINTER))
-            );
+        return new Some<>(loadValue(state, value).mapValue(instructions -> {
+            final var pushed = state.stack().pushMultipleData(instructions);
+            final var newStack = pushed.left();
+            final var address = pushed.right().left();
+            final var instructions0 = pushed.right().right();
+            final var defined = state.define(name, address);
+            return new Tuple<>(new State(defined.frames(), newStack), instructions0);
         }));
     }
 }

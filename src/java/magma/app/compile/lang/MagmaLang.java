@@ -26,7 +26,7 @@ public class MagmaLang {
     public static final String REFERENCE_VALUE = "value";
     public static final String INDEX_TYPE = "index";
     public static final String INDEX_VALUE = "value";
-    public static final String INDEX_OFFSET = "offset";
+    public static final String INDEX_OFFSET = "address";
 
     public static Rule createMagmaRootRule() {
         final List<Rule> function = List.of(

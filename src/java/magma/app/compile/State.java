@@ -1,88 +1,27 @@
 package magma.app.compile;
 
-import magma.api.Tuple;
-import magma.api.result.Err;
-import magma.api.result.Ok;
-import magma.api.result.Result;
-import magma.api.stream.Streams;
-import magma.app.compile.error.CompileError;
-import magma.app.compile.error.StringContext;
+import magma.app.compile.lang.casm.AssemblyStack;
 import magma.java.JavaList;
 import magma.java.JavaOrderedMap;
 
-import static magma.Assembler.STACK_POINTER;
-import static magma.app.compile.lang.casm.Instructions.instruct;
-
-public record State(JavaList<JavaOrderedMap<String, Node>> frames, long stackPointer) {
+public record State(JavaList<JavaOrderedMap<String, Node>> frames, AssemblyStack stack) {
     public State() {
-        this(new JavaList<JavaOrderedMap<String, Node>>().addLast(new JavaOrderedMap<>()), 0);
+        this(new JavaList<JavaOrderedMap<String, Node>>().addLast(new JavaOrderedMap<>()), new AssemblyStack());
     }
 
     public State enter() {
-        return new State(frames.addLast(new JavaOrderedMap<>()), stackPointer);
+        return new State(frames.addLast(new JavaOrderedMap<>()), stack);
     }
 
     public State exit() {
-        return new State(frames.popLastAndDrop().orElse(frames), stackPointer);
+        return new State(frames.popLastAndDrop().orElse(frames), stack);
     }
 
-    public Result<Tuple<State, JavaList<Node>>, CompileError> loadLabel(String label) {
-        final var last = frames.findLast().orElse(new JavaOrderedMap<>());
-        final var option = last.findIndexOfKey(label);
-        if (option.isEmpty()) return new Err<>(new CompileError("Label not defined", new StringContext(label)));
-
-        final var index = option.orElse(0);
-        return new Ok<>(moveByIndex(index));
-    }
-
-    public Tuple<State, JavaList<Node>> define(String name, Node type) {
-        final var last = frames.findLast().orElse(new JavaOrderedMap<>());
-        final var newLast = last.put(name, type);
-        final var withLast = frames.setLast(newLast);
-        final var copy = new State(withLast, stackPointer);
-        return copy.moveByIndex(last.size());
-    }
-
-    private Tuple<State, JavaList<Node>> moveByIndex(long definitionIndex) {
-        final var last = frames.findLast().orElse(new JavaOrderedMap<>());
-        final var frame = last.sliceToIndex((int) definitionIndex).orElse(new JavaOrderedMap<>());
-        final var size = computeFrameSize(frame);
-        return moveByOffset(size);
-    }
-
-    private Tuple<State, JavaList<Node>> moveByOffset(long offset) {
-        return moveByDelta(offset - this.stackPointer);
-    }
-
-    public Tuple<State, JavaList<Node>> moveByDelta(long delta) {
-        final JavaList<Node> instructions;
-        if (delta == 0) {
-            instructions = new JavaList<>();
-        } else {
-            final var instruction = delta > 0
-                    ? instruct("addv", delta)
-                    : instruct("subv", -delta);
-
-            instructions = new JavaList<Node>()
-                    .addLast(instruct("stod", "cache"))
-                    .addLast(instruct("ldd", STACK_POINTER))
-                    .addLast(instruction)
-                    .addLast(instruct("stod", STACK_POINTER))
-                    .addLast(instruct("ldd", "cache"));
-        }
-
-        return new Tuple<>(new State(frames, stackPointer + delta), instructions);
-    }
-
-    private int computeFrameSize(JavaOrderedMap<String, Node> frame) {
-        return frame.stream()
-                .map(Tuple::right)
-                .map(node -> node.findInt("length"))
-                .flatMap(Streams::fromOption)
-                .foldLeft(0, Integer::sum);
+    public State define(String name, Long address) {
+        return this;
     }
 
     public int depth() {
-        return Math.max(frames.size() - 1, 0);
+        return Math.max(0, frames.size() - 1);
     }
 }

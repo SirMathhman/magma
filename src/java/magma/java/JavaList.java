@@ -94,4 +94,8 @@ public record JavaList<T>(List<T> list) {
         copy.set(copy.size() - 1, last);
         return new JavaList<>(copy);
     }
+
+    public Option<T> findFirst() {
+        return get(0);
+    }
 }
