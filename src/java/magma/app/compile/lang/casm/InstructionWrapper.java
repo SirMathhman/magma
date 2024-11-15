@@ -54,8 +54,7 @@ public class InstructionWrapper implements Passer {
                 .addLast(dataSection)
                 .addLast(programSection);
 
-        final var node = new MapNode(ROOT_TYPE).withNodeList(CHILDREN, sectionList);
-        return node;
+        return new MapNode(ROOT_TYPE).withNodeList(CHILDREN, sectionList);
     }
 
     @Override
