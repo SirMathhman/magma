@@ -25,7 +25,6 @@ import static magma.app.compile.lang.MagmaLang.ROOT_TYPE;
 import static magma.app.compile.lang.MagmaLang.*;
 
 public class RootPasser implements Passer {
-    public static final String PROGRAM_SECTION = SECTION_PROGRAM;
     public static final String DATA_SECTION = "data";
     public static final String DATA_CACHE = "cache";
     public static final String TYPE_LENGTH = "length";
@@ -309,7 +308,7 @@ public class RootPasser implements Passer {
                 .withString(BLOCK_AFTER_CHILDREN, "\n");
 
         final var programSection = new MapNode(SECTION_TYPE)
-                .withString(GROUP_NAME, PROGRAM_SECTION)
+                .withString(GROUP_NAME, SECTION_PROGRAM)
                 .withString(GROUP_AFTER_NAME, " ")
                 .withNode(GROUP_VALUE, programValue);
 
