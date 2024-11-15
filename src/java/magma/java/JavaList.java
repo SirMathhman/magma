@@ -63,4 +63,10 @@ public record JavaList<T>(List<T> list) {
         copy.addAll(list);
         return new JavaList<T>(copy);
     }
+
+    public Option<JavaList<T>> popLastAndDrop() {
+        if (list.isEmpty()) return new None<>();
+        final var slice = list.subList(0, list.size() - 1);
+        return new Some<>(new JavaList<>(slice));
+    }
 }

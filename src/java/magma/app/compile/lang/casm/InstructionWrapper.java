@@ -54,33 +54,40 @@ public class InstructionWrapper implements Passer {
         if (!node.is(RETURN_TYPE)) return new None<>();
 
         final var value = node.findNode(RETURN_VALUE).orElse(new MapNode());
-        return new Some<>(loadValue(state, value).mapValue(loadInstructions -> new Tuple<>(state, new JavaList<Node>()
-                .addAll(loadInstructions)
-                .addLast(instruct("out"))
-                .addLast(instruct("halt")))));
+        return new Some<>(loadValue(state, value).mapValue(tuple -> {
+            final var newState = tuple.left();
+            final var loadInstructions = tuple.right();
+            return new Tuple<>(newState, new JavaList<Node>()
+                    .addAll(loadInstructions)
+                    .addLast(instruct("out"))
+                    .addLast(instruct("halt")));
+        }));
     }
 
-    private static Result<JavaList<Node>, CompileError> loadValue(State state, Node node) {
-        return loadNumericValue(node).or(() -> {
-            return loadSymbolValue(state, node);
-        }).orElseGet(() -> new Err<>(new CompileError("Unknown value", new NodeContext(node))));
+    private static Result<Tuple<State, JavaList<Node>>, CompileError> loadValue(State state, Node node) {
+        return loadNumericValue(state, node)
+                .or(() -> loadSymbolValue(state, node))
+                .orElseGet(() -> new Err<>(new CompileError("Unknown value", new NodeContext(node))));
     }
 
-    private static Option<Result<JavaList<Node>, CompileError>> loadSymbolValue(State state, Node node) {
-        if (node.is(SYMBOL_TYPE)) {
-            final var label = node.findString(SYMBOL_VALUE).orElse("");
-            final var tuple = state.loadLabel(label);
-        }
+    private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> loadSymbolValue(State state, Node node) {
+        if (!node.is(SYMBOL_TYPE)) return new None<>();
 
-        return new None<>();
+        final var label = node.findString(SYMBOL_VALUE).orElse("");
+        return state.loadLabel(label).map(tuple -> {
+            final var newState = tuple.left();
+            final var movingInstructions = tuple.right();
+            final var instructions = movingInstructions.addLast(instruct("ldi", STACK_POINTER));
+            return new Ok<>(new Tuple<>(newState, instructions));
+        });
     }
 
-    private static Option<Result<JavaList<Node>, CompileError>> loadNumericValue(Node node) {
+    private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> loadNumericValue(State state, Node node) {
         if (!node.is(NUMERIC_TYPE)) return new None<>();
 
         final var value = node.findInt(NUMERIC_VALUE).orElse(0);
         final var instructions = new JavaList<Node>().addLast(instruct("ldv", value));
-        return new Some<>(new Ok<>(instructions));
+        return new Some<>(new Ok<>(new Tuple<>(state, instructions)));
     }
 
     private static Node instruct(String mnemonic, long value) {
@@ -97,6 +104,10 @@ public class InstructionWrapper implements Passer {
         final var context = new NodeContext(node);
         final var error = new CompileError("Unknown root member", context);
         return new Err<>(error);
+    }
+
+    private static Node instruct(String mnemonic, String label) {
+        return instruct(mnemonic).withString(INSTRUCTION_LABEL, label);
     }
 
     @Override
@@ -128,22 +139,28 @@ public class InstructionWrapper implements Passer {
                 .mapValue(tuple -> tuple.mapRight(instructions::addAll));
     }
 
-    private Option<Result<Tuple<State, JavaList<Node>>, CompileError>> foldDeclaration(State state, Node rootMember) {
-        if (!rootMember.is(DECLARATION_TYPE)) return new None<>();
+    private Option<Result<Tuple<State, JavaList<Node>>, CompileError>> foldDeclaration(State state, Node declaration) {
+        if (!declaration.is(DECLARATION_TYPE)) return new None<>();
 
-        return new Some<>(loadValue(state, rootMember.findNode(DECLARATION_VALUE).orElse(new MapNode())).mapValue(loadInstructions -> {
-            final var definitionTypeSize = 1;
-            return new Tuple<>(state, new JavaList<Node>()
-                    .addAll(loadInstructions)
-                    .addLast(instruct("stoi", STACK_POINTER))
-                    .addLast(instruct("ldd", STACK_POINTER))
-                    .addLast(instruct("addv", definitionTypeSize))
-                    .addLast(instruct("stod", STACK_POINTER))
+        final var name = declaration.findString(DECLARATION_NAME).orElse("");
+        final var value = declaration.findNode(DECLARATION_VALUE).orElse(new MapNode());
+        return new Some<>(loadValue(state, value).mapValue(tuple -> {
+            final var u64Type = new MapNode("numeric")
+                    .withInt("length", 1)
+                    .withInt("sign", 0)
+                    .withInt("bits", 64);
+
+            final var loadedState = tuple.left();
+            final var loadedInstructions = tuple.right();
+
+            final var defined = loadedState.define(name, u64Type);
+            final var definedState = defined.left();
+            final var definedInstructions = defined.right();
+
+            return new Tuple<>(definedState, new JavaList<Node>()
+                    .addAll(definedInstructions)
+                    .addAll(loadedInstructions)
             );
         }));
-    }
-
-    private Node instruct(String mnemonic, String label) {
-        return instruct(mnemonic).withString(INSTRUCTION_LABEL, label);
     }
 }
