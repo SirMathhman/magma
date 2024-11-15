@@ -41,8 +41,8 @@ public class InstructionWrapper implements Passer {
                 .withString(BLOCK_AFTER_CHILDREN, "\n");
 
         final var programSection = new MapNode(SECTION_TYPE)
-                .withString(GROUP_NAME, SECTION_PROGRAM)
                 .withString(GROUP_AFTER_NAME, " ")
+                .withString(GROUP_NAME, SECTION_PROGRAM)
                 .withNode(GROUP_VALUE, programValue);
 
         final var cacheValue = new MapNode(CASMLang.NUMBER_TYPE)

@@ -6,8 +6,11 @@ import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.CASMLang;
 import magma.app.compile.lang.MagmaLang;
 import magma.app.compile.lang.casm.DataFormatter;
+import magma.app.compile.lang.casm.TypePasser;
 import magma.app.compile.pass.InstructionWrapper;
 import magma.java.JavaList;
+
+import static magma.app.compile.lang.CASMLang.DATA_TYPE;
 
 public record Compiler(String input) {
     private static CompoundPassingStage createPassingStage() {
@@ -18,7 +21,7 @@ public record Compiler(String input) {
 
     private static TreePassingStage createFormattingStage() {
         return new TreePassingStage(new CompoundPasser(new JavaList<Passer>()
-                .addLast(new DataFormatter())));
+                .addLast(new TypePasser(DATA_TYPE, new DataFormatter()))));
     }
 
     private static TreePassingStage createAssemblyStage() {
