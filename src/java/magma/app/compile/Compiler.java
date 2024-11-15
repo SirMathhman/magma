@@ -24,7 +24,8 @@ public record Compiler(String input) {
                 .addLast(new TypePasser(DATA_TYPE, new DataFormatter()))
                 .addLast(new TypePasser(LABEL_TYPE, new LabelFormatter()))
                 .addLast(new TypePasser(BLOCK_TYPE, new BlockFormatter()))
-                .addLast(new TypePasser(INSTRUCTION_TYPE, new InstructionFormatter()));
+                .addLast(new TypePasser(INSTRUCTION_TYPE, new InstructionFormatter()))
+                .addLast(new TypePasser(COMMENT_TYPE, new CommentFormatter()));
 
         return new TreePassingStage(new CompoundPasser(passers));
     }

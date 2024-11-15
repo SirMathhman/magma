@@ -1,4 +1,3 @@
-let first = 100;
-let second = 200;
-let third = 300;
+let first = [100];
+let second = first;
 return first;

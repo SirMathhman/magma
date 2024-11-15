@@ -7,6 +7,7 @@ import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.api.stream.ResultStream;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.State;
@@ -65,9 +66,26 @@ public class InstructionWrapper implements Passer {
     }
 
     private static Result<JavaList<JavaList<Node>>, CompileError> loadValue(State state, Node node) {
-        return loadNumericValue(state, node)
+        return loadNumericValue(node)
                 .or(() -> loadSymbolValue(state, node))
+                .or(() -> loadTupleType(state, node))
                 .orElseGet(() -> new Err<>(new CompileError("Value not loadable", new NodeContext(node))));
+    }
+
+    private static Option<Result<JavaList<JavaList<Node>>, CompileError>> loadTupleType(State state, Node node) {
+        if (!node.is(TUPLE_TYPE)) return new None<>();
+
+        final var values = node.findNodeList(TUPLE_VALUES).orElse(new JavaList<>());
+        return new Some<>(values.stream()
+                .map(value -> loadValue(state, value))
+                .into(ResultStream::new)
+                .foldResultsLeft(new JavaList<JavaList<Node>>(), JavaList::addAll)
+                .mapValue(list -> {
+                    final var element = new JavaList<Node>()
+                            .addLast(instruct("ldd", STACK_POINTER))
+                            .addLast(instruct("addv", 1));
+                    return list.addFirst(element);
+                }));
     }
 
     private static Option<Result<JavaList<JavaList<Node>>, CompileError>> loadSymbolValue(State state, Node node) {
@@ -85,7 +103,7 @@ public class InstructionWrapper implements Passer {
         return new Some<>(new Ok<>(new JavaList<JavaList<Node>>().addLast(instructions)));
     }
 
-    private static Option<Result<JavaList<JavaList<Node>>, CompileError>> loadNumericValue(State state, Node node) {
+    private static Option<Result<JavaList<JavaList<Node>>, CompileError>> loadNumericValue(Node node) {
         if (!node.is(NUMERIC_TYPE)) return new None<>();
 
         final var value = node.findInt(NUMERIC_VALUE).orElse(0);
@@ -137,11 +155,12 @@ public class InstructionWrapper implements Passer {
         final var name = declaration.findString(DECLARATION_NAME).orElse("");
         final var value = declaration.findNode(DECLARATION_VALUE).orElse(new MapNode());
 
-        return new Some<>(loadValue(state, value).mapValue(instructions -> {
+        final var clearStack = state.stack().moveToEmptyAddress();
+        return new Some<>(loadValue(new State(state.frames(), clearStack.left()), value).mapValue(instructions -> {
             final var pushed = state.stack().pushMultipleData(instructions);
             final var newStack = pushed.left();
             final var address = pushed.right().left();
-            final var instructions0 = pushed.right().right();
+            final var instructions0 = clearStack.right().addAll(pushed.right().right());
             final var defined = state.define(name, address);
             return new Tuple<>(new State(defined.frames(), newStack), instructions0);
         }));
