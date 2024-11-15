@@ -75,6 +75,7 @@ public class InstructionWrapper implements Passer {
     private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> loadTupleType(State state, Node node) {
         if (!node.is(TUPLE_TYPE)) return new None<>();
 
+
         return new Some<>(new Ok<>(new Tuple<>(state, new JavaList<Node>()
                 .addLast(instruct("ldd", STACK_POINTER))
                 .addLast(instruct("addv", 1)))));

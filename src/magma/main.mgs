@@ -1,2 +1,3 @@
-let first = [100];
+let first = 100;
+let second = 200;
 return first;

@@ -13,17 +13,17 @@ import magma.java.JavaOrderedMap;
 import static magma.Assembler.STACK_POINTER;
 import static magma.app.compile.lang.casm.Instructions.instruct;
 
-public record State(JavaList<JavaOrderedMap<String, Node>> frames, long frameIndex, long definitionIndex) {
+public record State(JavaList<JavaOrderedMap<String, Node>> frames, long stackPointer) {
     public State() {
-        this(new JavaList<JavaOrderedMap<String, Node>>().addLast(new JavaOrderedMap<>()), 0, 0);
+        this(new JavaList<JavaOrderedMap<String, Node>>().addLast(new JavaOrderedMap<>()), 0);
     }
 
     public State enter() {
-        return new State(frames.addLast(new JavaOrderedMap<>()), frameIndex, definitionIndex);
+        return new State(frames.addLast(new JavaOrderedMap<>()), stackPointer);
     }
 
     public State exit() {
-        return new State(frames.popLastAndDrop().orElse(frames), frameIndex, definitionIndex);
+        return new State(frames.popLastAndDrop().orElse(frames), stackPointer);
     }
 
     public Result<Tuple<State, JavaList<Node>>, CompileError> loadLabel(String label) {
@@ -39,14 +39,18 @@ public record State(JavaList<JavaOrderedMap<String, Node>> frames, long frameInd
         final var last = frames.findLast().orElse(new JavaOrderedMap<>());
         final var newLast = last.put(name, type);
         final var withLast = frames.setLast(newLast);
-        final var copy = new State(withLast, frameIndex, definitionIndex);
+        final var copy = new State(withLast, stackPointer);
         return copy.moveToIndex(last.size());
     }
 
     private Tuple<State, JavaList<Node>> moveToIndex(long definitionIndex) {
-        final var state = new State(frames, 0, definitionIndex);
+        final var state = new State(frames, definitionIndex);
 
-        final var delta = definitionIndex - this.definitionIndex;
+        final var last = frames.findLast().orElse(new JavaOrderedMap<>());
+        final var frame = last.sliceToIndex((int) definitionIndex).orElse(new JavaOrderedMap<>());
+        final var size = computeFrameSize(frame);
+
+        final var delta = size - this.stackPointer;
         final JavaList<Node> instructions;
         if (delta == 0) {
             instructions = new JavaList<>();
