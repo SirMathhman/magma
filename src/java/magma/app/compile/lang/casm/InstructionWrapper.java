@@ -5,6 +5,7 @@ import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
 import magma.api.result.Err;
+import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
@@ -18,7 +19,7 @@ import magma.java.JavaList;
 import static magma.Assembler.MAIN;
 import static magma.Assembler.SECTION_PROGRAM;
 import static magma.app.compile.lang.CASMLang.*;
-import static magma.app.compile.lang.MagmaLang.ROOT_TYPE;
+import static magma.app.compile.lang.MagmaLang.RETURN_TYPE;
 
 public class InstructionWrapper implements Passer {
     public static final String DATA_SECTION = "data";
@@ -49,6 +50,22 @@ public class InstructionWrapper implements Passer {
         return new MapNode(ROOT_TYPE).withNodeList(CHILDREN, sectionList);
     }
 
+    private static Option<Result<Tuple<State, JavaList<Node>>, CompileError>> foldReturnStatement(Tuple<State, JavaList<Node>> current, Node node) {
+        if (!node.is(RETURN_TYPE)) return new None<>();
+
+        final var state = current.left();
+        final var instruction = new MapNode(INSTRUCTION_TYPE)
+                .withString(INSTRUCTION_MNEMONIC, "halt");
+
+        return new Some<>(new Ok<>(new Tuple<>(state, new JavaList<Node>().addLast(instruction))));
+    }
+
+    private static Err<Tuple<State, JavaList<Node>>, CompileError> invalidateRootMember(Node node) {
+        final var context = new NodeContext(node);
+        final var error = new CompileError("Unknown root member", context);
+        return new Err<>(error);
+    }
+
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
         if (!node.is(ROOT_TYPE)) return new None<>();
@@ -65,15 +82,11 @@ public class InstructionWrapper implements Passer {
 
         return childrenOption.orElse(new JavaList<>())
                 .stream()
-                .foldLeftToResult(new Tuple<>(state, new JavaList<>()), this::fold)
+                .foldLeftToResult(new Tuple<>(state, new JavaList<>()), this::foldRootMember)
                 .mapValue(tuple -> tuple.mapRight(InstructionWrapper::wrapInstructions));
     }
 
-    private Result<Tuple<State, JavaList<Node>>, CompileError> fold(Tuple<State, JavaList<Node>> current, Node node) {
-
-
-        final var context = new NodeContext(node);
-        final var error = new CompileError("Unknown root member", context);
-        return new Err<>(error);
+    private Result<Tuple<State, JavaList<Node>>, CompileError> foldRootMember(Tuple<State, JavaList<Node>> current, Node node) {
+        return foldReturnStatement(current, node).orElseGet(() -> invalidateRootMember(node));
     }
 }

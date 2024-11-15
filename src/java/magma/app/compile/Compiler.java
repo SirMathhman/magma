@@ -23,7 +23,8 @@ public record Compiler(String input) {
                 .addLast(new TypePasser(SECTION_TYPE, new StatelessFolder(new SectionFormatter())))
                 .addLast(new TypePasser(DATA_TYPE, new DataFormatter()))
                 .addLast(new TypePasser(LABEL_TYPE, new LabelFormatter()))
-                .addLast(new TypePasser(BLOCK_TYPE, new BlockFormatter()));
+                .addLast(new TypePasser(BLOCK_TYPE, new BlockFormatter()))
+                .addLast(new TypePasser(INSTRUCTION_TYPE, new InstructionFormatter()));
 
         return new TreePassingStage(new CompoundPasser(passers));
     }

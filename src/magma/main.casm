@@ -3,5 +3,6 @@ section data {
 }
 section program {
 	label __main__ {
+		halt;
 	}
 }
