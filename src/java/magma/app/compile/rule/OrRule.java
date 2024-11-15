@@ -6,15 +6,21 @@ import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 import magma.app.compile.error.StringContext;
+import magma.java.JavaList;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public record OrRule(List<Rule> rules) implements Rule {
+public final class OrRule implements Rule {
+    private final JavaList<Rule> rules;
+
+    public OrRule(JavaList<Rule> rules) {
+        this.rules = rules;
+    }
+
     @Override
     public Result<Node, CompileError> parse(String input) {
         var errors = new ArrayList<CompileError>();
-        for (var rule : rules) {
+        for (var rule : rules.list()) {
             final var result = rule.parse(input);
             if (result.isOk()) {
                 return result;
@@ -29,7 +35,7 @@ public record OrRule(List<Rule> rules) implements Rule {
     @Override
     public Result<String, CompileError> generate(Node node) {
         var errors = new ArrayList<CompileError>();
-        for (var rule : rules) {
+        for (var rule : rules.list()) {
             final var result = rule.generate(node);
             if (result.isOk()) {
                 return result;

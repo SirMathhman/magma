@@ -1,6 +1,7 @@
 package magma.app.compile.lang;
 
 import magma.app.compile.rule.*;
+import magma.java.JavaList;
 
 import java.util.List;
 
@@ -18,6 +19,6 @@ public class CommonLang {
     }
 
     static Rule createBlockRule(List<Rule> list) {
-        return new TypeRule(BLOCK_TYPE, new NodeListRule(new BracketSplitter(), BLOCK_CHILDREN, new StripRule(BLOCK_BEFORE_CHILD, new OrRule(list), "after-child")));
+        return new TypeRule(BLOCK_TYPE, new NodeListRule(new BracketSplitter(), BLOCK_CHILDREN, new StripRule(BLOCK_BEFORE_CHILD, new OrRule(new JavaList<>(list)), "after-child")));
     }
 }

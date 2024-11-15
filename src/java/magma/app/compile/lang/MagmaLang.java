@@ -1,6 +1,7 @@
 package magma.app.compile.lang;
 
 import magma.app.compile.rule.*;
+import magma.java.JavaList;
 
 import java.util.List;
 
@@ -28,11 +29,12 @@ public class MagmaLang {
     public static final String INDEX_OFFSET = "offset";
 
     public static Rule createMagmaRootRule() {
-        return new TypeRule(ROOT_TYPE, new NodeListRule(new BracketSplitter(), "children", new StripRule(new OrRule(List.of(
+        final List<Rule> function = List.of(
                 createDeclarationRule(),
                 createReturnRule(),
                 new TypeRule("function", new StripRule(new PrefixRule("def empty() => {}", new EmptyRule())))
-        )))));
+        );
+        return new TypeRule(ROOT_TYPE, new NodeListRule(new BracketSplitter(), "children", new StripRule(new OrRule(new JavaList<>(function)))));
     }
 
     private static TypeRule createDeclarationRule() {
@@ -44,14 +46,15 @@ public class MagmaLang {
 
     private static Rule createValueRule() {
         final var value = new LazyRule();
-        value.setRule(new OrRule(List.of(
+        final List<Rule> numberRule = List.of(
                 createNumberRule(),
                 createSymbolRule(),
                 createAddRule(value),
                 createArrayRule(value),
                 createIndexRule(value),
                 new TypeRule(REFERENCE_TYPE, new StripRule(new PrefixRule("&", new NodeRule(REFERENCE_VALUE, value))))
-        )));
+        );
+        value.setRule(new OrRule(new JavaList<>(numberRule)));
         return value;
     }
 
@@ -80,6 +83,14 @@ public class MagmaLang {
 
     private static Rule createReturnRule() {
         final var value = new NodeRule(RETURN_VALUE, createValueRule());
-        return new TypeRule(RETURN_TYPE, new PrefixRule("return ", new SuffixRule(value, ";")));
+
+        final var withValue = new PrefixRule("return ", new SuffixRule(value, ";"));
+        final var withoutValue = new StripRule(new PrefixRule("return;", new EmptyRule()));
+
+        final var rules = new JavaList<Rule>()
+                .addLast(withValue)
+                .addLast(withoutValue);
+
+        return new TypeRule(RETURN_TYPE, new OrRule(rules));
     }
 }

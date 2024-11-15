@@ -1,6 +1,7 @@
 package magma.app.compile.lang;
 
 import magma.app.compile.rule.*;
+import magma.java.JavaList;
 
 import java.util.List;
 
@@ -37,15 +38,16 @@ public class CASMLang {
 
     public static Rule createRootRule() {
         final var label = createGroupRule(LABEL_TYPE, "label ", createStatementRule());
-        final var section = createGroupRule(SECTION_TYPE, "section ", new OrRule(List.of(
+        final var section = createGroupRule(SECTION_TYPE, "section ", new OrRule(new JavaList<>(List.of(
                 createDataRule(),
                 label
-        )));
+        ))));
 
-        return new TypeRule(ROOT_TYPE, new NodeListRule(new BracketSplitter(), CHILDREN, new StripRule(new OrRule(List.of(
+        final List<Rule> section1 = List.of(
                 section,
                 new StripRule(new EmptyRule())
-        )))));
+        );
+        return new TypeRule(ROOT_TYPE, new NodeListRule(new BracketSplitter(), CHILDREN, new StripRule(new OrRule(new JavaList<>(section1)))));
     }
 
     private static Rule createGroupRule(String type, String prefix, Rule statement) {
@@ -61,10 +63,10 @@ public class CASMLang {
 
     private static Rule createStatementRule() {
         final var statement = new LazyRule();
-        statement.setRule(new OrRule(List.of(
+        statement.setRule(new OrRule(new JavaList<>(List.of(
                 createCommentRule(),
                 createInstructionRule()
-        )));
+        ))));
         return statement;
     }
 
@@ -74,14 +76,17 @@ public class CASMLang {
     }
 
     private static TypeRule createInstructionRule() {
-        final var opCode = new StringRule(INSTRUCTION_MNEMONIC);
-        return new TypeRule(INSTRUCTION_TYPE, new SuffixRule(new OrRule(List.of(
-                new FirstRule(new FirstLocator(" "), opCode, " ", new OrRule(List.of(
-                        new StringRule(INSTRUCTION_LABEL),
-                        new IntRule(INSTRUCTION_ADDRESS_OR_VALUE)
-                ))),
-                opCode
-        )), ";"));
+        final var mnemonic = new StringRule(INSTRUCTION_MNEMONIC);
+
+        final var withValue = new FirstRule(new FirstLocator(" "), mnemonic, " ", new OrRule(new JavaList<Rule>()
+                .addLast(new StringRule(INSTRUCTION_LABEL))
+                .addLast(new IntRule(INSTRUCTION_ADDRESS_OR_VALUE))));
+
+        final var instructionOptions = new JavaList<Rule>()
+                .addLast(withValue)
+                .addLast(mnemonic);
+
+        return new TypeRule(INSTRUCTION_TYPE, new SuffixRule(new OrRule(instructionOptions), ";"));
     }
 
     private static Rule createDataRule() {
@@ -93,10 +98,11 @@ public class CASMLang {
     }
 
     private static Rule createValueRule() {
-        return new OrRule(List.of(
+        final List<Rule> charRule = List.of(
                 createCharRule(),
                 new TypeRule(NUMBER_TYPE, new StripRule(new FilterRule(new NumberFilter(), new StringRule(NUMBER_VALUE))))
-        ));
+        );
+        return new OrRule(new JavaList<>(charRule));
     }
 
     private static TypeRule createCharRule() {
