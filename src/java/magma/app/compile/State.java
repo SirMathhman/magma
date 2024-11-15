@@ -56,9 +56,11 @@ public record State(JavaList<JavaOrderedMap<String, Node>> frames, long frameInd
                     : instruct("subv", -delta);
 
             instructions = new JavaList<Node>()
+                    .addLast(instruct("stod", "cache"))
                     .addLast(instruct("ldd", STACK_POINTER))
                     .addLast(instruction)
-                    .addLast(instruct("stod", STACK_POINTER));
+                    .addLast(instruct("stod", STACK_POINTER))
+                    .addLast(instruct("ldd", "cache"));
         }
 
         return new Tuple<>(state, instructions);

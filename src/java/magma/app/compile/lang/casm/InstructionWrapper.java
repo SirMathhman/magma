@@ -145,8 +145,8 @@ public class InstructionWrapper implements Passer {
             final var definedInstructions = defined.right();
 
             return new Tuple<>(definedState, new JavaList<Node>()
-                    .addAll(definedInstructions)
                     .addAll(loadedInstructions)
+                    .addAll(definedInstructions)
                     .addLast(instruct("stoi", STACK_POINTER))
             );
         }));
