@@ -38,12 +38,14 @@ public class CASMLang {
     public static Rule createRootRule() {
         final var label = createGroupRule(LABEL_TYPE, "label ", createStatementRule());
         final var section = createGroupRule(SECTION_TYPE, "section ", new OrRule(List.of(
-                new StripRule(new EmptyRule()),
                 createDataRule(),
                 label
         )));
 
-        return new TypeRule(ROOT_TYPE, new NodeListRule(new BracketSplitter(), CHILDREN, new StripRule("", section, "")));
+        return new TypeRule(ROOT_TYPE, new NodeListRule(new BracketSplitter(), CHILDREN, new StripRule(new OrRule(List.of(
+                new StripRule(new EmptyRule()),
+                section
+        )))));
     }
 
     private static Rule createGroupRule(String type, String prefix, Rule statement) {

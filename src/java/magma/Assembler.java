@@ -444,6 +444,7 @@ public class Assembler {
     private static Result<SplitResult, CompileError> splitRoot(Node root) {
         final var children = root.findNodeList(CHILDREN).map(JavaList::list).orElse(Collections.emptyList());
         return JavaStreams.fromList(children)
+                .filter(child -> child.is(SECTION_TYPE))
                 .foldLeftToResult(new SplitResult(), Assembler::foldSection)
                 .flatMapValue(result -> validateSplitRoot(root, result));
     }
@@ -455,8 +456,6 @@ public class Assembler {
     }
 
     private static Result<SplitResult, CompileError> foldSection(SplitResult result, Node section) {
-        if (!section.is(SECTION_TYPE)) return new Err<>(new CompileError("Not a section", new NodeContext(section)));
-
         final var nameOption = section.findString(GROUP_NAME);
         if (nameOption.isEmpty())
             return new Err<>(new CompileError("No section name present", new NodeContext(section)));
