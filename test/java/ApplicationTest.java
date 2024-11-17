@@ -21,15 +21,37 @@ public class ApplicationTest {
 
         if (input.startsWith(RETURN_KEYWORD_WITH_SPACE) && input.endsWith(STATEMENT_END)) {
             final var slice = input.substring(RETURN_KEYWORD_WITH_SPACE.length(), input.length() - 1).strip();
-            return new Ok<>(slice);
+            if (isNumber(slice)) {
+                return new Ok<>(slice);
+            } else {
+                return new Err<>(new ApplicationError());
+            }
         }
 
         return new Err<>(new ApplicationError());
     }
 
+    private static boolean isNumber(String slice) {
+        for (int i = 0; i < slice.length(); i++) {
+            final var c = slice.charAt(i);
+            if (!Character.isDigit(c)) return false;
+        }
+
+        return true;
+    }
+
+    private static void assertRunErr(String input) {
+        assertTrue(run(input).isErr());
+    }
+
+    @Test
+    void returnValueInvalid() {
+        assertRunErr("return ?;");
+    }
+
     @Test
     void error() {
-        assertTrue(run("?").isErr());
+        assertRunErr("?");
     }
 
     @Test
