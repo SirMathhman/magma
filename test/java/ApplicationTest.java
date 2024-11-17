@@ -21,14 +21,18 @@ public class ApplicationTest {
 
         if (input.startsWith(RETURN_KEYWORD_WITH_SPACE) && input.endsWith(STATEMENT_END)) {
             final var slice = input.substring(RETURN_KEYWORD_WITH_SPACE.length(), input.length() - 1).strip();
-            if (isNumber(slice)) {
-                return new Ok<>(slice);
-            } else {
-                return new Err<>(new ApplicationError());
-            }
+            return evaluateValue(slice);
         }
 
         return new Err<>(new ApplicationError());
+    }
+
+    private static Result<String, ApplicationError> evaluateValue(String slice) {
+        if (isNumber(slice)) {
+            return new Ok<>(slice);
+        } else {
+            return new Err<>(new ApplicationError());
+        }
     }
 
     private static boolean isNumber(String slice) {
