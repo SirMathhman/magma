@@ -1,30 +1,47 @@
 package magma;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class Compiler {
     public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
     public static final String STATEMENT_END = ";";
     public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
+    public static final String STATIC_KEYWORD_WITH_SPACE = "static ";
 
-    static StringBuilder compile(String input) throws CompileException {
+    static String compile(String input) throws CompileException {
         final var segments = split(input);
         var output = new StringBuilder();
         for (String segment : segments) {
             final var segmentOutput = compileRootSegment(segment);
             output.append(segmentOutput);
         }
-        return output;
+        return output.toString();
     }
 
     static String compileRootSegment(String segment) throws CompileException {
-        if (segment.startsWith(PACKAGE_KEYWORD_WITH_SPACE)) return "";
-        if (segment.startsWith(IMPORT_KEYWORD_WITH_SPACE) && segment.endsWith(STATEMENT_END)) {
-            final var namespace = segment.substring(IMPORT_KEYWORD_WITH_SPACE.length(), segment.length() - STATEMENT_END.length());
-            return renderImport(namespace);
-        }
+        return compilePackage(segment)
+                .or(() -> compileImport(segment))
+                .orElseThrow(CompileException::new);
+    }
 
-        throw new CompileException();
+    private static Optional<String> compilePackage(String segment) {
+        return segment.startsWith(PACKAGE_KEYWORD_WITH_SPACE) ? Optional.of("") : Optional.empty();
+    }
+
+    private static Optional<String> compileImport(String segment) {
+        if (!segment.startsWith(IMPORT_KEYWORD_WITH_SPACE)) return Optional.empty();
+
+        final var slice = segment.substring(IMPORT_KEYWORD_WITH_SPACE.length());
+        var maybeStatic = slice.startsWith(STATIC_KEYWORD_WITH_SPACE)
+                ? slice.substring(STATIC_KEYWORD_WITH_SPACE.length())
+                : slice;
+
+        if (!maybeStatic.endsWith(STATEMENT_END)) return Optional.empty();
+
+        final var namespace = maybeStatic.substring(0, maybeStatic.length() - STATEMENT_END.length());
+        return Optional.of(renderInstanceImport(namespace));
+
     }
 
     static ArrayList<String> split(String input) {
@@ -46,8 +63,16 @@ public class Compiler {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    static String renderImport(String namespace) {
-        return IMPORT_KEYWORD_WITH_SPACE + namespace + STATEMENT_END;
+    static String renderInstanceImport(String namespace) {
+        return renderImport("", namespace);
+    }
+
+    static String renderStaticImport(String namespace) {
+        return renderImport(STATIC_KEYWORD_WITH_SPACE, namespace);
+    }
+
+    static String renderImport(String infix, String namespace) {
+        return IMPORT_KEYWORD_WITH_SPACE + infix + namespace + STATEMENT_END;
     }
 
     static String renderPackageStatement(String namespace) {

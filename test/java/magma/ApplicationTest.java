@@ -49,7 +49,7 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void packageAndImport(String namespace) {
-        final var renderedImport = Compiler.renderImport(namespace);
+        final var renderedImport = Compiler.renderInstanceImport(namespace);
         assertRun(Compiler.renderPackageStatement(namespace) + renderedImport, renderedImport);
     }
 
@@ -62,7 +62,7 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void importStatement(String namespace) {
-        assertRun(Compiler.renderImport(namespace), Compiler.renderImport(namespace));
+        assertRun(Compiler.renderInstanceImport(namespace), Compiler.renderInstanceImport(namespace));
     }
 
     @AfterEach
