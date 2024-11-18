@@ -17,14 +17,12 @@ public class Compiler {
     }
 
     static String compileRootSegment(String segment) {
-        String segmentOutput;
         if (segment.startsWith(IMPORT_KEYWORD_WITH_SPACE) && segment.endsWith(STATEMENT_END)) {
             final var namespace = segment.substring(IMPORT_KEYWORD_WITH_SPACE.length(), segment.length() - STATEMENT_END.length());
-            segmentOutput = renderImport(namespace);
+            return renderImport(namespace);
         } else {
-            segmentOutput = "";
+            return "";
         }
-        return segmentOutput;
     }
 
     static ArrayList<String> split(String input) {
