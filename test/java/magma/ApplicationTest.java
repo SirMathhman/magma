@@ -12,8 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ApplicationTest {
-    public static final Path SOURCE = Paths.get(".", "ApplicationTest.java");
-    public static final Path TARGET = Paths.get(".", "ApplicationTest.mgs");
+    public static final Path SOURCE = resolve("java");
+    public static final Path TARGET = resolve("mgs");
+
+    private static Path resolve(String extension) {
+        return Paths.get(".", "ApplicationTest." + extension);
+    }
 
     private static void run() throws IOException {
         if (Files.exists(SOURCE)) {
