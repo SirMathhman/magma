@@ -5,8 +5,9 @@ import java.util.ArrayList;
 public class Compiler {
     public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
     public static final String STATEMENT_END = ";";
+    public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
 
-    static StringBuilder compile(String input) {
+    static StringBuilder compile(String input) throws CompileException {
         final var segments = split(input);
         var output = new StringBuilder();
         for (String segment : segments) {
@@ -16,13 +17,14 @@ public class Compiler {
         return output;
     }
 
-    static String compileRootSegment(String segment) {
+    static String compileRootSegment(String segment) throws CompileException {
+        if (segment.startsWith(PACKAGE_KEYWORD_WITH_SPACE)) return "";
         if (segment.startsWith(IMPORT_KEYWORD_WITH_SPACE) && segment.endsWith(STATEMENT_END)) {
             final var namespace = segment.substring(IMPORT_KEYWORD_WITH_SPACE.length(), segment.length() - STATEMENT_END.length());
             return renderImport(namespace);
-        } else {
-            return "";
         }
+
+        throw new CompileException();
     }
 
     static ArrayList<String> split(String input) {
@@ -32,12 +34,16 @@ public class Compiler {
             var c = input.charAt(i);
             buffer.append(c);
             if (c == ';') {
-                segments.add(buffer.toString());
+                advance(buffer, segments);
                 buffer = new StringBuilder();
             }
         }
-        segments.add(buffer.toString());
+        advance(buffer, segments);
         return segments;
+    }
+
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
     static String renderImport(String namespace) {
@@ -45,6 +51,6 @@ public class Compiler {
     }
 
     static String renderPackageStatement(String namespace) {
-        return "package " + namespace + STATEMENT_END;
+        return PACKAGE_KEYWORD_WITH_SPACE + namespace + STATEMENT_END;
     }
 }

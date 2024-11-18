@@ -20,7 +20,7 @@ public class ApplicationTest {
         return Paths.get(".", "ApplicationTest." + extension);
     }
 
-    private static void run() throws IOException {
+    private static void run() throws IOException, CompileException {
         if (!Files.exists(SOURCE)) return;
 
         final var input = Files.readString(SOURCE);
@@ -31,9 +31,17 @@ public class ApplicationTest {
     private static void assertRun(String input, String output) {
         try {
             Files.writeString(SOURCE, input);
-            run();
+            runOrFail();
             assertEquals(output, Files.readString(TARGET));
         } catch (IOException e) {
+            fail(e);
+        }
+    }
+
+    private static void runOrFail() {
+        try {
+            run();
+        } catch (IOException | CompileException e) {
             fail(e);
         }
     }
@@ -65,14 +73,14 @@ public class ApplicationTest {
 
     @Test
     void generatesNoTarget() throws IOException {
-        run();
+        runOrFail();
         assertFalse(Files.exists(TARGET));
     }
 
     @Test
     void generatesTarget() throws IOException {
         Files.createFile(SOURCE);
-        run();
+        runOrFail();
         assertTrue(Files.exists(TARGET));
     }
 }
