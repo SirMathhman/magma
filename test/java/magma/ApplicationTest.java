@@ -15,8 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ApplicationTest {
     public static final Path SOURCE = resolve("java");
     public static final Path TARGET = resolve("mgs");
-    public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
-    public static final String STATEMENT_END = ";";
 
     private static Path resolve(String extension) {
         return Paths.get(".", "ApplicationTest." + extension);
@@ -26,14 +24,7 @@ public class ApplicationTest {
         if (!Files.exists(SOURCE)) return;
 
         final var input = Files.readString(SOURCE);
-        String output;
-        if (input.startsWith(IMPORT_KEYWORD_WITH_SPACE) && input.endsWith(STATEMENT_END)) {
-            final var namespace = input.substring(IMPORT_KEYWORD_WITH_SPACE.length(), input.length() - STATEMENT_END.length());
-            output = renderImport(namespace);
-        } else {
-            output = "";
-        }
-
+        final var output = Compiler.compile(input);
         Files.writeString(TARGET, output);
     }
 
@@ -47,19 +38,23 @@ public class ApplicationTest {
         }
     }
 
-    private static String renderImport(String namespace) {
-        return IMPORT_KEYWORD_WITH_SPACE + namespace + STATEMENT_END;
+    @ParameterizedTest
+    @ValueSource(strings = {"first", "second"})
+    void packageAndImport(String namespace) {
+        final var renderedImport = Compiler.renderImport(namespace);
+        assertRun(Compiler.renderPackageStatement(namespace) + renderedImport, renderedImport);
     }
 
-    @Test
-    void packageStatement() {
-        assertRun("package magma;", "");
+    @ParameterizedTest
+    @ValueSource(strings = {"first", "second"})
+    void packageStatement(String namespace) {
+        assertRun(Compiler.renderPackageStatement(namespace), "");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void importStatement(String namespace) {
-        assertRun(renderImport(namespace), renderImport(namespace));
+        assertRun(Compiler.renderImport(namespace), Compiler.renderImport(namespace));
     }
 
     @AfterEach
