@@ -29,12 +29,23 @@ public class Compiler {
     }
 
     private static Optional<String> compileClass(String segment) {
-        if (!segment.startsWith(CLASS_KEYWORD_WITH_SPACE)) return Optional.empty();
-        final var substring = segment.substring(CLASS_KEYWORD_WITH_SPACE.length());
+        return parsePrefix(segment, CLASS_KEYWORD_WITH_SPACE).map(Compiler::renderFunction);
+    }
 
-        if (!segment.endsWith(BLOCK_EMPTY)) return Optional.empty();
-        final var slice = substring.substring(0, substring.length() - BLOCK_EMPTY.length());
-        return Optional.of(renderFunction(slice));
+    private static Optional<String> parsePrefix(String segment, String prefix) {
+        if (!segment.startsWith(prefix)) return Optional.empty();
+        final var substring = segment.substring(prefix.length());
+        return parseSuffix(substring, BLOCK_EMPTY);
+    }
+
+    private static Optional<String> parseSuffix(String segment, String suffix) {
+        if (!segment.endsWith(suffix)) return Optional.empty();
+        final var slice = segment.substring(0, segment.length() - suffix.length());
+        return parseString(slice);
+    }
+
+    private static Optional<String> parseString(String slice) {
+        return Optional.of(slice);
     }
 
     private static Optional<String> compilePackage(String segment) {
