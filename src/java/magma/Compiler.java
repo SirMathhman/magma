@@ -1,7 +1,9 @@
 package magma;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Compiler {
     public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
@@ -11,23 +13,35 @@ public class Compiler {
     public static final String CLASS_KEYWORD_WITH_SPACE = "class ";
     public static final String BLOCK_EMPTY = " {}";
     public static final String CLASS_TYPE = "class";
+    public static final String PACKAGE_RULE = "package";
 
     static String compile(String input) throws CompileException {
-        final var segments = split(input);
-        var output = new StringBuilder();
-        for (String segment : segments) {
-            final var segmentOutput = compileRootSegment(segment);
-            output.append(segmentOutput);
-        }
-        return output.toString();
-    }
+        final var sourceRule = new OrRule(List.of(
+                createPackageRule(),
+                createInstanceImportRule(),
+                createStaticImportRule(),
+                createClassRule()
+        ));
 
-    static String compileRootSegment(String segment) throws CompileException {
-        return createPackageRule().parse(segment).map(node -> "")
-                .or(() -> createInstanceImportRule().parse(segment).map(Node::value).map(namespace -> render(namespace, createInstanceImportRule())))
-                .or(() -> createStaticImportRule().parse(segment).map(Node::value).map(namespace -> render(namespace, createInstanceImportRule())))
-                .or(() -> createClassRule().parse(segment).map(Node::value).map(className -> render(className, createFunctionRule())))
-                .orElseThrow(CompileException::new);
+        final var targetRule = new OrRule(List.of(
+                createInstanceImportRule(),
+                createFunctionRule()
+        ));
+
+        final var segments = split(input);
+        final var sourceNodes = segments.stream()
+                .map(sourceRule::parse)
+                .flatMap(Optional::stream)
+                .toList();
+
+        final var targetNodes = sourceNodes.stream()
+                .filter(node -> !node.is(PACKAGE_RULE))
+                .toList();
+
+        return targetNodes.stream()
+                .map(targetRule::generate)
+                .flatMap(Optional::stream)
+                .collect(Collectors.joining());
     }
 
     public static Rule createStaticImportRule() {
@@ -69,12 +83,8 @@ public class Compiler {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    public static String render(String namespace, Rule rule) {
-        return rule.generate(new Node(Optional.empty(), namespace)).orElse("");
-    }
-
-    public static PrefixRule createPackageRule() {
-        return new PrefixRule(PACKAGE_KEYWORD_WITH_SPACE, createNamespaceRule());
+    public static Rule createPackageRule() {
+        return new TypeRule(PACKAGE_RULE, new PrefixRule(PACKAGE_KEYWORD_WITH_SPACE, createNamespaceRule()));
     }
 
     public static PrefixRule createFunctionRule() {

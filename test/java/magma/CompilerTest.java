@@ -36,6 +36,10 @@ class CompilerTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void importStatic(String namespace) {
-        assertCompile(render(namespace, createStaticImportRule()), render(namespace, createInstanceImportRule()));
+        Rule rule = createInstanceImportRule();
+        Node node = new Node(Optional.empty(), namespace);
+        Rule rule1 = createStaticImportRule();
+        Node node1 = new Node(Optional.empty(), namespace);
+        assertCompile(rule1.generate(node1).orElseThrow(), rule.generate(node).orElseThrow());
     }
 }

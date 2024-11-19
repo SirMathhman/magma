@@ -50,7 +50,9 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void packageAndImport(String namespace) {
-        final var renderedImport = Compiler.render(namespace, Compiler.createInstanceImportRule());
+        Rule rule = Compiler.createInstanceImportRule();
+        Node node = new Node(Optional.empty(), namespace);
+        final var renderedImport = rule.generate(node).orElseThrow();
         assertRun(Compiler.createPackageRule()
                 .generate(new Node(Optional.empty(), namespace))
                 .orElse("") + renderedImport, renderedImport);
@@ -67,7 +69,11 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void importStatement(String namespace) {
-        assertRun(Compiler.render(namespace, Compiler.createInstanceImportRule()), Compiler.render(namespace, Compiler.createInstanceImportRule()));
+        Rule rule = Compiler.createInstanceImportRule();
+        Node node = new Node(Optional.empty(), namespace);
+        Rule rule1 = Compiler.createInstanceImportRule();
+        Node node1 = new Node(Optional.empty(), namespace);
+        assertRun(rule1.generate(node1).orElseThrow(), rule.generate(node).orElseThrow());
     }
 
     @AfterEach
