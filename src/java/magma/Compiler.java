@@ -29,12 +29,12 @@ public class Compiler {
     }
 
     private static Optional<String> compileClass(String segment) {
-        if (segment.startsWith(CLASS_KEYWORD_WITH_SPACE) && segment.endsWith(BLOCK_EMPTY)) {
-            final var slice = segment.substring(CLASS_KEYWORD_WITH_SPACE.length(), segment.length() - BLOCK_EMPTY.length());
-            return Optional.of(renderFunction(slice));
-        }
+        if (!segment.startsWith(CLASS_KEYWORD_WITH_SPACE)) return Optional.empty();
+        final var substring = segment.substring(CLASS_KEYWORD_WITH_SPACE.length());
 
-        return Optional.empty();
+        if (!segment.endsWith(BLOCK_EMPTY)) return Optional.empty();
+        final var slice = substring.substring(0, substring.length() - BLOCK_EMPTY.length());
+        return Optional.of(renderFunction(slice));
     }
 
     private static Optional<String> compilePackage(String segment) {
