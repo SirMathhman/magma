@@ -30,7 +30,8 @@ public class Compiler {
     }
 
     private static Optional<String> compileClass(String segment) {
-        return createClassRule().parse(segment).map(Compiler::renderFunction);
+        Rule rule = createClassRule();
+        return rule.parse(segment).map(Node::value).map(Compiler::renderFunction);
     }
 
     private static Rule createClassRule() {
@@ -42,7 +43,8 @@ public class Compiler {
     }
 
     private static Optional<String> compileImport(String segment) {
-        return createImportRule().parse(segment).map(Compiler::renderInstanceImport);
+        Rule rule = createImportRule();
+        return rule.parse(segment).map(Node::value).map(Compiler::renderInstanceImport);
     }
 
     private static Rule createImportRule() {

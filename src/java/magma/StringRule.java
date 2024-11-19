@@ -3,8 +3,12 @@ package magma;
 import java.util.Optional;
 
 public class StringRule implements Rule {
-    @Override
-    public Optional<String> parse(String input) {
+    private Optional<String> parse0(String input) {
         return Optional.of(input);
+    }
+
+    @Override
+    public Optional<Node> parse(String input) {
+        return parse0(input).map(Node::new);
     }
 }
