@@ -23,10 +23,10 @@ public class Compiler {
     }
 
     static String compileRootSegment(String segment) throws CompileException {
-        return compilePackage(segment)
-                .or(() -> compile(createInstanceImportRule(), segment))
-                .or(() -> compile(createStaticImportRule(), segment))
-                .or(() -> compileClass(segment))
+        return createPackageRule().parse(segment).map(node -> "")
+                .or(() -> createInstanceImportRule().parse(segment).map(Node::value).map(namespace -> render(namespace, createInstanceImportRule())))
+                .or(() -> createStaticImportRule().parse(segment).map(Node::value).map(namespace -> render(namespace, createInstanceImportRule())))
+                .or(() -> createClassRule().parse(segment).map(Node::value).map(className -> render(className, createFunctionRule())))
                 .orElseThrow(CompileException::new);
     }
 
@@ -38,21 +38,8 @@ public class Compiler {
         return createImportRule("import", createNamespaceRule());
     }
 
-    private static Optional<String> compileClass(String segment) {
-        Rule rule = createClassRule();
-        return rule.parse(segment).map(Node::value).map(className -> render(className, createFunctionRule()));
-    }
-
     public static Rule createClassRule() {
         return new TypeRule(CLASS_TYPE, new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(), BLOCK_EMPTY)));
-    }
-
-    private static Optional<String> compilePackage(String segment) {
-        return segment.startsWith(PACKAGE_KEYWORD_WITH_SPACE) ? Optional.of("") : Optional.empty();
-    }
-
-    private static Optional<String> compile(Rule rule, String input) {
-        return rule.parse(input).map(Node::value).map(namespace -> render(namespace, createInstanceImportRule()));
     }
 
     private static SuffixRule createNamespaceRule() {
@@ -83,9 +70,7 @@ public class Compiler {
     }
 
     public static String render(String namespace, Rule rule) {
-        return rule
-                .generate(new Node(Optional.empty(), namespace))
-                .orElse("");
+        return rule.generate(new Node(Optional.empty(), namespace)).orElse("");
     }
 
     public static PrefixRule createPackageRule() {
