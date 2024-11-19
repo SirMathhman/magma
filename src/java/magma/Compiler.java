@@ -1,6 +1,7 @@
 package magma;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class Compiler {
@@ -32,7 +33,7 @@ public class Compiler {
         return createClassRule().parse(segment).map(Compiler::renderFunction);
     }
 
-    private static PrefixRule createClassRule() {
+    private static Rule createClassRule() {
         return new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(), BLOCK_EMPTY));
     }
 
@@ -41,17 +42,17 @@ public class Compiler {
     }
 
     private static Optional<String> compileImport(String segment) {
-        if (!segment.startsWith(IMPORT_KEYWORD_WITH_SPACE)) return Optional.empty();
+        return createImportRule().parse(segment).map(Compiler::renderInstanceImport);
+    }
 
-        final var slice = segment.substring(IMPORT_KEYWORD_WITH_SPACE.length());
-        var maybeStatic = slice.startsWith(STATIC_KEYWORD_WITH_SPACE)
-                ? slice.substring(STATIC_KEYWORD_WITH_SPACE.length())
-                : slice;
+    private static Rule createImportRule() {
+        final var suffixRule = new SuffixRule(new StringRule(), STATEMENT_END);
+        final var maybeStatic = new OrRule(List.of(
+                new PrefixRule(STATIC_KEYWORD_WITH_SPACE, suffixRule),
+                suffixRule
+        ));
 
-        if (!maybeStatic.endsWith(STATEMENT_END)) return Optional.empty();
-
-        final var namespace = maybeStatic.substring(0, maybeStatic.length() - STATEMENT_END.length());
-        return Optional.of(renderInstanceImport(namespace));
+        return new PrefixRule(IMPORT_KEYWORD_WITH_SPACE, maybeStatic);
     }
 
     static ArrayList<String> split(String input) {
