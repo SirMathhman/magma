@@ -35,7 +35,7 @@ public class Compiler {
     }
 
     private static Rule createClassRule() {
-        return new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(), BLOCK_EMPTY));
+        return new TypeRule("class", new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(), BLOCK_EMPTY)));
     }
 
     private static Optional<String> compilePackage(String segment) {
@@ -54,7 +54,7 @@ public class Compiler {
                 suffixRule
         ));
 
-        return new PrefixRule(IMPORT_KEYWORD_WITH_SPACE, maybeStatic);
+        return new TypeRule("import", new PrefixRule(IMPORT_KEYWORD_WITH_SPACE, maybeStatic));
     }
 
     static ArrayList<String> split(String input) {

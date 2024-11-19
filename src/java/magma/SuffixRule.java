@@ -11,6 +11,6 @@ public record SuffixRule(StringRule childRule, String suffix) implements Rule {
 
     @Override
     public Optional<Node> parse(String input) {
-        return parse0(input).map(Node::new);
+        return parse0(input).map(value -> new Node(Optional.empty(), value));
     }
 }
