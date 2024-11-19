@@ -13,7 +13,9 @@ public class Compiler {
     public static final String CLASS_KEYWORD_WITH_SPACE = "class ";
     public static final String BLOCK_EMPTY = " {}";
     public static final String CLASS_TYPE = "class";
-    public static final String PACKAGE_RULE = "package";
+    public static final String PACKAGE_TYPE = "package";
+    public static final String VALUE = "value";
+    public static final String IMPORT_TYPE = "import";
 
     static String compile(String input) throws CompileException {
         final var sourceRule = new OrRule(List.of(
@@ -35,7 +37,7 @@ public class Compiler {
                 .toList();
 
         final var targetNodes = sourceNodes.stream()
-                .filter(node -> !node.is(PACKAGE_RULE))
+                .filter(node -> !node.is(PACKAGE_TYPE))
                 .toList();
 
         return targetNodes.stream()
@@ -49,7 +51,7 @@ public class Compiler {
     }
 
     public static Rule createInstanceImportRule() {
-        return createImportRule("import", createNamespaceRule());
+        return createImportRule(IMPORT_TYPE, createNamespaceRule());
     }
 
     public static Rule createClassRule() {
@@ -84,10 +86,10 @@ public class Compiler {
     }
 
     public static Rule createPackageRule() {
-        return new TypeRule(PACKAGE_RULE, new PrefixRule(PACKAGE_KEYWORD_WITH_SPACE, createNamespaceRule()));
+        return new TypeRule(PACKAGE_TYPE, new PrefixRule(PACKAGE_KEYWORD_WITH_SPACE, createNamespaceRule()));
     }
 
-    public static PrefixRule createFunctionRule() {
-        return new PrefixRule("class def ", new SuffixRule(new StringRule(), "() => {}"));
+    public static Rule createFunctionRule() {
+        return new TypeRule("function", new PrefixRule("class def ", new SuffixRule(new StringRule(), "() => {}")));
     }
 }

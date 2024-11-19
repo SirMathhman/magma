@@ -9,11 +9,11 @@ public class StringRule implements Rule {
 
     @Override
     public Optional<Node> parse(String input) {
-        return parse0(input).map(value -> new Node(Optional.empty(), value));
+        return parse0(input).map(value -> new Node(Optional.empty()).withString(Compiler.VALUE, value));
     }
 
     @Override
     public Optional<String> generate(Node node) {
-        return Optional.of(node.value());
+        return Optional.of(node.findValue(Compiler.VALUE).orElseThrow());
     }
 }

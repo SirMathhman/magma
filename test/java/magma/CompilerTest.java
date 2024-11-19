@@ -22,7 +22,7 @@ class CompilerTest {
     @ParameterizedTest
     @ValueSource(strings = {"First", "Second"})
     void classStatement(String className) {
-        final var node = new Node(Optional.of(CLASS_TYPE), className);
+        final var node = new Node(Optional.of(CLASS_TYPE)).withString(VALUE, className);
         final var input = createClassRule().generate(node).orElseThrow();
         final var expected = createFunctionRule().generate(node).orElseThrow();
         assertCompile(input, expected);
@@ -37,9 +37,9 @@ class CompilerTest {
     @ValueSource(strings = {"first", "second"})
     void importStatic(String namespace) {
         Rule rule = createInstanceImportRule();
-        Node node = new Node(Optional.empty(), namespace);
+        Node node = new Node(Optional.empty()).withString(VALUE, namespace);
         Rule rule1 = createStaticImportRule();
-        Node node1 = new Node(Optional.empty(), namespace);
+        Node node1 = new Node(Optional.empty()).withString(VALUE, namespace);
         assertCompile(rule1.generate(node1).orElseThrow(), rule.generate(node).orElseThrow());
     }
 }
