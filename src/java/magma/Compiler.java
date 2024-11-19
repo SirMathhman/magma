@@ -29,23 +29,11 @@ public class Compiler {
     }
 
     private static Optional<String> compileClass(String segment) {
-        return parsePrefix(segment, CLASS_KEYWORD_WITH_SPACE).map(Compiler::renderFunction);
+        return createClassRule().parse(segment).map(Compiler::renderFunction);
     }
 
-    private static Optional<String> parsePrefix(String segment, String prefix) {
-        if (!segment.startsWith(prefix)) return Optional.empty();
-        final var substring = segment.substring(prefix.length());
-        return parseSuffix(substring, BLOCK_EMPTY);
-    }
-
-    private static Optional<String> parseSuffix(String segment, String suffix) {
-        if (!segment.endsWith(suffix)) return Optional.empty();
-        final var slice = segment.substring(0, segment.length() - suffix.length());
-        return parseString(slice);
-    }
-
-    private static Optional<String> parseString(String slice) {
-        return Optional.of(slice);
+    private static PrefixRule createClassRule() {
+        return new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(), BLOCK_EMPTY));
     }
 
     private static Optional<String> compilePackage(String segment) {
