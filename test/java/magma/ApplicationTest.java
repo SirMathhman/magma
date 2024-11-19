@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,20 +50,24 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void packageAndImport(String namespace) {
-        final var renderedImport = Compiler.renderInstanceImport(namespace);
-        assertRun(Compiler.renderPackageStatement(namespace) + renderedImport, renderedImport);
+        final var renderedImport = Compiler.render(namespace, Compiler.createInstanceImportRule());
+        assertRun(Compiler.createPackageRule()
+                .generate(new Node(Optional.empty(), namespace))
+                .orElse("") + renderedImport, renderedImport);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void packageStatement(String namespace) {
-        assertRun(Compiler.renderPackageStatement(namespace), "");
+        assertRun(Compiler.createPackageRule()
+                .generate(new Node(Optional.empty(), namespace))
+                .orElse(""), "");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void importStatement(String namespace) {
-        assertRun(Compiler.renderInstanceImport(namespace), Compiler.renderInstanceImport(namespace));
+        assertRun(Compiler.render(namespace, Compiler.createInstanceImportRule()), Compiler.render(namespace, Compiler.createInstanceImportRule()));
     }
 
     @AfterEach

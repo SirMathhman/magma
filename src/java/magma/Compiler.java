@@ -1,7 +1,6 @@
 package magma;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class Compiler {
@@ -11,6 +10,7 @@ public class Compiler {
     public static final String STATIC_KEYWORD_WITH_SPACE = "static ";
     public static final String CLASS_KEYWORD_WITH_SPACE = "class ";
     public static final String BLOCK_EMPTY = " {}";
+    public static final String CLASS_TYPE = "class";
 
     static String compile(String input) throws CompileException {
         final var segments = split(input);
@@ -24,37 +24,43 @@ public class Compiler {
 
     static String compileRootSegment(String segment) throws CompileException {
         return compilePackage(segment)
-                .or(() -> compileImport(segment))
+                .or(() -> compile(createInstanceImportRule(), segment))
+                .or(() -> compile(createStaticImportRule(), segment))
                 .or(() -> compileClass(segment))
                 .orElseThrow(CompileException::new);
     }
 
-    private static Optional<String> compileClass(String segment) {
-        Rule rule = createClassRule();
-        return rule.parse(segment).map(Node::value).map(Compiler::renderFunction);
+    public static Rule createStaticImportRule() {
+        return createImportRule("import-static", new PrefixRule(STATIC_KEYWORD_WITH_SPACE, createNamespaceRule()));
     }
 
-    private static Rule createClassRule() {
-        return new TypeRule("class", new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(), BLOCK_EMPTY)));
+    public static Rule createInstanceImportRule() {
+        return createImportRule("import", createNamespaceRule());
+    }
+
+    private static Optional<String> compileClass(String segment) {
+        Rule rule = createClassRule();
+        return rule.parse(segment).map(Node::value).map(className -> render(className, createFunctionRule()));
+    }
+
+    public static Rule createClassRule() {
+        return new TypeRule(CLASS_TYPE, new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(), BLOCK_EMPTY)));
     }
 
     private static Optional<String> compilePackage(String segment) {
         return segment.startsWith(PACKAGE_KEYWORD_WITH_SPACE) ? Optional.of("") : Optional.empty();
     }
 
-    private static Optional<String> compileImport(String segment) {
-        Rule rule = createImportRule();
-        return rule.parse(segment).map(Node::value).map(Compiler::renderInstanceImport);
+    private static Optional<String> compile(Rule rule, String input) {
+        return rule.parse(input).map(Node::value).map(namespace -> render(namespace, createInstanceImportRule()));
     }
 
-    private static Rule createImportRule() {
-        final var suffixRule = new SuffixRule(new StringRule(), STATEMENT_END);
-        final var maybeStatic = new OrRule(List.of(
-                new PrefixRule(STATIC_KEYWORD_WITH_SPACE, suffixRule),
-                suffixRule
-        ));
+    private static SuffixRule createNamespaceRule() {
+        return new SuffixRule(new StringRule(), STATEMENT_END);
+    }
 
-        return new TypeRule("import", new PrefixRule(IMPORT_KEYWORD_WITH_SPACE, maybeStatic));
+    private static Rule createImportRule(String type, Rule suffixRule) {
+        return new TypeRule(type, new PrefixRule(IMPORT_KEYWORD_WITH_SPACE, suffixRule));
     }
 
     static ArrayList<String> split(String input) {
@@ -76,27 +82,17 @@ public class Compiler {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    static String renderInstanceImport(String namespace) {
-        return renderImport("", namespace);
+    public static String render(String namespace, Rule rule) {
+        return rule
+                .generate(new Node(Optional.empty(), namespace))
+                .orElse("");
     }
 
-    static String renderStaticImport(String namespace) {
-        return renderImport(STATIC_KEYWORD_WITH_SPACE, namespace);
+    public static PrefixRule createPackageRule() {
+        return new PrefixRule(PACKAGE_KEYWORD_WITH_SPACE, createNamespaceRule());
     }
 
-    static String renderImport(String infix, String namespace) {
-        return IMPORT_KEYWORD_WITH_SPACE + infix + namespace + STATEMENT_END;
-    }
-
-    static String renderPackageStatement(String namespace) {
-        return PACKAGE_KEYWORD_WITH_SPACE + namespace + STATEMENT_END;
-    }
-
-    static String renderClass(String className) {
-        return CLASS_KEYWORD_WITH_SPACE + className + BLOCK_EMPTY;
-    }
-
-    static String renderFunction(String className) {
-        return "class def " + className + "() => {}";
+    public static PrefixRule createFunctionRule() {
+        return new PrefixRule("class def ", new SuffixRule(new StringRule(), "() => {}"));
     }
 }

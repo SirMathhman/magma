@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.Optional;
+
 import static magma.Compiler.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +22,10 @@ class CompilerTest {
     @ParameterizedTest
     @ValueSource(strings = {"First", "Second"})
     void classStatement(String className) {
-        assertCompile(renderClass(className), renderFunction(className));
+        final var node = new Node(Optional.of(CLASS_TYPE), className);
+        final var input = createClassRule().generate(node).orElseThrow();
+        final var expected = createFunctionRule().generate(node).orElseThrow();
+        assertCompile(input, expected);
     }
 
     @Test
@@ -31,6 +36,6 @@ class CompilerTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void importStatic(String namespace) {
-        assertCompile(renderStaticImport(namespace), renderInstanceImport(namespace));
+        assertCompile(render(namespace, createStaticImportRule()), render(namespace, createInstanceImportRule()));
     }
 }

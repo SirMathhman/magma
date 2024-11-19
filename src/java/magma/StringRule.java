@@ -11,4 +11,9 @@ public class StringRule implements Rule {
     public Optional<Node> parse(String input) {
         return parse0(input).map(value -> new Node(Optional.empty(), value));
     }
+
+    @Override
+    public Optional<String> generate(Node node) {
+        return Optional.of(node.value());
+    }
 }

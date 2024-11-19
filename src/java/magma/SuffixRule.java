@@ -13,4 +13,9 @@ public record SuffixRule(StringRule childRule, String suffix) implements Rule {
     public Optional<Node> parse(String input) {
         return parse0(input).map(value -> new Node(Optional.empty(), value));
     }
+
+    @Override
+    public Optional<String> generate(Node node) {
+        return childRule.generate(node).map(slice -> slice + suffix);
+    }
 }
