@@ -8,6 +8,8 @@ public class Compiler {
     public static final String STATEMENT_END = ";";
     public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
     public static final String STATIC_KEYWORD_WITH_SPACE = "static ";
+    public static final String CLASS_KEYWORD_WITH_SPACE = "class ";
+    public static final String BLOCK_EMPTY = " {}";
 
     static String compile(String input) throws CompileException {
         final var segments = split(input);
@@ -22,7 +24,17 @@ public class Compiler {
     static String compileRootSegment(String segment) throws CompileException {
         return compilePackage(segment)
                 .or(() -> compileImport(segment))
+                .or(() -> compileClass(segment))
                 .orElseThrow(CompileException::new);
+    }
+
+    private static Optional<String> compileClass(String segment) {
+        if (segment.startsWith(CLASS_KEYWORD_WITH_SPACE) && segment.endsWith(BLOCK_EMPTY)) {
+            final var slice = segment.substring(CLASS_KEYWORD_WITH_SPACE.length(), segment.length() - BLOCK_EMPTY.length());
+            return Optional.of(renderFunction(slice));
+        }
+
+        return Optional.empty();
     }
 
     private static Optional<String> compilePackage(String segment) {
@@ -41,7 +53,6 @@ public class Compiler {
 
         final var namespace = maybeStatic.substring(0, maybeStatic.length() - STATEMENT_END.length());
         return Optional.of(renderInstanceImport(namespace));
-
     }
 
     static ArrayList<String> split(String input) {
@@ -77,5 +88,13 @@ public class Compiler {
 
     static String renderPackageStatement(String namespace) {
         return PACKAGE_KEYWORD_WITH_SPACE + namespace + STATEMENT_END;
+    }
+
+    static String renderClass(String className) {
+        return CLASS_KEYWORD_WITH_SPACE + className + BLOCK_EMPTY;
+    }
+
+    static String renderFunction(String className) {
+        return "class def " + className + "() => {}";
     }
 }
