@@ -6,6 +6,7 @@ import magma.stream.ResultStream;
 import magma.stream.Streams;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Compiler {
@@ -38,7 +39,7 @@ public class Compiler {
         return parse(input, sourceRule)
                 .mapValue(node -> node.findNodeList("children").orElse(new ArrayList<>()))
                 .mapValue(Compiler::pass)
-                .flatMapValue(nodes -> generate(nodes, targetRule));
+                .flatMapValue(nodes -> generate(new Node().withNodeList("children", nodes), targetRule));
     }
 
     private static Result<Node, CompileException> parse(String input, Rule sourceRule) {
@@ -50,8 +51,8 @@ public class Compiler {
                 .mapValue(list -> new Node().withNodeList("children", list));
     }
 
-    private static Result<String, CompileException> generate(List<Node> children, Rule rule) {
-        return Streams.from(children)
+    private static Result<String, CompileException> generate(Node node, Rule rule) {
+        return Streams.from(node.findNodeList("children").orElse(Collections.emptyList()))
                 .map(rule::generate)
                 .into(ResultStream::new)
                 .foldResultsLeft("", (current, next) -> current + next);
