@@ -1,17 +1,17 @@
 package magma;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 public final class Node {
     private final Optional<String> type;
-    private final Map<String, String> strings;
+    private final JavaMap<String, String> strings;
+    private final JavaMap<String, List<Node>> nodeLists;
 
-    private Node(Optional<String> type, Map<String, String> strings) {
+    private Node(Optional<String> type, JavaMap<String, String> strings, JavaMap<String, List<Node>> nodeLists) {
         this.type = type;
         this.strings = strings;
+        this.nodeLists = nodeLists;
     }
 
     public Node(String type) {
@@ -19,7 +19,7 @@ public final class Node {
     }
 
     public Node(Optional<String> type) {
-        this(type, Collections.emptyMap());
+        this(type, new JavaMap<>(), new JavaMap<>());
     }
 
     public Node() {
@@ -27,13 +27,11 @@ public final class Node {
     }
 
     public Node withString(String propertyKey, String propertyValue) {
-        final var copy = new HashMap<>(strings);
-        copy.put(propertyKey, propertyValue);
-        return new Node(type, copy);
+        return new Node(type, strings.put(propertyKey, propertyValue), nodeLists);
     }
 
     public Node retype(String type) {
-        return new Node(Optional.of(type), strings);
+        return new Node(Optional.of(type), strings, nodeLists);
     }
 
     public boolean is(String type) {
@@ -41,6 +39,14 @@ public final class Node {
     }
 
     public Optional<String> findValue(String propertyKey) {
-        return Optional.of(strings.get(propertyKey));
+        return strings.find(propertyKey);
+    }
+
+    public Node withNodeList(String propertyKey, List<Node> propertyValues) {
+        return new Node(type, strings, nodeLists.put(propertyKey, propertyValues));
+    }
+
+    public Optional<List<Node>> findNodeList(String propertyKey) {
+        return nodeLists.find(propertyKey);
     }
 }

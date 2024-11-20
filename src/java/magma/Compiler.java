@@ -36,16 +36,18 @@ public class Compiler {
         ));
 
         return parse(input, sourceRule)
+                .mapValue(node -> node.findNodeList("children").orElse(new ArrayList<>()))
                 .mapValue(Compiler::pass)
                 .flatMapValue(nodes -> generate(nodes, targetRule));
     }
 
-    private static Result<List<Node>, CompileException> parse(String input, Rule sourceRule) {
+    private static Result<Node, CompileException> parse(String input, Rule sourceRule) {
         final var segments = split(input);
         return Streams.from(segments)
                 .map(sourceRule::parse)
                 .into(ResultStream::new)
-                .foldResultsLeft(new ArrayList<>(), Compiler::add);
+                .foldResultsLeft(new ArrayList<>(), Compiler::add)
+                .mapValue(list -> new Node().withNodeList("children", list));
     }
 
     private static Result<String, CompileException> generate(List<Node> children, Rule rule) {
