@@ -2,11 +2,8 @@ package magma;
 
 import magma.result.Result;
 import magma.rule.*;
-import magma.stream.ResultStream;
-import magma.stream.Streams;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Compiler {
@@ -24,38 +21,22 @@ public class Compiler {
     public static final String FUNCTION_TYPE = "function";
 
     static Result<String, CompileException> compile(String input) {
-        final var sourceRule = new OrRule(List.of(
+        final var sourceRule = new SplitRule("children", new OrRule(List.of(
                 createPackageRule(),
                 createStaticImportRule(),
                 createInstanceImportRule(),
                 createClassRule()
-        ));
+        )));
 
-        final var targetRule = new OrRule(List.of(
+        final var targetRule = new SplitRule("children", new OrRule(List.of(
                 createInstanceImportRule(),
                 createFunctionRule()
-        ));
+        )));
 
-        return parse(input, sourceRule)
+        return sourceRule.parse(input)
                 .mapValue(node -> node.findNodeList("children").orElse(new ArrayList<>()))
                 .mapValue(Compiler::pass)
-                .flatMapValue(nodes -> generate(new Node().withNodeList("children", nodes), targetRule));
-    }
-
-    private static Result<Node, CompileException> parse(String input, Rule sourceRule) {
-        final var segments = split(input);
-        return Streams.from(segments)
-                .map(sourceRule::parse)
-                .into(ResultStream::new)
-                .foldResultsLeft(new ArrayList<>(), Compiler::add)
-                .mapValue(list -> new Node().withNodeList("children", list));
-    }
-
-    private static Result<String, CompileException> generate(Node node, Rule rule) {
-        return Streams.from(node.findNodeList("children").orElse(Collections.emptyList()))
-                .map(rule::generate)
-                .into(ResultStream::new)
-                .foldResultsLeft("", (current, next) -> current + next);
+                .flatMapValue(nodes -> targetRule.generate(new Node().withNodeList("children", nodes)));
     }
 
     private static List<Node> pass(List<Node> sourceNodes) {
@@ -69,12 +50,6 @@ public class Compiler {
         if (node.is(IMPORT_STATIC_TYPE)) return node.retype(IMPORT_TYPE);
         if (node.is(CLASS_TYPE)) return node.retype(FUNCTION_TYPE);
         return node;
-    }
-
-    private static List<Node> add(List<Node> current, Node element) {
-        final var copy = new ArrayList<>(current);
-        copy.add(element);
-        return copy;
     }
 
     public static Rule createStaticImportRule() {
