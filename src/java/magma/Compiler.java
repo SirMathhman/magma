@@ -72,25 +72,6 @@ public class Compiler {
         return new TypeRule(type, new PrefixRule(IMPORT_KEYWORD_WITH_SPACE, suffixRule));
     }
 
-    static ArrayList<String> split(String input) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        for (int i = 0; i < input.length(); i++) {
-            var c = input.charAt(i);
-            buffer.append(c);
-            if (c == ';') {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            }
-        }
-        advance(buffer, segments);
-        return segments;
-    }
-
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
-    }
-
     public static Rule createPackageRule() {
         return new TypeRule(PACKAGE_TYPE, new PrefixRule(PACKAGE_KEYWORD_WITH_SPACE, createNamespaceRule()));
     }
