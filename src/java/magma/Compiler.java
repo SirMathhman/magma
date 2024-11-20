@@ -1,11 +1,13 @@
 package magma;
 
+import magma.result.Result;
+import magma.result.Results;
 import magma.rule.*;
+import magma.stream.ResultStream;
+import magma.stream.Streams;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class Compiler {
     public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
@@ -34,25 +36,44 @@ public class Compiler {
                 createFunctionRule()
         ));
 
+        final var parse = parse(input, sourceRule);
+        return Results.unwrap(parse
+                .mapValue(Compiler::pass)
+                .flatMapValue(nodes -> generate(nodes, targetRule)));
+    }
+
+    private static Result<List<Node>, CompileException> parse(String input, Rule sourceRule) {
         final var segments = split(input);
-        final var sourceNodes = segments.stream()
-                .map(input1 -> sourceRule.parse(input1).findValue())
-                .flatMap(Optional::stream)
-                .toList();
+        return Streams.from(segments)
+                .map(sourceRule::parse)
+                .into(ResultStream::new)
+                .foldResultsLeft(new ArrayList<>(), Compiler::add);
+    }
 
-        final var targetNodes = sourceNodes.stream()
+    private static Result<String, CompileException> generate(List<Node> children, Rule rule) {
+        return Streams.from(children)
+                .map(rule::generate)
+                .into(ResultStream::new)
+                .foldResultsLeft("", (current, next) -> current + next);
+    }
+
+    private static List<Node> pass(List<Node> sourceNodes) {
+        return sourceNodes.stream()
                 .filter(node -> !node.is(PACKAGE_TYPE))
-                .map(node -> {
-                    if (node.is(IMPORT_STATIC_TYPE)) return node.retype(IMPORT_TYPE);
-                    if (node.is(CLASS_TYPE)) return node.retype(FUNCTION_TYPE);
-                    return node;
-                })
+                .map(Compiler::passRootMember)
                 .toList();
+    }
 
-        return targetNodes.stream()
-                .map(node -> targetRule.generate(node).findValue())
-                .flatMap(Optional::stream)
-                .collect(Collectors.joining());
+    private static Node passRootMember(Node node) {
+        if (node.is(IMPORT_STATIC_TYPE)) return node.retype(IMPORT_TYPE);
+        if (node.is(CLASS_TYPE)) return node.retype(FUNCTION_TYPE);
+        return node;
+    }
+
+    private static List<Node> add(List<Node> current, Node element) {
+        final var copy = new ArrayList<>(current);
+        copy.add(element);
+        return copy;
     }
 
     public static Rule createStaticImportRule() {
