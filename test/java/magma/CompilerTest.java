@@ -24,7 +24,7 @@ class CompilerTest {
     @ParameterizedTest
     @ValueSource(strings = {"First", "Second"})
     void classStatement(String className) {
-        final var node = new Node(Optional.of(JavaLang.CLASS_TYPE)).withString(VALUE, className);
+        final var node = new Node(Optional.of(JavaLang.CLASS_TYPE)).withString(CommonLang.VALUE, className);
         Rule rule1 = JavaLang.createClassRule();
         final var input = rule1.generate(node).findValue().orElseThrow();
         Rule rule = MagmaLang.createFunctionRule();
@@ -44,8 +44,8 @@ class CompilerTest {
         var rule = CommonLang.createInstanceImportRule();
         var rule1 = JavaLang.createStaticImportRule();
 
-        var node = new Node(CommonLang.IMPORT_TYPE).withString(VALUE, namespace);
-        var node1 = new Node(JavaLang.IMPORT_STATIC_TYPE).withString(VALUE, namespace);
+        var node = new Node(CommonLang.IMPORT_TYPE).withString(CommonLang.VALUE, namespace);
+        var node1 = new Node(JavaLang.IMPORT_STATIC_TYPE).withString(CommonLang.VALUE, namespace);
         assertCompile(rule1.generate(node1).findValue().orElseThrow(), rule.generate(node).findValue().orElseThrow());
     }
 }

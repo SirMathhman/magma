@@ -7,13 +7,14 @@ public class CommonLang {
     public static final String STATEMENT_END = ";";
     public static final String IMPORT_TYPE = "import";
     public static final String ROOT_CHILDREN = "children";
+    public static final String VALUE = "value";
 
     public static Rule createInstanceImportRule() {
         return createImportRule(IMPORT_TYPE, createNamespaceRule());
     }
 
     public static Rule createNamespaceRule() {
-        return new SuffixRule(new StringRule(), STATEMENT_END);
+        return new SuffixRule(new StringRule(VALUE), STATEMENT_END);
     }
 
     public static Rule createImportRule(String type, Rule suffixRule) {

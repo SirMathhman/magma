@@ -14,7 +14,7 @@ public class JavaLang {
     public static final String IMPORT_STATIC_TYPE = "import-static";
 
     public static Rule createClassRule() {
-        return new TypeRule(CLASS_TYPE, new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(), BLOCK_EMPTY)));
+        return new TypeRule(CLASS_TYPE, new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(CommonLang.VALUE), BLOCK_EMPTY)));
     }
 
     public static Rule createPackageRule() {
