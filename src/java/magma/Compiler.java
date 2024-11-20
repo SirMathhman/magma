@@ -16,12 +16,14 @@ public class Compiler {
     public static final String PACKAGE_TYPE = "package";
     public static final String VALUE = "value";
     public static final String IMPORT_TYPE = "import";
+    public static final String IMPORT_STATIC_TYPE = "import-static";
+    public static final String FUNCTION_TYPE = "function";
 
     static String compile(String input) throws CompileException {
         final var sourceRule = new OrRule(List.of(
                 createPackageRule(),
-                createInstanceImportRule(),
                 createStaticImportRule(),
+                createInstanceImportRule(),
                 createClassRule()
         ));
 
@@ -38,6 +40,11 @@ public class Compiler {
 
         final var targetNodes = sourceNodes.stream()
                 .filter(node -> !node.is(PACKAGE_TYPE))
+                .map(node -> {
+                    if (node.is(IMPORT_STATIC_TYPE)) return node.retype(IMPORT_TYPE);
+                    if (node.is(CLASS_TYPE)) return node.retype(FUNCTION_TYPE);
+                    return node;
+                })
                 .toList();
 
         return targetNodes.stream()
@@ -47,7 +54,7 @@ public class Compiler {
     }
 
     public static Rule createStaticImportRule() {
-        return createImportRule("import-static", new PrefixRule(STATIC_KEYWORD_WITH_SPACE, createNamespaceRule()));
+        return createImportRule(IMPORT_STATIC_TYPE, new PrefixRule(STATIC_KEYWORD_WITH_SPACE, createNamespaceRule()));
     }
 
     public static Rule createInstanceImportRule() {
@@ -90,6 +97,6 @@ public class Compiler {
     }
 
     public static Rule createFunctionRule() {
-        return new TypeRule("function", new PrefixRule("class def ", new SuffixRule(new StringRule(), "() => {}")));
+        return new TypeRule(FUNCTION_TYPE, new PrefixRule("class def ", new SuffixRule(new StringRule(), "() => {}")));
     }
 }

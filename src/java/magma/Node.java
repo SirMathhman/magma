@@ -22,6 +22,10 @@ public final class Node {
         this(type, Collections.emptyMap());
     }
 
+    public Node() {
+        this(Optional.empty());
+    }
+
     public Node withString(String propertyKey, String propertyValue) {
         final var copy = new HashMap<>(strings);
         copy.put(propertyKey, propertyValue);
