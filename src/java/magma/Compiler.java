@@ -19,31 +19,34 @@ public class Compiler {
     public static final String IMPORT_TYPE = "import";
     public static final String IMPORT_STATIC_TYPE = "import-static";
     public static final String FUNCTION_TYPE = "function";
+    public static final String ROOT_CHILDREN = "children";
 
     static Result<String, CompileException> compile(String input) {
-        final var sourceRule = new SplitRule("children", new OrRule(List.of(
+        final var sourceRule = new SplitRule(ROOT_CHILDREN, new OrRule(List.of(
                 createPackageRule(),
                 createStaticImportRule(),
                 createInstanceImportRule(),
                 createClassRule()
         )));
 
-        final var targetRule = new SplitRule("children", new OrRule(List.of(
+        final var targetRule = new SplitRule(ROOT_CHILDREN, new OrRule(List.of(
                 createInstanceImportRule(),
                 createFunctionRule()
         )));
 
         return sourceRule.parse(input)
-                .mapValue(node -> node.findNodeList("children").orElse(new ArrayList<>()))
-                .mapValue(Compiler::pass)
-                .flatMapValue(nodes -> targetRule.generate(new Node().withNodeList("children", nodes)));
+                .mapValue(Compiler::passRoot)
+                .flatMapValue(targetRule::generate);
     }
 
-    private static List<Node> pass(List<Node> sourceNodes) {
-        return sourceNodes.stream()
-                .filter(node -> !node.is(PACKAGE_TYPE))
+    private static Node passRoot(Node node) {
+        final var oldChildren = node.findNodeList(ROOT_CHILDREN).orElse(new ArrayList<>());
+        final var newChildren = oldChildren.stream()
+                .filter(node1 -> !node1.is(PACKAGE_TYPE))
                 .map(Compiler::passRootMember)
                 .toList();
+
+        return new Node().withNodeList(ROOT_CHILDREN, newChildren);
     }
 
     private static Node passRootMember(Node node) {
@@ -64,7 +67,7 @@ public class Compiler {
         return new TypeRule(CLASS_TYPE, new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(), BLOCK_EMPTY)));
     }
 
-    private static SuffixRule createNamespaceRule() {
+    private static Rule createNamespaceRule() {
         return new SuffixRule(new StringRule(), STATEMENT_END);
     }
 
