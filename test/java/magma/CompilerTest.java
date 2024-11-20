@@ -1,5 +1,6 @@
 package magma;
 
+import magma.result.Results;
 import magma.rule.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CompilerTest {
     private static void assertCompile(String input, String expected) {
         try {
-            final var output = compile(input);
+            final var output = Results.unwrap(compile(input));
             assertEquals(expected, output);
         } catch (CompileException e) {
             fail(e);
@@ -34,7 +35,7 @@ class CompilerTest {
 
     @Test
     void rootMemberInvalid() {
-        assertThrows(CompileException.class, () -> compile("?"));
+        assertThrows(CompileException.class, () -> Results.unwrap(compile("?")));
     }
 
     @ParameterizedTest

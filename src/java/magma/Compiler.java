@@ -1,7 +1,6 @@
 package magma;
 
 import magma.result.Result;
-import magma.result.Results;
 import magma.rule.*;
 import magma.stream.ResultStream;
 import magma.stream.Streams;
@@ -23,7 +22,7 @@ public class Compiler {
     public static final String IMPORT_STATIC_TYPE = "import-static";
     public static final String FUNCTION_TYPE = "function";
 
-    static String compile(String input) throws CompileException {
+    static Result<String, CompileException> compile(String input) {
         final var sourceRule = new OrRule(List.of(
                 createPackageRule(),
                 createStaticImportRule(),
@@ -36,10 +35,9 @@ public class Compiler {
                 createFunctionRule()
         ));
 
-        final var parse = parse(input, sourceRule);
-        return Results.unwrap(parse
+        return parse(input, sourceRule)
                 .mapValue(Compiler::pass)
-                .flatMapValue(nodes -> generate(nodes, targetRule)));
+                .flatMapValue(nodes -> generate(nodes, targetRule));
     }
 
     private static Result<List<Node>, CompileException> parse(String input, Rule sourceRule) {

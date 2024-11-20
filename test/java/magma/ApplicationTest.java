@@ -1,5 +1,6 @@
 package magma;
 
+import magma.result.Results;
 import magma.rule.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ public class ApplicationTest {
         if (!Files.exists(SOURCE)) return;
 
         final var input = Files.readString(SOURCE);
-        final var output = compile(input);
+        final var output = Results.unwrap(compile(input));
         Files.writeString(TARGET, output);
     }
 
