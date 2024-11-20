@@ -52,12 +52,12 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void packageAndImport(String namespace) {
-        final var packageNode = new Node(PACKAGE_TYPE).withString(VALUE, namespace);
-        final var importNode = new Node(IMPORT_TYPE).withString(VALUE, namespace);
+        final var packageNode = new Node(JavaLang.PACKAGE_TYPE).withString(VALUE, namespace);
+        final var importNode = new Node(CommonLang.IMPORT_TYPE).withString(VALUE, namespace);
 
-        Rule rule1 = createPackageRule();
+        Rule rule1 = JavaLang.createPackageRule();
         final var renderedPackage = rule1.generate(packageNode).findValue().orElseThrow();
-        Rule rule = createInstanceImportRule();
+        Rule rule = CommonLang.createInstanceImportRule();
         final var renderedImport = rule.generate(importNode).findValue().orElseThrow();
         assertRun(renderedPackage + renderedImport, renderedImport);
     }
@@ -65,8 +65,8 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void packageStatement(String namespace) {
-        final var packageNode = new Node(PACKAGE_TYPE).withString(VALUE, namespace);
-        Rule rule = createPackageRule();
+        final var packageNode = new Node(JavaLang.PACKAGE_TYPE).withString(VALUE, namespace);
+        Rule rule = JavaLang.createPackageRule();
         final var renderedPackage = rule.generate(packageNode).findValue();
         assertRun(renderedPackage.orElse(""), "");
     }
@@ -74,9 +74,9 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void importStatement(String namespace) {
-        var sourceNode = new Node(IMPORT_TYPE).withString(VALUE, namespace);
+        var sourceNode = new Node(CommonLang.IMPORT_TYPE).withString(VALUE, namespace);
 
-        Rule rule = createInstanceImportRule();
+        Rule rule = CommonLang.createInstanceImportRule();
         final var renderedNode = rule.generate(sourceNode).findValue();
         assertRun(renderedNode.orElseThrow(), renderedNode.orElseThrow());
     }

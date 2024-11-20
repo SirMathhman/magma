@@ -1,38 +1,15 @@
 package magma;
 
 import magma.result.Result;
-import magma.rule.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Compiler {
-    public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
-    public static final String STATEMENT_END = ";";
-    public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
-    public static final String STATIC_KEYWORD_WITH_SPACE = "static ";
-    public static final String CLASS_KEYWORD_WITH_SPACE = "class ";
-    public static final String BLOCK_EMPTY = " {}";
-    public static final String CLASS_TYPE = "class";
-    public static final String PACKAGE_TYPE = "package";
     public static final String VALUE = "value";
-    public static final String IMPORT_TYPE = "import";
-    public static final String IMPORT_STATIC_TYPE = "import-static";
-    public static final String FUNCTION_TYPE = "function";
-    public static final String ROOT_CHILDREN = "children";
 
     static Result<String, CompileException> compile(String input) {
-        final var sourceRule = new SplitRule(ROOT_CHILDREN, new OrRule(List.of(
-                createPackageRule(),
-                createStaticImportRule(),
-                createInstanceImportRule(),
-                createClassRule()
-        )));
-
-        final var targetRule = new SplitRule(ROOT_CHILDREN, new OrRule(List.of(
-                createInstanceImportRule(),
-                createFunctionRule()
-        )));
+        final var sourceRule = JavaLang.createRootJavaRule();
+        final var targetRule = MagmaLang.createRootMagmaRule();
 
         return sourceRule.parse(input)
                 .mapValue(Compiler::passRoot)
@@ -40,46 +17,18 @@ public class Compiler {
     }
 
     private static Node passRoot(Node node) {
-        final var oldChildren = node.findNodeList(ROOT_CHILDREN).orElse(new ArrayList<>());
+        final var oldChildren = node.findNodeList(CommonLang.ROOT_CHILDREN).orElse(new ArrayList<>());
         final var newChildren = oldChildren.stream()
-                .filter(node1 -> !node1.is(PACKAGE_TYPE))
+                .filter(node1 -> !node1.is(JavaLang.PACKAGE_TYPE))
                 .map(Compiler::passRootMember)
                 .toList();
 
-        return new Node().withNodeList(ROOT_CHILDREN, newChildren);
+        return new Node().withNodeList(CommonLang.ROOT_CHILDREN, newChildren);
     }
 
     private static Node passRootMember(Node node) {
-        if (node.is(IMPORT_STATIC_TYPE)) return node.retype(IMPORT_TYPE);
-        if (node.is(CLASS_TYPE)) return node.retype(FUNCTION_TYPE);
+        if (node.is(JavaLang.IMPORT_STATIC_TYPE)) return node.retype(CommonLang.IMPORT_TYPE);
+        if (node.is(JavaLang.CLASS_TYPE)) return node.retype(MagmaLang.FUNCTION_TYPE);
         return node;
-    }
-
-    public static Rule createStaticImportRule() {
-        return createImportRule(IMPORT_STATIC_TYPE, new PrefixRule(STATIC_KEYWORD_WITH_SPACE, createNamespaceRule()));
-    }
-
-    public static Rule createInstanceImportRule() {
-        return createImportRule(IMPORT_TYPE, createNamespaceRule());
-    }
-
-    public static Rule createClassRule() {
-        return new TypeRule(CLASS_TYPE, new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(), BLOCK_EMPTY)));
-    }
-
-    private static Rule createNamespaceRule() {
-        return new SuffixRule(new StringRule(), STATEMENT_END);
-    }
-
-    private static Rule createImportRule(String type, Rule suffixRule) {
-        return new TypeRule(type, new PrefixRule(IMPORT_KEYWORD_WITH_SPACE, suffixRule));
-    }
-
-    public static Rule createPackageRule() {
-        return new TypeRule(PACKAGE_TYPE, new PrefixRule(PACKAGE_KEYWORD_WITH_SPACE, createNamespaceRule()));
-    }
-
-    public static Rule createFunctionRule() {
-        return new TypeRule(FUNCTION_TYPE, new PrefixRule("class def ", new SuffixRule(new StringRule(), "() => {}")));
     }
 }
