@@ -1,5 +1,6 @@
 package magma;
 
+import magma.rule.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -23,8 +24,11 @@ class CompilerTest {
     @ValueSource(strings = {"First", "Second"})
     void classStatement(String className) {
         final var node = new Node(Optional.of(CLASS_TYPE)).withString(VALUE, className);
-        final var input = createClassRule().generate(node).orElseThrow();
-        final var expected = createFunctionRule().generate(node.retype(FUNCTION_TYPE)).orElseThrow();
+        Rule rule1 = createClassRule();
+        final var input = rule1.generate(node).findValue().orElseThrow();
+        Rule rule = createFunctionRule();
+        Node node1 = node.retype(FUNCTION_TYPE);
+        final var expected = rule.generate(node1).findValue().orElseThrow();
         assertCompile(input, expected);
     }
 
@@ -41,6 +45,6 @@ class CompilerTest {
 
         var node = new Node(IMPORT_TYPE).withString(VALUE, namespace);
         var node1 = new Node(IMPORT_STATIC_TYPE).withString(VALUE, namespace);
-        assertCompile(rule1.generate(node1).orElseThrow(), rule.generate(node).orElseThrow());
+        assertCompile(rule1.generate(node1).findValue().orElseThrow(), rule.generate(node).findValue().orElseThrow());
     }
 }

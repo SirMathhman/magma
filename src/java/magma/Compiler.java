@@ -36,7 +36,7 @@ public class Compiler {
 
         final var segments = split(input);
         final var sourceNodes = segments.stream()
-                .map(sourceRule::parse)
+                .map(input1 -> sourceRule.parse(input1).findValue())
                 .flatMap(Optional::stream)
                 .toList();
 
@@ -50,7 +50,7 @@ public class Compiler {
                 .toList();
 
         return targetNodes.stream()
-                .map(targetRule::generate)
+                .map(node -> targetRule.generate(node).findValue())
                 .flatMap(Optional::stream)
                 .collect(Collectors.joining());
     }

@@ -1,5 +1,6 @@
 package magma;
 
+import magma.rule.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 
 import static magma.Compiler.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,8 +54,10 @@ public class ApplicationTest {
         final var packageNode = new Node(PACKAGE_TYPE).withString(VALUE, namespace);
         final var importNode = new Node(IMPORT_TYPE).withString(VALUE, namespace);
 
-        final var renderedPackage = createPackageRule().generate(packageNode).orElseThrow();
-        final var renderedImport = createInstanceImportRule().generate(importNode).orElseThrow();
+        Rule rule1 = createPackageRule();
+        final var renderedPackage = rule1.generate(packageNode).findValue().orElseThrow();
+        Rule rule = createInstanceImportRule();
+        final var renderedImport = rule.generate(importNode).findValue().orElseThrow();
         assertRun(renderedPackage + renderedImport, renderedImport);
     }
 
@@ -63,7 +65,8 @@ public class ApplicationTest {
     @ValueSource(strings = {"first", "second"})
     void packageStatement(String namespace) {
         final var packageNode = new Node(PACKAGE_TYPE).withString(VALUE, namespace);
-        final var renderedPackage = createPackageRule().generate(packageNode);
+        Rule rule = createPackageRule();
+        final var renderedPackage = rule.generate(packageNode).findValue();
         assertRun(renderedPackage.orElse(""), "");
     }
 
@@ -72,7 +75,8 @@ public class ApplicationTest {
     void importStatement(String namespace) {
         var sourceNode = new Node(IMPORT_TYPE).withString(VALUE, namespace);
 
-        final var renderedNode = createInstanceImportRule().generate(sourceNode);
+        Rule rule = createInstanceImportRule();
+        final var renderedNode = rule.generate(sourceNode).findValue();
         assertRun(renderedNode.orElseThrow(), renderedNode.orElseThrow());
     }
 
