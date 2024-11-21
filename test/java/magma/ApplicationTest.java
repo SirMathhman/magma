@@ -52,8 +52,8 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void packageAndImport(String namespace) {
-        final var packageNode = new Node(JavaLang.PACKAGE_TYPE).withString(CommonLang.VALUE, namespace);
-        final var importNode = new Node(CommonLang.IMPORT_TYPE).withString(CommonLang.VALUE, namespace);
+        final var packageNode = new Node(JavaLang.PACKAGE_TYPE).withString(CommonLang.CLASS_NAME, namespace);
+        final var importNode = new Node(CommonLang.IMPORT_TYPE).withString(CommonLang.CLASS_NAME, namespace);
 
         Rule rule1 = JavaLang.createPackageRule();
         final var renderedPackage = rule1.generate(packageNode).findValue().orElseThrow();
@@ -65,7 +65,7 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void packageStatement(String namespace) {
-        final var packageNode = new Node(JavaLang.PACKAGE_TYPE).withString(CommonLang.VALUE, namespace);
+        final var packageNode = new Node(JavaLang.PACKAGE_TYPE).withString(CommonLang.CLASS_NAME, namespace);
         Rule rule = JavaLang.createPackageRule();
         final var renderedPackage = rule.generate(packageNode).findValue();
         assertRun(renderedPackage.orElse(""), "");
@@ -74,7 +74,7 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void importStatement(String namespace) {
-        var sourceNode = new Node(CommonLang.IMPORT_TYPE).withString(CommonLang.VALUE, namespace);
+        var sourceNode = new Node(CommonLang.IMPORT_TYPE).withString(CommonLang.CLASS_NAME, namespace);
 
         Rule rule = CommonLang.createInstanceImportRule();
         final var renderedNode = rule.generate(sourceNode).findValue();

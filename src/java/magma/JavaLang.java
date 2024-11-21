@@ -4,6 +4,8 @@ import magma.rule.*;
 
 import java.util.List;
 
+import static magma.CommonLang.*;
+
 public class JavaLang {
     public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
     public static final String CLASS_KEYWORD_WITH_SPACE = "class ";
@@ -14,22 +16,22 @@ public class JavaLang {
     public static final String IMPORT_STATIC_TYPE = "import-static";
 
     public static Rule createClassRule() {
-        return new TypeRule(CLASS_TYPE, new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(CommonLang.VALUE), BLOCK_EMPTY)));
+        return new TypeRule(CLASS_TYPE, new PrefixRule(CLASS_KEYWORD_WITH_SPACE, new SuffixRule(new StringRule(CLASS_NAME), BLOCK_EMPTY)));
     }
 
     public static Rule createPackageRule() {
-        return new TypeRule(PACKAGE_TYPE, new PrefixRule(PACKAGE_KEYWORD_WITH_SPACE, CommonLang.createNamespaceRule()));
+        return new TypeRule(PACKAGE_TYPE, new PrefixRule(PACKAGE_KEYWORD_WITH_SPACE, createNamespaceRule()));
     }
 
     public static Rule createStaticImportRule() {
-        return CommonLang.createImportRule(IMPORT_STATIC_TYPE, new PrefixRule(STATIC_KEYWORD_WITH_SPACE, CommonLang.createNamespaceRule()));
+        return createImportRule(IMPORT_STATIC_TYPE, new PrefixRule(STATIC_KEYWORD_WITH_SPACE, createNamespaceRule()));
     }
 
     static SplitRule createRootJavaRule() {
-        return new SplitRule(CommonLang.ROOT_CHILDREN, new OrRule(List.of(
+        return new SplitRule(ROOT_CHILDREN, new OrRule(List.of(
                 createPackageRule(),
                 createStaticImportRule(),
-                CommonLang.createInstanceImportRule(),
+                createInstanceImportRule(),
                 createClassRule()
         )));
     }
