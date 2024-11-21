@@ -1,14 +1,13 @@
 package magma;
 
 import magma.result.Results;
-import magma.rule.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Optional;
 
-import static magma.Compiler.*;
+import static magma.Compiler.compile;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CompilerTest {
@@ -21,16 +20,18 @@ class CompilerTest {
         }
     }
 
+    private static void assertNodeCompile(Node inputNode, Node expectedNode) {
+        final var input = JavaLang.createRootJavaRule().generate(inputNode).findValue().orElseThrow();
+        final var expected = MagmaLang.createRootMagmaRule().generate(expectedNode).findValue().orElseThrow();
+        assertCompile(input, expected);
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"First", "Second"})
     void classStatement(String className) {
-        final var node = new Node(Optional.of(JavaLang.CLASS_TYPE)).withString(CommonLang.VALUE, className);
-        Rule rule1 = JavaLang.createClassRule();
-        final var input = rule1.generate(node).findValue().orElseThrow();
-        Rule rule = MagmaLang.createFunctionRule();
-        Node node1 = node.retype(MagmaLang.FUNCTION_TYPE);
-        final var expected = rule.generate(node1).findValue().orElseThrow();
-        assertCompile(input, expected);
+        final var classNode = new Node(Optional.of(JavaLang.CLASS_TYPE)).withString(CommonLang.VALUE, className);
+        final var functionNode = classNode.retype(MagmaLang.FUNCTION_TYPE);
+        assertNodeCompile(classNode, functionNode);
     }
 
     @Test
@@ -41,11 +42,9 @@ class CompilerTest {
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
     void importStatic(String namespace) {
-        var rule = CommonLang.createInstanceImportRule();
-        var rule1 = JavaLang.createStaticImportRule();
 
         var node = new Node(CommonLang.IMPORT_TYPE).withString(CommonLang.VALUE, namespace);
         var node1 = new Node(JavaLang.IMPORT_STATIC_TYPE).withString(CommonLang.VALUE, namespace);
-        assertCompile(rule1.generate(node1).findValue().orElseThrow(), rule.generate(node).findValue().orElseThrow());
+        assertNodeCompile(node1, node);
     }
 }
