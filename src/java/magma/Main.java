@@ -98,7 +98,7 @@ public class Main {
                 .filter(modifier -> !modifier.isEmpty())
                 .toList();
 
-        final var afterKeyword = input.substring("class".length()).strip();
+        final var afterKeyword = input.substring(keywordIndex + "class".length()).strip();
         final var contentStart = afterKeyword.indexOf('{');
         final var name = afterKeyword.substring(0, contentStart).strip();
         final var body = afterKeyword.substring(contentStart + 1);
@@ -120,7 +120,7 @@ public class Main {
     }
 
     private static Optional<String> compileImport(String input) {
-        return input.startsWith("import ") ? Optional.of(input) : Optional.empty();
+        return input.startsWith("import ") ? Optional.of(input + "\n") : Optional.empty();
     }
 
     private static Optional<String> compilePackage(String input) {
