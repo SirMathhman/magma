@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -49,7 +50,36 @@ public class Main {
     }
 
     private static String compile(String input) throws CompileException {
+        final var segments = split(input);
+        var output = new StringBuilder();
+        for (String segment : segments) {
+            output.append(compileRootMember(segment));
+        }
+
+        return output.toString();
+    }
+
+    private static List<String> split(String input) {
+        var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            var c = input.charAt(i);
+            buffer.append(c);
+            if (c == ';') {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            }
+        }
+        advance(buffer, segments);
+        return segments;
+    }
+
+    private static String compileRootMember(String input) throws CompileException {
         throw new CompileException("Unknown input", input);
+    }
+
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
     private static List<String> findNamespace(Path path) {
