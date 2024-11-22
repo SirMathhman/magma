@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -53,7 +54,7 @@ public class Main {
         final var segments = split(input);
         var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootMember(segment));
+            output.append(compileRootMember(segment.strip()));
         }
 
         return output.toString();
@@ -75,7 +76,17 @@ public class Main {
     }
 
     private static String compileRootMember(String input) throws CompileException {
-        throw new CompileException("Unknown input", input);
+        return compilePackage(input)
+                .or(() -> compileImport(input))
+                .orElseThrow(() -> new CompileException("Unknown input", input));
+    }
+
+    private static Optional<String> compileImport(String input) {
+        return input.startsWith("import ") ? Optional.of(input) : Optional.empty();
+    }
+
+    private static Optional<String> compilePackage(String input) {
+        return input.startsWith("package ") ? Optional.of("") : Optional.empty();
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
