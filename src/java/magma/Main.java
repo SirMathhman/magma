@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -55,7 +56,7 @@ public class Main {
         final var segments = split(input);
         var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootMember(segment.strip()));
+            output.append(Results.unwrap(compileRootMember(segment.strip())));
         }
 
         return output.toString();
@@ -80,14 +81,14 @@ public class Main {
         return segments;
     }
 
-    private static String compileRootMember(String input) throws CompileException {
+    private static Result<String, CompileException> compileRootMember(String input) {
         return compilePackage(input)
                 .or(() -> compileImport(input))
                 .or(() -> compileClass(input))
-                .orElseThrow(() -> new CompileException("Unknown input", input));
+                .orElseGet(() -> new Err<>(new CompileException("Unknown input", input)));
     }
 
-    private static Optional<String> compileClass(String input) {
+    private static Optional<Result<String, CompileException>> compileClass(String input) {
         final var keywordIndex = input.indexOf("class");
         if (keywordIndex == -1) return Optional.empty();
 
@@ -97,11 +98,24 @@ public class Main {
         final var afterKeyword = input.substring(keywordIndex + "class".length()).strip();
         final var contentStart = afterKeyword.indexOf('{');
         final var name = afterKeyword.substring(0, contentStart).strip();
-        final var body = afterKeyword.substring(contentStart + 1);
+        final var bodyWithEnd = afterKeyword.substring(contentStart + 1);
+        if (!bodyWithEnd.endsWith("}")) return Optional.empty();
+        final var body = bodyWithEnd.substring(0, bodyWithEnd.length() - 1).strip();
+        final var segments = split(body);
 
-        final var newModifiers = passModifiers(oldModifiers);
-        final var modifierString = computeNewModifierString(newModifiers);
-        return Optional.of(modifierString + "class def " + name + "() => {}");
+        return Optional.of(segments.stream()
+                .map(Main::compileClassMember)
+                .reduce(new Ok<>(new StringBuilder()), (BiFunction<Result<StringBuilder, CompileException>, Result<String, CompileException>, Result<StringBuilder, CompileException>>)
+                        (first, second) -> first.and(() -> second).mapValue(tuple -> tuple.left().append(tuple.right())), (_, next) -> next)
+                .mapValue(buffer -> {
+                    final var newModifiers = passModifiers(oldModifiers);
+                    final var modifierString = computeNewModifierString(newModifiers);
+                    return modifierString + "class def " + name + "() => {" + buffer + "}";
+                }));
+    }
+
+    private static Result<String, CompileException> compileClassMember(String classMember) {
+        return new Err<>(new CompileException("Invalid class member", classMember));
     }
 
     private static List<String> computeModifiers(String modifierSlice) {
@@ -134,12 +148,12 @@ public class Main {
         return modifierString;
     }
 
-    private static Optional<String> compileImport(String input) {
-        return input.startsWith("import ") ? Optional.of(input + "\n") : Optional.empty();
+    private static Optional<Result<String, CompileException>> compileImport(String input) {
+        return input.startsWith("import ") ? Optional.of(new Ok<>(input + "\n")) : Optional.empty();
     }
 
-    private static Optional<String> compilePackage(String input) {
-        return input.startsWith("package ") ? Optional.of("") : Optional.empty();
+    private static Optional<Result<String, CompileException>> compilePackage(String input) {
+        return input.startsWith("package ") ? Optional.of(new Ok<>("")) : Optional.empty();
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
