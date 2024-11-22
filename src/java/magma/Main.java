@@ -91,32 +91,47 @@ public class Main {
         final var keywordIndex = input.indexOf("class");
         if (keywordIndex == -1) return Optional.empty();
 
-        final var modifiersArray = input.substring(0, keywordIndex)
-                .strip().split(" ");
-
-        final var oldModifiers = Arrays.stream(modifiersArray)
-                .filter(modifier -> !modifier.isEmpty())
-                .toList();
+        final var modifierSlice = input.substring(0, keywordIndex);
+        final var oldModifiers = computeModifiers(modifierSlice);
 
         final var afterKeyword = input.substring(keywordIndex + "class".length()).strip();
         final var contentStart = afterKeyword.indexOf('{');
         final var name = afterKeyword.substring(0, contentStart).strip();
         final var body = afterKeyword.substring(contentStart + 1);
 
+        final var newModifiers = passModifiers(oldModifiers);
+        final var modifierString = computeNewModifierString(newModifiers);
+        return Optional.of(modifierString + "class def " + name + "() => {}");
+    }
+
+    private static List<String> computeModifiers(String modifierSlice) {
+        final var modifiersArray = modifierSlice
+                .strip()
+                .split(" ");
+
+        return Arrays.stream(modifiersArray)
+                .filter(modifier -> !modifier.isEmpty())
+                .toList();
+    }
+
+    private static ArrayList<String> passModifiers(List<String> oldModifiers) {
         var newModifiers = new ArrayList<String>();
         for (String oldModifier : oldModifiers) {
             if (oldModifier.equals("public")) {
                 newModifiers.add("export");
             }
         }
+        return newModifiers;
+    }
 
+    private static String computeNewModifierString(ArrayList<String> newModifiers) {
         String modifierString;
         if (newModifiers.isEmpty()) {
             modifierString = "";
         } else {
             modifierString = String.join(" ", newModifiers) + " ";
         }
-        return Optional.of(modifierString + "class def " + name + "() => {}");
+        return modifierString;
     }
 
     private static Optional<String> compileImport(String input) {
