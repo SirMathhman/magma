@@ -67,6 +67,10 @@ public class Main {
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else if(c == '}' && depth == 1) {
+                depth--;
+                advance(buffer, segments);
+                buffer = new StringBuilder();
             } else {
                 if (c == '{') depth++;
                 if (c == '}') depth--;
@@ -80,27 +84,49 @@ public class Main {
         return compilePackage(input)
                 .or(() -> compileImport(input))
                 .or(() -> compileClass(input))
+                .or(() -> compileRecord(input))
                 .orElseGet(() -> new Err<>(new CompileException("Unknown input", input)));
     }
 
     private static Optional<Result<String, CompileException>> compileClass(String input) {
-        final var keywordIndex = input.indexOf("class");
+        return parseFirst(input, "class", Main::compileClass);
+    }
+
+    private static Optional<? extends Result<String, CompileException>> compileRecord(String input) {
+        return parseFirst(input, "record", Main::compileClass);
+    }
+
+    private static Optional<Result<String, CompileException>> parseFirst(String input, String keyword, Function<Tuple<String, String>, Optional<Result<String, CompileException>>> after) {
+        final var keywordIndex = input.indexOf(keyword);
         if (keywordIndex == -1) return Optional.empty();
 
-        final var modifierSlice = input.substring(0, keywordIndex);
-        final var oldModifiers = computeModifiers(modifierSlice);
+        final var beforeKeyword = input.substring(0, keywordIndex);
+        final var afterKeyword = input.substring(keywordIndex + keyword.length()).strip();
 
-        final var afterKeyword = input.substring(keywordIndex + "class".length()).strip();
+        return after.apply((new Tuple<>(beforeKeyword, afterKeyword)));
+    }
+
+    private static Optional<Result<String, CompileException>> compileClass(Tuple<String, String> tuple) {
+        final var beforeKeyword = tuple.left();
+        final var afterKeyword = tuple.right();
+
+        final var modifierString = compileModifiers(beforeKeyword);
+
         final var contentStart = afterKeyword.indexOf('{');
         final var name = afterKeyword.substring(0, contentStart).strip();
         final var bodyWithEnd = afterKeyword.substring(contentStart + 1);
         if (!bodyWithEnd.endsWith("}")) return Optional.empty();
+
         final var body = bodyWithEnd.substring(0, bodyWithEnd.length() - 1).strip();
         return Optional.of(splitAndParse(body, Main::compileClassMember).mapValue(buffer -> {
-            final var newModifiers = passModifiers(oldModifiers);
-            final var modifierString = computeNewModifierString(newModifiers);
             return modifierString + "class def " + name + "() => {" + buffer + "}";
         }));
+    }
+
+    private static String compileModifiers(String beforeKeyword) {
+        final var oldModifiers = computeModifiers(beforeKeyword);
+        final var newModifiers = passModifiers(oldModifiers);
+        return computeNewModifierString(newModifiers);
     }
 
     private static Result<String, CompileException> splitAndParse(String input, Function<String, Result<String, CompileException>> mapper) {
