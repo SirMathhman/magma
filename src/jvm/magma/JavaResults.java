@@ -1,6 +1,6 @@
 package magma;
 
-public class Results {
+public class JavaResults {
     public static <T, E extends Exception> T unwrap(Result<T, E> result) throws E {
         final var value = result.findValue();
         if (value.isPresent()) return value.get();

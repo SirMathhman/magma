@@ -54,7 +54,7 @@ public class Main {
     }
 
     private static String compile(String input) throws CompileException {
-        return Results.unwrap(splitAndParse(input, Main::compileRootMember));
+        return JavaResults.unwrap(splitAndParse(input, Main::compileRootMember));
     }
 
     private static List<String> split(String input) {
