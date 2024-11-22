@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/mgs" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/jvm" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/magma" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/lib" />
