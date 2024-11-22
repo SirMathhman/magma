@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -82,7 +83,40 @@ public class Main {
     private static String compileRootMember(String input) throws CompileException {
         return compilePackage(input)
                 .or(() -> compileImport(input))
+                .or(() -> compileClass(input))
                 .orElseThrow(() -> new CompileException("Unknown input", input));
+    }
+
+    private static Optional<String> compileClass(String input) {
+        final var keywordIndex = input.indexOf("class");
+        if (keywordIndex == -1) return Optional.empty();
+
+        final var modifiersArray = input.substring(0, keywordIndex)
+                .strip().split(" ");
+
+        final var oldModifiers = Arrays.stream(modifiersArray)
+                .filter(modifier -> !modifier.isEmpty())
+                .toList();
+
+        final var afterKeyword = input.substring("class".length()).strip();
+        final var contentStart = afterKeyword.indexOf('{');
+        final var name = afterKeyword.substring(0, contentStart).strip();
+        final var body = afterKeyword.substring(contentStart + 1);
+
+        var newModifiers = new ArrayList<String>();
+        for (String oldModifier : oldModifiers) {
+            if (oldModifier.equals("public")) {
+                newModifiers.add("export");
+            }
+        }
+
+        String modifierString;
+        if (newModifiers.isEmpty()) {
+            modifierString = "";
+        } else {
+            modifierString = String.join(" ", newModifiers) + " ";
+        }
+        return Optional.of(modifierString + "class def " + name + "() => {}");
     }
 
     private static Optional<String> compileImport(String input) {
