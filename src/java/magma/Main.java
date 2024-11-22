@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -53,13 +54,7 @@ public class Main {
     }
 
     private static String compile(String input) throws CompileException {
-        final var segments = split(input);
-        var output = new StringBuilder();
-        for (String segment : segments) {
-            output.append(Results.unwrap(compileRootMember(segment.strip())));
-        }
-
-        return output.toString();
+        return Results.unwrap(splitAndParse(input, Main::compileRootMember));
     }
 
     private static List<String> split(String input) {
@@ -101,17 +96,21 @@ public class Main {
         final var bodyWithEnd = afterKeyword.substring(contentStart + 1);
         if (!bodyWithEnd.endsWith("}")) return Optional.empty();
         final var body = bodyWithEnd.substring(0, bodyWithEnd.length() - 1).strip();
-        final var segments = split(body);
+        final var value = splitAndParse(body, Main::compileClassMember);
+        return Optional.of(value.mapValue(buffer -> {
+            final var newModifiers = passModifiers(oldModifiers);
+            final var modifierString = computeNewModifierString(newModifiers);
+            return modifierString + "class def " + name + "() => {" + buffer + "}";
+        }));
+    }
 
-        return Optional.of(segments.stream()
-                .map(Main::compileClassMember)
+    private static Result<String, CompileException> splitAndParse(String input, Function<String, Result<String, CompileException>> mapper) {
+        final var segments = split(input);
+        return segments.stream()
+                .map(mapper)
                 .reduce(new Ok<>(new StringBuilder()), (BiFunction<Result<StringBuilder, CompileException>, Result<String, CompileException>, Result<StringBuilder, CompileException>>)
                         (first, second) -> first.and(() -> second).mapValue(tuple -> tuple.left().append(tuple.right())), (_, next) -> next)
-                .mapValue(buffer -> {
-                    final var newModifiers = passModifiers(oldModifiers);
-                    final var modifierString = computeNewModifierString(newModifiers);
-                    return modifierString + "class def " + name + "() => {" + buffer + "}";
-                }));
+                .mapValue(StringBuilder::toString);
     }
 
     private static Result<String, CompileException> compileClassMember(String classMember) {
