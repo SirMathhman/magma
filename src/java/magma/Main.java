@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -113,7 +111,7 @@ public class Main {
     }
 
     private static Option<Result<String, ApplicationError>> compileRecord(String input) {
-        if (input.contains("record ")) return new Some<>(renderFunction("Temp", ""));
+        if (input.contains("record ")) return new Some<>(renderFunction(Collections.emptyList(), "Temp", ""));
         return new None<>();
     }
 
@@ -127,23 +125,37 @@ public class Main {
         if (classIndex == -1) return new None<>();
 
         final var contentStart = input.indexOf('{');
+        final var modifiersArray = input.substring(0, classIndex).strip().split(" ");
+        final var oldModifiers = Arrays.stream(modifiersArray)
+                .map(String::strip)
+                .filter(modifier -> !modifier.isEmpty())
+                .toList();
+
+        var newModifiers = new ArrayList<String>();
+        if (oldModifiers.contains("public")) {
+            newModifiers.add("export");
+        }
+
         final var nameAndMaybeImplements = input.substring(classIndex + "class ".length(), contentStart).strip();
 
         final Result<String, ApplicationError> rendered;
         final var implementsIndex = nameAndMaybeImplements.indexOf("implements ");
         if (implementsIndex == -1) {
-            rendered = renderFunction(nameAndMaybeImplements, "");
+            rendered = renderFunction(newModifiers, nameAndMaybeImplements, "");
         } else {
             final var name = nameAndMaybeImplements.substring(0, implementsIndex).strip();
             final var type = nameAndMaybeImplements.substring(implementsIndex + "implements ".length()).strip();
-            rendered = renderFunction(name, "\n\timplements " + type + ";");
+            rendered = renderFunction(newModifiers, name, "\n\timplements " + type + ";");
         }
 
         return new Some<>(rendered);
     }
 
-    private static Result<String, ApplicationError> renderFunction(String name, String content) {
-        return new Ok<>("class def " + name + "() => {" + content + "\n}");
+    private static Result<String, ApplicationError> renderFunction(List<String> newModifiers, String name, String content) {
+        final var copy = new ArrayList<>(newModifiers);
+        copy.add("class");
+        final var joinedModifiers = String.join(" ", copy);
+        return new Ok<>(joinedModifiers + " def " + name + "() => {" + content + "\n}");
     }
 
     private static Set<Path> collectSources() {
