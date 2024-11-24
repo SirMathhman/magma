@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,42 +15,58 @@ public class Main {
 
     public static void main(String[] args) {
         final var sources = collectSources();
-        compileSources(sources);
+        compileSources(sources).ifPresent(Throwable::printStackTrace);
     }
 
-    private static void compileSources(Set<Path> sources) {
-        try {
-            for (var source : sources) {
-                compileSource(source);
-            }
-        } catch (IOException | CompileException e) {
-            throw new RuntimeException(e);
-        }
+    private static Optional<ApplicationException> compileSources(Set<Path> sources) {
+        return sources.stream()
+                .map(Main::compileSource)
+                .flatMap(Options::stream)
+                .findFirst();
     }
 
-    private static void compileSource(Path source) throws IOException, CompileException {
+    private static Option<ApplicationException> compileSource(Path source) {
         final var relativized = SOURCE_DIRECTORY.relativize(source);
         final var nameWithExt = relativized.getFileName().toString();
         final var name = nameWithExt.substring(0, nameWithExt.indexOf('.'));
 
         final var targetParent = TARGET_DIRECTORY.resolve(relativized.getParent());
 
-        if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
+        if (!Files.exists(targetParent)) {
+            try {
+                Files.createDirectories(targetParent);
+            } catch (IOException e) {
+                return new Some<>(new ApplicationException(e));
+            }
+        }
         final var target = targetParent.resolve(name + ".mgs");
 
-        final var input = Files.readString(source);
-        Files.writeString(target, compile(input));
-    }
-
-    private static String compile(String input) throws CompileException {
-        final var segments = split(input);
-
-        var buffer = new StringBuilder();
-        for (String segment : segments) {
-            buffer.append(compileRootSegment(segment.strip()));
+        final String input;
+        try {
+            input = Files.readString(source);
+        } catch (IOException e) {
+            return new Some<>(new ApplicationException(e));
         }
 
-        return buffer.toString();
+        return compile(input).mapValue(value -> {
+            try {
+                Files.writeString(target, value);
+                return new None<ApplicationException>();
+            } catch (IOException e) {
+                return new Some<>(new ApplicationException(e));
+            }
+        }).mapErr(ApplicationException::new).match(value -> value, Some::new);
+    }
+
+    private static Result<String, CompileException> compile(String input) {
+        return split(input)
+                .stream()
+                .map(String::strip)
+                .map(Main::compileRootSegment)
+                .<Result<StringBuilder, CompileException>>reduce(new Ok<>(new StringBuilder()),
+                        (current, next) -> current.and(() -> next).mapValue(tuple -> tuple.left().append(tuple.right())),
+                        (_, next) -> next)
+                .mapValue(StringBuilder::toString);
     }
 
     private static ArrayList<String> split(String input) {
@@ -76,9 +93,9 @@ public class Main {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static String compileRootSegment(String input) throws CompileException {
-        if (input.startsWith("package ")) return "";
-        throw new CompileException("Invalid root", input);
+    private static Result<String, CompileException> compileRootSegment(String input) {
+        if (input.startsWith("package ")) return new Ok<>("");
+        return new Err<>(new CompileException("Invalid root", input));
     }
 
     private static Set<Path> collectSources() {
