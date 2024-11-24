@@ -46,7 +46,7 @@ public class Main {
 
         var buffer = new StringBuilder();
         for (String segment : segments) {
-            buffer.append(compileRootSegment(segment));
+            buffer.append(compileRootSegment(segment.strip()));
         }
 
         return buffer.toString();
@@ -55,13 +55,17 @@ public class Main {
     private static ArrayList<String> split(String input) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
+        var depth = 0;
         final var length = input.length();
         for (int i = 0; i < length; i++) {
             final var c = input.charAt(i);
             buffer.append(c);
-            if (c == ';') {
+            if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
             }
         }
         advance(buffer, segments);
@@ -69,11 +73,11 @@ public class Main {
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
-        if(!buffer.isEmpty()) segments.add(buffer.toString());
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
     private static String compileRootSegment(String input) throws CompileException {
-        if(input.startsWith("package ")) return "";
+        if (input.startsWith("package ")) return "";
         throw new CompileException("Invalid root", input);
     }
 
