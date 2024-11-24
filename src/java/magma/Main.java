@@ -15,17 +15,17 @@ public class Main {
 
     public static void main(String[] args) {
         final var sources = collectSources();
-        compileSources(sources).ifPresent(Throwable::printStackTrace);
+        compileSources(sources).ifPresent(error -> System.err.println(error.display()));
     }
 
-    private static Optional<ApplicationException> compileSources(Set<Path> sources) {
+    private static Optional<ApplicationError> compileSources(Set<Path> sources) {
         return sources.stream()
                 .map(Main::compileSource)
                 .flatMap(Options::stream)
                 .findFirst();
     }
 
-    private static Option<ApplicationException> compileSource(Path source) {
+    private static Option<ApplicationError> compileSource(Path source) {
         final var relativized = SOURCE_DIRECTORY.relativize(source);
         final var nameWithExt = relativized.getFileName().toString();
         final var name = nameWithExt.substring(0, nameWithExt.indexOf('.'));
@@ -36,7 +36,7 @@ public class Main {
             try {
                 Files.createDirectories(targetParent);
             } catch (IOException e) {
-                return new Some<>(new ApplicationException(e));
+                return new Some<>(new ApplicationError(new None<>(), new Some<>(new JavaError(e))));
             }
         }
         final var target = targetParent.resolve(name + ".mgs");
@@ -45,25 +45,25 @@ public class Main {
         try {
             input = Files.readString(source);
         } catch (IOException e) {
-            return new Some<>(new ApplicationException(e));
+            return new Some<>(new ApplicationError(new None<>(), new Some<>(new JavaError(e))));
         }
 
         return compile(input).mapValue(value -> {
             try {
                 Files.writeString(target, value);
-                return new None<ApplicationException>();
+                return new None<ApplicationError>();
             } catch (IOException e) {
-                return new Some<>(new ApplicationException(e));
+                return new Some<>(new ApplicationError(new JavaError(e)));
             }
-        }).mapErr(ApplicationException::new).match(value -> value, Some::new);
+        }).mapErr(ApplicationError::new).match(value -> value, Some::new);
     }
 
-    private static Result<String, CompileException> compile(String input) {
+    private static Result<String, ApplicationError> compile(String input) {
         return split(input)
                 .stream()
                 .map(String::strip)
                 .map(Main::compileRootSegment)
-                .<Result<StringBuilder, CompileException>>reduce(new Ok<>(new StringBuilder()),
+                .<Result<StringBuilder, ApplicationError>>reduce(new Ok<>(new StringBuilder()),
                         (current, next) -> current.and(() -> next).mapValue(tuple -> tuple.left().append(tuple.right())),
                         (_, next) -> next)
                 .mapValue(StringBuilder::toString);
@@ -93,16 +93,16 @@ public class Main {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static Result<String, CompileException> compileRootSegment(String input) {
+    private static Result<String, ApplicationError> compileRootSegment(String input) {
         if (input.startsWith("package ")) return new Ok<>("");
         if (input.startsWith("import ")) return new Ok<>(input);
         if (input.contains("class ")) return renderFunction();
         if (input.contains("record ")) return renderFunction();
         if (input.contains("interface ")) return new Ok<>("trait Temp {}");
-        return new Err<>(new CompileException("Invalid root segment", input));
+        return new Err<>(ApplicationError.createContextError("Invalid root segment", input));
     }
 
-    private static Ok<String, CompileException> renderFunction() {
+    private static Ok<String, ApplicationError> renderFunction() {
         return new Ok<>("class def Temp() => {}");
     }
 
