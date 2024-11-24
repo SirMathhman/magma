@@ -189,10 +189,13 @@ public class Main {
                 .orElse("");
 
         final var name = node.findString("name").orElse("");
-        final var params = node.findString("params");
+        final var params = node.findString("params").orElse("");
         final var content = node.findString("content").orElse("");
 
-        return new Ok<>(joinedModifiers + " def " + name + "(" + params.orElse("") + ") => {" + content + "\n}");
+        final var s = content + "\n}";
+        final var s1 = params + ") => {" + s;
+        final var s2 = name + "(" + s1;
+        return new Ok<>(joinedModifiers + " def " + s2);
     }
 
     private static Set<Path> collectSources() {
