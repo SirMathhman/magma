@@ -1,1 +1,1 @@
-class def Temp() => {}
+class def ApplicationError implements Error() => {}

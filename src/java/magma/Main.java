@@ -94,16 +94,45 @@ public class Main {
     }
 
     private static Result<String, ApplicationError> compileRootSegment(String input) {
-        if (input.startsWith("package ")) return new Ok<>("");
-        if (input.startsWith("import ")) return new Ok<>(input);
-        if (input.contains("class ")) return renderFunction();
-        if (input.contains("record ")) return renderFunction();
-        if (input.contains("interface ")) return new Ok<>("trait Temp {}");
-        return new Err<>(ApplicationError.createContextError("Invalid root segment", input));
+        return compilePackage(input)
+                .or(() -> compileImport(input))
+                .or(() -> compileClass(input))
+                .or(() -> compileRecord(input))
+                .or(() -> compileInterface(input))
+                .orElseGet(() -> new Err<>(ApplicationError.createContextError("Invalid root segment", input)));
     }
 
-    private static Ok<String, ApplicationError> renderFunction() {
-        return new Ok<>("class def Temp() => {}");
+    private static Option<Result<String, ApplicationError>> compileImport(String input) {
+        if (input.startsWith("import ")) return new Some<>(new Ok<>(input));
+        return new None<>();
+    }
+
+    private static Option<Result<String, ApplicationError>> compilePackage(String input) {
+        if (input.startsWith("package ")) return new Some<>(new Ok<>(""));
+        return new None<>();
+    }
+
+    private static Option<Result<String, ApplicationError>> compileRecord(String input) {
+        if (input.contains("record ")) return new Some<>(renderFunction("Temp"));
+        return new None<>();
+    }
+
+    private static Option<Result<String, ApplicationError>> compileInterface(String input) {
+        if (input.contains("interface ")) return new Some<>(new Ok<>("trait Temp {}"));
+        return new None<>();
+    }
+
+    private static Option<Result<String, ApplicationError>> compileClass(String input) {
+        final var classIndex = input.indexOf("class ");
+        if (classIndex == -1) return new None<>();
+
+        final var contentStart = input.indexOf('{');
+        final var name = input.substring(classIndex + "class ".length(), contentStart).strip();
+        return new Some<>(renderFunction(name));
+    }
+
+    private static Ok<String, ApplicationError> renderFunction(String name) {
+        return new Ok<>("class def " + name + "() => {}");
     }
 
     private static Set<Path> collectSources() {
