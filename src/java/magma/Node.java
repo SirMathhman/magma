@@ -41,4 +41,8 @@ public record Node(Map<String, String> strings, Map<String, List<String>> string
                 ? new Some<>(strings.get(propertyKey))
                 : new None<>();
     }
+
+    public String display() {
+        throw new UnsupportedOperationException();
+    }
 }

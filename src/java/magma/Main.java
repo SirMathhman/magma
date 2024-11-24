@@ -188,14 +188,18 @@ public class Main {
                 .map(modifiers -> String.join(" ", modifiers) + " ")
                 .orElse("");
 
-        final var name = node.findString("name").orElse("");
-        final var params = node.findString("params").orElse("");
-        final var content = node.findString("content").orElse("");
+        return new StringRule("content").generate(node).flatMapValue(content -> {
+            final var s = content + "\n}";
 
-        final var s = content + "\n}";
-        final var s1 = params + ") => {" + s;
-        final var s2 = name + "(" + s1;
-        return new Ok<>(joinedModifiers + " def " + s2);
+            return new StringRule("params").generate(node).flatMapValue(params -> {
+                final var s1 = params + ") => {" + s;
+
+                return new StringRule("name").generate(node).mapValue(name -> {
+                    final var s2 = name + "(" + s1;
+                    return joinedModifiers + " def " + s2;
+                });
+            });
+        });
     }
 
     private static Set<Path> collectSources() {

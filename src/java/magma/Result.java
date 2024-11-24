@@ -11,4 +11,8 @@ public interface Result<T, X> {
     <R> Result<T, R> mapErr(Function<X, R> mapper);
 
     <R> R match(Function<T, R> onOk, Function<X, R> onErr);
+
+    Option<T> findValue();
+
+    <R> Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper);
 }
