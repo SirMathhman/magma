@@ -95,7 +95,15 @@ public class Main {
 
     private static Result<String, CompileException> compileRootSegment(String input) {
         if (input.startsWith("package ")) return new Ok<>("");
-        return new Err<>(new CompileException("Invalid root", input));
+        if (input.startsWith("import ")) return new Ok<>(input);
+        if (input.contains("class ")) return renderFunction();
+        if (input.contains("record ")) return renderFunction();
+        if (input.contains("interface ")) return new Ok<>("trait Temp {}");
+        return new Err<>(new CompileException("Invalid root segment", input));
+    }
+
+    private static Ok<String, CompileException> renderFunction() {
+        return new Ok<>("class def Temp() => {}");
     }
 
     private static Set<Path> collectSources() {
