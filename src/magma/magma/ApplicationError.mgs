@@ -1,3 +1,2 @@
-export class def ApplicationError() => {
-	implements Error;
+class def Temp() => {
 }

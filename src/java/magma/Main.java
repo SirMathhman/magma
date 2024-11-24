@@ -51,9 +51,9 @@ public class Main {
                 Files.writeString(target, value);
                 return new None<ApplicationError>();
             } catch (IOException e) {
-                return new Some<>(new ApplicationError(new JavaError(e)));
+                return new Some<>(ApplicationError.fromCause(new JavaError(e)));
             }
-        }).mapErr(ApplicationError::new).match(value -> value, Some::new);
+        }).mapErr(ApplicationError::fromCause).match(value -> value, Some::new);
     }
 
     private static Result<String, ApplicationError> compile(String input) {
@@ -97,7 +97,7 @@ public class Main {
                 .or(() -> compileClass(input))
                 .or(() -> compileRecord(input))
                 .or(() -> compileInterface(input))
-                .orElseGet(() -> new Err<>(ApplicationError.createContextError("Invalid root segment", input)));
+                .orElseGet(() -> new Err<>(ApplicationError.fromMessage("Invalid root segment", input)));
     }
 
     private static Option<Result<String, ApplicationError>> compileImport(String input) {
