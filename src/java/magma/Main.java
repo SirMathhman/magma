@@ -111,8 +111,15 @@ public class Main {
     }
 
     private static Option<Result<String, ApplicationError>> compileRecord(String input) {
-        if (input.contains("record ")) return new Some<>(renderFunction(Collections.emptyList(), "Temp", ""));
-        return new None<>();
+        final var keywordIndex = input.indexOf("record ");
+        if (keywordIndex == -1) {
+            return new None<>();
+        }
+        final var newModifiers = compileModifiers(input.substring(0, keywordIndex));
+        final var after = input.substring(keywordIndex + "record ".length());
+        final var separator = after.indexOf('{');
+        final var nameAndImplements = after.substring(0, separator);
+        return new Some<>(compileWithImpls(newModifiers, nameAndImplements));
     }
 
     private static Option<Result<String, ApplicationError>> compileInterface(String input) {
@@ -125,7 +132,27 @@ public class Main {
         if (classIndex == -1) return new None<>();
 
         final var contentStart = input.indexOf('{');
-        final var modifiersArray = input.substring(0, classIndex).strip().split(" ");
+        final var modifierString = input.substring(0, classIndex);
+        final var newModifiers = compileModifiers(modifierString);
+
+        final var nameAndMaybeImplements = input.substring(classIndex + "class ".length(), contentStart).strip();
+        final var rendered = compileWithImpls(newModifiers, nameAndMaybeImplements);
+        return new Some<>(rendered);
+    }
+
+    private static Result<String, ApplicationError> compileWithImpls(List<String> newModifiers, String nameAndMaybeImplements) {
+        final var implementsIndex = nameAndMaybeImplements.indexOf("implements ");
+        if (implementsIndex == -1) {
+            return renderFunction(newModifiers, nameAndMaybeImplements, "", "");
+        } else {
+            final var name = nameAndMaybeImplements.substring(0, implementsIndex).strip();
+            final var type = nameAndMaybeImplements.substring(implementsIndex + "implements ".length()).strip();
+            return renderFunction(newModifiers, name, "\n\timplements " + type + ";", "");
+        }
+    }
+
+    private static ArrayList<String> compileModifiers(String modifierString) {
+        final var modifiersArray = modifierString.strip().split(" ");
         final var oldModifiers = Arrays.stream(modifiersArray)
                 .map(String::strip)
                 .filter(modifier -> !modifier.isEmpty())
@@ -135,27 +162,14 @@ public class Main {
         if (oldModifiers.contains("public")) {
             newModifiers.add("export");
         }
-
-        final var nameAndMaybeImplements = input.substring(classIndex + "class ".length(), contentStart).strip();
-
-        final Result<String, ApplicationError> rendered;
-        final var implementsIndex = nameAndMaybeImplements.indexOf("implements ");
-        if (implementsIndex == -1) {
-            rendered = renderFunction(newModifiers, nameAndMaybeImplements, "");
-        } else {
-            final var name = nameAndMaybeImplements.substring(0, implementsIndex).strip();
-            final var type = nameAndMaybeImplements.substring(implementsIndex + "implements ".length()).strip();
-            rendered = renderFunction(newModifiers, name, "\n\timplements " + type + ";");
-        }
-
-        return new Some<>(rendered);
+        return newModifiers;
     }
 
-    private static Result<String, ApplicationError> renderFunction(List<String> newModifiers, String name, String content) {
+    private static Result<String, ApplicationError> renderFunction(List<String> newModifiers, String name, String content, String params) {
         final var copy = new ArrayList<>(newModifiers);
         copy.add("class");
         final var joinedModifiers = String.join(" ", copy);
-        return new Ok<>(joinedModifiers + " def " + name + "() => {" + content + "\n}");
+        return new Ok<>(joinedModifiers + " def " + name + "(" + params + ") => {" + content + "\n}");
     }
 
     private static Set<Path> collectSources() {
