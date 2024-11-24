@@ -113,7 +113,7 @@ public class Main {
     }
 
     private static Option<Result<String, ApplicationError>> compileRecord(String input) {
-        if (input.contains("record ")) return new Some<>(renderFunction("Temp"));
+        if (input.contains("record ")) return new Some<>(renderFunction("Temp", ""));
         return new None<>();
     }
 
@@ -127,12 +127,23 @@ public class Main {
         if (classIndex == -1) return new None<>();
 
         final var contentStart = input.indexOf('{');
-        final var name = input.substring(classIndex + "class ".length(), contentStart).strip();
-        return new Some<>(renderFunction(name));
+        final var nameAndMaybeImplements = input.substring(classIndex + "class ".length(), contentStart).strip();
+
+        final Result<String, ApplicationError> rendered;
+        final var implementsIndex = nameAndMaybeImplements.indexOf("implements ");
+        if (implementsIndex == -1) {
+            rendered = renderFunction(nameAndMaybeImplements, "");
+        } else {
+            final var name = nameAndMaybeImplements.substring(0, implementsIndex).strip();
+            final var type = nameAndMaybeImplements.substring(implementsIndex + "implements ".length()).strip();
+            rendered = renderFunction(name, "\n\timplements " + type + ";");
+        }
+
+        return new Some<>(rendered);
     }
 
-    private static Ok<String, ApplicationError> renderFunction(String name) {
-        return new Ok<>("class def " + name + "() => {}");
+    private static Result<String, ApplicationError> renderFunction(String name, String content) {
+        return new Ok<>("class def " + name + "() => {" + content + "\n}");
     }
 
     private static Set<Path> collectSources() {

@@ -1,1 +1,3 @@
-class def ApplicationError implements Error() => {}
+class def ApplicationError() => {
+	implements Error;
+}
