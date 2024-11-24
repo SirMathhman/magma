@@ -143,11 +143,19 @@ public class Main {
     private static Result<String, ApplicationError> compileWithImpls(List<String> newModifiers, String nameAndMaybeImplements) {
         final var implementsIndex = nameAndMaybeImplements.indexOf("implements ");
         if (implementsIndex == -1) {
-            return renderFunction(newModifiers, nameAndMaybeImplements, "", "");
+            return renderFunction(new Node()
+                    .withStringList("modifiers", newModifiers)
+                    .withString("name", nameAndMaybeImplements)
+                    .withString("content", "")
+                    .withString("params", ""));
         } else {
             final var name = nameAndMaybeImplements.substring(0, implementsIndex).strip();
             final var type = nameAndMaybeImplements.substring(implementsIndex + "implements ".length()).strip();
-            return renderFunction(newModifiers, name, "\n\timplements " + type + ";", "");
+            return renderFunction(new Node()
+                    .withStringList("modifiers", newModifiers)
+                    .withString("name", name)
+                    .withString("content", "\n\timplements " + type + ";")
+                    .withString("params", ""));
         }
     }
 
@@ -165,11 +173,22 @@ public class Main {
         return newModifiers;
     }
 
-    private static Result<String, ApplicationError> renderFunction(List<String> newModifiers, String name, String content, String params) {
-        final var copy = new ArrayList<>(newModifiers);
-        copy.add("class");
-        final var joinedModifiers = String.join(" ", copy);
-        return new Ok<>(joinedModifiers + " def " + name + "(" + params + ") => {" + content + "\n}");
+    private static Result<String, ApplicationError> renderFunction(Node node) {
+        final var withModifiers = node.mapStringList("modifiers", modifiers -> {
+            final var copy = new ArrayList<String>(modifiers);
+            copy.add("class");
+            return copy;
+        }).orElseGet(() -> node.withStringList("modifiers", Collections.singletonList("class")));
+
+        final var joinedModifiers = withModifiers.findStringList("modifiers")
+                .map(modifiers -> String.join(" ", modifiers) + " ")
+                .orElse("");
+
+        final var name = node.findString("name").orElse("");
+        final var params = node.findString("params");
+        final var content = node.findString("content").orElse("");
+
+        return new Ok<>(joinedModifiers + " def " + name + "(" + params.orElse("") + ") => {" + content + "\n}");
     }
 
     private static Set<Path> collectSources() {
