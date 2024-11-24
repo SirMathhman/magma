@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,12 +22,12 @@ public class Main {
             for (var source : sources) {
                 compileSource(source);
             }
-        } catch (IOException e) {
+        } catch (IOException | CompileException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void compileSource(Path source) throws IOException {
+    private static void compileSource(Path source) throws IOException, CompileException {
         final var relativized = SOURCE_DIRECTORY.relativize(source);
         final var nameWithExt = relativized.getFileName().toString();
         final var name = nameWithExt.substring(0, nameWithExt.indexOf('.'));
@@ -37,7 +38,42 @@ public class Main {
         final var target = targetParent.resolve(name + ".mgs");
 
         final var input = Files.readString(source);
-        Files.writeString(target, input);
+        Files.writeString(target, compile(input));
+    }
+
+    private static String compile(String input) throws CompileException {
+        final var segments = split(input);
+
+        var buffer = new StringBuilder();
+        for (String segment : segments) {
+            buffer.append(compileRootSegment(segment));
+        }
+
+        return buffer.toString();
+    }
+
+    private static ArrayList<String> split(String input) {
+        var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        final var length = input.length();
+        for (int i = 0; i < length; i++) {
+            final var c = input.charAt(i);
+            buffer.append(c);
+            if (c == ';') {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            }
+        }
+        advance(buffer, segments);
+        return segments;
+    }
+
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if(!buffer.isEmpty()) segments.add(buffer.toString());
+    }
+
+    private static String compileRootSegment(String input) throws CompileException {
+        throw new CompileException("Invalid root", input);
     }
 
     private static Set<Path> collectSources() {
