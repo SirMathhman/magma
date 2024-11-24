@@ -143,19 +143,29 @@ public class Main {
     private static Result<String, ApplicationError> compileWithImpls(List<String> newModifiers, String nameAndMaybeImplements) {
         final var implementsIndex = nameAndMaybeImplements.indexOf("implements ");
         if (implementsIndex == -1) {
-            return renderFunction(new Node()
+            final Node node = new Node()
                     .withStringList("modifiers", newModifiers)
                     .withString("name", nameAndMaybeImplements)
                     .withString("content", "")
-                    .withString("params", ""));
+                    .withString("params", "");
+            return renderFunction(node.mapStringList("modifiers", modifiers -> {
+                final var copy = new ArrayList<String>(modifiers);
+                copy.add("class");
+                return copy;
+            }).orElseGet(() -> node.withStringList("modifiers", Collections.singletonList("class"))));
         } else {
             final var name = nameAndMaybeImplements.substring(0, implementsIndex).strip();
             final var type = nameAndMaybeImplements.substring(implementsIndex + "implements ".length()).strip();
-            return renderFunction(new Node()
+            final Node node = new Node()
                     .withStringList("modifiers", newModifiers)
                     .withString("name", name)
                     .withString("content", "\n\timplements " + type + ";")
-                    .withString("params", ""));
+                    .withString("params", "");
+            return renderFunction(node.mapStringList("modifiers", modifiers -> {
+                final var copy = new ArrayList<String>(modifiers);
+                copy.add("class");
+                return copy;
+            }).orElseGet(() -> node.withStringList("modifiers", Collections.singletonList("class"))));
         }
     }
 
@@ -174,13 +184,7 @@ public class Main {
     }
 
     private static Result<String, ApplicationError> renderFunction(Node node) {
-        final var withModifiers = node.mapStringList("modifiers", modifiers -> {
-            final var copy = new ArrayList<String>(modifiers);
-            copy.add("class");
-            return copy;
-        }).orElseGet(() -> node.withStringList("modifiers", Collections.singletonList("class")));
-
-        final var joinedModifiers = withModifiers.findStringList("modifiers")
+        final var joinedModifiers = node.findStringList("modifiers")
                 .map(modifiers -> String.join(" ", modifiers) + " ")
                 .orElse("");
 
