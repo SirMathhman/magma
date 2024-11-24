@@ -73,6 +73,7 @@ public class Main {
     }
 
     private static String compileRootSegment(String input) throws CompileException {
+        if(input.startsWith("package ")) return "";
         throw new CompileException("Invalid root", input);
     }
 
