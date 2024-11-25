@@ -164,8 +164,16 @@ public class Main {
     }
 
     private static Option<Result<String, CompileError>> compileInterface(String rootSegment) {
-        if (rootSegment.contains("interface")) return new Some<>(new Ok<>("trait Temp {}"));
-        return new None<>();
+        final var keywordIndex = rootSegment.indexOf("interface");
+        if (keywordIndex == -1) return new None<>();
+
+        final var afterKeyword = rootSegment.substring(keywordIndex + "interface".length());
+        final var contentStart = afterKeyword.indexOf('{');
+        if(contentStart == -1) return new None<>();
+
+        final var name = afterKeyword.substring(0, contentStart).strip();
+
+        return new Some<>(new Ok<>("trait " + name + " {}"));
     }
 
     private static Option<Result<String, CompileError>> compileRecord(String rootSegment) {
