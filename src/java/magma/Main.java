@@ -97,6 +97,7 @@ public class Main {
     private static Result<String, CompileError> compileRoot(String root) {
         return split(root)
                 .stream()
+                .map(String::strip)
                 .map(Main::compileRootSegment)
                 .<Result<StringBuilder, CompileError>>reduce(new Ok<>(new StringBuilder()),
                         (current, next) -> current.and(() -> next).mapValue(tuple -> tuple.left().append(tuple.right())),
@@ -126,6 +127,9 @@ public class Main {
 
     private static Result<String, CompileError> compileRootSegment(String root) {
         if (root.startsWith("package ")) return new Ok<>("");
+        if (root.startsWith("import ")) return new Ok<>(root);
+        if (root.contains("record") || root.contains("class")) return new Ok<>("class def Temp() => {}");
+        if (root.contains("interface")) return new Ok<>("trait Temp {}");
         return new Err<>(new CompileError("Invalid root segment", root));
     }
 
