@@ -15,11 +15,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main {
 
@@ -119,13 +118,30 @@ public class Main {
         var buffer = new StringBuilder();
         var depth = 0;
         final var length = root.length();
-        for (int i = 0; i < length; i++) {
-            var c = root.charAt(i);
+        final var queue = IntStream.range(0, length)
+                .mapToObj(root::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        while (!queue.isEmpty()) {
+            final var c = queue.pop();
             buffer.append(c);
+
+            if (c == '\'') {
+                final var maybeEscape = queue.pop();
+                buffer.append(maybeEscape);
+
+                if (maybeEscape == '\\') {
+                    buffer.append(queue.pop());
+                }
+
+                buffer.append(queue.pop());
+                continue;
+            }
+
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
-            } else if(c == '}' && depth == 1) {
+            } else if (c == '}' && depth == 1) {
                 depth--;
                 advance(buffer, segments);
                 buffer = new StringBuilder();
@@ -225,18 +241,26 @@ public class Main {
         if (contentEnd == -1) return new None<>();
         final var content = withEnd.substring(0, contentEnd);
         return new Some<>(parseAndCompile(content, Main::compileStatement).mapValue(outputContent -> {
-            return "\n\tdef " + name + "() => {" + outputContent + "}";
+            return "\n\tdef " + name + "() => {" + outputContent + "\n\t}";
         }));
 
     }
 
     private static Result<String, CompileError> compileStatement(String statement) {
-        return compileReturn(statement).orElseGet(() -> new Err<>(new CompileError("Unknown statement", statement)));
+        return compileReturn(statement)
+                .or(() -> compileInvocation(statement))
+                .orElseGet(() -> new Err<>(new CompileError("Unknown statement", statement)));
+    }
+
+    private static Option<Result<String, CompileError>> compileInvocation(String statement) {
+        return statement.contains("(")
+                ? new Some<>(new Ok<>("todo();"))
+                : new None<>();
     }
 
     private static Option<Result<String, CompileError>> compileReturn(String statement) {
         return statement.startsWith("return ")
-                ? new Some<>(new Ok<>(statement))
+                ? new Some<>(new Ok<>("\n\t\t" + statement))
                 : new None<>();
     }
 

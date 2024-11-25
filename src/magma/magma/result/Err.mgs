@@ -1,4 +1,18 @@
 import java.util.function.Function;import java.util.function.Supplier;export class def Err<T, X>(error: X) => {
-	def mapValue() => {}
+	def mapValue() => {
+		return new Err<>(error);
+	}
+	def mapErr() => {
+		return new Err<>(mapper.apply(error));
+	}
+	def match() => {
+		return onErr.apply(error);
+	}
+	def and() => {
+		return new Err<>(error);
+	}
+	def flatMapValue() => {
+		return new Err<>(error);
+	}
 	impl Result<T, X>;
 }

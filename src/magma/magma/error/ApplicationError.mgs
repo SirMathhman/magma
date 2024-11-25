@@ -1,4 +1,6 @@
 export class def ApplicationError(error: Error) => {
-	def display() => {return error.display();}
+	def display() => {
+		return error.display();
+	}
 	impl Error;
 }

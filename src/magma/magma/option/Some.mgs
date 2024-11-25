@@ -1,4 +1,17 @@
 import java.util.function.Consumer;import java.util.function.Function;import java.util.function.Supplier;export class def Some<T>(value: T) => {
-	def map() => {}
+	def map() => {
+		return new Some<>(mapper.apply(value));
+	}
+	def orElseGet() => {
+		return value;
+	}
+	def ifPresent() => {todo();
+	}
+	def flatMapValue() => {
+		return mapper.apply(value);
+	}
+	def or() => {
+		return this;
+	}
 	impl Option<T>;
 }
