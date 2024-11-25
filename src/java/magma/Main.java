@@ -142,31 +142,27 @@ public class Main {
 
     private static Result<String, ApplicationError> compileWithImpls(List<String> newModifiers, String nameAndMaybeImplements) {
         final var implementsIndex = nameAndMaybeImplements.indexOf("implements ");
+        final var node1 = new Node()
+                .withStringList("modifiers", newModifiers)
+                .withString("name", nameAndMaybeImplements)
+                .withString("params", "");
         if (implementsIndex == -1) {
-            final Node node = new Node()
-                    .withStringList("modifiers", newModifiers)
-                    .withString("name", nameAndMaybeImplements)
-                    .withString("content", "")
-                    .withString("params", "");
-            return renderFunction(node.mapStringList("modifiers", modifiers -> {
-                final var copy = new ArrayList<String>(modifiers);
-                copy.add("class");
-                return copy;
-            }).orElseGet(() -> node.withStringList("modifiers", Collections.singletonList("class"))));
+            final Node node = node1.withString("content", "");
+            return renderFunction(withClassKeyword(node));
         } else {
             final var name = nameAndMaybeImplements.substring(0, implementsIndex).strip();
             final var type = nameAndMaybeImplements.substring(implementsIndex + "implements ".length()).strip();
-            final Node node = new Node()
-                    .withStringList("modifiers", newModifiers)
-                    .withString("name", name)
-                    .withString("content", "\n\timplements " + type + ";")
-                    .withString("params", "");
-            return renderFunction(node.mapStringList("modifiers", modifiers -> {
-                final var copy = new ArrayList<String>(modifiers);
-                copy.add("class");
-                return copy;
-            }).orElseGet(() -> node.withStringList("modifiers", Collections.singletonList("class"))));
+            final Node node = node1.withString("content", "\n\timplements " + type + ";");
+            return renderFunction(withClassKeyword(node));
         }
+    }
+
+    private static Node withClassKeyword(Node node) {
+        return node.mapStringList("modifiers", modifiers -> {
+            final var copy = new ArrayList<String>(modifiers);
+            copy.add("class");
+            return copy;
+        }).orElseGet(() -> node.withStringList("modifiers", Collections.singletonList("class")));
     }
 
     private static ArrayList<String> compileModifiers(String modifierString) {
