@@ -194,7 +194,7 @@ public class Main {
         final var content = withEnd.substring(0, contentEnd);
 
         return new Some<>(parseAndCompile(content, Main::compileInnerMember).flatMapValue(outputContent -> {
-            return generateFunction(newModifiers, name, paramsOut, outputContent  + impl);
+            return generateFunction(newModifiers, name, paramsOut, outputContent + impl);
         }));
     }
 
@@ -204,8 +204,14 @@ public class Main {
     }
 
     private static Option<Result<String, CompileError>> compileMethod(String innerMember) {
-        if(innerMember.contains("(")) return new Some<>(new Ok<>("\n\tdef temp() => {}"));
-        return new None<>();
+        final var paramStart = innerMember.indexOf("(");
+        if (paramStart == -1) return new None<>();
+
+        final var header = innerMember.substring(0, paramStart).strip();
+        final var nameSeparator = header.lastIndexOf(' ');
+        final var name = header.substring(nameSeparator + 1).strip();
+
+        return new Some<>(new Ok<>("\n\tdef " + name + "() => {}"));
     }
 
     private static List<String> parseModifiers(String modifiersString) {

@@ -1,4 +1,4 @@
 import java.util.function.Function;import java.util.function.Supplier;export class def Ok<T, X>(value: T) => {
-	def temp() => {}
+	def mapValue() => {}
 	impl Result<T, X>;
 }

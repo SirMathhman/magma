@@ -1,4 +1,4 @@
 import java.util.function.Function;import java.util.function.Supplier;export class def Err<T, X>(error: X) => {
-	def temp() => {}
+	def mapValue() => {}
 	impl Result<T, X>;
 }
