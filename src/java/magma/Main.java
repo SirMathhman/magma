@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -94,6 +95,36 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRoot(String root) {
-        return new Err<>(new CompileError("Invalid root", root));
+        return split(root)
+                .stream()
+                .map(Main::compileRootSegment)
+                .<Result<StringBuilder, CompileError>>reduce(new Ok<>(new StringBuilder()), (stringBuilderCompileErrorResult, stringCompileErrorErr) -> stringBuilderCompileErrorResult.and(() -> stringCompileErrorErr).mapValue(tuple -> {
+                    return tuple.left().append(tuple.right());
+                }), (_, next) -> next)
+                .mapValue(StringBuilder::toString);
+    }
+
+    private static ArrayList<String> split(String root) {
+        var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        final var length = root.length();
+        for (int i = 0; i < length; i++) {
+            var c = root.charAt(i);
+            buffer.append(c);
+            if (c == ';') {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            }
+        }
+        advance(buffer, segments);
+        return segments;
+    }
+
+    private static Err<String, CompileError> compileRootSegment(String root) {
+        return new Err<>(new CompileError("Invalid root segment", root));
+    }
+
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 }
