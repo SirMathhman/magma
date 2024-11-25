@@ -159,11 +159,20 @@ public class Main {
         if (contentEnd == -1) return new None<>();
 
         final var params = afterOpenParentheses.substring(0, contentEnd).strip();
-        final var separator = params.indexOf(' ');
-        final var paramType = params.substring(0, separator).strip();
-        final var paramName = params.substring(separator + 1).strip();
 
-        return new Some<>(generateFunction(newModifiers, name, paramName + ": " + paramType));
+        final String paramsOut;
+        final var separator = params.indexOf(' ');
+        if (separator == -1) {
+            paramsOut = "";
+        } else {
+            final var paramType = params.substring(0, separator).strip();
+            final var paramName = params.substring(separator + 1).strip();
+            paramsOut = paramName + ": " + paramType;
+        }
+
+
+
+        return new Some<>(generateFunction(newModifiers, name, paramsOut));
     }
 
     private static List<String> parseModifiers(String modifiersString) {
