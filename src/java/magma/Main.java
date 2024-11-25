@@ -24,10 +24,14 @@ public class Main {
                 final var separator = fileName.indexOf('.');
                 var name = fileName.substring(0, separator);
                 final var target = targetParent.resolve(name + ".mgs");
-                Files.writeString(target, input);
+                Files.writeString(target, compileRoot(input));
             }
-        } catch (IOException e) {
+        } catch (IOException | CompileException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static String compileRoot(String root) throws CompileException {
+        throw new CompileException("Invalid root", root);
     }
 }
