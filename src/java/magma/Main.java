@@ -185,16 +185,19 @@ public class Main {
         if (paramEnd == -1) return new None<>();
 
         final var params = afterOpenParentheses.substring(0, paramEnd).strip();
+        final var paramsOut = Arrays.stream(params.split(","))
+                .map(String::strip)
+                .filter(paramSegment -> !paramSegment.isEmpty())
+                .<Option<String>>map(paramSegment -> {
+                    final var separator = paramSegment.indexOf(' ');
+                    if (separator == -1) return new None<>();
 
-        final String paramsOut;
-        final var separator = params.indexOf(' ');
-        if (separator == -1) {
-            paramsOut = "";
-        } else {
-            final var paramType = params.substring(0, separator).strip();
-            final var paramName = params.substring(separator + 1).strip();
-            paramsOut = paramName + ": " + paramType;
-        }
+                    final var paramType = paramSegment.substring(0, separator).strip();
+                    final var paramName = paramSegment.substring(separator + 1).strip();
+                    return new Some<>(paramName + ": " + paramType);
+                })
+                .flatMap(Options::stream)
+                .collect(Collectors.joining(", "));
 
         final var afterParams = afterOpenParentheses.substring(paramEnd + 1);
         final var contentStart = afterParams.indexOf('{');

@@ -1,4 +1,4 @@
-export class def CompileError(message, String context: String) => {
+export class def CompileError(message: String, context: String) => {
 	def display() => {
 		return message + ": " + context;
 	}
