@@ -1,3 +1,4 @@
 export class def JavaError<X extends Exception>(error: X) => {
+	def temp() => {}
 	impl Error;
 }

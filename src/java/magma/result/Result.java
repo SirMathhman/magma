@@ -11,4 +11,6 @@ public interface Result<T, X> {
     <R> R match(Function<T, R> onOk, Function<X, R> onErr);
 
     <R> Result<Tuple<T, R>, X> and(Supplier<Result<R, X>> supplier);
+
+    <R> Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper);
 }

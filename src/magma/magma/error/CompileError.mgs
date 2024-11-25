@@ -1,3 +1,4 @@
 export class def CompileError(message, String context: String) => {
+	def temp() => {}
 	impl Error;
 }

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public class Main {
 
@@ -98,10 +99,14 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRoot(String root) {
+        return parseAndCompile(root, Main::compileRootSegment);
+    }
+
+    private static Result<String, CompileError> parseAndCompile(String root, Function<String, Result<String, CompileError>> mapper) {
         return split(root)
                 .stream()
                 .map(String::strip)
-                .map(Main::compileRootSegment)
+                .map(mapper)
                 .<Result<StringBuilder, CompileError>>reduce(new Ok<>(new StringBuilder()),
                         (current, next) -> current.and(() -> next).mapValue(tuple -> tuple.left().append(tuple.right())),
                         (_, next) -> next)
@@ -175,15 +180,32 @@ public class Main {
         if (contentStart == -1) return new None<>();
 
         final var maybeImplements = afterParams.substring(0, contentStart).strip();
-        String content;
+        String impl;
         if (maybeImplements.startsWith("implements ")) {
             final var traitName = maybeImplements.substring("implements ".length());
-            content = "\n\timpl " + traitName + ";";
+            impl = "\n\timpl " + traitName + ";";
         } else {
-            content = "";
+            impl = "";
         }
 
-        return new Some<>(generateFunction(newModifiers, name, paramsOut, content));
+        final var withEnd = afterParams.substring(contentStart + 1).strip();
+        final var contentEnd = withEnd.lastIndexOf('}');
+        if (contentEnd == -1) return new None<>();
+        final var content = withEnd.substring(0, contentEnd);
+
+        return new Some<>(parseAndCompile(content, Main::compileInnerMember).flatMapValue(outputContent -> {
+            return generateFunction(newModifiers, name, paramsOut, outputContent  + impl);
+        }));
+    }
+
+    private static Result<String, CompileError> compileInnerMember(String innerMember) {
+        return compileMethod(innerMember)
+                .orElseGet(() -> new Err<>(new CompileError("Unknown inner member", innerMember)));
+    }
+
+    private static Option<Result<String, CompileError>> compileMethod(String innerMember) {
+        if(innerMember.contains("(")) return new Some<>(new Ok<>("\n\tdef temp() => {}"));
+        return new None<>();
     }
 
     private static List<String> parseModifiers(String modifiersString) {
