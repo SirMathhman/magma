@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 public class Main {
 
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
+    public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "magma");
 
     public static void main(String[] args) {
         extracted().ifPresent(error -> System.err.println(error.display()));
@@ -29,39 +30,42 @@ public class Main {
         }
     }
 
-    private static Option<ApplicationError> compile(Path file) {
-        final String input;
-        try {
-            input = Files.readString(file);
-        } catch (IOException e) {
-            return new Some<>(new ApplicationError(new JavaError<>(e)));
-        }
+    private static Option<ApplicationError> compile(Path path) {
+        return readString(path).mapValue(input -> {
+            final var relativized = Main.SOURCE_DIRECTORY.relativize(path);
+            final var parent = relativized.getParent();
 
-        final var relativized = Main.SOURCE_DIRECTORY.relativize(file);
-        final var parent = relativized.getParent();
-        final var targetDirectory = Paths.get(".", "src", "magma");
-        final var targetParent = targetDirectory.resolve(parent);
-        if (!Files.exists(targetParent)) {
-            try {
-                Files.createDirectories(targetParent);
-            } catch (IOException e) {
-                return new Some<>(new ApplicationError(new JavaError<>(e)));
+            final var targetParent = TARGET_DIRECTORY.resolve(parent);
+            if (!Files.exists(targetParent)) {
+                try {
+                    Files.createDirectories(targetParent);
+                } catch (IOException e) {
+                    return new Some<>(new ApplicationError(new JavaError<>(e)));
+                }
             }
-        }
 
-        final var fileName = file.getFileName().toString();
-        final var separator = fileName.indexOf('.');
-        var name = fileName.substring(0, separator);
-        final var target = targetParent.resolve(name + ".mgs");
+            final var fileName = path.getFileName().toString();
+            final var separator = fileName.indexOf('.');
+            var name = fileName.substring(0, separator);
+            final var target = targetParent.resolve(name + ".mgs");
 
-        return compileRoot(input).mapErr(ApplicationError::new).<Option<ApplicationError>>mapValue(output -> {
-            try {
-                Files.writeString(target, output);
-                return new None<>();
-            } catch (IOException e) {
-                return new Some<>(new ApplicationError(new JavaError<>(e)));
-            }
+            return compileRoot(input).mapErr(ApplicationError::new).<Option<ApplicationError>>mapValue(output -> {
+                try {
+                    Files.writeString(target, output);
+                    return new None<>();
+                } catch (IOException e) {
+                    return new Some<>(new ApplicationError(new JavaError<>(e)));
+                }
+            }).match(value -> value, Some::new);
         }).match(value -> value, Some::new);
+    }
+
+    private static Result<String, ApplicationError> readString(Path path) {
+        try {
+            return new Ok<>(Files.readString(path));
+        } catch (IOException e) {
+            return new Err<>(new ApplicationError(new JavaError<>(e)));
+        }
     }
 
     private static Result<String, CompileError> compileRoot(String root) {
