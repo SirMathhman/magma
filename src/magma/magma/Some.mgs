@@ -1,3 +1,0 @@
-import java.util.function.Function;import java.util.function.Supplier;export class  def Some<T>(T value)() => {
-	implements Option<T>;
-}

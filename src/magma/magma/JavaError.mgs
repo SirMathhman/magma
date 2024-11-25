@@ -1,3 +1,0 @@
-export class  def JavaError(Exception exception)() => {
-	implements Error;
-}

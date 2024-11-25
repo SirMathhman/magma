@@ -1,3 +1,0 @@
-export class  def ApplicationError(Option<String> message, Option<Error> cause)() => {
-	implements Error;
-}
