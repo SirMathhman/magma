@@ -167,18 +167,23 @@ public class Main {
         final var keywordIndex = rootSegment.indexOf("interface");
         if (keywordIndex == -1) return new None<>();
 
+        final var modifiersString = rootSegment.substring(0, keywordIndex).strip();
+        final var modifiers = parseModifiers(modifiersString);
+
         final var afterKeyword = rootSegment.substring(keywordIndex + "interface".length());
         final var contentStart = afterKeyword.indexOf('{');
-        if(contentStart == -1) return new None<>();
+        if (contentStart == -1) return new None<>();
 
         final var name = afterKeyword.substring(0, contentStart).strip();
         final var withEnd = afterKeyword.substring(contentStart + 1).strip();
         final var contentEnd = withEnd.lastIndexOf('}');
-        if(contentEnd == -1) return new None<>();
+        if (contentEnd == -1) return new None<>();
 
         final var content = withEnd.substring(0, contentEnd);
-        return new Some<>(parseAndCompile(content, Main::compileInnerMember)
-                .mapValue(outputContent -> "trait " + name + " {" + outputContent + "\n}"));
+        return new Some<>(parseAndCompile(content, Main::compileInnerMember).mapValue(outputContent -> {
+            final var outputModifiers = modifiers.isEmpty() ? "" : String.join(" ", modifiers) + " ";
+            return outputModifiers + "trait " + name + " {" + outputContent + "\n}";
+        }));
     }
 
     private static Option<Result<String, CompileError>> compileRecord(String rootSegment) {
@@ -186,7 +191,7 @@ public class Main {
         if (keywordIndex == -1) return new None<>();
 
         final var modifiersString = rootSegment.substring(0, keywordIndex);
-        final var newModifiers = parseModifiers(modifiersString);
+        final var newModifiers = parseClassModifiers(modifiersString);
 
         final var afterKeyword = rootSegment.substring(keywordIndex + "record ".length());
         final var paramStart = afterKeyword.indexOf('(');
@@ -250,7 +255,7 @@ public class Main {
         final var beforeName = header.substring(0, nameSeparator).strip();
         final var typeSeparator = beforeName.lastIndexOf(' ');
         final String type;
-        if(typeSeparator == -1) {
+        if (typeSeparator == -1) {
             type = beforeName;
         } else {
             type = beforeName.substring(typeSeparator + 1).strip();
@@ -294,7 +299,13 @@ public class Main {
                 : new None<>();
     }
 
-    private static List<String> parseModifiers(String modifiersString) {
+    private static List<String> parseClassModifiers(String modifiersString) {
+        final var newModifiers = new ArrayList<>(parseModifiers(modifiersString));
+        newModifiers.add("class");
+        return newModifiers;
+    }
+
+    private static ArrayList<String> parseModifiers(String modifiersString) {
         final var modifiersArray = modifiersString.strip().split(" ");
         final var oldModifiers = Arrays.stream(modifiersArray)
                 .map(String::strip)
@@ -305,7 +316,6 @@ public class Main {
         if (oldModifiers.contains("public")) {
             newModifiers.add("export");
         }
-        newModifiers.add("class");
         return newModifiers;
     }
 

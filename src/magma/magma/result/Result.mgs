@@ -1,4 +1,4 @@
-import java.util.function.Function;import java.util.function.Supplier;trait Result<T, X> {
+import java.util.function.Function;import java.util.function.Supplier;export trait Result<T, X> {
 	def mapValue(): X>;
 	def mapErr(): R>;
 	def match(): R;
