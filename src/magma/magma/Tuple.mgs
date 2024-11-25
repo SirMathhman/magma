@@ -1,2 +1,2 @@
-export class def Tuple<A, B>(A left, B right) () => {
+export class  def Tuple<A, B>(A left, B right) () => {
 }
