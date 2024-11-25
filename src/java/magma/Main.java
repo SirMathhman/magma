@@ -98,29 +98,34 @@ public class Main {
         return split(root)
                 .stream()
                 .map(Main::compileRootSegment)
-                .<Result<StringBuilder, CompileError>>reduce(new Ok<>(new StringBuilder()), (stringBuilderCompileErrorResult, stringCompileErrorErr) -> stringBuilderCompileErrorResult.and(() -> stringCompileErrorErr).mapValue(tuple -> {
-                    return tuple.left().append(tuple.right());
-                }), (_, next) -> next)
+                .<Result<StringBuilder, CompileError>>reduce(new Ok<>(new StringBuilder()),
+                        (current, next) -> current.and(() -> next).mapValue(tuple -> tuple.left().append(tuple.right())),
+                        (_, next) -> next)
                 .mapValue(StringBuilder::toString);
     }
 
     private static ArrayList<String> split(String root) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
+        var depth = 0;
         final var length = root.length();
         for (int i = 0; i < length; i++) {
             var c = root.charAt(i);
             buffer.append(c);
-            if (c == ';') {
+            if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
             }
         }
         advance(buffer, segments);
         return segments;
     }
 
-    private static Err<String, CompileError> compileRootSegment(String root) {
+    private static Result<String, CompileError> compileRootSegment(String root) {
+        if (root.startsWith("package ")) return new Ok<>("");
         return new Err<>(new CompileError("Invalid root segment", root));
     }
 
