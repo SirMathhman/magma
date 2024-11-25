@@ -1,1 +1,3 @@
-trait Error {}
+trait Error {
+	def display(): String;
+}

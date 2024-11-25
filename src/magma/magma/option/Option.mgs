@@ -1,1 +1,7 @@
-import java.util.function.Consumer;import java.util.function.Function;import java.util.function.Supplier;trait Option<T> {}
+import java.util.function.Consumer;import java.util.function.Function;import java.util.function.Supplier;trait Option<T> {
+	def map(): Option<R>;
+	def orElseGet(): T;
+	def ifPresent(): void;
+	def flatMapValue(): Option<R>;
+	def or(): Option<T>;
+}

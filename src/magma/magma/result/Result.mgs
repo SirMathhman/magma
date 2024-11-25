@@ -1,1 +1,7 @@
-import java.util.function.Function;import java.util.function.Supplier;trait Result<T, X> {}
+import java.util.function.Function;import java.util.function.Supplier;trait Result<T, X> {
+	def mapValue(): X>;
+	def mapErr(): R>;
+	def match(): R;
+	def and(): X>;
+	def flatMapValue(): X>;
+}

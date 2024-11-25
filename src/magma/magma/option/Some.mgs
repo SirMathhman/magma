@@ -1,16 +1,16 @@
 import java.util.function.Consumer;import java.util.function.Function;import java.util.function.Supplier;export class def Some<T>(value: T) => {
-	def map() => {
+	def map(): Option<R> => {
 		return new Some<>(mapper.apply(value));
 	}
-	def orElseGet() => {
+	def orElseGet(): T => {
 		return value;
 	}
-	def ifPresent() => {todo();
+	def ifPresent(): void => {todo();
 	}
-	def flatMapValue() => {
+	def flatMapValue(): Option<R> => {
 		return mapper.apply(value);
 	}
-	def or() => {
+	def or(): Option<T> => {
 		return this;
 	}
 	impl Option<T>;

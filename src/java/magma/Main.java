@@ -172,8 +172,13 @@ public class Main {
         if(contentStart == -1) return new None<>();
 
         final var name = afterKeyword.substring(0, contentStart).strip();
+        final var withEnd = afterKeyword.substring(contentStart + 1).strip();
+        final var contentEnd = withEnd.lastIndexOf('}');
+        if(contentEnd == -1) return new None<>();
 
-        return new Some<>(new Ok<>("trait " + name + " {}"));
+        final var content = withEnd.substring(0, contentEnd);
+        return new Some<>(parseAndCompile(content, Main::compileInnerMember)
+                .mapValue(outputContent -> "trait " + name + " {" + outputContent + "\n}"));
     }
 
     private static Option<Result<String, CompileError>> compileRecord(String rootSegment) {
@@ -241,18 +246,32 @@ public class Main {
 
         final var header = innerMember.substring(0, paramStart).strip();
         final var nameSeparator = header.lastIndexOf(' ');
+
+        final var beforeName = header.substring(0, nameSeparator).strip();
+        final var typeSeparator = beforeName.lastIndexOf(' ');
+        final String type;
+        if(typeSeparator == -1) {
+            type = beforeName;
+        } else {
+            type = beforeName.substring(typeSeparator + 1).strip();
+        }
+
         final var name = header.substring(nameSeparator + 1).strip();
 
         final var afterHeader = innerMember.substring(paramStart + 1).strip();
         final var contentStart = afterHeader.indexOf('{');
-        if (contentStart == -1) return new None<>();
+        if (contentStart == -1) {
+            return new Some<>(new Ok<>("\n\tdef " + name + "(): " + type + ";"));
+        }
         final var withEnd = afterHeader.substring(contentStart + 1).strip();
 
         final var contentEnd = withEnd.lastIndexOf('}');
         if (contentEnd == -1) return new None<>();
         final var content = withEnd.substring(0, contentEnd);
         return new Some<>(parseAndCompile(content, Main::compileStatement).mapValue(outputContent -> {
-            return "\n\tdef " + name + "() => {" + outputContent + "\n\t}";
+            return "\n\tdef " + name + "(): " +
+                    type +
+                    " => {" + outputContent + "\n\t}";
         }));
 
     }
