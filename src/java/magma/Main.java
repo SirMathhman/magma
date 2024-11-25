@@ -16,10 +16,7 @@ public class Main {
 
     private static Option<ApplicationError> extracted() {
         try (var stream = Files.walk(SOURCE_DIRECTORY)) {
-            final var files = stream.filter(file -> file.getFileName().toString().endsWith(".java"))
-                    .toList();
-
-            return files.stream()
+            return stream.filter(file -> file.getFileName().toString().endsWith(".java"))
                     .map(Main::compile)
                     .flatMap(Options::stream)
                     .findFirst()
@@ -30,34 +27,51 @@ public class Main {
         }
     }
 
-    private static Option<ApplicationError> compile(Path path) {
-        return readString(path).mapValue(input -> {
-            final var relativized = Main.SOURCE_DIRECTORY.relativize(path);
-            final var parent = relativized.getParent();
+    private static Option<ApplicationError> compile(Path sourceFile) {
+        return readString(sourceFile)
+                .mapValue(input -> compileWithInput(sourceFile, input))
+                .match(value -> value, Some::new);
+    }
 
-            final var targetParent = TARGET_DIRECTORY.resolve(parent);
-            if (!Files.exists(targetParent)) {
-                try {
-                    Files.createDirectories(targetParent);
-                } catch (IOException e) {
-                    return new Some<>(new ApplicationError(new JavaError<>(e)));
-                }
-            }
+    private static Option<ApplicationError> compileWithInput(Path sourceFile, String input) {
+        final var relativized = Main.SOURCE_DIRECTORY.relativize(sourceFile);
+        final var parent = relativized.getParent();
 
-            final var fileName = path.getFileName().toString();
-            final var separator = fileName.indexOf('.');
-            var name = fileName.substring(0, separator);
-            final var target = targetParent.resolve(name + ".mgs");
+        final var targetParent = TARGET_DIRECTORY.resolve(parent);
+        return createDirectories(targetParent)
+                .or(() -> compileWithTargetParent(sourceFile, targetParent, input));
+    }
 
-            return compileRoot(input).mapErr(ApplicationError::new).<Option<ApplicationError>>mapValue(output -> {
-                try {
-                    Files.writeString(target, output);
-                    return new None<>();
-                } catch (IOException e) {
-                    return new Some<>(new ApplicationError(new JavaError<>(e)));
-                }
-            }).match(value -> value, Some::new);
-        }).match(value -> value, Some::new);
+    private static Option<ApplicationError> compileWithTargetParent(Path sourceFile, Path targetParent, String input) {
+        final var fileName = sourceFile.getFileName().toString();
+        final var separator = fileName.indexOf('.');
+        var name = fileName.substring(0, separator);
+        final var target = targetParent.resolve(name + ".mgs");
+
+        return compileRoot(input)
+                .mapErr(ApplicationError::new)
+                .mapValue(output -> writeOutput(target, output))
+                .match(value -> value, Some::new);
+    }
+
+    private static Option<ApplicationError> writeOutput(Path file, String output) {
+        try {
+            Files.writeString(file, output);
+            return new None<>();
+        } catch (IOException e) {
+            return new Some<>(new ApplicationError(new JavaError<>(e)));
+        }
+    }
+
+    private static Option<ApplicationError> createDirectories(Path directories) {
+        if (Files.exists(directories)) return new None<>();
+
+        try {
+            Files.createDirectories(directories);
+            return new None<>();
+        } catch (IOException e) {
+            return new Some<>(new ApplicationError(new JavaError<>(e)));
+        }
     }
 
     private static Result<String, ApplicationError> readString(Path path) {

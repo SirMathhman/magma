@@ -10,4 +10,8 @@ public interface Option<T> {
     T orElseGet(Supplier<T> other);
 
     void ifPresent(Consumer<T> consumer);
+
+    <R> Option<R> flatMapValue(Function<T, Option<R>> mapper);
+
+    Option<T> or(Supplier<Option<T>> supplier);
 }
