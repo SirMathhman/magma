@@ -1,1 +1,1 @@
-class def Temp() => {}
+export class def Temp() => {}

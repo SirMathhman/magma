@@ -16,6 +16,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class Main {
 
@@ -125,12 +128,58 @@ public class Main {
         return segments;
     }
 
-    private static Result<String, CompileError> compileRootSegment(String root) {
-        if (root.startsWith("package ")) return new Ok<>("");
-        if (root.startsWith("import ")) return new Ok<>(root);
-        if (root.contains("record") || root.contains("class")) return new Ok<>("class def Temp() => {}");
-        if (root.contains("interface")) return new Ok<>("trait Temp {}");
-        return new Err<>(new CompileError("Invalid root segment", root));
+    private static Result<String, CompileError> compileRootSegment(String rootSegment) {
+        return compilePackage(rootSegment)
+                .or(() -> compileImport(rootSegment))
+                .or(() -> compileClass(rootSegment))
+                .or(() -> compileRecord(rootSegment))
+                .or(() -> compileInterface(rootSegment))
+                .orElseGet(() -> new Err<>(new CompileError("Invalid root segment", rootSegment)));
+    }
+
+    private static Option<Result<String, CompileError>> compileInterface(String rootSegment) {
+        if (rootSegment.contains("interface")) return new Some<>(new Ok<>("trait Temp {}"));
+        return new None<>();
+    }
+
+    private static Option<Result<String, CompileError>> compileRecord(String rootSegment) {
+        final var keywordIndex = rootSegment.indexOf("record");
+        if (keywordIndex == -1) return new None<>();
+
+        final var modifiersArray = rootSegment.substring(0, keywordIndex).strip().split(" ");
+        final var oldModifiers = Arrays.stream(modifiersArray)
+                .map(String::strip)
+                .filter(value -> !value.isEmpty())
+                .toList();
+
+        var newModifiers = new ArrayList<String>();
+        if (oldModifiers.contains("public")) {
+            newModifiers.add("export");
+        }
+        newModifiers.add("class");
+
+        return new Some<>(generateFunction(newModifiers));
+    }
+
+    private static Option<Result<String, CompileError>> compileClass(String rootSegment) {
+        if (rootSegment.contains("class")) {
+            return new Some<>(generateFunction(Collections.singletonList("class")));
+        } else {
+            return new None<>();
+        }
+    }
+
+    private static Result<String, CompileError> generateFunction(List<String> modifiers) {
+        return new Ok<>(String.join(" ", modifiers) + " def Temp() => {}");
+    }
+
+    private static Option<Result<String, CompileError>> compileImport(String rootSegment) {
+        if (rootSegment.startsWith("import ")) return new Some<>(new Ok<>(rootSegment));
+        return new None<>();
+    }
+
+    private static Option<Result<String, CompileError>> compilePackage(String rootSegment) {
+        return rootSegment.startsWith("package ") ? new Some<>(new Ok<>("")) : new None<>();
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {

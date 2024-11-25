@@ -1,4 +1,1 @@
-export class def ApplicationError(error : Error) => {
-    def display : String => error.display();
-    impl Error;
-}
+export class def Temp() => {}
