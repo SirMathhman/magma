@@ -144,15 +144,17 @@ public class Main {
         final var implementsIndex = nameAndMaybeImplements.indexOf("implements ");
         final var node1 = new Node()
                 .withStringList("modifiers", newModifiers)
-                .withString("name", nameAndMaybeImplements)
-                .withString("params", "");
+                .withString("params", "")
+                .withString("name", nameAndMaybeImplements);
         if (implementsIndex == -1) {
             final Node node = node1.withString("content", "");
             return renderFunction(withClassKeyword(node));
         } else {
             final var name = nameAndMaybeImplements.substring(0, implementsIndex).strip();
             final var type = nameAndMaybeImplements.substring(implementsIndex + "implements ".length()).strip();
-            final Node node = node1.withString("content", "\n\timplements " + type + ";");
+            final Node node = node1
+                    .withString("name", name)
+                    .withString("content", "\n\timplements " + type + ";");
             return renderFunction(withClassKeyword(node));
         }
     }

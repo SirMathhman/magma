@@ -1,3 +1,3 @@
-import java.util.function.Function;import java.util.function.Supplier;export class  def Err<T, X>(X error) implements Result<T, X> () => {
+import java.util.function.Function;import java.util.function.Supplier;export class  def Err<T, X>(X error)() => {
 	implements Result<T, X>;
 }
