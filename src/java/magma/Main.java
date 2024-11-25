@@ -106,6 +106,7 @@ public class Main {
         return split(root)
                 .stream()
                 .map(String::strip)
+                .filter(value -> !value.isEmpty())
                 .map(mapper)
                 .<Result<StringBuilder, CompileError>>reduce(new Ok<>(new StringBuilder()),
                         (current, next) -> current.and(() -> next).mapValue(tuple -> tuple.left().append(tuple.right())),
@@ -122,6 +123,10 @@ public class Main {
             var c = root.charAt(i);
             buffer.append(c);
             if (c == ';' && depth == 0) {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            } else if(c == '}' && depth == 1) {
+                depth--;
                 advance(buffer, segments);
                 buffer = new StringBuilder();
             } else {
@@ -211,7 +216,28 @@ public class Main {
         final var nameSeparator = header.lastIndexOf(' ');
         final var name = header.substring(nameSeparator + 1).strip();
 
-        return new Some<>(new Ok<>("\n\tdef " + name + "() => {}"));
+        final var afterHeader = innerMember.substring(paramStart + 1).strip();
+        final var contentStart = afterHeader.indexOf('{');
+        if (contentStart == -1) return new None<>();
+        final var withEnd = afterHeader.substring(contentStart + 1).strip();
+
+        final var contentEnd = withEnd.lastIndexOf('}');
+        if (contentEnd == -1) return new None<>();
+        final var content = withEnd.substring(0, contentEnd);
+        return new Some<>(parseAndCompile(content, Main::compileStatement).mapValue(outputContent -> {
+            return "\n\tdef " + name + "() => {" + outputContent + "}";
+        }));
+
+    }
+
+    private static Result<String, CompileError> compileStatement(String statement) {
+        return compileReturn(statement).orElseGet(() -> new Err<>(new CompileError("Unknown statement", statement)));
+    }
+
+    private static Option<Result<String, CompileError>> compileReturn(String statement) {
+        return statement.startsWith("return ")
+                ? new Some<>(new Ok<>(statement))
+                : new None<>();
     }
 
     private static List<String> parseModifiers(String modifiersString) {

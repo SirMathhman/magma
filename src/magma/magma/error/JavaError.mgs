@@ -1,4 +1,4 @@
 export class def JavaError<X extends Exception>(error: X) => {
-	def display() => {}
+	def display() => {return error.getMessage();}
 	impl Error;
 }
