@@ -150,15 +150,15 @@ public class Main {
         final var newModifiers = parseModifiers(modifiersString);
 
         final var afterKeyword = rootSegment.substring(keywordIndex + "record ".length());
-        final var contentStart = afterKeyword.indexOf('(');
-        if (contentStart == -1) return new None<>();
+        final var paramStart = afterKeyword.indexOf('(');
+        if (paramStart == -1) return new None<>();
 
-        final var name = afterKeyword.substring(0, contentStart).strip();
-        final var afterOpenParentheses = afterKeyword.substring(contentStart + 1).strip();
-        final var contentEnd = afterOpenParentheses.indexOf(')');
-        if (contentEnd == -1) return new None<>();
+        final var name = afterKeyword.substring(0, paramStart).strip();
+        final var afterOpenParentheses = afterKeyword.substring(paramStart + 1).strip();
+        final var paramEnd = afterOpenParentheses.indexOf(')');
+        if (paramEnd == -1) return new None<>();
 
-        final var params = afterOpenParentheses.substring(0, contentEnd).strip();
+        final var params = afterOpenParentheses.substring(0, paramEnd).strip();
 
         final String paramsOut;
         final var separator = params.indexOf(' ');
@@ -170,9 +170,20 @@ public class Main {
             paramsOut = paramName + ": " + paramType;
         }
 
+        final var afterParams = afterOpenParentheses.substring(paramEnd + 1);
+        final var contentStart = afterParams.indexOf('{');
+        if (contentStart == -1) return new None<>();
 
+        final var maybeImplements = afterParams.substring(0, contentStart).strip();
+        String content;
+        if (maybeImplements.startsWith("implements ")) {
+            final var traitName = maybeImplements.substring("implements ".length());
+            content = "\n\timpl " + traitName + ";";
+        } else {
+            content = "";
+        }
 
-        return new Some<>(generateFunction(newModifiers, name, paramsOut));
+        return new Some<>(generateFunction(newModifiers, name, paramsOut, content));
     }
 
     private static List<String> parseModifiers(String modifiersString) {
@@ -192,17 +203,19 @@ public class Main {
 
     private static Option<Result<String, CompileError>> compileClass(String rootSegment) {
         if (rootSegment.contains("class")) {
-            return new Some<>(generateFunction(Collections.singletonList("class"), "Temp", ""));
+            return new Some<>(generateFunction(Collections.singletonList("class"), "Temp", "", ""));
         } else {
             return new None<>();
         }
     }
 
-    private static Result<String, CompileError> generateFunction(List<String> modifiers, String name, String params) {
+    private static Result<String, CompileError> generateFunction(List<String> modifiers, String name, String params, String content) {
         final var joined = String.join(" ", modifiers);
         return new Ok<>(joined + " def " + name + "(" +
                 params +
-                ") => {}");
+                ") => {" +
+                content +
+                "\n}");
     }
 
     private static Option<Result<String, CompileError>> compileImport(String rootSegment) {

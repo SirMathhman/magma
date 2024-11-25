@@ -1,1 +1,3 @@
-import java.util.function.Function;import java.util.function.Supplier;export class def Err<T, X>(error: X) => {}
+import java.util.function.Function;import java.util.function.Supplier;export class def Err<T, X>(error: X) => {
+	impl Result<T, X>;
+}
