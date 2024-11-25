@@ -151,9 +151,19 @@ public class Main {
 
         final var afterKeyword = rootSegment.substring(keywordIndex + "record ".length());
         final var contentStart = afterKeyword.indexOf('(');
-        final var name = afterKeyword.substring(0, contentStart).strip();
+        if (contentStart == -1) return new None<>();
 
-        return new Some<>(generateFunction(newModifiers, name));
+        final var name = afterKeyword.substring(0, contentStart).strip();
+        final var afterOpenParentheses = afterKeyword.substring(contentStart + 1).strip();
+        final var contentEnd = afterOpenParentheses.indexOf(')');
+        if (contentEnd == -1) return new None<>();
+
+        final var params = afterOpenParentheses.substring(0, contentEnd).strip();
+        final var separator = params.indexOf(' ');
+        final var paramType = params.substring(0, separator).strip();
+        final var paramName = params.substring(separator + 1).strip();
+
+        return new Some<>(generateFunction(newModifiers, name, paramName + ": " + paramType));
     }
 
     private static List<String> parseModifiers(String modifiersString) {
@@ -173,15 +183,17 @@ public class Main {
 
     private static Option<Result<String, CompileError>> compileClass(String rootSegment) {
         if (rootSegment.contains("class")) {
-            return new Some<>(generateFunction(Collections.singletonList("class"), "Temp"));
+            return new Some<>(generateFunction(Collections.singletonList("class"), "Temp", ""));
         } else {
             return new None<>();
         }
     }
 
-    private static Result<String, CompileError> generateFunction(List<String> modifiers, String name) {
+    private static Result<String, CompileError> generateFunction(List<String> modifiers, String name, String params) {
         final var joined = String.join(" ", modifiers);
-        return new Ok<>(joined + " def " + name + "() => {}");
+        return new Ok<>(joined + " def " + name + "(" +
+                params +
+                ") => {}");
     }
 
     private static Option<Result<String, CompileError>> compileImport(String rootSegment) {

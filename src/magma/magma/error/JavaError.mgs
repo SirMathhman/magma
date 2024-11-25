@@ -1,1 +1,1 @@
-export class def JavaError<X extends Exception>() => {}
+export class def JavaError<X extends Exception>(error: X) => {}

@@ -1,1 +1,1 @@
-export class def CompileError() => {}
+export class def CompileError(message, String context: String) => {}

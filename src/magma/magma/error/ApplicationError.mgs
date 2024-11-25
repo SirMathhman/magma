@@ -1,1 +1,1 @@
-export class def ApplicationError() => {}
+export class def ApplicationError(error: Error) => {}
