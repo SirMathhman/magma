@@ -143,10 +143,21 @@ public class Main {
     }
 
     private static Option<Result<String, CompileError>> compileRecord(String rootSegment) {
-        final var keywordIndex = rootSegment.indexOf("record");
+        final var keywordIndex = rootSegment.indexOf("record ");
         if (keywordIndex == -1) return new None<>();
 
-        final var modifiersArray = rootSegment.substring(0, keywordIndex).strip().split(" ");
+        final var modifiersString = rootSegment.substring(0, keywordIndex);
+        final var newModifiers = parseModifiers(modifiersString);
+
+        final var afterKeyword = rootSegment.substring(keywordIndex + "record ".length());
+        final var contentStart = afterKeyword.indexOf('(');
+        final var name = afterKeyword.substring(0, contentStart).strip();
+
+        return new Some<>(generateFunction(newModifiers, name));
+    }
+
+    private static List<String> parseModifiers(String modifiersString) {
+        final var modifiersArray = modifiersString.strip().split(" ");
         final var oldModifiers = Arrays.stream(modifiersArray)
                 .map(String::strip)
                 .filter(value -> !value.isEmpty())
@@ -157,20 +168,20 @@ public class Main {
             newModifiers.add("export");
         }
         newModifiers.add("class");
-
-        return new Some<>(generateFunction(newModifiers));
+        return newModifiers;
     }
 
     private static Option<Result<String, CompileError>> compileClass(String rootSegment) {
         if (rootSegment.contains("class")) {
-            return new Some<>(generateFunction(Collections.singletonList("class")));
+            return new Some<>(generateFunction(Collections.singletonList("class"), "Temp"));
         } else {
             return new None<>();
         }
     }
 
-    private static Result<String, CompileError> generateFunction(List<String> modifiers) {
-        return new Ok<>(String.join(" ", modifiers) + " def Temp() => {}");
+    private static Result<String, CompileError> generateFunction(List<String> modifiers, String name) {
+        final var joined = String.join(" ", modifiers);
+        return new Ok<>(joined + " def " + name + "() => {}");
     }
 
     private static Option<Result<String, CompileError>> compileImport(String rootSegment) {
