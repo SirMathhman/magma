@@ -15,7 +15,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -239,13 +242,7 @@ public class Main {
         if (contentStart == -1) return new None<>();
 
         final var maybeImplements = afterParams.substring(0, contentStart).strip();
-        String impl;
-        if (maybeImplements.startsWith("implements ")) {
-            final var traitName = maybeImplements.substring("implements ".length());
-            impl = renderImpl(traitName);
-        } else {
-            impl = "";
-        }
+        final var impl = findImpl(maybeImplements);
 
         final var withEnd = afterParams.substring(contentStart + 1).strip();
         final var contentEnd = withEnd.lastIndexOf('}');
@@ -255,6 +252,13 @@ public class Main {
         return new Some<>(parseAndCompile(content, Main::compileInnerMember).flatMapValue(outputContent -> {
             return generateFunction(newModifiers, name, paramsOut, outputContent + impl);
         }));
+    }
+
+    private static String findImpl(String maybeImplements) {
+        if (!maybeImplements.startsWith("implements ")) return "";
+
+        final var traitName = maybeImplements.substring("implements ".length());
+        return renderImpl(traitName);
     }
 
     private static Result<String, CompileError> compileInnerMember(String innerMember) {
@@ -363,21 +367,16 @@ public class Main {
     }
 
     private static Node getNode(String nameAndMaybeImpl) {
-        final String name;
-        final String impl;
         final var implementsIndex = nameAndMaybeImpl.indexOf("implements");
         if (implementsIndex == -1) {
-            name = nameAndMaybeImpl;
-            impl = "";
-        } else {
-            name = nameAndMaybeImpl.substring(0, implementsIndex).strip();
-            final var slice = nameAndMaybeImpl.substring(implementsIndex + "implements".length()).strip();
-            impl = renderImpl(slice);
+            return new Node().withString("name", nameAndMaybeImpl);
         }
 
+        final String name = nameAndMaybeImpl.substring(0, implementsIndex).strip();
+        final var slice = nameAndMaybeImpl.substring(implementsIndex + "implements".length()).strip();
         return new Node()
                 .withString("name", name)
-                .withString("impl", impl);
+                .withString("impl", renderImpl(slice));
     }
 
     private static String renderImpl(String slice) {
