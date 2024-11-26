@@ -351,18 +351,24 @@ public class Main {
     }
 
     private static Option<Result<String, CompileError>> compileClass(String rootSegment) {
-        final var keywordIndex = rootSegment.indexOf("class");
-        if (keywordIndex == -1) return new None<>();
-        final var beforeKeyword = rootSegment.substring(0, keywordIndex).strip();
-        final var modifiers = parseClassModifiersToNode(beforeKeyword);
+        return new Some<>(createClassRule()
+                .parse(rootSegment)
+                .mapValue(value -> value.mapString("content", content -> content + value.findString("impl").orElse("")).orElse(value))
+                .flatMapValue(Main::generateFunction));
+    }
 
-        final var afterKeyword = rootSegment.substring(keywordIndex + "class".length()).strip();
+    private static FirstRule createClassRule() {
+        final var firstRule = new FirstRule("{", createHeaderRule(), new SuffixRule(Main::parseInnerMembersToNode, "}"));
+        return new FirstRule("class", createModifiersRule(), firstRule);
+    }
 
-        final var result = new FirstRule("{", createHeaderRule(), new SuffixRule(Main::parseInnerMembersToNode, "}")).parse(afterKeyword)
-                .mapValue(merged -> merged.merge(modifiers))
-                .mapValue(value -> value.mapString("content", content -> content + value.findString("impl").orElse("")).orElse(value));
-
-        return new Some<>(result.flatMapValue(Main::generateFunction));
+    private static Rule createModifiersRule() {
+        return new Rule() {
+            @Override
+            public Result<Node, CompileError> parse(String value) {
+                return new Ok<>(parseClassModifiersToNode(value));
+            }
+        };
     }
 
     private static Rule createHeaderRule() {
