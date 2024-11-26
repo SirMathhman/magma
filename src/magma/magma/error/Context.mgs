@@ -1,3 +1,0 @@
-export trait Context {
-	def format(this : &This): String;
-}

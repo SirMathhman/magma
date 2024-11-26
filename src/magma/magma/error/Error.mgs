@@ -1,3 +1,0 @@
-export trait Error {
-	def display(this : &This): String;
-}

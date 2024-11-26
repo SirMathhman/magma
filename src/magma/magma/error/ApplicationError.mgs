@@ -1,6 +1,0 @@
-export class  def ApplicationError(error: Error) => {
-	def display(this : &This): String => {
-		return error.display();
-	}
-	impl Error;
-}

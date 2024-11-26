@@ -1,6 +1,0 @@
-export class  def StringContext(context: String) => {
-	def format(this : &This): String => {
-		return context();
-	}
-	impl Context;
-}
