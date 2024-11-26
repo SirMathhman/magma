@@ -1,3 +1,3 @@
 export trait Error {
-	def display(): String;
+	def display(self : &Self): String;
 }

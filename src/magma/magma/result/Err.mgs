@@ -1,17 +1,17 @@
 import java.util.function.Function;import java.util.function.Supplier;export class def Err<T, X>(error: X) => {
-	def mapValue(): X> => {
+	def mapValue(self : &Self): X> => {
 		return new Err<>(error);
 	}
-	def mapErr(): R> => {
+	def mapErr(self : &Self): R> => {
 		return new Err<>(mapper.apply(error));
 	}
-	def match(): R => {
+	def match(self : &Self): R => {
 		return onErr.apply(error);
 	}
-	def and(): X> => {
+	def and(self : &Self): X> => {
 		return new Err<>(error);
 	}
-	def flatMapValue(): X> => {
+	def flatMapValue(self : &Self): X> => {
 		return new Err<>(error);
 	}
 	impl Result<T, X>;

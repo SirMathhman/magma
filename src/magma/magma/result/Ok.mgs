@@ -1,17 +1,17 @@
 import java.util.function.Function;import java.util.function.Supplier;export class def Ok<T, X>(value: T) => {
-	def mapValue(): X> => {
+	def mapValue(self : &Self): X> => {
 		return new Ok<>(mapper.apply(value));
 	}
-	def mapErr(): R> => {
+	def mapErr(self : &Self): R> => {
 		return new Ok<>(value);
 	}
-	def match(): R => {
+	def match(self : &Self): R => {
 		return onOk.apply(value);
 	}
-	def and(): X> => {
+	def and(self : &Self): X> => {
 		return supplier.get().mapValue(otherValue -> new Tuple<>(value, otherValue));
 	}
-	def flatMapValue(): X> => {
+	def flatMapValue(self : &Self): X> => {
 		return mapper.apply(value);
 	}
 	impl Result<T, X>;

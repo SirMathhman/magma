@@ -1,7 +1,7 @@
 import java.util.function.Consumer;import java.util.function.Function;import java.util.function.Supplier;export trait Option<T> {
-	def map(): Option<R>;
-	def orElseGet(): T;
-	def ifPresent(): void;
-	def flatMapValue(): Option<R>;
-	def or(): Option<T>;
+	def map(self : &Self): Option<R>;
+	def orElseGet(self : &Self): T;
+	def ifPresent(self : &Self): void;
+	def flatMapValue(self : &Self): Option<R>;
+	def or(self : &Self): Option<T>;
 }
