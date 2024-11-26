@@ -319,11 +319,12 @@ public class Main {
     }
 
     private static Option<Result<String, CompileError>> compileClass(String rootSegment) {
-        if (rootSegment.contains("class")) {
-            return new Some<>(generateFunction(Collections.singletonList("class"), "Temp", "", ""));
-        } else {
-            return new None<>();
-        }
+        final var keywordIndex = rootSegment.indexOf("class");
+        if (keywordIndex == -1) return new None<>();
+        final var modifierString = rootSegment.substring(0, keywordIndex).strip();
+        final var outputModifiers = parseClassModifiers(modifierString);
+
+        return new Some<>(generateFunction(outputModifiers, "Temp", "", ""));
     }
 
     private static Result<String, CompileError> generateFunction(List<String> modifiers, String name, String params, String content) {
