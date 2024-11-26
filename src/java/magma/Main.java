@@ -197,10 +197,13 @@ public class Main {
         if (contentEnd == -1) return new None<>();
 
         final var content = withEnd.substring(0, contentEnd);
-        return new Some<>(parseAndCompile(content, Main::compileInnerMember).mapValue(outputContent -> {
-            final var outputModifiers = modifiers.isEmpty() ? "" : String.join(" ", modifiers) + " ";
-            return outputModifiers + "trait " + name + " {" + outputContent + "\n}";
-        }));
+        return new Some<>(parseAndCompile(content, Main::compileInnerMember)
+                .mapValue(outputContent -> renderTrait(modifiers, outputContent, name)));
+    }
+
+    private static String renderTrait(List<String> modifiers, String content, String name) {
+        final var outputModifiers = modifiers.isEmpty() ? "" : String.join(" ", modifiers) + " ";
+        return outputModifiers + "trait " + name + " {" + content + "\n}";
     }
 
     private static Option<Result<String, CompileError>> compileRecord(String rootSegment) {
