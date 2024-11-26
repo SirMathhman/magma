@@ -1,5 +1,7 @@
 package magma.option;
 
+import magma.Tuple;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -37,5 +39,10 @@ public class None<T> implements Option<T> {
     @Override
     public boolean isEmpty() {
         return true;
+    }
+
+    @Override
+    public <R> Option<Tuple<T, R>> and(Supplier<Option<R>> supplier) {
+        return new None<>();
     }
 }

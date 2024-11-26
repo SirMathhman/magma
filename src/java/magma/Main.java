@@ -356,20 +356,35 @@ public class Main {
 
         final var afterKeyword = rootSegment.substring(keywordIndex + "class".length()).strip();
 
-        final var contentStart = afterKeyword.indexOf("{");
-        if (contentStart == -1) return new None<>();
-        final var beforeContent = afterKeyword.substring(0, contentStart).strip();
-        final var header = parseHeader(beforeContent);
+        return new Some<>(splitAtFirst(afterKeyword, "{", beforeContent -> new Ok<>(parseHeader(beforeContent)), Main::getNodeCompileErrorResult).mapValue(merged -> merged.merge(modifiers)).flatMapValue(Main::generateFunction));
+    }
 
-        final var afterContent = afterKeyword.substring(contentStart + "{".length()).strip();
-        if (!afterContent.endsWith("}")) return new None<>();
-        final var content = afterContent.substring(0, afterContent.length() - "}".length()).strip();
+    private static Result<Node, CompileError> getNodeCompileErrorResult(String afterContent) {
+        if (!afterContent.endsWith("}"))
+            return new Err<>(new CompileError("Suffix '}' not present", new StringContext(afterContent)));
+        final var content = afterContent.substring(0, afterContent.length() - "}".length());
 
-        return new Some<>(parseAndCompile(content, Main::compileInnerMember).flatMapValue(output -> {
-            final var node = header.mapString("content", impl -> output + impl).orElse(header);
-            final var merge = new Node().merge(node);
-            return generateFunction(merge.merge(modifiers));
-        }));
+        return parseAndCompile(content, Main::compileInnerMember).mapValue(output1 -> new Node().withString("content", output1));
+    }
+
+    private static Result<Node, CompileError> splitAtFirst(
+            String value,
+            String slice,
+            Rule leftRule,
+            Rule rightRule) {
+        final var index = value.indexOf(slice);
+        if (index == -1) {
+            final var context = new StringContext(value);
+            final var message = "Slice '%s' not present".formatted(slice);
+            return new Err<>(new CompileError(message, context));
+        }
+
+        final var left = value.substring(0, index);
+        final var right = value.substring(index + slice.length());
+
+        return leftRule.parse(left)
+                .and(() -> rightRule.parse(right))
+                .mapValue(nodes -> nodes.left().merge(nodes.right()));
     }
 
     private static Node parseClassModifiersToNode(String modifierString) {

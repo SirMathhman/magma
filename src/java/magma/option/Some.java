@@ -1,5 +1,7 @@
 package magma.option;
 
+import magma.Tuple;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -38,5 +40,10 @@ public record Some<T>(T value) implements Option<T> {
     @Override
     public boolean isEmpty() {
         return false;
+    }
+
+    @Override
+    public <R> Option<Tuple<T, R>> and(Supplier<Option<R>> supplier) {
+        return supplier.get().map(otherValue -> new Tuple<>(value, otherValue));
     }
 }
