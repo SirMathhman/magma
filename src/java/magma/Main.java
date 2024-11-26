@@ -237,9 +237,12 @@ public class Main {
         if (contentEnd == -1) return new None<>();
         final var content = withEnd.substring(0, contentEnd);
 
-        return new Some<>(parseAndCompile(content, Main::compileInnerMember).flatMapValue(outputContent -> {
-            return generateFunction(newModifiers, name, paramsOut, outputContent + impl);
-        }));
+        return new Some<>(parseAndCompile(content, Main::compileInnerMember)
+                .flatMapValue(outputContent -> generateFunction(new Node()
+                        .withStringList("modifiers", newModifiers)
+                        .withString("name", name)
+                        .withString("params", paramsOut)
+                        .withString("content", outputContent + impl))));
     }
 
     private static String parseParams(String params) {
@@ -368,7 +371,11 @@ public class Main {
 
         final var content = withEnd.substring(0, withEnd.length() - 1).strip();
         return new Some<>(parseAndCompile(content, Main::compileInnerMember).flatMapValue(output -> {
-            return generateFunction(outputModifiers, result.find("name").orElse(""), "", output + result.find("impl").orElse(""));
+            return generateFunction(new Node()
+                    .withStringList("modifiers", outputModifiers)
+                    .withString("name", result.findString("name").orElse(""))
+                    .withString("params", "")
+                    .withString("content", output + result.findString("impl").orElse("")));
         }));
     }
 
@@ -389,13 +396,16 @@ public class Main {
         return "\n\timpl " + slice + ";";
     }
 
-    private static Result<String, CompileError> generateFunction(List<String> modifiers, String name, String params, String content) {
-        final var joined = String.join(" ", modifiers);
-        return new Ok<>(joined + " def " + name + "(" +
-                params +
-                ") => {" +
-                content +
-                "\n}");
+    private static Result<String, CompileError> generateFunction(Node node) {
+        final var joined = node.findStringList("modifiers")
+                .map(values -> String.join(" ", values) + " ")
+                .orElse("");
+
+        final var name = node.findString("name").orElse("");
+        final var params = node.findString("params").orElse("");
+        final var content = node.findString("content").orElse("");
+
+        return new Ok<>(joined + " def " + name + "(" + params + ") => {" + content + "\n}");
     }
 
     private static Option<Result<String, CompileError>> compileImport(String rootSegment) {
