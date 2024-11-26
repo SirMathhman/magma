@@ -9,8 +9,6 @@ import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
 import magma.rule.FirstRule;
-import magma.rule.PrefixRule;
-import magma.rule.StringRule;
 import magma.rule.SuffixRule;
 
 import java.io.IOException;
@@ -423,21 +421,13 @@ public class Main {
         return new Ok<>(joined + " def " + name + "(" + params + ") => {" + content + "\n}");
     }
 
-    private static Result<Node, CompileError> compileImport(String rootSegment) {
-        return createNamespaceRule("import ").parse(rootSegment);
+    private static Option<Result<String, CompileError>> compileImport(String rootSegment) {
+        if (rootSegment.startsWith("import ")) return new Some<>(new Ok<>(rootSegment + "\n"));
+        return new None<>();
     }
 
-    private static Result<Node, CompileError> compilePackage(String rootSegment) {
-        return createPackageRule().parse(rootSegment);
-    }
-
-    private static PrefixRule createPackageRule() {
-        return createNamespaceRule("package ");
-    }
-
-    private static PrefixRule createNamespaceRule(String prefix) {
-        final var namespace = new StringRule("namespace");
-        return new PrefixRule(prefix, new SuffixRule(namespace, ";"));
+    private static Option<Result<String, CompileError>> compilePackage(String rootSegment) {
+        return rootSegment.startsWith("package ") ? new Some<>(new Ok<>("")) : new None<>();
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
