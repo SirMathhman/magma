@@ -8,6 +8,8 @@ import magma.option.Some;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
+import magma.rule.FirstRule;
+import magma.rule.SuffixRule;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -195,7 +197,7 @@ public class Main {
         if (contentEnd == -1) return new None<>();
 
         final var content = withEnd.substring(0, contentEnd);
-        return new Some<>(parseAndCompile(content, Main::compileInnerMember)
+        return new Some<>(parseInnerMembers(content)
                 .mapValue(outputContent -> renderTrait(modifiers, outputContent, name)));
     }
 
@@ -235,7 +237,7 @@ public class Main {
         if (contentEnd == -1) return new None<>();
         final var content = withEnd.substring(0, contentEnd);
 
-        return new Some<>(parseAndCompile(content, Main::compileInnerMember)
+        return new Some<>(parseInnerMembers(content)
                 .flatMapValue(outputContent -> generateFunction(new Node()
                         .withStringList("modifiers", newModifiers)
                         .withString("name", name)
@@ -356,39 +358,23 @@ public class Main {
 
         final var afterKeyword = rootSegment.substring(keywordIndex + "class".length()).strip();
 
-        final var result = splitAtFirst(afterKeyword, "{", beforeContent -> new Ok<>(parseHeader(beforeContent)), Main::getNodeCompileErrorResult)
+        final var result = new FirstRule("{", createHeaderRule(), new SuffixRule(Main::parseInnerMembersToNode, "}")).parse(afterKeyword)
                 .mapValue(merged -> merged.merge(modifiers))
                 .mapValue(value -> value.mapString("content", content -> content + value.findString("impl").orElse("")).orElse(value));
 
         return new Some<>(result.flatMapValue(Main::generateFunction));
     }
 
-    private static Result<Node, CompileError> getNodeCompileErrorResult(String afterContent) {
-        if (!afterContent.endsWith("}"))
-            return new Err<>(new CompileError("Suffix '}' not present", new StringContext(afterContent)));
-        final var content = afterContent.substring(0, afterContent.length() - "}".length());
-
-        return parseAndCompile(content, Main::compileInnerMember).mapValue(output1 -> new Node().withString("content", output1));
+    private static Rule createHeaderRule() {
+        return beforeContent -> new Ok<>(parseHeader(beforeContent));
     }
 
-    private static Result<Node, CompileError> splitAtFirst(
-            String value,
-            String slice,
-            Rule leftRule,
-            Rule rightRule) {
-        final var index = value.indexOf(slice);
-        if (index == -1) {
-            final var context = new StringContext(value);
-            final var message = "Slice '%s' not present".formatted(slice);
-            return new Err<>(new CompileError(message, context));
-        }
+    private static Result<Node, CompileError> parseInnerMembersToNode(String value) {
+        return parseInnerMembers(value).mapValue(output1 -> new Node().withString("content", output1));
+    }
 
-        final var left = value.substring(0, index);
-        final var right = value.substring(index + slice.length());
-
-        return leftRule.parse(left)
-                .and(() -> rightRule.parse(right))
-                .mapValue(nodes -> nodes.left().merge(nodes.right()));
+    private static Result<String, CompileError> parseInnerMembers(String content) {
+        return parseAndCompile(content, Main::compileInnerMember);
     }
 
     private static Node parseClassModifiersToNode(String modifierString) {
