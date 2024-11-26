@@ -336,7 +336,7 @@ public class Main {
     }
 
     private static Option<Result<String, CompileError>> compileImport(String rootSegment) {
-        if (rootSegment.startsWith("import ")) return new Some<>(new Ok<>(rootSegment));
+        if (rootSegment.startsWith("import ")) return new Some<>(new Ok<>(rootSegment + "\n"));
         return new None<>();
     }
 

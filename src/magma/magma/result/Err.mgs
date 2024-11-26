@@ -1,4 +1,6 @@
-import java.util.function.Function;import java.util.function.Supplier;export class def Err<T, X>(error: X) => {
+import java.util.function.Function;
+import java.util.function.Supplier;
+export class def Err<T, X>(error: X) => {
 	def mapValue(self : &Self): X> => {
 		return new Err<>(error);
 	}

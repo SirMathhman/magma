@@ -1,4 +1,6 @@
-import java.util.function.Function;import java.util.function.Supplier;export class def Ok<T, X>(value: T) => {
+import java.util.function.Function;
+import java.util.function.Supplier;
+export class def Ok<T, X>(value: T) => {
 	def mapValue(self : &Self): X> => {
 		return new Ok<>(mapper.apply(value));
 	}
