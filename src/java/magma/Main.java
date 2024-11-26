@@ -223,19 +223,7 @@ public class Main {
         if (paramEnd == -1) return new None<>();
 
         final var params = afterOpenParentheses.substring(0, paramEnd).strip();
-        final var paramsOut = Arrays.stream(params.split(","))
-                .map(String::strip)
-                .filter(paramSegment -> !paramSegment.isEmpty())
-                .<Option<String>>map(paramSegment -> {
-                    final var separator = paramSegment.indexOf(' ');
-                    if (separator == -1) return new None<>();
-
-                    final var paramType = paramSegment.substring(0, separator).strip();
-                    final var paramName = paramSegment.substring(separator + 1).strip();
-                    return new Some<>(paramName + ": " + paramType);
-                })
-                .flatMap(Options::stream)
-                .collect(Collectors.joining(", "));
+        final var paramsOut = parseParams(params);
 
         final var afterParams = afterOpenParentheses.substring(paramEnd + 1);
         final var contentStart = afterParams.indexOf('{');
@@ -252,6 +240,24 @@ public class Main {
         return new Some<>(parseAndCompile(content, Main::compileInnerMember).flatMapValue(outputContent -> {
             return generateFunction(newModifiers, name, paramsOut, outputContent + impl);
         }));
+    }
+
+    private static String parseParams(String params) {
+        return Arrays.stream(params.split(","))
+                .map(String::strip)
+                .filter(paramSegment -> !paramSegment.isEmpty())
+                .map(Main::parseParameter)
+                .flatMap(Options::stream)
+                .collect(Collectors.joining(", "));
+    }
+
+    private static Option<String> parseParameter(String paramSegment) {
+        final var separator = paramSegment.indexOf(' ');
+        if (separator == -1) return new None<>();
+
+        final var paramType = paramSegment.substring(0, separator).strip();
+        final var paramName = paramSegment.substring(separator + 1).strip();
+        return new Some<>(paramName + ": " + paramType);
     }
 
     private static String findImpl(String maybeImplements) {
