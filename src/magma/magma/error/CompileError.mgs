@@ -1,5 +1,5 @@
 export class def CompileError(message: String, context: String) => {
-	def display(self : &Self): String => {
+	def display(this : &This): String => {
 		return message + ": " + context;
 	}
 	impl Error;

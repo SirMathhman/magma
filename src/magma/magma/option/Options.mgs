@@ -1,3 +1,6 @@
 import java.util.stream.Stream;
-export class def Options() => {
+export class def Options() => {Ok[value=
+	def stream(this : &This): Stream<T> => {
+		return option.map(Stream::of).orElseGet(Stream::empty);
+	}]
 }

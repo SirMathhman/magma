@@ -1,19 +1,19 @@
 import java.util.function.Function;
 import java.util.function.Supplier;
 export class def Ok<T, X>(value: T) => {
-	def mapValue(self : &Self): X> => {
+	def mapValue(this : &This): X> => {
 		return new Ok<>(mapper.apply(value));
 	}
-	def mapErr(self : &Self): R> => {
+	def mapErr(this : &This): R> => {
 		return new Ok<>(value);
 	}
-	def match(self : &Self): R => {
+	def match(this : &This): R => {
 		return onOk.apply(value);
 	}
-	def and(self : &Self): X> => {
+	def and(this : &This): X> => {
 		return supplier.get().mapValue(otherValue -> new Tuple<>(value, otherValue));
 	}
-	def flatMapValue(self : &Self): X> => {
+	def flatMapValue(this : &This): X> => {
 		return mapper.apply(value);
 	}
 	impl Result<T, X>;

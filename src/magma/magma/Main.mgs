@@ -19,5 +19,5 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-export class def Main() => {
+export class def Main() => {Err[error=CompileError[message=Unknown statement, context=var depth = 0;]]
 }

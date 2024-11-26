@@ -141,6 +141,20 @@ public class Main {
                 continue;
             }
 
+            if (c == '\"') {
+                while (!queue.isEmpty()) {
+                    var next = queue.pop();
+                    buffer.append(next);
+                    if (next == '\"') {
+                        break;
+                    } else if (next == '\\') {
+                        if (!queue.isEmpty()) {
+                            buffer.append(queue.pop());
+                        }
+                    }
+                }
+            }
+
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
@@ -268,7 +282,7 @@ public class Main {
 
         final var afterHeader = innerMember.substring(paramStart + 1).strip();
         final var contentStart = afterHeader.indexOf('{');
-        final var header0 = "\n\tdef " + name + "(self : &Self): " + type;
+        final var header0 = "\n\tdef " + name + "(this : &This): " + type;
         if (contentStart == -1) {
             return new Some<>(new Ok<>(header0 + ";"));
         }
@@ -344,7 +358,13 @@ public class Main {
             impl = renderImpl(slice);
         }
 
-        return new Some<>(generateFunction(outputModifiers, name, "", impl));
+        final var withEnd = afterKeyword.substring(contentStart + 1).strip();
+        if (!withEnd.endsWith("}")) return new None<>();
+
+        final var content = withEnd.substring(0, withEnd.length() - 1).strip();
+        return new Some<>(parseAndCompile(content, Main::compileInnerMember).flatMapValue(output -> {
+            return generateFunction(outputModifiers, name, "", output + impl);
+        }));
     }
 
     private static String renderImpl(String slice) {
