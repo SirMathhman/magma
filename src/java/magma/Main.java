@@ -265,8 +265,9 @@ public class Main {
 
         final var afterHeader = innerMember.substring(paramStart + 1).strip();
         final var contentStart = afterHeader.indexOf('{');
+        final var header0 = "\n\tdef " + name + "(self : &Self): " + type;
         if (contentStart == -1) {
-            return new Some<>(new Ok<>("\n\tdef " + name + "(self : &Self): " + type + ";"));
+            return new Some<>(new Ok<>(header0 + ";"));
         }
         final var withEnd = afterHeader.substring(contentStart + 1).strip();
 
@@ -274,9 +275,7 @@ public class Main {
         if (contentEnd == -1) return new None<>();
         final var content = withEnd.substring(0, contentEnd);
         return new Some<>(parseAndCompile(content, Main::compileStatement).mapValue(outputContent -> {
-            return "\n\tdef " + name + "(self : &Self): " +
-                    type +
-                    " => {" + outputContent + "\n\t}";
+            return header0 + " => {" + outputContent + "\n\t}";
         }));
 
     }
