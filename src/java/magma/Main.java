@@ -356,7 +356,11 @@ public class Main {
 
         final var afterKeyword = rootSegment.substring(keywordIndex + "class".length()).strip();
 
-        return new Some<>(splitAtFirst(afterKeyword, "{", beforeContent -> new Ok<>(parseHeader(beforeContent)), Main::getNodeCompileErrorResult).mapValue(merged -> merged.merge(modifiers)).flatMapValue(Main::generateFunction));
+        final var result = splitAtFirst(afterKeyword, "{", beforeContent -> new Ok<>(parseHeader(beforeContent)), Main::getNodeCompileErrorResult)
+                .mapValue(merged -> merged.merge(modifiers))
+                .mapValue(value -> value.mapString("content", content -> content + value.findString("impl").orElse("")).orElse(value));
+
+        return new Some<>(result.flatMapValue(Main::generateFunction));
     }
 
     private static Result<Node, CompileError> getNodeCompileErrorResult(String afterContent) {
@@ -402,7 +406,7 @@ public class Main {
         final var slice = nameAndMaybeImpl.substring(implementsIndex + "implements".length()).strip();
         return new Node()
                 .withString("name", name)
-                .withString("content", renderImpl(slice));
+                .withString("impl", renderImpl(slice));
     }
 
     private static String renderImpl(String slice) {

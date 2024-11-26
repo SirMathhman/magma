@@ -133,8 +133,8 @@ export class  def Main () => {
 	def parseModifiers(this : &This): ArrayList<String> => {todo();todo();todo();todo();
 		return newModifiers;
 	}
-	def compileClass(this : &This): CompileError>> => {todo();todo();todo();todo();todo();
-		return new Some<>(splitAtFirst(afterKeyword, "{", beforeContent -> new Ok<>(parseHeader(beforeContent)), Main::getNodeCompileErrorResult).mapValue(merged -> merged.merge(modifiers)).flatMapValue(Main::generateFunction));
+	def compileClass(this : &This): CompileError>> => {todo();todo();todo();todo();todo();todo();
+		return new Some<>(result.flatMapValue(Main::generateFunction));
 	}
 	def getNodeCompileErrorResult(this : &This): CompileError> => {todo();todo();
 		return parseAndCompile(content, Main::compileInnerMember).mapValue(output1 -> new Node().withString("content", output1));
@@ -150,7 +150,7 @@ export class  def Main () => {
 	def parseHeader(this : &This): Node => {todo();todo();todo();todo();
 		return new Node()
                 .withString("name", name)
-                .withString("content", renderImpl(slice));
+                .withString("impl", renderImpl(slice));
 	}
 	def renderImpl(this : &This): String => {
 		return "\n\timpl " + slice + ";";
