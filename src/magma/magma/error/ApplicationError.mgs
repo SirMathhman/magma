@@ -1,4 +1,4 @@
-export class def ApplicationError(error: Error) => {
+export class  def ApplicationError(error: Error) => {
 	def display(this : &This): String => {
 		return error.display();
 	}

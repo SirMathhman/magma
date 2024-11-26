@@ -33,4 +33,9 @@ public class None<T> implements Option<T> {
     public T orElse(T other) {
         return other;
     }
+
+    @Override
+    public boolean isEmpty() {
+        return true;
+    }
 }

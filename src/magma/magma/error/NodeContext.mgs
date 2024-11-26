@@ -1,0 +1,7 @@
+import magma.Node;
+export class  def NodeContext(node: Node) => {
+	def format(this : &This): String => {
+		return node.format();
+	}
+	impl Context;
+}

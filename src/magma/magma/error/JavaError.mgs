@@ -1,4 +1,4 @@
-export class def JavaError<X extends Exception>(error: X) => {
+export class  def JavaError<X extends Exception>(error: X) => {
 	def display(this : &This): String => {
 		return error.getMessage();
 	}

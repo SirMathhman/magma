@@ -1,8 +1,6 @@
 package magma;
 
-import magma.error.ApplicationError;
-import magma.error.CompileError;
-import magma.error.JavaError;
+import magma.error.*;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Options;
@@ -177,7 +175,7 @@ public class Main {
                 .or(() -> compileClass(rootSegment))
                 .or(() -> compileRecord(rootSegment))
                 .or(() -> compileInterface(rootSegment))
-                .orElseGet(() -> new Err<>(new CompileError("Invalid root segment", rootSegment)));
+                .orElseGet(() -> new Err<>(new CompileError("Invalid root segment", new StringContext(rootSegment))));
     }
 
     private static Option<Result<String, CompileError>> compileInterface(String rootSegment) {
@@ -272,7 +270,7 @@ public class Main {
 
     private static Result<String, CompileError> compileInnerMember(String innerMember) {
         return compileMethod(innerMember)
-                .orElseGet(() -> new Err<>(new CompileError("Unknown inner member", innerMember)));
+                .orElseGet(() -> new Err<>(new CompileError("Unknown inner member", new StringContext(innerMember))));
     }
 
     private static Option<Result<String, CompileError>> compileMethod(String innerMember) {
@@ -284,12 +282,9 @@ public class Main {
 
         final var beforeName = header.substring(0, nameSeparator).strip();
         final var typeSeparator = beforeName.lastIndexOf(' ');
-        final String type;
-        if (typeSeparator == -1) {
-            type = beforeName;
-        } else {
-            type = beforeName.substring(typeSeparator + 1).strip();
-        }
+        final String type = typeSeparator == -1
+                ? beforeName
+                : beforeName.substring(typeSeparator + 1).strip();
 
         final var name = header.substring(nameSeparator + 1).strip();
 
@@ -305,7 +300,7 @@ public class Main {
         if (contentEnd == -1) return new None<>();
         final var content = withEnd.substring(0, contentEnd);
         return new Some<>(parseAndCompile(content, Main::compileStatement)
-                .mapErr(err -> new CompileError("Invalid content", content, err))
+                .mapErr(err -> new CompileError("Invalid content", new StringContext(content), err))
                 .mapValue(outputContent -> header0 + " => {" + outputContent + "\n\t}"));
 
     }
@@ -314,7 +309,7 @@ public class Main {
         return compileReturn(statement)
                 .or(() -> compileInvocation(statement))
                 .or(() -> compileDeclaration(statement))
-                .orElseGet(() -> new Err<>(new CompileError("Unknown statement", statement)));
+                .orElseGet(() -> new Err<>(new CompileError("Unknown statement", new StringContext(statement))));
     }
 
     private static Option<Result<String, CompileError>> compileDeclaration(String statement) {
@@ -401,7 +396,11 @@ public class Main {
                 .map(values -> String.join(" ", values) + " ")
                 .orElse("");
 
-        final var name = node.findString("name").orElse("");
+        final var nameOption = node.findString("name");
+        if(nameOption.isEmpty()) return new Err<>(new CompileError("No name present", new NodeContext(node)));
+
+        final var name = nameOption.orElse("");
+
         final var params = node.findString("params").orElse("");
         final var content = node.findString("content").orElse("");
 

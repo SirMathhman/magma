@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-final class Node {
+public final class Node {
     private final Map<String, String> strings;
     private final Map<String, List<String>> stringLists;
 
@@ -41,5 +41,9 @@ final class Node {
 
     public Option<List<String>> findStringList(String propertyKey) {
         return find(stringLists, propertyKey);
+    }
+
+    public String format() {
+        return strings.toString() + stringLists.toString();
     }
 }

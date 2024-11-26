@@ -1,7 +1,7 @@
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
-export class def CompileError(message: String, context: String, maybeCause: Option<CompileError>) => {
+export class  def CompileError(message: String, context: Context, maybeCause: Option<CompileError>) => {
 	def CompileError(this : &This): public => {todo();
 	}
 	def CompileError(this : &This): public => {todo();
@@ -10,7 +10,7 @@ export class def CompileError(message: String, context: String, maybeCause: Opti
 		return format(0);
 	}
 	def format(this : &This): String => {todo();
-		return "\t".repeat(depth) + message + ": " + context + causeString;
+		return "\t".repeat(depth) + message + ": " + context.format() + causeString;
 	}
 	impl Error;
 }

@@ -16,4 +16,6 @@ public interface Option<T> {
     Option<T> or(Supplier<Option<T>> supplier);
 
     T orElse(T other);
+
+    boolean isEmpty();
 }
