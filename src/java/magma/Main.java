@@ -300,7 +300,12 @@ public class Main {
     private static Result<String, CompileError> compileStatement(String statement) {
         return compileReturn(statement)
                 .or(() -> compileInvocation(statement))
+                .or(() -> compileDeclaration(statement))
                 .orElseGet(() -> new Err<>(new CompileError("Unknown statement", statement)));
+    }
+
+    private static Option<Result<String, CompileError>> compileDeclaration(String statement) {
+        return statement.contains("=") ? new Some<>(new Ok<>("let temp = 0;")) : new None<>();
     }
 
     private static Option<Result<String, CompileError>> compileInvocation(String statement) {
