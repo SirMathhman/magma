@@ -15,10 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -354,6 +351,18 @@ public class Main {
         if (contentStart == -1) return new None<>();
 
         final var nameAndMaybeImpl = afterKeyword.substring(0, contentStart).strip();
+        final var result = getNode(nameAndMaybeImpl);
+
+        final var withEnd = afterKeyword.substring(contentStart + 1).strip();
+        if (!withEnd.endsWith("}")) return new None<>();
+
+        final var content = withEnd.substring(0, withEnd.length() - 1).strip();
+        return new Some<>(parseAndCompile(content, Main::compileInnerMember).flatMapValue(output -> {
+            return generateFunction(outputModifiers, result.find("name").orElse(""), "", output + result.find("impl").orElse(""));
+        }));
+    }
+
+    private static Node getNode(String nameAndMaybeImpl) {
         final String name;
         final String impl;
         final var implementsIndex = nameAndMaybeImpl.indexOf("implements");
@@ -366,13 +375,9 @@ public class Main {
             impl = renderImpl(slice);
         }
 
-        final var withEnd = afterKeyword.substring(contentStart + 1).strip();
-        if (!withEnd.endsWith("}")) return new None<>();
-
-        final var content = withEnd.substring(0, withEnd.length() - 1).strip();
-        return new Some<>(parseAndCompile(content, Main::compileInnerMember).flatMapValue(output -> {
-            return generateFunction(outputModifiers, name, "", output + impl);
-        }));
+        return new Node()
+                .withString("name", name)
+                .withString("impl", impl);
     }
 
     private static String renderImpl(String slice) {
