@@ -351,26 +351,30 @@ public class Main {
     private static Option<Result<String, CompileError>> compileClass(String rootSegment) {
         final var keywordIndex = rootSegment.indexOf("class");
         if (keywordIndex == -1) return new None<>();
-        final var modifierString = rootSegment.substring(0, keywordIndex).strip();
-        final var outputModifiers = parseClassModifiers(modifierString);
+        final var beforeKeyword = rootSegment.substring(0, keywordIndex).strip();
+        final var modifiers = parseClassModifiersToNode(beforeKeyword);
 
         final var afterKeyword = rootSegment.substring(keywordIndex + "class".length()).strip();
-        final var contentStart = afterKeyword.indexOf('{');
+
+        final var contentStart = afterKeyword.indexOf("{");
         if (contentStart == -1) return new None<>();
+        final var beforeContent = afterKeyword.substring(0, contentStart).strip();
+        final var header = parseHeader(beforeContent);
 
-        final var nameAndMaybeImpl = afterKeyword.substring(0, contentStart).strip();
-        final var node1 = parseHeader(nameAndMaybeImpl);
+        final var afterContent = afterKeyword.substring(contentStart + "{".length()).strip();
+        if (!afterContent.endsWith("}")) return new None<>();
+        final var content = afterContent.substring(0, afterContent.length() - "}".length()).strip();
 
-        final var withEnd = afterKeyword.substring(contentStart + 1).strip();
-        if (!withEnd.endsWith("}")) return new None<>();
-
-        final var content = withEnd.substring(0, withEnd.length() - 1).strip();
         return new Some<>(parseAndCompile(content, Main::compileInnerMember).flatMapValue(output -> {
-            final var node = node1.mapString("content", impl -> output + impl).orElse(node1);
-            return generateFunction(node
-                    .withStringList("modifiers", outputModifiers)
-                    .withString("params", ""));
+            final var node = header.mapString("content", impl -> output + impl).orElse(header);
+            final var merge = new Node().merge(node);
+            return generateFunction(merge.merge(modifiers));
         }));
+    }
+
+    private static Node parseClassModifiersToNode(String modifierString) {
+        final var outputModifiers = parseClassModifiers(modifierString);
+        return new Node().withStringList("modifiers", outputModifiers);
     }
 
     private static Node parseHeader(String nameAndMaybeImpl) {

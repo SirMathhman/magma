@@ -53,4 +53,14 @@ public final class Node {
                 .map(mapper)
                 .map(value -> withString(propertyKey, value));
     }
+
+    public Node merge(Node other) {
+        final var stringsCopy = new HashMap<>(strings);
+        stringsCopy.putAll(other.strings);
+
+        final var stringListsCopy = new HashMap<>(stringLists);
+        stringListsCopy.putAll(other.stringLists);
+
+        return new Node(stringsCopy, stringListsCopy);
+    }
 }
