@@ -5,13 +5,14 @@ import magma.option.Option;
 import magma.option.Some;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 final class Node {
     private final Map<String, String> strings;
 
     public Node() {
-        this(Collections.emptyMap());
+        this(new HashMap<>());
     }
 
     public Node(Map<String, String> strings) {
