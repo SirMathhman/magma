@@ -7,6 +7,7 @@ import magma.option.Some;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public final class Node {
     private final Map<String, String> strings;
@@ -45,5 +46,11 @@ public final class Node {
 
     public String format() {
         return strings.toString() + stringLists.toString();
+    }
+
+    public Option<Node> mapString(String propertyKey, Function<String, String> mapper) {
+        return findString(propertyKey)
+                .map(mapper)
+                .map(value -> withString(propertyKey, value));
     }
 }

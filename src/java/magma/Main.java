@@ -359,22 +359,21 @@ public class Main {
         if (contentStart == -1) return new None<>();
 
         final var nameAndMaybeImpl = afterKeyword.substring(0, contentStart).strip();
-        final var result = getNode(nameAndMaybeImpl);
+        final var node1 = parseHeader(nameAndMaybeImpl);
 
         final var withEnd = afterKeyword.substring(contentStart + 1).strip();
         if (!withEnd.endsWith("}")) return new None<>();
 
         final var content = withEnd.substring(0, withEnd.length() - 1).strip();
         return new Some<>(parseAndCompile(content, Main::compileInnerMember).flatMapValue(output -> {
-            return generateFunction(new Node()
+            final var node = node1.mapString("content", impl -> output + impl).orElse(node1);
+            return generateFunction(node
                     .withStringList("modifiers", outputModifiers)
-                    .withString("name", result.findString("name").orElse(""))
-                    .withString("params", "")
-                    .withString("content", output + result.findString("impl").orElse("")));
+                    .withString("params", ""));
         }));
     }
 
-    private static Node getNode(String nameAndMaybeImpl) {
+    private static Node parseHeader(String nameAndMaybeImpl) {
         final var implementsIndex = nameAndMaybeImpl.indexOf("implements");
         if (implementsIndex == -1) {
             return new Node().withString("name", nameAndMaybeImpl);
@@ -384,7 +383,7 @@ public class Main {
         final var slice = nameAndMaybeImpl.substring(implementsIndex + "implements".length()).strip();
         return new Node()
                 .withString("name", name)
-                .withString("impl", renderImpl(slice));
+                .withString("content", renderImpl(slice));
     }
 
     private static String renderImpl(String slice) {
@@ -397,7 +396,7 @@ public class Main {
                 .orElse("");
 
         final var nameOption = node.findString("name");
-        if(nameOption.isEmpty()) return new Err<>(new CompileError("No name present", new NodeContext(node)));
+        if (nameOption.isEmpty()) return new Err<>(new CompileError("No name present", new NodeContext(node)));
 
         final var name = nameOption.orElse("");
 
