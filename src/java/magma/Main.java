@@ -15,7 +15,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -225,7 +228,7 @@ public class Main {
         String impl;
         if (maybeImplements.startsWith("implements ")) {
             final var traitName = maybeImplements.substring("implements ".length());
-            impl = "\n\timpl " + traitName + ";";
+            impl = renderImpl(traitName);
         } else {
             impl = "";
         }
@@ -324,7 +327,28 @@ public class Main {
         final var modifierString = rootSegment.substring(0, keywordIndex).strip();
         final var outputModifiers = parseClassModifiers(modifierString);
 
-        return new Some<>(generateFunction(outputModifiers, "Temp", "", ""));
+        final var afterKeyword = rootSegment.substring(keywordIndex + "class".length()).strip();
+        final var contentStart = afterKeyword.indexOf('{');
+        if (contentStart == -1) return new None<>();
+
+        final var nameAndMaybeImpl = afterKeyword.substring(0, contentStart).strip();
+        final String name;
+        final String impl;
+        final var implementsIndex = nameAndMaybeImpl.indexOf("implements");
+        if (implementsIndex == -1) {
+            name = nameAndMaybeImpl;
+            impl = "";
+        } else {
+            name = nameAndMaybeImpl.substring(0, implementsIndex).strip();
+            final var slice = nameAndMaybeImpl.substring(implementsIndex + "implements".length()).strip();
+            impl = renderImpl(slice);
+        }
+
+        return new Some<>(generateFunction(outputModifiers, name, "", impl));
+    }
+
+    private static String renderImpl(String slice) {
+        return "\n\timpl " + slice + ";";
     }
 
     private static Result<String, CompileError> generateFunction(List<String> modifiers, String name, String params, String content) {
