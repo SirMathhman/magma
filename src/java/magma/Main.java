@@ -291,9 +291,9 @@ public class Main {
         final var contentEnd = withEnd.lastIndexOf('}');
         if (contentEnd == -1) return new None<>();
         final var content = withEnd.substring(0, contentEnd);
-        return new Some<>(parseAndCompile(content, Main::compileStatement).mapValue(outputContent -> {
-            return header0 + " => {" + outputContent + "\n\t}";
-        }));
+        return new Some<>(parseAndCompile(content, Main::compileStatement)
+                .mapErr(err -> new CompileError("Invalid content", content, err))
+                .mapValue(outputContent -> header0 + " => {" + outputContent + "\n\t}"));
 
     }
 

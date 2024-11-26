@@ -14,4 +14,6 @@ public interface Option<T> {
     <R> Option<R> flatMapValue(Function<T, Option<R>> mapper);
 
     Option<T> or(Supplier<Option<T>> supplier);
+
+    T orElse(T other);
 }
