@@ -8,7 +8,6 @@ import java.util.stream.IntStream;
 import static magma.Main.OpCode.*;
 
 public class Main {
-
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
 
     public static void main(String[] args) {
@@ -16,6 +15,13 @@ public class Main {
                 Halt.empty()
         );
 
+        final var input = assemble(instructions);
+        run(input).consume(
+                value -> System.out.println(value.display()),
+                error -> System.err.println(error.display()));
+    }
+
+    private static Deque<Integer> assemble(List<Integer> instructions) {
         var input = new LinkedList<>(List.of(
                 InAddress.of(2),
                 JumpValue.of(0)));
@@ -30,18 +36,17 @@ public class Main {
                 InAddress.of(2),
                 JumpValue.of(3)
         ));
-
-        run(input).consume(value -> System.out.println(value.display()), error -> System.err.println(error.display()));
+        return input;
     }
 
-    private static Result<State, RuntimeError> run(LinkedList<Integer> input) {
+    private static Result<State, RuntimeError> run(Deque<Integer> input) {
         var state = new State();
         while (true) {
             final var instructionOption = state.findCurrentInstruction();
             if (instructionOption.isEmpty()) break;
             final var instruction = instructionOption.orElse(DEFAULT_INSTRUCTION);
 
-            final var processedResult = process(input, state, instruction);
+            final var processedResult = process(state, input, instruction);
             if (processedResult.isErr()) return processedResult.preserveErr(state);
 
             final var processedState = processedResult.findValue().orElse(new None<>());
@@ -52,7 +57,7 @@ public class Main {
         return new Ok<>(state);
     }
 
-    private static Result<Option<State>, RuntimeError> process(LinkedList<Integer> input, State state, Instruction instruction) {
+    private static Result<Option<State>, RuntimeError> process(State state, Deque<Integer> input, Instruction instruction) {
         return switch (instruction.opCode()) {
             case InAddress -> handleInAddress(state.next(), input, instruction);
             case JumpValue -> new Ok<>(new Some<>(state.jump(instruction.addressOrValue())));
