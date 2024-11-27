@@ -31,21 +31,20 @@ public class Main {
             if (instructionOption.isEmpty()) break;
             final var instruction = instructionOption.orElse(DEFAULT_INSTRUCTION);
 
-            final var preprocessed = state.next();
-            final var processedResult = process(preprocessed, input, instruction);
+            final var processedResult = process(input, state, instruction);
             if (processedResult.isErr()) return processedResult.preserveErr(state);
 
             final var processedState = processedResult.findValue().orElse(new None<>());
             if (processedState.isEmpty()) break;
-            state = processedState.orElse(preprocessed);
+            state = processedState.orElse(state);
         }
 
         return new Ok<>(state);
     }
 
-    private static Result<Option<State>, RuntimeError> process(State state, Deque<Integer> input, Instruction instruction) {
+    private static Result<Option<State>, RuntimeError> process(LinkedList<Integer> input, State state, Instruction instruction) {
         return switch (instruction.opCode()) {
-            case InAddress -> handleInAddress(state, input, instruction);
+            case InAddress -> handleInAddress(state.next(), input, instruction);
             case JumpValue -> new Ok<>(new Some<>(state.jump(instruction.addressOrValue())));
             case Halt -> new Ok<>(new None<>());
             default -> new Err<>(new RuntimeError("Invalid op code: " + instruction.opCode()));

@@ -29,7 +29,7 @@ public record State(List<Integer> memory, int programCounter) {
             copy.add(0);
         }
         copy.set(address, value);
-        return new State(memory, programCounter);
+        return new State(copy, programCounter);
     }
 
     public State jump(int address) {
