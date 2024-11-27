@@ -3,7 +3,7 @@ package magma;
 public record Instruction(OpCode opCode, int addressOrValue) {
     @Override
     public String toString() {
-        return opCode + " " + addressOrValue;
+        return opCode + " " + Integer.toHexString(addressOrValue);
     }
 
     static Instruction fromValue(Integer value) {

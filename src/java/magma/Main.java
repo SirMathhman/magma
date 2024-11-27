@@ -13,7 +13,7 @@ public class Main {
     public static void main(String[] args) {
         final var instructions = new ArrayList<Integer>();
         instructions.add(JumpValue.of(5));
-        instructions.add(100);
+        instructions.add(0x64);
         instructions.add(Halt.empty());
 
         final var input = assemble(instructions);
