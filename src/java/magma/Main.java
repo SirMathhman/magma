@@ -12,6 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
         final var instructions = List.of(
+                OutValue.of('h'),
                 Halt.empty()
         );
 
@@ -49,7 +50,7 @@ public class Main {
             if (instructionOption.isEmpty()) break;
             final var instruction = instructionOption.orElse(DEFAULT_INSTRUCTION);
 
-            final var processedResult = process(state, input, instruction);
+            final var processedResult = process(state.next(), input, instruction);
             if (processedResult.isErr()) return processedResult.preserveErr(state);
 
             final var processedState = processedResult.findValue().orElse(new None<>());
@@ -62,10 +63,14 @@ public class Main {
 
     private static Result<Option<State>, RuntimeError> process(State state, Deque<Integer> input, Instruction instruction) {
         return switch (instruction.opCode()) {
-            case InAddress -> handleInAddress(state.next(), input, instruction);
+            case InAddress -> handleInAddress(state, input, instruction);
             case JumpValue -> new Ok<>(new Some<>(state.jump(instruction.addressOrValue())));
+            case Nothing -> new Ok<>(new Some<>(state));
             case Halt -> new Ok<>(new None<>());
-            default -> new Err<>(new RuntimeError("Invalid op code: " + instruction.opCode()));
+            case OutValue -> {
+                System.out.print((char) instruction.addressOrValue());
+                yield new Ok<>(new Some<>(state));
+            }
         };
     }
 
@@ -82,7 +87,7 @@ public class Main {
         InAddress,
         JumpValue,
         Nothing,
-        Halt;
+        Halt, OutValue;
 
         private int of(int addressOrValue) {
             final var opCode = IntStream.range(0, values().length)
