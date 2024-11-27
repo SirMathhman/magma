@@ -1,5 +1,6 @@
 package magma;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,10 +12,9 @@ public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
 
     public static void main(String[] args) {
-        final var instructions = List.of(
-                OutValue.of('h'),
-                Halt.empty()
-        );
+        final var instructions = new ArrayList<Integer>();
+        instructions.add(JumpValue.of(4));
+        instructions.add(Halt.empty());
 
         final var input = assemble(instructions);
         run(input).consume(
