@@ -18,13 +18,15 @@ public class Main {
         final var input = assemble(instructions);
         run(input).consume(
                 value -> System.out.println(value.display()),
-                error -> System.err.println(error.display()));
+                error -> System.err.println(error.display())
+        );
     }
 
     private static Deque<Integer> assemble(List<Integer> instructions) {
         var input = new LinkedList<>(List.of(
                 InAddress.of(2),
-                JumpValue.of(0)));
+                JumpValue.of(0)
+        ));
 
         for (int i = 0; i < instructions.size(); i++) {
             int instruction = instructions.get(i);
@@ -36,6 +38,7 @@ public class Main {
                 InAddress.of(2),
                 JumpValue.of(3)
         ));
+
         return input;
     }
 
