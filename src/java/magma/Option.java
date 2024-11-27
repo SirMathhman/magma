@@ -9,4 +9,6 @@ public interface Option<T> {
     void ifPresent(Consumer<T> consumer);
 
     T orElse(T other);
+
+    boolean isEmpty();
 }

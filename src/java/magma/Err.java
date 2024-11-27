@@ -1,5 +1,7 @@
 package magma;
 
+import java.util.function.Consumer;
+
 public record Err<T, X>(X error) implements Result<T, X> {
     @Override
     public boolean isErr() {
@@ -14,5 +16,15 @@ public record Err<T, X>(X error) implements Result<T, X> {
     @Override
     public Option<T> findValue() {
         return new None<>();
+    }
+
+    @Override
+    public <R> Result<R, X> preserveErr(R replacement) {
+        return new Err<>(error);
+    }
+
+    @Override
+    public void consume(Consumer<T> onValid, Consumer<X> onError) {
+        onError.accept(error);
     }
 }

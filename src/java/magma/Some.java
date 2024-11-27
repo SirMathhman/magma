@@ -17,4 +17,9 @@ public record Some<T>(T value) implements Option<T> {
     public T orElse(T other) {
         return value;
     }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
 }

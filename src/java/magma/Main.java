@@ -1,54 +1,83 @@
 package magma;
 
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.IntStream;
+
+import static magma.Main.OpCode.*;
 
 public class Main {
 
-    public static final int IN = 0;
+    public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
 
     public static void main(String[] args) {
-        var input = new LinkedList<Integer>(List.of(
-                2
+        var input = new LinkedList<>(List.of(
+                InAddress.of(2),
+                JumpValue.of(0),
+                InAddress.of(3),
+                Halt.empty(),
+                InAddress.of(2),
+                JumpValue.of(3)
         ));
 
-        run(input).ifPresent(value -> System.out.println(value.display()));
+        run(input).consume(value -> System.out.println(value), error -> System.err.println(error.display()));
     }
 
-    private static Option<RuntimeError> run(LinkedList<Integer> input) {
-        List<Integer> memory = new ArrayList<>(List.of(1));
-        var counter = 0;
-        while (counter < memory.size()) {
-            var instruction = memory.get(counter);
-            final var opCode = (instruction >> 24) & 0xFF;
-            final var addressOrValue = instruction & 0x00FFFFFF;
+    private static Result<State, RuntimeError> run(LinkedList<Integer> input) {
+        var state = new State();
+        while (true) {
+            final var instructionOption = state.findCurrentInstruction();
+            if (instructionOption.isEmpty()) break;
+            final var instruction = instructionOption.orElse(DEFAULT_INSTRUCTION);
 
-            counter++;
+            final var preprocessed = state.next();
+            final var processedResult = process(preprocessed, input, instruction);
+            if (processedResult.isErr()) return processedResult.preserveErr(state);
 
-            final var result = process(input, memory, opCode, addressOrValue);
-            if (result.isErr()) return result.findErr();
-            else memory = result.findValue().orElse(memory);
+            final var processedState = processedResult.findValue().orElse(new None<>());
+            if (processedState.isEmpty()) break;
+            state = processedState.orElse(preprocessed);
         }
 
-        return new None<>();
+        return new Ok<>(state);
     }
 
-    private static Result<List<Integer>, RuntimeError> process(Deque<Integer> input, List<Integer> memory, int opCode, int addressOrValue) {
-        if (opCode == IN) {
-            if (input.isEmpty()) {
-                return new Err<>(new RuntimeError("Input is empty."));
-            } else {
-                final var copy = new ArrayList<>(memory);
-                while (addressOrValue >= copy.size()) {
-                    copy.add(0);
-                }
-                copy.set(addressOrValue, input.poll());
-                return new Ok<>(copy);
-            }
+    private static Result<Option<State>, RuntimeError> process(State state, Deque<Integer> input, Instruction instruction) {
+        return switch (instruction.opCode()) {
+            case InAddress -> handleInAddress(state, input, instruction);
+            case JumpValue -> new Ok<>(new Some<>(state.jump(instruction.addressOrValue())));
+            case Halt -> new Ok<>(new None<>());
+            default -> new Err<>(new RuntimeError("Invalid op code: " + instruction.opCode()));
+        };
+    }
+
+    private static Result<Option<State>, RuntimeError> handleInAddress(State state, Deque<Integer> input, Instruction instruction) {
+        if (input.isEmpty()) {
+            return new Err<>(new RuntimeError("Input is empty."));
+        } else {
+            final var copy = state.set(instruction.addressOrValue(), input.poll());
+            return new Ok<>(new Some<>(copy));
+        }
+    }
+
+    enum OpCode {
+        InAddress,
+        JumpValue,
+        Nothing,
+        Halt;
+
+        private int of(int addressOrValue) {
+            final var opCode = IntStream.range(0, values().length)
+                    .filter(index -> values()[index].equals(this))
+                    .findFirst()
+                    .orElse(0);
+
+            return (opCode << 24) + addressOrValue;
         }
 
-        return new Err<>(new RuntimeError("Invalid op code: " + opCode));
+        public int empty() {
+            return of(0);
+        }
     }
 }
