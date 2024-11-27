@@ -10,7 +10,10 @@ public class Main {
     public static final int IN = 0;
 
     public static void main(String[] args) {
-        var input = new LinkedList<Integer>();
+        var input = new LinkedList<Integer>(List.of(
+                2
+        ));
+
         run(input).ifPresent(value -> System.out.println(value.display()));
     }
 
@@ -38,6 +41,9 @@ public class Main {
                 return new Err<>(new RuntimeError("Input is empty."));
             } else {
                 final var copy = new ArrayList<>(memory);
+                while (addressOrValue >= copy.size()) {
+                    copy.add(0);
+                }
                 copy.set(addressOrValue, input.poll());
                 return new Ok<>(copy);
             }
