@@ -21,7 +21,7 @@ public class Main {
                 JumpValue.of(3)
         ));
 
-        run(input).consume(value -> System.out.println(value), error -> System.err.println(error.display()));
+        run(input).consume(value -> System.out.println(value.display()), error -> System.err.println(error.display()));
     }
 
     private static Result<State, RuntimeError> run(LinkedList<Integer> input) {

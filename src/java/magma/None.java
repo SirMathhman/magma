@@ -1,6 +1,7 @@
 package magma;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class None<T> implements Option<T> {
     @Override
@@ -20,5 +21,10 @@ public class None<T> implements Option<T> {
     @Override
     public boolean isEmpty() {
         return true;
+    }
+
+    @Override
+    public <R> Option<R> map(Function<T, R> mapper) {
+        return new None<>();
     }
 }
