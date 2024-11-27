@@ -12,11 +12,21 @@ public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
 
     public static void main(String[] args) {
+        final var instructions = List.of(
+                Halt.empty()
+        );
+
         var input = new LinkedList<>(List.of(
                 InAddress.of(2),
-                JumpValue.of(0),
-                InAddress.of(3),
-                Halt.empty(),
+                JumpValue.of(0)));
+
+        for (int i = 0; i < instructions.size(); i++) {
+            int instruction = instructions.get(i);
+            input.add(InAddress.of(3 + i));
+            input.add(instruction);
+        }
+
+        input.addAll(List.of(
                 InAddress.of(2),
                 JumpValue.of(3)
         ));
