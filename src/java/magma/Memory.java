@@ -11,7 +11,7 @@ public record Memory(List<Integer> memory) {
                 .map(Instruction::fromValue)
                 .map(Object::toString)
                 .map(value -> "\n\t\t" + value)
-                .collect(Collectors.joining(", ", "[", "\n\t]"));
+                .collect(Collectors.joining(",", "[", "\n\t]"));
     }
 
     public Option<Integer> get(int programCounter) {

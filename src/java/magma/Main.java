@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.IntStream;
 
-import static magma.Main.OpCode.*;
+import static magma.OpCode.*;
 
 public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
 
     public static void main(String[] args) {
         final var instructions = new ArrayList<Integer>();
-        instructions.add(JumpValue.of(4));
+        instructions.add(JumpValue.of(5));
+        instructions.add(100);
         instructions.add(Halt.empty());
 
         final var input = assemble(instructions);
@@ -83,23 +83,4 @@ public class Main {
         }
     }
 
-    enum OpCode {
-        InAddress,
-        JumpValue,
-        Nothing,
-        Halt, OutValue;
-
-        private int of(int addressOrValue) {
-            final var opCode = IntStream.range(0, values().length)
-                    .filter(index -> values()[index].equals(this))
-                    .findFirst()
-                    .orElse(0);
-
-            return (opCode << 24) + addressOrValue;
-        }
-
-        public int empty() {
-            return of(0);
-        }
-    }
 }

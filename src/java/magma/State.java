@@ -12,7 +12,7 @@ public final class State {
     }
 
     public State() {
-        this(new Memory(List.of(1)), 0);
+        this(new Memory(List.of(OpCode.InAddress.of(1))), 0);
     }
 
     Option<Instruction> findCurrentInstruction() {
