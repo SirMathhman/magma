@@ -15,7 +15,7 @@ public class Main {
     }
 
     private static Option<RuntimeError> run(LinkedList<Integer> input) {
-        var memory = new ArrayList<>(List.of(1));
+        List<Integer> memory = new ArrayList<>(List.of(1));
         var counter = 0;
         while (counter < memory.size()) {
             var instruction = memory.get(counter);
@@ -24,23 +24,25 @@ public class Main {
 
             counter++;
 
-            final var option = process(input, memory, opCode, addressOrValue);
-            if(option.isPresent()) return option;
+            final var result = process(input, memory, opCode, addressOrValue);
+            if (result.isErr()) return result.findErr();
+            else memory = result.findValue().orElse(memory);
         }
 
         return new None<>();
     }
 
-    private static Option<RuntimeError> process(Deque<Integer> input, List<Integer> memory, int opCode, int addressOrValue) {
+    private static Result<List<Integer>, RuntimeError> process(Deque<Integer> input, List<Integer> memory, int opCode, int addressOrValue) {
         if (opCode == IN) {
             if (input.isEmpty()) {
-                return new Some<>(new RuntimeError("Input is empty."));
+                return new Err<>(new RuntimeError("Input is empty."));
             } else {
-                memory.set(addressOrValue, input.poll());
-                return new None<>();
+                final var copy = new ArrayList<>(memory);
+                copy.set(addressOrValue, input.poll());
+                return new Ok<>(copy);
             }
         }
 
-        return new Some<>(new RuntimeError("Invalid op code: " + opCode));
+        return new Err<>(new RuntimeError("Invalid op code: " + opCode));
     }
 }

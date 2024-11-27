@@ -12,4 +12,9 @@ public record Some<T>(T value) implements Option<T> {
     public void ifPresent(Consumer<T> consumer) {
         consumer.accept(value);
     }
+
+    @Override
+    public T orElse(T other) {
+        return value;
+    }
 }
