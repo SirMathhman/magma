@@ -112,7 +112,10 @@ public class Main {
                             })
                             .foldLeft(new JavaList<Node>(), JavaList::addAll);
 
-                    return List.of(label("__start__", children.add(instruct(Halt)).list()));
+                    return List.of(label("__start__", new JavaList<Node>()
+                            .addAll(children)
+                            .add(instruct(Halt))
+                            .list()));
                 });
     }
 
@@ -120,11 +123,17 @@ public class Main {
         if(value.is(INT_TYPE)) {
             final var integer = value.findInt(INT_VALUE).orElse(0);
             return new JavaList<Node>()
-                    .add(instruct(LoadFromAddress, STACK_POINTER))
+                    .add(instruct(LoadDirectly, STACK_POINTER))
+                    .add(instruct(StoreIndirectly, STACK_POINTER))
+
+                    .add(instruct(LoadDirectly, STACK_POINTER))
                     .add(instruct(AddFromValue, 1))
                     .add(instruct(StoreDirectly, STACK_POINTER))
                     .add(instruct(LoadFromValue, integer))
-                    .add(instruct(StoreIndirectly, STACK_POINTER));
+                    .add(instruct(StoreIndirectly, STACK_POINTER))
+                    .add(instruct(LoadDirectly, STACK_POINTER))
+                    .add(instruct(SubFromValue, 1))
+                    .add(instruct(StoreDirectly, STACK_POINTER));
         }
         return new JavaList<>();
     }
@@ -158,7 +167,10 @@ public class Main {
                 address++;
             } else if (node.is(LABEL_TYPE)) {
                 final var name = node.findString(LABEL_NAME).orElse("");
-                final var children = node.findNodeList(LABEL_CHILDREN).map(list -> list.list()).orElse(new ArrayList<>());
+                final var children = node.findNodeList(LABEL_CHILDREN)
+                        .map(JavaList::list)
+                        .orElse(new ArrayList<>());
+
                 labelToAddress.put(name, address);
                 address += children.size();
             } else {
@@ -288,10 +300,10 @@ public class Main {
                 System.out.print((char) state.getAccumulator());
                 yield new Ok<>(new Some<>(state));
             }
-            case LoadFromAddress -> handleLoadFromAddress(state, addressOrValue);
+            case LoadDirectly -> handleLoadFromAddress(state, addressOrValue);
             case AddFromAddress -> handleAddFromAddress(state, addressOrValue);
             case JumpConditionByValue -> new Ok<>(new Some<>(state.jumpConditionByValue(addressOrValue)));
-            case SubtractValue -> new Ok<>(new Some<>(state.subtract(addressOrValue)));
+            case SubFromValue -> new Ok<>(new Some<>(state.subtract(addressOrValue)));
             case Not -> new Ok<>(new Some<>(state.invert()));
             case AddFromValue -> new Ok<>(new Some<>(state.add(addressOrValue)));
             case LoadFromValue -> new Ok<>(new Some<>(state.loadFromValue(addressOrValue)));
