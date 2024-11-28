@@ -2,16 +2,21 @@ package magma;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public record Memory(List<Integer> memory) {
     public String display() {
-        return memory.stream()
-                .map(Instruction::fromValue)
-                .map(Object::toString)
-                .map(value -> "\n\t\t" + value)
-                .collect(Collectors.joining(",", "[", "\n\t]"));
+        return IntStream.range(0, memory.size())
+                .mapToObj(this::formatMemoryCell)
+                .collect(Collectors.joining("", "[", "\n\t]"));
+    }
+
+    private String formatMemoryCell(int index) {
+        final var indexAsHex = Integer.toHexString(index);
+        final var indexAsHexPadded = " ".repeat(8 - indexAsHex.length()) + indexAsHex;
+        final var instruction = Instruction.fromValue(memory.get(index));
+        return "\n\t\t%s - %s".formatted(indexAsHexPadded, instruction);
     }
 
     public Option<Integer> get(int programCounter) {
