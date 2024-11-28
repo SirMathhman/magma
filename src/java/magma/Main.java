@@ -1,5 +1,12 @@
 package magma;
 
+import magma.option.None;
+import magma.option.Option;
+import magma.option.Some;
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -11,6 +18,7 @@ public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
 
     public static void main(String[] args) {
+
         final var instructions = new ArrayList<Integer>(List.<Integer>of(
                 JumpToValue.of(6),
                 (int) 'a',

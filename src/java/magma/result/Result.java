@@ -1,4 +1,6 @@
-package magma;
+package magma.result;
+
+import magma.option.Option;
 
 import java.util.function.Consumer;
 

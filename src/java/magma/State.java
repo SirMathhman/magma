@@ -1,5 +1,7 @@
 package magma;
 
+import magma.option.Option;
+
 import java.util.List;
 
 public final class State {

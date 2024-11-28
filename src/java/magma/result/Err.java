@@ -1,32 +1,34 @@
-package magma;
+package magma.result;
 
-import java.util.ArrayList;
-import java.util.List;
+import magma.option.None;
+import magma.option.Option;
+import magma.option.Some;
+
 import java.util.function.Consumer;
 
-public record Ok<T, X>(T value) implements Result<T, X> {
+public record Err<T, X>(X error) implements Result<T, X> {
     @Override
     public boolean isErr() {
-        return false;
+        return true;
     }
 
     @Override
     public Option<X> findErr() {
-        return new None<>();
+        return new Some<>(error);
     }
 
     @Override
     public Option<T> findValue() {
-        return new Some<>(value);
+        return new None<>();
     }
 
     @Override
     public <R> Result<R, X> preserveErr(R replacement) {
-        return new Ok<>(replacement);
+        return new Err<>(error);
     }
 
     @Override
     public void consume(Consumer<T> onValid, Consumer<X> onError) {
-        onValid.accept(value);
+        onError.accept(error);
     }
 }
