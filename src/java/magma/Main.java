@@ -29,29 +29,51 @@ public class Main {
     public static final String ROOT_CHILDREN = "children";
 
     public static void main(String[] args) {
-        final var source = "out 5;";
+        final var source = "let x = 5;";
 
-        var program = compile(source)
-                .findNodeList(ROOT_CHILDREN)
-                .orElse(Collections.emptyList());
+        compile(source).mapErr(ApplicationError::new).flatMapValue(program -> {
+            final var nodes = program.findNodeList(ROOT_CHILDREN)
+                    .orElse(Collections.emptyList());
 
-        assemble(program)
-                .mapValue(Main::buildBinary)
-                .mapValue(Main::wrap)
-                .flatMapValue(Main::run)
-                .consume(
-                        value -> System.out.println(value.display()),
-                        error -> System.err.println(error.display())
-                );
+            return assemble(nodes)
+                    .mapValue(Main::buildBinary)
+                    .mapValue(Main::wrap)
+                    .flatMapValue(Main::run)
+                    .mapErr(ApplicationError::new);
+        }).consume(
+                value -> System.out.println(value.display()),
+                error -> System.err.println(error.display())
+        );
     }
 
-    private static Node compile(String input) {
+    private static Result<Node, Error> compile(String input) {
+        var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            final var c = input.charAt(i);
+            buffer.append(c);
+            if (c == ';') {
+                if (!buffer.isEmpty()) segments.add(buffer.toString());
+                buffer = new StringBuilder();
+            }
+        }
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
+
+        var nodes = new ArrayList<Node>();
+        for (String segment : segments) {
+            return new Err<>(new CompileError("Invalid root member", new StringContext(segment)));
+        }
+
         final var instruct = List.of(
-                instruct(Halt),
-                data("stack-pointer", 4)
+                instruct(JumpByValue, "__start__"),
+                data("spill", 0),
+                data("stack-pointer", 6),
+                label("__start__", List.of(
+                        instruct(Halt)
+                ))
         );
 
-        return new Node(ROOT_TYPE).withNodeList(ROOT_CHILDREN, instruct);
+        return new Ok<>(new Node(ROOT_TYPE).withNodeList(ROOT_CHILDREN, instruct));
     }
 
     private static Node instruct(Operator operator, int value) {

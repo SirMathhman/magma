@@ -23,4 +23,6 @@ public interface Result<T, X> {
     <R> Result<Tuple<T, R>,X> and(Supplier<Result<R, X>> supplier);
 
     <R> Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper);
+
+    <R> Result<T, R> mapErr(Function<X, R> mapper);
 }
