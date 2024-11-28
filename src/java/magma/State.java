@@ -16,7 +16,7 @@ public final class State {
     }
 
     public State() {
-        this(new Memory(List.of(OpCode.InAddress.of(1))), 0, 0);
+        this(new Memory(List.of(Operator.InAddress.of(1))), 0, 0);
     }
 
     public int getAccumulator() {
@@ -24,7 +24,7 @@ public final class State {
     }
 
     Option<Instruction> findCurrentInstruction() {
-        return memory.get(programCounter).map(Instruction::fromValue);
+        return memory.resolve(programCounter).map(Instruction::fromValue);
     }
 
     State next() {
@@ -35,7 +35,7 @@ public final class State {
         return new State(memory.set(address, value), programCounter, accumulator);
     }
 
-    public State jump(int address) {
+    public State jumpByValue(int address) {
         return new State(memory, address, accumulator);
     }
 
@@ -53,10 +53,14 @@ public final class State {
     }
 
     public Option<State> loadFromAddress(int address) {
-        return memory.get(address).map(value -> new State(memory, programCounter, value));
+        return memory.resolve(address).map(value -> new State(memory, programCounter, value));
     }
 
     public Option<State> addFromAddress(int address) {
-        return memory.get(address).map(value -> new State(memory, programCounter, accumulator + value));
+        return memory.resolve(address).map(value -> new State(memory, programCounter, accumulator + value));
+    }
+
+    public Option<State> jumpByAddress(int address) {
+        return memory.resolve(address).map(this::jumpByValue);
     }
 }

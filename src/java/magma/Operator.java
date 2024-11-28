@@ -1,30 +1,44 @@
 package magma;
 
+import magma.option.None;
+import magma.option.Option;
+import magma.option.Some;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
-enum OpCode {
+enum Operator {
     Nothing,
     InAddress,
-    JumpToValue,
+    JumpByValue,
     Halt,
     OutValue,
     OutToAccumulator,
     LoadFromAddress,
-    AddFromAddress;
+    AddFromAddress,
+    JumpByAddress;
 
     private static final int maxLength;
 
     static {
-        maxLength = Arrays.stream(OpCode.values())
+        maxLength = Arrays.stream(Operator.values())
                 .map(Objects::toString)
                 .mapToInt(String::length)
                 .max()
                 .orElse(0);
     }
 
-    public static String padLeft(OpCode code) {
+    public static Option<Operator> find(int value) {
+        final var array = Operator.values();
+        if (value < array.length) {
+            return new Some<>(array[value]);
+        } else {
+            return new None<>();
+        }
+    }
+
+    public static String padLeft(Operator code) {
         final var codeString = code.toString();
         return " ".repeat(maxLength - codeString.length()) + codeString;
     }

@@ -23,7 +23,7 @@ public record Memory(List<Integer> memory) {
         return "\n\t\t%s - %s".formatted(indexAsHexPadded, instruction);
     }
 
-    public Option<Integer> get(int programCounter) {
+    public Option<Integer> resolve(int programCounter) {
         return programCounter < memory.size()
                 ? new Some<>(memory.get(programCounter))
                 : new None<>();
