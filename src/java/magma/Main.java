@@ -6,6 +6,8 @@ import magma.option.Some;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
+import magma.stream.ResultStream;
+import magma.stream.Streams;
 
 import java.util.*;
 
@@ -52,12 +54,13 @@ public class Main {
 
     private static Result<List<Node>, RuntimeError> assemble(List<Node> program) {
         final var labelsToAddresses = computeLabelsToAddresses(program);
-        return program.stream()
+        return Streams.from(program)
                 .map(value -> resolveAddressesForNode(labelsToAddresses, value))
-                .<Result<List<Node>, RuntimeError>>reduce(new Ok<>(new ArrayList<>()), (listRuntimeErrorResult, listRuntimeErrorResult2) -> listRuntimeErrorResult.and(() -> listRuntimeErrorResult2).mapValue(tuple -> {
-                    tuple.left().addAll(tuple.right());
-                    return tuple.left();
-                }), (_, next) -> next);
+                .into(ResultStream::new)
+                .foldResultsLeft(new ArrayList<>(), (nodes, nodes2) -> {
+                    nodes.addAll(nodes2);
+                    return nodes;
+                });
     }
 
     private static HashMap<String, Integer> computeLabelsToAddresses(List<Node> program) {
