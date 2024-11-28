@@ -4,7 +4,6 @@ import magma.assemble.Instruction;
 import magma.assemble.Operator;
 import magma.assemble.State;
 import magma.error.*;
-import magma.error.Error;
 import magma.java.JavaList;
 import magma.option.None;
 import magma.option.Option;
@@ -87,16 +86,8 @@ public class Main {
         return createMagmaRootRule()
                 .parse(input)
                 .mapValue(root -> {
-                    return new ArrayList<>();
+                    return List.of(label("__start__", List.of(instruct(Halt))));
                 });
-    }
-
-    private static Result<Node, Error> compileRootSegment(String segment) {
-        if (segment.contains("=")) {
-
-        }
-
-        return new Err<>(new CompileError("Invalid root member", new StringContext(segment)));
     }
 
     private static Node instruct(Operator operator, int value) {
