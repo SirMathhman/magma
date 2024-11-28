@@ -19,7 +19,7 @@ public final class State {
         this(new Memory(List.of(Operator.InAddress.of(1))), 0, 0);
     }
 
-    public State set(int addressOrValue) {
+    public State storeDirectly(int addressOrValue) {
         return set(addressOrValue, getAccumulator());
     }
 
@@ -89,5 +89,10 @@ public final class State {
 
     public State loadFromValue(int value) {
         return new State(memory, programCounter, value);
+    }
+
+    public State storeIndirectly(int addressOrValue) {
+        final var memory1 = memory.storeIndirectly(addressOrValue, accumulator);
+        return new State(memory1, programCounter, accumulator);
     }
 }

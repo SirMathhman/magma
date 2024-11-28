@@ -13,7 +13,7 @@ public enum Operator {
     InAddress,
     OutFromValue,
     OutFromAccumulator,
-    StoreAtAddress,
+    StoreDirectly,
     LoadFromValue,
     LoadFromAddress,
     AddFromAddress,
@@ -23,7 +23,7 @@ public enum Operator {
     JumpByValue,
     JumpByAddress,
     JumpConditionByValue,
-    Halt;
+    Halt, StoreIndirectly;
 
     private static final int maxLength;
 

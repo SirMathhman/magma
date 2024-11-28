@@ -37,4 +37,9 @@ public record Memory(List<Integer> memory) {
         copy.set(address, value);
         return new Memory(copy);
     }
+
+    public Memory storeIndirectly(int address, int accumulator) {
+        final var realized = memory.get(address);
+        return set(realized, accumulator);
+    }
 }

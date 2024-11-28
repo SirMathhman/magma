@@ -13,14 +13,15 @@ public record Node(
         Option<String> type,
         Map<String, Integer> integers,
         Map<String, String> strings,
+        Map<String, Node> nodes,
         Map<String, JavaList<Node>> nodeLists
 ) implements Display {
     public Node(String type) {
-        this(new Some<>(type), new HashMap<>(), new HashMap<>(), new HashMap<>());
+        this(new Some<>(type), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
     public Node() {
-        this(new None<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
+        this(new None<>(), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
     public Node withInt(String propertyKey, int propertyValue) {
@@ -48,7 +49,7 @@ public record Node(
                 : new None<>();
     }
 
-    public Option<JavaList<Node>> getListOption(String propertyKey) {
+    public Option<JavaList<Node>> findNodeList(String propertyKey) {
         return nodeLists.containsKey(propertyKey)
                 ? new Some<>(nodeLists.get(propertyKey))
                 : new None<>();
@@ -66,13 +67,25 @@ public record Node(
     }
 
     public Node retype(String type) {
-        return new Node(new Some<>(type), integers, strings, nodeLists);
+        return new Node(new Some<>(type), integers, strings, nodes, nodeLists);
     }
 
     public Node merge(Node other) {
         integers.putAll(other.integers);
         strings.putAll(other.strings);
+        nodes.putAll(other.nodes);
         nodeLists.putAll(other.nodeLists);
         return this;
+    }
+
+    public Node withNode(String propertyKey, Node propertyValue) {
+        nodes.put(propertyKey, propertyValue);
+        return this;
+    }
+
+    public Option<Node> findNode(String propertyKey) {
+        return nodes.containsKey(propertyKey)
+                ? new Some<>(nodes.get(propertyKey))
+                : new None<>();
     }
 }

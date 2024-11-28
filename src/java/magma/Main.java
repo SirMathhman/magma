@@ -35,6 +35,10 @@ public class Main {
     public static final String ROOT_CHILDREN = "children";
     public static final String STACK_POINTER = "__stack-pointer__";
     public static final String SPILL = "__spill__";
+    public static final String DECLARATION_TYPE = "declaration";
+    public static final String DECLARATION_VALUE = "value";
+    public static final String INT_TYPE = "int";
+    public static final String INT_VALUE = "value";
 
     public static void main(String[] args) {
         final var source = "let x = 5;";
@@ -50,7 +54,7 @@ public class Main {
     }
 
     private static Result<State, ApplicationError> runProgram(Node program) {
-        final var nodes = program.getListOption(ROOT_CHILDREN).map(list -> list.list())
+        final var nodes = program.findNodeList(ROOT_CHILDREN).map(JavaList::list)
                 .orElse(Collections.emptyList());
 
         return assemble(nodes)
@@ -61,9 +65,18 @@ public class Main {
     }
 
     private static Node mergeIntoRoot(List<Node> compiled) {
+        var count = 0;
+        for (Node node : compiled) {
+            if(node.is(LABEL_TYPE)) {
+                count += node.findNodeList(LABEL_CHILDREN).map(JavaList::size).orElse(0);
+            } else {
+                count += 1;
+            }
+        }
+
         final var instruct = new ArrayList<>(List.of(
                 instruct(JumpByValue, "__start__"),
-                data(STACK_POINTER, 6),
+                data(STACK_POINTER, count + 5),
                 data(SPILL, 0)
         ));
 
@@ -77,17 +90,43 @@ public class Main {
 
     private static TypeRule createDeclarationRule() {
         final var name = new StripRule(new StringRule("name"));
-        final var value = new StripRule(new StringRule("value"));
+        final var value = new StripRule(new NodeRule(DECLARATION_VALUE, new TypeRule(INT_TYPE, new IntRule(INT_VALUE))));
 
-        return new TypeRule("declaration", new FirstRule(new PrefixRule("let ", name), "=", new SuffixRule(value, ";")));
+        return new TypeRule(DECLARATION_TYPE, new FirstRule(new PrefixRule("let ", name), "=", new SuffixRule(value, ";")));
     }
 
     private static Result<List<Node>, CompileError> compile(String input) {
         return createMagmaRootRule()
                 .parse(input)
                 .mapValue(root -> {
-                    return List.of(label("__start__", List.of(instruct(Halt))));
+                    var children = root.findNodeList(ROOT_CHILDREN)
+                            .orElse(new JavaList<>())
+                            .stream()
+                            .map(child -> {
+                                if(child.is(DECLARATION_TYPE)) {
+                                    final var value = child.findNode(DECLARATION_VALUE).orElse(new Node());
+                                    return loadValue(value);
+                                }
+
+                                return new JavaList<Node>().add(child);
+                            })
+                            .foldLeft(new JavaList<Node>(), JavaList::addAll);
+
+                    return List.of(label("__start__", children.add(instruct(Halt)).list()));
                 });
+    }
+
+    private static JavaList<Node> loadValue(Node value) {
+        if(value.is(INT_TYPE)) {
+            final var integer = value.findInt(INT_VALUE).orElse(0);
+            return new JavaList<Node>()
+                    .add(instruct(LoadFromAddress, STACK_POINTER))
+                    .add(instruct(AddFromValue, 1))
+                    .add(instruct(StoreDirectly, STACK_POINTER))
+                    .add(instruct(LoadFromValue, integer))
+                    .add(instruct(StoreIndirectly, STACK_POINTER));
+        }
+        return new JavaList<>();
     }
 
     private static Node instruct(Operator operator, int value) {
@@ -99,13 +138,16 @@ public class Main {
         return Streams.from(program)
                 .map(value -> resolveAddressesForNode(labelsToAddresses, value))
                 .into(ResultStream::new)
-                .foldResultsLeft(new ArrayList<>(), (nodes, nodes2) -> {
-                    nodes.addAll(nodes2);
-                    return nodes;
-                });
+                .mapResult(JavaList::new)
+                .foldResultsLeft(new JavaList<Node>(), JavaList::addAll)
+                .mapValue(values -> {
+                    return new JavaList<Node>()
+                            .addAll(values);
+                })
+                .mapValue(JavaList::list);
     }
 
-    private static HashMap<String, Integer> computeLabelsToAddresses(List<Node> program) {
+    private static Map<String, Integer> computeLabelsToAddresses(List<Node> program) {
         var labelToAddress = new HashMap<String, Integer>();
         var address = 3;
         for (final Node node : program) {
@@ -116,7 +158,7 @@ public class Main {
                 address++;
             } else if (node.is(LABEL_TYPE)) {
                 final var name = node.findString(LABEL_NAME).orElse("");
-                final var children = node.getListOption(LABEL_CHILDREN).map(list -> list.list()).orElse(new ArrayList<>());
+                final var children = node.findNodeList(LABEL_CHILDREN).map(list -> list.list()).orElse(new ArrayList<>());
                 labelToAddress.put(name, address);
                 address += children.size();
             } else {
@@ -149,7 +191,7 @@ public class Main {
         if (node.is(INSTRUCTION_TYPE)) {
             return resolveInstruction(labelToAddress, node).mapValue(Collections::singletonList);
         } else if (node.is(LABEL_TYPE)) {
-            final var children = node.getListOption(LABEL_CHILDREN).map(list -> list.list()).orElse(Collections.emptyList());
+            final var children = node.findNodeList(LABEL_CHILDREN).map(list -> list.list()).orElse(Collections.emptyList());
             return children.stream()
                     .map(child -> resolveInstruction(labelToAddress, child))
                     .<Result<List<Node>, RuntimeError>>reduce(new Ok<>(new ArrayList<Node>()), (current, next) -> current.and(() -> next).mapValue(tuple -> {
@@ -252,8 +294,9 @@ public class Main {
             case SubtractValue -> new Ok<>(new Some<>(state.subtract(addressOrValue)));
             case Not -> new Ok<>(new Some<>(state.invert()));
             case AddFromValue -> new Ok<>(new Some<>(state.add(addressOrValue)));
-            case StoreAtAddress -> new Ok<>(new Some<>(state.set(addressOrValue)));
             case LoadFromValue -> new Ok<>(new Some<>(state.loadFromValue(addressOrValue)));
+            case StoreDirectly -> new Ok<>(new Some<>(state.storeDirectly(addressOrValue)));
+            case StoreIndirectly -> new Ok<>(new Some<>(state.storeIndirectly(addressOrValue)));
         };
     }
 

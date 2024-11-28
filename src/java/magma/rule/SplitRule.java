@@ -39,7 +39,7 @@ public record SplitRule(String propertyKey, Rule childRule) implements Rule {
 
     @Override
     public Result<String, CompileError> generate(Node node) {
-        final var option = node.getListOption(propertyKey);
+        final var option = node.findNodeList(propertyKey);
         if (option.isEmpty()) return new Err<>(new CompileError("No children present", new NodeContext(node)));
 
         return option.orElse(new JavaList<>())
