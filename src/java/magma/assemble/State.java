@@ -1,4 +1,4 @@
-package magma;
+package magma.assemble;
 
 import magma.option.Option;
 
@@ -19,7 +19,7 @@ public final class State {
         this(new Memory(List.of(Operator.InAddress.of(1))), 0, 0);
     }
 
-    State set(int addressOrValue) {
+    public State set(int addressOrValue) {
         return set(addressOrValue, getAccumulator());
     }
 
@@ -27,15 +27,15 @@ public final class State {
         return accumulator;
     }
 
-    Option<Instruction> findCurrentInstruction() {
+    public Option<Instruction> findCurrentInstruction() {
         return memory.resolve(programCounter).map(Instruction::fromValue);
     }
 
-    State next() {
+    public State next() {
         return new State(memory, programCounter + 1, accumulator);
     }
 
-    State set(int address, int value) {
+    public State set(int address, int value) {
         return new State(memory.set(address, value), programCounter, accumulator);
     }
 

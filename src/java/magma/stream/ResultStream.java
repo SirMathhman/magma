@@ -25,4 +25,8 @@ public record ResultStream<T, X>(Stream<Result<T, X>> parent) implements Stream<
     public <C> Result<C, X> foldResultsLeft(C initial, BiFunction<C, T, C> folder) {
         return parent.<Result<C, X>>foldLeft(new Ok<>(initial), (cxResult, txResult) -> cxResult.and(() -> txResult).mapValue(tuple -> folder.apply(tuple.left(), tuple.right())));
     }
+
+    public <R> ResultStream<R, X> mapResult(Function<T, R> mapper) {
+        return new ResultStream<>(parent.map(inner -> inner.mapValue(mapper)));
+    }
 }

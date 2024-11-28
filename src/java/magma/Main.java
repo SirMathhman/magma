@@ -1,17 +1,24 @@
 package magma;
 
+import magma.assemble.Instruction;
+import magma.assemble.Operator;
+import magma.assemble.State;
+import magma.error.*;
+import magma.error.Error;
+import magma.java.JavaList;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
+import magma.rule.*;
 import magma.stream.ResultStream;
 import magma.stream.Streams;
 
 import java.util.*;
 
-import static magma.Operator.*;
+import static magma.assemble.Operator.*;
 
 public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
@@ -27,53 +34,69 @@ public class Main {
     public static final String INSTRUCTION_ADDRESS_OR_VALUE = "address-or-value";
     public static final String ROOT_TYPE = "root";
     public static final String ROOT_CHILDREN = "children";
+    public static final String STACK_POINTER = "__stack-pointer__";
+    public static final String SPILL = "__spill__";
 
     public static void main(String[] args) {
         final var source = "let x = 5;";
 
-        compile(source).mapErr(ApplicationError::new).flatMapValue(program -> {
-            final var nodes = program.findNodeList(ROOT_CHILDREN)
-                    .orElse(Collections.emptyList());
-
-            return assemble(nodes)
-                    .mapValue(Main::buildBinary)
-                    .mapValue(Main::wrap)
-                    .flatMapValue(Main::run)
-                    .mapErr(ApplicationError::new);
-        }).consume(
-                value -> System.out.println(value.display()),
-                error -> System.err.println(error.display())
-        );
+        compile(source)
+                .mapValue(Main::mergeIntoRoot)
+                .mapErr(ApplicationError::new)
+                .flatMapValue(Main::runProgram)
+                .consume(
+                        value -> System.out.println(value.display()),
+                        error -> System.err.println(error.display())
+                );
     }
 
-    private static Result<Node, Error> compile(String input) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        for (int i = 0; i < input.length(); i++) {
-            final var c = input.charAt(i);
-            buffer.append(c);
-            if (c == ';') {
-                if (!buffer.isEmpty()) segments.add(buffer.toString());
-                buffer = new StringBuilder();
-            }
-        }
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
+    private static Result<State, ApplicationError> runProgram(Node program) {
+        final var nodes = program.getListOption(ROOT_CHILDREN).map(list -> list.list())
+                .orElse(Collections.emptyList());
 
-        var nodes = new ArrayList<Node>();
-        for (String segment : segments) {
-            return new Err<>(new CompileError("Invalid root member", new StringContext(segment)));
-        }
+        return assemble(nodes)
+                .mapValue(Main::buildBinary)
+                .mapValue(Main::wrap)
+                .flatMapValue(Main::run)
+                .mapErr(ApplicationError::new);
+    }
 
-        final var instruct = List.of(
+    private static Node mergeIntoRoot(List<Node> compiled) {
+        final var instruct = new ArrayList<>(List.of(
                 instruct(JumpByValue, "__start__"),
-                data("spill", 0),
-                data("stack-pointer", 6),
-                label("__start__", List.of(
-                        instruct(Halt)
-                ))
-        );
+                data(STACK_POINTER, 6),
+                data(SPILL, 0)
+        ));
 
-        return new Ok<>(new Node(ROOT_TYPE).withNodeList(ROOT_CHILDREN, instruct));
+        instruct.addAll(compiled);
+        return new Node(ROOT_TYPE).withNodeList0(ROOT_CHILDREN, new JavaList<>(instruct));
+    }
+
+    private static Rule createMagmaRootRule() {
+        return new SplitRule("children", createDeclarationRule());
+    }
+
+    private static TypeRule createDeclarationRule() {
+        final var name = new StripRule(new StringRule("name"));
+        final var value = new StripRule(new StringRule("value"));
+
+        return new TypeRule("declaration", new FirstRule(new PrefixRule("let ", name), "=", new SuffixRule(value, ";")));
+    }
+
+    private static Result<List<Node>, CompileError> compile(String input) {
+        return createMagmaRootRule()
+                .parse(input)
+                .mapValue(root -> {
+                    return new ArrayList<>();
+                });
+    }
+
+    private static Result<Node, Error> compileRootSegment(String segment) {
+        if (segment.contains("=")) {
+
+        }
+
+        return new Err<>(new CompileError("Invalid root member", new StringContext(segment)));
     }
 
     private static Node instruct(Operator operator, int value) {
@@ -102,7 +125,7 @@ public class Main {
                 address++;
             } else if (node.is(LABEL_TYPE)) {
                 final var name = node.findString(LABEL_NAME).orElse("");
-                final var children = node.findNodeList(LABEL_CHILDREN).orElse(new ArrayList<>());
+                final var children = node.getListOption(LABEL_CHILDREN).map(list -> list.list()).orElse(new ArrayList<>());
                 labelToAddress.put(name, address);
                 address += children.size();
             } else {
@@ -135,7 +158,7 @@ public class Main {
         if (node.is(INSTRUCTION_TYPE)) {
             return resolveInstruction(labelToAddress, node).mapValue(Collections::singletonList);
         } else if (node.is(LABEL_TYPE)) {
-            final var children = node.findNodeList(LABEL_CHILDREN).orElse(Collections.emptyList());
+            final var children = node.getListOption(LABEL_CHILDREN).map(list -> list.list()).orElse(Collections.emptyList());
             return children.stream()
                     .map(child -> resolveInstruction(labelToAddress, child))
                     .<Result<List<Node>, RuntimeError>>reduce(new Ok<>(new ArrayList<Node>()), (current, next) -> current.and(() -> next).mapValue(tuple -> {
@@ -161,7 +184,7 @@ public class Main {
     }
 
     private static Node label(String name, List<Node> children) {
-        return new Node(LABEL_TYPE).withString(LABEL_NAME, name).withNodeList(LABEL_CHILDREN, children);
+        return new Node(LABEL_TYPE).withString(LABEL_NAME, name).withNodeList0(LABEL_CHILDREN, new JavaList<>(children));
     }
 
     private static Node instruct(Operator operator, String label) {

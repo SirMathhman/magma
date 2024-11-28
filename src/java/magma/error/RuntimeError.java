@@ -1,4 +1,4 @@
-package magma;
+package magma.error;
 
 public record RuntimeError(String message) implements Error {
     @Override

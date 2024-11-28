@@ -1,4 +1,4 @@
-package magma;
+package magma.assemble;
 
 public record Instruction(Operator operator, int addressOrValue) {
     @Override

@@ -1,4 +1,4 @@
-package magma;
+package magma.assemble;
 
 import magma.option.None;
 import magma.option.Option;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
-enum Operator {
+public enum Operator {
     Nothing,
     InAddress,
     OutFromValue,
@@ -54,7 +54,7 @@ enum Operator {
         return (opCode << 24) + addressOrValue;
     }
 
-    int computeOpCode() {
+    public int computeOpCode() {
         return IntStream.range(0, values().length)
                 .filter(index -> values()[index].equals(this))
                 .findFirst()

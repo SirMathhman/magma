@@ -1,20 +1,26 @@
 package magma;
 
+import magma.error.Display;
+import magma.java.JavaList;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public record Node(
         Option<String> type,
         Map<String, Integer> integers,
         Map<String, String> strings,
-        Map<String, List<Node>> nodeLists) {
+        Map<String, JavaList<Node>> nodeLists
+) implements Display {
     public Node(String type) {
         this(new Some<>(type), new HashMap<>(), new HashMap<>(), new HashMap<>());
+    }
+
+    public Node() {
+        this(new None<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
     public Node withInt(String propertyKey, int propertyValue) {
@@ -27,7 +33,7 @@ public record Node(
         return this;
     }
 
-    public Node withNodeList(String propertyKey, List<Node> propertyValues) {
+    public Node withNodeList0(String propertyKey, JavaList<Node> propertyValues) {
         nodeLists.put(propertyKey, propertyValues);
         return this;
     }
@@ -42,7 +48,7 @@ public record Node(
                 : new None<>();
     }
 
-    public Option<List<Node>> findNodeList(String propertyKey) {
+    public Option<JavaList<Node>> getListOption(String propertyKey) {
         return nodeLists.containsKey(propertyKey)
                 ? new Some<>(nodeLists.get(propertyKey))
                 : new None<>();
@@ -52,5 +58,21 @@ public record Node(
         return integers.containsKey(propertyKey)
                 ? new Some<>(integers.get(propertyKey))
                 : new None<>();
+    }
+
+    @Override
+    public String display() {
+        return toString();
+    }
+
+    public Node retype(String type) {
+        return new Node(new Some<>(type), integers, strings, nodeLists);
+    }
+
+    public Node merge(Node other) {
+        integers.putAll(other.integers);
+        strings.putAll(other.strings);
+        nodeLists.putAll(other.nodeLists);
+        return this;
     }
 }

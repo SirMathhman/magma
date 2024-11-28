@@ -1,4 +1,4 @@
-package magma;
+package magma.error;
 
 public record CompileError(String message, Context context) implements Error {
     @Override
