@@ -25,43 +25,15 @@ public class Main {
     public static final String INSTRUCTION_OPERATOR = "operator";
     public static final String INSTRUCTION_LABEL = "label";
     public static final String INSTRUCTION_ADDRESS_OR_VALUE = "address-or-value";
+    public static final String ROOT_TYPE = "root";
+    public static final String ROOT_CHILDREN = "children";
 
     public static void main(String[] args) {
-        int i = 0;
-        while (true) {
-            if (!(i - 10 < 0)) {
-                break;
-            } else {
-                i++;
-            }
-        }
+        final var source = "out 5;";
 
-        var program = List.of(
-                instruct(JumpByValue, "__start__"),
-                data("value", '0'),
-                data("index", 0),
-                label("__start__", List.of(
-                        instruct(JumpByValue, "loop")
-                )),
-                label("loop", List.of(
-                        instruct(LoadFromAddress, "index"),
-                        instruct(SubtractValue, 10),
-                        instruct(Not),
-                        instruct(JumpConditionByValue, "halt"),
-
-                        instruct(LoadFromAddress, "index"),
-                        instruct(AddFromValue, '0'),
-                        instruct(OutToAccumulator),
-
-                        instruct(LoadFromAddress, "index"),
-                        instruct(AddFromValue, 1),
-                        instruct(StoreAtAddress, "index"),
-                        instruct(JumpByValue, "loop")
-                )),
-                label("halt", List.of(
-                        instruct(Halt)
-                ))
-        );
+        var program = compile(source)
+                .findNodeList(ROOT_CHILDREN)
+                .orElse(Collections.emptyList());
 
         assemble(program)
                 .mapValue(Main::buildBinary)
@@ -71,6 +43,15 @@ public class Main {
                         value -> System.out.println(value.display()),
                         error -> System.err.println(error.display())
                 );
+    }
+
+    private static Node compile(String input) {
+        final var instruct = List.of(
+                instruct(Halt),
+                data("stack-pointer", 0)
+        );
+
+        return new Node(ROOT_TYPE).withNodeList(ROOT_CHILDREN, instruct);
     }
 
     private static Node instruct(Operator operator, int value) {
@@ -221,11 +202,11 @@ public class Main {
             case JumpByAddress -> handleJumpByAddress(state, addressOrValue);
             case Nothing -> new Ok<>(new Some<>(state));
             case Halt -> new Ok<>(new None<>());
-            case OutValue -> {
+            case OutFromValue -> {
                 System.out.print((char) addressOrValue);
                 yield new Ok<>(new Some<>(state));
             }
-            case OutToAccumulator -> {
+            case OutFromAccumulator -> {
                 System.out.print((char) state.getAccumulator());
                 yield new Ok<>(new Some<>(state));
             }
@@ -236,6 +217,7 @@ public class Main {
             case Not -> new Ok<>(new Some<>(state.invert()));
             case AddFromValue -> new Ok<>(new Some<>(state.add(addressOrValue)));
             case StoreAtAddress -> new Ok<>(new Some<>(state.set(addressOrValue)));
+            case LoadFromValue -> new Ok<>(new Some<>(state.loadFromValue(addressOrValue)));
         };
     }
 

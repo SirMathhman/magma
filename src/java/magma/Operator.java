@@ -11,13 +11,19 @@ import java.util.stream.IntStream;
 enum Operator {
     Nothing,
     InAddress,
-    JumpByValue,
-    Halt,
-    OutValue,
-    OutToAccumulator,
+    OutFromValue,
+    OutFromAccumulator,
+    StoreAtAddress,
+    LoadFromValue,
     LoadFromAddress,
     AddFromAddress,
-    JumpByAddress, JumpConditionByValue, SubtractValue, Not, AddFromValue, StoreAtAddress;
+    AddFromValue,
+    SubtractValue,
+    Not,
+    JumpByValue,
+    JumpByAddress,
+    JumpConditionByValue,
+    Halt;
 
     private static final int maxLength;
 

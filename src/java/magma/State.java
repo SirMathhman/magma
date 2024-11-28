@@ -86,4 +86,8 @@ public final class State {
         }
         return this;
     }
+
+    public State loadFromValue(int value) {
+        return new State(memory, programCounter, value);
+    }
 }
