@@ -9,7 +9,10 @@ enum OpCode {
     InAddress,
     JumpToValue,
     Halt,
-    OutValue, LoadFromAddress, AddFromAddress;
+    OutValue,
+    OutToAccumulator,
+    LoadFromAddress,
+    AddFromAddress;
 
     private static final int maxLength;
 

@@ -17,6 +17,10 @@ public final class State {
         this(new Memory(List.of(OpCode.InAddress.of(1))), 0, 0);
     }
 
+    public int getAccumulator() {
+        return accumulator;
+    }
+
     Option<Instruction> findCurrentInstruction() {
         return memory.get(programCounter).map(Instruction::fromValue);
     }

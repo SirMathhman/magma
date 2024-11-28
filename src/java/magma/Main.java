@@ -11,12 +11,13 @@ public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
 
     public static void main(String[] args) {
-        final var instructions = new ArrayList<>(List.of(
+        final var instructions = new ArrayList<Integer>(List.<Integer>of(
                 JumpToValue.of(6),
-                100,
-                200,
+                (int) 'a',
+                1,
                 LoadFromAddress.of(4),
                 AddFromAddress.of(5),
+                OutToAccumulator.empty(),
                 Halt.empty()
         ));
 
@@ -74,6 +75,10 @@ public class Main {
             case Halt -> new Ok<>(new None<>());
             case OutValue -> {
                 System.out.print((char) addressOrValue);
+                yield new Ok<>(new Some<>(state));
+            }
+            case OutToAccumulator -> {
+                System.out.print((char) state.getAccumulator());
                 yield new Ok<>(new Some<>(state));
             }
             case LoadFromAddress -> handleLoadFromAddress(state, addressOrValue);
