@@ -11,10 +11,14 @@ public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
 
     public static void main(String[] args) {
-        final var instructions = new ArrayList<Integer>();
-        instructions.add(JumpValue.of(5));
-        instructions.add(0x64);
-        instructions.add(Halt.empty());
+        final var instructions = new ArrayList<>(List.of(
+                JumpToValue.of(6),
+                100,
+                200,
+                LoadFromAddress.of(4),
+                AddFromAddress.of(5),
+                Halt.empty()
+        ));
 
         final var input = assemble(instructions);
         run(input).consume(
@@ -26,7 +30,7 @@ public class Main {
     private static Deque<Integer> assemble(List<Integer> instructions) {
         var input = new LinkedList<>(List.of(
                 InAddress.of(2),
-                JumpValue.of(0)
+                JumpToValue.of(0)
         ));
 
         for (int i = 0; i < instructions.size(); i++) {
@@ -37,7 +41,7 @@ public class Main {
 
         input.addAll(List.of(
                 InAddress.of(2),
-                JumpValue.of(3)
+                JumpToValue.of(3)
         ));
 
         return input;
@@ -62,16 +66,31 @@ public class Main {
     }
 
     private static Result<Option<State>, RuntimeError> process(State state, Deque<Integer> input, Instruction instruction) {
+        final var addressOrValue = instruction.addressOrValue();
         return switch (instruction.opCode()) {
             case InAddress -> handleInAddress(state, input, instruction);
-            case JumpValue -> new Ok<>(new Some<>(state.jump(instruction.addressOrValue())));
+            case JumpToValue -> new Ok<>(new Some<>(state.jump(addressOrValue)));
             case Nothing -> new Ok<>(new Some<>(state));
             case Halt -> new Ok<>(new None<>());
             case OutValue -> {
-                System.out.print((char) instruction.addressOrValue());
+                System.out.print((char) addressOrValue);
                 yield new Ok<>(new Some<>(state));
             }
+            case LoadFromAddress -> handleLoadFromAddress(state, addressOrValue);
+            case AddFromAddress -> handleAddFromAddress(state, addressOrValue);
         };
+    }
+
+    private static Result<Option<State>, RuntimeError> handleAddFromAddress(State state, int addressOrValue) {
+        return state.addFromAddress(addressOrValue)
+                .<Result<Option<State>, RuntimeError>>map(value -> new Ok<>(new Some<>(value)))
+                .orElseGet(() -> new Err<>(new RuntimeError("Invalid address: " + addressOrValue)));
+    }
+
+    private static Result<Option<State>, RuntimeError> handleLoadFromAddress(State state, int addressOrValue) {
+        return state.loadFromAddress(addressOrValue)
+                .<Result<Option<State>, RuntimeError>>map(value -> new Ok<>(new Some<>(value)))
+                .orElseGet(() -> new Err<>(new RuntimeError("Invalid address: " + addressOrValue)));
     }
 
     private static Result<Option<State>, RuntimeError> handleInAddress(State state, Deque<Integer> input, Instruction instruction) {

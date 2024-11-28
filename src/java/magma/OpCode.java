@@ -7,9 +7,9 @@ import java.util.stream.IntStream;
 enum OpCode {
     Nothing,
     InAddress,
-    JumpValue,
+    JumpToValue,
     Halt,
-    OutValue;
+    OutValue, LoadFromAddress, AddFromAddress;
 
     private static final int maxLength;
 
