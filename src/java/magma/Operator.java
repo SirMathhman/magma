@@ -17,7 +17,7 @@ enum Operator {
     OutToAccumulator,
     LoadFromAddress,
     AddFromAddress,
-    JumpByAddress;
+    JumpByAddress, JumpConditionByValue, SubtractValue, Not, AddFromValue, StoreAtAddress;
 
     private static final int maxLength;
 

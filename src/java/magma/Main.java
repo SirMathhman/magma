@@ -27,15 +27,36 @@ public class Main {
     public static final String INSTRUCTION_ADDRESS_OR_VALUE = "address-or-value";
 
     public static void main(String[] args) {
+        int i = 0;
+        while (true) {
+            if (!(i - 10 < 0)) {
+                break;
+            } else {
+                i++;
+            }
+        }
+
         var program = List.of(
                 instruct(JumpByValue, "__start__"),
-                data("value", 'a'),
-                data("offset", 1),
+                data("value", '0'),
+                data("index", 0),
                 label("__start__", List.of(
-                        instruct(LoadFromAddress, "value"),
-                        instruct(AddFromAddress, "offset"),
+                        instruct(JumpByValue, "loop")
+                )),
+                label("loop", List.of(
+                        instruct(LoadFromAddress, "index"),
+                        instruct(SubtractValue, 10),
+                        instruct(Not),
+                        instruct(JumpConditionByValue, "halt"),
+
+                        instruct(LoadFromAddress, "index"),
+                        instruct(AddFromValue, '0'),
                         instruct(OutToAccumulator),
-                        instruct(JumpByAddress, "halt")
+
+                        instruct(LoadFromAddress, "index"),
+                        instruct(AddFromValue, 1),
+                        instruct(StoreAtAddress, "index"),
+                        instruct(JumpByValue, "loop")
                 )),
                 label("halt", List.of(
                         instruct(Halt)
@@ -50,6 +71,10 @@ public class Main {
                         value -> System.out.println(value.display()),
                         error -> System.err.println(error.display())
                 );
+    }
+
+    private static Node instruct(Operator operator, int value) {
+        return instruct(operator).withInt(INSTRUCTION_ADDRESS_OR_VALUE, value);
     }
 
     private static Result<List<Node>, RuntimeError> assemble(List<Node> program) {
@@ -206,6 +231,11 @@ public class Main {
             }
             case LoadFromAddress -> handleLoadFromAddress(state, addressOrValue);
             case AddFromAddress -> handleAddFromAddress(state, addressOrValue);
+            case JumpConditionByValue -> new Ok<>(new Some<>(state.jumpConditionByValue(addressOrValue)));
+            case SubtractValue -> new Ok<>(new Some<>(state.subtract(addressOrValue)));
+            case Not -> new Ok<>(new Some<>(state.invert()));
+            case AddFromValue -> new Ok<>(new Some<>(state.add(addressOrValue)));
+            case StoreAtAddress -> new Ok<>(new Some<>(state.set(addressOrValue)));
         };
     }
 

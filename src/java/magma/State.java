@@ -19,6 +19,10 @@ public final class State {
         this(new Memory(List.of(Operator.InAddress.of(1))), 0, 0);
     }
 
+    State set(int addressOrValue) {
+        return set(addressOrValue, getAccumulator());
+    }
+
     public int getAccumulator() {
         return accumulator;
     }
@@ -62,5 +66,24 @@ public final class State {
 
     public Option<State> jumpByAddress(int address) {
         return memory.resolve(address).map(this::jumpByValue);
+    }
+
+    public State invert() {
+        return new State(memory, programCounter, accumulator > 0 ? 0 : 1);
+    }
+
+    public State subtract(int value) {
+        return new State(memory, programCounter, accumulator - value);
+    }
+
+    public State add(int addressOrValue) {
+        return new State(memory, programCounter, accumulator + addressOrValue);
+    }
+
+    public State jumpConditionByValue(int value) {
+        if(accumulator < 0) {
+            return jumpByValue(value);
+        }
+        return this;
     }
 }
