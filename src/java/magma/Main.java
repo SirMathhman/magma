@@ -48,7 +48,7 @@ public class Main {
     private static Node compile(String input) {
         final var instruct = List.of(
                 instruct(Halt),
-                data("stack-pointer", 0)
+                data("stack-pointer", 4)
         );
 
         return new Node(ROOT_TYPE).withNodeList(ROOT_CHILDREN, instruct);
