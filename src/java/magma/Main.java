@@ -18,8 +18,19 @@ public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
 
     public static void main(String[] args) {
+        var nodes = List.of(
+                instruct(JumpToValue, "__start__"),
+                data("value", 'a'),
+                data("offset", 1),
+                instruct(LoadFromAddress, "value"),
+                instruct(AddFromAddress, "offset"),
+                instruct(OutToAccumulator),
+                instruct(Halt)
+        );
 
-        final var instructions = new ArrayList<Integer>(List.<Integer>of(
+        
+
+        final var instructions = new ArrayList<Integer>(List.of(
                 JumpToValue.of(6),
                 (int) 'a',
                 1,
@@ -34,6 +45,20 @@ public class Main {
                 value -> System.out.println(value.display()),
                 error -> System.err.println(error.display())
         );
+    }
+
+    private static Node instruct(OpCode opCode, String label) {
+        return instruct(opCode).withString("label", label);
+    }
+
+    private static Node instruct(OpCode opCode) {
+        return new Node("instruction").withInt("op-code", opCode.computeOpCode());
+    }
+
+    private static Node data(String label, int value) {
+        return new Node("data")
+                .withString("label", label)
+                .withInt("value", value);
     }
 
     private static Deque<Integer> assemble(List<Integer> instructions) {

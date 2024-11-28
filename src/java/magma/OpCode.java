@@ -16,11 +16,6 @@ enum OpCode {
 
     private static final int maxLength;
 
-    public static String padLeft(OpCode code) {
-        final var codeString = code.toString();
-        return " ".repeat(maxLength - codeString.length()) + codeString;
-    }
-
     static {
         maxLength = Arrays.stream(OpCode.values())
                 .map(Objects::toString)
@@ -29,13 +24,21 @@ enum OpCode {
                 .orElse(0);
     }
 
+    public static String padLeft(OpCode code) {
+        final var codeString = code.toString();
+        return " ".repeat(maxLength - codeString.length()) + codeString;
+    }
+
     public int of(int addressOrValue) {
-        final var opCode = IntStream.range(0, values().length)
+        final var opCode = computeOpCode();
+        return (opCode << 24) + addressOrValue;
+    }
+
+    int computeOpCode() {
+        return IntStream.range(0, values().length)
                 .filter(index -> values()[index].equals(this))
                 .findFirst()
                 .orElse(0);
-
-        return (opCode << 24) + addressOrValue;
     }
 
     public int empty() {
