@@ -18,7 +18,7 @@ public enum Operator {
     LoadDirectly,
     AddFromAddress,
     AddFromValue,
-    SubFromValue,
+    SubtractFromValue,
     Not,
     JumpByValue,
     JumpByAddress,

@@ -1,10 +1,11 @@
 package magma.java;
 
+import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
 import magma.api.stream.HeadedStream;
-import magma.api.stream.ListHead;
+import magma.api.stream.RangeHead;
 import magma.api.stream.Stream;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public record JavaList<T>(List<T> list) {
     }
 
     public Stream<T> stream() {
-        return new HeadedStream<>(new ListHead<>(list));
+        return new HeadedStream<>(new RangeHead(list.size())).map(list::get);
     }
 
     public JavaList<T> addAll(JavaList<T> other) {
@@ -46,5 +47,15 @@ public record JavaList<T>(List<T> list) {
     private JavaList<T> set(int index, T last) {
         list.set(index, last);
         return this;
+    }
+
+    public Stream<Tuple<Integer, T>> streamWithIndices() {
+        return new HeadedStream<>(new RangeHead(list.size())).extend(list::get);
+    }
+
+    public Option<Stream<T>> sliceTo(int index) {
+        if (index < list.size()) return new None<>();
+        return new Some<>(new HeadedStream<>(new RangeHead(index))
+                .map(list::get));
     }
 }

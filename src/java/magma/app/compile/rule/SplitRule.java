@@ -7,7 +7,8 @@ import magma.java.JavaList;
 import magma.api.result.Err;
 import magma.api.result.Result;
 import magma.api.stream.ResultStream;
-import magma.api.stream.Streams;
+
+import java.util.List;
 
 public final class SplitRule implements Rule {
     private final String propertyKey;
@@ -22,7 +23,8 @@ public final class SplitRule implements Rule {
 
     @Override
     public Result<Node, CompileError> parse(String input) {
-        return Streams.from(splitter.split(input))
+        List<String> list1 = splitter.split(input);
+        return new JavaList<>(list1).stream()
                 .map(childRule::parse)
                 .into(ResultStream::new)
                 .foldResultsLeft(new JavaList<Node>(), JavaList::add)

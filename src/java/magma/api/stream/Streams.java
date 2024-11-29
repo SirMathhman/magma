@@ -1,14 +1,9 @@
 package magma.api.stream;
 
-import java.util.List;
+import magma.api.option.Option;
 
 public class Streams {
-    public static <T> Stream<T> from(List<T> list) {
-        return new HeadedStream<>(new ListHead<>(list));
-    }
-
-    @SafeVarargs
-    public static <T> Stream<T> of(T... values) {
-        return from(List.of(values));
+    public static <T> Stream<T> fromOption(Option<T> option) {
+        return new HeadedStream<>(option.<Head<T>>map(SingleHead::new).orElseGet(EmptyHead::new));
     }
 }

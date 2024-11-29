@@ -10,7 +10,7 @@ public class ListHead<T> implements Head<T> {
     private final List<T> list;
     private int counter;
 
-    public ListHead(List<T> list) {
+    private ListHead(List<T> list) {
         this.list = list;
         this.counter = 0;
     }

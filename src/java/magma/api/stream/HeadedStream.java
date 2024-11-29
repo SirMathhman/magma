@@ -46,7 +46,8 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
                 : new HeadedStream<>(new EmptyHead<>()));
     }
 
-    private <R> Stream<R> flatMap(Function<T, Stream<R>> mapper) {
+    @Override
+    public <R> Stream<R> flatMap(Function<T, Stream<R>> mapper) {
         return map(mapper).foldLeft(new HeadedStream<>(new EmptyHead<>()), new BiFunction<HeadedStream<R>, Stream<R>, HeadedStream<R>>() {
             @Override
             public HeadedStream<R> apply(HeadedStream<R> rHeadedStream, Stream<R> rStream) {

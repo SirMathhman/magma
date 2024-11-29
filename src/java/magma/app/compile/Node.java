@@ -3,11 +3,11 @@ package magma.app.compile;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
-import magma.api.stream.Streams;
 import magma.app.error.Display;
 import magma.java.JavaList;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -54,7 +54,9 @@ public record Node(
                 .foldLeft((previous, next) -> previous + ", " + next)
                 .orElse("") + "]");
 
-        final var filter = Streams.of(joinedIntegers, joinedNodeLists)
+        final T[] ts = new T[]{joinedIntegers, joinedNodeLists};
+        final JavaList<T[]> javaList = new JavaList<>(List.of(ts));
+        final var filter = javaList.stream()
                 .filter(value -> !value.isEmpty())
                 .foldLeft((previous, next) -> previous + "," + next)
                 .orElse("");
