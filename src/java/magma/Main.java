@@ -190,7 +190,7 @@ public class Main {
     private static Result<Loader, CompileError> loadValue(Node value) {
         if (value.is(INT_TYPE)) {
             final var integer = value.findInt(INT_VALUE).orElse(0);
-            return new Ok<>(new SingleLoader(new JavaList<Node>().add(instruct(LoadFromValue, integer))));
+            return loadValue(integer);
         }
 
         if (value.is(TUPLE_TYPE)) {
@@ -203,7 +203,16 @@ public class Main {
                     .mapValue(MultipleLoader::new);
         }
 
+        if(value.is(CHAR_TYPE)) {
+            final var c = value.findString(CHAR_VALUE).orElse("");
+            return loadValue((int) c.charAt(0));
+        }
+
         return new Err<>(new CompileError("Unknown value", new NodeContext(value)));
+    }
+
+    private static Result<Loader, CompileError> loadValue(int integer) {
+        return new Ok<>(new SingleLoader(new JavaList<Node>().add(instruct(LoadFromValue, integer))));
     }
 
     private static Result<List<Node>, RuntimeError> assemble(List<Node> program) {

@@ -14,6 +14,8 @@ public class MagmaLang {
     public static final String OUT_TYPE = "out";
     public static final String OUT_VALUE = "value";
     public static final String WHITESPACE_TYPE = "whitespace";
+    public static final String CHAR_TYPE = "char";
+    public static final String CHAR_VALUE = "value";
 
     public static Rule createMagmaRootRule() {
         return new SplitRule(new BracketSplitter(), "children", new OrRule(new JavaList<Rule>()
@@ -45,9 +47,19 @@ public class MagmaLang {
         final var value = new LazyRule();
         value.set(new OrRule(new JavaList<Rule>()
                 .add(createTupleRule(value))
-                .add(new TypeRule(INT_TYPE, new StripRule(new IntRule(INT_VALUE))))
+                .add(createIntType())
+                .add(createCharRule())
         ));
         return value;
+    }
+
+    private static TypeRule createCharRule() {
+        final var value = new StringRule(CHAR_VALUE);
+        return new TypeRule(CHAR_TYPE, new PrefixRule("'", new SuffixRule(value, "'")));
+    }
+
+    private static TypeRule createIntType() {
+        return new TypeRule(INT_TYPE, new StripRule(new IntRule(INT_VALUE)));
     }
 
     private static TypeRule createTupleRule(LazyRule value) {
