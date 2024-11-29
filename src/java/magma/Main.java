@@ -37,7 +37,7 @@ public class Main {
 
     public static void main(String[] args) {
         final var source = """
-                out 3;
+                out 'a';
                 """;
 
         compile(source)
