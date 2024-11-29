@@ -65,10 +65,9 @@ public record Stack(
                     .map(Stack::computeFrameSliceSize)
                     .orElse(0);
 
-            return frame.getValue(layoutIndex).flatMap(layout -> {
-                return layout.computeElementSizeTo(indices).map(size -> {
-                    return beforeFrameSize + beforeElementsSize + size;
-                });
+            return frame.getValue(layoutIndex).map(layout -> {
+                final var size = layout.computeElementSizeTo(indices).orElse(0);
+                return beforeFrameSize + beforeElementsSize + size;
             });
         }).orElse(0);
     }

@@ -37,7 +37,9 @@ public class Main {
 
     public static void main(String[] args) {
         final var source = """
-                out 'a';
+                let x = 'a';
+                let y = 'b';
+                let z = 'c';
                 """;
 
         compile(source)
@@ -116,7 +118,7 @@ public class Main {
             return computeLayout(value).flatMapValue(layout -> {
                 final var defined = stack.define(name, layout);
                 return loadValue(value).mapValue(loader -> {
-                    return declare(defined, name, new JavaList<>(), loader);
+                    return initialize(defined, name, new JavaList<>(), loader);
                 });
             });
         }
@@ -135,14 +137,14 @@ public class Main {
         return new Err<>(new CompileError("Unknown root member", new NodeContext(rootMember)));
     }
 
-    private static Tuple<Stack, JavaList<Node>> declare(Stack stack, String name, JavaList<Integer> indices, Loader loader) {
+    private static Tuple<Stack, JavaList<Node>> initialize(Stack stack, String name, JavaList<Integer> indices, Loader loader) {
         return loader.stream()
-                .map(loaderChild -> declareMultipleValues(stack, name, indices, loaderChild))
-                .or(() -> declareSingleValue(stack, name, indices, loader))
+                .map(loaderChild -> initializeMultiple(stack, name, indices, loaderChild))
+                .or(() -> initializeSingle(stack, name, indices, loader))
                 .orElse(new Tuple<>(stack, new JavaList<>()));
     }
 
-    private static Option<Tuple<Stack, JavaList<Node>>> declareSingleValue(
+    private static Option<Tuple<Stack, JavaList<Node>>> initializeSingle(
             Stack stack,
             String name,
             JavaList<Integer> indices,
@@ -157,7 +159,7 @@ public class Main {
         });
     }
 
-    private static Tuple<Stack, JavaList<Node>> declareMultipleValues(
+    private static Tuple<Stack, JavaList<Node>> initializeMultiple(
             Stack stack,
             String name,
             JavaList<Integer> indices,
@@ -167,13 +169,13 @@ public class Main {
             final var currentStack = current.left();
             final var currentInstructions = current.right();
 
-            return declare(currentStack, name, indices.add(child.left()), child.right())
+            return initialize(currentStack, name, indices.add(child.left()), child.right())
                     .mapRight(currentInstructions::addAll);
         });
     }
 
     private static Result<Layout, CompileError> computeLayout(Node value) {
-        if (value.is(INT_TYPE)) {
+        if (value.is(INT_TYPE) || value.is(CHAR_TYPE)) {
             return new Ok<>(new SingleLayout(1));
         }
 
