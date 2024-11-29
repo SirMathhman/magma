@@ -168,7 +168,7 @@ public class Main {
                     .map(Main::loadValue)
                     .into(ResultStream::new)
                     .foldResultsLeft(new JavaList<Loader>(), JavaList::add)
-                    .mapValue((JavaList<Loader> loads) -> new MultipleLoader(loads));
+                    .mapValue(MultipleLoader::new);
         }
 
         return new Err<>(new CompileError("Unknown value", new NodeContext(value)));

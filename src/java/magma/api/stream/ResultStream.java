@@ -16,6 +16,11 @@ public record ResultStream<T, X>(Stream<Result<T, X>> parent) implements Stream<
     }
 
     @Override
+    public <R, Y> Result<R, Y> foldLeftToResult(R initial, BiFunction<R, Result<T, X>, Result<R, Y>> folder) {
+        return parent.foldLeftToResult(initial, folder);
+    }
+
+    @Override
     public <R> Stream<R> flatMap(Function<Result<T, X>, Stream<R>> mapper) {
         return parent.flatMap(mapper);
     }

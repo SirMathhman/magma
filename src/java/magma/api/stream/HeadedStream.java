@@ -2,6 +2,8 @@ package magma.api.stream;
 
 import magma.api.Tuple;
 import magma.api.option.Option;
+import magma.api.result.Ok;
+import magma.api.result.Result;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -69,5 +71,10 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     @Override
     public <R> Stream<Tuple<T, R>> extend(Function<T, R> mapper) {
         return map(value -> new Tuple<>(value, mapper.apply(value)));
+    }
+
+    @Override
+    public <R, X> Result<R, X> foldLeftToResult(R initial, BiFunction<R, T, Result<R, X>> folder) {
+        return this.<Result<R, X>>foldLeft(new Ok<>(initial), (rxResult, t) -> rxResult.flatMapValue(inner -> folder.apply(inner, t)));
     }
 }
