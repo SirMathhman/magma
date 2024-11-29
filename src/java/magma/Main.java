@@ -15,12 +15,14 @@ import magma.app.compile.CompileError;
 import magma.app.compile.MagmaLang;
 import magma.app.compile.Node;
 import magma.app.error.ApplicationError;
+import magma.app.error.NodeContext;
 import magma.app.error.RuntimeError;
 import magma.java.JavaList;
 
 import java.util.*;
 
 import static magma.app.assemble.Operator.*;
+import static magma.app.compile.MagmaLang.TUPLE_TYPE;
 
 public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
@@ -86,34 +88,42 @@ public class Main {
     private static Result<List<Node>, CompileError> compile(String input) {
         return MagmaLang.createMagmaRootRule()
                 .parse(input)
-                .mapValue(root -> {
-                    var children = root.findNodeList(ROOT_CHILDREN)
-                            .orElse(new JavaList<>())
-                            .stream()
-                            .map(child -> {
-                                if (child.is(MagmaLang.DECLARATION_TYPE)) {
-                                    final var value = child.findNode(MagmaLang.DECLARATION_VALUE).orElse(new Node());
-                                    return loadValue(value)
-                                            .add(instruct(StoreIndirectly, STACK_POINTER));
-                                }
-
-                                return new JavaList<Node>().add(child);
-                            })
-                            .foldLeft(new JavaList<Node>(), JavaList::addAll);
-
-                    return List.of(label("__start__", new JavaList<Node>()
-                            .addAll(children)
-                            .add(instruct(Halt))
-                            .list()));
-                });
+                .flatMapValue(Main::getListCompileErrorResult);
     }
 
-    private static JavaList<Node> loadValue(Node value) {
+    private static Result<List<Node>, CompileError> getListCompileErrorResult(Node root) {
+        return root.findNodeList(ROOT_CHILDREN)
+                .orElse(new JavaList<>())
+                .stream()
+                .map(Main::getJavaListResult)
+                .into(ResultStream::new)
+                .foldResultsLeft(new JavaList<Node>(), JavaList::addAll)
+                .mapValue(children -> List.of(label("__start__", new JavaList<Node>()
+                        .addAll(children)
+                        .add(instruct(Halt))
+                        .list())));
+    }
+
+    private static Result<JavaList<Node>, CompileError> getJavaListResult(Node child) {
+        if (child.is(MagmaLang.DECLARATION_TYPE)) {
+            final var value = child.findNode(MagmaLang.DECLARATION_VALUE).orElse(new Node());
+            return loadValue(value).mapValue(instructions -> instructions.add(instruct(StoreIndirectly, STACK_POINTER)));
+        }
+
+        return new Ok<>(new JavaList<Node>().add(child));
+    }
+
+    private static Result<JavaList<Node>, CompileError> loadValue(Node value) {
         if (value.is(MagmaLang.INT_TYPE)) {
             final var integer = value.findInt(MagmaLang.INT_VALUE).orElse(0);
-            return new JavaList<Node>().add(instruct(LoadFromValue, integer));
+            return new Ok<>(new JavaList<Node>().add(instruct(LoadFromValue, integer)));
         }
-        return new JavaList<>();
+
+        if (value.is(TUPLE_TYPE)) {
+
+        }
+
+        return new Err<>(new CompileError("Unknown value", new NodeContext(value)));
     }
 
     private static Node instruct(Operator operator, int value) {
