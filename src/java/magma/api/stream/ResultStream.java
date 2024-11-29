@@ -1,5 +1,6 @@
 package magma.api.stream;
 
+import magma.api.Tuple;
 import magma.api.option.Option;
 import magma.api.result.Ok;
 import magma.api.result.Result;
@@ -12,6 +13,16 @@ public record ResultStream<T, X>(Stream<Result<T, X>> parent) implements Stream<
     @Override
     public <R> Stream<R> map(Function<Result<T, X>, R> mapper) {
         return parent.map(mapper);
+    }
+
+    @Override
+    public <R> Stream<R> flatMap(Function<Result<T, X>, Stream<R>> mapper) {
+        return parent.flatMap(mapper);
+    }
+
+    @Override
+    public <R> Stream<Tuple<Result<T, X>, R>> extend(Function<Result<T, X>, R> mapper) {
+        return parent.extend(mapper);
     }
 
     @Override

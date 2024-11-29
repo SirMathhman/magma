@@ -1,5 +1,6 @@
 package magma.api.stream;
 
+import magma.api.Tuple;
 import magma.api.option.Option;
 
 import java.util.function.BiFunction;
@@ -63,5 +64,10 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     @Override
     public Option<T> next() {
         return head.next();
+    }
+
+    @Override
+    public <R> Stream<Tuple<T, R>> extend(Function<T, R> mapper) {
+        return map(value -> new Tuple<>(value, mapper.apply(value)));
     }
 }

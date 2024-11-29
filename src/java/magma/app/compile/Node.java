@@ -54,9 +54,10 @@ public record Node(
                 .foldLeft((previous, next) -> previous + ", " + next)
                 .orElse("") + "]");
 
-        final T[] ts = new T[]{joinedIntegers, joinedNodeLists};
-        final JavaList<T[]> javaList = new JavaList<>(List.of(ts));
-        final var filter = javaList.stream()
+        final var filter = new JavaList<String>()
+                .add(joinedIntegers)
+                .add(joinedNodeLists)
+                .stream()
                 .filter(value -> !value.isEmpty())
                 .foldLeft((previous, next) -> previous + "," + next)
                 .orElse("");
