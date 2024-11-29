@@ -1,5 +1,6 @@
 package magma;
 
+import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
@@ -7,12 +8,12 @@ import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.api.stream.ResultStream;
+import magma.api.stream.Stream;
 import magma.app.assemble.Instruction;
 import magma.app.assemble.Operator;
 import magma.app.assemble.State;
-import magma.app.compile.CASMLang;
-import magma.app.compile.CompileError;
-import magma.app.compile.Node;
+import magma.app.compile.Stack;
+import magma.app.compile.*;
 import magma.app.error.ApplicationError;
 import magma.app.error.NodeContext;
 import magma.app.error.RuntimeError;
@@ -22,7 +23,6 @@ import java.util.*;
 
 import static magma.app.assemble.Operator.*;
 import static magma.app.compile.MagmaLang.*;
-import static magma.app.compile.MagmaLang.TUPLE_TYPE;
 
 public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
@@ -79,40 +79,96 @@ public class Main {
     private static Result<List<Node>, CompileError> compile(String input) {
         return createMagmaRootRule()
                 .parse(input)
-                .flatMapValue(Main::getListCompileErrorResult);
+                .flatMapValue(root -> compileRoot(new Stack(), root))
+                .mapValue(Tuple::right);
     }
 
-    private static Result<List<Node>, CompileError> getListCompileErrorResult(Node root) {
+    private static Result<Tuple<Stack, List<Node>>, CompileError> compileRoot(Stack stack, Node root) {
         return root.findNodeList(ROOT_CHILDREN)
                 .orElse(new JavaList<>())
                 .stream()
-                .map(Main::getJavaListResult)
-                .into(ResultStream::new)
-                .foldResultsLeft(new JavaList<Node>(), JavaList::addAll)
-                .mapValue(children -> List.of(CASMLang.label("__start__", new JavaList<Node>()
-                        .addAll(children)
-                        .add(CASMLang.instruct(Halt))
-                        .list())));
+                .foldLeftToResult(new Tuple<>(stack, new JavaList<Node>()), (current, child) -> {
+                    final var instructions = current.right();
+                    return compileRootChild(current.left(), child).mapValue(tuple -> {
+                        return tuple.mapRight(right -> {
+                            return instructions.addAll(right);
+                        });
+                    });
+                })
+                .mapValue(result -> {
+                    return result.mapRight(children -> {
+                        return List.of(CASMLang.label("__start__", new JavaList<Node>()
+                                .addAll(children)
+                                .add(CASMLang.instruct(Halt))
+                                .list()));
+                    });
+                });
     }
 
-    private static Result<JavaList<Node>, CompileError> getJavaListResult(Node child) {
+    private static Result<Tuple<Stack, JavaList<Node>>, CompileError> compileRootChild(Stack stack, Node child) {
         if (child.is(DECLARATION_TYPE)) {
+            final var name = child.findString(DECLARATION_NAME).orElse("");
             final var value = child.findNode(DECLARATION_VALUE).orElse(new Node());
-            return loadValue(value).mapValue(instructions -> instructions.add(CASMLang.instruct(StoreIndirectly, STACK_POINTER)));
+            return computeLayout(value).flatMapValue(layout -> {
+                final var defined = stack.define(name, layout);
+                return loadValue(value).mapValue(loader -> declare(defined, name, new JavaList<>(), loader));
+            });
         }
 
-        return new Ok<>(new JavaList<Node>().add(child));
+        return new Ok<>(new Tuple<>(stack, new JavaList<Node>().add(child)));
     }
 
-    private static Result<JavaList<Node>, CompileError> loadValue(Node value) {
+    private static Tuple<Stack, JavaList<Node>> declare(Stack stack, String name, JavaList<Integer> indices, Loader loader) {
+        return loader.stream()
+                .map(loaderChild -> declareMultipleValues(stack, name, indices, loaderChild))
+                .or(() -> declareSingleValue(stack, name, indices, loader))
+                .orElse(new Tuple<>(stack, new JavaList<>()));
+    }
+
+    private static Option<Tuple<Stack, JavaList<Node>>> declareSingleValue(
+            Stack stack,
+            String name,
+            JavaList<Integer> indices,
+            Loader loader
+    ) {
+        return stack.moveTo(name, indices).map(result -> result.mapRight(movingInstructions -> {
+            final var loadingInstructions = loader.findInstructions().orElse(new JavaList<>());
+            return movingInstructions.addAll(loadingInstructions);
+        }));
+    }
+
+    private static Tuple<Stack, JavaList<Node>> declareMultipleValues(
+            Stack stack,
+            String name,
+            JavaList<Integer> indices,
+            Stream<Tuple<Integer, Loader>> children
+    ) {
+        return children.foldLeft(new Tuple<>(stack, new JavaList<>()), (current, child) -> {
+            final var currentStack = current.left();
+            final var currentInstructions = current.right();
+
+            return declare(currentStack, name, indices.add(child.left()), child.right()).mapRight(currentInstructions::addAll);
+        });
+    }
+
+    private static Result<Layout, CompileError> computeLayout(Node value) {
+        return new Err<>(new CompileError("Cannot compute layout", new NodeContext(value)));
+    }
+
+    private static Result<Loader, CompileError> loadValue(Node value) {
         if (value.is(INT_TYPE)) {
             final var integer = value.findInt(INT_VALUE).orElse(0);
-            return new Ok<>(new JavaList<Node>().add(CASMLang.instruct(LoadFromValue, integer)));
+            return new Ok<>(new SingleLoader(new JavaList<Node>().add(CASMLang.instruct(LoadFromValue, integer))));
         }
 
         if (value.is(TUPLE_TYPE)) {
-            final var values = value.findNodeList(TUPLE_VALUES).orElse(new JavaList<>());
-
+            return value.findNodeList(TUPLE_VALUES)
+                    .orElse(new JavaList<>())
+                    .stream()
+                    .map(Main::loadValue)
+                    .into(ResultStream::new)
+                    .foldResultsLeft(new JavaList<Loader>(), JavaList::add)
+                    .mapValue((JavaList<Loader> loads) -> new MultipleLoader(loads));
         }
 
         return new Err<>(new CompileError("Unknown value", new NodeContext(value)));

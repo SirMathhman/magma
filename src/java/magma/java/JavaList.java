@@ -58,4 +58,9 @@ public record JavaList<T>(List<T> list) {
         return new Some<>(new HeadedStream<>(new RangeHead(index))
                 .map(list::get));
     }
+
+    public Option<T> get(int index) {
+        if(index < list.size()) return new Some<>(list.get(index));
+        return new None<>();
+    }
 }

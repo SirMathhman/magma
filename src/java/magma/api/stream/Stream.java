@@ -2,6 +2,8 @@ package magma.api.stream;
 
 import magma.api.Tuple;
 import magma.api.option.Option;
+import magma.api.result.Result;
+import magma.java.JavaList;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -23,4 +25,6 @@ public interface Stream<T> {
     Option<T> next();
 
     <R> Stream<Tuple<T, R>> extend(Function<T, R> mapper);
+
+    <R, X> Result<R, X> foldLeftToResult(R initial, BiFunction<R, T, Result<R, X>> folder);
 }

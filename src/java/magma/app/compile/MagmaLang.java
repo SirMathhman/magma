@@ -10,13 +10,14 @@ public class MagmaLang {
     public static final String DECLARATION_VALUE = "value";
     public static final String TUPLE_TYPE = "tuple";
     public static final String TUPLE_VALUES = "values";
+    public static final String DECLARATION_NAME = "name";
 
     public static Rule createMagmaRootRule() {
         return new SplitRule(new BracketSplitter(), "children", createDeclarationRule());
     }
 
     private static TypeRule createDeclarationRule() {
-        final var name = new StripRule(new StringRule("name"));
+        final var name = new StripRule(new StringRule(DECLARATION_NAME));
         final var value = new StripRule(new NodeRule(DECLARATION_VALUE, createValueRule()));
 
         final var beforeAssign = new PrefixRule("let ", name);

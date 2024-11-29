@@ -1,9 +1,7 @@
 package magma.app.compile;
 
 import magma.api.Tuple;
-import magma.api.option.None;
 import magma.api.option.Option;
-import magma.api.option.Some;
 import magma.api.stream.Stream;
 import magma.api.stream.Streams;
 import magma.java.JavaList;
@@ -17,16 +15,17 @@ import static magma.app.compile.CASMLang.instruct;
 public record Stack(
         JavaNonEmptyList<JavaOrderedMap<String, Layout>> frames,
         int frameIndex,
-        Option<Integer> elementIndex
+        int elementIndex,
+        JavaList<Integer> indices
 ) {
     public Stack() {
-        this(new JavaNonEmptyList<>(new JavaOrderedMap<>()), 0, new None<>());
+        this(new JavaNonEmptyList<>(new JavaOrderedMap<>()), 0, 0, new JavaList<>());
     }
 
     private static Option<Tuple<Integer, Integer>> pairWithIndex(Tuple<Integer, JavaOrderedMap<String, Layout>> indexAndFrame, String name) {
-        return indexAndFrame.right()
-                .findKeyIndex(name)
-                .map(index -> new Tuple<>(indexAndFrame.left(), index));
+        final var frameIndex = indexAndFrame.left();
+        final var map = indexAndFrame.right();
+        return map.findKeyIndex(name).map(indexWithinFrame -> new Tuple<>(frameIndex, indexWithinFrame));
     }
 
     private static int computeFrameSize(JavaOrderedMap<String, Layout> frame) {
@@ -35,7 +34,7 @@ public record Stack(
 
     private static int computeFrameSliceSize(Stream<Tuple<String, Layout>> elements) {
         return elements.map(Tuple::right)
-                .map(Layout::computeSize)
+                .map(Layout::computeTotalSize)
                 .foldLeft(0, Integer::sum);
     }
 
@@ -49,11 +48,7 @@ public record Stack(
     }
 
     public Option<Tuple<Stack, JavaList<Node>>> moveTo(String name) {
-        return frames.streamReverseWithIndices()
-                .map(frame -> pairWithIndex(frame, name))
-                .flatMap(Streams::fromOption)
-                .next()
-                .map(foundFrame -> moveTo(foundFrame.left(), foundFrame.right()));
+        return moveTo(name, new JavaList<>());
     }
 
     private int computeFrameSize(int frameIndexExclusive) {
@@ -62,24 +57,27 @@ public record Stack(
                 .orElse(0);
     }
 
-    private int computePosition(int frameIndex, int layoutIndex) {
+    private int computePosition(int frameIndex, int layoutIndex, JavaList<Integer> indices) {
         final var beforeFrameSize = computeFrameSize(frameIndex);
 
-        return frames.get(frameIndex).map(frame -> {
+        return frames.get(frameIndex).flatMap(frame -> {
             final var beforeElementsSize = frame.sliceTo(layoutIndex)
                     .map(Stack::computeFrameSliceSize)
                     .orElse(0);
 
-            return beforeFrameSize + beforeElementsSize;
+            return frame.getValue(layoutIndex).map(layout -> {
+                final var size = layout.computeSize(indices);
+                return beforeFrameSize + beforeElementsSize + size;
+            });
         }).orElse(0);
     }
 
-    private Tuple<Stack, JavaList<Node>> moveTo(int frameIndex, int elementIndex) {
+    private Tuple<Stack, JavaList<Node>> moveTo(int frameIndex, int elementIndex, JavaList<Integer> indices) {
         final var fromPosition = computePosition();
-        final var toPosition = computePosition(frameIndex, elementIndex);
+        final var toPosition = computePosition(frameIndex, elementIndex, indices);
         if (fromPosition == toPosition) return new Tuple<>(this, new JavaList<>());
 
-        var copy = new Stack(frames, frameIndex, new Some<>(elementIndex));
+        var copy = new Stack(frames, frameIndex, elementIndex, indices);
         final var delta = toPosition - fromPosition;
         final var distance = Math.abs(delta);
         final var shouldMoveRight = distance > 0;
@@ -91,14 +89,22 @@ public record Stack(
     }
 
     private int computePosition() {
-        return computePosition(frameIndex, elementIndex.orElse(0));
+        return computePosition(frameIndex, elementIndex, indices);
     }
 
     public Stack define(String name, Layout type) {
-        return new Stack(frames.mapLast(last -> last.put(name, type)), frameIndex, elementIndex);
+        return new Stack(frames.mapLast(last -> last.put(name, type)), frameIndex, elementIndex, indices);
     }
 
-    public interface Layout {
-        int computeSize();
+    public Option<Tuple<Stack, JavaList<Node>>> moveTo(String name, JavaList<Integer> indices) {
+        return frames.streamReverseWithIndices()
+                .map(frame -> pairWithIndex(frame, name))
+                .flatMap(Streams::fromOption)
+                .next()
+                .map(foundFrame -> {
+                    final var frameIndex = foundFrame.left();
+                    final var elementIndex = foundFrame.right();
+                    return moveTo(frameIndex, elementIndex, indices);
+                });
     }
 }

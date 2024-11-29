@@ -40,4 +40,12 @@ public record JavaOrderedMap<K, V>(JavaList<Tuple<K, V>> list) {
     public Option<Stream<Tuple<K, V>>> sliceTo(int index) {
         return list.sliceTo(index);
     }
+
+    public Option<Tuple<K, V>> get(int index) {
+        return list.get(index);
+    }
+
+    public Option<V> getValue(int index) {
+        return get(index).map(Tuple::right);
+    }
 }
