@@ -1,11 +1,11 @@
 package magma.java;
 
-import magma.option.None;
-import magma.option.Option;
-import magma.option.Some;
-import magma.stream.HeadedStream;
-import magma.stream.ListHead;
-import magma.stream.Stream;
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.option.Some;
+import magma.api.stream.HeadedStream;
+import magma.api.stream.ListHead;
+import magma.api.stream.Stream;
 
 import java.util.ArrayList;
 import java.util.List;

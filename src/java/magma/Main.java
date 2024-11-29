@@ -1,23 +1,26 @@
 package magma;
 
-import magma.assemble.Instruction;
-import magma.assemble.Operator;
-import magma.assemble.State;
-import magma.error.*;
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.option.Some;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.api.stream.ResultStream;
+import magma.api.stream.Streams;
+import magma.app.assemble.Instruction;
+import magma.app.assemble.Operator;
+import magma.app.assemble.State;
+import magma.app.compile.CompileError;
+import magma.app.compile.MagmaLang;
+import magma.app.compile.Node;
+import magma.app.error.ApplicationError;
+import magma.app.error.RuntimeError;
 import magma.java.JavaList;
-import magma.option.None;
-import magma.option.Option;
-import magma.option.Some;
-import magma.result.Err;
-import magma.result.Ok;
-import magma.result.Result;
-import magma.rule.*;
-import magma.stream.ResultStream;
-import magma.stream.Streams;
 
 import java.util.*;
 
-import static magma.assemble.Operator.*;
+import static magma.app.assemble.Operator.*;
 
 public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
@@ -35,10 +38,6 @@ public class Main {
     public static final String ROOT_CHILDREN = "children";
     public static final String STACK_POINTER = "__stack-pointer__";
     public static final String SPILL = "__spill__";
-    public static final String DECLARATION_TYPE = "declaration";
-    public static final String DECLARATION_VALUE = "value";
-    public static final String INT_TYPE = "int";
-    public static final String INT_VALUE = "value";
 
     public static void main(String[] args) {
         final var source = "let x = [ 3, 4 ];";
@@ -67,7 +66,7 @@ public class Main {
     private static Node mergeIntoRoot(List<Node> compiled) {
         var count = 0;
         for (Node node : compiled) {
-            if(node.is(LABEL_TYPE)) {
+            if (node.is(LABEL_TYPE)) {
                 count += node.findNodeList(LABEL_CHILDREN).map(JavaList::size).orElse(0);
             } else {
                 count += 1;
@@ -84,27 +83,16 @@ public class Main {
         return new Node(ROOT_TYPE).withNodeList0(ROOT_CHILDREN, new JavaList<>(instruct));
     }
 
-    private static Rule createMagmaRootRule() {
-        return new SplitRule("children", createDeclarationRule());
-    }
-
-    private static TypeRule createDeclarationRule() {
-        final var name = new StripRule(new StringRule("name"));
-        final var value = new StripRule(new NodeRule(DECLARATION_VALUE, new TypeRule(INT_TYPE, new IntRule(INT_VALUE))));
-
-        return new TypeRule(DECLARATION_TYPE, new FirstRule(new PrefixRule("let ", name), "=", new SuffixRule(value, ";")));
-    }
-
     private static Result<List<Node>, CompileError> compile(String input) {
-        return createMagmaRootRule()
+        return MagmaLang.createMagmaRootRule()
                 .parse(input)
                 .mapValue(root -> {
                     var children = root.findNodeList(ROOT_CHILDREN)
                             .orElse(new JavaList<>())
                             .stream()
                             .map(child -> {
-                                if(child.is(DECLARATION_TYPE)) {
-                                    final var value = child.findNode(DECLARATION_VALUE).orElse(new Node());
+                                if (child.is(MagmaLang.DECLARATION_TYPE)) {
+                                    final var value = child.findNode(MagmaLang.DECLARATION_VALUE).orElse(new Node());
                                     return loadValue(value)
                                             .add(instruct(StoreIndirectly, STACK_POINTER));
                                 }
@@ -121,8 +109,8 @@ public class Main {
     }
 
     private static JavaList<Node> loadValue(Node value) {
-        if(value.is(INT_TYPE)) {
-            final var integer = value.findInt(INT_VALUE).orElse(0);
+        if (value.is(MagmaLang.INT_TYPE)) {
+            final var integer = value.findInt(MagmaLang.INT_VALUE).orElse(0);
             return new JavaList<Node>().add(instruct(LoadFromValue, integer));
         }
         return new JavaList<>();
