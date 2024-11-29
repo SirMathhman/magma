@@ -37,9 +37,7 @@ public class Main {
 
     public static void main(String[] args) {
         final var source = """
-                let x = 'a';
-                let y = 'b';
-                let z = 'c';
+                let x = ['a', 'b'];
                 """;
 
         compile(source)

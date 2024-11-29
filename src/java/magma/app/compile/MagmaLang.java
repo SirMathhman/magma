@@ -55,7 +55,7 @@ public class MagmaLang {
 
     private static TypeRule createCharRule() {
         final var value = new StringRule(CHAR_VALUE);
-        return new TypeRule(CHAR_TYPE, new PrefixRule("'", new SuffixRule(value, "'")));
+        return new TypeRule(CHAR_TYPE, new StripRule(new PrefixRule("'", new SuffixRule(value, "'"))));
     }
 
     private static TypeRule createIntType() {
