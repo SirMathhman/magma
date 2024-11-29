@@ -7,6 +7,7 @@ import magma.api.option.Some;
 import magma.api.stream.HeadedStream;
 import magma.api.stream.RangeHead;
 import magma.api.stream.Stream;
+import magma.app.compile.Layout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,5 +69,10 @@ public record JavaNonEmptyList<T>(List<T> list) {
 
     public Tuple<T, JavaList<T>> popFirst() {
         return new Tuple<>(first(), new JavaList<>(list.subList(1, list.size())));
+    }
+
+    public Stream<T> stream() {
+        return new HeadedStream<>(new RangeHead(list.size()))
+                .map(list::get);
     }
 }

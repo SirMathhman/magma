@@ -16,6 +16,8 @@ public class MagmaLang {
     public static final String WHITESPACE_TYPE = "whitespace";
     public static final String CHAR_TYPE = "char";
     public static final String CHAR_VALUE = "value";
+    public static final String SYMBOL_TYPE = "symbol";
+    public static final String SYMBOL_VALUE = "value";
 
     public static Rule createMagmaRootRule() {
         return new SplitRule(new BracketSplitter(), "children", new OrRule(new JavaList<Rule>()
@@ -49,8 +51,13 @@ public class MagmaLang {
                 .add(createTupleRule(value))
                 .add(createIntType())
                 .add(createCharRule())
+                .add(createSymbolRule())
         ));
         return value;
+    }
+
+    private static TypeRule createSymbolRule() {
+        return new TypeRule(SYMBOL_TYPE, new StripRule(new StringRule(SYMBOL_VALUE)));
     }
 
     private static TypeRule createCharRule() {

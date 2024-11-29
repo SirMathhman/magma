@@ -107,4 +107,12 @@ public record Stack(
                     return moveTo(frameIndex, elementIndex, indices);
                 });
     }
+
+    public Option<Layout> resolve(String name) {
+        return frames.stream()
+                .flatMap(JavaOrderedMap::stream)
+                .filter(tuple -> tuple.left().equals(name))
+                .map(Tuple::right)
+                .next();
+    }
 }

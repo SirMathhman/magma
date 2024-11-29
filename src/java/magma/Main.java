@@ -19,6 +19,7 @@ import magma.app.compile.Stack;
 import magma.app.error.ApplicationError;
 import magma.app.error.NodeContext;
 import magma.app.error.RuntimeError;
+import magma.app.error.StringContext;
 import magma.java.JavaList;
 
 import java.util.*;
@@ -37,7 +38,9 @@ public class Main {
 
     public static void main(String[] args) {
         final var source = """
-                let x = ['a', 'b'];
+                let x = 'a';
+                let y = x;
+                out y;
                 """;
 
         compile(source)
@@ -113,22 +116,22 @@ public class Main {
         if (rootMember.is(DECLARATION_TYPE)) {
             final var name = rootMember.findString(DECLARATION_NAME).orElse("");
             final var value = rootMember.findNode(DECLARATION_VALUE).orElse(new Node());
-            return computeLayout(value).flatMapValue(layout -> {
+            return computeLayout(stack, value).flatMapValue(layout -> {
                 final var defined = stack.define(name, layout);
-                return loadValue(value).mapValue(loader -> {
-                    return initialize(defined, name, new JavaList<>(), loader);
+                return createLoader(defined, value).mapValue(loader -> {
+                    return initialize(loader.left(), name, new JavaList<>(), loader.right());
                 });
             });
         }
 
         if (rootMember.is(OUT_TYPE)) {
-            final var loaded = loadValue(rootMember.findNode(OUT_VALUE).orElse(new Node()));
+            final var loaded = createLoader(stack, rootMember.findNode(OUT_VALUE).orElse(new Node()));
             return loaded.mapValue(loader -> {
-                final var instructions = loader.findInstructions()
+                final var instructions = loader.right().findInstructions()
                         .orElse(new JavaList<>())
                         .add(instruct(OutFromAccumulator));
 
-                return new Tuple<>(stack, instructions);
+                return new Tuple<>(loader.left(), instructions);
             });
         }
 
@@ -172,7 +175,7 @@ public class Main {
         });
     }
 
-    private static Result<Layout, CompileError> computeLayout(Node value) {
+    private static Result<Layout, CompileError> computeLayout(Stack stack, Node value) {
         if (value.is(INT_TYPE) || value.is(CHAR_TYPE)) {
             return new Ok<>(new SingleLayout(1));
         }
@@ -180,38 +183,53 @@ public class Main {
         if (value.is(TUPLE_TYPE)) {
             return value.findNodeList(TUPLE_VALUES).orElse(new JavaList<>())
                     .stream()
-                    .<JavaList<Layout>, CompileError>foldLeftToResult(new JavaList<>(), (layoutJavaList, node) -> computeLayout(node).mapValue(layoutJavaList::add))
+                    .<JavaList<Layout>, CompileError>foldLeftToResult(new JavaList<>(), (layoutJavaList, node) -> computeLayout(stack, node).mapValue(layoutJavaList::add))
                     .mapValue(MultipleLayout::new);
+        }
+
+        if (value.is(SYMBOL_TYPE)) {
+            final var text = value.findString(SYMBOL_VALUE).orElse("");
+            return stack.resolve(text)
+                    .<Result<Layout, CompileError>>map(Ok::new)
+                    .orElseGet(() -> new Err<>(new CompileError("Symbol not defined", new StringContext(text))));
         }
 
         return new Err<>(new CompileError("Cannot compute layout", new NodeContext(value)));
     }
 
-    private static Result<Loader, CompileError> loadValue(Node value) {
+    private static Result<Tuple<Stack, Loader>, CompileError> createLoader(Stack stack, Node value) {
         if (value.is(INT_TYPE)) {
             final var integer = value.findInt(INT_VALUE).orElse(0);
-            return loadValue(integer);
+            return createLoader(integer).mapValue(loader -> new Tuple<>(stack, loader));
         }
 
         if (value.is(TUPLE_TYPE)) {
             return value.findNodeList(TUPLE_VALUES)
                     .orElse(new JavaList<>())
                     .stream()
-                    .map(Main::loadValue)
-                    .into(ResultStream::new)
-                    .foldResultsLeft(new JavaList<Loader>(), JavaList::add)
-                    .mapValue(MultipleLoader::new);
+                    .foldLeftToResult(new Tuple<>(stack, new JavaList<Loader>()),
+                            (tuple, node) -> createLoader(tuple.left(), node).mapValue(
+                                    tuple0 -> tuple0.mapRight(right -> tuple.right().add(right))))
+                    .mapValue(tuple0 -> tuple0.mapRight(MultipleLoader::new));
         }
 
-        if(value.is(CHAR_TYPE)) {
+        if (value.is(CHAR_TYPE)) {
             final var c = value.findString(CHAR_VALUE).orElse("");
-            return loadValue((int) c.charAt(0));
+            return createLoader(c.charAt(0)).mapValue(loader -> new Tuple<>(stack, loader));
         }
 
-        return new Err<>(new CompileError("Unknown value", new NodeContext(value)));
+        if (value.is(SYMBOL_TYPE)) {
+            final var symbolValue = value.findString(SYMBOL_VALUE).orElse("");
+            return stack.moveTo(symbolValue)
+                    .map(tuple -> tuple.<Loader>mapRight(SingleLoader::new))
+                    .<Result<Tuple<Stack, Loader>, CompileError>>map(Ok::new)
+                    .orElseGet(() -> new Err<>(new CompileError("Not defined", new StringContext(symbolValue))));
+        }
+
+        return new Err<>(new CompileError("Cannot load value", new NodeContext(value)));
     }
 
-    private static Result<Loader, CompileError> loadValue(int integer) {
+    private static Result<Loader, CompileError> createLoader(int integer) {
         return new Ok<>(new SingleLoader(new JavaList<Node>().add(instruct(LoadFromValue, integer))));
     }
 
