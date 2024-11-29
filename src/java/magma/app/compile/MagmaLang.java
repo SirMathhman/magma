@@ -13,6 +13,7 @@ public class MagmaLang {
     public static final String DECLARATION_NAME = "name";
     public static final String OUT_TYPE = "out";
     public static final String OUT_VALUE = "value";
+    public static final String WHITESPACE_TYPE = "whitespace";
 
     public static Rule createMagmaRootRule() {
         return new SplitRule(new BracketSplitter(), "children", new OrRule(new JavaList<Rule>()
@@ -23,7 +24,7 @@ public class MagmaLang {
     }
 
     private static TypeRule createWhitespaceRule() {
-        return new TypeRule("whitespace", new StripRule(new EmptyRule()));
+        return new TypeRule(WHITESPACE_TYPE, new StripRule(new EmptyRule()));
     }
 
     private static TypeRule createOutRule() {

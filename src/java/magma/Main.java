@@ -12,8 +12,10 @@ import magma.api.stream.Stream;
 import magma.app.assemble.Instruction;
 import magma.app.assemble.Operator;
 import magma.app.assemble.State;
+import magma.app.compile.CompileError;
+import magma.app.compile.Layout;
+import magma.app.compile.Node;
 import magma.app.compile.Stack;
-import magma.app.compile.*;
 import magma.app.error.ApplicationError;
 import magma.app.error.NodeContext;
 import magma.app.error.RuntimeError;
@@ -22,6 +24,7 @@ import magma.java.JavaList;
 import java.util.*;
 
 import static magma.app.assemble.Operator.*;
+import static magma.app.compile.CASMLang.*;
 import static magma.app.compile.MagmaLang.*;
 
 public class Main {
@@ -34,8 +37,8 @@ public class Main {
 
     public static void main(String[] args) {
         final var source = """
-        out 3;
-        """;
+                out 3;
+                """;
 
         compile(source)
                 .mapValue(Main::mergeIntoRoot)
@@ -61,17 +64,17 @@ public class Main {
     private static Node mergeIntoRoot(List<Node> compiled) {
         var count = 0;
         for (Node node : compiled) {
-            if (node.is(CASMLang.LABEL_TYPE)) {
-                count += node.findNodeList(CASMLang.LABEL_CHILDREN).map(JavaList::size).orElse(0);
+            if (node.is(LABEL_TYPE)) {
+                count += node.findNodeList(LABEL_CHILDREN).map(JavaList::size).orElse(0);
             } else {
                 count += 1;
             }
         }
 
         final var instruct = new ArrayList<>(List.of(
-                CASMLang.instruct(JumpByValue, "__start__"),
-                CASMLang.data(STACK_POINTER, count + 6),
-                CASMLang.data(SPILL, 0)
+                instruct(JumpByValue, "__start__"),
+                data(STACK_POINTER, count + 6),
+                data(SPILL, 0)
         ));
 
         instruct.addAll(compiled);
@@ -89,26 +92,27 @@ public class Main {
         return root.findNodeList(ROOT_CHILDREN)
                 .orElse(new JavaList<>())
                 .stream()
+                .filter(node -> !node.is(WHITESPACE_TYPE))
                 .foldLeftToResult(new Tuple<>(stack, new JavaList<Node>()), (current, child) -> {
                     final var instructions = current.right();
-                    return compileRootChild(current.left(), child).mapValue(tuple -> {
+                    return compileRootMember(current.left(), child).mapValue(tuple -> {
                         return tuple.mapRight(instructions::addAll);
                     });
                 })
                 .mapValue(result -> {
                     return result.mapRight(children -> {
-                        return List.of(CASMLang.label("__start__", new JavaList<Node>()
+                        return List.of(label("__start__", new JavaList<Node>()
                                 .addAll(children)
-                                .add(CASMLang.instruct(Halt))
+                                .add(instruct(Halt))
                                 .list()));
                     });
                 });
     }
 
-    private static Result<Tuple<Stack, JavaList<Node>>, CompileError> compileRootChild(Stack stack, Node child) {
-        if (child.is(DECLARATION_TYPE)) {
-            final var name = child.findString(DECLARATION_NAME).orElse("");
-            final var value = child.findNode(DECLARATION_VALUE).orElse(new Node());
+    private static Result<Tuple<Stack, JavaList<Node>>, CompileError> compileRootMember(Stack stack, Node rootMember) {
+        if (rootMember.is(DECLARATION_TYPE)) {
+            final var name = rootMember.findString(DECLARATION_NAME).orElse("");
+            final var value = rootMember.findNode(DECLARATION_VALUE).orElse(new Node());
             return computeLayout(value).flatMapValue(layout -> {
                 final var defined = stack.define(name, layout);
                 return loadValue(value).mapValue(loader -> {
@@ -117,7 +121,18 @@ public class Main {
             });
         }
 
-        return new Ok<>(new Tuple<>(stack, new JavaList<Node>().add(child)));
+        if (rootMember.is(OUT_TYPE)) {
+            final var loaded = loadValue(rootMember.findNode(OUT_VALUE).orElse(new Node()));
+            return loaded.mapValue(loader -> {
+                final var instructions = loader.findInstructions()
+                        .orElse(new JavaList<>())
+                        .add(instruct(OutFromAccumulator));
+
+                return new Tuple<>(stack, instructions);
+            });
+        }
+
+        return new Err<>(new CompileError("Unknown root member", new NodeContext(rootMember)));
     }
 
     private static Tuple<Stack, JavaList<Node>> declare(Stack stack, String name, JavaList<Integer> indices, Loader loader) {
@@ -137,7 +152,7 @@ public class Main {
             return result.mapRight(movingInstructions -> {
                 final var loadingInstructions = loader.findInstructions().orElse(new JavaList<>());
                 return movingInstructions.addAll(loadingInstructions)
-                        .add(CASMLang.instruct(StoreIndirectly, STACK_POINTER));
+                        .add(instruct(StoreIndirectly, STACK_POINTER));
             });
         });
     }
@@ -158,7 +173,7 @@ public class Main {
     }
 
     private static Result<Layout, CompileError> computeLayout(Node value) {
-        if(value.is(INT_TYPE)) {
+        if (value.is(INT_TYPE)) {
             return new Ok<>(new SingleLayout(1));
         }
 
@@ -175,7 +190,7 @@ public class Main {
     private static Result<Loader, CompileError> loadValue(Node value) {
         if (value.is(INT_TYPE)) {
             final var integer = value.findInt(INT_VALUE).orElse(0);
-            return new Ok<>(new SingleLoader(new JavaList<Node>().add(CASMLang.instruct(LoadFromValue, integer))));
+            return new Ok<>(new SingleLoader(new JavaList<Node>().add(instruct(LoadFromValue, integer))));
         }
 
         if (value.is(TUPLE_TYPE)) {
@@ -209,14 +224,14 @@ public class Main {
         var labelToAddress = new HashMap<String, Integer>();
         var address = 3;
         for (final Node node : program) {
-            if (node.is(CASMLang.DATA_TYPE)) {
-                final var labelOption = node.findString(CASMLang.DATA_LABEL);
+            if (node.is(DATA_TYPE)) {
+                final var labelOption = node.findString(DATA_LABEL);
                 int finalAddress = address;
                 labelOption.ifPresent(label -> labelToAddress.put(label, finalAddress));
                 address++;
-            } else if (node.is(CASMLang.LABEL_TYPE)) {
-                final var name = node.findString(CASMLang.LABEL_NAME).orElse("");
-                final var children = node.findNodeList(CASMLang.LABEL_CHILDREN)
+            } else if (node.is(LABEL_TYPE)) {
+                final var name = node.findString(LABEL_NAME).orElse("");
+                final var children = node.findNodeList(LABEL_CHILDREN)
                         .map(JavaList::list)
                         .orElse(new ArrayList<>());
 
@@ -232,16 +247,16 @@ public class Main {
     private static List<Integer> buildBinary(List<Node> nodes) {
         var list = new ArrayList<Integer>();
         for (Node node : nodes) {
-            if (node.is(CASMLang.INSTRUCTION_TYPE)) {
-                final var operator = node.findInt(CASMLang.INSTRUCTION_OPERATOR)
+            if (node.is(INSTRUCTION_TYPE)) {
+                final var operator = node.findInt(INSTRUCTION_OPERATOR)
                         .flatMap(Operator::find)
                         .orElse(Nothing);
 
                 list.add(node.findInt(INSTRUCTION_ADDRESS_OR_VALUE)
                         .map(operator::of)
                         .orElseGet(operator::empty));
-            } else if (node.is(CASMLang.DATA_TYPE)) {
-                list.add(node.findInt(CASMLang.DATA_VALUE).orElse(0));
+            } else if (node.is(DATA_TYPE)) {
+                list.add(node.findInt(DATA_VALUE).orElse(0));
             }
         }
 
@@ -249,10 +264,10 @@ public class Main {
     }
 
     private static Result<List<Node>, RuntimeError> resolveAddressesForNode(Map<String, Integer> labelToAddress, Node node) {
-        if (node.is(CASMLang.INSTRUCTION_TYPE)) {
+        if (node.is(INSTRUCTION_TYPE)) {
             return resolveInstruction(labelToAddress, node).mapValue(Collections::singletonList);
-        } else if (node.is(CASMLang.LABEL_TYPE)) {
-            final var children = node.findNodeList(CASMLang.LABEL_CHILDREN).map(list -> list.list()).orElse(Collections.emptyList());
+        } else if (node.is(LABEL_TYPE)) {
+            final var children = node.findNodeList(LABEL_CHILDREN).map(list -> list.list()).orElse(Collections.emptyList());
             return children.stream()
                     .map(child -> resolveInstruction(labelToAddress, child))
                     .<Result<List<Node>, RuntimeError>>reduce(new Ok<>(new ArrayList<Node>()), (current, next) -> current.and(() -> next).mapValue(tuple -> {
@@ -265,7 +280,7 @@ public class Main {
     }
 
     private static Result<Node, RuntimeError> resolveInstruction(Map<String, Integer> labelToAddress, Node node) {
-        final var labelOption = node.findString(CASMLang.INSTRUCTION_LABEL);
+        final var labelOption = node.findString(INSTRUCTION_LABEL);
         if (labelOption.isEmpty()) return new Ok<>(node);
 
         final var label = labelOption.orElse("");

@@ -14,6 +14,7 @@ public enum Operator {
     OutFromValue,
     OutFromAccumulator,
     StoreDirectly,
+    StoreIndirectly,
     LoadFromValue,
     LoadDirectly,
     AddFromAddress,
@@ -23,7 +24,7 @@ public enum Operator {
     JumpByValue,
     JumpByAddress,
     JumpConditionByValue,
-    Halt, StoreIndirectly;
+    Halt;
 
     private static final int maxLength;
 
