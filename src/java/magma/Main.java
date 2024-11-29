@@ -33,7 +33,9 @@ public class Main {
     public static final String SPILL = "__spill__";
 
     public static void main(String[] args) {
-        final var source = "let x = 3;";
+        final var source = """
+        out 3;
+        """;
 
         compile(source)
                 .mapValue(Main::mergeIntoRoot)

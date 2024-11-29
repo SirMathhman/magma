@@ -11,9 +11,24 @@ public class MagmaLang {
     public static final String TUPLE_TYPE = "tuple";
     public static final String TUPLE_VALUES = "values";
     public static final String DECLARATION_NAME = "name";
+    public static final String OUT_TYPE = "out";
+    public static final String OUT_VALUE = "value";
 
     public static Rule createMagmaRootRule() {
-        return new SplitRule(new BracketSplitter(), "children", createDeclarationRule());
+        return new SplitRule(new BracketSplitter(), "children", new OrRule(new JavaList<Rule>()
+                .add(createWhitespaceRule())
+                .add(createDeclarationRule())
+                .add(createOutRule())
+        ));
+    }
+
+    private static TypeRule createWhitespaceRule() {
+        return new TypeRule("whitespace", new StripRule(new EmptyRule()));
+    }
+
+    private static TypeRule createOutRule() {
+        final var value = new NodeRule(OUT_VALUE, createValueRule());
+        return new TypeRule(OUT_TYPE, new PrefixRule("out ", new SuffixRule(value, ";")));
     }
 
     private static TypeRule createDeclarationRule() {
