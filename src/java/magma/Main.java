@@ -22,6 +22,7 @@ import magma.java.JavaList;
 import java.util.*;
 
 import static magma.app.assemble.Operator.*;
+import static magma.app.compile.MagmaLang.*;
 import static magma.app.compile.MagmaLang.TUPLE_TYPE;
 
 public class Main {
@@ -86,7 +87,7 @@ public class Main {
     }
 
     private static Result<List<Node>, CompileError> compile(String input) {
-        return MagmaLang.createMagmaRootRule()
+        return createMagmaRootRule()
                 .parse(input)
                 .flatMapValue(Main::getListCompileErrorResult);
     }
@@ -105,8 +106,8 @@ public class Main {
     }
 
     private static Result<JavaList<Node>, CompileError> getJavaListResult(Node child) {
-        if (child.is(MagmaLang.DECLARATION_TYPE)) {
-            final var value = child.findNode(MagmaLang.DECLARATION_VALUE).orElse(new Node());
+        if (child.is(DECLARATION_TYPE)) {
+            final var value = child.findNode(DECLARATION_VALUE).orElse(new Node());
             return loadValue(value).mapValue(instructions -> instructions.add(instruct(StoreIndirectly, STACK_POINTER)));
         }
 
@@ -114,12 +115,13 @@ public class Main {
     }
 
     private static Result<JavaList<Node>, CompileError> loadValue(Node value) {
-        if (value.is(MagmaLang.INT_TYPE)) {
-            final var integer = value.findInt(MagmaLang.INT_VALUE).orElse(0);
+        if (value.is(INT_TYPE)) {
+            final var integer = value.findInt(INT_VALUE).orElse(0);
             return new Ok<>(new JavaList<Node>().add(instruct(LoadFromValue, integer)));
         }
 
         if (value.is(TUPLE_TYPE)) {
+            final var values = value.findNodeList(TUPLE_VALUES).orElse(new JavaList<>());
 
         }
 

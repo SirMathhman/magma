@@ -6,11 +6,22 @@ import magma.api.result.Result;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public record ResultStream<T, X>(Stream<Result<T, X>> parent) implements Stream<Result<T, X>> {
     @Override
     public <R> Stream<R> map(Function<Result<T, X>, R> mapper) {
         return parent.map(mapper);
+    }
+
+    @Override
+    public Stream<Result<T, X>> filter(Predicate<Result<T, X>> predicate) {
+        return parent.filter(predicate);
+    }
+
+    @Override
+    public Option<Result<T, X>> next() {
+        return parent.next();
     }
 
     @Override

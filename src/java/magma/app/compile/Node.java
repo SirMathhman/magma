@@ -1,13 +1,15 @@
 package magma.app.compile;
 
-import magma.app.error.Display;
-import magma.java.JavaList;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
+import magma.api.stream.Streams;
+import magma.app.error.Display;
+import magma.java.JavaList;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public record Node(
         Option<String> type,
@@ -37,6 +39,43 @@ public record Node(
     public Node withNodeList0(String propertyKey, JavaList<Node> propertyValues) {
         nodeLists.put(propertyKey, propertyValues);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return format(0);
+    }
+
+    private String format(int depth) {
+        final var joinedIntegers = join(depth, integers, String::valueOf);
+        final var joinedNodeLists = join(depth, nodeLists, nodeJavaList -> "[" + nodeJavaList
+                .stream()
+                .map(node -> node.format(depth + 1))
+                .foldLeft((previous, next) -> previous + ", " + next)
+                .orElse("") + "]");
+
+        final var filter = Streams.of(joinedIntegers, joinedNodeLists)
+                .filter(value -> !value.isEmpty())
+                .foldLeft((previous, next) -> previous + "," + next)
+                .orElse("");
+
+        return type.map(inner -> inner + " ").orElse("") + "{" +
+                filter +
+                "\n" + "\t".repeat(depth) + "}";
+    }
+
+    private <T> String join(int depth, Map<String, T> map, Function<T, String> formatter) {
+        var buffer = new StringBuilder();
+        for (var entry : map.entrySet()) {
+            final var values = formatter.apply(entry.getValue());
+            buffer.append("\n")
+                    .append("\t".repeat(depth + 1))
+                    .append(entry.getKey())
+                    .append(" = ")
+                    .append(values);
+        }
+
+        return buffer.toString();
     }
 
     public boolean is(String type) {

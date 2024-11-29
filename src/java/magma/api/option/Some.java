@@ -52,4 +52,9 @@ public record Some<T>(T value) implements Option<T> {
     public Tuple<Boolean, T> toTuple(T other) {
         return new Tuple<>(true, value);
     }
+
+    @Override
+    public Option<T> or(Supplier<Option<T>> other) {
+        return this;
+    }
 }

@@ -9,6 +9,7 @@ public class MagmaLang {
     public static final String DECLARATION_TYPE = "declaration";
     public static final String DECLARATION_VALUE = "value";
     public static final String TUPLE_TYPE = "tuple";
+    public static final String TUPLE_VALUES = "values";
 
     public static Rule createMagmaRootRule() {
         return new SplitRule(new BracketSplitter(), "children", createDeclarationRule());
@@ -33,7 +34,7 @@ public class MagmaLang {
     }
 
     private static TypeRule createTupleRule(LazyRule value) {
-        final var childRule = new SplitRule(new ValueSplitter(), "values", value);
+        final var childRule = new SplitRule(new ValueSplitter(), TUPLE_VALUES, value);
         return new TypeRule(TUPLE_TYPE, new PrefixRule("[", new SuffixRule(childRule, "]")));
     }
 }
