@@ -39,7 +39,8 @@ public class Main {
     public static void main(String[] args) {
         final var source = """
                 let x = 'a';
-                let y = x;
+                let y = 'b';
+                let z = x;
                 out y;
                 """;
 
