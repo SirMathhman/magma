@@ -41,7 +41,7 @@ public class Main {
     public static final String INT_VALUE = "value";
 
     public static void main(String[] args) {
-        final var source = "let x = 5;";
+        final var source = "let x = [ 3, 4 ];";
 
         compile(source)
                 .mapValue(Main::mergeIntoRoot)
@@ -76,7 +76,7 @@ public class Main {
 
         final var instruct = new ArrayList<>(List.of(
                 instruct(JumpByValue, "__start__"),
-                data(STACK_POINTER, count + 5),
+                data(STACK_POINTER, count + 6),
                 data(SPILL, 0)
         ));
 
@@ -105,7 +105,8 @@ public class Main {
                             .map(child -> {
                                 if(child.is(DECLARATION_TYPE)) {
                                     final var value = child.findNode(DECLARATION_VALUE).orElse(new Node());
-                                    return loadValue(value);
+                                    return loadValue(value)
+                                            .add(instruct(StoreIndirectly, STACK_POINTER));
                                 }
 
                                 return new JavaList<Node>().add(child);
@@ -122,18 +123,7 @@ public class Main {
     private static JavaList<Node> loadValue(Node value) {
         if(value.is(INT_TYPE)) {
             final var integer = value.findInt(INT_VALUE).orElse(0);
-            return new JavaList<Node>()
-                    .add(instruct(LoadDirectly, STACK_POINTER))
-                    .add(instruct(StoreIndirectly, STACK_POINTER))
-
-                    .add(instruct(LoadDirectly, STACK_POINTER))
-                    .add(instruct(AddFromValue, 1))
-                    .add(instruct(StoreDirectly, STACK_POINTER))
-                    .add(instruct(LoadFromValue, integer))
-                    .add(instruct(StoreIndirectly, STACK_POINTER))
-                    .add(instruct(LoadDirectly, STACK_POINTER))
-                    .add(instruct(SubFromValue, 1))
-                    .add(instruct(StoreDirectly, STACK_POINTER));
+            return new JavaList<Node>().add(instruct(LoadFromValue, integer));
         }
         return new JavaList<>();
     }
