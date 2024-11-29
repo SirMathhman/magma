@@ -48,4 +48,11 @@ public record JavaOrderedMap<K, V>(JavaList<Tuple<K, V>> list) {
     public Option<V> getValue(int index) {
         return get(index).map(Tuple::right);
     }
+
+    @Override
+    public String toString() {
+        return "{" + list.stream()
+                .map(pair -> pair.left() + "=" + pair.right())
+                .foldLeft((previous, next) -> previous + ", " + next).orElse("") + "}";
+    }
 }

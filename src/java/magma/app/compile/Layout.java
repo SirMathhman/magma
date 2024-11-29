@@ -1,9 +1,10 @@
 package magma.app.compile;
 
+import magma.api.option.Option;
 import magma.java.JavaList;
 
 public interface Layout {
-    int computeTotalSize();
+    int computeElementSizeTo();
 
-    int computeSize(JavaList<Integer> indices);
+    Option<Integer> computeElementSizeTo(JavaList<Integer> indices);
 }

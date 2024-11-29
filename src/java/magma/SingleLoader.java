@@ -15,6 +15,14 @@ public record SingleLoader(JavaList<Node> instructions) implements Loader {
     }
 
     @Override
+    public String toString() {
+        return "[" + instructions.stream()
+                .map(Node::display)
+                .foldLeft((previous, next) -> previous + ", " + next)
+                .orElse("") + "]";
+    }
+
+    @Override
     public Option<JavaList<Node>> findInstructions() {
         return new Some<>(instructions);
     }

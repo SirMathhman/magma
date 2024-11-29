@@ -9,17 +9,20 @@ import magma.api.stream.RangeHead;
 import magma.api.stream.Stream;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public record JavaList<T>(List<T> list) {
     public JavaList() {
-        this(new ArrayList<>());
+        this(Collections.emptyList());
     }
 
     public JavaList<T> add(T node) {
-        list.add(node);
-        return this;
+        final var copy = new ArrayList<>(list);
+        copy.add(node);
+        return new JavaList<>(copy);
     }
 
     public Stream<T> stream() {
@@ -27,26 +30,13 @@ public record JavaList<T>(List<T> list) {
     }
 
     public JavaList<T> addAll(JavaList<T> other) {
-        list.addAll(other.list);
-        return this;
+        final var copy = new ArrayList<>(list);
+        copy.addAll(other.list);
+        return new JavaList<>(copy);
     }
 
     public int size() {
         return list.size();
-    }
-
-    public Option<T> last() {
-        if (list.isEmpty()) return new None<>();
-        return new Some<>(list.getLast());
-    }
-
-    public Option<JavaList<T>> mapLast(Function<T, T> mapper) {
-        return last().map(mapper).map(last -> set(list.size() - 1, last));
-    }
-
-    private JavaList<T> set(int index, T last) {
-        list.set(index, last);
-        return this;
     }
 
     public Stream<Tuple<Integer, T>> streamWithIndices() {
@@ -54,13 +44,30 @@ public record JavaList<T>(List<T> list) {
     }
 
     public Option<Stream<T>> sliceTo(int index) {
-        if (index < list.size()) return new None<>();
-        return new Some<>(new HeadedStream<>(new RangeHead(index))
-                .map(list::get));
+        if (index < list.size()) {
+            return new Some<>(new HeadedStream<>(new RangeHead(index))
+                    .map(list::get));
+        }
+        return new None<>();
     }
 
     public Option<T> get(int index) {
-        if(index < list.size()) return new Some<>(list.get(index));
+        if (index < list.size()) return new Some<>(list.get(index));
         return new None<>();
+    }
+
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
+
+    public Option<Tuple<T, JavaList<T>>> popFirst() {
+        return isEmpty() ? new None<>() : new Some<>(new Tuple<>(list.getFirst(), new JavaList<>(list.subList(1, list.size()))));
+    }
+
+    @Override
+    public String toString() {
+        return list.stream()
+                .map(Objects::toString)
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 }

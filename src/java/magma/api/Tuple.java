@@ -6,4 +6,9 @@ public record Tuple<A, B>(A left, B right) {
     public <R> Tuple<A, R> mapRight(Function<B, R> mapper) {
         return new Tuple<>(left, mapper.apply(right));
     }
+
+    @Override
+    public String toString() {
+        return "[" + left + ", " + right + "]";
+    }
 }

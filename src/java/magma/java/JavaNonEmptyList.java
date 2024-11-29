@@ -11,11 +11,26 @@ import magma.api.stream.Stream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public record JavaNonEmptyList<T>(List<T> list) {
     public JavaNonEmptyList(T initial) {
         this(new ArrayList<>(Collections.singletonList(initial)));
+    }
+
+    public static <T> Option<JavaNonEmptyList<T>> from(JavaList<T> list) {
+        return list.isEmpty()
+                ? new Some<>(new JavaNonEmptyList<>(list.list()))
+                : new None<>();
+    }
+
+    @Override
+    public String toString() {
+        return list.stream()
+                .map(Objects::toString)
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public T last() {
@@ -41,8 +56,17 @@ public record JavaNonEmptyList<T>(List<T> list) {
     }
 
     public Option<Stream<T>> sliceTo(int extent) {
-        if(extent < list.size()) return new None<>();
+        if (extent < list.size()) return new None<>();
         return new Some<>(new HeadedStream<>(new RangeHead(extent))
                 .map(list::get));
+    }
+
+    public T first() {
+        if (list().isEmpty()) throw new IllegalStateException();
+        return list.getFirst();
+    }
+
+    public Tuple<T, JavaList<T>> popFirst() {
+        return new Tuple<>(first(), new JavaList<>(list.subList(1, list.size())));
     }
 }

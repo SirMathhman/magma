@@ -34,7 +34,7 @@ public record Stack(
 
     private static int computeFrameSliceSize(Stream<Tuple<String, Layout>> elements) {
         return elements.map(Tuple::right)
-                .map(Layout::computeTotalSize)
+                .map(Layout::computeElementSizeTo)
                 .foldLeft(0, Integer::sum);
     }
 
@@ -65,9 +65,10 @@ public record Stack(
                     .map(Stack::computeFrameSliceSize)
                     .orElse(0);
 
-            return frame.getValue(layoutIndex).map(layout -> {
-                final var size = layout.computeSize(indices);
-                return beforeFrameSize + beforeElementsSize + size;
+            return frame.getValue(layoutIndex).flatMap(layout -> {
+                return layout.computeElementSizeTo(indices).map(size -> {
+                    return beforeFrameSize + beforeElementsSize + size;
+                });
             });
         }).orElse(0);
     }

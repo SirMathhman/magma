@@ -33,7 +33,7 @@ public class Main {
     public static final String SPILL = "__spill__";
 
     public static void main(String[] args) {
-        final var source = "let x = [ 3, 4 ];";
+        final var source = "let x = 3;";
 
         compile(source)
                 .mapValue(Main::mergeIntoRoot)
@@ -90,9 +90,7 @@ public class Main {
                 .foldLeftToResult(new Tuple<>(stack, new JavaList<Node>()), (current, child) -> {
                     final var instructions = current.right();
                     return compileRootChild(current.left(), child).mapValue(tuple -> {
-                        return tuple.mapRight(right -> {
-                            return instructions.addAll(right);
-                        });
+                        return tuple.mapRight(instructions::addAll);
                     });
                 })
                 .mapValue(result -> {
@@ -111,7 +109,9 @@ public class Main {
             final var value = child.findNode(DECLARATION_VALUE).orElse(new Node());
             return computeLayout(value).flatMapValue(layout -> {
                 final var defined = stack.define(name, layout);
-                return loadValue(value).mapValue(loader -> declare(defined, name, new JavaList<>(), loader));
+                return loadValue(value).mapValue(loader -> {
+                    return declare(defined, name, new JavaList<>(), loader);
+                });
             });
         }
 
@@ -131,10 +131,13 @@ public class Main {
             JavaList<Integer> indices,
             Loader loader
     ) {
-        return stack.moveTo(name, indices).map(result -> result.mapRight(movingInstructions -> {
-            final var loadingInstructions = loader.findInstructions().orElse(new JavaList<>());
-            return movingInstructions.addAll(loadingInstructions);
-        }));
+        return stack.moveTo(name, indices).map(result -> {
+            return result.mapRight(movingInstructions -> {
+                final var loadingInstructions = loader.findInstructions().orElse(new JavaList<>());
+                return movingInstructions.addAll(loadingInstructions)
+                        .add(CASMLang.instruct(StoreIndirectly, STACK_POINTER));
+            });
+        });
     }
 
     private static Tuple<Stack, JavaList<Node>> declareMultipleValues(
@@ -147,11 +150,23 @@ public class Main {
             final var currentStack = current.left();
             final var currentInstructions = current.right();
 
-            return declare(currentStack, name, indices.add(child.left()), child.right()).mapRight(currentInstructions::addAll);
+            return declare(currentStack, name, indices.add(child.left()), child.right())
+                    .mapRight(currentInstructions::addAll);
         });
     }
 
     private static Result<Layout, CompileError> computeLayout(Node value) {
+        if(value.is(INT_TYPE)) {
+            return new Ok<>(new SingleLayout(1));
+        }
+
+        if (value.is(TUPLE_TYPE)) {
+            return value.findNodeList(TUPLE_VALUES).orElse(new JavaList<>())
+                    .stream()
+                    .<JavaList<Layout>, CompileError>foldLeftToResult(new JavaList<>(), (layoutJavaList, node) -> computeLayout(node).mapValue(layoutJavaList::add))
+                    .mapValue(MultipleLayout::new);
+        }
+
         return new Err<>(new CompileError("Cannot compute layout", new NodeContext(value)));
     }
 
