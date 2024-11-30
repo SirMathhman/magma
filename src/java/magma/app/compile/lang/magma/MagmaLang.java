@@ -4,9 +4,6 @@ import magma.app.compile.rule.*;
 import magma.java.JavaList;
 
 public class MagmaLang {
-    public static final String NUMERIC_TYPE = "numeric";
-    public static final String NUMERIC_VALUE = "value";
-
     public static final String DECLARATION_TYPE = "declaration";
     public static final String DECLARATION_NAME = "name";
     public static final String DECLARATION_TYPE_PROPERTY = "type";
@@ -79,7 +76,7 @@ public class MagmaLang {
     }
 
     private static TypeRule createNumericType() {
-        return new TypeRule(NUMERIC_TYPE, new StripRule(new IntRule(NUMERIC_VALUE)));
+        return new TypeRule(CommonLang.NUMERIC_VALUE_TYPE, new StripRule(new IntRule(CommonLang.NUMERIC_VALUE)));
     }
 
     private static TypeRule createTupleRule(LazyRule value) {

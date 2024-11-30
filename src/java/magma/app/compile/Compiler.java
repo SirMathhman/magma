@@ -7,6 +7,7 @@ import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.casm.CASMLang;
+import magma.app.compile.lang.casm.LoadNumeric;
 import magma.app.compile.lang.magma.FlattenBlock;
 import magma.app.compile.lang.magma.WrapFunction;
 import magma.app.compile.lang.magma.MagmaLang;
@@ -29,6 +30,7 @@ public class Compiler {
                 .add(new WrapFunction())
                 .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new ResolveDeclaration()))))
                 .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new FlattenBlock()))))
+                .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new LoadNumeric()))))
                 .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new MyPasser()))))
                 .add(new Starter()));
     }
