@@ -8,9 +8,6 @@ import magma.app.compile.Node;
 import magma.app.error.NodeContext;
 import magma.java.JavaList;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static magma.app.assemble.Operator.JumpByValue;
 import static magma.app.compile.CASMLang.*;
 
@@ -26,27 +23,33 @@ public class Compiler {
                 .mapValue(Compiler::mergeIntoRoot);
     }
 
-    private static Node mergeIntoRoot(List<Node> compiled) {
-        var count = 0;
-        for (Node node : compiled) {
-            if (node.is(LABEL_TYPE)) {
-                count += node.findNodeList(LABEL_CHILDREN).map(JavaList::size).orElse(0);
-            } else {
-                count += 1;
-            }
-        }
+    private static Node mergeIntoRoot(Node program) {
+        final var children = program
+                .findNodeList("children")
+                .orElse(new JavaList<>());
 
-        final var instruct = new ArrayList<>(List.of(
-                instruct(JumpByValue, "__start__"),
-                data(STACK_POINTER, count + 6),
-                data(SPILL, 0)
-        ));
+        final var count = children.stream()
+                .map(Compiler::getInteger)
+                .foldLeft(0, Integer::sum);
 
-        instruct.addAll(compiled);
-        return new Node(Main.ROOT_TYPE).withNodeList0(ROOT_CHILDREN, new JavaList<>(instruct));
+        final var instructions = new JavaList<Node>()
+                .add(instruct(JumpByValue, "__start__"))
+                .add(data(STACK_POINTER, count + 6))
+                .add(data(SPILL, 0))
+                .addAll(children);
+
+        return new Node(Main.ROOT_TYPE).withNodeList0(ROOT_CHILDREN, instructions);
     }
 
-    private static Result<List<Node>, CompileError> compileRoot(Node root) {
+    private static Integer getInteger(Node child) {
+        if (!child.is(LABEL_TYPE)) return 1;
+
+        return child.findNodeList(LABEL_CHILDREN)
+                .map(JavaList::size)
+                .orElse(0);
+    }
+
+    private static Result<Node, CompileError> compileRoot(Node root) {
         return new Err<>(new CompileError("Unknown root", new NodeContext(root)));
     }
 }
