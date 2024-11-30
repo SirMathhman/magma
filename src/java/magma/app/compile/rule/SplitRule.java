@@ -29,7 +29,7 @@ public final class SplitRule implements Rule {
                 .map(childRule::parse)
                 .into(ResultStream::new)
                 .foldResultsLeft(new JavaList<Node>(), JavaList::add)
-                .mapValue(list -> new MapNode().withNodeList0(propertyKey, list));
+                .mapValue(list -> new MapNode().withNodeList(propertyKey, list));
     }
 
     @Override

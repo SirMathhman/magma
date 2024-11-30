@@ -45,7 +45,7 @@ public record MapNode(
     }
 
     @Override
-    public Node withNodeList0(String propertyKey, JavaList<Node> propertyValues) {
+    public Node withNodeList(String propertyKey, JavaList<Node> propertyValues) {
         return new MapNode(type, integers, strings, nodes, nodeLists.put(propertyKey, propertyValues));
     }
 

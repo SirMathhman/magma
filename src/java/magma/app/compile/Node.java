@@ -14,7 +14,7 @@ public interface Node extends Display {
 
     Node withString(String propertyKey, String propertyValue);
 
-    Node withNodeList0(String propertyKey, JavaList<Node> propertyValues);
+    Node withNodeList(String propertyKey, JavaList<Node> propertyValues);
 
     String format(int depth);
 

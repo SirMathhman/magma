@@ -1,12 +1,14 @@
 package magma;
 
-import magma.api.result.Err;
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.api.stream.ResultStream;
 import magma.app.compile.CompileError;
 import magma.app.compile.MagmaLang;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
-import magma.app.error.NodeContext;
 import magma.java.JavaList;
 
 import static magma.app.assemble.Operator.JumpByValue;
@@ -20,7 +22,7 @@ public class Compiler {
     static Result<Node, CompileError> compile(String source) {
         return MagmaLang.createMagmaRootRule()
                 .parse(source)
-                .flatMapValue(Compiler::compileRoot)
+                .flatMapValue(Compiler::pass)
                 .mapValue(Compiler::mergeIntoRoot);
     }
 
@@ -39,7 +41,7 @@ public class Compiler {
                 .add(data(SPILL, 0))
                 .addAll(children);
 
-        return new MapNode(Main.ROOT_TYPE).withNodeList0(ROOT_CHILDREN, instructions);
+        return new MapNode(Main.ROOT_TYPE).withNodeList(ROOT_CHILDREN, instructions);
     }
 
     private static int countSize(Node child) {
@@ -50,7 +52,38 @@ public class Compiler {
                 .orElse(0);
     }
 
-    private static Result<Node, CompileError> compileRoot(Node root) {
-        return new Err<>(new CompileError("Unknown root", new NodeContext(root)));
+    private static Result<Node, CompileError> pass(Node root) {
+        return beforeNode(root).orElse(new Ok<>(root))
+                .flatMapValue(Compiler::passNodes)
+                .flatMapValue(Compiler::passNodeLists)
+                .flatMapValue(node -> afterNode(node).orElse(new Ok<>(node)));
+    }
+
+    private static Option<Result<Node, CompileError>> beforeNode(Node node) {
+        return new None<>();
+    }
+
+    private static Result<Node, CompileError> passNodeLists(Node withNodes) {
+        return withNodes.streamNodeLists().foldLeftToResult(withNodes, (node, tuple) -> {
+            final var propertyKey = tuple.left();
+            final var propertyValues = tuple.right();
+            return propertyValues.stream()
+                    .map(Compiler::pass)
+                    .into(ResultStream::new)
+                    .foldResultsLeft(new JavaList<Node>(), JavaList::add)
+                    .mapValue(newValues -> node.withNodeList(propertyKey, newValues));
+        });
+    }
+
+    private static Result<Node, CompileError> passNodes(Node root) {
+        return root.streamNodes().foldLeftToResult(root, (node, tuple) -> {
+            final var propertyKey = tuple.left();
+            final var propertyValue = tuple.right();
+            return pass(propertyValue).mapValue(newValue -> node.withNode(propertyKey, newValue));
+        });
+    }
+
+    private static Option<Result<Node, CompileError>> afterNode(Node node) {
+        return new None<>();
     }
 }
