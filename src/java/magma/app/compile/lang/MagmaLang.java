@@ -19,13 +19,15 @@ public class MagmaLang {
     public static final String CHAR_VALUE = "value";
     public static final String SYMBOL_TYPE = "symbol";
     public static final String SYMBOL_VALUE = "value";
+    public static final String ROOT_TYPE = "root";
+    public static final String ROOT_CHILDREN = "children";
 
     public static Rule createMagmaRootRule() {
-        return new SplitRule(new BracketSplitter(), "children", new OrRule(new JavaList<Rule>()
+        return new TypeRule(ROOT_TYPE, new SplitRule(new BracketSplitter(), ROOT_CHILDREN, new OrRule(new JavaList<Rule>()
                 .add(createWhitespaceRule())
                 .add(createDeclarationRule())
                 .add(createOutRule())
-        ));
+        )));
     }
 
     private static TypeRule createWhitespaceRule() {

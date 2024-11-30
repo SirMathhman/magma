@@ -18,6 +18,8 @@ public class CASMLang {
     public static final String INSTRUCTION_TYPE = "instruction";
     public static final String INSTRUCTION_OPERATOR = "operator";
     public static final String INSTRUCTION_LABEL = "label";
+    public static final String PROGRAM_TYPE = "program";
+    public static final String PROGRAM_CHILDREN = "children";
 
     public static Node label(String name, List<Node> children) {
         return new MapNode(LABEL_TYPE).withString(LABEL_NAME, name).withNodeList(LABEL_CHILDREN, new JavaList<>(children));
