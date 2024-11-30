@@ -1,5 +1,6 @@
 package magma.app.compile.rule;
 
+import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.CompileError;
 import magma.app.error.NodeContext;
@@ -9,7 +10,7 @@ import magma.api.result.Result;
 public record NodeRule(String propertyKey, Rule childRule) implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
-        return childRule.parse(input).mapValue(value -> new Node().withNode(propertyKey, value));
+        return childRule.parse(input).mapValue(value -> new MapNode().withNode(propertyKey, value));
     }
 
     @Override
@@ -23,7 +24,7 @@ public record NodeRule(String propertyKey, Rule childRule) implements Rule {
             return new Err<>(error);
         }
 
-        final var value = option.orElse(new Node());
+        final var value = option.orElse(new MapNode());
         return childRule.generate(value);
     }
 }

@@ -1,133 +1,49 @@
 package magma.app.compile;
 
-import magma.api.option.None;
+import magma.api.Tuple;
 import magma.api.option.Option;
-import magma.api.option.Some;
+import magma.api.stream.Stream;
 import magma.app.error.Display;
 import magma.java.JavaList;
+import magma.java.JavaMap;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
-public record Node(
-        Option<String> type,
-        Map<String, Integer> integers,
-        Map<String, String> strings,
-        Map<String, Node> nodes,
-        Map<String, JavaList<Node>> nodeLists
-) implements Display {
-    public Node(String type) {
-        this(new Some<>(type), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
-    }
+public interface Node extends Display {
+    Node withInt(String propertyKey, int propertyValue);
 
-    public Node() {
-        this(new None<>(), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
-    }
+    Node withString(String propertyKey, String propertyValue);
 
-    public Node withInt(String propertyKey, int propertyValue) {
-        integers.put(propertyKey, propertyValue);
-        return this;
-    }
+    Node withNodeList0(String propertyKey, JavaList<Node> propertyValues);
 
-    public Node withString(String propertyKey, String propertyValue) {
-        strings.put(propertyKey, propertyValue);
-        return this;
-    }
+    String format(int depth);
 
-    public Node withNodeList0(String propertyKey, JavaList<Node> propertyValues) {
-        nodeLists.put(propertyKey, propertyValues);
-        return this;
-    }
+    <T> String join(JavaMap<String, T> map, int depth, Function<T, String> formatter);
+
+    boolean is(String type);
+
+    Option<String> findString(String propertyKey);
+
+    Option<JavaList<Node>> findNodeList(String propertyKey);
+
+    Option<Integer> findInt(String propertyKey);
 
     @Override
-    public String toString() {
-        return format(0);
-    }
+    String display();
 
-    private String format(int depth) {
-        final var joinedIntegers = join(depth, integers, String::valueOf);
-        final var joinedNodeLists = join(depth, nodeLists, nodeJavaList -> "[" + nodeJavaList
-                .stream()
-                .map(node -> node.format(depth + 1))
-                .foldLeft((previous, next) -> previous + ", " + next)
-                .orElse("") + "]");
+    Node retype(String type);
 
-        final var filter = new JavaList<String>()
-                .add(joinedIntegers)
-                .add(joinedNodeLists)
-                .stream()
-                .filter(value -> !value.isEmpty())
-                .foldLeft((previous, next) -> previous + "," + next)
-                .orElse("");
+    Stream<Tuple<String, JavaList<Node>>> streamNodeLists();
 
-        return type.map(inner -> inner + " ").orElse("") + "{" +
-                filter +
-                "\n" + "\t".repeat(depth) + "}";
-    }
+    Stream<Tuple<String, Node>> streamNodes();
 
-    private <T> String join(int depth, Map<String, T> map, Function<T, String> formatter) {
-        var buffer = new StringBuilder();
-        for (var entry : map.entrySet()) {
-            final var values = formatter.apply(entry.getValue());
-            buffer.append("\n")
-                    .append("\t".repeat(depth + 1))
-                    .append(entry.getKey())
-                    .append(" = ")
-                    .append(values);
-        }
+    Stream<Tuple<String, String>> streamStrings();
 
-        return buffer.toString();
-    }
+    Stream<Tuple<String, Integer>> streamIntegers();
 
-    public boolean is(String type) {
-        return this.type.filter(value -> value.equals(type)).isPresent();
-    }
+    Node merge(Node other);
 
-    public Option<String> findString(String propertyKey) {
-        return strings.containsKey(propertyKey)
-                ? new Some<>(strings.get(propertyKey))
-                : new None<>();
-    }
+    Node withNode(String propertyKey, Node propertyValue);
 
-    public Option<JavaList<Node>> findNodeList(String propertyKey) {
-        return nodeLists.containsKey(propertyKey)
-                ? new Some<>(nodeLists.get(propertyKey))
-                : new None<>();
-    }
-
-    public Option<Integer> findInt(String propertyKey) {
-        return integers.containsKey(propertyKey)
-                ? new Some<>(integers.get(propertyKey))
-                : new None<>();
-    }
-
-    @Override
-    public String display() {
-        return toString();
-    }
-
-    public Node retype(String type) {
-        return new Node(new Some<>(type), integers, strings, nodes, nodeLists);
-    }
-
-    public Node merge(Node other) {
-        integers.putAll(other.integers);
-        strings.putAll(other.strings);
-        nodes.putAll(other.nodes);
-        nodeLists.putAll(other.nodeLists);
-        return this;
-    }
-
-    public Node withNode(String propertyKey, Node propertyValue) {
-        nodes.put(propertyKey, propertyValue);
-        return this;
-    }
-
-    public Option<Node> findNode(String propertyKey) {
-        return nodes.containsKey(propertyKey)
-                ? new Some<>(nodes.get(propertyKey))
-                : new None<>();
-    }
+    Option<Node> findNode(String propertyKey);
 }

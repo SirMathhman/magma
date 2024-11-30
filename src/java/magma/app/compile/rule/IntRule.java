@@ -1,5 +1,6 @@
 package magma.app.compile.rule;
 
+import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.CompileError;
 import magma.app.error.NodeContext;
@@ -13,7 +14,7 @@ public record IntRule(String propertyKey) implements Rule {
     public Result<Node, CompileError> parse(String input) {
         try {
             final var value = Integer.parseInt(input);
-            return new Ok<>(new Node().withInt(propertyKey, value));
+            return new Ok<>(new MapNode().withInt(propertyKey, value));
         } catch (NumberFormatException e) {
             return new Err<>(new CompileError("Not an int", new StringContext(input)));
         }

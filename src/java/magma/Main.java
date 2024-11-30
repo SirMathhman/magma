@@ -10,6 +10,7 @@ import magma.api.stream.ResultStream;
 import magma.app.assemble.Instruction;
 import magma.app.assemble.Operator;
 import magma.app.assemble.State;
+import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.RuntimeError;
@@ -62,7 +63,7 @@ public class Main {
                 .map(value -> resolveAddressesForNode(labelsToAddresses, value))
                 .into(ResultStream::new)
                 .mapResult(JavaList::new)
-                .foldResultsLeft(new JavaList<Node>(), JavaList::addAll)
+                .foldResultsLeft(new JavaList<MapNode>(), JavaList::addAll)
                 .mapValue(JavaList::list);
     }
 

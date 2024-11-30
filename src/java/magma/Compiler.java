@@ -4,6 +4,7 @@ import magma.api.result.Err;
 import magma.api.result.Result;
 import magma.app.compile.CompileError;
 import magma.app.compile.MagmaLang;
+import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.error.NodeContext;
 import magma.java.JavaList;
@@ -38,7 +39,7 @@ public class Compiler {
                 .add(data(SPILL, 0))
                 .addAll(children);
 
-        return new Node(Main.ROOT_TYPE).withNodeList0(ROOT_CHILDREN, instructions);
+        return new MapNode(Main.ROOT_TYPE).withNodeList0(ROOT_CHILDREN, instructions);
     }
 
     private static Integer getInteger(Node child) {

@@ -1,5 +1,6 @@
 package magma.app.compile.rule;
 
+import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.CompileError;
 import magma.app.error.NodeContext;
@@ -27,8 +28,8 @@ public final class SplitRule implements Rule {
         return new JavaList<>(list1).stream()
                 .map(childRule::parse)
                 .into(ResultStream::new)
-                .foldResultsLeft(new JavaList<Node>(), JavaList::add)
-                .mapValue(list -> new Node().withNodeList0(propertyKey, list));
+                .foldResultsLeft(new JavaList<MapNode>(), JavaList::add)
+                .mapValue(list -> new MapNode().withNodeList0(propertyKey, list));
     }
 
     @Override

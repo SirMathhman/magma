@@ -9,7 +9,7 @@ import magma.app.error.StringContext;
 public class EmptyRule implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
-        if (input.isEmpty()) return new Ok<>(new Node());
+        if (input.isEmpty()) return new Ok<>(new MapNode());
         return new Err<>(new CompileError("Not empty", new StringContext(input)));
     }
 
