@@ -57,14 +57,14 @@ public record MapNode(
     @Override
     public String format(int depth) {
         final var joinedIntegers = join(integers, depth, String::valueOf);
-        final var joinedNodeLists = join(nodeLists, depth, nodeJavaList -> "[" + nodeJavaList
-                .stream()
-                .map(node -> node.format(depth + 1))
-                .foldLeft((previous, next) -> previous + ", " + next)
-                .orElse("") + "]");
+        final var joinedStrings = join(strings, depth, value -> "\"" + value + "\"");
+        final var joinedNodes = join(nodes, depth, node -> node.format(depth + 1));
+        final var joinedNodeLists = join(nodeLists, depth, nodeJavaList -> formatNodeList(nodeJavaList, depth));
 
         final var filter = new JavaList<String>()
                 .add(joinedIntegers)
+                .add(joinedStrings)
+                .add(joinedNodes)
                 .add(joinedNodeLists)
                 .stream()
                 .filter(value -> !value.isEmpty())
@@ -74,6 +74,14 @@ public record MapNode(
         return type.map(inner -> inner + " ").orElse("") + "{" +
                 filter +
                 "\n" + "\t".repeat(depth) + "}";
+    }
+
+    private static String formatNodeList(JavaList<Node> nodeList, int depth) {
+        return "[" + nodeList
+                .stream()
+                .map(node -> node.format(depth + 1))
+                .foldLeft((previous, next) -> previous + ", " + next)
+                .orElse("") + "]";
     }
 
     @Override
