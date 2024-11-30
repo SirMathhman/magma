@@ -4,8 +4,9 @@ import magma.app.compile.rule.*;
 import magma.java.JavaList;
 
 public class MagmaLang {
-    public static final String INT_TYPE = "int";
-    public static final String INT_VALUE = "value";
+    public static final String NUMERIC_TYPE = "numeric";
+    public static final String NUMERIC_VALUE = "value";
+
     public static final String DECLARATION_TYPE = "declaration";
     public static final String DECLARATION_TYPE_PROPERTY = "type";
     public static final String DECLARATION_VALUE = "value";
@@ -55,7 +56,7 @@ public class MagmaLang {
         final var value = new LazyRule();
         value.set(new OrRule(new JavaList<Rule>()
                 .add(createTupleRule(value))
-                .add(createIntType())
+                .add(createNumericType())
                 .add(createCharRule())
                 .add(createSymbolRule())
         ));
@@ -71,8 +72,8 @@ public class MagmaLang {
         return new TypeRule(CHAR_TYPE, new StripRule(new PrefixRule("'", new SuffixRule(value, "'"))));
     }
 
-    private static TypeRule createIntType() {
-        return new TypeRule(INT_TYPE, new StripRule(new IntRule(INT_VALUE)));
+    private static TypeRule createNumericType() {
+        return new TypeRule(NUMERIC_TYPE, new StripRule(new IntRule(NUMERIC_VALUE)));
     }
 
     private static TypeRule createTupleRule(LazyRule value) {
