@@ -1,10 +1,10 @@
 package magma.app.compile.rule;
 
 import magma.app.compile.Node;
-import magma.app.compile.CompileError;
-import magma.app.error.Context;
-import magma.app.error.NodeContext;
-import magma.app.error.StringContext;
+import magma.app.compile.error.CompileError;
+import magma.app.compile.error.Context;
+import magma.app.compile.error.NodeContext;
+import magma.app.compile.error.StringContext;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;

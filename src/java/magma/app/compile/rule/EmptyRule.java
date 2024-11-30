@@ -1,10 +1,12 @@
-package magma.app.compile;
+package magma.app.compile.rule;
 
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.app.compile.rule.Rule;
-import magma.app.error.StringContext;
+import magma.app.compile.error.CompileError;
+import magma.app.compile.MapNode;
+import magma.app.compile.Node;
+import magma.app.compile.error.StringContext;
 
 public class EmptyRule implements Rule {
     @Override

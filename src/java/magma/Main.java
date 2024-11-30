@@ -10,9 +10,10 @@ import magma.api.stream.ResultStream;
 import magma.app.assemble.Instruction;
 import magma.app.assemble.Operator;
 import magma.app.assemble.State;
+import magma.app.compile.Compiler;
 import magma.app.compile.Node;
-import magma.app.error.ApplicationError;
-import magma.app.error.RuntimeError;
+import magma.app.ApplicationError;
+import magma.api.error.RuntimeError;
 import magma.java.JavaList;
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static magma.app.assemble.Operator.*;
-import static magma.app.compile.CASMLang.*;
+import static magma.app.compile.lang.CASMLang.*;
 
 public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);

@@ -1,7 +1,9 @@
-package magma.app.compile;
+package magma.app.compile.lang;
 
 import magma.Main;
 import magma.app.assemble.Operator;
+import magma.app.compile.MapNode;
+import magma.app.compile.Node;
 import magma.java.JavaList;
 
 import java.util.List;

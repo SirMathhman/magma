@@ -2,8 +2,8 @@ package magma.app.compile.rule;
 
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
-import magma.app.error.NodeContext;
-import magma.app.compile.CompileError;
+import magma.app.compile.error.NodeContext;
+import magma.app.compile.error.CompileError;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;

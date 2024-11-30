@@ -2,11 +2,11 @@ package magma.app.compile.rule;
 
 import magma.api.result.Err;
 import magma.api.result.Result;
-import magma.app.compile.CompileError;
+import magma.app.compile.error.CompileError;
 import magma.app.compile.Node;
-import magma.app.error.Error;
-import magma.app.error.NodeContext;
-import magma.app.error.StringContext;
+import magma.api.error.Error;
+import magma.app.compile.error.NodeContext;
+import magma.app.compile.error.StringContext;
 import magma.java.JavaList;
 
 public record OrRule(JavaList<Rule> rules) implements Rule {

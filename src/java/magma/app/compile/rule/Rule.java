@@ -1,7 +1,7 @@
 package magma.app.compile.rule;
 
 import magma.app.compile.Node;
-import magma.app.compile.CompileError;
+import magma.app.compile.error.CompileError;
 import magma.api.result.Result;
 
 public interface Rule {

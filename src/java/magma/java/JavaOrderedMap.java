@@ -1,9 +1,8 @@
-package magma.app.compile;
+package magma.java;
 
 import magma.api.Tuple;
 import magma.api.option.Option;
 import magma.api.stream.Stream;
-import magma.java.JavaList;
 
 public record JavaOrderedMap<K, V>(JavaList<Tuple<K, V>> list) {
     public JavaOrderedMap() {

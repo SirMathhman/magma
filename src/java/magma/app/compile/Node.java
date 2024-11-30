@@ -3,7 +3,7 @@ package magma.app.compile;
 import magma.api.Tuple;
 import magma.api.option.Option;
 import magma.api.stream.Stream;
-import magma.app.error.Display;
+import magma.api.Display;
 import magma.java.JavaList;
 import magma.java.JavaMap;
 

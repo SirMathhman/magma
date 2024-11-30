@@ -7,7 +7,6 @@ import magma.api.option.Some;
 import magma.api.stream.HeadedStream;
 import magma.api.stream.RangeHead;
 import magma.api.stream.Stream;
-import magma.app.compile.Layout;
 
 import java.util.ArrayList;
 import java.util.Collections;

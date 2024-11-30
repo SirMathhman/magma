@@ -1,5 +1,6 @@
-package magma.app.compile;
+package magma.app.compile.lang;
 
+import magma.app.compile.rule.EmptyRule;
 import magma.app.compile.rule.*;
 import magma.java.JavaList;
 

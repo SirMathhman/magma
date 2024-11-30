@@ -1,8 +1,6 @@
-package magma.app.compile;
+package magma.app.compile.error;
 
-import magma.app.error.Context;
-import magma.app.error.Error;
-import magma.app.error.StringContext;
+import magma.api.error.Error;
 import magma.java.JavaList;
 
 public record CompileError(String message, Context context, JavaList<Error> causes) implements Error {
