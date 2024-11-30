@@ -29,20 +29,20 @@ public class Compiler {
                 .findNodeList("children")
                 .orElse(new JavaList<>());
 
-        final var count = children.stream()
-                .map(Compiler::getInteger)
+        final var totalSize = children.stream()
+                .map(Compiler::countSize)
                 .foldLeft(0, Integer::sum);
 
         final var instructions = new JavaList<Node>()
                 .add(instruct(JumpByValue, "__start__"))
-                .add(data(STACK_POINTER, count + 6))
+                .add(data(STACK_POINTER, totalSize + 6))
                 .add(data(SPILL, 0))
                 .addAll(children);
 
         return new MapNode(Main.ROOT_TYPE).withNodeList0(ROOT_CHILDREN, instructions);
     }
 
-    private static Integer getInteger(Node child) {
+    private static int countSize(Node child) {
         if (!child.is(LABEL_TYPE)) return 1;
 
         return child.findNodeList(LABEL_CHILDREN)
