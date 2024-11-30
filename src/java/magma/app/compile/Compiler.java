@@ -17,7 +17,7 @@ public class Compiler {
                 .add(new TreePassingStage(new Initializer())));
     }
 
-    static Result<Node, CompileError> compile(String source) {
+    public static Result<Node, CompileError> compile(String source) {
         final var passingStage = createPassingStage();
 
         return MagmaLang.createMagmaRootRule()
