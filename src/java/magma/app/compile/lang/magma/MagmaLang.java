@@ -8,21 +8,27 @@ public class MagmaLang {
     public static final String NUMERIC_VALUE = "value";
 
     public static final String DECLARATION_TYPE = "declaration";
+    public static final String DECLARATION_NAME = "name";
     public static final String DECLARATION_TYPE_PROPERTY = "type";
     public static final String DECLARATION_VALUE = "value";
 
     public static final String TUPLE_TYPE = "tuple";
     public static final String TUPLE_VALUES = "values";
-    public static final String DECLARATION_NAME = "name";
+
     public static final String OUT_TYPE = "out";
     public static final String OUT_VALUE = "value";
+
     public static final String WHITESPACE_TYPE = "whitespace";
+
     public static final String CHAR_TYPE = "char";
     public static final String CHAR_VALUE = "value";
+
     public static final String SYMBOL_TYPE = "symbol";
     public static final String SYMBOL_VALUE = "value";
+
     public static final String ROOT_TYPE = "root";
     public static final String ROOT_CHILDREN = "children";
+
     public static final String BLOCK_TYPE = "block";
     public static final String BLOCK_CHILDREN = "children";
 
