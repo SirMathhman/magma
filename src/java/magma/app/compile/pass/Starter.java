@@ -9,11 +9,11 @@ import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
-import magma.app.compile.lang.CASMLang;
+import magma.app.compile.lang.casm.CASMLang;
 import magma.java.JavaList;
 
-import static magma.app.assemble.Operator.JumpByValue;
-import static magma.app.compile.lang.CASMLang.*;
+import static magma.app.compile.lang.casm.assemble.Operator.JumpByValue;
+import static magma.app.compile.lang.casm.CASMLang.*;
 
 public class Starter implements PassingStage {
     public static final String START_LABEL = "__start__";

@@ -1,6 +1,5 @@
-package magma.app.compile.lang;
+package magma.app.compile.lang.magma;
 
-import magma.app.compile.rule.EmptyRule;
 import magma.app.compile.rule.*;
 import magma.java.JavaList;
 
@@ -8,7 +7,9 @@ public class MagmaLang {
     public static final String INT_TYPE = "int";
     public static final String INT_VALUE = "value";
     public static final String DECLARATION_TYPE = "declaration";
+    public static final String DECLARATION_TYPE_PROPERTY = "type";
     public static final String DECLARATION_VALUE = "value";
+
     public static final String TUPLE_TYPE = "tuple";
     public static final String TUPLE_VALUES = "values";
     public static final String DECLARATION_NAME = "name";

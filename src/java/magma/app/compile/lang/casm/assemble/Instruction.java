@@ -1,4 +1,4 @@
-package magma.app.assemble;
+package magma.app.compile.lang.casm.assemble;
 
 public record Instruction(Operator operator, int addressOrValue) {
     @Override

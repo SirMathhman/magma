@@ -7,9 +7,9 @@ import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.api.stream.ResultStream;
-import magma.app.assemble.Instruction;
-import magma.app.assemble.Operator;
-import magma.app.assemble.State;
+import magma.app.compile.lang.casm.assemble.Instruction;
+import magma.app.compile.lang.casm.assemble.Operator;
+import magma.app.compile.lang.casm.assemble.State;
 import magma.app.compile.Compiler;
 import magma.app.compile.Node;
 import magma.app.ApplicationError;
@@ -21,8 +21,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static magma.app.assemble.Operator.*;
-import static magma.app.compile.lang.CASMLang.*;
+import static magma.app.compile.lang.casm.assemble.Operator.*;
+import static magma.app.compile.lang.casm.CASMLang.*;
 
 public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);

@@ -1,4 +1,4 @@
-package magma.app.assemble;
+package magma.app.compile.lang.casm.assemble;
 
 import magma.api.option.Option;
 
