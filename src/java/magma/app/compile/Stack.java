@@ -7,8 +7,8 @@ import magma.api.stream.Streams;
 import magma.java.JavaList;
 import magma.java.JavaNonEmptyList;
 
-import static magma.Main.SPILL;
-import static magma.Main.STACK_POINTER;
+import static magma.Compiler.SPILL;
+import static magma.Compiler.STACK_POINTER;
 import static magma.app.assemble.Operator.*;
 import static magma.app.compile.CASMLang.instruct;
 
