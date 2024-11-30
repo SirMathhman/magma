@@ -39,7 +39,7 @@ public record Stack(
     }
 
     private static JavaList<Node> createMoveInstructions(Node instruction) {
-        return new JavaList<MapNode>()
+        return new JavaList<Node>()
                 .add(instruct(StoreDirectly, SPILL))
                 .add(instruct(LoadDirectly, STACK_POINTER))
                 .add(instruction)

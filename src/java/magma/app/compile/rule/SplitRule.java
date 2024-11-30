@@ -28,7 +28,7 @@ public final class SplitRule implements Rule {
         return new JavaList<>(list1).stream()
                 .map(childRule::parse)
                 .into(ResultStream::new)
-                .foldResultsLeft(new JavaList<MapNode>(), JavaList::add)
+                .foldResultsLeft(new JavaList<Node>(), JavaList::add)
                 .mapValue(list -> new MapNode().withNodeList0(propertyKey, list));
     }
 
