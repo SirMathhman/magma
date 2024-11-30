@@ -30,7 +30,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            final var source = Files.readString(Paths.get(".", "Main.mgs"));
+            final var source = Files.readString(Paths.get(".", "main.mgs"));
             Compiler.compile(source)
                     .mapErr(ApplicationError::new)
                     .flatMapValue(Main::runProgram)
