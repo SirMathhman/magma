@@ -22,6 +22,8 @@ public class MagmaLang {
     public static final String SYMBOL_VALUE = "value";
     public static final String ROOT_TYPE = "root";
     public static final String ROOT_CHILDREN = "children";
+    public static final String BLOCK_TYPE = "block";
+    public static final String BLOCK_CHILDREN = "children";
 
     public static Rule createMagmaRootRule() {
         return new TypeRule(ROOT_TYPE, new SplitRule(new BracketSplitter(), ROOT_CHILDREN, new OrRule(new JavaList<Rule>()

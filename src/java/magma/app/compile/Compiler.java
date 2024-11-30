@@ -7,10 +7,11 @@ import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.casm.CASMLang;
+import magma.app.compile.lang.magma.FlattenBlock;
+import magma.app.compile.lang.magma.WrapFunction;
 import magma.app.compile.lang.magma.MagmaLang;
-import magma.app.compile.lang.magma.FunctionWrapper;
 import magma.app.compile.pass.*;
-import magma.app.compile.resolve.DeclarationResolver;
+import magma.app.compile.resolve.ResolveDeclaration;
 import magma.java.JavaList;
 
 import static magma.app.compile.lang.casm.CASMLang.PROGRAM_CHILDREN;
@@ -25,14 +26,9 @@ public class Compiler {
 
     private static PassingStage createPassingStage() {
         return new CompoundPassingStage(new JavaList<PassingStage>()
-                .add(new FunctionWrapper())
-                .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new DeclarationResolver()))))
-                .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new Passer() {
-                    @Override
-                    public Option<Result<Node, CompileError>> afterNode(Node node) {
-                        return Passer.super.afterNode(node);
-                    }
-                }))))
+                .add(new WrapFunction())
+                .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new ResolveDeclaration()))))
+                .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new FlattenBlock()))))
                 .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new MyPasser()))))
                 .add(new Starter()));
     }

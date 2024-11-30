@@ -1,9 +1,11 @@
 package magma.app.compile;
 
+import magma.api.Display;
 import magma.api.Tuple;
 import magma.api.option.Option;
+import magma.api.result.Result;
 import magma.api.stream.Stream;
-import magma.api.Display;
+import magma.app.compile.error.CompileError;
 import magma.java.JavaList;
 import magma.java.JavaMap;
 
@@ -46,4 +48,9 @@ public interface Node extends Display {
     Node withNode(String propertyKey, Node propertyValue);
 
     Option<Node> findNode(String propertyKey);
+
+    Option<Result<Node, CompileError>> mapNodeList(
+            String propertyKey,
+            Function<JavaList<Node>, Result<JavaList<Node>, CompileError>> mapper
+    );
 }

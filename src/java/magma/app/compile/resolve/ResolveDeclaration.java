@@ -13,7 +13,7 @@ import magma.app.compile.pass.Passer;
 import static magma.app.compile.lang.magma.MagmaLang.DECLARATION_TYPE;
 import static magma.app.compile.lang.magma.MagmaLang.DECLARATION_TYPE_PROPERTY;
 
-public class DeclarationResolver implements Passer {
+public class ResolveDeclaration implements Passer {
     @Override
     public Option<Result<Node, CompileError>> afterNode(Node node) {
         if (!node.is(DECLARATION_TYPE)) return new None<>();

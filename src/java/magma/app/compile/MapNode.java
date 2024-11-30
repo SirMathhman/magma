@@ -4,7 +4,9 @@ import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
+import magma.api.result.Result;
 import magma.api.stream.Stream;
+import magma.app.compile.error.CompileError;
 import magma.java.JavaList;
 import magma.java.JavaMap;
 
@@ -158,5 +160,10 @@ public record MapNode(
     @Override
     public Option<Node> findNode(String propertyKey) {
         return nodes.find(propertyKey);
+    }
+
+    @Override
+    public Option<Result<Node, CompileError>> mapNodeList(String propertyKey, Function<JavaList<Node>, Result<JavaList<Node>, CompileError>> mapper) {
+        return findNodeList(propertyKey).map(mapper).map(result -> result.mapValue(inner -> withNodeList(propertyKey, inner)));
     }
 }
