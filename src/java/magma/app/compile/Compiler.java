@@ -36,7 +36,6 @@ public class Compiler {
                         .add(new FlattenDeclaration())
                         .add(new FlattenAssignment()))))
 
-                .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new LoadNumeric()))))
                 .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>()
                         .add(new FlattenGroup())
                         .add(new FlattenBlock()))))
