@@ -54,4 +54,11 @@ public record JavaOrderedMap<K, V>(JavaList<Tuple<K, V>> list) {
                 .map(pair -> pair.left() + "=" + pair.right())
                 .foldLeft((previous, next) -> previous + ", " + next).orElse("") + "}";
     }
+
+    public Option<V> find(K key) {
+        return list.stream()
+                .filter(element -> element.left().equals(key))
+                .map(Tuple::right)
+                .next();
+    }
 }

@@ -74,4 +74,10 @@ public record JavaNonEmptyList<T>(List<T> list) {
         return new HeadedStream<>(new RangeHead(list.size()))
                 .map(list::get);
     }
+
+    public Stream<T> streamReverse() {
+        return new HeadedStream<>(new RangeHead(list.size()))
+                .map(index -> list.size() - index - 1)
+                .map(list::get);
+    }
 }

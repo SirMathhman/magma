@@ -31,6 +31,7 @@ public class Compiler {
                 .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new ResolveDeclaration()))))
                 .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>()
                         .add(new Definer())
+                        .add(new TagSymbol())
                         .add(new FlattenDeclaration())
                         .add(new FlattenAssignment()))))
 
