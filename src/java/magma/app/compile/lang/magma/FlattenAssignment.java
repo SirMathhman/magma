@@ -8,6 +8,7 @@ import magma.api.result.Result;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
+import magma.app.compile.lang.common.CommonLang;
 import magma.java.JavaList;
 
 public class FlattenAssignment implements magma.app.compile.pass.Passer {

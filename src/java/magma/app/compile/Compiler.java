@@ -5,12 +5,11 @@ import magma.api.option.Option;
 import magma.api.option.Some;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.api.stream.HeadedStream;
-import magma.api.stream.SingleHead;
-import magma.api.stream.Stream;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.casm.CASMLang;
 import magma.app.compile.lang.casm.LoadNumeric;
+import magma.app.compile.lang.common.FlattenBlock;
+import magma.app.compile.lang.common.FlattenGroup;
 import magma.app.compile.lang.magma.FlattenAssignment;
 import magma.app.compile.lang.magma.FlattenDeclaration;
 import magma.app.compile.lang.magma.MagmaLang;
@@ -21,8 +20,6 @@ import magma.java.JavaList;
 
 import static magma.app.compile.lang.casm.CASMLang.PROGRAM_CHILDREN;
 import static magma.app.compile.lang.casm.CASMLang.PROGRAM_TYPE;
-import static magma.app.compile.lang.magma.CommonLang.GROUP_CHILDREN;
-import static magma.app.compile.lang.magma.CommonLang.GROUP_TYPE;
 import static magma.app.compile.lang.magma.MagmaLang.ROOT_TYPE;
 import static magma.app.compile.pass.Starter.START_LABEL;
 
@@ -40,7 +37,9 @@ public class Compiler {
                         .add(new FlattenAssignment()))))
 
                 .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new LoadNumeric()))))
-                .add(new TreePassingStage(new FlattenGroup()))
+                .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>()
+                        .add(new FlattenGroup())
+                        .add(new FlattenBlock()))))
 
                 .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>().add(new MyPasser()))))
                 .add(new Starter()));
@@ -64,25 +63,6 @@ public class Compiler {
             final var programChildren = new JavaList<Node>().add(label);
             final var program = new MapNode(PROGRAM_TYPE).withNodeList(PROGRAM_CHILDREN, programChildren);
             return new Some<>(new Ok<>(program));
-        }
-    }
-
-    private static class FlattenGroup implements Passer {
-        @Override
-        public Option<Result<Node, CompileError>> afterNode(Node node) {
-            if (!node.is(GROUP_TYPE)) return new None<>();
-
-            return node.mapNodeList(GROUP_CHILDREN, children -> new Ok<>(children.stream()
-                    .flatMap(this::flatten)
-                    .foldLeft(new JavaList<>(), JavaList::add)));
-        }
-
-        private Stream<Node> flatten(Node child) {
-            if (!child.is(GROUP_TYPE)) return new HeadedStream<>(new SingleHead<>(child));
-
-            return child.findNodeList(GROUP_CHILDREN)
-                    .orElse(new JavaList<>())
-                    .stream();
         }
     }
 }

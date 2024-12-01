@@ -1,5 +1,6 @@
 package magma.app.compile.lang.magma;
 
+import magma.app.compile.lang.common.CommonLang;
 import magma.app.compile.rule.*;
 import magma.java.JavaList;
 

@@ -9,13 +9,12 @@ import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.casm.assemble.Operator;
-import magma.app.compile.lang.magma.CommonLang;
+import magma.app.compile.lang.common.CommonLang;
 import magma.app.compile.pass.Passer;
 import magma.java.JavaList;
 
 import static magma.app.compile.lang.casm.CASMLang.instruct;
-import static magma.app.compile.lang.magma.CommonLang.NUMERIC_VALUE_TYPE;
-import static magma.app.compile.lang.magma.CommonLang.NUMERIC_VALUE;
+import static magma.app.compile.lang.common.CommonLang.NUMERIC_VALUE;
 
 public class LoadNumeric implements Passer {
     @Override

@@ -10,7 +10,7 @@ import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.pass.Passer;
 
-import static magma.app.compile.lang.magma.CommonLang.NUMERIC_TYPE_TYPE;
+import static magma.app.compile.lang.common.CommonLang.NUMERIC_TYPE_TYPE;
 import static magma.app.compile.lang.magma.MagmaLang.DECLARATION_TYPE;
 import static magma.app.compile.lang.magma.MagmaLang.DECLARATION_TYPE_PROPERTY;
 

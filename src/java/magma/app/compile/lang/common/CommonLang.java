@@ -1,4 +1,4 @@
-package magma.app.compile.lang.magma;
+package magma.app.compile.lang.common;
 
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
