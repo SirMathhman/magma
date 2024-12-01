@@ -27,6 +27,7 @@ public class WrapFunction implements PassingStage {
                 .withString("name", START_LABEL)
                 .withNode("value", block);
 
-        return new Ok<>(new Tuple<>(state, node));
+        return new Ok<>(new Tuple<>(state, new MapNode("root").withNodeList("children", new JavaList<Node>()
+                .add(node))));
     }
 }

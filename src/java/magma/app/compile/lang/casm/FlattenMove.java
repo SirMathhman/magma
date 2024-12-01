@@ -35,7 +35,7 @@ public class FlattenMove implements Passer {
             final var load = CASMLang.instruct(Operator.LoadFromValue, value);
             final var move = new MapNode("goto").withString("location", destination)
                     .withNodeList("children", new JavaList<Node>()
-                            .add(new MapNode("store")));
+                            .add(CASMLang.instruct(Operator.StoreDirectly)));
 
             final var group = CommonLang.toGroup(new JavaList<Node>()
                     .add(load)
