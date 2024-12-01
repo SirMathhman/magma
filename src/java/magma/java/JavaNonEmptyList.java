@@ -80,4 +80,15 @@ public record JavaNonEmptyList<T>(List<T> list) {
                 .map(index -> list.size() - index - 1)
                 .map(list::get);
     }
+
+    public Option<Stream<T>> sliceFrom(int extent) {
+        if (extent < list.size()) return new None<>();
+        return new Some<>(new HeadedStream<>(new RangeHead(list.size() - extent))
+                .map(offset -> offset + extent)
+                .map(list::get));
+    }
+
+    public int size() {
+        return list.size();
+    }
 }

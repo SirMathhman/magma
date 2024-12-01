@@ -70,4 +70,12 @@ public record JavaList<T>(List<T> list) {
                 .map(Objects::toString)
                 .collect(Collectors.joining(", ", "[", "]"));
     }
+
+    public Option<Stream<T>> sliceFrom(int index) {
+        if (index >= list.size()) return new None<>();
+
+        return new Some<>(new HeadedStream<>(new RangeHead(list.size() - index))
+                .map(offset -> index + offset)
+                .map(list::get));
+    }
 }

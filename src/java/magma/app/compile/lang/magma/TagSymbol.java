@@ -21,7 +21,7 @@ public class TagSymbol implements Passer {
         if(!node.is(SYMBOL_TYPE)) return new None<>();
 
         final var value = node.findString(SYMBOL_VALUE).orElse("");
-        final var type = state.lookup(value).orElse(new MapNode());
+        final var type = state.resolve(value).orElse(new MapNode());
 
         final var withType = node.withNode("type", type);
         return new Some<>(new Ok<>(new Tuple<>(state, withType)));

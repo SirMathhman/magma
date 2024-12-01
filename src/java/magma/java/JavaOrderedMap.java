@@ -56,9 +56,21 @@ public record JavaOrderedMap<K, V>(JavaList<Tuple<K, V>> list) {
     }
 
     public Option<V> find(K key) {
-        return list.stream()
-                .filter(element -> element.left().equals(key))
-                .map(Tuple::right)
+        return findIndexAndValue(key).map(Tuple::right);
+    }
+
+    public Option<Tuple<Integer, V>> findIndexAndValue(K key) {
+        return list.streamWithIndices()
+                .filter(element -> element.right().left().equals(key))
+                .map(tuple -> tuple.mapRight(Tuple::right))
                 .next();
+    }
+
+    public Option<Stream<Tuple<K, V>>> sliceFrom(int index) {
+        return list.sliceFrom(index);
+    }
+
+    public int size() {
+        return list.size();
     }
 }

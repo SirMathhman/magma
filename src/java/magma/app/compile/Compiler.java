@@ -8,6 +8,8 @@ import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.casm.CASMLang;
+import magma.app.compile.lang.casm.FlattenGoto;
+import magma.app.compile.lang.casm.FlattenMove;
 import magma.app.compile.lang.common.FlattenBlock;
 import magma.app.compile.lang.common.FlattenGroup;
 import magma.app.compile.lang.magma.*;
@@ -34,6 +36,11 @@ public class Compiler {
                         .add(new TagSymbol())
                         .add(new FlattenDeclaration())
                         .add(new FlattenAssignment()))))
+
+                .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>()
+                        .add(new Definer())
+                        .add(new FlattenMove())
+                        .add(new FlattenGoto()))))
 
                 .add(new TreePassingStage(new CompoundPasser(new JavaList<Passer>()
                         .add(new FlattenGroup())
