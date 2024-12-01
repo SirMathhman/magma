@@ -9,6 +9,7 @@ import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.casm.assemble.Operator;
+import magma.app.compile.lang.magma.CommonLang;
 import magma.app.compile.pass.Passer;
 import magma.java.JavaList;
 
@@ -19,13 +20,14 @@ import static magma.app.compile.lang.magma.CommonLang.NUMERIC_VALUE;
 public class LoadNumeric implements Passer {
     @Override
     public Option<Result<Node, CompileError>> afterNode(Node node) {
-        if (!node.is(NUMERIC_VALUE_TYPE)) return new None<>();
+        if (!node.is("load")) return new None<>();
 
-        final var value = node.findInt(NUMERIC_VALUE).orElse(0);
+        final var value0 = node.findNode("value").orElse(new MapNode());
+        final var value = value0.findInt(NUMERIC_VALUE).orElse(0);
         final var instructions = new JavaList<Node>()
                 .add(instruct(Operator.LoadFromValue, value));
 
-        final var loader = new MapNode("loader").withNodeList("instructions", instructions);
+        final var loader = CommonLang.toGroup(instructions);
         return new Some<>(new Ok<>(loader));
     }
 }

@@ -4,7 +4,7 @@ import magma.app.compile.rule.*;
 import magma.java.JavaList;
 
 public class MagmaLang {
-    public static final String DECLARATION_TYPE = "declaration";
+    public static final String DECLARATION_TYPE = "declare";
     public static final String DECLARATION_NAME = "name";
     public static final String DECLARATION_TYPE_PROPERTY = "type";
     public static final String DECLARATION_VALUE = "value";
@@ -28,6 +28,9 @@ public class MagmaLang {
 
     public static final String BLOCK_TYPE = "block";
     public static final String BLOCK_CHILDREN = "children";
+    public static final String ASSIGNMENT_TYPE = "assignment";
+    public static final String ASSIGNMENT_VARIABLE = "variable";
+    public static final String ASSIGNMENT_EXPRESSION = "expression";
 
     public static Rule createMagmaRootRule() {
         return new TypeRule(ROOT_TYPE, new SplitRule(new BracketSplitter(), ROOT_CHILDREN, new OrRule(new JavaList<Rule>()
