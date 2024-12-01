@@ -1,10 +1,11 @@
 package magma.app.compile.pass;
 
+import magma.api.Tuple;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.api.stream.ResultStream;
-import magma.app.compile.error.CompileError;
 import magma.app.compile.Node;
+import magma.app.compile.State;
+import magma.app.compile.error.CompileError;
 import magma.java.JavaList;
 
 public class TreePassingStage implements PassingStage {
@@ -14,31 +15,46 @@ public class TreePassingStage implements PassingStage {
         this.passer = passer;
     }
 
-    public Result<Node, CompileError> passNodeLists(Node withNodes) {
-        return withNodes.streamNodeLists().foldLeftToResult(withNodes, (node, tuple) -> {
-            final var propertyKey = tuple.left();
-            final var propertyValues = tuple.right();
-            return propertyValues.stream()
-                    .map(this::pass)
-                    .into(ResultStream::new)
-                    .foldResultsLeft(new JavaList<Node>(), JavaList::add)
-                    .mapValue(newValues -> node.withNodeList(propertyKey, newValues));
-        });
+    public Result<Tuple<State, Node>, CompileError> passNodeLists(State state, Node root) {
+        return root.streamNodeLists().foldLeftToResult(new Tuple<>(state, root), this::passNodeList);
     }
 
-    public Result<Node, CompileError> passNodes(Node root) {
-        return root.streamNodes().foldLeftToResult(root, (node, tuple) -> {
-            final var propertyKey = tuple.left();
-            final var propertyValue = tuple.right();
-            return pass(propertyValue).mapValue(newValue -> node.withNode(propertyKey, newValue));
+    private Result<Tuple<State, Node>, CompileError> passNodeList(
+            Tuple<State, Node> current,
+            Tuple<String, JavaList<Node>> next
+    ) {
+        final var state = current.left();
+        final var node = current.right();
+        final var propertyKey = next.left();
+        final var propertyValues = next.right();
+
+        return propertyValues.stream()
+                .foldLeftToResult(new Tuple<>(state, new JavaList<Node>()), (tuple, node1) -> {
+                    final var oldState = tuple.left();
+                    final var oldList = tuple.right();
+
+                    return pass(oldState, node1).mapValue(inner -> inner.mapRight(oldList::add));
+                })
+                .mapValue(tuple -> tuple.mapRight(newValues -> node.withNodeList(propertyKey, newValues)));
+    }
+
+    public Result<Tuple<State, Node>, CompileError> passNodes(State state, Node root) {
+        return root.streamNodes().foldLeftToResult(new Tuple<>(state, root), (current, next) -> {
+            final var oldState = current.left();
+            final var oldNode = current.right();
+            final var propertyKey = next.left();
+            final var propertyValue = next.right();
+            return pass(oldState, propertyValue).mapValue(
+                    newPair -> newPair.mapRight(
+                            right -> oldNode.withNode(propertyKey, right)));
         });
     }
 
     @Override
-    public Result<Node, CompileError> pass(Node root) {
-        return passer.beforeNode(root).orElse(new Ok<>(root))
-                .flatMapValue(this::passNodes)
-                .flatMapValue(this::passNodeLists)
-                .flatMapValue(node -> passer.afterNode(node).orElse(new Ok<>(node)));
+    public Result<Tuple<State, Node>, CompileError> pass(State state, Node root) {
+        return passer.beforePass(state, root).orElse(new Ok<>(new Tuple<>(state, root)))
+                .flatMapValue(before -> passNodes(before.left(), before.right()))
+                .flatMapValue(withNodes -> passNodeLists(withNodes.left(), withNodes.right()))
+                .flatMapValue(withNodes -> passer.afterPass(withNodes.left(), withNodes.right()).orElse(new Ok<>(withNodes)));
     }
 }

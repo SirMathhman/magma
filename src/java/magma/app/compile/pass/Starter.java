@@ -1,12 +1,14 @@
 package magma.app.compile.pass;
 
 import magma.Main;
+import magma.api.Tuple;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.Compiler;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
+import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 import magma.app.compile.lang.casm.CASMLang;
@@ -27,7 +29,7 @@ public class Starter implements PassingStage {
     }
 
     @Override
-    public Result<Node, CompileError> pass(Node root) {
+    public Result<Tuple<State, Node>, CompileError> pass(State state, Node root) {
         if (!root.is(CASMLang.PROGRAM_TYPE)) {
             final var context = new NodeContext(root);
             final var error = new CompileError("Not a program", context);
@@ -52,6 +54,7 @@ public class Starter implements PassingStage {
                 .add(data(Compiler.SPILL, 0))
                 .addAll(children);
 
-        return new Ok<>(new MapNode(Main.ROOT_TYPE).withNodeList(Compiler.ROOT_CHILDREN, instructions));
+        final var node = new MapNode(Main.ROOT_TYPE).withNodeList(Compiler.ROOT_CHILDREN, instructions);
+        return new Ok<>(new Tuple<>(state, node));
     }
 }
