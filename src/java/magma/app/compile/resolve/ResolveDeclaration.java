@@ -22,6 +22,7 @@ public class ResolveDeclaration implements Passer {
         if (!node.is(DECLARATION_TYPE)) return new None<>();
 
         final var type = new MapNode(NUMERIC_TYPE_TYPE)
+                .withInt("length", 1)
                 .withInt("sign", 0)
                 .withInt("bits", 32);
 

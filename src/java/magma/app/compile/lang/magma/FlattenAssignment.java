@@ -11,15 +11,22 @@ import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 
+import static magma.app.compile.lang.magma.MagmaLang.*;
+
 public class FlattenAssignment implements magma.app.compile.pass.Passer {
     @Override
-    public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
-        if (!node.is(MagmaLang.ASSIGNMENT_TYPE)) return new None<>();
+    public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
+        if (!node.is(ASSIGNMENT_TYPE)) return new None<>();
 
-        final var variable = node.findNode(MagmaLang.ASSIGNMENT_VARIABLE).orElse(new MapNode());
-        final var expression = node.findNode(MagmaLang.ASSIGNMENT_EXPRESSION).orElse(new MapNode());
+        final var variable = node.findNode(ASSIGNMENT_VARIABLE).orElse(new MapNode());
+        final var length = variable.findNode("type")
+                .flatMap(type -> type.findInt("length"))
+                .orElse(0);
+
+        final var expression = node.findNode(ASSIGNMENT_EXPRESSION).orElse(new MapNode());
 
         final var result = new MapNode("move")
+                .withInt("length", length)
                 .withNode("destination", variable)
                 .withNode("source", expression);
 
