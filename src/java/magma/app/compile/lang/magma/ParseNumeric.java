@@ -11,6 +11,7 @@ public class ParseNumeric implements Stateless {
         final var bits = Integer.parseInt(value.substring(1));
 
         return new MapNode("numeric-type")
+                .withInt("length", 1)
                 .withInt("signed", sign)
                 .withInt("bits", bits);
     }

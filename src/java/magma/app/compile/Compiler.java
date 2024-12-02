@@ -5,6 +5,8 @@ import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
+import magma.app.compile.lang.casm.ExpandAssign;
+import magma.app.compile.lang.casm.ExpandMove;
 import magma.app.compile.lang.magma.FilteredStateful;
 import magma.app.compile.lang.magma.MagmaLang;
 import magma.app.compile.lang.magma.ParseNumeric;
@@ -23,7 +25,9 @@ public class Compiler {
                         .add(new FilteredStateful("numeric-type", new ParseNumeric())))))
                 .add(new WrapRoot())
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
-                        .add(new FilteredStateful("initialize", new ExpandDeclare())))))
+                        .add(new FilteredStateful("initialize", new ExpandDeclare()))
+                        .add(new FilteredStateful("assign", new ExpandAssign()))
+                        .add(new FilteredStateful("move", new ExpandMove())))))
                 .add(new Setup()));
     }
 
