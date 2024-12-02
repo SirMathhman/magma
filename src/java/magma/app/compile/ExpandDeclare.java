@@ -19,6 +19,7 @@ public class ExpandDeclare implements Stateless {
                 .withString("value", name);
 
         final var assign = new MapNode("assign")
+                .withNode("type", type)
                 .withNode("source", value)
                 .withNode("destination", symbol);
 
