@@ -13,7 +13,7 @@ import magma.app.compile.pass.PassingStage;
 import magma.java.JavaList;
 
 import static magma.app.compile.lang.magma.MagmaLang.*;
-import static magma.app.compile.pass.Starter.START_LABEL;
+import static magma.app.compile.pass.Setup.START_LABEL;
 
 public class WrapFunction implements PassingStage {
     @Override

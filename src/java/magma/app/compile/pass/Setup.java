@@ -17,7 +17,7 @@ import magma.java.JavaList;
 import static magma.app.compile.lang.casm.assemble.Operator.JumpByValue;
 import static magma.app.compile.lang.casm.CASMLang.*;
 
-public class Starter implements PassingStage {
+public class Setup implements PassingStage {
     public static final String START_LABEL = "__start__";
 
     private static int countSize(Node child) {
@@ -45,7 +45,7 @@ public class Starter implements PassingStage {
         final var children = childrenOption.orElse(new JavaList<>());
 
         final var totalSize = children.stream()
-                .map(Starter::countSize)
+                .map(Setup::countSize)
                 .foldLeft(0, Integer::sum);
 
         final var instructions = new JavaList<Node>()
