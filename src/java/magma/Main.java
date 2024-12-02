@@ -1,5 +1,6 @@
 package magma;
 
+import magma.api.error.RuntimeError;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
@@ -7,13 +8,14 @@ import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.api.stream.ResultStream;
+import magma.app.ApplicationError;
+import magma.app.compile.Compiler;
+import magma.app.compile.Node;
+import magma.app.compile.error.CompileError;
+import magma.app.compile.error.NodeContext;
 import magma.app.compile.lang.casm.assemble.Instruction;
 import magma.app.compile.lang.casm.assemble.Operator;
 import magma.app.compile.lang.casm.assemble.State;
-import magma.app.compile.Compiler;
-import magma.app.compile.Node;
-import magma.app.ApplicationError;
-import magma.api.error.RuntimeError;
 import magma.java.JavaList;
 
 import java.io.IOException;
@@ -21,8 +23,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static magma.app.compile.lang.casm.assemble.Operator.*;
 import static magma.app.compile.lang.casm.CASMLang.*;
+import static magma.app.compile.lang.casm.assemble.Operator.*;
 
 public class Main {
     public static final Instruction DEFAULT_INSTRUCTION = new Instruction(Nothing, 0);
@@ -53,21 +55,23 @@ public class Main {
         return assemble(nodes)
                 .mapValue(Main::buildBinary)
                 .mapValue(Main::wrap)
-                .flatMapValue(Main::run)
+                .flatMapValue((Deque<Integer> input) -> run(input).mapErr(ApplicationError::new))
                 .mapErr(ApplicationError::new);
     }
 
-    private static Result<List<Node>, RuntimeError> assemble(List<Node> program) {
-        final var labelsToAddresses = computeLabelsToAddresses(program);
-        return new JavaList<>(program).stream()
-                .map(value -> resolveAddressesForNode(labelsToAddresses, value))
-                .into(ResultStream::new)
-                .mapResult(JavaList::new)
-                .foldResultsLeft(new JavaList<Node>(), JavaList::addAll)
-                .mapValue(JavaList::list);
+    private static Result<List<Node>, ApplicationError> assemble(List<Node> program) {
+        return computeLabelsToAddresses(program).mapErr(ApplicationError::new).flatMapValue(labelsToAddresses -> {
+            return new JavaList<>(program).stream()
+                    .map(value -> resolveAddressesForNode(labelsToAddresses, value))
+                    .into(ResultStream::new)
+                    .mapResult(JavaList::new)
+                    .foldResultsLeft(new JavaList<Node>(), JavaList::addAll)
+                    .mapValue(JavaList::list)
+                    .mapErr(ApplicationError::new);
+        });
     }
 
-    private static Map<String, Integer> computeLabelsToAddresses(List<Node> program) {
+    private static Result<Map<String, Integer>, CompileError> computeLabelsToAddresses(List<Node> program) {
         var labelToAddress = new HashMap<String, Integer>();
         var address = 3;
         for (final Node node : program) {
@@ -85,10 +89,10 @@ public class Main {
                 labelToAddress.put(name, address);
                 address += children.size();
             } else {
-                address++;
+                return new Err<>(new CompileError("Unknown node to link", new NodeContext(node)));
             }
         }
-        return labelToAddress;
+        return new Ok<>(labelToAddress);
     }
 
     private static List<Integer> buildBinary(List<Node> nodes) {

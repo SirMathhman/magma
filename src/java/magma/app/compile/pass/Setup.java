@@ -14,8 +14,8 @@ import magma.app.compile.error.NodeContext;
 import magma.app.compile.lang.casm.CASMLang;
 import magma.java.JavaList;
 
-import static magma.app.compile.lang.casm.assemble.Operator.JumpByValue;
 import static magma.app.compile.lang.casm.CASMLang.*;
+import static magma.app.compile.lang.casm.assemble.Operator.JumpByValue;
 
 public class Setup implements PassingStage {
     public static final String START_LABEL = "__start__";
@@ -30,19 +30,24 @@ public class Setup implements PassingStage {
 
     @Override
     public Result<Tuple<State, Node>, CompileError> pass(State state, Node root) {
-        if (!root.is(CASMLang.PROGRAM_TYPE)) {
-            final var context = new NodeContext(root);
-            final var error = new CompileError("Not a program", context);
-            return new Err<>(error);
-        }
+        final JavaList<Node> children;
+        if (root.is(LABEL_TYPE)) {
+            children = new JavaList<Node>().add(root);
+        } else {
+            if (!root.is(CASMLang.PROGRAM_TYPE)) {
+                final var context = new NodeContext(root);
+                final var error = new CompileError("Not a program", context);
+                return new Err<>(error);
+            }
 
-        final var childrenOption = root.findNodeList(PROGRAM_CHILDREN);
-        if (childrenOption.isEmpty()) {
-            final var context = new NodeContext(root);
-            final var error = new CompileError("No children present", context);
-            return new Err<>(error);
+            final var childrenOption = root.findNodeList(PROGRAM_CHILDREN);
+            if (childrenOption.isEmpty()) {
+                final var context = new NodeContext(root);
+                final var error = new CompileError("No children present", context);
+                return new Err<>(error);
+            }
+            children = childrenOption.orElse(new JavaList<>());
         }
-        final var children = childrenOption.orElse(new JavaList<>());
 
         final var totalSize = children.stream()
                 .map(Setup::countSize)

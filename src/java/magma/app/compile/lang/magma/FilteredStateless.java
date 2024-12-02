@@ -11,11 +11,11 @@ import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.pass.Stateful;
 
-public class FilteredStateful implements Stateful {
+public class FilteredStateless implements Stateful {
     private final Stateless stateless;
     private final String type;
 
-    public FilteredStateful(String type, Stateless stateless) {
+    public FilteredStateless(String type, Stateless stateless) {
         this.stateless = stateless;
         this.type = type;
     }
