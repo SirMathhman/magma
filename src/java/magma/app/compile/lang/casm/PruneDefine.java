@@ -10,9 +10,10 @@ import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.common.CommonLang;
+import magma.app.compile.pass.Stateful;
 import magma.java.JavaList;
 
-public class PruneDefine implements magma.app.compile.pass.Passer {
+public class PruneDefine implements Stateful {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
         if (!node.is("define")) return new None<>();

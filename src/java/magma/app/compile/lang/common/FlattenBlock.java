@@ -11,7 +11,7 @@ import magma.api.stream.Stream;
 import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
-import magma.app.compile.pass.Passer;
+import magma.app.compile.pass.Stateful;
 import magma.java.JavaList;
 
 import static magma.app.compile.lang.common.CommonLang.GROUP_CHILDREN;
@@ -19,7 +19,7 @@ import static magma.app.compile.lang.common.CommonLang.GROUP_TYPE;
 import static magma.app.compile.lang.magma.MagmaLang.BLOCK_CHILDREN;
 import static magma.app.compile.lang.magma.MagmaLang.BLOCK_TYPE;
 
-public class FlattenBlock implements Passer  {
+public class FlattenBlock implements Stateful {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
         if (!node.is(BLOCK_TYPE)) return new None<>();

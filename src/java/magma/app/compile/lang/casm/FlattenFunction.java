@@ -10,9 +10,10 @@ import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
+import magma.app.compile.pass.Stateful;
 import magma.java.JavaList;
 
-public class FlattenFunction implements magma.app.compile.pass.Passer {
+public class FlattenFunction implements Stateful {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
         if (!node.is("function")) return new None<>();

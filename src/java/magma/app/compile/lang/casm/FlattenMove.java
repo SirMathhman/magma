@@ -6,19 +6,16 @@ import magma.api.option.Option;
 import magma.api.option.Some;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.app.compile.Compiler;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.casm.assemble.Operator;
 import magma.app.compile.lang.common.CommonLang;
-import magma.app.compile.pass.Passer;
+import magma.app.compile.pass.Stateful;
 import magma.java.JavaList;
 
-import java.util.Map;
-
-public class FlattenMove implements Passer {
+public class FlattenMove implements Stateful {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
         if(!node.is("move")) return new None<>();

@@ -11,9 +11,10 @@ import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.common.CommonLang;
+import magma.app.compile.pass.Stateful;
 import magma.java.JavaList;
 
-public class FlattenGoto implements magma.app.compile.pass.Passer {
+public class FlattenGoto implements Stateful {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
         if (!node.is("goto")) return new None<>();

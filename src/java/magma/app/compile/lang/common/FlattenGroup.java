@@ -11,13 +11,13 @@ import magma.api.stream.Stream;
 import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
-import magma.app.compile.pass.Passer;
+import magma.app.compile.pass.Stateful;
 import magma.java.JavaList;
 
 import static magma.app.compile.lang.common.CommonLang.GROUP_CHILDREN;
 import static magma.app.compile.lang.common.CommonLang.GROUP_TYPE;
 
-public class FlattenGroup implements Passer {
+public class FlattenGroup implements Stateful {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
         if (!node.is(GROUP_TYPE)) return new None<>();

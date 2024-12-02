@@ -10,13 +10,13 @@ import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
-import magma.app.compile.pass.Passer;
+import magma.app.compile.pass.Stateful;
 
 import static magma.app.compile.lang.common.CommonLang.NUMERIC_TYPE_TYPE;
 import static magma.app.compile.lang.magma.MagmaLang.DECLARATION_TYPE;
 import static magma.app.compile.lang.magma.MagmaLang.DECLARATION_TYPE_PROPERTY;
 
-public class ResolveDeclaration implements Passer {
+public class ResolveDeclaration implements Stateful {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
         if (!node.is(DECLARATION_TYPE)) return new None<>();

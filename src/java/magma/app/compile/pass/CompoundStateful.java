@@ -9,7 +9,7 @@ import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.java.JavaList;
 
-public record CompoundPasser(JavaList<Passer> passers) implements Passer {
+public record CompoundStateful(JavaList<Stateful> passers) implements Stateful {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
         return passers.stream()

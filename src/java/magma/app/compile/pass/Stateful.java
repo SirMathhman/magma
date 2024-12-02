@@ -8,7 +8,7 @@ import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 
-public interface Passer {
+public interface Stateful {
     default Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
         return new None<>();
     }

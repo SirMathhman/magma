@@ -9,10 +9,10 @@ import magma.app.compile.error.CompileError;
 import magma.java.JavaList;
 
 public class TreePassingStage implements PassingStage {
-    private final Passer passer;
+    private final Stateful stateful;
 
-    public TreePassingStage(Passer passer) {
-        this.passer = passer;
+    public TreePassingStage(Stateful stateful) {
+        this.stateful = stateful;
     }
 
     public Result<Tuple<State, Node>, CompileError> passNodeLists(State state, Node root) {
@@ -52,9 +52,9 @@ public class TreePassingStage implements PassingStage {
 
     @Override
     public Result<Tuple<State, Node>, CompileError> pass(State state, Node root) {
-        return passer.beforePass(state, root).orElse(new Ok<>(new Tuple<>(state, root)))
+        return stateful.beforePass(state, root).orElse(new Ok<>(new Tuple<>(state, root)))
                 .flatMapValue(before -> passNodes(before.left(), before.right()))
                 .flatMapValue(withNodes -> passNodeLists(withNodes.left(), withNodes.right()))
-                .flatMapValue(withNodes -> passer.afterPass(withNodes.left(), withNodes.right()).orElse(new Ok<>(withNodes)));
+                .flatMapValue(withNodes -> stateful.afterPass(withNodes.left(), withNodes.right()).orElse(new Ok<>(withNodes)));
     }
 }
