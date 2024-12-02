@@ -57,16 +57,20 @@ public class MagmaLang {
         final var name = new StripRule(new StringRule(DECLARATION_NAME));
         final var value = new StripRule(new NodeRule(DECLARATION_VALUE, createValueRule()));
 
-        final var beforeAssign = new PrefixRule("let ", name);
+        final var definition = new PrefixRule("let ", new FirstRule(name, " : ", new NodeRule(DECLARATION_TYPE_PROPERTY, createTypeRule())));
         final var afterAssign = new SuffixRule(value, ";");
-        return new TypeRule(DECLARATION_TYPE, new StripRule(new FirstRule(beforeAssign, "=", afterAssign)));
+        return new TypeRule(DECLARATION_TYPE, new StripRule(new FirstRule(definition, "=", afterAssign)));
+    }
+
+    private static Rule createTypeRule() {
+        return new TypeRule("numeric-type", new StripRule(new StringRule("value")));
     }
 
     private static Rule createValueRule() {
         final var value = new LazyRule();
         value.set(new OrRule(new JavaList<Rule>()
                 .add(createTupleRule(value))
-                .add(createNumericType())
+                .add(createNumericRule())
                 .add(createCharRule())
                 .add(createSymbolRule())
         ));
@@ -82,7 +86,7 @@ public class MagmaLang {
         return new TypeRule(CHAR_TYPE, new StripRule(new PrefixRule("'", new SuffixRule(value, "'"))));
     }
 
-    private static TypeRule createNumericType() {
+    private static TypeRule createNumericRule() {
         return new TypeRule(CommonLang.NUMERIC_VALUE_TYPE, new StripRule(new IntRule(CommonLang.NUMERIC_VALUE)));
     }
 
