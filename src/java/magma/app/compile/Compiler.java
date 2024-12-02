@@ -23,7 +23,7 @@ public class Compiler {
                         .add(new FilteredStateful("numeric-type", new ParseNumeric())))))
                 .add(new WrapRoot())
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
-                        .add(new FilteredStateful("declare", new ExpandDeclare())))))
+                        .add(new FilteredStateful("initialize", new ExpandDeclare())))))
                 .add(new Setup()));
     }
 
