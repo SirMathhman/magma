@@ -14,6 +14,6 @@ public class ExpandMove implements Stateless {
 
         final var load = new MapNode("load").withNode("value", source);
         final var store = new MapNode("store").withNode("value", destination);
-        return CommonLang.toGroup(new JavaList<Node>().add(load).add(store));
+        return CommonLang.asGroup(new JavaList<Node>().add(load).add(store));
     }
 }

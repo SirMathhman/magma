@@ -34,7 +34,7 @@ public class FlattenMove implements Stateful {
                     .withNodeList("children", new JavaList<Node>()
                             .add(CASMLang.instruct(Operator.StoreDirectly)));
 
-            final var group = CommonLang.toGroup(new JavaList<Node>()
+            final var group = CommonLang.asGroup(new JavaList<Node>()
                     .add(load)
                     .add(move));
 

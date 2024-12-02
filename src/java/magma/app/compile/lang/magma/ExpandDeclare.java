@@ -1,7 +1,8 @@
-package magma.app.compile;
+package magma.app.compile.lang.magma;
 
+import magma.app.compile.MapNode;
+import magma.app.compile.Node;
 import magma.app.compile.lang.common.CommonLang;
-import magma.app.compile.lang.magma.Stateless;
 import magma.java.JavaList;
 
 public class ExpandDeclare implements Stateless {
@@ -23,7 +24,7 @@ public class ExpandDeclare implements Stateless {
                 .withNode("source", value)
                 .withNode("destination", symbol);
 
-        return CommonLang.toGroup(new JavaList<Node>()
+        return CommonLang.asGroup(new JavaList<Node>()
                 .add(define)
                 .add(assign));
     }

@@ -20,9 +20,9 @@ public class FlattenGoto implements Stateful {
         if (!node.is("goto")) return new None<>();
 
         final var location = node.findString("location").orElse("");
-        final var distance = state.computeDistance(location).orElse(0);
+        final var distance = state.computeOffset(location).orElse(0);
 
-        return new Some<>(new Ok<>(new Tuple<>(state, CommonLang.toGroup(new JavaList<Node>()
+        return new Some<>(new Ok<>(new Tuple<>(state, CommonLang.asGroup(new JavaList<Node>()
                 .add(new MapNode("move-stack-pointer").withInt("distance", distance))
                 .addAll(node.findNodeList("children").orElse(new JavaList<>()))
                 .add(new MapNode("move-stack-pointer").withInt("distance", -distance))))));

@@ -6,19 +6,19 @@ import magma.api.option.Option;
 import magma.api.option.Some;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
-import magma.app.compile.lang.common.CommonLang;
-import magma.app.compile.pass.Stateful;
-import magma.java.JavaList;
 
-public class PruneDefine implements Stateful {
+public class Resolver implements magma.app.compile.pass.Stateful {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
-        if (!node.is("define")) return new None<>();
+        if (!node.is("symbol")) return new None<>();
 
-        final var group = CommonLang.asGroup(new JavaList<>());
-        return new Some<>(new Ok<>(new Tuple<>(state, group)));
+        final var value = node.findString("value").orElse("");
+        final var offset = state.computeOffset(value).orElse(0);
+
+        return new Some<>(new Ok<>(new Tuple<>(state, new MapNode("address").withInt("offset", offset))));
     }
 }

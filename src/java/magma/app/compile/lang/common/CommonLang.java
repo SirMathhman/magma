@@ -11,8 +11,12 @@ public class CommonLang {
     public static final String GROUP_TYPE = "group";
     public static final String GROUP_CHILDREN = "children";
 
-    public static Node toGroup(JavaList<Node> children) {
+    public static Node asGroup(JavaList<Node> children) {
         return new MapNode(GROUP_TYPE)
                 .withNodeList(GROUP_CHILDREN, children);
+    }
+
+    public static Node createEmptyGroup() {
+        return asGroup(new JavaList<>());
     }
 }

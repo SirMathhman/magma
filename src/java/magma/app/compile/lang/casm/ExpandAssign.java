@@ -25,6 +25,6 @@ public class ExpandAssign implements Stateless {
             throw new UnsupportedOperationException();
         }
 
-        return CommonLang.toGroup(nodes);
+        return CommonLang.asGroup(nodes);
     }
 }

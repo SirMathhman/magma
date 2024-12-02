@@ -29,7 +29,7 @@ public record State(JavaNonEmptyList<JavaOrderedMap<String, Node>> frames) {
                 .next();
     }
 
-    public Option<Integer> computeDistance(String name) {
+    public Option<Integer> computeOffset(String name) {
         return resolveIndexAndType(name).map(tuple -> {
             final var other = tuple.right();
 
