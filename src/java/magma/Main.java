@@ -53,18 +53,17 @@ public class Main {
         for (int i = 0; i < input.length(); i++) {
             var c = input.charAt(i);
             var appended = state.append(c);
-            state = splitAtChar(c, appended);
+            state = splitAtChar(appended, c);
         }
 
         return state.advance().segments;
     }
 
-    private static State splitAtChar(char c, State appended) {
-        if (c == ';') {
-            return appended.advance();
-        } else {
-            return appended;
-        }
+    private static State splitAtChar(State state, char c) {
+        if (c == ';' && state.isLevel()) return state.advance();
+        if (c == '{') return state.enter();
+        if (c == '}') return state.exit();
+        return state;
     }
 
     private static String compileRootMember(String input) throws CompileException {
@@ -77,20 +76,32 @@ public class Main {
         throw new CompileException(input);
     }
 
-    private record State(List<String> segments, StringBuilder buffer) {
+    private record State(List<String> segments, StringBuilder buffer, int depth) {
         public State() {
-            this(new ArrayList<>(), new StringBuilder());
+            this(new ArrayList<>(), new StringBuilder(), 0);
         }
 
         private State append(char c) {
-            return new State(segments, buffer.append(c));
+            return new State(segments, buffer.append(c), depth);
         }
 
         private State advance() {
             if (buffer.isEmpty()) return this;
             final var copy = new ArrayList<>(segments);
             copy.add(buffer.toString());
-            return new State(copy, new StringBuilder());
+            return new State(copy, new StringBuilder(), depth);
+        }
+
+        public boolean isLevel() {
+            return depth == 0;
+        }
+
+        public State enter() {
+            return new State(segments, buffer, depth + 1);
+        }
+
+        public State exit() {
+            return new State(segments, buffer, depth - 1);
         }
     }
 }
