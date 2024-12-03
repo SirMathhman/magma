@@ -7,10 +7,12 @@ import magma.java.JavaList;
 
 public class FlattenFunction implements Stateless {
     @Override
-    public Node beforePass(Node node) {
+    public Node afterPass(Node node) {
         final var name = node.findString("name").orElse("");
         final var value = node.findNode("value").orElse(new MapNode());
-        final var children = value.findNodeList("children").orElse(new JavaList<Node>());
+        final var children = value.findNodeList("children")
+                .orElse(new JavaList<Node>());
+
         return CASMLang.label(name, children.list());
     }
 }

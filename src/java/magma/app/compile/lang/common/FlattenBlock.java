@@ -8,9 +8,11 @@ import magma.api.result.Result;
 import magma.api.stream.HeadedStream;
 import magma.api.stream.SingleHead;
 import magma.api.stream.Stream;
+import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
+import magma.app.compile.lang.magma.Stateless;
 import magma.app.compile.pass.Stateful;
 import magma.java.JavaList;
 
@@ -19,15 +21,14 @@ import static magma.app.compile.lang.common.CommonLang.GROUP_TYPE;
 import static magma.app.compile.lang.magma.MagmaLang.BLOCK_CHILDREN;
 import static magma.app.compile.lang.magma.MagmaLang.BLOCK_TYPE;
 
-public class FlattenBlock implements Stateful {
+public class FlattenBlock implements Stateless {
     @Override
-    public Option<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
-        if (!node.is(BLOCK_TYPE)) return new None<>();
-
-        return node.mapNodeList(BLOCK_CHILDREN, children -> new Ok<>(children.stream()
+    public Node afterPass(Node node) {
+        final var children = node.findNodeList(BLOCK_CHILDREN).orElse(new JavaList<>());
+        final var newChildren = children.stream()
                 .flatMap(this::flatten)
-                .foldLeft(new JavaList<>(), JavaList::add)))
-                .map(inner -> inner.mapValue(inner0 -> new Tuple<>(state, inner0)));
+                .foldLeft(new JavaList<Node>(), JavaList::add);
+        return new MapNode("block").withNodeList(BLOCK_CHILDREN, newChildren);
     }
 
     private Stream<Node> flatten(Node child) {

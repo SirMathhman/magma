@@ -4,10 +4,13 @@ import magma.api.Tuple;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.casm.*;
+import magma.app.compile.lang.common.FlattenBlock;
 import magma.app.compile.lang.common.FlattenGroup;
 import magma.app.compile.lang.magma.*;
 import magma.app.compile.pass.*;
 import magma.java.JavaList;
+
+import java.util.logging.Filter;
 
 public class Compiler {
     public static final String ROOT_CHILDREN = "children";
@@ -32,7 +35,8 @@ public class Compiler {
                         .add(new FilteredStateless("move-stack-pointer", new ExpandMoveStackPointer())))))
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
                         .add(new FilteredStateless("group", new FlattenGroup()))
-                        .add(new FilteredStateless("function", new FlattenFunction())))))
+                        .add(new FilteredStateless("function", new FlattenFunction()))
+                        .add(new FilteredStateless("block", new FlattenBlock())))))
                 .add(new Setup()));
     }
 

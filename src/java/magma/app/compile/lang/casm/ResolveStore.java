@@ -18,7 +18,7 @@ public class ResolveStore implements Stateless {
             final var offset = value.findInt("offset").orElse(0);
             return CommonLang.asGroup(new JavaList<Node>()
                     .add(new MapNode("move-stack-pointer").withInt("offset", offset))
-                    .add(CASMLang.instruct(Operator.StoreDirectly, STACK_POINTER))
+                    .add(CASMLang.instruct(Operator.StoreIndirectly, STACK_POINTER))
                     .add(new MapNode("move-stack-pointer").withInt("offset", -offset)));
         } else {
             throw new UnsupportedOperationException();

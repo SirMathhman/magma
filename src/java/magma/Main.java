@@ -48,27 +48,34 @@ public class Main {
     }
 
     private static Result<State, ApplicationError> runProgram(Node program) {
+        System.out.println(program.display());
+
         final var nodes = program.findNodeList(Compiler.ROOT_CHILDREN)
                 .map(JavaList::list)
                 .orElse(Collections.emptyList());
 
         return assemble(nodes)
-                .mapValue(Main::buildBinary)
+                .flatMapValue((List<Node> nodes1) -> buildBinary(nodes1).mapErr(ApplicationError::new))
+                .mapErr(err -> new ApplicationError(new CompileError("Unknown program", new NodeContext(program), err)))
                 .mapValue(Main::wrap)
                 .flatMapValue((Deque<Integer> input) -> run(input).mapErr(ApplicationError::new))
                 .mapErr(ApplicationError::new);
     }
 
     private static Result<List<Node>, ApplicationError> assemble(List<Node> program) {
-        return computeLabelsToAddresses(program).mapErr(ApplicationError::new).flatMapValue(labelsToAddresses -> {
-            return new JavaList<>(program).stream()
-                    .map(value -> resolveAddressesForNode(labelsToAddresses, value))
-                    .into(ResultStream::new)
-                    .mapResult(JavaList::new)
-                    .foldResultsLeft(new JavaList<Node>(), JavaList::addAll)
-                    .mapValue(JavaList::list)
-                    .mapErr(ApplicationError::new);
-        });
+        return computeLabelsToAddresses(program)
+                .mapErr(ApplicationError::new)
+                .flatMapValue(labelsToAddresses -> assembleWithAddresses(program, labelsToAddresses));
+    }
+
+    private static Result<List<Node>, ApplicationError> assembleWithAddresses(List<Node> program, Map<String, Integer> labelsToAddresses) {
+        return new JavaList<>(program).stream()
+                .map(value -> resolveAddressesForNode(labelsToAddresses, value))
+                .into(ResultStream::new)
+                .mapResult(JavaList::new)
+                .foldResultsLeft(new JavaList<Node>(), JavaList::addAll)
+                .mapValue(JavaList::list)
+                .mapErr(ApplicationError::new);
     }
 
     private static Result<Map<String, Integer>, CompileError> computeLabelsToAddresses(List<Node> program) {
@@ -88,6 +95,8 @@ public class Main {
 
                 labelToAddress.put(name, address);
                 address += children.size();
+            } else if(node.is(INSTRUCTION_TYPE)) {
+                address++;
             } else {
                 return new Err<>(new CompileError("Unknown node to link", new NodeContext(node)));
             }
@@ -95,7 +104,7 @@ public class Main {
         return new Ok<>(labelToAddress);
     }
 
-    private static List<Integer> buildBinary(List<Node> nodes) {
+    private static Result<List<Integer>,CompileError> buildBinary(List<Node> nodes) {
         var list = new ArrayList<Integer>();
         for (Node node : nodes) {
             if (node.is(INSTRUCTION_TYPE)) {
@@ -108,10 +117,12 @@ public class Main {
                         .orElseGet(operator::empty));
             } else if (node.is(DATA_TYPE)) {
                 list.add(node.findInt(DATA_VALUE).orElse(0));
+            } else {
+                return new Err<>(new CompileError("Unknown binary value", new NodeContext(node)));
             }
         }
 
-        return list;
+        return new Ok<>(list);
     }
 
     private static Result<List<Node>, RuntimeError> resolveAddressesForNode(Map<String, Integer> labelToAddress, Node node) {
