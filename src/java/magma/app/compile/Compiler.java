@@ -9,6 +9,7 @@ import magma.app.compile.lang.common.FlattenGroup;
 import magma.app.compile.lang.common.Generator;
 import magma.app.compile.lang.magma.*;
 import magma.app.compile.pass.*;
+import magma.app.compile.rule.Filter;
 import magma.java.JavaList;
 
 public class Compiler {
@@ -34,9 +35,18 @@ public class Compiler {
                         .add(new FilteredStateless("move", new ExpandMove())))))
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
                         .add(new Definer())
-                        .add(new ResolveSymbol()))))
+                        .add(new ResolveSymbol())
+                        .add(new FilteredStateless("less-than", new ResolveLessThan()))
+                )))
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
-                        .add( new ResolveLoad())
+                        .add(new FilteredStateless("numeric-value", new ResolveNumericValue()))
+                        .add(new FilteredStateless("address", new ResolveAddress()))
+
+                        .add(new FilteredStateless("add", new ResolveAdd()))
+                        .add(new FilteredStateless("subtract", new ResolveSubtract()))
+                        .add(new FilteredStateless("reference", new ResolveReference()))
+                        .add(new FilteredStateless("dereference", new ResolveDereference()))
+
                         .add(new FilteredStateless("store", new ResolveStore()))
                         .add(new FilteredStateless("move-stack-pointer", new ExpandMoveStackPointer())))))
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
