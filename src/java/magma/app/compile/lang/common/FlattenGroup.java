@@ -1,9 +1,12 @@
 package magma.app.compile.lang.common;
 
+import magma.api.result.Ok;
+import magma.api.result.Result;
 import magma.api.stream.HeadedStream;
 import magma.api.stream.SingleHead;
 import magma.api.stream.Stream;
 import magma.app.compile.Node;
+import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.magma.Stateless;
 import magma.java.JavaList;
 
@@ -25,5 +28,14 @@ public class FlattenGroup implements Stateless {
         return child.findNodeList(GROUP_CHILDREN)
                 .orElse(new JavaList<>())
                 .stream();
+    }
+
+    private Node beforePass0(Node node) {
+        return node;
+    }
+
+    @Override
+    public Result<Node, CompileError> beforePass(Node node) {
+        return new Ok<>(beforePass0(node));
     }
 }

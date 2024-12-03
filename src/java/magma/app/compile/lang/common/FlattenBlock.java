@@ -1,8 +1,5 @@
 package magma.app.compile.lang.common;
 
-import magma.api.Tuple;
-import magma.api.option.None;
-import magma.api.option.Option;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.api.stream.HeadedStream;
@@ -10,16 +7,13 @@ import magma.api.stream.SingleHead;
 import magma.api.stream.Stream;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
-import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.magma.Stateless;
-import magma.app.compile.pass.Stateful;
 import magma.java.JavaList;
 
 import static magma.app.compile.lang.common.CommonLang.GROUP_CHILDREN;
 import static magma.app.compile.lang.common.CommonLang.GROUP_TYPE;
 import static magma.app.compile.lang.magma.MagmaLang.BLOCK_CHILDREN;
-import static magma.app.compile.lang.magma.MagmaLang.BLOCK_TYPE;
 
 public class FlattenBlock implements Stateless {
     @Override
@@ -37,5 +31,14 @@ public class FlattenBlock implements Stateless {
         return child.findNodeList(GROUP_CHILDREN)
                 .orElse(new JavaList<>())
                 .stream();
+    }
+
+    private Node beforePass0(Node node) {
+        return node;
+    }
+
+    @Override
+    public Result<Node, CompileError> beforePass(Node node) {
+        return new Ok<>(beforePass0(node));
     }
 }

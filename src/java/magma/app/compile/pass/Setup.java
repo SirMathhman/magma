@@ -55,8 +55,9 @@ public class Setup implements PassingStage {
 
         final var instructions = new JavaList<Node>()
                 .add(instruct(JumpByValue, START_LABEL))
-                .add(data(Compiler.STACK_POINTER, totalSize + 6))
+                .add(data(Compiler.STACK_POINTER, totalSize + 7))
                 .add(data(Compiler.SPILL, 0))
+                .add(data(Compiler.SPILL0, 0))
                 .addAll(children);
 
         final var node = new MapNode(Main.ROOT_TYPE).withNodeList(Compiler.ROOT_CHILDREN, instructions);

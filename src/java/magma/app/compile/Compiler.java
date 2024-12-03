@@ -14,6 +14,7 @@ public class Compiler {
     public static final String ROOT_CHILDREN = "children";
     public static final String STACK_POINTER = "__stack-pointer__";
     public static final String SPILL = "__spill__";
+    public static final String SPILL0 = "__spill0__";
 
     private static PassingStage createPassingStage() {
         return new CompoundPassingStage(new JavaList<PassingStage>()

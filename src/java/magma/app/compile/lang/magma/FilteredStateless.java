@@ -6,6 +6,7 @@ import magma.api.option.Option;
 import magma.api.option.Some;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
@@ -23,7 +24,7 @@ public class FilteredStateless implements Stateful {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
         if (!node.is(type)) return new None<>();
-        final var newNode = stateless.beforePass(node);
+        final var newNode = stateless.beforePass(node).findValue().orElse(new MapNode());
         return new Some<>(new Ok<>(new Tuple<>(state, newNode)));
     }
 

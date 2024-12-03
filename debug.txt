@@ -1,0 +1,63 @@
+0 -            InAddress        1
+1 -            InAddress        2
+2 -          JumpByValue        3
+3 -          JumpByValue        6
+
+4 -              Nothing       2d
+5 -              Nothing      190
+
+6 -        LoadFromValue       64
+7 -      StoreIndirectly        4
+
+8 -        LoadFromValue       c8
+
+    9 -        StoreDirectly        5
+    a -         LoadDirectly        4
+    b -         AddFromValue        1
+    c -        StoreDirectly        4
+    d -         LoadDirectly        5
+
+e -      StoreIndirectly        4
+
+    f -        StoreDirectly        5
+    10 -         LoadDirectly        4
+    11 -    SubtractFromValue        1
+    12 -        StoreDirectly        4
+    13 -         LoadDirectly        5
+
+14 -       LoadIndirectly        4
+15 -        StoreDirectly        5
+
+    16 -        StoreDirectly        5
+    17 -         LoadDirectly        4
+    18 -         AddFromValue        1
+    19 -        StoreDirectly        4
+    1a -         LoadDirectly        5
+
+1b -       LoadIndirectly        4
+
+    1c -        StoreDirectly        5
+    1d -         LoadDirectly        4
+    1e -    SubtractFromValue        1
+    1f -        StoreDirectly        4
+    20 -         LoadDirectly        5
+
+21 -       AddFromAddress        5
+
+    22 -        StoreDirectly        5
+    23 -         LoadDirectly        4
+    24 -         AddFromValue        2
+    25 -        StoreDirectly        4
+    26 -         LoadDirectly        5
+
+27 -      StoreIndirectly        4
+
+    28 -        StoreDirectly        5
+    29 -         LoadDirectly        4
+    2a -    SubtractFromValue        2
+    2b -        StoreDirectly        4
+    2c -         LoadDirectly        5
+
+2d -              Nothing       64
+2e -              Nothing       c8
+2f -              Nothing      190
