@@ -4,8 +4,8 @@ import magma.api.Tuple;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.c.CLang;
-import magma.app.compile.lang.magma.MagmaLang;
-import magma.app.compile.lang.magma.WrapRoot;
+import magma.app.compile.lang.common.FlattenGroups;
+import magma.app.compile.lang.magma.*;
 import magma.app.compile.pass.*;
 import magma.java.JavaList;
 
@@ -19,8 +19,10 @@ public class Compiler {
 
     private static PassingStage createPassingStage() {
         return new CompoundPassingStage(new JavaList<PassingStage>()
-                .add(new WrapRoot())
-                .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>())))
+                .add(new WrapRootInFunction())
+                .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
+                        .add(new FilteredStateless("function", new ExpandFunction()))
+                        .add(new FilteredStateless("group", new FlattenGroups())))))
                 .add(new SavingPassingStage(Paths.get(".", "main.c"), CLang.createRootRule()))
         );
 
@@ -73,4 +75,5 @@ public class Compiler {
                 .flatMapValue(root -> passingStage.pass(new State(), root))
                 .mapValue(Tuple::right);
     }
+
 }

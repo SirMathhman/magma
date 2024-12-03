@@ -1,25 +1,26 @@
 package magma.app.compile.lang.common;
 
-import magma.api.result.Ok;
-import magma.api.result.Result;
 import magma.api.stream.HeadedStream;
 import magma.api.stream.SingleHead;
 import magma.api.stream.Stream;
 import magma.app.compile.Node;
-import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.magma.Stateless;
 import magma.java.JavaList;
 
 import static magma.app.compile.lang.common.CommonLang.GROUP_CHILDREN;
 import static magma.app.compile.lang.common.CommonLang.GROUP_TYPE;
 
-public class FlattenGroup implements Stateless {
+public class FlattenGroups implements Stateless {
     @Override
     public Node afterPass(Node node) {
-        final var children = node.findNodeList(GROUP_CHILDREN).orElse(new JavaList<>());
-        return CommonLang.asGroup(children.stream()
+        final var oldChildren = node.findNodeList(GROUP_CHILDREN)
+                .orElse(new JavaList<>());
+
+        final var newChildren = oldChildren.stream()
                 .flatMap(this::flatten)
-                .foldLeft(new JavaList<Node>(), JavaList::add));
+                .foldLeft(new JavaList<Node>(), JavaList::add);
+
+        return CommonLang.asGroup(newChildren);
     }
 
     private Stream<Node> flatten(Node child) {

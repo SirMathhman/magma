@@ -5,7 +5,7 @@ import magma.app.compile.rule.*;
 
 public class CLang {
     public static Rule createRootRule() {
-        return new TypeRule("root", new SplitRule(new BracketSplitter(), "children", createRootMemberRule()));
+        return new TypeRule("group", new SplitRule(new BracketSplitter(), "children", createRootMemberRule()));
     }
 
     private static TypeRule createRootMemberRule() {

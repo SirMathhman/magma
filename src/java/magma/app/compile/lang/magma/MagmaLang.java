@@ -43,7 +43,7 @@ public class MagmaLang {
         ));
 
         final var childRule = CommonLang.splitByBraces(ROOT_CHILDREN, statement);
-        return new TypeRule(ROOT_TYPE, childRule);
+        return new TypeRule("group", childRule);
     }
 
     private static TypeRule createFunctionRule(LazyRule statement) {
