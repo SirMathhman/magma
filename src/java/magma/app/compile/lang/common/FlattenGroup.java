@@ -29,13 +29,4 @@ public class FlattenGroup implements Stateless {
                 .orElse(new JavaList<>())
                 .stream();
     }
-
-    private Node beforePass0(Node node) {
-        return node;
-    }
-
-    @Override
-    public Result<Node, CompileError> beforePass(Node node) {
-        return new Ok<>(beforePass0(node));
-    }
 }

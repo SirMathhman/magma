@@ -6,6 +6,7 @@ import magma.app.compile.error.CompileError;
 import magma.app.compile.lang.casm.*;
 import magma.app.compile.lang.common.FlattenBlock;
 import magma.app.compile.lang.common.FlattenGroup;
+import magma.app.compile.lang.common.Generator;
 import magma.app.compile.lang.magma.*;
 import magma.app.compile.pass.*;
 import magma.java.JavaList;
@@ -23,7 +24,8 @@ public class Compiler {
                         .add(new FilteredStateless("numeric-type", new ParseNumeric())))))
                 .add(new WrapRoot())
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
-                        .add(new FilteredStateless("block", new ExpandBlock()))
+                        .add(new FilteredStateless("whitespace", new ExpandWhitespace()))
+                        .add(new FilteredStateless("block", new ExpandBlock(new Generator())))
                         .add(new FilteredStateless("initialize", new ExpandInitialize()))
                         .add(new FilteredStateless("assign", new ExpandAssign()))
                         .add(new FilteredStateless("move", new ExpandMove())))))
@@ -35,9 +37,11 @@ public class Compiler {
                         .add(new FilteredStateless("store", new ResolveStore()))
                         .add(new FilteredStateless("move-stack-pointer", new ExpandMoveStackPointer())))))
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
-                        .add(new FilteredStateless("group", new FlattenGroup()))
                         .add(new FilteredStateless("function", new FlattenFunction()))
+                        .add(new FilteredStateless("group", new FlattenGroup()))
                         .add(new FilteredStateless("block", new FlattenBlock())))))
+                .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
+                        .add(new FilteredStateless("label", new FlattenLabel())))))
                 .add(new Setup()));
     }
 

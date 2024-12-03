@@ -16,6 +16,8 @@ import magma.java.JavaList;
 
 import static magma.app.compile.lang.casm.CASMLang.*;
 import static magma.app.compile.lang.casm.assemble.Operator.JumpByValue;
+import static magma.app.compile.lang.common.CommonLang.GROUP_CHILDREN;
+import static magma.app.compile.lang.common.CommonLang.GROUP_TYPE;
 
 public class Setup implements PassingStage {
     public static final String START_LABEL = "__start__";
@@ -34,13 +36,13 @@ public class Setup implements PassingStage {
         if (root.is(LABEL_TYPE)) {
             children = new JavaList<Node>().add(root);
         } else {
-            if (!root.is(CASMLang.PROGRAM_TYPE)) {
+            if (!root.is(GROUP_TYPE)) {
                 final var context = new NodeContext(root);
                 final var error = new CompileError("Not a program", context);
                 return new Err<>(error);
             }
 
-            final var childrenOption = root.findNodeList(PROGRAM_CHILDREN);
+            final var childrenOption = root.findNodeList(GROUP_CHILDREN);
             if (childrenOption.isEmpty()) {
                 final var context = new NodeContext(root);
                 final var error = new CompileError("No children present", context);
