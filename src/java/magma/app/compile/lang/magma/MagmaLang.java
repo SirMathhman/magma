@@ -64,11 +64,16 @@ public class MagmaLang {
         final var value = new LazyRule();
         value.set(new OrRule(new JavaList<Rule>()
                 .add(createTupleRule(value))
+                .add(createAddRule(value))
                 .add(createNumericRule())
                 .add(createCharRule())
                 .add(createSymbolRule())
         ));
         return value;
+    }
+
+    private static TypeRule createAddRule(LazyRule value) {
+        return new TypeRule("add", new FirstRule(new NodeRule("left", value), "+", new NodeRule("right", value)));
     }
 
     private static TypeRule createSymbolRule() {
