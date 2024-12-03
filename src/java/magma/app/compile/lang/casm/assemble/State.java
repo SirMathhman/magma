@@ -56,7 +56,7 @@ public final class State {
                 "\n]";
     }
 
-    public Option<State> loadFromAddress(int address) {
+    public Option<State> loadDirectly(int address) {
         return memory.resolve(address).map(value -> new State(memory, programCounter, value));
     }
 
@@ -94,5 +94,11 @@ public final class State {
     public State storeIndirectly(int addressOrValue) {
         final var memory1 = memory.storeIndirectly(addressOrValue, accumulator);
         return new State(memory1, programCounter, accumulator);
+    }
+
+    public Option<State> loadIndirectly(int address) {
+        return memory.resolve(address)
+                .flatMap(memory::resolve)
+                .map(value -> new State(memory, programCounter, value));
     }
 }

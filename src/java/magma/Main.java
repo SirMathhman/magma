@@ -208,7 +208,8 @@ public class Main {
                 System.out.print((char) state.getAccumulator());
                 yield new Ok<>(new Some<>(state));
             }
-            case LoadDirectly -> handleLoadFromAddress(state, addressOrValue);
+            case LoadDirectly -> handleLoadDirectly(state, addressOrValue);
+            case LoadIndirectly -> handleLoadIndirectly(state, addressOrValue);
             case AddFromAddress -> handleAddFromAddress(state, addressOrValue);
             case JumpConditionByValue -> new Ok<>(new Some<>(state.jumpConditionByValue(addressOrValue)));
             case SubtractFromValue -> new Ok<>(new Some<>(state.subtract(addressOrValue)));
@@ -218,6 +219,12 @@ public class Main {
             case StoreDirectly -> new Ok<>(new Some<>(state.storeDirectly(addressOrValue)));
             case StoreIndirectly -> new Ok<>(new Some<>(state.storeIndirectly(addressOrValue)));
         };
+    }
+
+    private static Result<Option<State>, RuntimeError> handleLoadIndirectly(State state, int addressOrValue) {
+        return state.loadIndirectly(addressOrValue)
+                .<Result<Option<State>, RuntimeError>>map(value -> new Ok<>(new Some<>(value)))
+                .orElseGet(() -> new Err<>(new RuntimeError("Invalid address: " + addressOrValue)));
     }
 
     private static Result<Option<State>, RuntimeError> handleJumpByAddress(State state, int addressOrValue) {
@@ -232,8 +239,8 @@ public class Main {
                 .orElseGet(() -> new Err<>(new RuntimeError("Invalid address: " + addressOrValue)));
     }
 
-    private static Result<Option<State>, RuntimeError> handleLoadFromAddress(State state, int addressOrValue) {
-        return state.loadFromAddress(addressOrValue)
+    private static Result<Option<State>, RuntimeError> handleLoadDirectly(State state, int addressOrValue) {
+        return state.loadDirectly(addressOrValue)
                 .<Result<Option<State>, RuntimeError>>map(value -> new Ok<>(new Some<>(value)))
                 .orElseGet(() -> new Err<>(new RuntimeError("Invalid address: " + addressOrValue)));
     }
