@@ -23,6 +23,7 @@ public class Compiler {
                         .add(new FilteredStateless("numeric-type", new ParseNumeric())))))
                 .add(new WrapRoot())
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
+                        .add(new FilteredStateless("block", new ExpandBlock()))
                         .add(new FilteredStateless("initialize", new ExpandInitialize()))
                         .add(new FilteredStateless("assign", new ExpandAssign()))
                         .add(new FilteredStateless("move", new ExpandMove())))))
