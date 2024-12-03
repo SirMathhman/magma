@@ -31,11 +31,24 @@ public class MagmaLang {
     public static final String BLOCK_CHILDREN = "children";
 
     public static Rule createMagmaRootRule() {
-        return new TypeRule(ROOT_TYPE, new SplitRule(new BracketSplitter(), ROOT_CHILDREN, new OrRule(new JavaList<Rule>()
+        final var statement = new LazyRule();
+        statement.set(new OrRule(new JavaList<Rule>()
+                .add(createBlockRule(statement))
                 .add(createWhitespaceRule())
                 .add(createDeclarationRule())
                 .add(createOutRule())
-        )));
+        ));
+
+        final var childRule = splitByBraces(ROOT_CHILDREN, statement);
+        return new TypeRule(ROOT_TYPE, childRule);
+    }
+
+    private static TypeRule createBlockRule(LazyRule statement) {
+        return new TypeRule("block", new PrefixRule("{", new SuffixRule(splitByBraces("children", statement), "}")));
+    }
+
+    private static SplitRule splitByBraces(String propertyKey, Rule statement) {
+        return new SplitRule(new BracketSplitter(), propertyKey, statement);
     }
 
     private static TypeRule createWhitespaceRule() {
