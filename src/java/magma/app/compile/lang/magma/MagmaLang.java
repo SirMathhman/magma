@@ -33,7 +33,7 @@ public class MagmaLang {
     public static Rule createMagmaRootRule() {
         final var statement = new LazyRule();
         statement.set(new OrRule(new JavaList<Rule>()
-                .add(createBlockRule(statement))
+                .add(CommonLang.createBlockRule(statement))
                 .add(createWhitespaceRule())
                 .add(createDeclarationRule())
                 .add(createIfRule(statement))
@@ -42,7 +42,7 @@ public class MagmaLang {
                 .add(createFunctionRule(statement))
         ));
 
-        final var childRule = splitByBraces(ROOT_CHILDREN, statement);
+        final var childRule = CommonLang.splitByBraces(ROOT_CHILDREN, statement);
         return new TypeRule(ROOT_TYPE, childRule);
     }
 
@@ -59,15 +59,6 @@ public class MagmaLang {
         final var condition = new NodeRule("condition", createValueRule());
         final var value = new NodeRule("value", statement);
         return new TypeRule("if", new StripRule(new PrefixRule("if", new FirstRule(new StripRule(new PrefixRule("(", condition)), ")", value))));
-    }
-
-    private static TypeRule createBlockRule(LazyRule statement) {
-        final var children = splitByBraces("children", statement);
-        return new TypeRule("block", new StripRule(new PrefixRule("{", new SuffixRule(children, "}"))));
-    }
-
-    private static SplitRule splitByBraces(String propertyKey, Rule statement) {
-        return new SplitRule(new BracketSplitter(), propertyKey, statement);
     }
 
     private static TypeRule createWhitespaceRule() {

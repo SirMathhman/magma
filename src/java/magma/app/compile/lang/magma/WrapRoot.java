@@ -10,6 +10,7 @@ import magma.app.compile.State;
 import magma.app.compile.error.CompileError;
 import magma.app.compile.error.NodeContext;
 import magma.app.compile.pass.PassingStage;
+import magma.java.JavaList;
 
 public class WrapRoot implements PassingStage {
     @Override
@@ -18,8 +19,11 @@ public class WrapRoot implements PassingStage {
             return new Err<>(new CompileError("Not a root node", new NodeContext(root)));
 
         final var block = root.retype("block");
-        return new Ok<>(new Tuple<>(state, new MapNode("function")
+        final var function = new MapNode("function")
                 .withString("name", "__start__")
-                .withNode("value", block)));
+                .withNode("value", block);
+
+        return new Ok<>(new Tuple<>(state, new MapNode("root").withNodeList("children", new JavaList<Node>()
+                .add(function))));
     }
 }

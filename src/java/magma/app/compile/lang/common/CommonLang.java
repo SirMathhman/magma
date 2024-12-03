@@ -2,6 +2,7 @@ package magma.app.compile.lang.common;
 
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
+import magma.app.compile.rule.*;
 import magma.java.JavaList;
 
 public class CommonLang {
@@ -18,5 +19,14 @@ public class CommonLang {
 
     public static Node createEmptyGroup() {
         return asGroup(new JavaList<>());
+    }
+
+    public static SplitRule splitByBraces(String propertyKey, Rule statement) {
+        return new SplitRule(new BracketSplitter(), propertyKey, statement);
+    }
+
+    public static TypeRule createBlockRule(Rule statement) {
+        final var children = splitByBraces("children", statement);
+        return new TypeRule("block", new StripRule(new PrefixRule("{", new SuffixRule(children, "}"))));
     }
 }
