@@ -81,7 +81,7 @@ public final class State {
     }
 
     public State jumpConditionByValue(int value) {
-        if(accumulator < 0) {
+        if (accumulator < 0) {
             return jumpByValue(value);
         }
         return this;
@@ -106,5 +106,15 @@ public final class State {
         return memory.resolve(address)
                 .map(this::subtractValue)
                 .orElse(this);
+    }
+
+    public State lessThanAddress(int addressOrValue) {
+        return memory.resolve(addressOrValue)
+                .map(this::lessThan)
+                .orElse(this);
+    }
+
+    private State lessThan(int value) {
+        return new State(memory, programCounter, accumulator < value ? 1 : 0);
     }
 }

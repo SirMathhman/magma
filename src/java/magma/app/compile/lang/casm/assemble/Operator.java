@@ -24,7 +24,7 @@ public enum Operator {
     JumpByValue,
     JumpByAddress,
     JumpConditionByValue,
-    Halt, LoadIndirectly, SubtractFromAddress;
+    Halt, LoadIndirectly, SubtractFromAddress, LessThanAddress;
 
     private static final int maxLength;
 

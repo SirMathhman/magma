@@ -36,7 +36,6 @@ public class Compiler {
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
                         .add(new Definer())
                         .add(new ResolveSymbol())
-                        .add(new FilteredStateless("less-than", new ResolveLessThan()))
                 )))
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
                         .add(new FilteredStateless("numeric-value", new ResolveNumericValue()))
@@ -46,6 +45,8 @@ public class Compiler {
                         .add(new FilteredStateless("subtract", new ResolveSubtract()))
                         .add(new FilteredStateless("reference", new ResolveReference()))
                         .add(new FilteredStateless("dereference", new ResolveDereference()))
+
+                        .add(new FilteredStateless("less-than", new ResolveLessThan()))
 
                         .add(new FilteredStateless("store", new ResolveStore()))
                         .add(new FilteredStateless("move-stack-pointer", new ExpandMoveStackPointer())))))

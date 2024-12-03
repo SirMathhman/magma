@@ -15,6 +15,7 @@ import magma.app.compile.lang.casm.CASMLang;
 import magma.java.JavaList;
 
 import static magma.app.compile.lang.casm.CASMLang.*;
+import static magma.app.compile.lang.casm.assemble.Operator.Halt;
 import static magma.app.compile.lang.casm.assemble.Operator.JumpByValue;
 import static magma.app.compile.lang.common.CommonLang.GROUP_CHILDREN;
 import static magma.app.compile.lang.common.CommonLang.GROUP_TYPE;
@@ -57,10 +58,11 @@ public class Setup implements PassingStage {
 
         final var instructions = new JavaList<Node>()
                 .add(instruct(JumpByValue, START_LABEL))
-                .add(data(Compiler.STACK_POINTER, totalSize + 7))
+                .add(data(Compiler.STACK_POINTER, totalSize + 8))
                 .add(data(Compiler.SPILL, 0))
                 .add(data(Compiler.SPILL0, 0))
-                .addAll(children);
+                .addAll(children)
+                .add(instruct(Halt));
 
         final var node = new MapNode(Main.ROOT_TYPE).withNodeList(Compiler.ROOT_CHILDREN, instructions);
         return new Ok<>(new Tuple<>(state, node));
