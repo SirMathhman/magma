@@ -19,6 +19,7 @@ public class Compiler {
     private static PassingStage createPassingStage() {
         return new CompoundPassingStage(new JavaList<PassingStage>()
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
+                        .add(new FilteredStateless("pointer", new ParsePointer()))
                         .add(new FilteredStateless("numeric-type", new ParseNumeric())))))
                 .add(new WrapRoot())
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()

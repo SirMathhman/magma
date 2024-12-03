@@ -57,7 +57,12 @@ public class MagmaLang {
     }
 
     private static Rule createTypeRule() {
-        return new TypeRule("numeric-type", new StripRule(new StringRule("value")));
+        final var type = new LazyRule();
+        type.set(new OrRule(new JavaList<Rule>()
+                .add(new TypeRule("pointer", new PrefixRule("*", new NodeRule("value", type))))
+                .add(new TypeRule("numeric-type", new StripRule(new StringRule("value"))))
+        ));
+        return type;
     }
 
     private static Rule createValueRule() {
@@ -68,8 +73,13 @@ public class MagmaLang {
                 .add(createNumericRule())
                 .add(createCharRule())
                 .add(createSymbolRule())
+                .add(createReferenceRule(value))
         ));
         return value;
+    }
+
+    private static TypeRule createReferenceRule(Rule value) {
+        return new TypeRule("reference", new PrefixRule("&", new NodeRule("value", value)));
     }
 
     private static TypeRule createAddRule(LazyRule value) {
