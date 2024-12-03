@@ -39,10 +39,20 @@ public class MagmaLang {
                 .add(createIfRule(statement))
                 .add(new TypeRule("else", new StripRule(new PrefixRule("else", new NodeRule("value", statement)))))
                 .add(createOutRule())
+                .add(createFunctionRule(statement))
         ));
 
         final var childRule = splitByBraces(ROOT_CHILDREN, statement);
         return new TypeRule(ROOT_TYPE, childRule);
+    }
+
+    private static TypeRule createFunctionRule(LazyRule statement) {
+        final var name = new StringRule("name");
+        final var returnType = new NodeRule("return-type", createTypeRule());
+        final var header = new PrefixRule("def ", new FirstRule(name, "()", new StripRule(new PrefixRule(":", returnType))));
+
+        final var value = new NodeRule("value", statement);
+        return new TypeRule("function", new FirstRule(header, "=>", value));
     }
 
     private static TypeRule createIfRule(LazyRule statement) {
@@ -81,12 +91,17 @@ public class MagmaLang {
     private static Rule createTypeRule() {
         final var type = new LazyRule();
         type.set(new OrRule(new JavaList<Rule>()
-                .add(new TypeRule("boolean", new StripRule(new FilterRule(new EqualsFilter("Bool"), new StringRule("value")))))
+                .add(createKeywordType("boolean", "Bool"))
+                .add(createKeywordType("void", "Void"))
                 .add(new TypeRule("pointer", new PrefixRule("*", new NodeRule("value", type))))
                 .add(createNumericTypeRule("signed-numeric-type", "I"))
                 .add(createNumericTypeRule("unsigned-numeric-type", "U"))
         ));
         return type;
+    }
+
+    private static TypeRule createKeywordType(String type, String value) {
+        return new TypeRule(type, new StripRule(new FilterRule(new EqualsFilter(value), new StringRule("value"))));
     }
 
     private static TypeRule createNumericTypeRule(String type, String prefix) {
