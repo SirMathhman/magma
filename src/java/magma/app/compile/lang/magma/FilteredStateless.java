@@ -24,8 +24,7 @@ public class FilteredStateless implements Stateful {
     @Override
     public Option<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
         if (!node.is(type)) return new None<>();
-        final var newNode = stateless.beforePass(node).findValue().orElse(new MapNode());
-        return new Some<>(new Ok<>(new Tuple<>(state, newNode)));
+        return new Some<>(stateless.beforePass(node).mapValue(inner -> new Tuple<>(state, inner)));
     }
 
     @Override

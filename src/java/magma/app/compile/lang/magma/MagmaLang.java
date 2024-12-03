@@ -73,22 +73,29 @@ public class MagmaLang {
     private static Rule createTypeRule() {
         final var type = new LazyRule();
         type.set(new OrRule(new JavaList<Rule>()
+                .add(new TypeRule("boolean", new StripRule(new FilterRule(new EqualsFilter("Bool"), new StringRule("value")))))
                 .add(new TypeRule("pointer", new PrefixRule("*", new NodeRule("value", type))))
-                .add(new TypeRule("numeric-type", new StripRule(new StringRule("value"))))
+                .add(createNumericTypeRule("signed-numeric-type", "I"))
+                .add(createNumericTypeRule("unsigned-numeric-type", "U"))
         ));
         return type;
+    }
+
+    private static TypeRule createNumericTypeRule(String type, String prefix) {
+        return new TypeRule(type, new StripRule(new PrefixRule(prefix, new IntRule("bits"))));
     }
 
     private static Rule createValueRule() {
         final var value = new LazyRule();
         value.set(new OrRule(new JavaList<Rule>()
                 .add(createTupleRule(value))
-                .add(createAddRule(value))
                 .add(createNumericRule())
                 .add(createCharRule())
                 .add(createSymbolRule())
                 .add(createReferenceRule(value))
                 .add(createDeferenceRule(value))
+                .add(createOperatorRule(value, "add", "+"))
+                .add(createOperatorRule(value, "less-than", "<"))
         ));
         return value;
     }
@@ -101,8 +108,8 @@ public class MagmaLang {
         return new TypeRule("reference", new PrefixRule("&", new NodeRule("value", value)));
     }
 
-    private static TypeRule createAddRule(LazyRule value) {
-        return new TypeRule("add", new FirstRule(new NodeRule("left", value), "+", new NodeRule("right", value)));
+    private static TypeRule createOperatorRule(LazyRule value, String type, String operator) {
+        return new TypeRule(type, new FirstRule(new NodeRule("left", value), operator, new NodeRule("right", value)));
     }
 
     private static TypeRule createSymbolRule() {

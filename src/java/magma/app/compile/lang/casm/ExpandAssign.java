@@ -1,16 +1,19 @@
 package magma.app.compile.lang.casm;
 
+import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.compile.error.CompileError;
+import magma.app.compile.error.NodeContext;
 import magma.app.compile.lang.common.CommonLang;
 import magma.app.compile.lang.magma.Stateless;
 import magma.java.JavaList;
 
 public class ExpandAssign implements Stateless {
-    private Node beforePass0(Node node) {
+    @Override
+    public Result<Node, CompileError> beforePass(Node node) {
         final var type = node.findNode("type").orElse(new MapNode());
         final var length = type.findInt("length").orElse(0);
 
@@ -24,14 +27,9 @@ public class ExpandAssign implements Stateless {
                     .withNode("destination", destination));
         } else {
             // for each "byte" go through each address and copy manually
-            throw new UnsupportedOperationException();
+            return new Err<>(new CompileError("Invalid length", new NodeContext(type)));
         }
 
-        return CommonLang.asGroup(nodes);
-    }
-
-    @Override
-    public Result<Node, CompileError> beforePass(Node node) {
-        return new Ok<>(beforePass0(node));
+        return new Ok<>(CommonLang.asGroup(nodes));
     }
 }
