@@ -1,3 +1,2 @@
 let x : U32 = 100;
-let sub : U32 = 20 - x;
-let x : Bool = 0 < sub;
+let x : Bool = x < 20;

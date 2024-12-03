@@ -69,7 +69,16 @@ public class ResolveLoad implements Stateful {
             return new Some<>(new Ok<>(new Tuple<>(state, group)));
         }
 
-        if(value.is("reference")) {
+        if (value.is("less-than")) {
+            final var left = value.findNode("left").orElse(new MapNode());
+            final var right = value.findNode("right").orElse(new MapNode());
+
+            var group = CommonLang.asGroup(new JavaList<Node>().add(new MapNode("subtract").withNode("left", right).withNode("right", left)));
+
+            return new Some<>(new Ok<>(new Tuple<>(state, group)));
+        }
+
+        if (value.is("reference")) {
             final var inner = value.findNode("value").orElse(new MapNode());
 
             if (inner.is("address")) {
@@ -82,7 +91,7 @@ public class ResolveLoad implements Stateful {
             }
         }
 
-        if(value.is("dereference")) {
+        if (value.is("dereference")) {
             final var inner = value.findNode("value").orElse(new MapNode());
 
             if (inner.is("address")) {
