@@ -60,7 +60,7 @@ public class ResolveLoad implements Stateful {
             final var inner = value.findNode("value").orElse(new MapNode());
 
             if (inner.is("address")) {
-                final var offset = value.findInt("offset").orElse(0);
+                final var offset = inner.findInt("offset").orElse(0);
                 var result = CommonLang.asGroup(new JavaList<Node>()
                         .add(new MapNode("move-stack-pointer").withInt("offset", offset))
                         .add(instruct(Operator.LoadDirectly, STACK_POINTER))
