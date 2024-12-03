@@ -72,7 +72,8 @@ public class MagmaLang {
     }
 
     private static TypeRule createSymbolRule() {
-        return new TypeRule(SYMBOL_TYPE, new StripRule(new StringRule(SYMBOL_VALUE)));
+        final var value = new FilterRule(new SymbolFilter(), new StringRule(SYMBOL_VALUE));
+        return new TypeRule(SYMBOL_TYPE, new StripRule(value));
     }
 
     private static TypeRule createCharRule() {
