@@ -1,3 +1,6 @@
 let x : Bool = 0 < 1;
-let y : Bool = 1 < 0;
-let z : Bool = 1 < 1;
+if (x) {
+    let x : U32 = 100;
+} else {
+    let y : U32 = 200;
+}

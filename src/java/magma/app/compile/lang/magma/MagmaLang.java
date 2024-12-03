@@ -36,11 +36,19 @@ public class MagmaLang {
                 .add(createBlockRule(statement))
                 .add(createWhitespaceRule())
                 .add(createDeclarationRule())
+                .add(createIfRule(statement))
+                .add(new TypeRule("else", new StripRule(new PrefixRule("else", new NodeRule("value", statement)))))
                 .add(createOutRule())
         ));
 
         final var childRule = splitByBraces(ROOT_CHILDREN, statement);
         return new TypeRule(ROOT_TYPE, childRule);
+    }
+
+    private static TypeRule createIfRule(LazyRule statement) {
+        final var condition = new NodeRule("condition", createValueRule());
+        final var value = new NodeRule("value", statement);
+        return new TypeRule("if", new StripRule(new PrefixRule("if", new FirstRule(new StripRule(new PrefixRule("(", condition)), ")", value))));
     }
 
     private static TypeRule createBlockRule(LazyRule statement) {

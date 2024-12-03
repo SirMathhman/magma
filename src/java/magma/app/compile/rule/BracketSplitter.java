@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BracketSplitter implements Splitter {
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
+    }
+
     @Override
     public List<String> split(String input) {
         var segments = new ArrayList<String>();
@@ -13,14 +17,18 @@ public class BracketSplitter implements Splitter {
             final var c = input.charAt(i);
             buffer.append(c);
             if (c == ';' && depth == 0) {
-                if (!buffer.isEmpty()) segments.add(buffer.toString());
+                advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else if (c == '}' && depth == 1) {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+                depth--;
             } else {
                 if (c == '{') depth++;
                 if (c == '}') depth--;
             }
         }
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
+        advance(buffer, segments);
         return segments;
     }
 }
