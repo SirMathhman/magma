@@ -30,7 +30,7 @@ public class Compiler {
                         .add(new Definer())
                         .add(new ResolveSymbol()))))
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
-                        .add(new FilteredStateless("load", new ResolveLoad()))
+                        .add( new ResolveLoad())
                         .add(new FilteredStateless("store", new ResolveStore()))
                         .add(new FilteredStateless("move-stack-pointer", new ExpandMoveStackPointer())))))
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
