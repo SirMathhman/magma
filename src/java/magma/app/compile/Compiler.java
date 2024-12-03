@@ -10,8 +10,6 @@ import magma.app.compile.lang.magma.*;
 import magma.app.compile.pass.*;
 import magma.java.JavaList;
 
-import java.util.logging.Filter;
-
 public class Compiler {
     public static final String ROOT_CHILDREN = "children";
     public static final String STACK_POINTER = "__stack-pointer__";
@@ -23,12 +21,12 @@ public class Compiler {
                         .add(new FilteredStateless("numeric-type", new ParseNumeric())))))
                 .add(new WrapRoot())
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
-                        .add(new FilteredStateless("initialize", new ExpandDeclare()))
+                        .add(new FilteredStateless("initialize", new ExpandInitialize()))
                         .add(new FilteredStateless("assign", new ExpandAssign()))
                         .add(new FilteredStateless("move", new ExpandMove())))))
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
                         .add(new Definer())
-                        .add(new Resolver()))))
+                        .add(new ResolveSymbol()))))
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
                         .add(new FilteredStateless("load", new ResolveLoad()))
                         .add(new FilteredStateless("store", new ResolveStore()))

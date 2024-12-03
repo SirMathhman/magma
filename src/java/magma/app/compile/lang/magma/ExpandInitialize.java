@@ -5,7 +5,7 @@ import magma.app.compile.Node;
 import magma.app.compile.lang.common.CommonLang;
 import magma.java.JavaList;
 
-public class ExpandDeclare implements Stateless {
+public class ExpandInitialize implements Stateless {
     @Override
     public Node beforePass(Node node) {
         final var name = node.findString("name").orElse("");
