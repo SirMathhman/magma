@@ -210,11 +210,12 @@ public class Main {
             }
             case LoadDirectly -> handleLoadDirectly(state, addressOrValue);
             case LoadIndirectly -> handleLoadIndirectly(state, addressOrValue);
-            case AddFromAddress -> handleAddFromAddress(state, addressOrValue);
-            case JumpConditionByValue -> new Ok<>(new Some<>(state.jumpConditionByValue(addressOrValue)));
-            case SubtractFromValue -> new Ok<>(new Some<>(state.subtract(addressOrValue)));
-            case Not -> new Ok<>(new Some<>(state.invert()));
             case AddFromValue -> new Ok<>(new Some<>(state.add(addressOrValue)));
+            case AddFromAddress -> handleAddFromAddress(state, addressOrValue);
+            case SubtractFromValue -> new Ok<>(new Some<>(state.subtractValue(addressOrValue)));
+            case SubtractFromAddress -> new Ok<>(new Some<>(state.subtractAddress(addressOrValue)));
+            case JumpConditionByValue -> new Ok<>(new Some<>(state.jumpConditionByValue(addressOrValue)));
+            case Not -> new Ok<>(new Some<>(state.invert()));
             case LoadFromValue -> new Ok<>(new Some<>(state.loadFromValue(addressOrValue)));
             case StoreDirectly -> new Ok<>(new Some<>(state.storeDirectly(addressOrValue)));
             case StoreIndirectly -> new Ok<>(new Some<>(state.storeIndirectly(addressOrValue)));

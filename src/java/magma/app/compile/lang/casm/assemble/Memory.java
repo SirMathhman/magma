@@ -23,9 +23,9 @@ public record Memory(List<Integer> memory) {
         return "\n\t\t%s - %s".formatted(indexAsHexPadded, instruction);
     }
 
-    public Option<Integer> resolve(int programCounter) {
-        return programCounter < memory.size()
-                ? new Some<>(memory.get(programCounter))
+    public Option<Integer> resolve(int address) {
+        return address < memory.size()
+                ? new Some<>(memory.get(address))
                 : new None<>();
     }
 

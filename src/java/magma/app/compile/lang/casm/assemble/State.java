@@ -72,7 +72,7 @@ public final class State {
         return new State(memory, programCounter, accumulator > 0 ? 0 : 1);
     }
 
-    public State subtract(int value) {
+    public State subtractValue(int value) {
         return new State(memory, programCounter, accumulator - value);
     }
 
@@ -100,5 +100,11 @@ public final class State {
         return memory.resolve(address)
                 .flatMap(memory::resolve)
                 .map(value -> new State(memory, programCounter, value));
+    }
+
+    public State subtractAddress(int address) {
+        return memory.resolve(address)
+                .map(this::subtractValue)
+                .orElse(this);
     }
 }

@@ -56,6 +56,19 @@ public class ResolveLoad implements Stateful {
             return new Some<>(new Ok<>(new Tuple<>(state, group)));
         }
 
+        if (value.is("subtract")) {
+            final var left = value.findNode("left").orElse(new MapNode());
+            final var right = value.findNode("right").orElse(new MapNode());
+
+            var group = CommonLang.asGroup(new JavaList<Node>()
+                    .add(new MapNode("load").withNode("value", left))
+                    .add(instruct(Operator.StoreDirectly, SPILL0))
+                    .add(new MapNode("load").withNode("value", right))
+                    .add(instruct(Operator.SubtractFromAddress, SPILL0)));
+
+            return new Some<>(new Ok<>(new Tuple<>(state, group)));
+        }
+
         if(value.is("reference")) {
             final var inner = value.findNode("value").orElse(new MapNode());
 

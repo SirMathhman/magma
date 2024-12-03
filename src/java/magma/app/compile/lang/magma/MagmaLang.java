@@ -95,6 +95,7 @@ public class MagmaLang {
                 .add(createReferenceRule(value))
                 .add(createDeferenceRule(value))
                 .add(createOperatorRule(value, "add", "+"))
+                .add(createOperatorRule(value, "subtract", "-"))
                 .add(createOperatorRule(value, "less-than", "<"))
         ));
         return value;
