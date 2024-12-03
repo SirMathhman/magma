@@ -1,5 +1,10 @@
 package magma;
 
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
+import magma.result.Results;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,7 +46,7 @@ public class Main {
 
         var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootMember(segment));
+            output.append(Results.unwrap(compileRootMember(segment)));
         }
 
         return output.toString();
@@ -65,13 +70,13 @@ public class Main {
         return state;
     }
 
-    private static String compileRootMember(String input) throws CompileException {
+    private static Result<String, CompileException> compileRootMember(String input) {
         if (input.startsWith("package ")) {
             if (input.endsWith(";")) {
-                return "";
+                return new Ok<>("");
             }
         }
 
-        throw new CompileException(input);
+        return new Err<>(new CompileException(input));
     }
 }
