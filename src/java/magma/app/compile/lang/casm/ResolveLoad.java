@@ -69,6 +69,19 @@ public class ResolveLoad implements Stateful {
             }
         }
 
+        if(value.is("dereference")) {
+            final var inner = value.findNode("value").orElse(new MapNode());
+
+            if (inner.is("address")) {
+                final var offset = value.findInt("offset").orElse(0);
+                var result = CommonLang.asGroup(new JavaList<Node>()
+                        .add(new MapNode("move-stack-pointer").withInt("offset", offset))
+                        .add(instruct(Operator.LoadIndirectly, STACK_POINTER))
+                        .add(new MapNode("move-stack-pointer").withInt("offset", -offset)));
+                return new Some<>(new Ok<>(new Tuple<>(state, result)));
+            }
+        }
+
         return new Some<>(new Err<>(new CompileError("Unknown value to load", new NodeContext(node))));
     }
 }

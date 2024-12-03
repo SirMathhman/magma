@@ -1,2 +1,3 @@
 let x : U32 = 100;
 let y : *U32 = &x;
+let z : U32 = *y;

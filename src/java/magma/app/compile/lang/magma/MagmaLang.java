@@ -74,8 +74,13 @@ public class MagmaLang {
                 .add(createCharRule())
                 .add(createSymbolRule())
                 .add(createReferenceRule(value))
+                .add(createDeferenceRule(value))
         ));
         return value;
+    }
+
+    private static TypeRule createDeferenceRule(LazyRule value) {
+        return new TypeRule("dereference", new PrefixRule("*", new NodeRule("value", value)));
     }
 
     private static TypeRule createReferenceRule(Rule value) {
