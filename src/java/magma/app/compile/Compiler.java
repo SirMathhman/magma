@@ -3,14 +3,12 @@ package magma.app.compile;
 import magma.api.Tuple;
 import magma.api.result.Result;
 import magma.app.compile.error.CompileError;
-import magma.app.compile.lang.casm.*;
-import magma.app.compile.lang.common.FlattenBlock;
-import magma.app.compile.lang.common.FlattenGroup;
-import magma.app.compile.lang.common.Generator;
-import magma.app.compile.lang.magma.*;
+import magma.app.compile.lang.c.CLang;
+import magma.app.compile.lang.magma.MagmaLang;
 import magma.app.compile.pass.*;
-import magma.app.compile.rule.Filter;
 import magma.java.JavaList;
+
+import java.nio.file.Paths;
 
 public class Compiler {
     public static final String ROOT_CHILDREN = "children";
@@ -19,6 +17,12 @@ public class Compiler {
     public static final String SPILL0 = "__spill0__";
 
     private static PassingStage createPassingStage() {
+        return new CompoundPassingStage(new JavaList<PassingStage>()
+                .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>())))
+                .add(new SavingPassingStage(Paths.get(".", "main.c"), CLang.createRootRule()))
+        );
+
+        /*
         return new CompoundPassingStage(new JavaList<PassingStage>()
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
                         .add(new FilteredStateless("pointer", new ParsePointer()))
@@ -56,7 +60,7 @@ public class Compiler {
                         .add(new FilteredStateless("block", new FlattenBlock())))))
                 .add(new TreePassingStage(new CompoundStateful(new JavaList<Stateful>()
                         .add(new FilteredStateless("label", new FlattenLabel())))))
-                .add(new Setup()));
+                .add(new Setup()));*/
     }
 
     public static Result<Node, CompileError> compile(String source) {
