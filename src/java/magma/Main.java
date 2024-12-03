@@ -4,6 +4,7 @@ import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
 import magma.result.Results;
+import magma.stream.Streams;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,20 +37,17 @@ public class Main {
             final var target = source.resolveSibling(name + ".mgs");
 
             final var input = Files.readString(source);
-            final var output = compile(input);
+            final var output = Results.unwrap(compile(input));
             Files.writeString(target, output);
         }
     }
 
-    private static String compile(String input) throws CompileException {
+    private static Result<String, CompileException> compile(String input) {
         final var segments = split(input);
 
-        var output = new StringBuilder();
-        for (String segment : segments) {
-            output.append(Results.unwrap(compileRootMember(segment)));
-        }
-
-        return output.toString();
+        return Streams.from(segments)
+                .foldLeftIntoResult(new StringBuilder(), (builder, segment) -> compileRootMember(segment).mapValue(builder::append))
+                .mapValue(StringBuilder::toString);
     }
 
     private static List<String> split(String input) {
