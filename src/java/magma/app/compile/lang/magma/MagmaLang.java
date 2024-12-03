@@ -44,7 +44,8 @@ public class MagmaLang {
     }
 
     private static TypeRule createBlockRule(LazyRule statement) {
-        return new TypeRule("block", new PrefixRule("{", new SuffixRule(splitByBraces("children", statement), "}")));
+        final var children = splitByBraces("children", statement);
+        return new TypeRule("block", new StripRule(new PrefixRule("{", new SuffixRule(children, "}"))));
     }
 
     private static SplitRule splitByBraces(String propertyKey, Rule statement) {
