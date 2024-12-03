@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -56,7 +55,7 @@ public class Main {
             state = splitAtChar(appended, c);
         }
 
-        return state.advance().segments;
+        return state.advance().segments();
     }
 
     private static State splitAtChar(State state, char c) {
@@ -74,34 +73,5 @@ public class Main {
         }
 
         throw new CompileException(input);
-    }
-
-    private record State(List<String> segments, StringBuilder buffer, int depth) {
-        public State() {
-            this(new ArrayList<>(), new StringBuilder(), 0);
-        }
-
-        private State append(char c) {
-            return new State(segments, buffer.append(c), depth);
-        }
-
-        private State advance() {
-            if (buffer.isEmpty()) return this;
-            final var copy = new ArrayList<>(segments);
-            copy.add(buffer.toString());
-            return new State(copy, new StringBuilder(), depth);
-        }
-
-        public boolean isLevel() {
-            return depth == 0;
-        }
-
-        public State enter() {
-            return new State(segments, buffer, depth + 1);
-        }
-
-        public State exit() {
-            return new State(segments, buffer, depth - 1);
-        }
     }
 }
