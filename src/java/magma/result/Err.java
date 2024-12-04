@@ -37,4 +37,9 @@ public record Err<T, X>(X error) implements Result<T, X> {
         return onErr.apply(error);
     }
 
+    @Override
+    public boolean isOk() {
+        return false;
+    }
+
 }

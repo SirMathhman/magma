@@ -129,12 +129,8 @@ public class Main {
             }
         }
 
-        final var stripped = input.strip();
-        if (stripped.startsWith("import ")) {
-            if (stripped.endsWith(";")) {
-                return new Ok<>(stripped);
-            }
-        }
+        final var result = compileImport(input);
+        if(result.isOk()) return result;
 
         if (input.contains("record")) {
             return generateFunction();
@@ -144,11 +140,30 @@ public class Main {
             return generateFunction();
         }
 
-        if(input.contains("interface")) {
+        if (input.contains("interface")) {
             return new Ok<>("trait Temp {}");
         }
 
         return new Err<>(new CompileError("Invalid root member", input));
+    }
+
+    private static Result<String, CompileError> compileImport(String input) {
+        final var stripped = input.strip();
+        final var prefix = "import ";
+        if (!stripped.startsWith(prefix))
+            return new Err<>(new CompileError("Prefix '" + prefix + "' not present", input));
+
+        final var withoutPrefix = stripped.substring(prefix.length());
+        final var suffix = ";";
+        if (!withoutPrefix.endsWith(suffix))
+            return new Err<>(new CompileError("Suffix '" + suffix + "' not present", input));
+
+        final var withoutSuffix = withoutPrefix.substring(0, withoutPrefix.length() - 1);
+        return generateImport(withoutSuffix);
+    }
+
+    private static Ok<String, CompileError> generateImport(String withoutSuffix) {
+        return new Ok<>("import " + withoutSuffix + ";");
     }
 
     private static Ok<String, CompileError> generateFunction() {

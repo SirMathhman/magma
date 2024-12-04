@@ -36,4 +36,9 @@ public record Ok<T, X>(T value) implements Result<T, X> {
     public <R> R match(Function<T, R> onOk, Function<X, R> onErr) {
         return onOk.apply(value);
     }
+
+    @Override
+    public boolean isOk() {
+        return true;
+    }
 }
