@@ -1,9 +1,12 @@
 package magma.stream;
 
+import magma.option.None;
+import magma.option.Option;
 import magma.result.Ok;
 import magma.result.Result;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     @Override
@@ -11,7 +14,28 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
         return this.<Result<R, X>>foldLeft(new Ok<>(initial), (current, next) -> current.flatMapValue(currentValue -> folder.apply(currentValue, next)));
     }
 
-    private <R> R foldLeft(R initial, BiFunction<R, T, R> folder) {
+    @Override
+    public <R> Stream<R> map(Function<T, R> mapper) {
+        return new HeadedStream<>(() -> head.next().map(mapper));
+    }
+
+    @Override
+    public <R> Stream<R> flatMap(Function<T, Stream<R>> mapper) {
+        return map(mapper).<Stream<R>>foldLeft(new HeadedStream<>(None::new), Stream::concat);
+    }
+
+    @Override
+    public Stream<T> concat(Stream<T> other) {
+        return new HeadedStream<>(() -> head.next().or(other::next));
+    }
+
+    @Override
+    public Option<T> next() {
+        return head.next();
+    }
+
+    @Override
+    public <R> R foldLeft(R initial, BiFunction<R, T, R> folder) {
         var current = initial;
         while (true) {
             var finalCurrent = current;

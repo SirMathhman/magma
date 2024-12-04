@@ -14,4 +14,8 @@ public interface Stream<T> {
     <R> Stream<R> flatMap(Function<T, Stream<R>> mapper);
 
     Option<T> next();
+
+    Stream<T> concat(Stream<T> other);
+
+    <R> R foldLeft(R initial, BiFunction<R, T, R> folder);
 }

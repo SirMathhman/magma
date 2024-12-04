@@ -2,7 +2,6 @@ package magma.result;
 
 import magma.option.Option;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface Result<T, X> {
@@ -17,6 +16,4 @@ public interface Result<T, X> {
     <R> Result<T, R> mapErr(Function<X, R> mapper);
 
     <R> R match(Function<T, R> onOk, Function<X, R> onErr);
-
-    void ifPresent(Consumer<T> consumer);
 }

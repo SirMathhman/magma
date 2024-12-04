@@ -20,6 +20,7 @@ public class Main {
     public static void main(String[] args) {
         findSources()
                 .mapValue(Main::runWithSources)
+                .match(onOk -> onOk, Some::new)
                 .ifPresent(e -> System.err.println(e.display()));
     }
 

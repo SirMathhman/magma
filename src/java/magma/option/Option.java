@@ -2,7 +2,9 @@ package magma.option;
 
 import magma.Tuple;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public interface Option<T> {
     boolean isPresent();
@@ -13,5 +15,9 @@ public interface Option<T> {
 
     Tuple<Boolean, T> toTuple(T other);
 
-    String display();
+    void ifPresent(Consumer<T> consumer);
+
+    Option<T> or(Supplier<Option<T>> other);
+
+    T orElseGet(Supplier<T> other);
 }
