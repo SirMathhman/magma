@@ -1,9 +1,10 @@
-package magma.stream;
+package magma.stream.head;
 
 import magma.option.None;
 import magma.option.Option;
 import magma.result.Ok;
 import magma.result.Result;
+import magma.stream.Stream;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
