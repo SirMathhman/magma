@@ -20,4 +20,6 @@ public interface Option<T> {
     Option<T> or(Supplier<Option<T>> other);
 
     T orElseGet(Supplier<T> other);
+
+    T orElse(T other);
 }

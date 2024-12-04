@@ -1,9 +1,7 @@
 package magma;
 
-import magma.error.ApplicationError;
-import magma.error.CompileError;
+import magma.error.*;
 import magma.error.Error;
-import magma.error.JavaError;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
@@ -146,7 +144,7 @@ public class Main {
             return new ExactRule("trait Temp {}").generate();
         }
 
-        return new Err<>(new CompileError("Invalid root member", input));
+        return new Err<>(new CompileError("Invalid root member", new StringContext(input)));
     }
 
     private static Rule createImportRule() {
@@ -154,6 +152,6 @@ public class Main {
     }
 
     private static Rule createNamespaceRule(String type, String prefix) {
-        return new TypeRule(type, new StripRule(new PrefixRule(prefix, new SuffixRule(new StringRule(), ";"))));
+        return new TypeRule(type, new StripRule(new PrefixRule(prefix, new SuffixRule(new StringRule(Node.NAMESPACE_VALUE), ";"))));
     }
 }

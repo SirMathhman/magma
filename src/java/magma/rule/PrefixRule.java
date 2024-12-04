@@ -2,6 +2,7 @@ package magma.rule;
 
 import magma.Node;
 import magma.error.CompileError;
+import magma.error.StringContext;
 import magma.result.Err;
 import magma.result.Result;
 
@@ -11,7 +12,7 @@ public record PrefixRule(String prefix, SuffixRule rule) implements Rule {
         if (!input.startsWith(prefix())) {
             final var format = "Prefix '%s' not present";
             final var message = format.formatted(prefix());
-            final var error = new CompileError(message, input);
+            final var error = new CompileError(message, new StringContext(input));
             return new Err<>(error);
         }
 

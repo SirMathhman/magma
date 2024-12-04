@@ -2,6 +2,7 @@ package magma.rule;
 
 import magma.Node;
 import magma.error.CompileError;
+import magma.error.StringContext;
 import magma.result.Err;
 import magma.result.Result;
 
@@ -11,7 +12,7 @@ public record SuffixRule(Rule childRule, String suffix) implements Rule {
         if (!input.endsWith(suffix())) {
             final var format = "Suffix '%s' not present";
             final var message = format.formatted(suffix());
-            final var error = new CompileError(message, input);
+            final var error = new CompileError(message, new StringContext(input));
             return new Err<>(error);
         }
 

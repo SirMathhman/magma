@@ -41,4 +41,9 @@ public record Some<T>(T value) implements Option<T> {
     public T orElseGet(Supplier<T> other) {
         return value;
     }
+
+    @Override
+    public T orElse(T other) {
+        return value;
+    }
 }
