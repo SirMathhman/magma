@@ -135,15 +135,15 @@ public class Main {
         if (importResult.isOk()) return importResult;
 
         if (input.contains("record")) {
-            return generateFunction();
+            return new ExactRule("class def Temp() => {}").generate();
         }
 
         if (input.contains("class")) {
-            return generateFunction();
+            return new ExactRule("class def Temp() => {}").generate();
         }
 
         if (input.contains("interface")) {
-            return new Ok<>("trait Temp {}");
+            return new ExactRule("trait Temp {}").generate();
         }
 
         return new Err<>(new CompileError("Invalid root member", input));
@@ -155,9 +155,5 @@ public class Main {
 
     private static Ok<String, CompileError> generateImport(Node node) {
         return new Ok<>("import " + node.value() + ";");
-    }
-
-    private static Ok<String, CompileError> generateFunction() {
-        return new Ok<>("class def Temp() => {}");
     }
 }
