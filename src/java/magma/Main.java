@@ -159,11 +159,15 @@ public class Main {
             return new Err<>(new CompileError("Suffix '" + suffix + "' not present", input));
 
         final var withoutSuffix = withoutPrefix.substring(0, withoutPrefix.length() - 1);
-        return generateImport(withoutSuffix);
+        return parse(withoutSuffix).flatMapValue(Main::generateImport);
     }
 
-    private static Ok<String, CompileError> generateImport(String withoutSuffix) {
-        return new Ok<>("import " + withoutSuffix + ";");
+    private static Result<Node, CompileError> parse(String input) {
+        return new Ok<>(new Node(input));
+    }
+
+    private static Ok<String, CompileError> generateImport(Node node) {
+        return new Ok<>("import " + node.namespace() + ";");
     }
 
     private static Ok<String, CompileError> generateFunction() {
