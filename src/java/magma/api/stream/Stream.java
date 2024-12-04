@@ -20,5 +20,7 @@ public interface Stream<T> {
 
     <R> R foldLeft(R initial, BiFunction<R, T, R> folder);
 
+    Option<T> foldLeft(BiFunction<T, T, T> folder);
+
     Stream<T> filter(Predicate<T> predicate);
 }

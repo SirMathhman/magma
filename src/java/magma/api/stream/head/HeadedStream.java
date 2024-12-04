@@ -56,6 +56,11 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     }
 
     @Override
+    public Option<T> foldLeft(BiFunction<T, T, T> folder) {
+        return head.next().map(value -> this.foldLeft(value, folder));
+    }
+
+    @Override
     public Stream<T> filter(Predicate<T> predicate) {
         return this.<Option<T>>map(Some::new)
                 .map(option -> option.filter(predicate))
