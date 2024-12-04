@@ -2,13 +2,14 @@ package magma.compile.rule;
 
 import magma.compile.Node;
 import magma.ApplicationError;
+import magma.compile.error.CompileError;
 import magma.java.JavaList;
 import magma.api.result.Result;
 import magma.api.stream.Streams;
 
 import java.util.List;
 
-public final class SplitRule {
+public final class SplitRule implements Rule {
     private final Rule childRule;
     private final String propertyKey;
 
@@ -35,21 +36,21 @@ public final class SplitRule {
         return state;
     }
 
-    public Result<Node, ApplicationError> parse(String input) {
+    @Override
+    public Result<Node, CompileError> parse(String input) {
         final var segments = split(input);
 
         return Streams.from(segments)
                 .foldLeftIntoResult(new JavaList<Node>(), (list, segment) -> childRule.parse(segment).mapValue(list::add))
-                .mapErr(ApplicationError::new)
                 .mapValue(list -> new Node().withNodeList(propertyKey, list));
     }
 
-    public Result<String, ApplicationError> generate(Node value) {
+    @Override
+    public Result<String, CompileError> generate(Node value) {
         return value.findNodeList(propertyKey)
                 .orElse(new JavaList<Node>())
                 .stream().foldLeftIntoResult(new StringBuilder(), (builder, segment) -> childRule.generate(segment)
                         .mapValue(builder::append))
-                .mapValue(StringBuilder::toString)
-                .mapErr(ApplicationError::new);
+                .mapValue(StringBuilder::toString);
     }
 }

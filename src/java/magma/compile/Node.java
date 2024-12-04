@@ -8,26 +8,20 @@ import magma.java.JavaMap;
 
 import java.util.function.Function;
 
-public final class Node {
+public record Node(
+        Option<String> type,
+        JavaMap<String, String> strings,
+        JavaMap<String, JavaList<String>> stringLists,
+        JavaMap<String, Node> nodes, JavaMap<String, JavaList<Node>> nodeLists
+) {
     public static final String NAMESPACE_VALUE = "slice";
-    private final Option<String> type;
-    private final JavaMap<String, String> strings;
-    private final JavaMap<String, JavaList<Node>> nodeLists;
-    private final JavaMap<String, JavaList<String>> stringLists;
 
     public Node(Option<String> type) {
-        this(type, new JavaMap<>(), new JavaMap<>(), new JavaMap<>());
-    }
-
-    public Node(Option<String> type, JavaMap<String, String> strings, JavaMap<String, JavaList<String>> stringLists, JavaMap<String, JavaList<Node>> nodeLists) {
-        this.type = type;
-        this.strings = strings;
-        this.stringLists = stringLists;
-        this.nodeLists = nodeLists;
+        this(type, new JavaMap<>(), new JavaMap<>(), new JavaMap<>(), new JavaMap<>());
     }
 
     public Node() {
-        this(new None<>(), new JavaMap<>(), new JavaMap<>(), new JavaMap<>());
+        this(new None<>(), new JavaMap<>(), new JavaMap<>(), new JavaMap<>(), new JavaMap<>());
     }
 
     @Override
@@ -41,11 +35,11 @@ public final class Node {
     }
 
     public Node withString(String propertyKey, String propertyValue) {
-        return new Node(type, strings.put(propertyKey, propertyValue), stringLists, nodeLists);
+        return new Node(type, strings.put(propertyKey, propertyValue), stringLists, nodes, nodeLists);
     }
 
     public Node retype(String type) {
-        return new Node(new Some<>(type), strings, stringLists, nodeLists);
+        return new Node(new Some<>(type), strings, stringLists, nodes, nodeLists);
     }
 
     public Option<String> findString(String propertyKey) {
@@ -57,7 +51,7 @@ public final class Node {
     }
 
     public Node withNodeList(String propertyKey, JavaList<Node> propertyValues) {
-        return new Node(type, strings, stringLists, nodeLists.put(propertyKey, propertyValues));
+        return new Node(type, strings, stringLists, nodes, nodeLists.put(propertyKey, propertyValues));
     }
 
     public Option<JavaList<Node>> findNodeList(String propertyKey) {
@@ -73,14 +67,27 @@ public final class Node {
     }
 
     public Node merge(Node other) {
-        return new Node(type, strings.putAll(other.strings), stringLists.putAll(other.stringLists), nodeLists.putAll(other.nodeLists));
+        return new Node(type,
+                strings.putAll(other.strings),
+                stringLists.putAll(other.stringLists),
+                nodes.putAll(other.nodes),
+                nodeLists.putAll(other.nodeLists)
+        );
     }
 
     public Node withStringList(String propertyKey, JavaList<String> propertyValues) {
-        return new Node(type, strings, stringLists.put(propertyKey, propertyValues), nodeLists);
+        return new Node(type, strings, stringLists.put(propertyKey, propertyValues), nodes, nodeLists);
     }
 
     public Option<JavaList<String>> findStringList(String propertyKey) {
         return stringLists.find(propertyKey);
+    }
+
+    public Node withNode(String propertyKey, Node propertyValue) {
+        return new Node(type, strings, stringLists, nodes.put(propertyKey, propertyValue), nodeLists);
+    }
+
+    public Option<Node> findNode(String propertyKey) {
+        return nodes.find(propertyKey);
     }
 }

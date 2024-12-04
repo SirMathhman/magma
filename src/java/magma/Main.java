@@ -84,7 +84,8 @@ public class Main {
         final var magmaRule = createMagmaRootRule();
         return javaRule.parse(input)
                 .mapValue(Main::pass)
-                .flatMapValue(magmaRule::generate);
+                .flatMapValue(magmaRule::generate)
+                .mapErr(ApplicationError::new);
     }
 
     private static Node pass(Node root) {
@@ -160,9 +161,35 @@ public class Main {
         final var name = new StripRule(new StringRule("name"));
 
         final var beforeKeyword = new StripRule(new StringListRule("modifiers", " "));
-        final var afterKeyword = new InfixRule(name, "{", new DiscardRule());
+        final var childRule = new SplitRule("children", createClassMemberRule());
+
+        final var afterKeyword = new InfixRule(name, "{", new StripRule(new SuffixRule(childRule, "}")));
 
         return new TypeRule("interface", new InfixRule(beforeKeyword, "interface ", afterKeyword));
+    }
+
+    private static Rule createClassMemberRule() {
+        return new OrRule(List.of(
+                createMethodRule(),
+                new TypeRule("whitespace", new StripRule(new EmptyRule()))
+        ));
+    }
+
+    private static TypeRule createMethodRule() {
+        final var header = new InfixRule(new NodeRule("type", createTypeRule()), " ", new StringRule("name"));
+        return new TypeRule("method", new SuffixRule(header, "();"));
+    }
+
+    private static Rule createTypeRule() {
+        return new OrRule(List.of(
+                createExactTypeRule("boolean", "boolean"),
+                createExactTypeRule("void", "void"),
+                new TypeRule("symbol", new StringRule("value"))
+        ));
+    }
+
+    private static TypeRule createExactTypeRule(String type, String slice) {
+        return new TypeRule(type, new ExactRule(slice));
     }
 
     private static Rule createFunctionRule() {
