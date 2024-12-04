@@ -1,10 +1,12 @@
 package magma.api.result;
 
+import magma.api.Tuple;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public record Err<T, X>(X error) implements Result<T, X> {
     @Override
@@ -40,6 +42,11 @@ public record Err<T, X>(X error) implements Result<T, X> {
     @Override
     public boolean isOk() {
         return false;
+    }
+
+    @Override
+    public <R> Result<Tuple<T, R>, X> and(Supplier<Result<R, X>> other) {
+        return new Err<>(error);
     }
 
 }

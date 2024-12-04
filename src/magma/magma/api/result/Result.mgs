@@ -1,1 +1,1 @@
-import magma.api.option.Option;import java.util.function.Function;class def Temp() => {}
+import magma.api.Tuple;import magma.api.option.Option;import java.util.function.Function;import java.util.function.Supplier;class def Temp() => {}
