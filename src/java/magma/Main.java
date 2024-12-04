@@ -145,9 +145,9 @@ public class Main {
         return new OrRule(List.of(
                 createNamespaceRule("package", "package "),
                 createImportRule(),
-                new TypeRule("record", new InfixRule("record")),
-                new TypeRule("class", new InfixRule("class")),
-                new TypeRule("interface", new InfixRule("interface"))
+                new TypeRule("record", new InfixRule(new DiscardRule(), "record", new DiscardRule())),
+                new TypeRule("class", new InfixRule(new DiscardRule(), "class", new DiscardRule())),
+                new TypeRule("interface", new InfixRule(new DiscardRule(), "interface", new DiscardRule()))
         ));
     }
 
@@ -156,7 +156,7 @@ public class Main {
     }
 
     private static Rule createTraitRule() {
-        return new TypeRule("trait", new ExactRule("trait Temp {}"));
+        return new TypeRule("trait", new PrefixRule("trait ", new SuffixRule(new StringRule("name"), " {}")));
     }
 
     private static Rule createImportRule() {

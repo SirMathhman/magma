@@ -59,4 +59,8 @@ public final class Node {
     public boolean is(String type) {
         return this.type.filter(inner -> inner.equals(type)).isPresent();
     }
+
+    public Node merge(Node other) {
+        return new Node(type, strings.putAll(other.strings), nodeLists.putAll(other.nodeLists));
+    }
 }
