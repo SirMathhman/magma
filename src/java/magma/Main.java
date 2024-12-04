@@ -115,11 +115,11 @@ public class Main {
     }
 
     private static SplitRule createJavaRootRule() {
-        return new SplitRule("children", createJavaRootMemberRule());
+        return new SplitRule(new BracketSplitter(), "children", createJavaRootMemberRule());
     }
 
     private static SplitRule createMagmaRootRule() {
-        return new SplitRule("children", createMagmaRootMemberRule());
+        return new SplitRule(new BracketSplitter(), "children", createMagmaRootMemberRule());
     }
 
     private static Option<Error> writeSafe(Path target, String output) {
@@ -161,7 +161,7 @@ public class Main {
         final var name = new StripRule(new StringRule("name"));
 
         final var beforeKeyword = new StripRule(new StringListRule("modifiers", " "));
-        final var childRule = new SplitRule("children", createClassMemberRule());
+        final var childRule = new SplitRule(new BracketSplitter(), "children", createClassMemberRule());
 
         final var afterKeyword = new InfixRule(name, "{", new StripRule(new SuffixRule(childRule, "}")));
 
@@ -171,13 +171,27 @@ public class Main {
     private static Rule createClassMemberRule() {
         return new OrRule(List.of(
                 createMethodRule(),
-                new TypeRule("whitespace", new StripRule(new EmptyRule()))
+                createWhitespaceRule()
         ));
     }
 
+    private static TypeRule createWhitespaceRule() {
+        return new TypeRule("whitespace", new StripRule(new EmptyRule()));
+    }
+
     private static TypeRule createMethodRule() {
-        final var header = new InfixRule(new NodeRule("type", createTypeRule()), " ", new StringRule("name"));
-        return new TypeRule("method", new SuffixRule(header, "();"));
+        final var header = createDeclarationRule();
+        final var params = new SplitRule(new ValueSplitter(), "params", new OrRule(List.of(
+                createDeclarationRule(),
+                createWhitespaceRule()
+        )));
+        return new TypeRule("method", new InfixRule(header, "(", new SuffixRule(params, ");")));
+    }
+
+    private static Rule createDeclarationRule() {
+        final var type = new NodeRule("type", createTypeRule());
+        final var name = new StringRule("name");
+        return new TypeRule("declaration", new InfixRule(type, " ", name));
     }
 
     private static Rule createTypeRule() {

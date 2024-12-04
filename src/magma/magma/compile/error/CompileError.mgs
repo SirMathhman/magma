@@ -1,1 +1,1 @@
-import magma.api.error.Error;import magma.java.JavaList;class def Temp() => {}
+import magma.api.error.Error;import magma.java.JavaList;import java.util.Collections;class def Temp() => {}

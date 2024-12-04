@@ -16,7 +16,7 @@ public record SuffixRule(Rule childRule, String suffix) implements Rule {
             return new Err<>(error);
         }
 
-        final var withoutSuffix = input.substring(0, input.length() - 1);
+        final var withoutSuffix = input.substring(0, input.length() - suffix.length());
         return childRule().parse(withoutSuffix);
     }
 

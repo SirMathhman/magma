@@ -5,11 +5,15 @@ import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.CompileError;
 import magma.compile.error.NodeContext;
+import magma.compile.error.StringContext;
+import magma.java.JavaList;
 
 public record TypeRule(String type, Rule rule) implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
-        return rule.parse(input).mapValue(node -> node.retype(type));
+        return rule.parse(input)
+                .mapValue(node -> node.retype(type))
+                .mapErr(err -> new CompileError("Cannot assign type '" + type + "'", new StringContext(input), err));
     }
 
     @Override

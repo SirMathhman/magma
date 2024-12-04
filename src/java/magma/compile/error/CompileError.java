@@ -3,6 +3,8 @@ package magma.compile.error;
 import magma.api.error.Error;
 import magma.java.JavaList;
 
+import java.util.Collections;
+
 public class CompileError implements Error {
     private final String message;
     private final Context context;
@@ -16,6 +18,10 @@ public class CompileError implements Error {
         this.message = message;
         this.context = context;
         this.children = children;
+    }
+
+    public CompileError(String message, StringContext context, CompileError cause) {
+        this(message, context, new JavaList<>(Collections.singletonList(cause)));
     }
 
     @Override
