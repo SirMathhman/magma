@@ -62,7 +62,6 @@ public class Main {
         return Streams.from(segments)
                 .foldLeftIntoResult(new StringBuilder(), (builder, segment) -> compileRootMember(segment).mapValue(builder::append))
                 .mapValue(StringBuilder::toString)
-                .mapErr(JavaError::new)
                 .mapErr(ApplicationError::new);
     }
 
@@ -101,13 +100,13 @@ public class Main {
         return state;
     }
 
-    private static Result<String, CompileException> compileRootMember(String input) {
+    private static Result<String, CompileError> compileRootMember(String input) {
         if (input.startsWith("package ")) {
             if (input.endsWith(";")) {
                 return new Ok<>("");
             }
         }
 
-        return new Err<>(new CompileException(input));
+        return new Err<>(new CompileError("Invalid root member", input));
     }
 }
