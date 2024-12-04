@@ -122,27 +122,19 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRootMember(String input) {
-        final var packageResult = createNamespaceRule("package", "package ")
-                .parse(input)
-                .mapValue(node -> "");
-        if (packageResult.isOk()) return packageResult;
-
-        final var importResult = createImportRule()
-                .parse(input)
-                .flatMapValue(node -> createImportRule().generate(node));
-
-        if (importResult.isOk()) return importResult;
-
-        final var generate = new InfixRule("record").parse(input).flatMapValue(createFunctionRule()::generate);
-        if (generate.isOk()) return generate;
-
-        final var generate0 = new InfixRule("class").parse(input).flatMapValue(createFunctionRule()::generate);
-        if (generate0.isOk()) return generate0;
-
-        final var generate1 = new InfixRule("interface").parse(input).flatMapValue(createTraitRule()::generate);
-        if (generate1.isOk()) return generate1;
-
-        return new Err<>(new CompileError("Invalid root member", new StringContext(input)));
+        return new OrRule(List.of(
+                createNamespaceRule("package", "package "),
+                createImportRule(),
+                new InfixRule("record"),
+                new InfixRule("class"),
+                new InfixRule("interface")
+        )).parse(input).flatMapValue(node -> {
+            return new OrRule(List.of(
+                    createImportRule(),
+                    createFunctionRule(),
+                    createTraitRule()
+            )).generate(node);
+        });
     }
 
     private static ExactRule createFunctionRule() {
