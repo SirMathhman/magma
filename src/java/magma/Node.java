@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class Node {
-    public static final String NAMESPACE_VALUE = "value";
+    public static final String NAMESPACE_VALUE = "slice";
     private final Option<String> type;
     private final Map<String, String> strings;
 

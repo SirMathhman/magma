@@ -1,7 +1,7 @@
 package magma;
 
-import magma.error.*;
 import magma.error.Error;
+import magma.error.*;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
@@ -130,21 +130,27 @@ public class Main {
         final var importResult = createImportRule()
                 .parse(input)
                 .flatMapValue(node -> createImportRule().generate(node));
+
         if (importResult.isOk()) return importResult;
 
-        if (input.contains("record")) {
-            return new ExactRule("class def Temp() => {}").generate();
-        }
+        final var generate = new InfixRule("record").parse(input).flatMapValue(createFunctionRule()::generate);
+        if (generate.isOk()) return generate;
 
-        if (input.contains("class")) {
-            return new ExactRule("class def Temp() => {}").generate();
-        }
+        final var generate0 = new InfixRule("class").parse(input).flatMapValue(createFunctionRule()::generate);
+        if (generate0.isOk()) return generate0;
 
-        if (input.contains("interface")) {
-            return new ExactRule("trait Temp {}").generate();
-        }
+        final var generate1 = new InfixRule("interface").parse(input).flatMapValue(createTraitRule()::generate);
+        if (generate1.isOk()) return generate1;
 
         return new Err<>(new CompileError("Invalid root member", new StringContext(input)));
+    }
+
+    private static ExactRule createFunctionRule() {
+        return new ExactRule("class def Temp() => {}");
+    }
+
+    private static ExactRule createTraitRule() {
+        return new ExactRule("trait Temp {}");
     }
 
     private static Rule createImportRule() {
