@@ -1,0 +1,1 @@
+import magma.option.None;import magma.option.Option;class def Temp() => {}

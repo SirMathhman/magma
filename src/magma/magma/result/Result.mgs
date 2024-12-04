@@ -1,0 +1,1 @@
+import magma.option.Option;import java.util.function.Function;trait Temp {}

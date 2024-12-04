@@ -21,6 +21,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
+
+    public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
+
     public static void main(String[] args) {
         findSources()
                 .mapValue(Main::runWithSources)
@@ -29,8 +32,7 @@ public class Main {
     }
 
     private static Result<List<Path>, magma.error.Error> findSources() {
-        final var sourceDirectory = Paths.get(".", "src", "java");
-        try (Stream<Path> stream = Files.walk(sourceDirectory)) {
+        try (Stream<Path> stream = Files.walk(SOURCE_DIRECTORY)) {
             final var sources = stream.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".java"))
                     .collect(Collectors.toList());
@@ -52,12 +54,28 @@ public class Main {
         final var fileName = source.getFileName().toString();
         final var separator = fileName.indexOf('.');
         final var name = fileName.substring(0, separator);
-        final var target = source.resolveSibling(name + ".mgs");
 
-        return readSafe(source)
-                .flatMapValue(Main::compile)
-                .mapValue(output -> writeSafe(target, output))
-                .match(onOk -> onOk, Some::new);
+        final var relativized = SOURCE_DIRECTORY.relativize(source.getParent());
+        final var targetParent = Paths.get(".", "src", "magma").resolve(relativized);
+        return createDirectories(targetParent).or(() -> {
+            final var target = targetParent.resolve(name + ".mgs");
+
+            return readSafe(source)
+                    .flatMapValue(Main::compile)
+                    .mapValue(output -> writeSafe(target, output))
+                    .match(onOk -> onOk, Some::new);
+        });
+    }
+
+    private static Option<Error> createDirectories(Path targetParent) {
+        if (Files.exists(targetParent)) return new None<>();
+
+        try {
+            Files.createDirectories(targetParent);
+            return new None<>();
+        } catch (IOException e) {
+            return new Some<>(new JavaError(e));
+        }
     }
 
     private static Result<String, ApplicationError> compile(String input) {
@@ -111,6 +129,29 @@ public class Main {
             }
         }
 
+        final var stripped = input.strip();
+        if (stripped.startsWith("import ")) {
+            if (stripped.endsWith(";")) {
+                return new Ok<>(stripped);
+            }
+        }
+
+        if (input.contains("record")) {
+            return generateFunction();
+        }
+
+        if (input.contains("class")) {
+            return generateFunction();
+        }
+
+        if(input.contains("interface")) {
+            return new Ok<>("trait Temp {}");
+        }
+
         return new Err<>(new CompileError("Invalid root member", input));
+    }
+
+    private static Ok<String, CompileError> generateFunction() {
+        return new Ok<>("class def Temp() => {}");
     }
 }
