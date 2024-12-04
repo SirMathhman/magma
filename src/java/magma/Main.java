@@ -129,9 +129,9 @@ public class Main {
                 .mapValue(node -> "");
         if (packageResult.isOk()) return packageResult;
 
-        final var importResult = createNamespaceRule("import", "import ")
+        final var importResult = createImportRule()
                 .parse(input)
-                .flatMapValue(Main::generateImport);
+                .flatMapValue(node -> createImportRule().generate(node));
         if (importResult.isOk()) return importResult;
 
         if (input.contains("record")) {
@@ -149,11 +149,11 @@ public class Main {
         return new Err<>(new CompileError("Invalid root member", input));
     }
 
-    private static Rule createNamespaceRule(String type, String prefix) {
-        return new TypeRule(type, new StripRule(new PrefixRule(prefix, new SuffixRule(new StringRule(), ";"))));
+    private static Rule createImportRule() {
+        return createNamespaceRule("import", "import ");
     }
 
-    private static Ok<String, CompileError> generateImport(Node node) {
-        return new Ok<>("import " + node.value() + ";");
+    private static Rule createNamespaceRule(String type, String prefix) {
+        return new TypeRule(type, new StripRule(new PrefixRule(prefix, new SuffixRule(new StringRule(), ";"))));
     }
 }

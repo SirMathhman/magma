@@ -17,4 +17,9 @@ public record PrefixRule(String prefix, SuffixRule rule) implements Rule {
 
         return rule().parse(input.substring(prefix().length()));
     }
+
+    @Override
+    public Result<String, CompileError> generate(Node node) {
+        return rule.generate(node).mapValue(value -> prefix + value);
+    }
 }

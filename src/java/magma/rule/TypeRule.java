@@ -9,4 +9,9 @@ public record TypeRule(String type, Rule rule)  implements Rule{
     public Result<Node, CompileError> parse(String input) {
         return rule.parse(input).mapValue(node -> node.retype(type));
     }
+
+    @Override
+    public Result<String, CompileError> generate(Node node) {
+        return rule.generate(node);
+    }
 }

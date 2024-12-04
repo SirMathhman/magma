@@ -10,4 +10,9 @@ public record StripRule(PrefixRule rule) implements Rule {
         final var stripped = input.strip();
         return rule().parse(stripped);
     }
+
+    @Override
+    public Result<String, CompileError> generate(Node node) {
+        return rule.generate(node);
+    }
 }

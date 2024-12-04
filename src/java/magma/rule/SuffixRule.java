@@ -18,4 +18,9 @@ public record SuffixRule(Rule childRule, String suffix) implements Rule {
         final var withoutSuffix = input.substring(0, input.length() - 1);
         return childRule().parse(withoutSuffix);
     }
+
+    @Override
+    public Result<String, CompileError> generate(Node node) {
+        return childRule.generate(node).mapValue(value -> value + suffix);
+    }
 }
