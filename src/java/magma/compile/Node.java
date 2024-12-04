@@ -13,6 +13,22 @@ public final class Node {
     private final Option<String> type;
     private final JavaMap<String, String> strings;
     private final JavaMap<String, JavaList<Node>> nodeLists;
+    private final JavaMap<String, JavaList<String>> stringLists;
+
+    public Node(Option<String> type) {
+        this(type, new JavaMap<>(), new JavaMap<>(), new JavaMap<>());
+    }
+
+    public Node(Option<String> type, JavaMap<String, String> strings, JavaMap<String, JavaList<String>> stringLists, JavaMap<String, JavaList<Node>> nodeLists) {
+        this.type = type;
+        this.strings = strings;
+        this.stringLists = stringLists;
+        this.nodeLists = nodeLists;
+    }
+
+    public Node() {
+        this(new None<>(), new JavaMap<>(), new JavaMap<>(), new JavaMap<>());
+    }
 
     @Override
     public String toString() {
@@ -20,29 +36,16 @@ public final class Node {
                 "type=" + type +
                 ", strings=" + strings +
                 ", nodeLists=" + nodeLists +
+                ", stringLists=" + stringLists +
                 '}';
     }
 
-    public Node(Option<String> type) {
-        this(type, new JavaMap<>(), new JavaMap<>());
-    }
-
-    public Node(Option<String> type, JavaMap<String, String> strings, JavaMap<String, JavaList<Node>> nodeLists) {
-        this.type = type;
-        this.strings = strings;
-        this.nodeLists = nodeLists;
-    }
-
-    public Node() {
-        this(new None<>(), new JavaMap<>(), new JavaMap<>());
-    }
-
     public Node withString(String propertyKey, String propertyValue) {
-        return new Node(type, strings.put(propertyKey, propertyValue), nodeLists);
+        return new Node(type, strings.put(propertyKey, propertyValue), stringLists, nodeLists);
     }
 
     public Node retype(String type) {
-        return new Node(new Some<>(type), strings, nodeLists);
+        return new Node(new Some<>(type), strings, stringLists, nodeLists);
     }
 
     public Option<String> findString(String propertyKey) {
@@ -54,7 +57,7 @@ public final class Node {
     }
 
     public Node withNodeList(String propertyKey, JavaList<Node> propertyValues) {
-        return new Node(type, strings, nodeLists.put(propertyKey, propertyValues));
+        return new Node(type, strings, stringLists, nodeLists.put(propertyKey, propertyValues));
     }
 
     public Option<JavaList<Node>> findNodeList(String propertyKey) {
@@ -70,6 +73,14 @@ public final class Node {
     }
 
     public Node merge(Node other) {
-        return new Node(type, strings.putAll(other.strings), nodeLists.putAll(other.nodeLists));
+        return new Node(type, strings.putAll(other.strings), stringLists.putAll(other.stringLists), nodeLists.putAll(other.nodeLists));
+    }
+
+    public Node withStringList(String propertyKey, JavaList<String> propertyValues) {
+        return new Node(type, strings, stringLists.put(propertyKey, propertyValues), nodeLists);
+    }
+
+    public Option<JavaList<String>> findStringList(String propertyKey) {
+        return stringLists.find(propertyKey);
     }
 }

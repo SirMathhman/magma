@@ -1,17 +1,17 @@
 package magma;
 
-import magma.compile.Node;
 import magma.api.error.Error;
-import magma.java.JavaError;
-import magma.java.JavaList;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.compile.rule.*;
 import magma.api.stream.Streams;
+import magma.compile.Node;
+import magma.compile.rule.*;
+import magma.java.JavaError;
+import magma.java.JavaList;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -102,7 +102,12 @@ public class Main {
         if (rootMember.is("record") || rootMember.is("class")) {
             return rootMember.retype("function");
         } else if (rootMember.is("interface")) {
-            return rootMember.retype("trait");
+            final var oldModifiers = rootMember.findStringList("modifiers").orElse(new JavaList<>());
+            final var newModifiers = oldModifiers.stream()
+                    .map(modifier -> modifier.equals("public") ? "export" : modifier)
+                    .foldLeft(new JavaList<String>(), JavaList::add);
+
+            return rootMember.retype("trait").withStringList("modifiers", newModifiers);
         } else {
             return rootMember;
         }
@@ -153,7 +158,11 @@ public class Main {
 
     private static TypeRule createInterfaceRule() {
         final var name = new StripRule(new StringRule("name"));
-        return new TypeRule("interface", new InfixRule(new DiscardRule(), "interface", new InfixRule(name, "{", new DiscardRule())));
+
+        final var beforeKeyword = new StripRule(new StringListRule("modifiers", " "));
+        final var afterKeyword = new InfixRule(name, "{", new DiscardRule());
+
+        return new TypeRule("interface", new InfixRule(beforeKeyword, "interface ", afterKeyword));
     }
 
     private static Rule createFunctionRule() {
@@ -161,7 +170,13 @@ public class Main {
     }
 
     private static Rule createTraitRule() {
-        return new TypeRule("trait", new PrefixRule("trait ", new SuffixRule(new StringRule("name"), " {}")));
+        final var modifiers = new OrRule(List.of(
+                new SuffixRule(new StringListRule("modifiers", " "), " "),
+                new EmptyRule()
+        ));
+
+        final var name = new SuffixRule(new StringRule("name"), " {}");
+        return new TypeRule("trait", new InfixRule(modifiers, "trait ", name));
     }
 
     private static Rule createImportRule() {

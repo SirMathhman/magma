@@ -1,1 +1,1 @@
-import magma.api.Tuple;import magma.api.option.Option;import java.util.function.Function;import java.util.function.Supplier;trait Result<T, X> {}
+import magma.api.Tuple;import magma.api.option.Option;import java.util.function.Function;import java.util.function.Supplier;export trait Result<T, X> {}

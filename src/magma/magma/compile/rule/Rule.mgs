@@ -1,1 +1,1 @@
-import magma.compile.Node;import magma.compile.error.CompileError;import magma.api.result.Result;trait Rule {}
+import magma.compile.Node;import magma.compile.error.CompileError;import magma.api.result.Result;export trait Rule {}

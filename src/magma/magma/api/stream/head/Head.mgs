@@ -1,1 +1,1 @@
-import magma.api.option.Option;trait Head<T> {}
+import magma.api.option.Option;export trait Head<T> {}
