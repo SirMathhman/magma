@@ -1,10 +1,10 @@
 package magma.compile;
 
-import magma.java.JavaList;
-import magma.java.JavaMap;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
+import magma.java.JavaList;
+import magma.java.JavaMap;
 
 import java.util.function.Function;
 
@@ -13,6 +13,15 @@ public final class Node {
     private final Option<String> type;
     private final JavaMap<String, String> strings;
     private final JavaMap<String, JavaList<Node>> nodeLists;
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "type=" + type +
+                ", strings=" + strings +
+                ", nodeLists=" + nodeLists +
+                '}';
+    }
 
     public Node(Option<String> type) {
         this(type, new JavaMap<>(), new JavaMap<>());

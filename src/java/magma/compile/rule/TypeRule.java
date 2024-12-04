@@ -1,10 +1,12 @@
 package magma.compile.rule;
 
+import magma.api.result.Err;
+import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.CompileError;
-import magma.api.result.Result;
+import magma.compile.error.NodeContext;
 
-public record TypeRule(String type, Rule rule)  implements Rule{
+public record TypeRule(String type, Rule rule) implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
         return rule.parse(input).mapValue(node -> node.retype(type));
@@ -12,6 +14,11 @@ public record TypeRule(String type, Rule rule)  implements Rule{
 
     @Override
     public Result<String, CompileError> generate(Node node) {
-        return rule.generate(node);
+        if (node.is(type)) return rule.generate(node);
+
+        final var format = "Not of type '%s'";
+        final var message = format.formatted(type);
+        final var context = new NodeContext(node);
+        return new Err<>(new CompileError(message, context));
     }
 }
