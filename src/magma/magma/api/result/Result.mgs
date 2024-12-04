@@ -1,1 +1,1 @@
-import magma.api.Tuple;import magma.api.option.Option;import java.util.function.Function;import java.util.function.Supplier;export trait Result<T, X> {}
+import magma.api.Tuple;import magma.api.option.Option;import java.util.function.Function;import java.util.function.Supplier;export trait Result<T, X> {findValue   Option<X> findError   <R> Result<R, X> mapValue   <R> Result<R, X> flatMapValue   <R> Result<T, R> mapErr   <R> R match   boolean isOk   <R> Result<Tuple<T, R>, X> and}

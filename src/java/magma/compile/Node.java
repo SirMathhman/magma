@@ -24,16 +24,6 @@ public record Node(
         this(new None<>(), new JavaMap<>(), new JavaMap<>(), new JavaMap<>(), new JavaMap<>());
     }
 
-    @Override
-    public String toString() {
-        return "Node{" +
-                "type=" + type +
-                ", strings=" + strings +
-                ", nodeLists=" + nodeLists +
-                ", stringLists=" + stringLists +
-                '}';
-    }
-
     public Node withString(String propertyKey, String propertyValue) {
         return new Node(type, strings.put(propertyKey, propertyValue), stringLists, nodes, nodeLists);
     }

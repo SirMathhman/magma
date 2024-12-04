@@ -1,1 +1,1 @@
-export trait Context {}
+export trait Context {display}

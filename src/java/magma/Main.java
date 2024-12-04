@@ -216,7 +216,12 @@ public class Main {
                 new EmptyRule()
         ));
 
-        final var name = new SuffixRule(new StringRule("name"), " {}");
+        final var children = new SplitRule(new BracketSplitter(), "children", new OrRule(List.of(
+                new TypeRule("method", new StringRule("name")),
+                createWhitespaceRule()
+        )));
+
+        final var name = new InfixRule(new StringRule("name"), " {", new SuffixRule(children, "}"));
         return new TypeRule("trait", new InfixRule(modifiers, "trait ", name));
     }
 
