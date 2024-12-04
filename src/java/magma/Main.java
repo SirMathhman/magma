@@ -10,6 +10,10 @@ import magma.option.Some;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
+import magma.rule.PrefixRule;
+import magma.rule.StringRule;
+import magma.rule.StripRule;
+import magma.rule.SuffixRule;
 import magma.stream.Streams;
 
 import java.io.IOException;
@@ -130,7 +134,7 @@ public class Main {
         }
 
         final var result = compileImport(input);
-        if(result.isOk()) return result;
+        if (result.isOk()) return result;
 
         if (input.contains("record")) {
             return generateFunction();
@@ -148,22 +152,13 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileImport(String input) {
-        final var stripped = input.strip();
-        final var prefix = "import ";
-        if (!stripped.startsWith(prefix))
-            return new Err<>(new CompileError("Prefix '" + prefix + "' not present", input));
-
-        final var withoutPrefix = stripped.substring(prefix.length());
-        final var suffix = ";";
-        if (!withoutPrefix.endsWith(suffix))
-            return new Err<>(new CompileError("Suffix '" + suffix + "' not present", input));
-
-        final var withoutSuffix = withoutPrefix.substring(0, withoutPrefix.length() - 1);
-        return parse(withoutSuffix).flatMapValue(Main::generateImport);
+        return createImportRule()
+                .parse(input)
+                .flatMapValue(Main::generateImport);
     }
 
-    private static Result<Node, CompileError> parse(String input) {
-        return new Ok<>(new Node(input));
+    private static StripRule createImportRule() {
+        return new StripRule(new PrefixRule("import ", new SuffixRule(new StringRule(), ";")));
     }
 
     private static Ok<String, CompileError> generateImport(Node node) {
