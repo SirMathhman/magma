@@ -1,8 +1,8 @@
 package magma.java;
 
-import magma.stream.Stream;
-import magma.stream.head.HeadedStream;
-import magma.stream.head.ListHead;
+import magma.api.stream.Stream;
+import magma.api.stream.head.HeadedStream;
+import magma.api.stream.head.ListHead;
 
 import java.util.ArrayList;
 import java.util.Collections;

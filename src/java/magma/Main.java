@@ -1,17 +1,17 @@
 package magma;
 
-import magma.error.ApplicationError;
-import magma.error.Error;
-import magma.error.JavaError;
+import magma.compile.Node;
+import magma.api.error.Error;
+import magma.java.JavaError;
 import magma.java.JavaList;
-import magma.option.None;
-import magma.option.Option;
-import magma.option.Some;
-import magma.result.Err;
-import magma.result.Ok;
-import magma.result.Result;
-import magma.rule.*;
-import magma.stream.Streams;
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.option.Some;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.compile.rule.*;
+import magma.api.stream.Streams;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,7 +32,7 @@ public class Main {
                 .ifPresent(e -> System.err.println(e.display()));
     }
 
-    private static Result<List<Path>, magma.error.Error> findSources() {
+    private static Result<List<Path>, Error> findSources() {
         try (Stream<Path> stream = Files.walk(SOURCE_DIRECTORY)) {
             final var sources = stream.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".java"))
@@ -44,14 +44,14 @@ public class Main {
         }
     }
 
-    private static Option<magma.error.Error> runWithSources(List<Path> sources) {
+    private static Option<Error> runWithSources(List<Path> sources) {
         return Streams.from(sources)
                 .map(Main::runWithSource)
                 .flatMap(Streams::fromOption)
                 .next();
     }
 
-    private static Option<magma.error.Error> runWithSource(Path source) {
+    private static Option<Error> runWithSource(Path source) {
         final var fileName = source.getFileName().toString();
         final var separator = fileName.indexOf('.');
         final var name = fileName.substring(0, separator);

@@ -1,0 +1,1 @@
+import magma.compile.Node;import magma.compile.error.CompileError;import magma.compile.error.NodeContext;import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;class def Temp() => {}

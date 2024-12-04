@@ -1,0 +1,1 @@
+import magma.api.option.Option;import magma.api.stream.head.*;import java.util.List;class def Temp() => {}

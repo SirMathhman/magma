@@ -1,0 +1,1 @@
+import magma.api.error.Error;class def Temp() => {}
