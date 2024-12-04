@@ -147,8 +147,13 @@ public class Main {
                 createImportRule(),
                 new TypeRule("record", new InfixRule(new DiscardRule(), "record", new DiscardRule())),
                 new TypeRule("class", new InfixRule(new DiscardRule(), "class", new DiscardRule())),
-                new TypeRule("interface", new InfixRule(new DiscardRule(), "interface", new DiscardRule()))
+                createInterfaceRule()
         ));
+    }
+
+    private static TypeRule createInterfaceRule() {
+        final var name = new StripRule(new StringRule("name"));
+        return new TypeRule("interface", new InfixRule(new DiscardRule(), "interface", new InfixRule(name, "{", new DiscardRule())));
     }
 
     private static Rule createFunctionRule() {

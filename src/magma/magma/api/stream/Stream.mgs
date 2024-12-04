@@ -1,1 +1,1 @@
-import magma.api.option.Option;import magma.api.result.Result;import java.util.function.BiFunction;import java.util.function.Function;import java.util.function.Predicate;class def Temp() => {}
+import magma.api.option.Option;import magma.api.result.Result;import java.util.function.BiFunction;import java.util.function.Function;import java.util.function.Predicate;trait Stream<T> {}
