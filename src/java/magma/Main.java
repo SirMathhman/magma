@@ -1,7 +1,8 @@
 package magma;
 
+import magma.error.ApplicationError;
 import magma.error.Error;
-import magma.error.*;
+import magma.error.JavaError;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
@@ -78,10 +79,15 @@ public class Main {
     }
 
     private static Result<String, ApplicationError> compile(String input) {
-        final var segments = split(input);
+        final var javaRootMemberRule = createJavaRootMemberRule();
+        final var magmaRootMemberRule = createMagmaRootMemberRule();
 
+        final var segments = split(input);
         return Streams.from(segments)
-                .foldLeftIntoResult(new StringBuilder(), (builder, segment) -> compileRootMember(segment).mapValue(builder::append))
+                .foldLeftIntoResult(new StringBuilder(), (builder, segment) -> {
+                    return javaRootMemberRule.parse(segment).flatMapValue(magmaRootMemberRule::generate)
+                            .mapValue(builder::append);
+                })
                 .mapValue(StringBuilder::toString)
                 .mapErr(ApplicationError::new);
     }
@@ -121,28 +127,30 @@ public class Main {
         return state;
     }
 
-    private static Result<String, CompileError> compileRootMember(String input) {
+    private static OrRule createMagmaRootMemberRule() {
+        return new OrRule(List.of(
+                createImportRule(),
+                createFunctionRule(),
+                createTraitRule()
+        ));
+    }
+
+    private static OrRule createJavaRootMemberRule() {
         return new OrRule(List.of(
                 createNamespaceRule("package", "package "),
                 createImportRule(),
-                new InfixRule("record"),
-                new InfixRule("class"),
-                new InfixRule("interface")
-        )).parse(input).flatMapValue(node -> {
-            return new OrRule(List.of(
-                    createImportRule(),
-                    createFunctionRule(),
-                    createTraitRule()
-            )).generate(node);
-        });
+                new TypeRule("record", new InfixRule("record")),
+                new TypeRule("class", new InfixRule("class")),
+                new TypeRule("interface", new InfixRule("interface"))
+        ));
     }
 
-    private static ExactRule createFunctionRule() {
-        return new ExactRule("class def Temp() => {}");
+    private static Rule createFunctionRule() {
+        return new TypeRule("function", new ExactRule("class def Temp() => {}"));
     }
 
-    private static ExactRule createTraitRule() {
-        return new ExactRule("trait Temp {}");
+    private static Rule createTraitRule() {
+        return new TypeRule("trait", new ExactRule("trait Temp {}"));
     }
 
     private static Rule createImportRule() {
