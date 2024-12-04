@@ -3,6 +3,7 @@ package magma;
 import magma.error.ApplicationError;
 import magma.error.Error;
 import magma.error.JavaError;
+import magma.java.JavaList;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
@@ -79,17 +80,40 @@ public class Main {
     }
 
     private static Result<String, ApplicationError> compile(String input) {
-        final var javaRootMemberRule = createJavaRootMemberRule();
-        final var magmaRootMemberRule = createMagmaRootMemberRule();
+        final var javaRule = createJavaRootRule();
+        final var magmaRule = createMagmaRootRule();
+        return javaRule.parse(input)
+                .mapValue(Main::pass)
+                .flatMapValue(magmaRule::generate);
+    }
 
-        final var segments = split(input);
-        return Streams.from(segments)
-                .foldLeftIntoResult(new StringBuilder(), (builder, segment) -> {
-                    return javaRootMemberRule.parse(segment).flatMapValue(magmaRootMemberRule::generate)
-                            .mapValue(builder::append);
-                })
-                .mapValue(StringBuilder::toString)
-                .mapErr(ApplicationError::new);
+    private static Node pass(Node root) {
+        return root.mapNodeList("children", Main::passRootChildren).orElse(root);
+    }
+
+    private static JavaList<Node> passRootChildren(JavaList<Node> children) {
+        return children.stream()
+                .filter(child -> !child.is("package"))
+                .map(Main::passRootMember)
+                .foldLeft(new JavaList<Node>(), JavaList::add);
+    }
+
+    private static Node passRootMember(Node rootMember) {
+        if (rootMember.is("record") || rootMember.is("class")) {
+            return rootMember.retype("function");
+        } else if (rootMember.is("interface")) {
+            return rootMember.retype("trait");
+        } else {
+            return rootMember;
+        }
+    }
+
+    private static SplitRule createJavaRootRule() {
+        return new SplitRule("children", createJavaRootMemberRule());
+    }
+
+    private static SplitRule createMagmaRootRule() {
+        return new SplitRule("children", createMagmaRootMemberRule());
     }
 
     private static Option<Error> writeSafe(Path target, String output) {
@@ -107,24 +131,6 @@ public class Main {
         } catch (IOException e) {
             return new Err<>(new ApplicationError(new JavaError(e)));
         }
-    }
-
-    private static List<String> split(String input) {
-        var state = new State();
-        for (int i = 0; i < input.length(); i++) {
-            var c = input.charAt(i);
-            var appended = state.append(c);
-            state = splitAtChar(appended, c);
-        }
-
-        return state.advance().segments();
-    }
-
-    private static State splitAtChar(State state, char c) {
-        if (c == ';' && state.isLevel()) return state.advance();
-        if (c == '{') return state.enter();
-        if (c == '}') return state.exit();
-        return state;
     }
 
     private static OrRule createMagmaRootMemberRule() {

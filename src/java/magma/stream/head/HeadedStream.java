@@ -2,12 +2,15 @@ package magma.stream.head;
 
 import magma.option.None;
 import magma.option.Option;
+import magma.option.Some;
 import magma.result.Ok;
 import magma.result.Result;
 import magma.stream.Stream;
+import magma.stream.Streams;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     @Override
@@ -50,5 +53,12 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
                 return current;
             }
         }
+    }
+
+    @Override
+    public Stream<T> filter(Predicate<T> predicate) {
+        return this.<Option<T>>map(Some::new)
+                .map(option -> option.filter(predicate))
+                .flatMap(Streams::fromOption);
     }
 }

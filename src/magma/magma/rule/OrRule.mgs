@@ -1,0 +1,1 @@
+import magma.Node;import magma.error.CompileError;import magma.error.NodeContext;import magma.error.StringContext;import magma.result.Err;import magma.result.Result;import java.util.List;class def Temp() => {}

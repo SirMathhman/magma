@@ -1,9 +1,9 @@
-package magma;
+package magma.rule;
 
 import java.util.ArrayList;
 import java.util.List;
 
-record State(List<String> segments, StringBuilder buffer, int depth) {
+public record State(List<String> segments, StringBuilder buffer, int depth) {
     public State() {
         this(new ArrayList<>(), new StringBuilder(), 0);
     }
@@ -12,7 +12,7 @@ record State(List<String> segments, StringBuilder buffer, int depth) {
         return new State(segments, buffer.append(c), depth);
     }
 
-    State advance() {
+    public State advance() {
         if (buffer.isEmpty()) return this;
         final var copy = new ArrayList<>(segments);
         copy.add(buffer.toString());

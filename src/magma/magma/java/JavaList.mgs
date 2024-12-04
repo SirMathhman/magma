@@ -1,0 +1,1 @@
+import magma.stream.Stream;import magma.stream.head.HeadedStream;import magma.stream.head.ListHead;import java.util.ArrayList;import java.util.Collections;import java.util.List;class def Temp() => {}

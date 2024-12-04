@@ -1,1 +1,1 @@
-import magma.option.None;import magma.option.Option;import magma.option.Some;import java.util.Collections;import java.util.HashMap;import java.util.Map;class def Temp() => {}
+import magma.java.JavaList;import magma.java.JavaMap;import magma.option.None;import magma.option.Option;import magma.option.Some;import java.util.function.Function;class def Temp() => {}

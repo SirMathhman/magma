@@ -1,1 +1,1 @@
-import magma.option.Option;trait Temp {}
+import magma.option.Option;class def Temp() => {}

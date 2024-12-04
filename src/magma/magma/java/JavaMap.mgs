@@ -1,0 +1,1 @@
+import magma.option.None;import magma.option.Option;import magma.option.Some;import java.util.Collections;import java.util.HashMap;import java.util.Map;class def Temp() => {}
