@@ -1,5 +1,9 @@
 package magma;
 
+import magma.error.ApplicationError;
+import magma.error.CompileError;
+import magma.error.Error;
+import magma.error.JavaError;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
@@ -24,7 +28,7 @@ public class Main {
                 .ifPresent(e -> System.err.println(e.display()));
     }
 
-    private static Result<List<Path>, Error> findSources() {
+    private static Result<List<Path>, magma.error.Error> findSources() {
         final var sourceDirectory = Paths.get(".", "src", "java");
         try (Stream<Path> stream = Files.walk(sourceDirectory)) {
             final var sources = stream.filter(Files::isRegularFile)
@@ -37,14 +41,14 @@ public class Main {
         }
     }
 
-    private static Option<Error> runWithSources(List<Path> sources) {
+    private static Option<magma.error.Error> runWithSources(List<Path> sources) {
         return Streams.from(sources)
                 .map(Main::runWithSource)
                 .flatMap(Streams::fromOption)
                 .next();
     }
 
-    private static Option<Error> runWithSource(Path source) {
+    private static Option<magma.error.Error> runWithSource(Path source) {
         final var fileName = source.getFileName().toString();
         final var separator = fileName.indexOf('.');
         final var name = fileName.substring(0, separator);

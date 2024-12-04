@@ -1,4 +1,4 @@
-package magma;
+package magma.error;
 
 public class CompileError implements Error {
     private final String message;
