@@ -10,10 +10,7 @@ import magma.option.Some;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
-import magma.rule.PrefixRule;
-import magma.rule.StringRule;
-import magma.rule.StripRule;
-import magma.rule.SuffixRule;
+import magma.rule.*;
 import magma.stream.Streams;
 
 import java.io.IOException;
@@ -127,14 +124,15 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRootMember(String input) {
-        if (input.startsWith("package ")) {
-            if (input.endsWith(";")) {
-                return new Ok<>("");
-            }
-        }
+        final var packageResult = createNamespaceRule("package", "package ")
+                .parse(input)
+                .mapValue(node -> "");
+        if (packageResult.isOk()) return packageResult;
 
-        final var result = compileImport(input);
-        if (result.isOk()) return result;
+        final var importResult = createNamespaceRule("import", "import ")
+                .parse(input)
+                .flatMapValue(Main::generateImport);
+        if (importResult.isOk()) return importResult;
 
         if (input.contains("record")) {
             return generateFunction();
@@ -151,18 +149,12 @@ public class Main {
         return new Err<>(new CompileError("Invalid root member", input));
     }
 
-    private static Result<String, CompileError> compileImport(String input) {
-        return createImportRule()
-                .parse(input)
-                .flatMapValue(Main::generateImport);
-    }
-
-    private static StripRule createImportRule() {
-        return new StripRule(new PrefixRule("import ", new SuffixRule(new StringRule(), ";")));
+    private static Rule createNamespaceRule(String type, String prefix) {
+        return new TypeRule(type, new StripRule(new PrefixRule(prefix, new SuffixRule(new StringRule(), ";"))));
     }
 
     private static Ok<String, CompileError> generateImport(Node node) {
-        return new Ok<>("import " + node.namespace() + ";");
+        return new Ok<>("import " + node.value() + ";");
     }
 
     private static Ok<String, CompileError> generateFunction() {
