@@ -1,6 +1,7 @@
 package magma.stream;
 
 import magma.option.Option;
+import magma.stream.head.*;
 
 import java.util.List;
 
