@@ -23,6 +23,11 @@ public class StringRule implements Rule {
     public Result<String, CompileError> generate(Node node) {
         return node.findString(propertyKey)
                 .<Result<String, CompileError>>map(Ok::new)
-                .orElseGet(() -> new Err<>(new CompileError("Unknown property key", new NodeContext(node))));
+                .orElseGet(() -> {
+                    final var format = "String '%s' not present";
+                    final var message = format.formatted(propertyKey);
+                    final var context = new NodeContext(node);
+                    return new Err<>(new CompileError(message, context));
+                });
     }
 }

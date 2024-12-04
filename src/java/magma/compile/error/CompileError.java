@@ -25,10 +25,11 @@ public class CompileError implements Error {
 
     private String format(int depth) {
         final var joinedChildren = children.stream()
-                .map(child -> child.format(depth))
-                .foldLeft((previous, next) -> previous + "\n" + next)
+                .map(child -> child.format(depth + 1))
+                .map(child -> "\n" + child)
+                .foldLeft((previous, next) -> previous + next)
                 .orElse("");
 
-        return message + ": " + context.display() + joinedChildren;
+        return "\t".repeat(depth) + depth + ") " + message + ": " + context.display() + joinedChildren;
     }
 }
