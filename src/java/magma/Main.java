@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,14 +45,15 @@ public class Main {
     }
 
     private static String compile(String input) {
-        final var segments = split(input);
+        return splitAndCompile(input, Main::compileRootSegment);
+    }
 
-        var output = new StringBuilder();
-        for (String segment : segments) {
-            output.append(compileRootSegment(segment));
-        }
-
-        return output.toString();
+    private static String splitAndCompile(String input, Function<String, String> mapper) {
+        return split(input)
+                .stream()
+                .map(mapper)
+                .reduce(new StringBuilder(), StringBuilder::append, (_, next) -> next)
+                .toString();
     }
 
     private static ArrayList<String> split(String input) {
@@ -94,10 +96,31 @@ public class Main {
 
         final var name = afterKeyword.substring(0, contentStart).strip();
         final var withEnd = afterKeyword.substring(contentStart + 1).strip();
-        if(!withEnd.endsWith("}")) return Optional.empty();
-        final var content = withEnd.substring(0, withEnd.length() - "}".length());
+        if (!withEnd.endsWith("}")) return Optional.empty();
+        final var oldContent = withEnd.substring(0, withEnd.length() - "}".length());
+        final var newContent = splitAndCompile(oldContent, Main::compileClassMember);
 
-        return Optional.of(modifiers + "class def " + name + "() => {\n\t" + content + "}");
+        return Optional.of(modifiers + "class def " + name + "() => {\n" + newContent + "}");
+    }
+
+    private static String compileClassMember(String input) {
+        return compileDeclaration(input).orElse(input);
+    }
+
+    private static Optional<String> compileDeclaration(String input) {
+        final var index = input.indexOf('=');
+        if (index == -1) return Optional.empty();
+
+        final var header = input.substring(0, index).strip();
+        final var withEnd = input.substring(index + 1).strip();
+        if(!withEnd.endsWith(";")) return Optional.empty();
+        final var value = withEnd.substring(0, withEnd.length() - 1);
+
+        final var last = header.lastIndexOf(" ");
+        if (last == -1) return Optional.empty();
+
+        final var name = header.substring(last + 1).strip();
+        return Optional.of("\tlet " + name + " = " + value + ";\n");
     }
 
     private static Optional<String> compileImport(String input) {
