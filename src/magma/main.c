@@ -1,1 +1,3 @@
-int test(){}
+def main(): I32 => {
+    return 0;
+}

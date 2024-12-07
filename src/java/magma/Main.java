@@ -7,10 +7,13 @@ import java.nio.file.Paths;
 public class Main {
     public static final String DEF_KEYWORD_WITH_SPACE = "def ";
     public static final String BEFORE_TYPE = "(): ";
-    public static final String AFTER_TYPE = " => {}";
+    public static final String BEFORE_CONTENT = " => {";
+    public static final String AFTER_CONTENT = "}";
 
-    private static String getString(String returnType) {
-        return BEFORE_TYPE + returnType + AFTER_TYPE;
+    private static String getString(String content) {
+        return BEFORE_CONTENT +
+                content +
+                AFTER_CONTENT;
     }
 
     public static void main(String[] args) {
@@ -31,15 +34,25 @@ public class Main {
             if (index != -1) {
                 final var name = slice.substring(0, index);
                 final var after = slice.substring(index + BEFORE_TYPE.length());
-                if (after.endsWith(AFTER_TYPE)) {
-                    final var oldType = after.substring(0, after.length() - AFTER_TYPE.length());
-                    final var type = switch (oldType) {
-                        case "I32" -> "int";
-                        case "Void" -> "Void";
-                        default -> "";
-                    };
 
-                    return type + " " + name + "(){}";
+                final var beforeIndex = after.indexOf(BEFORE_CONTENT);
+                if (beforeIndex != -1) {
+                    final var oldType = after.substring(0, beforeIndex);
+                    final var contentWithEnd = after.substring(beforeIndex + BEFORE_CONTENT.length());
+                    if (!contentWithEnd.endsWith(AFTER_CONTENT)) {
+                        var content = contentWithEnd.substring(0, contentWithEnd.length() - AFTER_CONTENT.length());
+                        String outputContent = content.equals("\n" +
+                                "    return 0;\n" +
+                                "") ? "{return 0;}" : "";
+
+                        final var type = switch (oldType) {
+                            case "I32" -> "int";
+                            case "Void" -> "Void";
+                            default -> "";
+                        };
+
+                        return type + " " + name + "(){}";
+                    }
                 }
             }
         }
