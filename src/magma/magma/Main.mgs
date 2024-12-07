@@ -3,15 +3,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 export class def Main() => {
-	let SOURCE_DIRECTORY : Path = Paths.get(".", "src", "java");
-	let TARGET_DIRECTORY : Path = Paths.get(".", "src", "magma");
-	let stream : (Stream<Path> = Files.walk(SOURCE_DIRECTORY)) {
+	static let SOURCE_DIRECTORY : Path = Paths.get(".", "src", "java");
+	static let TARGET_DIRECTORY : Path = Paths.get(".", "src", "magma");
+	static void main(String[] args) {
+        try let stream : (Stream<Path> = Files.walk(SOURCE_DIRECTORY)) {
             final var sources = stream.filter(Files::isRegularFile)
                     .filter(file -> file.toString().endsWith(".java"))
                     .collect(Collectors.toSet());
@@ -93,12 +95,15 @@ export class def Main() => {
         if (!withEnd.endsWith("}")) return Optional.empty();
         final var oldContent = withEnd.substring(0, withEnd.length() - "}".length());
 	let newContent : var = splitAndCompile(oldContent, Main::compileClassMember);
-	let "() : + = > {\n" + newContent + "}");
+	return Optional.of(modifiers + "class def " + name let "() : + = > {\n" + newContent + "}");
 
     }
 
     private static String compileClassMember(String input) {
-        return compileDeclaration(input).orElse(input);	let index : var = input.indexOf('=');
+        return compileDeclaration(input).orElse(input);	}
+
+    private static Optional<String> compileDeclaration(String input) {
+        let index : var = input.indexOf('=');
 
         if (index == -1) return Optional.empty();	let header : var = input.substring(0, index).strip();
 	let withEnd : var = input.substring(index + 1).strip();
@@ -106,12 +111,17 @@ export class def Main() => {
         if (!withEnd.endsWith(";")) return Optional.empty();	let value : var = withEnd.substring(0, withEnd.length() - 1);
 	let last : var = header.lastIndexOf(" ");
 
-        if (last == -1) return Optional.empty();	let withType : var = header.substring(0,  last).strip();
+        if (last == -1) return Optional.empty();	let withType : var = header.substring(0, last).strip();
 	let separator : var = withType.lastIndexOf(' ');
 
-        if (separator == -1) return Optional.empty();	let type : var = withType.substring(separator + 1).strip();
+        if (separator == -1) return Optional.empty();	let oldModifiers : var = Arrays.stream(withType.substring(0, separator).strip().split(" ")).toList();
+	let newModifiers : var = new ArrayList<String>(oldModifiers);
+
+        newModifiers.remove("public");
+        newModifiers.remove("final");
+        newModifiers.add("let");	let type : var = withType.substring(separator + 1).strip();
 	let name : var = header.substring(last + 1).strip();
-	let " : + = " + value + ";
+	return Optional.of("\t" + String.join(" ", newModifiers) + " " + name + " : " + type let " : + = " + value + ";
 \n");
     }
 

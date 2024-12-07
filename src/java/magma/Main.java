@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -119,13 +120,19 @@ public class Main {
         final var last = header.lastIndexOf(" ");
         if (last == -1) return Optional.empty();
 
-        final var withType = header.substring(0,  last).strip();
+        final var withType = header.substring(0, last).strip();
         final var separator = withType.lastIndexOf(' ');
         if (separator == -1) return Optional.empty();
+        final var oldModifiers = Arrays.stream(withType.substring(0, separator).strip().split(" ")).toList();
+        final var newModifiers = new ArrayList<String>(oldModifiers);
+        newModifiers.remove("public");
+        newModifiers.remove("final");
+        newModifiers.add("let");
+
         final var type = withType.substring(separator + 1).strip();
 
         final var name = header.substring(last + 1).strip();
-        return Optional.of("\tlet " + name + " : " + type + " = " + value + ";\n");
+        return Optional.of("\t" + String.join(" ", newModifiers) + " " + name + " : " + type + " = " + value + ";\n");
     }
 
     private static Optional<String> compileImport(String input) {
