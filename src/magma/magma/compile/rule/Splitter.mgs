@@ -1,1 +1,0 @@
-import java.util.List;export trait Splitter {split}

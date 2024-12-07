@@ -1,1 +1,0 @@
-import magma.api.Tuple;import java.util.function.Consumer;import java.util.function.Function;import java.util.function.Predicate;import java.util.function.Supplier;export trait Option<T> {isPresent   T orElseNull   <R> Option<R> map   Tuple<Boolean, T> toTuple   void ifPresent   Option<T> or   T orElseGet   T orElse   Option<T> filter}
