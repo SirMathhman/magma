@@ -57,13 +57,15 @@ public class Main {
 
         final var afterContent = afterParams.substring(contentIndex + CONTENT_START.length()).strip();
 
-        if (!afterContent.endsWith(AFTER_CONTENT)) return Optional.empty();
-        var inputContent = afterContent.substring(0, afterContent.length() - AFTER_CONTENT.length()).strip();
-        var outputContent = inputContent.equals("return 0;") ? "\n\treturn 0;" : "";
-        final var other = new Node().withString(CONTENT, outputContent);
-
-        final var node = node1.merge(node2.merge(other));
-        return createCFunctionRule().generate(node);
+        return new SuffixRule(new StringRule(CONTENT), AFTER_CONTENT).parse(afterContent).flatMap(node -> {
+            return node.findString(CONTENT).map(inputContent -> {
+                var outputContent = inputContent.equals("return 0;") ? "\n\treturn 0;" : "";
+                return node.withString(CONTENT, outputContent);
+            });
+        }).flatMap(other -> {
+            final var node = node1.merge(node2.merge(other));
+            return createCFunctionRule().generate(node);
+        });
     }
 
     private static Rule createCFunctionRule() {
@@ -73,4 +75,5 @@ public class Main {
         final var content = new StringRule(CONTENT);
         return new SuffixRule(new InfixRule(beforeParams, "(){", content), "\n}");
     }
+
 }

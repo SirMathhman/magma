@@ -2,11 +2,10 @@ package magma;
 
 import java.util.Optional;
 
-public class StringRule implements Rule {
-    private final String propertyKey;
-
-    public StringRule(String propertyKey) {
-        this.propertyKey = propertyKey;
+public record StringRule(String propertyKey) implements Rule {
+    @Override
+    public Optional<Node> parse(String input) {
+        return Optional.of(new Node().withString(propertyKey(), input));
     }
 
     @Override
