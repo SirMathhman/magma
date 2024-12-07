@@ -40,27 +40,30 @@ public class Main {
         final var paramsIndex = withoutKeyword.indexOf(PARAMS);
         if (paramsIndex == -1) return Optional.empty();
         final var beforeParams = withoutKeyword.substring(0, paramsIndex);
+        final var node2 = new Node().withString(NAME, beforeParams);
+
         final var afterParams = withoutKeyword.substring(paramsIndex + PARAMS.length());
 
         final var contentIndex = afterParams.indexOf(CONTENT_START);
         if (contentIndex == -1) return Optional.empty();
         final var beforeContent = afterParams.substring(0, contentIndex);
-        final var afterContent = afterParams.substring(contentIndex + CONTENT_START.length()).strip();
-
-        if (!afterContent.endsWith(AFTER_CONTENT)) return Optional.empty();
-        var inputContent = afterContent.substring(0, afterContent.length() - AFTER_CONTENT.length()).strip();
-
-        var outputContent = inputContent.equals("return 0;") ? "\n\treturn 0;" : "";
         final var type = switch (beforeContent) {
             case "I32" -> "int";
             case "Void" -> "Void";
             default -> "";
         };
 
-        return createCFunctionRule().generate(new Node()
-                .withString("type", type)
-                .withString(NAME, beforeParams)
-                .withString(CONTENT, outputContent));
+        final var node1 = new Node().withString("type", type);
+
+        final var afterContent = afterParams.substring(contentIndex + CONTENT_START.length()).strip();
+
+        if (!afterContent.endsWith(AFTER_CONTENT)) return Optional.empty();
+        var inputContent = afterContent.substring(0, afterContent.length() - AFTER_CONTENT.length()).strip();
+        var outputContent = inputContent.equals("return 0;") ? "\n\treturn 0;" : "";
+        final var other = new Node().withString(CONTENT, outputContent);
+
+        final var node = node1.merge(node2.merge(other));
+        return createCFunctionRule().generate(node);
     }
 
     private static Rule createCFunctionRule() {

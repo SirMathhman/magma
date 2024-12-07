@@ -23,4 +23,9 @@ public final class Node {
     public Optional<String> findString(String propertyKey) {
         return Optional.ofNullable(strings.get(propertyKey));
     }
+
+    public Node merge(Node other) {
+        strings.putAll(other.strings);
+        return this;
+    }
 }
