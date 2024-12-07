@@ -1,1 +1,1 @@
-void empty(){}
+int test(){}

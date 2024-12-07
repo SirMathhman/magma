@@ -5,9 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class Main {
-
     public static final String DEF_KEYWORD_WITH_SPACE = "def ";
-    public static final String FUNCTION_SUFFIX = "(): Void => {}";
+    public static final String BEFORE_TYPE = "(): ";
+    public static final String AFTER_TYPE = " => {}";
+
+    private static String getString(String returnType) {
+        return BEFORE_TYPE + returnType + AFTER_TYPE;
+    }
 
     public static void main(String[] args) {
         try {
@@ -20,15 +24,26 @@ public class Main {
     }
 
     private static String compile(String input) {
-        if (input.startsWith(DEF_KEYWORD_WITH_SPACE) && input.endsWith(FUNCTION_SUFFIX)) {
-            final var name = input.substring(DEF_KEYWORD_WITH_SPACE.length(), input.length() - FUNCTION_SUFFIX.length());
-            return "void " + name + "(){}";
+        if (input.startsWith(DEF_KEYWORD_WITH_SPACE)) {
+            final var slice = input.substring(DEF_KEYWORD_WITH_SPACE.length());
+
+            final var index = slice.indexOf(BEFORE_TYPE);
+            if (index != -1) {
+                final var name = slice.substring(0, index);
+                final var after = slice.substring(index + BEFORE_TYPE.length());
+                if (after.endsWith(AFTER_TYPE)) {
+                    final var oldType = after.substring(0, after.length() - AFTER_TYPE.length());
+                    final var type = switch (oldType) {
+                        case "I32" -> "int";
+                        case "Void" -> "Void";
+                        default -> "";
+                    };
+
+                    return type + " " + name + "(){}";
+                }
+            }
         }
 
         return input;
-    }
-
-    private static String renderFunction(String name) {
-        return DEF_KEYWORD_WITH_SPACE + name + FUNCTION_SUFFIX;
     }
 }

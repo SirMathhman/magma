@@ -1,1 +1,1 @@
-def empty(): Void => {}
+def test(): I32 => {}
