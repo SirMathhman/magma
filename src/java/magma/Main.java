@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,12 +57,16 @@ public class Main {
     private static ArrayList<String> split(String input) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
+        var depth = 0;
         for (int i = 0; i < input.length(); i++) {
             var c = input.charAt(i);
             buffer.append(c);
-            if (c == ';') {
+            if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
             }
         }
         advance(buffer, segments);
@@ -70,11 +75,41 @@ public class Main {
 
     private static String compileRootSegment(String segment) {
         final var stripped = segment.strip();
-        if(stripped.startsWith("package ")) return "";
-        if(stripped.startsWith("import ")) {
-            return stripped + "\n";
+        return compilePackage(stripped)
+                .or(() -> compileImport(stripped))
+                .or(() -> compileClass(stripped))
+                .orElse(segment);
+    }
+
+    private static Optional<String> compileClass(String input) {
+        final var classIndex = input.indexOf("class");
+        if (classIndex == -1) return Optional.empty();
+
+        final var beforeKeyword = input.substring(0, classIndex);
+        var modifiers = beforeKeyword.equals("public ") ? "export " : "";
+
+        final var afterKeyword = input.substring(classIndex + "class".length());
+        final var contentStart = afterKeyword.indexOf('{');
+        if (contentStart == -1) return Optional.empty();
+
+        final var name = afterKeyword.substring(0, contentStart).strip();
+        final var withEnd = afterKeyword.substring(contentStart + 1).strip();
+        if(!withEnd.endsWith("}")) return Optional.empty();
+        final var content = withEnd.substring(0, withEnd.length() - "}".length());
+
+        return Optional.of(modifiers + "class def " + name + "() => {\n\t" + content + "}");
+    }
+
+    private static Optional<String> compileImport(String input) {
+        if (input.startsWith("import ")) {
+            return Optional.of(input + "\n");
+        } else {
+            return Optional.empty();
         }
-        return segment;
+    }
+
+    private static Optional<String> compilePackage(String input) {
+        return input.startsWith("package ") ? Optional.of("") : Optional.empty();
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
