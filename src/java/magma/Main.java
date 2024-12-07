@@ -3,6 +3,7 @@ package magma;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 public class Main {
     public static final String DEF_KEYWORD_WITH_SPACE = "def ";
@@ -27,6 +28,10 @@ public class Main {
     }
 
     private static String compile(String input) {
+        return compileFunction(input).orElse(input);
+    }
+
+    private static Optional<String> compileFunction(String input) {
         if (input.startsWith(DEF_KEYWORD_WITH_SPACE)) {
             final var slice = input.substring(DEF_KEYWORD_WITH_SPACE.length());
 
@@ -49,12 +54,11 @@ public class Main {
                             default -> "";
                         };
 
-                        return type + " " + name + "(){" + outputContent + "\n}";
+                        return Optional.of(type + " " + name + "(){" + outputContent + "\n}");
                     }
                 }
             }
         }
-
-        return input;
+        return Optional.empty();
     }
 }
