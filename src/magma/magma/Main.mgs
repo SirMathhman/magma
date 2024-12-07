@@ -9,9 +9,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 export class def Main() => {
-	let SOURCE_DIRECTORY = Paths.get(".", "src", "java");
-	let TARGET_DIRECTORY = Paths.get(".", "src", "magma");
-	let stream = Files.walk(SOURCE_DIRECTORY)) {
+	let SOURCE_DIRECTORY : Path = Paths.get(".", "src", "java");
+	let TARGET_DIRECTORY : Path = Paths.get(".", "src", "magma");
+	let stream : (Stream<Path> = Files.walk(SOURCE_DIRECTORY)) {
             final var sources = stream.filter(Files::isRegularFile)
                     .filter(file -> file.toString().endsWith(".java"))
                     .collect(Collectors.toSet());
@@ -92,22 +92,26 @@ export class def Main() => {
         final var withEnd = afterKeyword.substring(contentStart + 1).strip();
         if (!withEnd.endsWith("}")) return Optional.empty();
         final var oldContent = withEnd.substring(0, withEnd.length() - "}".length());
-	let newContent = splitAndCompile(oldContent, Main::compileClassMember);
-	let "() = > {\n" + newContent + "}");
+	let newContent : var = splitAndCompile(oldContent, Main::compileClassMember);
+	let "() : + = > {\n" + newContent + "}");
 
     }
 
     private static String compileClassMember(String input) {
-        return compileDeclaration(input).orElse(input);	let index = input.indexOf('=');
-	let (index = = -1) return Optional.empty();
-	let header = input.substring(0, index).strip();
-	let withEnd = input.substring(index + 1).strip();
+        return compileDeclaration(input).orElse(input);	let index : var = input.indexOf('=');
 
-        if(!withEnd.endsWith(";")) return Optional.empty();	let value = withEnd.substring(0, withEnd.length() - 1);
-	let last = header.lastIndexOf(" ");
-	let (last = = -1) return Optional.empty();
-	let name = header.substring(last + 1).strip();
-	let " = " + value + ";
+        if (index == -1) return Optional.empty();	let header : var = input.substring(0, index).strip();
+	let withEnd : var = input.substring(index + 1).strip();
+
+        if (!withEnd.endsWith(";")) return Optional.empty();	let value : var = withEnd.substring(0, withEnd.length() - 1);
+	let last : var = header.lastIndexOf(" ");
+
+        if (last == -1) return Optional.empty();	let withType : var = header.substring(0,  last).strip();
+	let separator : var = withType.lastIndexOf(' ');
+
+        if (separator == -1) return Optional.empty();	let type : var = withType.substring(separator + 1).strip();
+	let name : var = header.substring(last + 1).strip();
+	let " : + = " + value + ";
 \n");
     }
 

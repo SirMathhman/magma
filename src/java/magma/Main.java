@@ -113,14 +113,19 @@ public class Main {
 
         final var header = input.substring(0, index).strip();
         final var withEnd = input.substring(index + 1).strip();
-        if(!withEnd.endsWith(";")) return Optional.empty();
+        if (!withEnd.endsWith(";")) return Optional.empty();
         final var value = withEnd.substring(0, withEnd.length() - 1);
 
         final var last = header.lastIndexOf(" ");
         if (last == -1) return Optional.empty();
 
+        final var withType = header.substring(0,  last).strip();
+        final var separator = withType.lastIndexOf(' ');
+        if (separator == -1) return Optional.empty();
+        final var type = withType.substring(separator + 1).strip();
+
         final var name = header.substring(last + 1).strip();
-        return Optional.of("\tlet " + name + " = " + value + ";\n");
+        return Optional.of("\tlet " + name + " : " + type + " = " + value + ";\n");
     }
 
     private static Optional<String> compileImport(String input) {
