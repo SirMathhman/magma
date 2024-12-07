@@ -32,33 +32,31 @@ public class Main {
     }
 
     private static Optional<String> compileFunction(String input) {
-        if (input.startsWith(DEF_KEYWORD_WITH_SPACE)) {
-            final var slice = input.substring(DEF_KEYWORD_WITH_SPACE.length());
+        if (!input.startsWith(DEF_KEYWORD_WITH_SPACE)) return Optional.empty();
+        final var slice = input.substring(DEF_KEYWORD_WITH_SPACE.length());
 
-            final var index = slice.indexOf(BEFORE_TYPE);
-            if (index != -1) {
-                final var name = slice.substring(0, index);
-                final var after = slice.substring(index + BEFORE_TYPE.length());
+        final var index = slice.indexOf(BEFORE_TYPE);
+        if (index == -1) return Optional.empty();
 
-                final var beforeIndex = after.indexOf(BEFORE_CONTENT);
-                if (beforeIndex != -1) {
-                    final var oldType = after.substring(0, beforeIndex);
-                    final var contentWithEnd = after.substring(beforeIndex + BEFORE_CONTENT.length()).strip();
-                    if (contentWithEnd.endsWith(AFTER_CONTENT)) {
-                        var content = contentWithEnd.substring(0, contentWithEnd.length() - AFTER_CONTENT.length()).strip();
-                        String outputContent = content.equals("return 0;") ? "\n\treturn 0;" : "";
+        final var name = slice.substring(0, index);
+        final var after = slice.substring(index + BEFORE_TYPE.length());
 
-                        final var type = switch (oldType) {
-                            case "I32" -> "int";
-                            case "Void" -> "Void";
-                            default -> "";
-                        };
+        final var beforeIndex = after.indexOf(BEFORE_CONTENT);
+        if (beforeIndex == -1) return Optional.empty();
 
-                        return Optional.of(type + " " + name + "(){" + outputContent + "\n}");
-                    }
-                }
-            }
-        }
-        return Optional.empty();
+        final var oldType = after.substring(0, beforeIndex);
+        final var contentWithEnd = after.substring(beforeIndex + BEFORE_CONTENT.length()).strip();
+        if (!contentWithEnd.endsWith(AFTER_CONTENT)) return Optional.empty();
+
+        var inputContent = contentWithEnd.substring(0, contentWithEnd.length() - AFTER_CONTENT.length()).strip();
+        var outputContent = inputContent.equals("return 0;") ? "\n\treturn 0;" : "";
+
+        final var type = switch (oldType) {
+            case "I32" -> "int";
+            case "Void" -> "Void";
+            default -> "";
+        };
+
+        return Optional.of(type + " " + name + "(){" + outputContent + "\n}");
     }
 }
