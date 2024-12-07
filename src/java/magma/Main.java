@@ -13,12 +13,6 @@ public class Main {
     public static final String CONTENT = "content";
     public static final String NAME = "name";
 
-    private static String generate(String content) {
-        return CONTENT_START +
-                content +
-                AFTER_CONTENT;
-    }
-
     public static void main(String[] args) {
         try {
             final var source = Paths.get(".", "src", "magma", "main.mgs");
