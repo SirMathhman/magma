@@ -123,10 +123,17 @@ public class Main {
         final var withType = header.substring(0, last).strip();
         final var separator = withType.lastIndexOf(' ');
         if (separator == -1) return Optional.empty();
-        final var oldModifiers = Arrays.stream(withType.substring(0, separator).strip().split(" ")).toList();
-        final var newModifiers = new ArrayList<String>(oldModifiers);
-        newModifiers.remove("public");
-        newModifiers.remove("final");
+        final var oldModifiers = Arrays.stream(withType.substring(0, separator)
+                        .strip().split(" "))
+                .toList();
+
+        var newModifiers = new ArrayList<String>();
+        for (String oldModifier : oldModifiers) {
+            if(oldModifier.equals("public") || oldModifier.equals("final")) continue;
+            else if(oldModifier.equals("static")) newModifiers.add("static");
+            else return Optional.empty();
+        }
+
         newModifiers.add("let");
 
         final var type = withType.substring(separator + 1).strip();

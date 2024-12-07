@@ -12,8 +12,10 @@ import java.util.stream.Stream;
 export class def Main() => {
 	static let SOURCE_DIRECTORY : Path = Paths.get(".", "src", "java");
 	static let TARGET_DIRECTORY : Path = Paths.get(".", "src", "magma");
-	static void main(String[] args) {
-        try let stream : (Stream<Path> = Files.walk(SOURCE_DIRECTORY)) {
+
+
+    public static void main(String[] args) {
+        try (Stream<Path> stream = Files.walk(SOURCE_DIRECTORY)) {
             final var sources = stream.filter(Files::isRegularFile)
                     .filter(file -> file.toString().endsWith(".java"))
                     .collect(Collectors.toSet());
@@ -93,18 +95,18 @@ export class def Main() => {
         final var name = afterKeyword.substring(0, contentStart).strip();
         final var withEnd = afterKeyword.substring(contentStart + 1).strip();
         if (!withEnd.endsWith("}")) return Optional.empty();
-        final var oldContent = withEnd.substring(0, withEnd.length() - "}".length());
-	let newContent : var = splitAndCompile(oldContent, Main::compileClassMember);
-	return Optional.of(modifiers + "class def " + name let "() : + = > {\n" + newContent + "}");
+        final var oldContent = withEnd.substring(0, withEnd.length() - "}".length());	let newContent : var = splitAndCompile(oldContent, Main::compileClassMember);
 
+
+        return Optional.of(modifiers + "class def " + name + "() => {\n" + newContent + "}");
     }
 
     private static String compileClassMember(String input) {
-        return compileDeclaration(input).orElse(input);	}
+        return compileDeclaration(input).orElse(input);
+    }
 
     private static Optional<String> compileDeclaration(String input) {
-        let index : var = input.indexOf('=');
-
+        final var index = input.indexOf('=');
         if (index == -1) return Optional.empty();	let header : var = input.substring(0, index).strip();
 	let withEnd : var = input.substring(index + 1).strip();
 
@@ -114,15 +116,22 @@ export class def Main() => {
         if (last == -1) return Optional.empty();	let withType : var = header.substring(0, last).strip();
 	let separator : var = withType.lastIndexOf(' ');
 
-        if (separator == -1) return Optional.empty();	let oldModifiers : var = Arrays.stream(withType.substring(0, separator).strip().split(" ")).toList();
-	let newModifiers : var = new ArrayList<String>(oldModifiers);
+        if (separator == -1) return Optional.empty();	let oldModifiers : var = Arrays.stream(withType.substring(0, separator)
+                        .strip().split(" "))
+                .toList();
 
-        newModifiers.remove("public");
-        newModifiers.remove("final");
+
+        var newModifiers = new ArrayList<String>();
+        for (String oldModifier : oldModifiers) {
+            if(oldModifier.equals("public") || oldModifier.equals("final")) continue;
+            else if(oldModifier.equals("static")) newModifiers.add("static");
+            else return Optional.empty();
+        }
+
         newModifiers.add("let");	let type : var = withType.substring(separator + 1).strip();
 	let name : var = header.substring(last + 1).strip();
-	return Optional.of("\t" + String.join(" ", newModifiers) + " " + name + " : " + type let " : + = " + value + ";
-\n");
+
+        return Optional.of("\t" + String.join(" ", newModifiers) + " " + name + " : " + type + " = " + value + ";\n");
     }
 
     private static Optional<String> compileImport(String input) {
