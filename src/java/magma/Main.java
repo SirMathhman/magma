@@ -10,8 +10,10 @@ public class Main {
     public static final String PARAMS = "(): ";
     public static final String CONTENT_START = " => {";
     public static final String AFTER_CONTENT = "}";
+    public static final String CONTENT = "content";
+    public static final String NAME = "name";
 
-    private static String getString(String content) {
+    private static String generate(String content) {
         return CONTENT_START +
                 content +
                 AFTER_CONTENT;
@@ -55,6 +57,17 @@ public class Main {
             default -> "";
         };
 
-        return Optional.of(type + " " + beforeParams + "(){" + outputContent + "\n}");
+        return createCFunctionRule().generate(new Node()
+                .withString("type", type)
+                .withString(NAME, beforeParams)
+                .withString(CONTENT, outputContent));
+    }
+
+    private static Rule createCFunctionRule() {
+        final var type = new StringRule("type");
+        final var name = new StringRule(NAME);
+        final var beforeParams = new InfixRule(type, " ", name);
+        final var content = new StringRule(CONTENT);
+        return new SuffixRule(new InfixRule(beforeParams, "(){", content), "\n}");
     }
 }
