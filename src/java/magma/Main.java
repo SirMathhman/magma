@@ -7,12 +7,12 @@ import java.util.Optional;
 
 public class Main {
     public static final String DEF_KEYWORD_WITH_SPACE = "def ";
-    public static final String BEFORE_TYPE = "(): ";
-    public static final String BEFORE_CONTENT = " => {";
+    public static final String PARAMS = "(): ";
+    public static final String CONTENT_START = " => {";
     public static final String AFTER_CONTENT = "}";
 
     private static String getString(String content) {
-        return BEFORE_CONTENT +
+        return CONTENT_START +
                 content +
                 AFTER_CONTENT;
     }
@@ -33,30 +33,28 @@ public class Main {
 
     private static Optional<String> compileFunction(String input) {
         if (!input.startsWith(DEF_KEYWORD_WITH_SPACE)) return Optional.empty();
-        final var slice = input.substring(DEF_KEYWORD_WITH_SPACE.length());
+        final var withoutKeyword = input.substring(DEF_KEYWORD_WITH_SPACE.length());
 
-        final var index = slice.indexOf(BEFORE_TYPE);
-        if (index == -1) return Optional.empty();
+        final var paramsIndex = withoutKeyword.indexOf(PARAMS);
+        if (paramsIndex == -1) return Optional.empty();
+        final var beforeParams = withoutKeyword.substring(0, paramsIndex);
+        final var afterParams = withoutKeyword.substring(paramsIndex + PARAMS.length());
 
-        final var name = slice.substring(0, index);
-        final var after = slice.substring(index + BEFORE_TYPE.length());
+        final var contentIndex = afterParams.indexOf(CONTENT_START);
+        if (contentIndex == -1) return Optional.empty();
+        final var beforeContent = afterParams.substring(0, contentIndex);
+        final var afterContent = afterParams.substring(contentIndex + CONTENT_START.length()).strip();
 
-        final var beforeIndex = after.indexOf(BEFORE_CONTENT);
-        if (beforeIndex == -1) return Optional.empty();
+        if (!afterContent.endsWith(AFTER_CONTENT)) return Optional.empty();
+        var inputContent = afterContent.substring(0, afterContent.length() - AFTER_CONTENT.length()).strip();
 
-        final var oldType = after.substring(0, beforeIndex);
-        final var contentWithEnd = after.substring(beforeIndex + BEFORE_CONTENT.length()).strip();
-        if (!contentWithEnd.endsWith(AFTER_CONTENT)) return Optional.empty();
-
-        var inputContent = contentWithEnd.substring(0, contentWithEnd.length() - AFTER_CONTENT.length()).strip();
         var outputContent = inputContent.equals("return 0;") ? "\n\treturn 0;" : "";
-
-        final var type = switch (oldType) {
+        final var type = switch (beforeContent) {
             case "I32" -> "int";
             case "Void" -> "Void";
             default -> "";
         };
 
-        return Optional.of(type + " " + name + "(){" + outputContent + "\n}");
+        return Optional.of(type + " " + beforeParams + "(){" + outputContent + "\n}");
     }
 }
