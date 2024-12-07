@@ -38,12 +38,10 @@ public class Main {
                 final var beforeIndex = after.indexOf(BEFORE_CONTENT);
                 if (beforeIndex != -1) {
                     final var oldType = after.substring(0, beforeIndex);
-                    final var contentWithEnd = after.substring(beforeIndex + BEFORE_CONTENT.length());
-                    if (!contentWithEnd.endsWith(AFTER_CONTENT)) {
-                        var content = contentWithEnd.substring(0, contentWithEnd.length() - AFTER_CONTENT.length());
-                        String outputContent = content.equals("\n" +
-                                "    return 0;\n" +
-                                "") ? "{return 0;}" : "";
+                    final var contentWithEnd = after.substring(beforeIndex + BEFORE_CONTENT.length()).strip();
+                    if (contentWithEnd.endsWith(AFTER_CONTENT)) {
+                        var content = contentWithEnd.substring(0, contentWithEnd.length() - AFTER_CONTENT.length()).strip();
+                        String outputContent = content.equals("return 0;") ? "\n\treturn 0;" : "";
 
                         final var type = switch (oldType) {
                             case "I32" -> "int";
@@ -51,7 +49,7 @@ public class Main {
                             default -> "";
                         };
 
-                        return type + " " + name + "(){}";
+                        return type + " " + name + "(){" + outputContent + "\n}";
                     }
                 }
             }
