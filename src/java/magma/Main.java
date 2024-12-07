@@ -30,41 +30,23 @@ public class Main {
     }
 
     private static String compile(String input) {
-        return compileFunction(input).orElse(input);
+        return createMagmaFunctionRule()
+                .parse(input)
+                .flatMap(Main::pass)
+                .flatMap(node -> createCFunctionRule().generate(node))
+                .orElse(input);
     }
 
-    private static Optional<String> compileFunction(String input) {
-        if (!input.startsWith(DEF_KEYWORD_WITH_SPACE)) return Optional.empty();
-        final var withoutKeyword = input.substring(DEF_KEYWORD_WITH_SPACE.length());
+    private static PrefixRule createMagmaFunctionRule() {
+        return new PrefixRule(DEF_KEYWORD_WITH_SPACE, new InfixRule(new StringRule(NAME), PARAMS, new InfixRule(new StringRule("type"), CONTENT_START, new SuffixRule(new StringRule(CONTENT), AFTER_CONTENT))));
+    }
 
-        final var paramsIndex = withoutKeyword.indexOf(PARAMS);
-        if (paramsIndex == -1) return Optional.empty();
-        final var beforeParams = withoutKeyword.substring(0, paramsIndex);
-        final var node2 = new Node().withString(NAME, beforeParams);
-
-        final var afterParams = withoutKeyword.substring(paramsIndex + PARAMS.length());
-
-        final var contentIndex = afterParams.indexOf(CONTENT_START);
-        if (contentIndex == -1) return Optional.empty();
-        final var beforeContent = afterParams.substring(0, contentIndex);
-        final var type = switch (beforeContent) {
+    private static Optional<Node> pass(Node other) {
+        final var node = other.mapString(CONTENT, s -> s.equals("return 0;") ? "\n\treturn 0;" : "").orElse(other);
+        return node.mapString("type", type -> switch (type) {
             case "I32" -> "int";
             case "Void" -> "Void";
             default -> "";
-        };
-
-        final var node1 = new Node().withString("type", type);
-
-        final var afterContent = afterParams.substring(contentIndex + CONTENT_START.length()).strip();
-
-        return new SuffixRule(new StringRule(CONTENT), AFTER_CONTENT).parse(afterContent).flatMap(node -> {
-            return node.findString(CONTENT).map(inputContent -> {
-                var outputContent = inputContent.equals("return 0;") ? "\n\treturn 0;" : "";
-                return node.withString(CONTENT, outputContent);
-            });
-        }).flatMap(other -> {
-            final var node = node1.merge(node2.merge(other));
-            return createCFunctionRule().generate(node);
         });
     }
 
@@ -75,5 +57,4 @@ public class Main {
         final var content = new StringRule(CONTENT);
         return new SuffixRule(new InfixRule(beforeParams, "(){", content), "\n}");
     }
-
 }

@@ -3,6 +3,7 @@ package magma;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 public final class Node {
     private final Map<String, String> strings;
@@ -13,6 +14,13 @@ public final class Node {
 
     public Node() {
         this(new HashMap<>());
+    }
+
+    Optional<Node> mapString(String propertyKey, Function<String, String> mapper) {
+        return findString(propertyKey).map(inputContent -> {
+            var outputContent = mapper.apply(inputContent);
+            return withString(propertyKey, outputContent);
+        });
     }
 
     public Node withString(String propertyKey, String propertyValue) {
