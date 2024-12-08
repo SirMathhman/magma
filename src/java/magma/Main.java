@@ -2,6 +2,7 @@ package magma;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static magma.Main.Operation.*;
 
@@ -12,20 +13,13 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
-
-
-        var input = new ArrayList<Long>(List.of(
-                instruct(InputDirect, 2),
-                instruct(JumpValue, 0),
-                instruct(InputDirect, 3),
-                0L,
-                instruct(InputDirect, 4),
-                0L,
-                instruct(InputDirect, 5),
-                instruct(Halt),
-                instruct(InputDirect, 2),
-                instruct(JumpValue, 5)
-        ));
+        var input = Stream.of(
+                load(2, instruct(JumpValue, 0)),
+                load(3, 5L),
+                load(4, 0L),
+                load(5, instruct(Halt)),
+                load(2, instruct(JumpValue, 5))
+        ).flatMap(Collection::stream).toList();
 
         final var memory = Collections.singletonList(instruct(InputDirect, 1));
         final var run = run(new State(memory, new Port(input)));
@@ -36,6 +30,13 @@ public class Main {
         }
 
         System.out.println("[" + joiner + "]");
+    }
+
+    private static List<Long> load(int address, long value) {
+        return List.of(
+                instruct(InputDirect, address),
+                value
+        );
     }
 
     private static long instruct(Operation operation) {
@@ -101,6 +102,16 @@ public class Main {
         private final Port port;
         private int programCounter;
 
+        public State(List<Long> memory, Port port) {
+            this(memory, port, 0);
+        }
+
+        public State(List<Long> memory, Port port, int programCounter) {
+            this.memory = new ArrayList<>(memory);
+            this.port = port;
+            this.programCounter = programCounter;
+        }
+
         @Override
         public String toString() {
             final var joinedMemory = memory.stream()
@@ -111,16 +122,6 @@ public class Main {
                     "memory=" + joinedMemory +
                     ", programCounter=" + programCounter +
                     '}';
-        }
-
-        public State(List<Long> memory, Port port) {
-            this(memory, port, 0);
-        }
-
-        public State(List<Long> memory, Port port, int programCounter) {
-            this.memory = new ArrayList<>(memory);
-            this.port = port;
-            this.programCounter = programCounter;
         }
 
         public State next() {
