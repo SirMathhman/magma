@@ -12,13 +12,19 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
+
+
         var input = new ArrayList<Long>(List.of(
                 instruct(InputDirect, 2),
                 instruct(JumpValue, 0),
                 instruct(InputDirect, 3),
+                0L,
+                instruct(InputDirect, 4),
+                0L,
+                instruct(InputDirect, 5),
                 instruct(Halt),
                 instruct(InputDirect, 2),
-                instruct(JumpValue, 3)
+                instruct(JumpValue, 5)
         ));
 
         final var memory = Collections.singletonList(instruct(InputDirect, 1));
