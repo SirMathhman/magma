@@ -14,13 +14,14 @@ public class Main {
 
     public static void main(String[] args) {
         var instructions = Stream.of(
-                List.of(
-                        instruct(LoadValue, 100)),
-                moveByInstruction(instruct(AddValue, 1)),
-                List.of(
-                        instruct(StoreIndirect, 3)
-                ),
-                moveByInstruction(instruct(SubtractValue, 1)),
+                insertAt(1, List.of(instruct(LoadValue, 100))),
+                insertAt(2, List.of(instruct(LoadValue, 200))),
+                insertAt(3, Stream.of(
+                        loadOffset(1),
+                        List.of(instruct(StoreDirect, 4)),
+                        loadOffset(2),
+                        List.of(instruct(AddDirect, 4))
+                ).flatMap(Collection::stream).toList()),
                 List.of(instruct(Halt))
         ).flatMap(Collection::stream).toList();
 
@@ -48,6 +49,29 @@ public class Main {
         }
 
         System.out.println(joiner);
+    }
+
+    private static List<Long> loadOffset(int offset) {
+        return Stream.of(moveTo(offset),
+                        List.of(instruct(LoadIndirect, 3)),
+                        moveTo(-offset),
+                        List.of(instruct(StoreDirect, 4)))
+                .flatMap(Collection::stream).toList();
+    }
+
+    private static List<Long> insertAt(int offset, List<Long> loader) {
+        return Stream.of(loader,
+                        moveTo(offset), List.of(instruct(StoreIndirect, 3)),
+                        moveTo(-offset))
+                .flatMap(Collection::stream).toList();
+    }
+
+    private static List<Long> moveTo(int offset) {
+        if (offset > 0) {
+            return moveByInstruction(instruct(AddValue, offset));
+        } else {
+            return moveByInstruction(instruct(SubtractValue, -offset));
+        }
     }
 
     private static List<Long> moveByInstruction(long instruction) {
@@ -104,8 +128,10 @@ public class Main {
                 case AddValue -> Optional.of(next.addValue(addressOrValue));
                 case StoreDirect -> Optional.of(next.storeDirect(addressOrValue));
                 case LoadValue -> Optional.of(next.loadValue(addressOrValue));
+                case LoadIndirect -> Optional.of(next.loadIndirect(addressOrValue));
                 case StoreIndirect -> Optional.of(next.storeIndirect(addressOrValue));
                 case SubtractValue -> Optional.of(next.subtractValue(result.addressOrValue));
+                case AddDirect -> Optional.of(next.addDirect(result.addressOrValue));
             };
         });
     }
@@ -122,7 +148,15 @@ public class Main {
         Nothing,
         InputDirect,
         JumpValue,
-        Halt, LoadDirect, AddValue, StoreDirect, LoadValue, StoreIndirect, SubtractValue;
+        Halt,
+        AddValue,
+        StoreDirect,
+        LoadValue,
+        LoadDirect,
+        LoadIndirect,
+        StoreIndirect,
+        SubtractValue,
+        AddDirect;
 
         public static final Map<Byte, Operation> OP_CODE_TO_OPERATION = new HashMap<>();
 
@@ -236,6 +270,17 @@ public class Main {
 
         public State subtractValue(long value) {
             accumulator -= value;
+            return this;
+        }
+
+        public State loadIndirect(long address) {
+            final var next = memory.get((int) address);
+            accumulator = memory.get(Math.toIntExact(next));
+            return this;
+        }
+
+        public State addDirect(long address) {
+            accumulator += memory.get((int) address);
             return this;
         }
     }
