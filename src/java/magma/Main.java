@@ -2,6 +2,7 @@ package magma;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static magma.Main.Operation.*;
 
@@ -12,14 +13,16 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
-        var instructions = List.of(
-                instruct(LoadDirect, 3),
-                instruct(AddValue, 1),
-                instruct(StoreDirect, 3),
-                instruct(LoadValue, 100),
-                instruct(StoreIndirect, 3),
-                instruct(Halt)
-        );
+        var instructions = Stream.of(
+                List.of(
+                        instruct(LoadValue, 100)),
+                moveByInstruction(instruct(AddValue, 1)),
+                List.of(
+                        instruct(StoreIndirect, 3)
+                ),
+                moveByInstruction(instruct(SubtractValue, 1)),
+                List.of(instruct(Halt))
+        ).flatMap(Collection::stream).toList();
 
         final var assembled = new ArrayList<Long>();
         assembled.addAll(set(2, instruct(JumpValue, 0)));
@@ -45,6 +48,16 @@ public class Main {
         }
 
         System.out.println(joiner);
+    }
+
+    private static List<Long> moveByInstruction(long instruction) {
+        return List.of(
+                instruct(StoreDirect, 4),
+                instruct(LoadDirect, 3),
+                instruction,
+                instruct(StoreDirect, 3),
+                instruct(LoadDirect, 4)
+        );
     }
 
     private static List<Long> set(int address, long value) {
@@ -80,16 +93,19 @@ public class Main {
             final var result = decode(instruction);
 
             final var next = state.next();
-            return switch (result.operation()) {
+            final var operation = result.operation();
+            final var addressOrValue = result.addressOrValue();
+            return switch (operation) {
                 case Nothing -> Optional.of(next);
-                case InputDirect -> Optional.of(next.inputDirect(result.addressOrValue()));
-                case JumpValue -> Optional.of(next.jumpValue(result.addressOrValue()));
+                case InputDirect -> Optional.of(next.inputDirect(addressOrValue));
+                case JumpValue -> Optional.of(next.jumpValue(addressOrValue));
                 case Halt -> Optional.empty();
-                case LoadDirect -> Optional.of(next.loadDirect(result.addressOrValue()));
-                case AddValue -> Optional.of(next.addValue(result.addressOrValue()));
-                case StoreDirect -> Optional.of(next.storeDirect(result.addressOrValue()));
-                case LoadValue -> Optional.of(next.loadValue(result.addressOrValue()));
-                case StoreIndirect -> Optional.of(next.storeIndirect(result.addressOrValue()));
+                case LoadDirect -> Optional.of(next.loadDirect(addressOrValue));
+                case AddValue -> Optional.of(next.addValue(addressOrValue));
+                case StoreDirect -> Optional.of(next.storeDirect(addressOrValue));
+                case LoadValue -> Optional.of(next.loadValue(addressOrValue));
+                case StoreIndirect -> Optional.of(next.storeIndirect(addressOrValue));
+                case SubtractValue -> Optional.of(next.subtractValue(result.addressOrValue));
             };
         });
     }
@@ -106,7 +122,7 @@ public class Main {
         Nothing,
         InputDirect,
         JumpValue,
-        Halt, LoadDirect, AddValue, StoreDirect, LoadValue, StoreIndirect;
+        Halt, LoadDirect, AddValue, StoreDirect, LoadValue, StoreIndirect, SubtractValue;
 
         public static final Map<Byte, Operation> OP_CODE_TO_OPERATION = new HashMap<>();
 
@@ -215,6 +231,11 @@ public class Main {
         public State storeIndirect(long address) {
             final var resolved = memory.get((int) address);
             set(Math.toIntExact(resolved), accumulator);
+            return this;
+        }
+
+        public State subtractValue(long value) {
+            accumulator -= value;
             return this;
         }
     }
