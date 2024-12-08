@@ -36,12 +36,15 @@ public class Main {
         final var memory = Collections.singletonList(instruct(InputDirect, 1));
         final var run = run(new State(memory, new Port(assembled)));
 
-        var joiner = new StringJoiner(", ");
-        for (long value : run.memory) {
-            joiner.add(Long.toHexString(value));
+        var joiner = new StringJoiner("\n");
+        List<Long> longs = run.memory;
+        for (int i = 0; i < longs.size(); i++) {
+            long value = longs.get(i);
+            final var result = decode(value);
+            joiner.add(Long.toHexString(i) + ": " + result);
         }
 
-        System.out.println("[" + joiner + "]");
+        System.out.println(joiner);
     }
 
     private static List<Long> set(int address, long value) {
@@ -74,23 +77,29 @@ public class Main {
 
     private static Optional<State> cycle(State state) {
         return state.current().flatMap(instruction -> {
-            final var opCode = (byte) (instruction >> ADDRESS_OR_VALUE_LENGTH);
-            final var operation = apply(opCode).orElse(Nothing);
-            final var addressOrValue = instruction & ((1L << ADDRESS_OR_VALUE_LENGTH) - 1);
+            final var result = decode(instruction);
 
             final var next = state.next();
-            return switch (operation) {
+            return switch (result.operation()) {
                 case Nothing -> Optional.of(next);
-                case InputDirect -> Optional.of(next.inputDirect(addressOrValue));
-                case JumpValue -> Optional.of(next.jumpValue(addressOrValue));
+                case InputDirect -> Optional.of(next.inputDirect(result.addressOrValue()));
+                case JumpValue -> Optional.of(next.jumpValue(result.addressOrValue()));
                 case Halt -> Optional.empty();
-                case LoadDirect -> Optional.of(next.loadDirect(addressOrValue));
-                case AddValue -> Optional.of(next.addValue(addressOrValue));
-                case StoreDirect -> Optional.of(next.storeDirect(addressOrValue));
-                case LoadValue -> Optional.of(next.loadValue(addressOrValue));
-                case StoreIndirect -> Optional.of(next.storeIndirect(addressOrValue));
+                case LoadDirect -> Optional.of(next.loadDirect(result.addressOrValue()));
+                case AddValue -> Optional.of(next.addValue(result.addressOrValue()));
+                case StoreDirect -> Optional.of(next.storeDirect(result.addressOrValue()));
+                case LoadValue -> Optional.of(next.loadValue(result.addressOrValue()));
+                case StoreIndirect -> Optional.of(next.storeIndirect(result.addressOrValue()));
             };
         });
+    }
+
+    private static Instruction decode(Long instruction) {
+        final var opCode = (byte) (instruction >> ADDRESS_OR_VALUE_LENGTH);
+        final var operation = apply(opCode).orElse(Nothing);
+        final var addressOrValue = instruction & ((1L << ADDRESS_OR_VALUE_LENGTH) - 1);
+        Instruction result = new Instruction(operation, addressOrValue);
+        return result;
     }
 
     enum Operation {
@@ -111,6 +120,13 @@ public class Main {
 
         public static Optional<Operation> apply(byte opCode) {
             return Optional.of(OP_CODE_TO_OPERATION.get(opCode));
+        }
+    }
+
+    private record Instruction(Operation operation, long addressOrValue) {
+        @Override
+        public String toString() {
+            return operation + " " + Long.toHexString(addressOrValue);
         }
     }
 
