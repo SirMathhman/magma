@@ -2,7 +2,6 @@ package magma;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static magma.Main.Operation.*;
 
@@ -13,16 +12,29 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
-        var input = Stream.of(
-                load(2, instruct(JumpValue, 0)),
-                load(3, 5L),
-                load(4, 0L),
-                load(5, instruct(Halt)),
-                load(2, instruct(JumpValue, 5))
-        ).flatMap(Collection::stream).toList();
+        var instructions = List.of(
+                instruct(LoadDirect, 3),
+                instruct(AddValue, 1),
+                instruct(StoreDirect, 3),
+                instruct(LoadValue, 100),
+                instruct(StoreIndirect, 3),
+                instruct(Halt)
+        );
+
+        final var assembled = new ArrayList<Long>();
+        assembled.addAll(set(2, instruct(JumpValue, 0)));
+        assembled.addAll(set(3, 4L + instructions.size()));
+        assembled.addAll(set(4, 0L));
+
+        for (int i = 0; i < instructions.size(); i++) {
+            final var instruction = instructions.get(i);
+            assembled.addAll(set(i + 5, instruction));
+        }
+
+        assembled.addAll(set(2, instruct(JumpValue, 5)));
 
         final var memory = Collections.singletonList(instruct(InputDirect, 1));
-        final var run = run(new State(memory, new Port(input)));
+        final var run = run(new State(memory, new Port(assembled)));
 
         var joiner = new StringJoiner(", ");
         for (long value : run.memory) {
@@ -32,7 +44,7 @@ public class Main {
         System.out.println("[" + joiner + "]");
     }
 
-    private static List<Long> load(int address, long value) {
+    private static List<Long> set(int address, long value) {
         return List.of(
                 instruct(InputDirect, address),
                 value
@@ -72,6 +84,11 @@ public class Main {
                 case InputDirect -> Optional.of(next.inputDirect(addressOrValue));
                 case JumpValue -> Optional.of(next.jumpValue(addressOrValue));
                 case Halt -> Optional.empty();
+                case LoadDirect -> Optional.of(next.loadDirect(addressOrValue));
+                case AddValue -> Optional.of(next.addValue(addressOrValue));
+                case StoreDirect -> Optional.of(next.storeDirect(addressOrValue));
+                case LoadValue -> Optional.of(next.loadValue(addressOrValue));
+                case StoreIndirect -> Optional.of(next.storeIndirect(addressOrValue));
             };
         });
     }
@@ -80,7 +97,7 @@ public class Main {
         Nothing,
         InputDirect,
         JumpValue,
-        Halt;
+        Halt, LoadDirect, AddValue, StoreDirect, LoadValue, StoreIndirect;
 
         public static final Map<Byte, Operation> OP_CODE_TO_OPERATION = new HashMap<>();
 
@@ -100,16 +117,14 @@ public class Main {
     private static class State {
         private final List<Long> memory;
         private final Port port;
+        private long accumulator;
         private int programCounter;
 
         public State(List<Long> memory, Port port) {
-            this(memory, port, 0);
-        }
-
-        public State(List<Long> memory, Port port, int programCounter) {
             this.memory = new ArrayList<>(memory);
             this.port = port;
-            this.programCounter = programCounter;
+            this.programCounter = 0;
+            this.accumulator = 0;
         }
 
         @Override
@@ -158,6 +173,32 @@ public class Main {
             if (address < memory.size()) {
                 programCounter = (int) address;
             }
+            return this;
+        }
+
+        public State loadDirect(long address) {
+            accumulator = memory.get((int) address);
+            return this;
+        }
+
+        public State addValue(long value) {
+            accumulator += value;
+            return this;
+        }
+
+        public State storeDirect(long address) {
+            memory.set((int) address, accumulator);
+            return this;
+        }
+
+        public State loadValue(long value) {
+            accumulator = value;
+            return this;
+        }
+
+        public State storeIndirect(long address) {
+            final var resolved = memory.get((int) address);
+            set(Math.toIntExact(resolved), accumulator);
             return this;
         }
     }
