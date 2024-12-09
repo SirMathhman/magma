@@ -23,10 +23,14 @@ final class State {
     }
 
     private List<List<Instruction>> assign(String name, List<Loader> loaders) {
+        return assign(name, 0, loaders);
+    }
+
+    private List<List<Instruction>> assign(String name, int offset, List<Loader> loaders) {
         var newInstructions = new ArrayList<List<Instruction>>();
-        for (int i = 0; i < loaders.size(); i++) {
-            final var loader = loaders.get(i);
-            newInstructions.add(assignAtOffset(name, loader, i));
+        for (int index = 0; index < loaders.size(); index++) {
+            final var loader = loaders.get(index);
+            newInstructions.add(assignAtOffset(name, loader, index + offset));
         }
         return newInstructions;
     }
@@ -46,13 +50,15 @@ final class State {
     }
 
     public State define(String labelName, String variableName, List<Loader> loaders) {
-        return assign(labelName, variableName, loaders).define(variableName, loaders.size());
+        return assign(labelName, variableName, 0, loaders).define(variableName, loaders.size());
     }
 
-    public State assign(String labelName, String destinationName, List<Loader> loaders) {
-        return updateLabel(labelName, label -> assign(destinationName, loaders)
-                .stream()
-                .reduce(label, Label::instruct, (_, next) -> next));
+    public State assign(String labelName, String destinationName, int offset, List<Loader> loaders) {
+        return updateLabel(labelName, label -> {
+            return assign(destinationName, offset, loaders)
+                    .stream()
+                    .reduce(label, Label::instruct, (_, next) -> next);
+        });
     }
 
     private State updateLabel(String labelName, Function<Label, Label> mapper) {

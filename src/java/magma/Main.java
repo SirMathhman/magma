@@ -21,7 +21,7 @@ public class Main {
                     _ -> List.of(LoadValue.of(new Value(300))),
                     _ -> List.of(LoadValue.of(new Value(200)))
                     ))
-                    .assign("main", "sum", Collections.singletonList(stack -> List.of(
+                    .assign("main", "array", 2, Collections.singletonList(stack -> List.of(
                             LoadDirect.of(new DataAddress(stack.resolveAddress("array"))),
                             AddDirect.of(new DataAddress(stack.resolveAddress("array") + 1))
                     )));
