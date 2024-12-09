@@ -23,7 +23,7 @@ record Stack(List<List<Tuple<String, Long>>> frames) {
         return this;
     }
 
-    public long resolveAddress(String name) {
+    public long resolveDataAddress(String name) {
         var sum = 0;
 
         for (List<Tuple<String, Long>> frame : frames()) {

@@ -12,15 +12,20 @@ public class Main {
 
     public static void main(String[] args) {
         final var result0 = new State()
-                .label("main", state -> state.define("array", List.of(
-                        _ -> List.of(LoadValue.of(new Value(100))),
-                        _ -> List.of(LoadValue.of(new Value(300))),
-                        _ -> List.of(LoadValue.of(new Value(200)))
-                ))
-                .assign("array", 2, Collections.singletonList(stack -> List.of(
-                        LoadDirect.of(new DataAddress(stack.resolveAddress("array"))),
-                        AddDirect.of(new DataAddress(stack.resolveAddress("array") + 1))
-                ))));
+                .label("main", context -> context.define("array", List.of(
+                                _ -> List.of(LoadValue.of(new Value(100))),
+                                _ -> List.of(LoadValue.of(new Value(300))),
+                                _ -> List.of(LoadValue.of(new Value(200)))
+                        ))
+                        .assign("array", 2, Collections.singletonList(stack -> List.of(
+                                LoadDirect.of(new DataAddress(stack.resolveDataAddress("array"))),
+                                AddDirect.of(new DataAddress(stack.resolveDataAddress("array") + 1))
+                        )))
+                        .jump("exit")
+                )
+                .label("exit", context -> {
+                    return context.instruct(List.of(Halt.empty()));
+                });
 
         final var instructions = result0.instructions();
         final var adjusted = instructions.stream()
@@ -79,6 +84,7 @@ public class Main {
                 case Nothing -> Optional.of(next);
                 case InputDirect -> Optional.of(next.inputDirect(addressOrValue));
                 case JumpValue -> Optional.of(next.jumpValue(addressOrValue));
+                case JumpAddress -> Optional.of(next.jumpAddress(addressOrValue));
                 case Halt -> Optional.empty();
                 case LoadDirect -> Optional.of(next.loadDirect(addressOrValue));
                 case AddValue -> Optional.of(next.addValue(addressOrValue));

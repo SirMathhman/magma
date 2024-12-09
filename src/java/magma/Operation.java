@@ -8,6 +8,7 @@ public enum Operation {
     Nothing,
     InputDirect,
     JumpValue,
+    JumpAddress,
     Halt,
     AddValue,
     StoreDirect,

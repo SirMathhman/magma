@@ -1,15 +1,12 @@
 package magma;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-import static magma.Operation.StoreDirect;
+import static magma.Operation.*;
 
-final class State {
+public final class State {
     private final Stack stack;
     private final List<Tuple<String, Label>> labels;
 
@@ -17,6 +14,7 @@ final class State {
         this.stack = stack;
         this.labels = labels;
     }
+
 
     public State(List<Tuple<String, Label>> labels) {
         this(new Stack(), labels);
@@ -32,22 +30,9 @@ final class State {
         return applied.state().exit();
     }
 
-    private List<List<Instruction>> assign(String name, List<Loader> loaders) {
-        return assign(name, 0, loaders);
-    }
-
-    private List<List<Instruction>> assign(String name, int offset, List<Loader> loaders) {
-        var newInstructions = new ArrayList<List<Instruction>>();
-        for (int index = 0; index < loaders.size(); index++) {
-            final var loader = loaders.get(index);
-            newInstructions.add(assignAtOffset(name, loader, index + offset));
-        }
-        return newInstructions;
-    }
-
     private List<Instruction> assignAtOffset(String name, Loader loader, int offset) {
         final var instructions = new ArrayList<>(loader.load(stack));
-        instructions.add(StoreDirect.of(new DataAddress(stack.resolveAddress(name) + offset)));
+        instructions.add(StoreDirect.of(new DataAddress(stack.resolveDataAddress(name) + offset)));
         return instructions;
     }
 
@@ -64,11 +49,21 @@ final class State {
     }
 
     public State assign(String labelName, String destinationName, int offset, List<Loader> loaders) {
-        return updateLabel(labelName, label -> {
-            return assign(destinationName, offset, loaders)
-                    .stream()
-                    .reduce(label, Label::instruct, (_, next) -> next);
-        });
+        return instruct(labelName, assign(destinationName, offset, loaders));
+    }
+
+    public State instruct(String labelName, List<Instruction> instructions) {
+        return updateLabel(labelName, label -> label.instruct(instructions));
+    }
+
+    private List<Instruction> assign(String destinationName, int offset, List<Loader> loaders) {
+        var newInstructions = new ArrayList<Instruction>();
+        for (int index = 0; index < loaders.size(); index++) {
+            final var loader = loaders.get(index);
+            newInstructions.addAll(assignAtOffset(destinationName, loader, index + offset));
+        }
+
+        return newInstructions;
     }
 
     private State updateLabel(String labelName, Function<Label, Label> mapper) {
@@ -106,5 +101,24 @@ final class State {
                 .map(Label::instructions)
                 .flatMap(Collection::stream)
                 .toList();
+    }
+
+    public State jump(String sourceLabel, String destinationLabel) {
+        return updateLabel(sourceLabel, label -> {
+            final var instruction = JumpValue.of(new FunctionAddress(resolveFunctionAddress(destinationLabel)));
+            return label.instruct(Collections.singletonList(instruction));
+        });
+    }
+
+    private long resolveFunctionAddress(String destinationLabel) {
+        var total = 0L;
+        for (Tuple<String, Label> label : labels) {
+            if (label.left().equals(destinationLabel)) {
+                return total;
+            } else {
+                total += label.right().size();
+            }
+        }
+        return total;
     }
 }

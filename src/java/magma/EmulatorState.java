@@ -114,4 +114,8 @@ class EmulatorState {
     public List<Long> getMemory() {
         return memory;
     }
+
+    public EmulatorState jumpAddress(long addressOrValue) {
+        return jumpValue(memory.get((int) addressOrValue));
+    }
 }

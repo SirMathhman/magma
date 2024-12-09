@@ -13,4 +13,8 @@ public record Label(List<Instruction> instructions) {
         copy.addAll(instructions);
         return new Label(copy);
     }
+
+    public long size() {
+        return instructions.size();
+    }
 }
