@@ -14,28 +14,17 @@ public class Main {
 
     public static void main(String[] args) {
         var instructions = Stream.of(
-                insertAt(1, List.of(instruct(LoadValue, 100))),
-                insertAt(2, List.of(instruct(LoadValue, 200))),
-                insertAt(3, Stream.of(
-                        loadOffset(1),
-                        List.of(instruct(StoreDirect, 4)),
-                        loadOffset(2),
-                        List.of(instruct(AddDirect, 4))
-                ).flatMap(Collection::stream).toList()),
                 List.of(instruct(Halt))
         ).flatMap(Collection::stream).toList();
 
-        final var assembled = new ArrayList<Long>();
-        assembled.addAll(set(2, instruct(JumpValue, 0)));
-        assembled.addAll(set(3, 4L + instructions.size()));
-        assembled.addAll(set(4, 0L));
+        final var assembled = new ArrayList<>(set(2, instruct(JumpValue, 0)));
 
         for (int i = 0; i < instructions.size(); i++) {
             final var instruction = instructions.get(i);
-            assembled.addAll(set(i + 5, instruction));
+            assembled.addAll(set(i + 3, instruction));
         }
 
-        assembled.addAll(set(2, instruct(JumpValue, 5)));
+        assembled.addAll(set(2, instruct(JumpValue, 3)));
 
         final var memory = Collections.singletonList(instruct(InputDirect, 1));
         final var run = run(new State(memory, new Port(assembled)));
