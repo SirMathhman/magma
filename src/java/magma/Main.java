@@ -55,7 +55,7 @@ public class Main {
     private static State block(State state, Function<State, State> mapper) {
         final var entered = state.enter();
         final var applied = mapper.apply(entered);
-        return applied.mapLeft(Stack::exit);
+        return applied.exit();
     }
 
     private static List<Long> set(int address, long value) {
@@ -120,10 +120,6 @@ public class Main {
 
         public State exit() {
             return new State(stack.exit(), instructions);
-        }
-
-        public State mapLeft(Function<Stack, Stack> mapper) {
-            return new State(mapper.apply(stack), instructions);
         }
 
         public State defineData(String name, long size, Function<Stack, List<Instruction>> loader) {
