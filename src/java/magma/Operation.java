@@ -31,4 +31,12 @@ public enum Operation {
     public static Optional<Operation> apply(byte opCode) {
         return Optional.of(OP_CODE_TO_OPERATION.get(opCode));
     }
+
+    public Instruction empty() {
+        return new Instruction(this);
+    }
+
+    public Instruction of(Operand operand) {
+        return new Instruction(this, operand);
+    }
 }

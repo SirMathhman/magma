@@ -32,6 +32,6 @@ public final class Instruction {
     }
 
     public Instruction offset(int offset) {
-        return new Instruction(operation, operand.offset(offset));
+        return operation.of(operand.offset(offset));
     }
 }
