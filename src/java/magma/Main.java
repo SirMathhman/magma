@@ -12,21 +12,20 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
-        final var withSum = new State().defineData("sum", 1L);
+        final var withSum = new State(List.of(new Tuple<>("main", new Label()))).define("sum", 1L);
 
-        final var instructions = block(withSum, state -> {
-            return state.defineData("a", 1L, _ -> List.of(LoadValue.of(new Value(100))))
-                    .defineData("b", 1L, _ -> List.of(LoadValue.of(new Value(200))))
-                    .assignAsState("sum", stack -> List.of(
+        final var result0 = block(withSum, state -> {
+            return state.define("main", "a", 1L, _ -> List.of(LoadValue.of(new Value(100))))
+                    .define("main", "b", 1L, _ -> List.of(LoadValue.of(new Value(200))))
+                    .assign("main", "sum", stack -> List.of(
                             LoadDirect.of(new DataAddress(stack.resolveAddress("a"))),
-                            AddDirect.of(new DataAddress(stack.resolveAddress("b")))));
+                            AddDirect.of(new DataAddress(stack.resolveAddress("b")))
+                    ));
         });
 
-        final var totalInstructions = new ArrayList<>(instructions.instructions());
-        totalInstructions.add(Halt.empty());
-
-        final var adjusted = totalInstructions.stream()
-                .map(instruction -> instruction.offsetAddress(3).offsetData(totalInstructions.size()))
+        final var instructions = result0.instructions();
+        final var adjusted = instructions.stream()
+                .map(instruction -> instruction.offsetAddress(3).offsetData(instructions.size()))
                 .map(Instruction::toBinary)
                 .toList();
 
