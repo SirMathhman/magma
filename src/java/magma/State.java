@@ -22,6 +22,16 @@ final class State {
         this(new Stack(), labels);
     }
 
+    public State() {
+        this(new ArrayList<>());
+    }
+
+    State label(String name, Function<LabelContext, LabelContext> mapper) {
+        final var entered = enter();
+        final var applied = mapper.apply(new LabelContext(name, entered));
+        return applied.state().exit();
+    }
+
     private List<List<Instruction>> assign(String name, List<Loader> loaders) {
         return assign(name, 0, loaders);
     }
@@ -62,13 +72,19 @@ final class State {
     }
 
     private State updateLabel(String labelName, Function<Label, Label> mapper) {
-        final var tuple = findLabelWithIndex(labelName).orElseThrow();
-        final var index = tuple.left();
-        final var oldLabel = tuple.right();
-
-        final var newLabel = mapper.apply(oldLabel);
+        final var optional = findLabelWithIndex(labelName);
         final var copy = new ArrayList<>(labels);
-        copy.set(index, new Tuple<>(labelName, newLabel));
+        if (optional.isPresent()) {
+            var tuple = optional.get();
+            final var index = tuple.left();
+            final var oldLabel = tuple.right();
+
+            final var newLabel = mapper.apply(oldLabel);
+            copy.set(index, new Tuple<>(labelName, newLabel));
+        } else {
+            copy.add(new Tuple<>(labelName, mapper.apply(new Label())));
+        }
+
         return new State(stack, copy);
     }
 

@@ -1,7 +1,6 @@
 package magma;
 
 import java.util.*;
-import java.util.function.Function;
 
 import static magma.Operation.*;
 
@@ -12,10 +11,8 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
-        final var withSum = new State(List.of(new Tuple<>("main", new Label())))
-                .define("sum", 1L);
-
-        final var result0 = label("main", withSum, state -> state.define("array", List.of(
+        final var result0 = new State()
+                .label("main", state -> state.define("array", List.of(
                         _ -> List.of(LoadValue.of(new Value(100))),
                         _ -> List.of(LoadValue.of(new Value(300))),
                         _ -> List.of(LoadValue.of(new Value(200)))
@@ -49,12 +46,6 @@ public class Main {
         }
 
         System.out.println(joiner);
-    }
-
-    private static State label(String name, State state, Function<LabelContext, LabelContext> mapper) {
-        final var entered = state.enter();
-        final var applied = mapper.apply(new LabelContext(name, entered));
-        return applied.state().exit();
     }
 
     private static List<Long> set(int address, long value) {
