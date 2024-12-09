@@ -14,27 +14,27 @@ public class Main {
     public static void main(String[] args) {
         var instructions = List.of(
                 LoadValue.of(new Value(100)),
-                StoreDirect.of(new Address(0)),
+                StoreDirect.of(new DataAddress(0)),
                 LoadValue.of(new Value(200)),
-                StoreDirect.of(new Address(1)),
-                LoadDirect.of(new Address(0)),
-                AddDirect.of(new Address(1)),
-                StoreDirect.of(new Address(2)),
+                StoreDirect.of(new DataAddress(1)),
+                LoadDirect.of(new DataAddress(0)),
+                AddDirect.of(new DataAddress(1)),
+                StoreDirect.of(new DataAddress(2)),
                 Halt.empty()
         );
 
         final var adjusted = instructions.stream()
-                .map(instruction -> instruction.offset(3 + instructions.size()))
+                .map(instruction -> instruction.offsetAddress(3).offsetData(instructions.size()))
                 .map(Instruction::toBinary)
                 .toList();
 
-        final var assembled = new ArrayList<>(set(2, JumpValue.of(new Address(0)).toBinary()));
+        final var assembled = new ArrayList<>(set(2, JumpValue.of(new DataAddress(0)).toBinary()));
         for (int i = 0; i < adjusted.size(); i++) {
             assembled.addAll(set(3 + i, adjusted.get(i)));
         }
-        assembled.addAll(set(2, JumpValue.of(new Address(3)).toBinary()));
+        assembled.addAll(set(2, JumpValue.of(new DataAddress(3)).toBinary()));
 
-        final var memory = Collections.singletonList(InputDirect.of(new Address(1)).toBinary());
+        final var memory = Collections.singletonList(InputDirect.of(new DataAddress(1)).toBinary());
         final var run = run(new State(memory, new Port(assembled)));
 
         var joiner = new StringJoiner("\n");
@@ -50,7 +50,7 @@ public class Main {
 
     private static List<Long> set(int address, long value) {
         return List.of(
-                InputDirect.of(new Address(address)).toBinary(),
+                InputDirect.of(new DataAddress(address)).toBinary(),
                 value
         );
     }
@@ -96,7 +96,7 @@ public class Main {
         final var opCode = (byte) (instruction >> ADDRESS_OR_VALUE_LENGTH);
         final var operation = apply(opCode).orElse(Nothing);
         final var addressOrValue = instruction & ((1L << ADDRESS_OR_VALUE_LENGTH) - 1);
-        return operation.of(new Address(addressOrValue));
+        return operation.of(new DataAddress(addressOrValue));
     }
 
     private static class State {

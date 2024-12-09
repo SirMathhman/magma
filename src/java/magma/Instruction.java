@@ -10,7 +10,7 @@ public final class Instruction {
     }
 
     public Instruction(Operation operation) {
-        this(operation, new Address(0));
+        this(operation, new DataAddress(0));
     }
 
     long toBinary() {
@@ -31,7 +31,11 @@ public final class Instruction {
         return operand.compute();
     }
 
-    public Instruction offset(int offset) {
-        return operation.of(operand.offset(offset));
+    public Instruction offsetData(int offset) {
+        return operation.of(operand.offsetData(offset));
+    }
+
+    public Instruction offsetAddress(int offset) {
+        return operation.of(operand.offsetAddress(offset));
     }
 }

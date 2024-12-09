@@ -7,7 +7,7 @@ public record Value(int value) implements Operand {
     }
 
     @Override
-    public Operand offset(int offset) {
+    public Operand offsetData(int offset) {
         return new Value(value);
     }
 }
