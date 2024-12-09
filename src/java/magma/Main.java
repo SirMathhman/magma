@@ -15,17 +15,15 @@ public class Main {
         final var withSum = new State(List.of(new Tuple<>("main", new Label())))
                 .define("sum", 1L);
 
-        final var result0 = block(withSum, state -> {
-            return state.define("main", "array", List.of(
-                    _ -> List.of(LoadValue.of(new Value(100))),
-                    _ -> List.of(LoadValue.of(new Value(300))),
-                    _ -> List.of(LoadValue.of(new Value(200)))
-                    ))
-                    .assign("main", "array", 2, Collections.singletonList(stack -> List.of(
-                            LoadDirect.of(new DataAddress(stack.resolveAddress("array"))),
-                            AddDirect.of(new DataAddress(stack.resolveAddress("array") + 1))
-                    )));
-        });
+        final var result0 = label("main", withSum, state -> state.define("array", List.of(
+                        _ -> List.of(LoadValue.of(new Value(100))),
+                        _ -> List.of(LoadValue.of(new Value(300))),
+                        _ -> List.of(LoadValue.of(new Value(200)))
+                ))
+                .assign("array", 2, Collections.singletonList(stack -> List.of(
+                        LoadDirect.of(new DataAddress(stack.resolveAddress("array"))),
+                        AddDirect.of(new DataAddress(stack.resolveAddress("array") + 1))
+                ))));
 
         final var instructions = result0.instructions();
         final var adjusted = instructions.stream()
@@ -53,10 +51,10 @@ public class Main {
         System.out.println(joiner);
     }
 
-    private static State block(State state, Function<State, State> mapper) {
+    private static State label(String name, State state, Function<LabelContext, LabelContext> mapper) {
         final var entered = state.enter();
-        final var applied = mapper.apply(entered);
-        return applied.exit();
+        final var applied = mapper.apply(new LabelContext(name, entered));
+        return applied.state().exit();
     }
 
     private static List<Long> set(int address, long value) {
