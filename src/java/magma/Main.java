@@ -12,25 +12,25 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
-        var frame = new ArrayList<Tuple<String, Long>>();
+        var frames = new ArrayList<List<Tuple<String, Long>>>(List.of(new ArrayList<>()));
 
-        frame.add(new Tuple<>("x", 1L));
+        frames.getLast().add(new Tuple<>("x", 1L));
         var instructions = new ArrayList<>(List.of(
                 LoadValue.of(new Value(100)),
-                StoreDirect.of(new DataAddress(resolveAddress(frame, "x")))
+                StoreDirect.of(new DataAddress(resolveAddress(frames.getLast(), "x")))
         ));
 
-        frame.add(new Tuple<>("y", 1L));
+        frames.getLast().add(new Tuple<>("y", 1L));
         instructions.addAll(List.of(
                 LoadValue.of(new Value(200)),
-                StoreDirect.of(new DataAddress(resolveAddress(frame, "y")))
+                StoreDirect.of(new DataAddress(resolveAddress(frames.getLast(), "y")))
         ));
 
-        frame.add(new Tuple<>("z", 1L));
+        frames.getLast().add(new Tuple<>("z", 1L));
         instructions.addAll(List.of(
-                LoadValue.of(new DataAddress(resolveAddress(frame, "x"))),
-                AddDirect.of(new DataAddress(resolveAddress(frame, "y"))),
-                StoreDirect.of(new DataAddress(resolveAddress(frame, "z")))
+                LoadValue.of(new DataAddress(resolveAddress(frames.getLast(), "x"))),
+                AddDirect.of(new DataAddress(resolveAddress(frames.getLast(), "y"))),
+                StoreDirect.of(new DataAddress(resolveAddress(frames.getLast(), "z")))
         ));
 
         instructions.add(Halt.empty());
