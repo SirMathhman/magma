@@ -13,7 +13,9 @@ public class Main {
     public static void main(String[] args) {
         final var result0 = new State()
                 .label("exit", context -> {
-                    return context.instruct(List.of(Halt.empty()));
+                    return context
+                            .define("param", 1L)
+                            .instruct(List.of(Halt.empty()));
                 })
                 .label("__start__", context -> context.define("array", List.of(
                                         _ -> List.of(LoadValue.of(new Value(100))),

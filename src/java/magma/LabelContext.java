@@ -19,4 +19,8 @@ public record LabelContext(String labelName, State state) {
     public LabelContext jump(String labelName) {
         return new LabelContext(this.labelName, state.jump(this.labelName, labelName));
     }
+
+    public LabelContext define(String variableName, long size) {
+        return new LabelContext(labelName, state.define(variableName, size));
+    }
 }
