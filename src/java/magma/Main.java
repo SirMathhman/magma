@@ -14,17 +14,17 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
-        final var withSum = new State().define("sum", 1L);
+        final var withSum = new State().defineData("sum", 1L);
 
         final var instructions = block(withSum, state -> {
-            return state.define("a", 1L, _ -> List.of(LoadValue.of(new Value(100))))
-                    .define("b", 1L, _ -> List.of(LoadValue.of(new Value(200))))
+            return state.defineData("a", 1L, _ -> List.of(LoadValue.of(new Value(100))))
+                    .defineData("b", 1L, _ -> List.of(LoadValue.of(new Value(200))))
                     .assignAsState("sum", stack -> List.of(
                             LoadDirect.of(new DataAddress(stack.resolveAddress("a"))),
                             AddDirect.of(new DataAddress(stack.resolveAddress("b")))));
         });
 
-        final var totalInstructions = instructions.instructions;
+        final var totalInstructions = new ArrayList<>(instructions.instructions);
         totalInstructions.add(Halt.empty());
 
         final var adjusted = totalInstructions.stream()
@@ -126,11 +126,10 @@ public class Main {
             return new State(mapper.apply(stack), instructions);
         }
 
-        public State define(String name, long size, Function<Stack, List<Instruction>> loader) {
+        public State defineData(String name, long size, Function<Stack, List<Instruction>> loader) {
             final var withA = stack.define(name, size);
             final var instructions = assign(name, loader);
-            this.instructions.addAll(instructions);
-            return new State(withA, this.instructions);
+            return new State(withA, instructions);
         }
 
         public State assignAsState(String name, Function<Stack, List<Instruction>> loader) {
@@ -142,11 +141,13 @@ public class Main {
             final var instructions = Stream.of(loader.apply(stack), List.of(StoreDirect.of(new DataAddress(stack.resolveAddress(name)))))
                     .flatMap(Collection::stream)
                     .toList();
-            this.instructions.addAll(instructions);
-            return instructions;
+
+            final var copy = new ArrayList<>(this.instructions);
+            copy.addAll(instructions);
+            return copy;
         }
 
-        public State define(String name, long size) {
+        public State defineData(String name, long size) {
             return new State(stack.define(name, size), instructions);
         }
     }
