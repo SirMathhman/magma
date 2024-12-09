@@ -11,6 +11,18 @@ public class ApplicationTest {
     public static final String STATEMENT_END = ";";
 
     private static String run(String input) {
+        final var separator = input.indexOf(';');
+        if(separator == -1) return input;
+
+        final var left = input.substring(0, separator + 1);
+        final var right = input.substring(separator + 1);
+
+        return executeStatement(left) + executeStatement(right);
+    }
+
+    private static String executeStatement(String input) {
+        if(input.equals(generateDefinition())) return "";
+
         if (input.startsWith(RETURN_KEYWORD_WITH_SPACE) && input.endsWith(STATEMENT_END)) {
             return input.substring(RETURN_KEYWORD_WITH_SPACE.length(), input.length() - STATEMENT_END.length());
         }
@@ -18,20 +30,37 @@ public class ApplicationTest {
         return input;
     }
 
+    private static void assertRun(String input, String output) {
+        assertEquals(output, run(input));
+    }
+
+    private static String generateReturn(String value) {
+        return RETURN_KEYWORD_WITH_SPACE + value + STATEMENT_END;
+    }
+
     @Test
     void empty() {
-        assertEquals("", run(""));
+        assertRun("", "");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"100", "200"})
     void value(String value) {
-        assertEquals(value, run(value));
+        assertRun(value, value);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"100", "200"})
     void returns(String value) {
-        assertEquals(value, run(RETURN_KEYWORD_WITH_SPACE + value + STATEMENT_END));
+        assertRun(generateReturn(value), value);
+    }
+
+    @Test
+    void definition() {
+        assertRun(generateDefinition(), "");
+    }
+
+    private static String generateDefinition() {
+        return "let value = 100;";
     }
 }
