@@ -12,32 +12,40 @@ public class Main {
 
     public static void main(String[] args) {
         final var result0 = new State()
-                .label("main", context -> context.define("array", List.of(
-                                _ -> List.of(LoadValue.of(new Value(100))),
-                                _ -> List.of(LoadValue.of(new Value(300))),
-                                _ -> List.of(LoadValue.of(new Value(200)))
-                        ))
-                        .assign("array", 2, Collections.singletonList(stack -> List.of(
-                                LoadDirect.of(new DataAddress(stack.resolveDataAddress("array"))),
-                                AddDirect.of(new DataAddress(stack.resolveDataAddress("array") + 1))
-                        )))
-                        .jump("exit")
-                )
                 .label("exit", context -> {
                     return context.instruct(List.of(Halt.empty()));
-                });
+                })
+                .label("__start__", context -> context.define("array", List.of(
+                                        _ -> List.of(LoadValue.of(new Value(100))),
+                                        _ -> List.of(LoadValue.of(new Value(300))),
+                                        _ -> List.of(LoadValue.of(new Value(200)))
+                                ))
+                                .assign("array", 2, Collections.singletonList(stack -> List.of(
+                                        LoadDirect.of(new DataAddress(stack.resolveDataAddress("array"))),
+                                        AddDirect.of(new DataAddress(stack.resolveDataAddress("array") + 1))
+                                )))
+                                .jump("exit")
+                );
 
         final var instructions = result0.instructions();
         final var adjusted = instructions.stream()
                 .map(instruction -> instruction.offsetAddress(3).offsetData(instructions.size()))
+                .toList();
+
+        System.out.println(adjusted);
+
+        final var toBinary = adjusted
+                .stream()
                 .map(Instruction::toBinary)
                 .toList();
 
         final var assembled = new ArrayList<>(set(2, JumpValue.of(new DataAddress(0)).toBinary()));
-        for (int i = 0; i < adjusted.size(); i++) {
-            assembled.addAll(set(3 + i, adjusted.get(i)));
+        for (int i = 0; i < toBinary.size(); i++) {
+            assembled.addAll(set(3 + i, toBinary.get(i)));
         }
-        assembled.addAll(set(2, JumpValue.of(new DataAddress(3)).toBinary()));
+
+        final var startAddress = result0.resolveLabel("__start__").orElseThrow() + 3;
+        assembled.addAll(set(2, JumpValue.of(new FunctionAddress(startAddress)).toBinary()));
 
         final var memory = Collections.singletonList(InputDirect.of(new DataAddress(1)).toBinary());
         final var run = run(new EmulatorState(memory, new Port(assembled)));

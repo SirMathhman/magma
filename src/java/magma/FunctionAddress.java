@@ -8,11 +8,11 @@ public record FunctionAddress(long address) implements Operand {
 
     @Override
     public Operand offsetData(int offset) {
-        return new FunctionAddress(address + offset);
+        return new FunctionAddress(address);
     }
 
     @Override
     public Operand offsetAddress(int offset) {
-        return new FunctionAddress(address);
+        return new FunctionAddress(address + offset);
     }
 }

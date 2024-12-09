@@ -71,11 +71,15 @@ public final class State {
 
     public State jump(String sourceLabel, String destinationLabel) {
         final var labels1 = labels.updateLabel(sourceLabel, label -> {
-            final var address = labels.resolveFunctionAddress(destinationLabel).orElseThrow();
+            final var address = labels.resolveAddress(destinationLabel).orElseThrow();
             final var instruction = JumpValue.of(new FunctionAddress(address));
             return label.instruct(Collections.singletonList(instruction));
         });
 
         return new State(stack, labels1);
+    }
+
+    public Optional<Long> resolveLabel(String labelName) {
+        return labels.resolveAddress(labelName);
     }
 }

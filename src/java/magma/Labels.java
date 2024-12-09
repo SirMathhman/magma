@@ -37,7 +37,7 @@ public record Labels(List<Tuple<String, Label>> labels) {
                 .findFirst();
     }
 
-    Optional<Long> resolveFunctionAddress(String destinationLabel) {
+    Optional<Long> resolveAddress(String destinationLabel) {
         var total = 0L;
         for (Tuple<String, Label> label : labels()) {
             if (label.left().equals(destinationLabel)) {
