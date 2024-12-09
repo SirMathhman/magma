@@ -15,12 +15,14 @@ public class Main {
         final var withSum = new State(List.of(new Tuple<>("main", new Label()))).define("sum", 1L);
 
         final var result0 = block(withSum, state -> {
-            return state.define("main", "a", 1L, _ -> List.of(LoadValue.of(new Value(100))))
-                    .define("main", "b", 1L, _ -> List.of(LoadValue.of(new Value(200))))
-                    .assign("main", "sum", stack -> List.of(
-                            LoadDirect.of(new DataAddress(stack.resolveAddress("a"))),
-                            AddDirect.of(new DataAddress(stack.resolveAddress("b")))
-                    ));
+            return state.define("main", "array", 2L, List.of(
+                    _ -> List.of(LoadValue.of(new Value(100))),
+                    _ -> List.of(LoadValue.of(new Value(300)))
+                    ))
+                    .assign("main", "sum", Collections.singletonList(stack -> List.of(
+                            LoadDirect.of(new DataAddress(stack.resolveAddress("array"))),
+                            AddDirect.of(new DataAddress(stack.resolveAddress("array") + 1))
+                    )));
         });
 
         final var instructions = result0.instructions();

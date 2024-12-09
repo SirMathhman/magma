@@ -22,9 +22,18 @@ final class State {
         this(new Stack(), labels);
     }
 
-    private List<Instruction> assign(String name, Function<Stack, List<Instruction>> loader) {
-        final var instructions = new ArrayList<>(loader.apply(stack));
-        instructions.add(StoreDirect.of(new DataAddress(stack.resolveAddress(name))));
+    private List<List<Instruction>> assign(String name, List<Loader> loaders) {
+        var newInstructions = new ArrayList<List<Instruction>>();
+        for (int i = 0; i < loaders.size(); i++) {
+            final var loader = loaders.get(i);
+            newInstructions.add(assignAtOffset(name, loader, i));
+        }
+        return newInstructions;
+    }
+
+    private List<Instruction> assignAtOffset(String name, Loader loader, int offset) {
+        final var instructions = new ArrayList<>(loader.load(stack));
+        instructions.add(StoreDirect.of(new DataAddress(stack.resolveAddress(name) + offset)));
         return instructions;
     }
 
@@ -36,13 +45,15 @@ final class State {
         return new State(stack.exit(), labels);
     }
 
-    public State define(String labelName, String variableName, long size, Function<Stack, List<Instruction>> loader) {
-        var next = assign(labelName, variableName, loader);
+    public State define(String labelName, String variableName, long size, List<Loader> loaders) {
+        var next = assign(labelName, variableName, loaders);
         return new State(next.stack.define(variableName, size), next.labels);
     }
 
-    public State assign(String labelName, String destinationName, Function<Stack, List<Instruction>> loader) {
-        return updateLabel(labelName, label -> label.instruct(assign(destinationName, loader)));
+    public State assign(String labelName, String destinationName, List<Loader> loaders) {
+        return updateLabel(labelName, label -> assign(destinationName, loaders)
+                .stream()
+                .reduce(label, Label::instruct, (_, next) -> next));
     }
 
     private State updateLabel(String labelName, Function<Label, Label> mapper) {
