@@ -23,11 +23,11 @@ final class State {
     }
 
     public State enter() {
-        return new State(stack.enter(), new Label(label.instructions()));
+        return new State(stack.enter(), label);
     }
 
     public State exit() {
-        return new State(stack.exit(), new Label(label.instructions()));
+        return new State(stack.exit(), label);
     }
 
     public State defineData(String name, long size, Function<Stack, List<Instruction>> loader) {
@@ -52,7 +52,7 @@ final class State {
     }
 
     public State defineData(String name, long size) {
-        return new State(stack.define(name, size), new Label(label.instructions()));
+        return new State(stack.define(name, size), label);
     }
 
     public Stack stack() {
