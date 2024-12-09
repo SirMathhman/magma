@@ -12,10 +12,11 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
-        final var withSum = new State(List.of(new Tuple<>("main", new Label()))).define("sum", 1L);
+        final var withSum = new State(List.of(new Tuple<>("main", new Label())))
+                .define("sum", 1L);
 
         final var result0 = block(withSum, state -> {
-            return state.define("main", "array", 2L, List.of(
+            return state.define("main", "array", List.of(
                     _ -> List.of(LoadValue.of(new Value(100))),
                     _ -> List.of(LoadValue.of(new Value(300)))
                     ))

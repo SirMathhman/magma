@@ -45,9 +45,9 @@ final class State {
         return new State(stack.exit(), labels);
     }
 
-    public State define(String labelName, String variableName, long size, List<Loader> loaders) {
+    public State define(String labelName, String variableName, List<Loader> loaders) {
         var next = assign(labelName, variableName, loaders);
-        return new State(next.stack.define(variableName, size), next.labels);
+        return new State(next.stack.define(variableName, loaders.size()), next.labels);
     }
 
     public State assign(String labelName, String destinationName, List<Loader> loaders) {
