@@ -1,6 +1,7 @@
 package magma;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static magma.Operation.*;
@@ -12,30 +13,35 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
-        var frames = new ArrayList<List<Tuple<String, Long>>>(List.of(new ArrayList<>()));
+        final var withSum = new Stack()
+                .define("sum", 1L);
 
-        frames.getLast().add(new Tuple<>("x", 1L));
-        var instructions = new ArrayList<>(List.of(
-                LoadValue.of(new Value(100)),
-                StoreDirect.of(new DataAddress(resolveAddress(frames.getLast(), "x")))
-        ));
+        final var instructions = block(withSum, stack -> {
+            final var withA = stack.define("a", 1L);
+            var instructions1 = new ArrayList<>(List.of(
+                    LoadValue.of(new Value(100)),
+                    StoreDirect.of(new DataAddress(withA.resolveAddress("a")))
+            ));
 
-        frames.getLast().add(new Tuple<>("y", 1L));
-        instructions.addAll(List.of(
-                LoadValue.of(new Value(200)),
-                StoreDirect.of(new DataAddress(resolveAddress(frames.getLast(), "y")))
-        ));
+            final var withB = withA.define("b", 1L);
+            instructions1.addAll(List.of(
+                    LoadValue.of(new Value(200)),
+                    StoreDirect.of(new DataAddress(withB.resolveAddress("b")))
+            ));
 
-        frames.getLast().add(new Tuple<>("z", 1L));
-        instructions.addAll(List.of(
-                LoadValue.of(new DataAddress(resolveAddress(frames.getLast(), "x"))),
-                AddDirect.of(new DataAddress(resolveAddress(frames.getLast(), "y"))),
-                StoreDirect.of(new DataAddress(resolveAddress(frames.getLast(), "z")))
-        ));
+            instructions1.addAll(List.of(
+                    LoadDirect.of(new DataAddress(withB.resolveAddress("a"))),
+                    AddDirect.of(new DataAddress(withB.resolveAddress("b"))),
+                    StoreDirect.of(new DataAddress(withB.resolveAddress("sum")))
+            ));
+            return new Tuple<>(stack, instructions1);
+        });
 
-        instructions.add(Halt.empty());
-        final var adjusted = instructions.stream()
-                .map(instruction -> instruction.offsetAddress(3).offsetData(instructions.size()))
+        final var totalInstructions = instructions.right();
+        totalInstructions.add(Halt.empty());
+
+        final var adjusted = totalInstructions.stream()
+                .map(instruction -> instruction.offsetAddress(3).offsetData(totalInstructions.size()))
                 .map(Instruction::toBinary)
                 .toList();
 
@@ -59,18 +65,10 @@ public class Main {
         System.out.println(joiner);
     }
 
-    private static long resolveAddress(List<Tuple<String, Long>> frame, String name) {
-        var sum = 0;
-        for (Tuple<String, Long> entry : frame) {
-            final var left = entry.left();
-            if (left.equals(name)) {
-                return sum;
-            } else {
-                sum += entry.right();
-            }
-        }
-
-        return sum;
+    private static Tuple<Stack, List<Instruction>> block(Stack withSum, Function<Stack, Tuple<Stack, List<Instruction>>> mapper) {
+        final var stack = withSum.enter();
+        final var applied = mapper.apply(stack);
+        return applied.mapLeft(Stack::exit);
     }
 
     private static List<Long> set(int address, long value) {
@@ -245,6 +243,44 @@ public class Main {
             final var value = buffer.get(counter);
             counter++;
             return Optional.of(value);
+        }
+    }
+
+    private record Stack(List<List<Tuple<String, Long>>> frames) {
+        public Stack() {
+            this(new ArrayList<>(List.of(new ArrayList<>())));
+        }
+
+        private Stack exit() {
+            frames.removeLast();
+            return this;
+        }
+
+        private Stack enter() {
+            frames.add(new ArrayList<>());
+            return this;
+        }
+
+        private Stack define(String name, long size) {
+            frames.getLast().add(new Tuple<>(name, size));
+            return this;
+        }
+
+        private long resolveAddress(String name) {
+            var sum = 0;
+
+            for (List<Tuple<String, Long>> frame : frames()) {
+                for (Tuple<String, Long> entry : frame) {
+                    final var left = entry.left();
+                    if (left.equals(name)) {
+                        return sum;
+                    } else {
+                        sum += entry.right();
+                    }
+                }
+            }
+
+            return sum;
         }
     }
 }
