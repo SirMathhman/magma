@@ -3,6 +3,7 @@ package magma;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static magma.Operation.*;
 
@@ -18,23 +19,16 @@ public class Main {
 
         final var instructions = block(withSum, stack -> {
             final var withA = stack.define("a", 1L);
-            var instructions1 = new ArrayList<>(List.of(
-                    LoadValue.of(new Value(100)),
-                    StoreDirect.of(new DataAddress(withA.resolveAddress("a")))
-            ));
+            var instructions0 = new ArrayList<>(assign(stack, "a", List.of(LoadValue.of(new Value(100)))));
 
             final var withB = withA.define("b", 1L);
-            instructions1.addAll(List.of(
-                    LoadValue.of(new Value(200)),
-                    StoreDirect.of(new DataAddress(withB.resolveAddress("b")))
-            ));
+            instructions0.addAll(assign(stack, "b", List.of(LoadValue.of(new Value(200)))));
 
-            instructions1.addAll(List.of(
+            instructions0.addAll(assign(withB, "sum", List.of(
                     LoadDirect.of(new DataAddress(withB.resolveAddress("a"))),
-                    AddDirect.of(new DataAddress(withB.resolveAddress("b"))),
-                    StoreDirect.of(new DataAddress(withB.resolveAddress("sum")))
-            ));
-            return new Tuple<>(stack, instructions1);
+                    AddDirect.of(new DataAddress(withB.resolveAddress("b"))))));
+
+            return new Tuple<>(stack, instructions0);
         });
 
         final var totalInstructions = instructions.right();
@@ -63,6 +57,11 @@ public class Main {
         }
 
         System.out.println(joiner);
+    }
+
+    private static List<Instruction> assign(Stack stack, String name, List<Instruction> loader) {
+        return Stream.of(loader, List.of(StoreDirect.of(new DataAddress(stack.resolveAddress(name))))
+        ).flatMap(Collection::stream).toList();
     }
 
     private static Tuple<Stack, List<Instruction>> block(Stack withSum, Function<Stack, Tuple<Stack, List<Instruction>>> mapper) {
