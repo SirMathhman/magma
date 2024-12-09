@@ -2,9 +2,8 @@ package magma;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static magma.Main.Operation.*;
+import static magma.Operation.*;
 
 public class Main {
     public static final int MEMORY_SIZE = 64;
@@ -13,20 +12,29 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
-        var instructions = Stream.of(
-                List.of(instruct(Halt))
-        ).flatMap(Collection::stream).toList();
+        var instructions = List.of(
+                new Instruction(LoadValue, new Value(100)),
+                new Instruction(StoreDirect, new Address(0)),
+                new Instruction(LoadValue, new Value(200)),
+                new Instruction(StoreDirect, new Address(1)),
+                new Instruction(LoadDirect, new Address(0)),
+                new Instruction(AddDirect, new Address(1)),
+                new Instruction(StoreDirect, new Address(2)),
+                new Instruction(Halt)
+        );
 
-        final var assembled = new ArrayList<>(set(2, instruct(JumpValue, 0)));
+        final var adjusted = instructions.stream()
+                .map(instruction -> instruction.offset(3 + instructions.size()))
+                .map(Instruction::toBinary)
+                .toList();
 
-        for (int i = 0; i < instructions.size(); i++) {
-            final var instruction = instructions.get(i);
-            assembled.addAll(set(i + 3, instruction));
+        final var assembled = new ArrayList<>(set(2, new Instruction(JumpValue, new Address(0)).toBinary()));
+        for (int i = 0; i < adjusted.size(); i++) {
+            assembled.addAll(set(3 + i, adjusted.get(i)));
         }
+        assembled.addAll(set(2, new Instruction(JumpValue, new Address(3)).toBinary()));
 
-        assembled.addAll(set(2, instruct(JumpValue, 3)));
-
-        final var memory = Collections.singletonList(instruct(InputDirect, 1));
+        final var memory = Collections.singletonList(new Instruction(InputDirect, new Address(1)).toBinary());
         final var run = run(new State(memory, new Port(assembled)));
 
         var joiner = new StringJoiner("\n");
@@ -40,53 +48,11 @@ public class Main {
         System.out.println(joiner);
     }
 
-    private static List<Long> loadOffset(int offset) {
-        return Stream.of(moveTo(offset),
-                        List.of(instruct(LoadIndirect, 3)),
-                        moveTo(-offset),
-                        List.of(instruct(StoreDirect, 4)))
-                .flatMap(Collection::stream).toList();
-    }
-
-    private static List<Long> insertAt(int offset, List<Long> loader) {
-        return Stream.of(loader,
-                        moveTo(offset), List.of(instruct(StoreIndirect, 3)),
-                        moveTo(-offset))
-                .flatMap(Collection::stream).toList();
-    }
-
-    private static List<Long> moveTo(int offset) {
-        if (offset > 0) {
-            return moveByInstruction(instruct(AddValue, offset));
-        } else {
-            return moveByInstruction(instruct(SubtractValue, -offset));
-        }
-    }
-
-    private static List<Long> moveByInstruction(long instruction) {
-        return List.of(
-                instruct(StoreDirect, 4),
-                instruct(LoadDirect, 3),
-                instruction,
-                instruct(StoreDirect, 3),
-                instruct(LoadDirect, 4)
-        );
-    }
-
     private static List<Long> set(int address, long value) {
         return List.of(
-                instruct(InputDirect, address),
+                new Instruction(InputDirect, new Address(address)).toBinary(),
                 value
         );
-    }
-
-    private static long instruct(Operation operation) {
-        return instruct(operation, 0);
-    }
-
-    private static long instruct(Operation operation, int addressOrValue) {
-        final var shiftedOpCode = (long) operation.ordinal() << ADDRESS_OR_VALUE_LENGTH;
-        return shiftedOpCode + addressOrValue;
     }
 
     private static State run(State state) {
@@ -108,6 +74,7 @@ public class Main {
             final var next = state.next();
             final var operation = result.operation();
             final var addressOrValue = result.addressOrValue();
+
             return switch (operation) {
                 case Nothing -> Optional.of(next);
                 case InputDirect -> Optional.of(next.inputDirect(addressOrValue));
@@ -119,8 +86,8 @@ public class Main {
                 case LoadValue -> Optional.of(next.loadValue(addressOrValue));
                 case LoadIndirect -> Optional.of(next.loadIndirect(addressOrValue));
                 case StoreIndirect -> Optional.of(next.storeIndirect(addressOrValue));
-                case SubtractValue -> Optional.of(next.subtractValue(result.addressOrValue));
-                case AddDirect -> Optional.of(next.addDirect(result.addressOrValue));
+                case SubtractValue -> Optional.of(next.subtractValue(addressOrValue));
+                case AddDirect -> Optional.of(next.addDirect(addressOrValue));
             };
         });
     }
@@ -129,44 +96,7 @@ public class Main {
         final var opCode = (byte) (instruction >> ADDRESS_OR_VALUE_LENGTH);
         final var operation = apply(opCode).orElse(Nothing);
         final var addressOrValue = instruction & ((1L << ADDRESS_OR_VALUE_LENGTH) - 1);
-        Instruction result = new Instruction(operation, addressOrValue);
-        return result;
-    }
-
-    enum Operation {
-        Nothing,
-        InputDirect,
-        JumpValue,
-        Halt,
-        AddValue,
-        StoreDirect,
-        LoadValue,
-        LoadDirect,
-        LoadIndirect,
-        StoreIndirect,
-        SubtractValue,
-        AddDirect;
-
-        public static final Map<Byte, Operation> OP_CODE_TO_OPERATION = new HashMap<>();
-
-        static {
-            Operation[] values = values();
-            for (int i = 0; i < values.length; i++) {
-                Operation value = values[i];
-                OP_CODE_TO_OPERATION.put((byte) i, value);
-            }
-        }
-
-        public static Optional<Operation> apply(byte opCode) {
-            return Optional.of(OP_CODE_TO_OPERATION.get(opCode));
-        }
-    }
-
-    private record Instruction(Operation operation, long addressOrValue) {
-        @Override
-        public String toString() {
-            return operation + " " + Long.toHexString(addressOrValue);
-        }
+        return new Instruction(operation, new Address(addressOrValue));
     }
 
     private static class State {
@@ -242,7 +172,7 @@ public class Main {
         }
 
         public State storeDirect(long address) {
-            memory.set((int) address, accumulator);
+            set((int) address, accumulator);
             return this;
         }
 
@@ -252,8 +182,10 @@ public class Main {
         }
 
         public State storeIndirect(long address) {
-            final var resolved = memory.get((int) address);
-            set(Math.toIntExact(resolved), accumulator);
+            if (address < memory.size()) {
+                final var resolved = memory.get((int) address);
+                set(Math.toIntExact(resolved), accumulator);
+            }
             return this;
         }
 
