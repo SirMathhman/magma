@@ -10,4 +10,9 @@ public record Value(int value) implements Operand {
     public Operand offsetData(int offset) {
         return new Value(value);
     }
+
+    @Override
+    public Operand offsetAddress(int offset) {
+        return new Value(value);
+    }
 }

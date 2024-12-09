@@ -12,17 +12,28 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
-        var instructions = List.of(
-                LoadValue.of(new Value(100)),
-                StoreDirect.of(new DataAddress(0)),
-                LoadValue.of(new Value(200)),
-                StoreDirect.of(new DataAddress(1)),
-                LoadDirect.of(new DataAddress(0)),
-                AddDirect.of(new DataAddress(1)),
-                StoreDirect.of(new DataAddress(2)),
-                Halt.empty()
-        );
+        var frame = new ArrayList<Tuple<String, Long>>();
 
+        frame.add(new Tuple<>("x", 1L));
+        var instructions = new ArrayList<>(List.of(
+                LoadValue.of(new Value(100)),
+                StoreDirect.of(new DataAddress(resolveAddress(frame, "x")))
+        ));
+
+        frame.add(new Tuple<>("y", 1L));
+        instructions.addAll(List.of(
+                LoadValue.of(new Value(200)),
+                StoreDirect.of(new DataAddress(resolveAddress(frame, "y")))
+        ));
+
+        frame.add(new Tuple<>("z", 1L));
+        instructions.addAll(List.of(
+                LoadValue.of(new DataAddress(resolveAddress(frame, "x"))),
+                AddDirect.of(new DataAddress(resolveAddress(frame, "y"))),
+                StoreDirect.of(new DataAddress(resolveAddress(frame, "z")))
+        ));
+
+        instructions.add(Halt.empty());
         final var adjusted = instructions.stream()
                 .map(instruction -> instruction.offsetAddress(3).offsetData(instructions.size()))
                 .map(Instruction::toBinary)
@@ -46,6 +57,20 @@ public class Main {
         }
 
         System.out.println(joiner);
+    }
+
+    private static long resolveAddress(List<Tuple<String, Long>> frame, String name) {
+        var sum = 0;
+        for (Tuple<String, Long> entry : frame) {
+            final var left = entry.left();
+            if (left.equals(name)) {
+                return sum;
+            } else {
+                sum += entry.right();
+            }
+        }
+
+        return sum;
     }
 
     private static List<Long> set(int address, long value) {
