@@ -14,24 +14,17 @@ public class Main {
     public static final int ADDRESS_OR_VALUE_LENGTH = INT;
 
     public static void main(String[] args) {
-        final var withSum = new Stack()
-                .define("sum", 1L);
+        final var withSum = new State().define("sum", 1L);
 
-        final var instructions = block(withSum, stack -> {
-            final var withA = stack.define("a", 1L);
-            var instructions0 = new ArrayList<>(assign(stack, "a", List.of(LoadValue.of(new Value(100)))));
-
-            final var withB = withA.define("b", 1L);
-            instructions0.addAll(assign(stack, "b", List.of(LoadValue.of(new Value(200)))));
-
-            instructions0.addAll(assign(withB, "sum", List.of(
-                    LoadDirect.of(new DataAddress(withB.resolveAddress("a"))),
-                    AddDirect.of(new DataAddress(withB.resolveAddress("b"))))));
-
-            return new Tuple<>(stack, instructions0);
+        final var instructions = block(withSum, state -> {
+            return state.define("a", 1L, _ -> List.of(LoadValue.of(new Value(100))))
+                    .define("b", 1L, _ -> List.of(LoadValue.of(new Value(200))))
+                    .assignAsState("sum", stack -> List.of(
+                            LoadDirect.of(new DataAddress(stack.resolveAddress("a"))),
+                            AddDirect.of(new DataAddress(stack.resolveAddress("b")))));
         });
 
-        final var totalInstructions = instructions.right();
+        final var totalInstructions = instructions.instructions;
         totalInstructions.add(Halt.empty());
 
         final var adjusted = totalInstructions.stream()
@@ -46,7 +39,7 @@ public class Main {
         assembled.addAll(set(2, JumpValue.of(new DataAddress(3)).toBinary()));
 
         final var memory = Collections.singletonList(InputDirect.of(new DataAddress(1)).toBinary());
-        final var run = run(new State(memory, new Port(assembled)));
+        final var run = run(new EmulatorState(memory, new Port(assembled)));
 
         var joiner = new StringJoiner("\n");
         List<Long> longs = run.memory;
@@ -59,14 +52,9 @@ public class Main {
         System.out.println(joiner);
     }
 
-    private static List<Instruction> assign(Stack stack, String name, List<Instruction> loader) {
-        return Stream.of(loader, List.of(StoreDirect.of(new DataAddress(stack.resolveAddress(name))))
-        ).flatMap(Collection::stream).toList();
-    }
-
-    private static Tuple<Stack, List<Instruction>> block(Stack withSum, Function<Stack, Tuple<Stack, List<Instruction>>> mapper) {
-        final var stack = withSum.enter();
-        final var applied = mapper.apply(stack);
+    private static State block(State state, Function<State, State> mapper) {
+        final var entered = state.enter();
+        final var applied = mapper.apply(entered);
         return applied.mapLeft(Stack::exit);
     }
 
@@ -77,7 +65,7 @@ public class Main {
         );
     }
 
-    private static State run(State state) {
+    private static EmulatorState run(EmulatorState state) {
         var current = state;
         while (true) {
             final var cycled = cycle(current);
@@ -89,7 +77,7 @@ public class Main {
         }
     }
 
-    private static Optional<State> cycle(State state) {
+    private static Optional<EmulatorState> cycle(EmulatorState state) {
         return state.current().flatMap(instruction -> {
             final var result = decode(instruction);
 
@@ -121,13 +109,55 @@ public class Main {
         return operation.of(new DataAddress(addressOrValue));
     }
 
-    private static class State {
+    record State(Stack stack, List<Instruction> instructions) {
+        public State() {
+            this(new Stack(), new ArrayList<>());
+        }
+
+        public State enter() {
+            return new State(stack.enter(), instructions);
+        }
+
+        public State exit() {
+            return new State(stack.exit(), instructions);
+        }
+
+        public State mapLeft(Function<Stack, Stack> mapper) {
+            return new State(mapper.apply(stack), instructions);
+        }
+
+        public State define(String name, long size, Function<Stack, List<Instruction>> loader) {
+            final var withA = stack.define(name, size);
+            final var instructions = assign(name, loader);
+            this.instructions.addAll(instructions);
+            return new State(withA, this.instructions);
+        }
+
+        public State assignAsState(String name, Function<Stack, List<Instruction>> loader) {
+            final var instructions = assign(name, loader);
+            return new State(stack, instructions);
+        }
+
+        private List<Instruction> assign(String name, Function<Stack, List<Instruction>> loader) {
+            final var instructions = Stream.of(loader.apply(stack), List.of(StoreDirect.of(new DataAddress(stack.resolveAddress(name)))))
+                    .flatMap(Collection::stream)
+                    .toList();
+            this.instructions.addAll(instructions);
+            return instructions;
+        }
+
+        public State define(String name, long size) {
+            return new State(stack.define(name, size), instructions);
+        }
+    }
+
+    private static class EmulatorState {
         private final List<Long> memory;
         private final Port port;
         private long accumulator;
         private int programCounter;
 
-        public State(List<Long> memory, Port port) {
+        public EmulatorState(List<Long> memory, Port port) {
             this.memory = new ArrayList<>(memory);
             this.port = port;
             this.programCounter = 0;
@@ -146,7 +176,7 @@ public class Main {
                     '}';
         }
 
-        public State next() {
+        public EmulatorState next() {
             programCounter++;
             return this;
         }
@@ -159,7 +189,7 @@ public class Main {
             }
         }
 
-        public State inputDirect(long address) {
+        public EmulatorState inputDirect(long address) {
             final var read = port.read();
 
             if (read.isEmpty()) return this;
@@ -176,34 +206,34 @@ public class Main {
             memory.set(address, value);
         }
 
-        public State jumpValue(long address) {
+        public EmulatorState jumpValue(long address) {
             if (address < memory.size()) {
                 programCounter = (int) address;
             }
             return this;
         }
 
-        public State loadDirect(long address) {
+        public EmulatorState loadDirect(long address) {
             accumulator = memory.get((int) address);
             return this;
         }
 
-        public State addValue(long value) {
+        public EmulatorState addValue(long value) {
             accumulator += value;
             return this;
         }
 
-        public State storeDirect(long address) {
+        public EmulatorState storeDirect(long address) {
             set((int) address, accumulator);
             return this;
         }
 
-        public State loadValue(long value) {
+        public EmulatorState loadValue(long value) {
             accumulator = value;
             return this;
         }
 
-        public State storeIndirect(long address) {
+        public EmulatorState storeIndirect(long address) {
             if (address < memory.size()) {
                 final var resolved = memory.get((int) address);
                 set(Math.toIntExact(resolved), accumulator);
@@ -211,18 +241,18 @@ public class Main {
             return this;
         }
 
-        public State subtractValue(long value) {
+        public EmulatorState subtractValue(long value) {
             accumulator -= value;
             return this;
         }
 
-        public State loadIndirect(long address) {
+        public EmulatorState loadIndirect(long address) {
             final var next = memory.get((int) address);
             accumulator = memory.get(Math.toIntExact(next));
             return this;
         }
 
-        public State addDirect(long address) {
+        public EmulatorState addDirect(long address) {
             accumulator += memory.get((int) address);
             return this;
         }
@@ -245,41 +275,4 @@ public class Main {
         }
     }
 
-    private record Stack(List<List<Tuple<String, Long>>> frames) {
-        public Stack() {
-            this(new ArrayList<>(List.of(new ArrayList<>())));
-        }
-
-        private Stack exit() {
-            frames.removeLast();
-            return this;
-        }
-
-        private Stack enter() {
-            frames.add(new ArrayList<>());
-            return this;
-        }
-
-        private Stack define(String name, long size) {
-            frames.getLast().add(new Tuple<>(name, size));
-            return this;
-        }
-
-        private long resolveAddress(String name) {
-            var sum = 0;
-
-            for (List<Tuple<String, Long>> frame : frames()) {
-                for (Tuple<String, Long> entry : frame) {
-                    final var left = entry.left();
-                    if (left.equals(name)) {
-                        return sum;
-                    } else {
-                        sum += entry.right();
-                    }
-                }
-            }
-
-            return sum;
-        }
-    }
 }
