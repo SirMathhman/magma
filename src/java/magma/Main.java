@@ -18,7 +18,8 @@ public class Main {
         final var result0 = block(withSum, state -> {
             return state.define("main", "array", List.of(
                     _ -> List.of(LoadValue.of(new Value(100))),
-                    _ -> List.of(LoadValue.of(new Value(300)))
+                    _ -> List.of(LoadValue.of(new Value(300))),
+                    _ -> List.of(LoadValue.of(new Value(200)))
                     ))
                     .assign("main", "sum", Collections.singletonList(stack -> List.of(
                             LoadDirect.of(new DataAddress(stack.resolveAddress("array"))),
