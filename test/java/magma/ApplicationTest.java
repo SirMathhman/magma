@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -57,42 +56,33 @@ public class ApplicationTest {
     }
 
     private static Optional<Tuple<Scope, String>> compileDefinition(Scope scope, String input) {
-        return truncateLeft(LET_KEYWORD_WITH_SPACE, input, slice -> {
-            final var operator = slice.indexOf(ASSIGNMENT_OPERATOR);
-            if (operator == -1) return Optional.empty();
-
-            final var name = slice.substring(0, operator);
-            final var withEnd = slice.substring(operator + 1);
-
-            return truncateRight(withEnd, ";", value -> {
-                final var defined = scope.define(name, value);
-                return Optional.of(new Tuple<>(defined, ""));
-            });
+        return createDefinitionRule().parse(input).map(node -> {
+            final var name1 = node.findString("name").orElse("");
+            final var value1 = node.findString("value").orElse("");
+            final var defined = scope.define(name1, value1);
+            return new Tuple<>(defined, "");
         });
     }
 
-    private static Optional<Tuple<Scope, String>> truncateLeft(
-            String prefix,
-            String input,
-            Function<String, Optional<Tuple<Scope, String>>> mapper
-    ) {
-        if (!input.startsWith(prefix)) return Optional.empty();
-        final var slice = input.substring(prefix.length());
-        return mapper.apply(slice);
+    private static PrefixRule createDefinitionRule() {
+        final var name = new StringRule("name");
+        final var value = new StringRule("value");
+
+        final var withEnd = new SuffixRule(value, STATEMENT_END);
+        return new PrefixRule(LET_KEYWORD_WITH_SPACE, new InfixRule(name, ASSIGNMENT_OPERATOR, withEnd));
     }
 
     private static Optional<Tuple<Scope, String>> compileReturn(Scope scope, String input) {
-        return truncateLeft(RETURN_KEYWORD_WITH_SPACE, input, afterKeyword ->
-                truncateRight(afterKeyword, STATEMENT_END, value -> {
-                    var result = scope.find(value).orElse(value);
-                    return Optional.of(new Tuple<>(scope, result));
-                }));
+        return createReturnRule().parse(input).map(node -> {
+            final var symbol = node.findString("value").orElse("");
+            var result = scope.find(symbol).orElse(symbol);
+            return new Tuple<>(scope, result);
+        });
     }
 
-    private static Optional<Tuple<Scope, String>> truncateRight(String input, String suffix, Function<String, Optional<Tuple<Scope, String>>> mapper) {
-        if (!input.endsWith(suffix)) return Optional.empty();
-        final var slice = input.substring(0, input.length() - suffix.length());
-        return mapper.apply(slice);
+    private static Rule createReturnRule() {
+        final var value = new StringRule("value");
+        return new PrefixRule(RETURN_KEYWORD_WITH_SPACE, new SuffixRule(value, STATEMENT_END));
     }
 
     private static String generateDefinition(String name, String value) {
