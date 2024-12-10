@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -56,30 +57,38 @@ public class ApplicationTest {
     }
 
     private static Optional<Tuple<Scope, String>> compileDefinition(Scope scope, String input) {
-        if (!input.startsWith(LET_KEYWORD_WITH_SPACE)) return Optional.empty();
+        return truncateLeft(LET_KEYWORD_WITH_SPACE, input, slice -> {
+            final var operator = slice.indexOf(ASSIGNMENT_OPERATOR);
+            if (operator == -1) return Optional.empty();
 
-        final var slice = input.substring(LET_KEYWORD_WITH_SPACE.length());
-        final var operator = slice.indexOf(ASSIGNMENT_OPERATOR);
-        if (operator == -1) return Optional.empty();
+            final var name = slice.substring(0, operator);
+            final var withEnd = slice.substring(operator + 1);
+            if (!withEnd.endsWith(STATEMENT_END)) return Optional.empty();
 
-        final var name = slice.substring(0, operator);
-        final var withEnd = slice.substring(operator + 1);
-        if (!withEnd.endsWith(STATEMENT_END)) return Optional.empty();
+            final var value = withEnd.substring(0, withEnd.length() - STATEMENT_END.length());
+            final var defined = scope.define(name, value);
+            return Optional.of(new Tuple<>(defined, ""));
+        });
+    }
 
-        final var value = withEnd.substring(0, withEnd.length() - STATEMENT_END.length());
-        final var defined = scope.define(name, value);
-        return Optional.of(new Tuple<>(defined, ""));
+    private static Optional<Tuple<Scope, String>> truncateLeft(
+            String prefix,
+            String input,
+            Function<String, Optional<Tuple<Scope, String>>> mapper
+    ) {
+        if (!input.startsWith(prefix)) return Optional.empty();
+        final var slice = input.substring(prefix.length());
+        return mapper.apply(slice);
     }
 
     private static Optional<Tuple<Scope, String>> compileReturn(Scope scope, String input) {
-        if (!input.startsWith(RETURN_KEYWORD_WITH_SPACE)) return Optional.empty();
+        return truncateLeft(RETURN_KEYWORD_WITH_SPACE, input, afterKeyword -> {
+            if (!afterKeyword.endsWith(STATEMENT_END)) return Optional.empty();
 
-        final var afterKeyword = input.substring(RETURN_KEYWORD_WITH_SPACE.length());
-        if (!afterKeyword.endsWith(STATEMENT_END)) return Optional.empty();
-
-        final var slice = afterKeyword.substring(0, afterKeyword.length() - STATEMENT_END.length());
-        var result = scope.find(slice).orElse(slice);
-        return Optional.of(new Tuple<>(scope, result));
+            final var slice = afterKeyword.substring(0, afterKeyword.length() - STATEMENT_END.length());
+            var result = scope.find(slice).orElse(slice);
+            return Optional.of(new Tuple<>(scope, result));
+        });
     }
 
     private static String generateDefinition(String name, String value) {
@@ -98,7 +107,7 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"100", "200"})
     void definitionValue(String value) {
-        assertRun(generateDefinition("fram", value) + generateReturn("fram"), value);
+        assertRun(generateDefinition("test", value) + generateReturn("test"), value);
     }
 
     @ParameterizedTest
