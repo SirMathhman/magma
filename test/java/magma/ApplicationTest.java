@@ -63,11 +63,11 @@ public class ApplicationTest {
 
             final var name = slice.substring(0, operator);
             final var withEnd = slice.substring(operator + 1);
-            if (!withEnd.endsWith(STATEMENT_END)) return Optional.empty();
 
-            final var value = withEnd.substring(0, withEnd.length() - STATEMENT_END.length());
-            final var defined = scope.define(name, value);
-            return Optional.of(new Tuple<>(defined, ""));
+            return truncateRight(withEnd, ";", value -> {
+                final var defined = scope.define(name, value);
+                return Optional.of(new Tuple<>(defined, ""));
+            });
         });
     }
 
@@ -82,13 +82,17 @@ public class ApplicationTest {
     }
 
     private static Optional<Tuple<Scope, String>> compileReturn(Scope scope, String input) {
-        return truncateLeft(RETURN_KEYWORD_WITH_SPACE, input, afterKeyword -> {
-            if (!afterKeyword.endsWith(STATEMENT_END)) return Optional.empty();
+        return truncateLeft(RETURN_KEYWORD_WITH_SPACE, input, afterKeyword ->
+                truncateRight(afterKeyword, STATEMENT_END, value -> {
+                    var result = scope.find(value).orElse(value);
+                    return Optional.of(new Tuple<>(scope, result));
+                }));
+    }
 
-            final var slice = afterKeyword.substring(0, afterKeyword.length() - STATEMENT_END.length());
-            var result = scope.find(slice).orElse(slice);
-            return Optional.of(new Tuple<>(scope, result));
-        });
+    private static Optional<Tuple<Scope, String>> truncateRight(String input, String suffix, Function<String, Optional<Tuple<Scope, String>>> mapper) {
+        if (!input.endsWith(suffix)) return Optional.empty();
+        final var slice = input.substring(0, input.length() - suffix.length());
+        return mapper.apply(slice);
     }
 
     private static String generateDefinition(String name, String value) {
