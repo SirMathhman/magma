@@ -50,39 +50,64 @@ public class ApplicationTest {
     }
 
     private static Tuple<Scope, String> compileRootMember(Scope scope, String input) {
-        return compileDefinition(scope, input)
-                .or(() -> compileReturn(scope, input))
-                .orElseGet(() -> new Tuple<>(scope, input));
+        final var or = parseRootMember(input);
+        if (or.isEmpty()) return new Tuple<>(scope, "");
+        final var node = or.get();
+        return evaluateRootMember(scope, node);
     }
 
-    private static Optional<Tuple<Scope, String>> compileDefinition(Scope scope, String input) {
-        return createDefinitionRule().parse(input).map(node -> {
-            final var name1 = node.findString("name").orElse("");
-            final var value1 = node.findString("value").orElse("");
-            final var defined = scope.define(name1, value1);
-            return new Tuple<>(defined, "");
-        });
+    private static Tuple<Scope, String> evaluateRootMember(Scope scope, Node node) {
+        return evaluateDefinition(scope, node)
+                .or(() -> evaluateReturn(scope, node))
+                .or(() -> evaluateNumeric(scope, node))
+                .orElseGet(() -> new Tuple<>(scope, ""));
     }
 
-    private static PrefixRule createDefinitionRule() {
+    private static Optional<Tuple<Scope, String>> evaluateNumeric(Scope scope, Node node) {
+        if (!node.is("numeric")) return Optional.empty();
+
+        final var value = node.findString("value").orElse("");
+        return Optional.of(new Tuple<>(scope, value));
+    }
+
+    private static Optional<Tuple<Scope, String>> evaluateDefinition(Scope scope, Node node) {
+        if (!node.is("definition")) return Optional.empty();
+
+        final var name1 = node.findString("name").orElse("");
+        final var value1 = node.findString("value").orElse("");
+        final var defined = scope.define(name1, value1);
+        return Optional.of(new Tuple<>(defined, ""));
+    }
+
+    private static Optional<Tuple<Scope, String>> evaluateReturn(Scope scope, Node node) {
+        if (!node.is("return")) return Optional.empty();
+
+        final var symbol = node.findString("value").orElse("");
+        var result = scope.find(symbol).orElse(symbol);
+        return Optional.of(new Tuple<>(scope, result));
+    }
+
+    private static Optional<Node> parseRootMember(String input) {
+        return createDefinitionRule().parse(input)
+                .or(() -> createReturnRule().parse(input))
+                .or(() -> createNumericRule().parse(input));
+    }
+
+    private static TypeRule createNumericRule() {
+        return new TypeRule("numeric", new StringRule("value"));
+    }
+
+    private static Rule createDefinitionRule() {
         final var name = new StringRule("name");
         final var value = new StringRule("value");
 
         final var withEnd = new SuffixRule(value, STATEMENT_END);
-        return new PrefixRule(LET_KEYWORD_WITH_SPACE, new InfixRule(name, ASSIGNMENT_OPERATOR, withEnd));
-    }
-
-    private static Optional<Tuple<Scope, String>> compileReturn(Scope scope, String input) {
-        return createReturnRule().parse(input).map(node -> {
-            final var symbol = node.findString("value").orElse("");
-            var result = scope.find(symbol).orElse(symbol);
-            return new Tuple<>(scope, result);
-        });
+        return new TypeRule("definition", new PrefixRule(LET_KEYWORD_WITH_SPACE, new InfixRule(name, ASSIGNMENT_OPERATOR, withEnd)));
     }
 
     private static Rule createReturnRule() {
         final var value = new StringRule("value");
-        return new PrefixRule(RETURN_KEYWORD_WITH_SPACE, new SuffixRule(value, STATEMENT_END));
+        return new TypeRule("return", new PrefixRule(RETURN_KEYWORD_WITH_SPACE, new SuffixRule(value, STATEMENT_END)));
     }
 
     private static String generateDefinition(String name, String value) {
