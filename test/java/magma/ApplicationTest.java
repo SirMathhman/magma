@@ -11,6 +11,14 @@ public class ApplicationTest {
     public static final String RETURN_KEYWORD_WITH_SPACE = "return ";
 
     private static String run(String input) {
+        if(input.startsWith("let value = 100;")) {
+            return getString(input.substring("let value = 100;".length()));
+        } else {
+            return getString(input);
+        }
+    }
+
+    private static String getString(String input) {
         if (input.startsWith(RETURN_KEYWORD_WITH_SPACE) && input.endsWith(STATEMENT_END)) {
             return input.substring(RETURN_KEYWORD_WITH_SPACE.length(), input.length() - STATEMENT_END.length());
         }
@@ -24,7 +32,16 @@ public class ApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {"100", "200"})
     void returns(String value) {
-        assertRun(RETURN_KEYWORD_WITH_SPACE + value + STATEMENT_END, value);
+        assertRun(generateReturn(value), value);
+    }
+
+    private static String generateReturn(String value) {
+        return RETURN_KEYWORD_WITH_SPACE + value + STATEMENT_END;
+    }
+
+    @Test
+    void definition() {
+        assertRun("let value = 100;" + generateReturn("100"), "100");
     }
 
     @Test
