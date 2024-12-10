@@ -34,7 +34,7 @@ public class ApplicationTest {
         }
         advance(buffer, segments);
 
-        var state = new State();
+        var state = new Scope();
         var output = new StringBuilder();
         for (String segment : segments) {
             final var tuple = compileRootMember(state, segment);
@@ -49,31 +49,37 @@ public class ApplicationTest {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static Tuple<State, String> compileRootMember(State state, String input) {
-        if (input.startsWith(LET_KEYWORD_WITH_SPACE)) {
-            final var slice = input.substring(LET_KEYWORD_WITH_SPACE.length());
-            final var operator = slice.indexOf(ASSIGNMENT_OPERATOR);
-            if (operator != -1) {
-                final var name = slice.substring(0, operator);
-                final var withEnd = slice.substring(operator + 1);
-                if (withEnd.endsWith(STATEMENT_END)) {
-                    final var value = withEnd.substring(0, withEnd.length() - STATEMENT_END.length());
-                    final var defined = state.define(name, value);
-                    return new Tuple<>(defined, "");
-                }
-            }
-        }
+    private static Tuple<Scope, String> compileRootMember(Scope scope, String input) {
+        return compileDefinition(scope, input)
+                .or(() -> compileReturn(scope, input))
+                .orElseGet(() -> new Tuple<>(scope, input));
+    }
 
-        if (input.startsWith(RETURN_KEYWORD_WITH_SPACE)) {
-            final var afterKeyword = input.substring(RETURN_KEYWORD_WITH_SPACE.length());
-            if (afterKeyword.endsWith(STATEMENT_END)) {
-                final var slice = afterKeyword.substring(0, afterKeyword.length() - STATEMENT_END.length());
-                var result = state.find(slice).orElse(slice);
-                return new Tuple<>(state, result);
-            }
-        }
+    private static Optional<Tuple<Scope, String>> compileDefinition(Scope scope, String input) {
+        if (!input.startsWith(LET_KEYWORD_WITH_SPACE)) return Optional.empty();
 
-        return new Tuple<>(state, input);
+        final var slice = input.substring(LET_KEYWORD_WITH_SPACE.length());
+        final var operator = slice.indexOf(ASSIGNMENT_OPERATOR);
+        if (operator == -1) return Optional.empty();
+
+        final var name = slice.substring(0, operator);
+        final var withEnd = slice.substring(operator + 1);
+        if (!withEnd.endsWith(STATEMENT_END)) return Optional.empty();
+
+        final var value = withEnd.substring(0, withEnd.length() - STATEMENT_END.length());
+        final var defined = scope.define(name, value);
+        return Optional.of(new Tuple<>(defined, ""));
+    }
+
+    private static Optional<Tuple<Scope, String>> compileReturn(Scope scope, String input) {
+        if (!input.startsWith(RETURN_KEYWORD_WITH_SPACE)) return Optional.empty();
+
+        final var afterKeyword = input.substring(RETURN_KEYWORD_WITH_SPACE.length());
+        if (!afterKeyword.endsWith(STATEMENT_END)) return Optional.empty();
+
+        final var slice = afterKeyword.substring(0, afterKeyword.length() - STATEMENT_END.length());
+        var result = scope.find(slice).orElse(slice);
+        return Optional.of(new Tuple<>(scope, result));
     }
 
     private static String generateDefinition(String name, String value) {
@@ -121,13 +127,13 @@ public class ApplicationTest {
         assertRun(value, value);
     }
 
-    private record State(Map<String, String> frame) {
-        public State() {
+    private record Scope(Map<String, String> frame) {
+        public Scope() {
             this(new HashMap<>());
         }
 
 
-        public State define(String name, String value) {
+        public Scope define(String name, String value) {
             frame.put(name, value);
             return this;
         }
