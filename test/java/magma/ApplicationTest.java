@@ -45,26 +45,30 @@ public class ApplicationTest {
         return DEFINITION_PREFIX + value + STATEMENT_END;
     }
 
+    private static void assertRun(String input, String output) {
+        assertEquals(output, run(input));
+    }
+
     @Test
     void empty() {
-        assertEquals("", run(""));
+        assertRun("", "");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"100", "200"})
     void definition(String value) {
-        assertEquals(value, run(generateDefinition(value) + generateReturn("value")));
+        assertRun(generateDefinition(value) + generateReturn("value"), value);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"100", "200"})
     void returns(String value) {
-        assertEquals(value, run(generateReturn(value)));
+        assertRun(generateReturn(value), value);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"100", "200"})
     void numeric(String value) {
-        assertEquals(value, run(value));
+        assertRun(value, value);
     }
 }
