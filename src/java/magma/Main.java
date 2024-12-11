@@ -47,15 +47,15 @@ public class Main {
     }
 
     private static List<Integer> createProgram() {
-        return assign(0, value(0x100))
-                .addAll(assign(1, value(0x200)))
-                .addAll(assign(2, operate(AddDirect, offset(0), 1)))
-                .addAll(assign(3, operate(SubtractDirect, offset(1), 0)))
+
+
+        return assign(0, value(0))
+                .add()
                 .add(Halt.empty())
                 .list();
     }
 
-    private static JavaList<Integer> operate(Operation operation, JavaList<Integer> loadLeft, int addressOffset) {
+    private static JavaList<Integer> operate(Operation operation, int addressOffset, JavaList<Integer> loadLeft) {
         return loadLeft.addAll(mapOffset(addressOffset, new JavaList<Integer>()
                 .add(LoadIndirect.of(STACK_POINTER))
                 .add(operation.of(SPILL))));
