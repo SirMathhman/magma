@@ -38,65 +38,99 @@ public class Main {
                 .flatMap(Function.identity());
 
         final var set = Stream.of(
-                set(2, Jump.of(0)),
+                set(2, encode(new Node()
+                        .withInt("ordinal", Jump.ordinal())
+                        .withInt("addressOrValue", 0))),
                 set(STACK_POINTER, 5 + program.size()),
                 set(SPILL, 0)
         ).flatMap(Function.identity());
 
-        return Stream.concat(Stream.concat(set, setInstructions), set(2, Jump.of(5)));
+        return Stream.concat(Stream.concat(set, setInstructions), set(2, encode(new Node()
+                .withInt("ordinal", Jump.ordinal())
+                .withInt("addressOrValue", 5))));
     }
 
     private static List<Integer> createProgram() {
         return assign(0, value(0))
-                .add(Halt.empty())
+                .add(encode(new Node().withInt("ordinal", Halt.ordinal())))
                 .list();
     }
 
     private static JavaList<Integer> operate(Operation operation, int addressOffset, JavaList<Integer> loadLeft) {
         return loadLeft.addAll(mapOffset(addressOffset, new JavaList<Integer>()
-                .add(LoadIndirect.of(STACK_POINTER))
-                .add(operation.of(SPILL))));
+                .add(encode(new Node()
+                        .withInt("ordinal", LoadIndirect.ordinal())
+                        .withInt("addressOrValue", STACK_POINTER)))
+                .add(encode(new Node()
+                        .withInt("ordinal", operation.ordinal())
+                        .withInt("addressOrValue", SPILL)))));
     }
 
     private static JavaList<Integer> mapOffset(int offset, JavaList<Integer> instructions) {
         return new JavaList<Integer>()
                 .addAll(move(offset))
                 .addAll(instructions)
-                .add(StoreDirect.of(SPILL))
+                .add(encode(new Node()
+                        .withInt("ordinal", StoreDirect.ordinal())
+                        .withInt("addressOrValue", SPILL)))
                 .addAll(move(-offset))
-                .add(LoadDirect.of(SPILL));
+                .add(encode(new Node()
+                        .withInt("ordinal", LoadDirect.ordinal())
+                        .withInt("addressOrValue", SPILL)));
     }
 
     private static JavaList<Integer> value(int value) {
-        return new JavaList<Integer>().add(LoadValue.of(value));
+        return new JavaList<Integer>().add(encode(new Node()
+                .withInt("ordinal", LoadValue.ordinal())
+                .withInt("addressOrValue", value)));
     }
 
     private static JavaList<Integer> assign(int offset, JavaList<Integer> loader) {
         return new JavaList<Integer>()
                 .addAll(loader)
-                .add(StoreDirect.of(SPILL))
+                .add(encode(new Node()
+                        .withInt("ordinal", StoreDirect.ordinal())
+                        .withInt("addressOrValue", SPILL)))
                 .addAll(move(offset))
-                .add(LoadDirect.of(SPILL))
-                .add(StoreIndirect.of(STACK_POINTER))
+                .add(encode(new Node()
+                        .withInt("ordinal", LoadDirect.ordinal())
+                        .withInt("addressOrValue", SPILL)))
+                .add(encode(new Node()
+                        .withInt("ordinal", StoreIndirect.ordinal())
+                        .withInt("addressOrValue", STACK_POINTER)))
                 .addAll(move(-offset));
     }
 
     private static JavaList<Integer> move(int offset) {
         if (offset == 0) return new JavaList<>();
 
-        var instruction = offset > 0
-                ? AddValue.of(offset)
-                : SubtractValue.of(-offset);
+        int instruction;
+        if (offset > 0) {
+            instruction = encode(new Node()
+                    .withInt("ordinal", AddValue.ordinal())
+                    .withInt("addressOrValue", offset));
+        } else {
+            int addressOrValue = -offset;
+            instruction = encode(new Node()
+                    .withInt("ordinal", SubtractValue.ordinal())
+                    .withInt("addressOrValue", addressOrValue));
+        }
 
         return new JavaList<Integer>()
-                .add(LoadDirect.of(STACK_POINTER))
+                .add(encode(new Node()
+                        .withInt("ordinal", LoadDirect.ordinal())
+                        .withInt("addressOrValue", STACK_POINTER)))
                 .add(instruction)
-                .add(StoreDirect.of(STACK_POINTER));
+                .add(encode(new Node()
+                        .withInt("ordinal", StoreDirect.ordinal())
+                        .withInt("addressOrValue", STACK_POINTER)));
     }
 
     private static Stream<Integer> set(int address, int instruction) {
         return Stream.of(
-                InStore.of(address),
+                encode(new Node()
+                        .withInt("ordinal", InStore.ordinal())
+                        .withInt("addressOrValue", address)),
                 instruction
         );
     }

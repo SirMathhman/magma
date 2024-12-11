@@ -14,11 +14,8 @@ public enum Operation {
     AddDirect,
     LoadIndirect, SubtractDirect, JumpCond;
 
-    int empty() {
-        return of(0);
-    }
-
-    int of(int addressOrValue) {
-        return (ordinal() << 24) + addressOrValue;
+    static int encode(Node node) {
+        final var shiftedOrdinal = node.ordinal().orElse(0) << 24;
+        return shiftedOrdinal + node.addressOrValue().orElse(0);
     }
 }

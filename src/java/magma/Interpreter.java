@@ -10,7 +10,9 @@ import static magma.Operation.InStore;
 public class Interpreter {
     static Result<State, Tuple<State, RuntimeError>> interpreter(Deque<Integer> input) {
         var memory = new ArrayList<Integer>();
-        memory.add(InStore.of(1));
+        memory.add(Operation.encode(new Node()
+                .withInt("ordinal", InStore.ordinal())
+                .withInt("addressOrValue", 1)));
 
         var programCounter = 0;
 
