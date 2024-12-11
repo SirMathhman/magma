@@ -8,4 +8,8 @@ public record Instruction(Operation operation, int addressOrValue) {
         final var operation = Operation.values()[opCode];
         return new Instruction(operation, addressOrValue);
     }
+
+    public String display() {
+        return operation + " " + Integer.toHexString(addressOrValue);
+    }
 }

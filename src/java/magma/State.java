@@ -18,7 +18,8 @@ public class State {
 
     String display() {
         return memory.stream()
-                .map(Integer::toHexString)
+                .map(Instruction::decode)
+                .map(Instruction::display)
                 .collect(Collectors.joining("\n"));
     }
 
