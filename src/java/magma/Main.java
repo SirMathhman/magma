@@ -1,6 +1,5 @@
 package magma;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
@@ -48,24 +47,36 @@ public class Main {
     }
 
     private static List<Integer> createProgram() {
-        return List.of(
-                LoadValue.of(0x100),
-                StoreIndirect.of(STACK_POINTER),
+        return define(0, loadValue(0x100))
+                .addAll(define(1, loadValue(0x200)))
+                .list();
+    }
 
-                LoadValue.of(0x200),
+    private static JavaList<Integer> loadValue(int value) {
+        return new JavaList<Integer>().add(LoadValue.of(value));
+    }
 
-                StoreDirect.of(SPILL),
-                LoadDirect.of(STACK_POINTER),
-                AddValue.of(1),
-                StoreDirect.of(STACK_POINTER),
-                LoadDirect.of(SPILL),
+    private static JavaList<Integer> define(int offset, JavaList<Integer> loader) {
+        return new JavaList<Integer>()
+                .addAll(loader)
+                .add(StoreDirect.of(SPILL))
+                .addAll(move(offset))
+                .add(LoadDirect.of(SPILL))
+                .add(StoreIndirect.of(STACK_POINTER))
+                .addAll(move(-offset));
+    }
 
-                StoreIndirect.of(STACK_POINTER),
+    private static JavaList<Integer> move(int offset) {
+        if (offset == 0) return new JavaList<>();
 
-                LoadDirect.of(STACK_POINTER),
-                SubtractValue.of(1),
-                StoreDirect.of(STACK_POINTER)
-        );
+        var instruction = offset > 0
+                ? AddValue.of(offset)
+                : SubtractValue.of(-offset);
+
+        return new JavaList<Integer>()
+                .add(LoadDirect.of(STACK_POINTER))
+                .add(instruction)
+                .add(StoreDirect.of(STACK_POINTER));
     }
 
     private static Stream<Integer> set(int address, int instruction) {
