@@ -2,15 +2,21 @@ package magma;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
+
+import static magma.Operation.Halt;
+import static magma.Operation.InAndStore;
 
 public class Main {
     public static void main(String[] args) {
-        var input = new LinkedList<Integer>();
-        input.addLast(Operation.Halt.empty());
+        var input = new LinkedList<>(List.of(
+                InAndStore.of(2),
+                Halt.empty()
+        ));
 
         var memory = new ArrayList<Integer>();
-        memory.add(Operation.InAndStore.of(1));
+        memory.add(InAndStore.of(1));
 
         var programCounter = 0;
 
@@ -25,7 +31,6 @@ public class Main {
         }
 
         final var joined = state.display();
-
         System.out.println(joined);
     }
 
