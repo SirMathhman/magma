@@ -5,6 +5,8 @@ import java.util.Deque;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static magma.Operation.InStore;
+
 public class Interpreter {
     static Result<State, Tuple<State, RuntimeError>> interpreter(Deque<Integer> input) {
         var memory = new ArrayList<Integer>();
@@ -24,19 +26,19 @@ public class Interpreter {
 
                 final var error = result.findError();
                 if (error.isPresent()) {
-                    return new Err<State, Tuple<State, RuntimeError>>(new Tuple<State, RuntimeError>(state, error.orElseThrow()));
+                    return new Err<>(new Tuple<>(state, error.orElseThrow()));
                 }
             } else {
                 break;
             }
         }
 
-        return new Ok<State, Tuple<State, RuntimeError>>(state);
+        return new Ok<>(state);
     }
 
     static Optional<Result<State, RuntimeError>> cycle(State state) {
         return state.current()
-                .map(Main::decode)
+                .map(Interpreter::decode)
                 .flatMap(result -> processDecoded(state, result));
     }
 
