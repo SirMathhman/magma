@@ -11,11 +11,9 @@ import static magma.Operation.*;
 
 public class Main {
     public static void main(String[] args) {
-        var input = Stream.of(
-                set(2, Jump.of(0)),
-                set(3, Halt.empty()),
-                set(2, Jump.of(3))
-        ).flatMap(Function.identity()).collect(Collectors.toCollection(LinkedList::new));
+        var input = createProgram()
+                .flatMap(Function.identity())
+                .collect(Collectors.toCollection(LinkedList::new));
 
         var memory = new ArrayList<Integer>();
         memory.add(InStore.of(1));
@@ -34,6 +32,14 @@ public class Main {
 
         final var joined = state.display();
         System.out.println(joined);
+    }
+
+    private static Stream<Stream<Integer>> createProgram() {
+        return Stream.of(
+                set(2, Jump.of(0)),
+                set(3, Halt.empty()),
+                set(2, Jump.of(3))
+        );
     }
 
     private static Stream<Integer> set(int address, int instruction) {
