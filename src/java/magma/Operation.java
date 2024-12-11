@@ -11,7 +11,7 @@ public enum Operation {
     LoadDirect,
     AddValue,
     SubtractValue,
-    AddAddress,
+    AddDirect,
     LoadIndirect;
 
     int empty() {
