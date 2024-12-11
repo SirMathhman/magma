@@ -2,6 +2,7 @@ package magma;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -16,7 +17,7 @@ public class Main {
     public static final int SPILL = 4;
 
     public static void main(String[] args) {
-        var input = createProgram().collect(Collectors.toCollection(LinkedList::new));
+        var input = createLoadableProgram().collect(Collectors.toCollection(LinkedList::new));
 
         run(input).consume(state -> {
             final var joined = state.display();
@@ -58,18 +59,8 @@ public class Main {
         return new Ok<>(state);
     }
 
-    private static Stream<Integer> createProgram() {
-
-        var program = Stream.of(
-                define(0, loadValue(0x100)),
-                define(1, loadValue(0x200)),
-                define(2, Stream.of(
-                        loadOffset(0),
-
-                ).flatMap(Function.identity())),
-                Stream.of(Halt.empty())
-        ).flatMap(Function.identity()).collect(Collectors.toCollection(ArrayList::new));
-
+    private static Stream<Integer> createLoadableProgram() {
+        var program = createProgram();
         System.out.println(Instruction.displayEncoded(program));
 
         final var setInstructions = IntStream.range(0, program.size())
@@ -83,6 +74,16 @@ public class Main {
         ).flatMap(Function.identity());
 
         return Stream.concat(Stream.concat(set, setInstructions), set(2, Jump.of(5)));
+    }
+
+    private static List<Integer> createProgram() {
+        return Stream.of(
+                define(1, loadValue(0x100)),
+                define(2, Stream.of(
+                        loadOffset(1)
+                ).flatMap(Function.identity())),
+                Stream.of(Halt.empty())
+        ).flatMap(Function.identity()).collect(Collectors.toCollection(ArrayList::new));
     }
 
     private static Stream<Integer> loadValue(int value) {
