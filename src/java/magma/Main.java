@@ -8,8 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static magma.Operation.InStore;
-import static magma.Operation.Jump;
+import static magma.Operation.*;
 
 public class Main {
 
@@ -49,7 +48,24 @@ public class Main {
     }
 
     private static List<Integer> createProgram() {
-        return Collections.emptyList();
+        return List.of(
+                LoadValue.of(0x100),
+                StoreIndirect.of(STACK_POINTER),
+
+                LoadValue.of(0x200),
+
+                StoreDirect.of(SPILL),
+                LoadDirect.of(STACK_POINTER),
+                AddValue.of(1),
+                StoreDirect.of(STACK_POINTER),
+                LoadDirect.of(SPILL),
+
+                StoreIndirect.of(STACK_POINTER),
+
+                LoadDirect.of(STACK_POINTER),
+                SubtractValue.of(1),
+                StoreDirect.of(STACK_POINTER)
+        );
     }
 
     private static Stream<Integer> set(int address, int instruction) {
