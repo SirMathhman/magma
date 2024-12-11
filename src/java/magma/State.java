@@ -96,4 +96,12 @@ public class State {
     public State subtractAddress(int address) {
         return subtractValue(memory.get(address));
     }
+
+    public State jumpIfLessThan(int address) {
+        if(accumulator < 0) {
+            programCounter = address;
+        }
+
+        return this;
+    }
 }

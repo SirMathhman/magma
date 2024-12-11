@@ -47,10 +47,7 @@ public class Main {
     }
 
     private static List<Integer> createProgram() {
-
-
         return assign(0, value(0))
-                .add()
                 .add(Halt.empty())
                 .list();
     }
@@ -59,10 +56,6 @@ public class Main {
         return loadLeft.addAll(mapOffset(addressOffset, new JavaList<Integer>()
                 .add(LoadIndirect.of(STACK_POINTER))
                 .add(operation.of(SPILL))));
-    }
-
-    private static JavaList<Integer> offset(int offset) {
-        return mapOffset(offset, new JavaList<Integer>().add(LoadIndirect.of(STACK_POINTER)));
     }
 
     private static JavaList<Integer> mapOffset(int offset, JavaList<Integer> instructions) {

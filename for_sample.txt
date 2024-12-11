@@ -163,7 +163,10 @@ next = {
 }
 
 int array[10];
+int i;
 i = loada 0;
+jp loop;
+
 ifTrue = {
     jp next;
 }
@@ -182,7 +185,8 @@ ifFalse = {
     jp loop;
 }
 loop = {
-    load i - 10;
+    loadd i;
+    subv 10;
     jpl ifFalse;
     jp ifTrue;
 }
