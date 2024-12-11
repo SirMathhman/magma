@@ -4,6 +4,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class State {
     private final Deque<Integer> input;
@@ -17,9 +18,12 @@ public class State {
     }
 
     String display() {
-        return memory.stream()
-                .map(Instruction::decode)
-                .map(Instruction::display)
+        return IntStream.range(0, memory.size())
+                .mapToObj(index -> new Tuple<>(index, memory.get(index)))
+                .map(tuple -> tuple.mapRight(Instruction::decode))
+                .map(tuple -> tuple.mapRight(Instruction::display))
+                .map(tuple -> tuple.mapLeft(Integer::toHexString))
+                .map(tuple -> tuple.left() + ") " + tuple.right())
                 .collect(Collectors.joining("\n"));
     }
 
