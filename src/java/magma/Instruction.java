@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static magma.Operation.encode;
+
 public record Instruction(Operation operation, int addressOrValue) {
     static Optional<Instruction> decode(int instruction) {
         final var opCode = instruction >> 24;
@@ -48,6 +50,12 @@ public record Instruction(Operation operation, int addressOrValue) {
                 .mapToObj(index -> new Tuple<>(index, instructions.get(index)))
                 .map(Instruction::displayEncodedInstruction)
                 .collect(Collectors.joining("\n"));
+    }
+
+    static int of(Operation operation, int addressOrValue) {
+        return encode(new Node()
+                .withInt("ordinal", operation.ordinal())
+                .withInt("addressOrValue", addressOrValue));
     }
 
     public String display() {

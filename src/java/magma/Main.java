@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static magma.Instruction.displayEncoded;
+import static magma.Instruction.of;
 import static magma.Operation.*;
 
 public class Main {
@@ -31,23 +33,19 @@ public class Main {
 
     private static Stream<Integer> createLoadableProgram() {
         var program = createProgram();
-        System.out.println(Instruction.displayEncoded(program));
+        System.out.println(displayEncoded(program));
 
         final var setInstructions = IntStream.range(0, program.size())
                 .mapToObj(index -> set(5 + index, program.get(index)))
                 .flatMap(Function.identity());
 
         final var set = Stream.of(
-                set(2, encode(new Node()
-                        .withInt("ordinal", Jump.ordinal())
-                        .withInt("addressOrValue", 0))),
+                set(2, of(Jump, 0)),
                 set(STACK_POINTER, 5 + program.size()),
                 set(SPILL, 0)
         ).flatMap(Function.identity());
 
-        return Stream.concat(Stream.concat(set, setInstructions), set(2, encode(new Node()
-                .withInt("ordinal", Jump.ordinal())
-                .withInt("addressOrValue", 5))));
+        return Stream.concat(Stream.concat(set, setInstructions), set(2, of(Jump, 5)));
     }
 
     private static List<Integer> createProgram() {
@@ -58,46 +56,30 @@ public class Main {
 
     private static JavaList<Integer> operate(Operation operation, int addressOffset, JavaList<Integer> loadLeft) {
         return loadLeft.addAll(mapOffset(addressOffset, new JavaList<Integer>()
-                .add(encode(new Node()
-                        .withInt("ordinal", LoadIndirect.ordinal())
-                        .withInt("addressOrValue", STACK_POINTER)))
-                .add(encode(new Node()
-                        .withInt("ordinal", operation.ordinal())
-                        .withInt("addressOrValue", SPILL)))));
+                .add(of(LoadIndirect, STACK_POINTER))
+                .add(of(operation, SPILL))));
     }
 
     private static JavaList<Integer> mapOffset(int offset, JavaList<Integer> instructions) {
         return new JavaList<Integer>()
                 .addAll(move(offset))
                 .addAll(instructions)
-                .add(encode(new Node()
-                        .withInt("ordinal", StoreDirect.ordinal())
-                        .withInt("addressOrValue", SPILL)))
+                .add(of(StoreDirect, SPILL))
                 .addAll(move(-offset))
-                .add(encode(new Node()
-                        .withInt("ordinal", LoadDirect.ordinal())
-                        .withInt("addressOrValue", SPILL)));
+                .add(of(LoadDirect, SPILL));
     }
 
     private static JavaList<Integer> value(int value) {
-        return new JavaList<Integer>().add(encode(new Node()
-                .withInt("ordinal", LoadValue.ordinal())
-                .withInt("addressOrValue", value)));
+        return new JavaList<Integer>().add(of(LoadValue, value));
     }
 
     private static JavaList<Integer> assign(int offset, JavaList<Integer> loader) {
         return new JavaList<Integer>()
                 .addAll(loader)
-                .add(encode(new Node()
-                        .withInt("ordinal", StoreDirect.ordinal())
-                        .withInt("addressOrValue", SPILL)))
+                .add(of(StoreDirect, SPILL))
                 .addAll(move(offset))
-                .add(encode(new Node()
-                        .withInt("ordinal", LoadDirect.ordinal())
-                        .withInt("addressOrValue", SPILL)))
-                .add(encode(new Node()
-                        .withInt("ordinal", StoreIndirect.ordinal())
-                        .withInt("addressOrValue", STACK_POINTER)))
+                .add(of(LoadDirect, SPILL))
+                .add(of(StoreIndirect, STACK_POINTER))
                 .addAll(move(-offset));
     }
 
@@ -106,31 +88,21 @@ public class Main {
 
         int instruction;
         if (offset > 0) {
-            instruction = encode(new Node()
-                    .withInt("ordinal", AddValue.ordinal())
-                    .withInt("addressOrValue", offset));
+            instruction = of(AddValue, offset);
         } else {
             int addressOrValue = -offset;
-            instruction = encode(new Node()
-                    .withInt("ordinal", SubtractValue.ordinal())
-                    .withInt("addressOrValue", addressOrValue));
+            instruction = of(SubtractValue, addressOrValue);
         }
 
         return new JavaList<Integer>()
-                .add(encode(new Node()
-                        .withInt("ordinal", LoadDirect.ordinal())
-                        .withInt("addressOrValue", STACK_POINTER)))
+                .add(of(LoadDirect, STACK_POINTER))
                 .add(instruction)
-                .add(encode(new Node()
-                        .withInt("ordinal", StoreDirect.ordinal())
-                        .withInt("addressOrValue", STACK_POINTER)));
+                .add(of(StoreDirect, STACK_POINTER));
     }
 
     private static Stream<Integer> set(int address, int instruction) {
         return Stream.of(
-                encode(new Node()
-                        .withInt("ordinal", InStore.ordinal())
-                        .withInt("addressOrValue", address)),
+                of(InStore, address),
                 instruction
         );
     }
