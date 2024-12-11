@@ -8,10 +8,10 @@ import java.util.stream.Collectors;
 public class Main {
     public static void main(String[] args) {
         var input = new LinkedList<Integer>();
-        input.addLast(instruct(Operation.Halt));
+        input.addLast(Operation.Halt.empty());
 
         var memory = new ArrayList<Integer>();
-        memory.add(instruct(Operation.InAndStore, 1));
+        memory.add(Operation.InAndStore.of(1));
 
         var programCounter = 0;
 
@@ -33,24 +33,13 @@ public class Main {
     }
 
     private static Optional<State> run(State state) {
-        return state.current().flatMap(instruction -> {
-            final var opCode = instruction >> 24;
-            final var addressOrValue = instruction & 0x00FFFFFF;
-
+        return state.current().map(Instruction::decode).flatMap(instruction -> {
             final var next = state.next();
-            final var operation = Operation.values()[opCode];
-            return switch (operation) {
-                case InAndStore -> Optional.of(next.inAndStore(addressOrValue));
+            return switch (instruction.operation()) {
+                case Nothing -> Optional.of(next);
+                case InAndStore -> Optional.of(next.inAndStore(instruction.addressOrValue()));
                 case Halt -> Optional.empty();
             };
         });
-    }
-
-    private static int instruct(Operation operation) {
-        return instruct(operation, 0);
-    }
-
-    private static int instruct(Operation operation, int addressOrValue) {
-        return (operation.ordinal() << 24) + addressOrValue;
     }
 }
