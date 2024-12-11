@@ -3,6 +3,7 @@ package magma;
 import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class State {
     private final Deque<Integer> input;
@@ -13,6 +14,12 @@ public class State {
         this.input = input;
         this.memory = memory;
         this.programCounter = programCounter;
+    }
+
+    String display() {
+        return memory.stream()
+                .map(Integer::toHexString)
+                .collect(Collectors.joining("\n"));
     }
 
     State inAndStore(int addressOrValue) {
@@ -26,28 +33,12 @@ public class State {
     }
 
     State next() {
-        setProgramCounter(getProgramCounter() + 1);
+        this.programCounter = programCounter + 1;
         return this;
     }
 
-    public Deque<Integer> getInput() {
-        return input;
-    }
-
-    public List<Integer> getMemory() {
-        return memory;
-    }
-
-    public int getProgramCounter() {
-        return programCounter;
-    }
-
-    public void setProgramCounter(int programCounter) {
-        this.programCounter = programCounter;
-    }
-
     public Optional<Integer> current() {
-        if (this.getProgramCounter() >= this.memory.size()) return Optional.empty();
-        return Optional.of(this.memory.get(this.getProgramCounter()));
+        if (programCounter >= this.memory.size()) return Optional.empty();
+        return Optional.of(this.memory.get(programCounter));
     }
 }

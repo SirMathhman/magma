@@ -3,7 +3,6 @@ package magma;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -25,9 +24,7 @@ public class Main {
             }
         }
 
-        final var joined = state.getMemory().stream()
-                .map(Integer::toHexString)
-                .collect(Collectors.joining("\n"));
+        final var joined = state.display();
 
         System.out.println(joined);
     }
