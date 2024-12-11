@@ -26,9 +26,21 @@ public record Instruction(Operation operation, int addressOrValue) {
         final var indexHex = Integer.toHexString(index);
         final var instruction = decode(value)
                 .map(Instruction::display)
-                .orElse(String.valueOf(value));
+                .orElseGet(() -> displayIntAsHex(value));
 
         return indexHex + ") " + instruction;
+    }
+
+    private static String displayIntAsHex(int value) {
+        if (value < 0) {
+            return "-" + Integer.toHexString(-value);
+        } else {
+            return Integer.toHexString(value);
+        }
+    }
+
+    private static String getHexString(Integer value) {
+        return Integer.toHexString(value);
     }
 
     static String displayEncoded(List<Integer> instructions) {

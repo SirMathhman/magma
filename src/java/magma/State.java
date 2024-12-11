@@ -92,4 +92,8 @@ public class State {
     public Result<State, RuntimeError> loadIndirect(int address) {
         return loadDirect(memory.get(address));
     }
+
+    public State subtractAddress(int address) {
+        return subtractValue(memory.get(address));
+    }
 }

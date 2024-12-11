@@ -12,7 +12,7 @@ public enum Operation {
     AddValue,
     SubtractValue,
     AddDirect,
-    LoadIndirect;
+    LoadIndirect, SubtractDirect;
 
     int empty() {
         return of(0);

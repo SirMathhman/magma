@@ -65,6 +65,7 @@ public class Interpreter {
             case AddDirect -> Optional.of(new Ok<State, RuntimeError>(next.addAddress(addressOrValue)));
             case SubtractValue -> Optional.of(new Ok<State, RuntimeError>(next.subtractValue(addressOrValue)));
             case LoadIndirect -> Optional.of(next.loadIndirect(addressOrValue));
+            case SubtractDirect -> Optional.of(new Ok<>(next.subtractAddress(addressOrValue)));
         };
     }
 

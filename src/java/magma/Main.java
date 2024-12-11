@@ -47,16 +47,21 @@ public class Main {
     }
 
     private static List<Integer> createProgram() {
-        return assign(0, loadValue(0x100))
-                .addAll(assign(1, loadValue(0x200)))
-                .addAll(assign(2, loadOffset(0).addAll(mapOffset(1, new JavaList<Integer>()
-                        .add(LoadIndirect.of(STACK_POINTER))
-                        .add(AddDirect.of(SPILL))))))
+        return assign(0, value(0x100))
+                .addAll(assign(1, value(0x200)))
+                .addAll(assign(2, operate(AddDirect, offset(0), 1)))
+                .addAll(assign(3, operate(SubtractDirect, offset(1), 0)))
                 .add(Halt.empty())
                 .list();
     }
 
-    private static JavaList<Integer> loadOffset(int offset) {
+    private static JavaList<Integer> operate(Operation operation, JavaList<Integer> loadLeft, int addressOffset) {
+        return loadLeft.addAll(mapOffset(addressOffset, new JavaList<Integer>()
+                .add(LoadIndirect.of(STACK_POINTER))
+                .add(operation.of(SPILL))));
+    }
+
+    private static JavaList<Integer> offset(int offset) {
         return mapOffset(offset, new JavaList<Integer>().add(LoadIndirect.of(STACK_POINTER)));
     }
 
@@ -69,7 +74,7 @@ public class Main {
                 .add(LoadDirect.of(SPILL));
     }
 
-    private static JavaList<Integer> loadValue(int value) {
+    private static JavaList<Integer> value(int value) {
         return new JavaList<Integer>().add(LoadValue.of(value));
     }
 
