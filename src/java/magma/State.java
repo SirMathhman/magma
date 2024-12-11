@@ -10,6 +10,7 @@ public class State {
     private final Deque<Integer> input;
     private final List<Integer> memory;
     private int programCounter;
+    private int accumulator = 0;
 
     public State(Deque<Integer> input, List<Integer> memory, int programCounter) {
         this.input = input;
@@ -29,11 +30,15 @@ public class State {
 
     State inAndStore(int addressOrValue) {
         final var first = input.removeFirst();
-        while (!(addressOrValue < memory.size())) {
+        return set(addressOrValue, first);
+    }
+
+    private State set(int address, int value) {
+        while (!(address < memory.size())) {
             memory.add(0);
         }
 
-        memory.set(addressOrValue, first);
+        memory.set(address, value);
         return this;
     }
 
@@ -50,5 +55,18 @@ public class State {
     public State jump(int addressOrValue) {
         programCounter = addressOrValue;
         return this;
+    }
+
+    public State loadValue(int value) {
+        accumulator = value;
+        return this;
+    }
+
+    public State storeIndirect(int address) {
+        return storeDirect(memory.get(address));
+    }
+
+    private State storeDirect(int address) {
+        return set(address, accumulator);
     }
 }

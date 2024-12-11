@@ -3,7 +3,7 @@ package magma;
 public enum Operation {
     Nothing,
     InStore,
-    Halt, Jump;
+    Halt, Jump, LoadValue, StoreIndirect;
 
     int empty() {
         return of(0);

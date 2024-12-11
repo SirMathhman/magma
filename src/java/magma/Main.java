@@ -36,6 +36,8 @@ public class Main {
 
     private static Stream<Integer> createProgram() {
         var program = new ArrayList<>(List.of(
+                LoadValue.of(0x100),
+                StoreIndirect.of(3),
                 Halt.empty()
         ));
 
@@ -69,6 +71,8 @@ public class Main {
                 case InStore -> Optional.of(next.inAndStore(addressOrValue));
                 case Halt -> Optional.empty();
                 case Jump -> Optional.of(next.jump(addressOrValue));
+                case LoadValue -> Optional.of(next.loadValue(addressOrValue));
+                case StoreIndirect -> Optional.of(next.storeIndirect(addressOrValue));
             };
         });
     }
