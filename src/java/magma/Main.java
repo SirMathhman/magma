@@ -60,17 +60,17 @@ public class Main {
     private static Stream<Integer> setAtOffset(int offset, Stream<Integer> loader) {
         return Stream.of(
                 loader,
-                moveByOffset(offset),
+                moveByOffset(AddValue.of(offset)),
                 Stream.of(StoreIndirect.of(STACK_POINTER)),
-                moveByOffset(offset)
+                moveByOffset(SubtractValue.of(offset))
         ).flatMap(Function.identity());
     }
 
-    private static Stream<Integer> moveByOffset(int offset) {
+    private static Stream<Integer> moveByOffset(int instruction) {
         return Stream.of(
                 StoreDirect.of(SPILL),
                 LoadDirect.of(STACK_POINTER),
-                AddValue.of(offset),
+                instruction,
                 StoreDirect.of(STACK_POINTER),
                 LoadDirect.of(SPILL)
         );
@@ -98,6 +98,7 @@ public class Main {
                 case StoreDirect -> Optional.of(next.storeDirect(addressOrValue));
                 case LoadDirect -> Optional.of(next.loadDirect(addressOrValue));
                 case AddValue -> Optional.of(next.addValue(addressOrValue));
+                case SubtractValue -> Optional.of(next.subtractValue(addressOrValue));
             };
         });
     }

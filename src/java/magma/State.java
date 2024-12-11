@@ -78,4 +78,9 @@ public class State {
         accumulator += addressOrValue;
         return this;
     }
+
+    public State subtractValue(int addressOrValue) {
+        accumulator -= addressOrValue;
+        return this;
+    }
 }
