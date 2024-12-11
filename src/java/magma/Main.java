@@ -37,8 +37,10 @@ public class Main {
     private static Stream<Stream<Integer>> createProgram() {
         return Stream.of(
                 set(2, Jump.of(0)),
-                set(3, Halt.empty()),
-                set(2, Jump.of(3))
+                set(3, 6),
+                set(4, 0),
+                set(5, Halt.empty()),
+                set(2, Jump.of(5))
         );
     }
 
