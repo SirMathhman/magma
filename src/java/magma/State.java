@@ -21,7 +21,7 @@ public class State {
     String display() {
         return IntStream.range(0, memory.size())
                 .mapToObj(index -> new Tuple<>(index, memory.get(index)))
-                .map(tuple -> tuple.mapRight(Instruction::decode))
+                .map(tuple -> tuple.mapRight(instruction -> Instruction.decode(instruction).orElseThrow()))
                 .map(tuple -> tuple.mapRight(Instruction::display))
                 .map(tuple -> tuple.mapLeft(Integer::toHexString))
                 .map(tuple -> tuple.left() + ") " + tuple.right())
@@ -82,5 +82,9 @@ public class State {
     public State subtractValue(int addressOrValue) {
         accumulator -= addressOrValue;
         return this;
+    }
+
+    public State addAddress(int address) {
+        return addValue(memory.get(address));
     }
 }
