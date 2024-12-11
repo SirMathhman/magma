@@ -2,18 +2,18 @@ package magma;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static magma.Operation.*;
 
 public class Main {
     public static void main(String[] args) {
-        var input = createProgram()
-                .flatMap(Function.identity())
-                .collect(Collectors.toCollection(LinkedList::new));
+        var input = createProgram().collect(Collectors.toCollection(LinkedList::new));
 
         var memory = new ArrayList<Integer>();
         memory.add(InStore.of(1));
@@ -34,14 +34,22 @@ public class Main {
         System.out.println(joined);
     }
 
-    private static Stream<Stream<Integer>> createProgram() {
-        return Stream.of(
+    private static Stream<Integer> createProgram() {
+        var program = new ArrayList<>(List.of(
+                Halt.empty()
+        ));
+
+        final var setInstructions = IntStream.range(0, program.size())
+                .mapToObj(index -> set(5 + index, program.get(index)))
+                .flatMap(Function.identity());
+
+        final var set = Stream.of(
                 set(2, Jump.of(0)),
-                set(3, 6),
-                set(4, 0),
-                set(5, Halt.empty()),
-                set(2, Jump.of(5))
-        );
+                set(3, 5 + program.size()),
+                set(4, 0)
+        ).flatMap(Function.identity());
+
+        return Stream.concat(Stream.concat(set, setInstructions), set(2, Jump.of(5)));
     }
 
     private static Stream<Integer> set(int address, int instruction) {
