@@ -3,10 +3,14 @@ package magma;
 import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class State {
+    public static final String DISPLAY_FORMAT = """
+            Memory:
+            %s
+            
+            Program Counter: %s
+            Accumulator: %s""";
     private final Deque<Integer> input;
     private final List<Integer> memory;
     private int programCounter;
@@ -19,20 +23,7 @@ public class State {
     }
 
     String display() {
-        return IntStream.range(0, memory.size())
-                .mapToObj(index -> new Tuple<>(index, memory.get(index)))
-                .map(tuple -> {
-                    final var index = tuple.left();
-                    final var value = tuple.right();
-
-                    final var indexHex = Integer.toHexString(index);
-                    final var instruction = Instruction.decode(value)
-                            .map(Instruction::display)
-                            .orElse(String.valueOf(value));
-
-                    return indexHex + ") " + instruction;
-                })
-                .collect(Collectors.joining("\n"));
+        return DISPLAY_FORMAT.formatted(Instruction.displayEncoded(memory), Integer.toHexString(programCounter), Integer.toHexString(accumulator));
     }
 
     State inAndStore(int addressOrValue) {
@@ -77,8 +68,11 @@ public class State {
         return set(address, accumulator);
     }
 
-    public State loadDirect(int address) {
-        return loadValue(memory.get(address));
+    public Result<State, RuntimeError> loadDirect(int address) {
+        if (address >= 0 && address < memory.size()) {
+            return new Ok<>(loadValue(memory.get(address)));
+        }
+        return new Err<>(new RuntimeError("Invalid address", String.valueOf(address)));
     }
 
     public State addValue(int addressOrValue) {
@@ -95,7 +89,7 @@ public class State {
         return addValue(memory.get(address));
     }
 
-    public State loadIndirect(int address) {
+    public Result<State, RuntimeError> loadIndirect(int address) {
         return loadDirect(memory.get(address));
     }
 }

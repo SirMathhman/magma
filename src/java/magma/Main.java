@@ -18,7 +18,7 @@ public class Main {
     public static void main(String[] args) {
         var input = createProgram().collect(Collectors.toCollection(LinkedList::new));
 
-        getState(input).consume(state -> {
+        run(input).consume(state -> {
             final var joined = state.display();
             System.out.println(joined);
         }, err -> {
@@ -30,7 +30,7 @@ public class Main {
         });
     }
 
-    private static Result<State, Tuple<State, RuntimeError>> getState(LinkedList<Integer> input) {
+    private static Result<State, Tuple<State, RuntimeError>> run(LinkedList<Integer> input) {
         var memory = new ArrayList<Integer>();
         memory.add(InStore.of(1));
 
@@ -38,7 +38,7 @@ public class Main {
 
         var state = new State(input, memory, programCounter);
         while (true) {
-            final var optional = run(state);
+            final var optional = cycle(state);
             if (optional.isPresent()) {
                 final var result = optional.get();
                 final var value = result.findValue();
@@ -59,11 +59,18 @@ public class Main {
     }
 
     private static Stream<Integer> createProgram() {
+
         var program = Stream.of(
                 define(0, loadValue(0x100)),
-                define(1, loadOffset(0)),
+                define(1, loadValue(0x200)),
+                define(2, Stream.of(
+                        loadOffset(0),
+
+                ).flatMap(Function.identity())),
                 Stream.of(Halt.empty())
         ).flatMap(Function.identity()).collect(Collectors.toCollection(ArrayList::new));
+
+        System.out.println(Instruction.displayEncoded(program));
 
         final var setInstructions = IntStream.range(0, program.size())
                 .mapToObj(index -> set(5 + index, program.get(index)))
@@ -76,15 +83,6 @@ public class Main {
         ).flatMap(Function.identity());
 
         return Stream.concat(Stream.concat(set, setInstructions), set(2, Jump.of(5)));
-    }
-
-    private static Stream<Integer> add(Stream<Integer> loadLeft, Stream<Integer> loadRight) {
-        return Stream.of(
-                loadLeft,
-                Stream.of(StoreDirect.of(SPILL)),
-                loadRight,
-                Stream.of(AddAddress.of(SPILL))
-        ).flatMap(Function.identity());
     }
 
     private static Stream<Integer> loadValue(int value) {
@@ -102,9 +100,15 @@ public class Main {
     private static Stream<Integer> define(int offset, Stream<Integer> loader) {
         return Stream.of(
                 loader,
-                moveToOffset(offset),
-                Stream.of(StoreIndirect.of(STACK_POINTER)),
-                moveToOffset(offset)
+                Stream.of(
+                        Stream.of(StoreDirect.of(SPILL)),
+                        moveToOffset(offset),
+                        Stream.of(
+                                LoadDirect.of(SPILL),
+                                StoreIndirect.of(STACK_POINTER)
+                        ),
+                        moveToOffset(-offset)
+                ).flatMap(Function.identity())
         ).flatMap(Function.identity());
     }
 
@@ -112,14 +116,12 @@ public class Main {
         if (offset == 0) return Stream.empty();
         var instruction = offset > 0
                 ? AddValue.of(offset)
-                : SubtractValue.of(offset);
+                : SubtractValue.of(-offset);
 
         return Stream.of(
-                StoreDirect.of(SPILL),
                 LoadDirect.of(STACK_POINTER),
                 instruction,
-                StoreDirect.of(STACK_POINTER),
-                LoadDirect.of(SPILL)
+                StoreDirect.of(STACK_POINTER)
         );
     }
 
@@ -130,30 +132,34 @@ public class Main {
         );
     }
 
-    private static Optional<Result<State, RuntimeError>> run(State state) {
+    private static Optional<Result<State, RuntimeError>> cycle(State state) {
         return state.current()
                 .map(Main::decode)
-                .flatMap(result -> result
-                        .mapValue(instruction -> processInstruction(state, instruction))
-                        .match(state0 -> state0.map(Ok::new), err -> Optional.of(new Err<>(err))));
+                .flatMap(result -> processDecoded(state, result));
     }
 
-    private static Optional<State> processInstruction(State state, Instruction instruction) {
+    private static Optional<Result<State, RuntimeError>> processDecoded(State state, Result<Instruction, RuntimeError> result) {
+        return result.mapValue(instruction -> processInstruction(state, instruction))
+                .into(Results::invertOption)
+                .map(inner -> inner.flatMapValue(Function.identity()));
+    }
+
+    private static Optional<Result<State, RuntimeError>> processInstruction(State state, Instruction instruction) {
         final var next = state.next();
         final var operation = instruction.operation();
         final var addressOrValue = instruction.addressOrValue();
         return switch (operation) {
-            case Nothing -> Optional.of(next);
-            case InStore -> Optional.of(next.inAndStore(addressOrValue));
+            case Nothing -> Optional.of(new Ok<>(next));
+            case InStore -> Optional.of(new Ok<>(next.inAndStore(addressOrValue)));
             case Halt -> Optional.empty();
-            case Jump -> Optional.of(next.jump(addressOrValue));
-            case LoadValue -> Optional.of(next.loadValue(addressOrValue));
-            case StoreIndirect -> Optional.of(next.storeIndirect(addressOrValue));
-            case StoreDirect -> Optional.of(next.storeDirect(addressOrValue));
+            case Jump -> Optional.of(new Ok<>(next.jump(addressOrValue)));
+            case LoadValue -> Optional.of(new Ok<>(next.loadValue(addressOrValue)));
             case LoadDirect -> Optional.of(next.loadDirect(addressOrValue));
-            case AddValue -> Optional.of(next.addValue(addressOrValue));
-            case SubtractValue -> Optional.of(next.subtractValue(addressOrValue));
-            case AddAddress -> Optional.of(next.addAddress(addressOrValue));
+            case StoreIndirect -> Optional.of(new Ok<>(next.storeIndirect(addressOrValue)));
+            case StoreDirect -> Optional.of(new Ok<>(next.storeDirect(addressOrValue)));
+            case AddValue -> Optional.of(new Ok<>(next.addValue(addressOrValue)));
+            case AddAddress -> Optional.of(new Ok<>(next.addAddress(addressOrValue)));
+            case SubtractValue -> Optional.of(new Ok<>(next.subtractValue(addressOrValue)));
             case LoadIndirect -> Optional.of(next.loadIndirect(addressOrValue));
         };
     }

@@ -29,4 +29,9 @@ public record Err<T, X>(X error) implements Result<T, X> {
     public void consume(Consumer<T> valueConsumer, Consumer<X> errorConsumer) {
         errorConsumer.accept(error);
     }
+
+    @Override
+    public <R> Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper) {
+        return new Err<>(error);
+    }
 }

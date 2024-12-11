@@ -14,4 +14,10 @@ public interface Result<T, X> {
     Optional<X> findError();
 
     void consume(Consumer<T> valueConsumer, Consumer<X> errorConsumer);
+
+    <R> Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper);
+
+    default <R> R into(Function<Result<T, X>, R> mapper) {
+        return mapper.apply(this);
+    }
 }
