@@ -2,21 +2,20 @@ package magma;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static magma.Operation.*;
 
 public class Main {
     public static void main(String[] args) {
-        var input = new LinkedList<>(List.of(
-                InStore.of(2),
-                Jump.of(0),
-                InStore.of(3),
-                Halt.empty(),
-                InStore.of(2),
-                Jump.of(3)
-        ));
+        var input = Stream.of(
+                set(2, Jump.of(0)),
+                set(3, Halt.empty()),
+                set(2, Jump.of(3))
+        ).flatMap(Function.identity()).collect(Collectors.toCollection(LinkedList::new));
 
         var memory = new ArrayList<Integer>();
         memory.add(InStore.of(1));
@@ -35,6 +34,13 @@ public class Main {
 
         final var joined = state.display();
         System.out.println(joined);
+    }
+
+    private static Stream<Integer> set(int address, int instruction) {
+        return Stream.of(
+                InStore.of(address),
+                instruction
+        );
     }
 
     private static Optional<State> run(State state) {
