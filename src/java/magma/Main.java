@@ -2,7 +2,6 @@ package magma;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -39,18 +38,11 @@ public class Main {
     }
 
     private static Stream<Integer> createProgram() {
-        var program = new ArrayList<>(List.of(
-                LoadValue.of(0x100),
-                StoreIndirect.of(STACK_POINTER),
-                LoadValue.of(0x200),
-                StoreDirect.of(SPILL),
-                LoadDirect.of(STACK_POINTER),
-                AddValue.of(1),
-                StoreDirect.of(STACK_POINTER),
-                LoadDirect.of(SPILL),
-                StoreIndirect.of(STACK_POINTER),
-                Halt.empty()
-        ));
+        var program = Stream.of(
+                setAtOffset(0, Stream.of(LoadValue.of(0x100))),
+                setAtOffset(1, Stream.of(LoadValue.of(0x200))),
+                Stream.of(Halt.empty())
+        ).flatMap(Function.identity()).collect(Collectors.toCollection(ArrayList::new));
 
         final var setInstructions = IntStream.range(0, program.size())
                 .mapToObj(index -> set(5 + index, program.get(index)))
@@ -63,6 +55,25 @@ public class Main {
         ).flatMap(Function.identity());
 
         return Stream.concat(Stream.concat(set, setInstructions), set(2, Jump.of(5)));
+    }
+
+    private static Stream<Integer> setAtOffset(int offset, Stream<Integer> loader) {
+        return Stream.of(
+                loader,
+                moveByOffset(offset),
+                Stream.of(StoreIndirect.of(STACK_POINTER)),
+                moveByOffset(offset)
+        ).flatMap(Function.identity());
+    }
+
+    private static Stream<Integer> moveByOffset(int offset) {
+        return Stream.of(
+                StoreDirect.of(SPILL),
+                LoadDirect.of(STACK_POINTER),
+                AddValue.of(offset),
+                StoreDirect.of(STACK_POINTER),
+                LoadDirect.of(SPILL)
+        );
     }
 
     private static Stream<Integer> set(int address, int instruction) {
