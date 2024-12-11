@@ -66,7 +66,16 @@ public class State {
         return storeDirect(memory.get(address));
     }
 
-    private State storeDirect(int address) {
+    State storeDirect(int address) {
         return set(address, accumulator);
+    }
+
+    public State loadDirect(int address) {
+        return loadValue(memory.get(address));
+    }
+
+    public State addValue(int addressOrValue) {
+        accumulator += addressOrValue;
+        return this;
     }
 }

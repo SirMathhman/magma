@@ -12,6 +12,10 @@ import java.util.stream.Stream;
 import static magma.Operation.*;
 
 public class Main {
+
+    public static final int STACK_POINTER = 3;
+    public static final int SPILL = 4;
+
     public static void main(String[] args) {
         var input = createProgram().collect(Collectors.toCollection(LinkedList::new));
 
@@ -37,7 +41,14 @@ public class Main {
     private static Stream<Integer> createProgram() {
         var program = new ArrayList<>(List.of(
                 LoadValue.of(0x100),
-                StoreIndirect.of(3),
+                StoreIndirect.of(STACK_POINTER),
+                LoadValue.of(0x200),
+                StoreDirect.of(SPILL),
+                LoadDirect.of(STACK_POINTER),
+                AddValue.of(1),
+                StoreDirect.of(STACK_POINTER),
+                LoadDirect.of(SPILL),
+                StoreIndirect.of(STACK_POINTER),
                 Halt.empty()
         ));
 
@@ -47,8 +58,8 @@ public class Main {
 
         final var set = Stream.of(
                 set(2, Jump.of(0)),
-                set(3, 5 + program.size()),
-                set(4, 0)
+                set(STACK_POINTER, 5 + program.size()),
+                set(SPILL, 0)
         ).flatMap(Function.identity());
 
         return Stream.concat(Stream.concat(set, setInstructions), set(2, Jump.of(5)));
@@ -73,6 +84,9 @@ public class Main {
                 case Jump -> Optional.of(next.jump(addressOrValue));
                 case LoadValue -> Optional.of(next.loadValue(addressOrValue));
                 case StoreIndirect -> Optional.of(next.storeIndirect(addressOrValue));
+                case StoreDirect -> Optional.of(next.storeDirect(addressOrValue));
+                case LoadDirect -> Optional.of(next.loadDirect(addressOrValue));
+                case AddValue -> Optional.of(next.addValue(addressOrValue));
             };
         });
     }
