@@ -2,8 +2,8 @@ package magma;
 
 public enum Operation {
     Nothing,
-    InAndStore,
-    Halt;
+    InStore,
+    Halt, Jump;
 
     int empty() {
         return of(0);

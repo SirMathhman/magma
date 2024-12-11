@@ -46,4 +46,9 @@ public class State {
         if (programCounter >= this.memory.size()) return Optional.empty();
         return Optional.of(this.memory.get(programCounter));
     }
+
+    public State jump(int addressOrValue) {
+        programCounter = addressOrValue;
+        return this;
+    }
 }
