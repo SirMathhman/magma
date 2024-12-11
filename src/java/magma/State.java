@@ -21,10 +21,17 @@ public class State {
     String display() {
         return IntStream.range(0, memory.size())
                 .mapToObj(index -> new Tuple<>(index, memory.get(index)))
-                .map(tuple -> tuple.mapRight(instruction -> Instruction.decode(instruction).orElseThrow()))
-                .map(tuple -> tuple.mapRight(Instruction::display))
-                .map(tuple -> tuple.mapLeft(Integer::toHexString))
-                .map(tuple -> tuple.left() + ") " + tuple.right())
+                .map(tuple -> {
+                    final var index = tuple.left();
+                    final var value = tuple.right();
+
+                    final var indexHex = Integer.toHexString(index);
+                    final var instruction = Instruction.decode(value)
+                            .map(Instruction::display)
+                            .orElse(String.valueOf(value));
+
+                    return indexHex + ") " + instruction;
+                })
                 .collect(Collectors.joining("\n"));
     }
 
@@ -86,5 +93,9 @@ public class State {
 
     public State addAddress(int address) {
         return addValue(memory.get(address));
+    }
+
+    public State loadIndirect(int address) {
+        return loadDirect(memory.get(address));
     }
 }

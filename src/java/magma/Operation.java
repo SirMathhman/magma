@@ -3,7 +3,16 @@ package magma;
 public enum Operation {
     Nothing,
     InStore,
-    Halt, Jump, LoadValue, StoreIndirect, StoreDirect, LoadDirect, AddValue, SubtractValue, AddAddress;
+    Halt,
+    Jump,
+    LoadValue,
+    StoreIndirect,
+    StoreDirect,
+    LoadDirect,
+    AddValue,
+    SubtractValue,
+    AddAddress,
+    LoadIndirect;
 
     int empty() {
         return of(0);

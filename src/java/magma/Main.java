@@ -60,11 +60,8 @@ public class Main {
 
     private static Stream<Integer> createProgram() {
         var program = Stream.of(
-                setAt(0, value(0x100)),
-                setAt(1, value(0x200)),
-                setAt(2, offset(0)),
-                setAt(3, offset(1)),
-                setAt(4, add(offset(0), offset(1))),
+                define(0, loadValue(0x100)),
+                define(1, loadOffset(0)),
                 Stream.of(Halt.empty())
         ).flatMap(Function.identity()).collect(Collectors.toCollection(ArrayList::new));
 
@@ -90,28 +87,33 @@ public class Main {
         ).flatMap(Function.identity());
     }
 
-    private static Stream<Integer> value(int value) {
+    private static Stream<Integer> loadValue(int value) {
         return Stream.of(LoadValue.of(value));
     }
 
-    private static Stream<Integer> offset(int offset) {
+    private static Stream<Integer> loadOffset(int offset) {
         return Stream.of(
                 moveToOffset(offset),
-                Stream.of(LoadDirect.of(STACK_POINTER)),
+                Stream.of(LoadIndirect.of(STACK_POINTER)),
                 moveToOffset(-offset)
         ).flatMap(Function.identity());
     }
 
-    private static Stream<Integer> setAt(int offset, Stream<Integer> loader) {
+    private static Stream<Integer> define(int offset, Stream<Integer> loader) {
         return Stream.of(
                 loader,
-                moveToOffset(AddValue.of(offset)),
+                moveToOffset(offset),
                 Stream.of(StoreIndirect.of(STACK_POINTER)),
-                moveToOffset(SubtractValue.of(offset))
+                moveToOffset(offset)
         ).flatMap(Function.identity());
     }
 
-    private static Stream<Integer> moveToOffset(int instruction) {
+    private static Stream<Integer> moveToOffset(int offset) {
+        if (offset == 0) return Stream.empty();
+        var instruction = offset > 0
+                ? AddValue.of(offset)
+                : SubtractValue.of(offset);
+
         return Stream.of(
                 StoreDirect.of(SPILL),
                 LoadDirect.of(STACK_POINTER),
@@ -152,6 +154,7 @@ public class Main {
             case AddValue -> Optional.of(next.addValue(addressOrValue));
             case SubtractValue -> Optional.of(next.subtractValue(addressOrValue));
             case AddAddress -> Optional.of(next.addAddress(addressOrValue));
+            case LoadIndirect -> Optional.of(next.loadIndirect(addressOrValue));
         };
     }
 
