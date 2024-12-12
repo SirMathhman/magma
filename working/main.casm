@@ -3,9 +3,10 @@ label exit = {
         halt;
     }
 }
-let DefaultInterruptHandler = () => {
-    exit();
-};
+label DefaultInterruptHandler = {
+	jp exit;
+}
+
 
 class def Interrupt(index : U8) => {
     let mut set : Bool = false;

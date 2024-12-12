@@ -5,9 +5,10 @@ def exit() => {
 }
 
 type InterruptHandler = () => Void;
-let DefaultInterruptHandler = () => {
+
+def DefaultInterruptHandler () => {
     exit();
-};
+}
 
 class def Interrupt(index : U8) => {
     let mut set : Bool = false;

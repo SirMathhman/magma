@@ -88,11 +88,19 @@ public class Main {
 
         return Optional.of("label " + name + " = {\n" +
                 output +
-                "}");
+                "}\n");
     }
 
     private static String compileStatement(String statement) {
-        return "\t" + statement + "\n";
+        return "\t" + compileInvocation(statement.strip()).orElse(statement) + "\n";
+    }
+
+    private static Optional<String> compileInvocation(String statement) {
+        final var argStart = statement.indexOf('(');
+        if (argStart == -1) return Optional.empty();
+
+        var name = statement.substring(0, argStart);
+        return Optional.of("jp " + name + ";");
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
