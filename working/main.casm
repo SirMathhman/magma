@@ -3,8 +3,6 @@ label exit = {
         halt;
     }
 }
-
-type InterruptHandler = () => Void;
 let DefaultInterruptHandler = () => {
     exit();
 };

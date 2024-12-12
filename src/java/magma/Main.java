@@ -53,7 +53,14 @@ public class Main {
 
     private static String compileRootSegment(String rootSegment) {
         final var stripped = rootSegment.strip();
-        return compileFunction(stripped).orElse(rootSegment);
+        return compileFunction(stripped)
+                .or(() -> compileAlias(stripped))
+                .orElse(rootSegment);
+    }
+
+    private static Optional<String> compileAlias(String rootSegment) {
+        if (rootSegment.startsWith("type ")) return Optional.of("");
+        else return Optional.empty();
     }
 
     private static Optional<String> compileFunction(String input) {
