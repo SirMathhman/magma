@@ -1,7 +1,4 @@
-def exit() => {
-    native {
-        exit;
-    }
+label exit = {
 }
 
 type InterruptHandler = () => Void;

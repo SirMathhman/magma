@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) {
@@ -46,7 +47,19 @@ public class Main {
     }
 
     private static String compileRootSegment(String rootSegment) {
-        return rootSegment;
+        final var stripped = rootSegment.strip();
+        return compileFunction(stripped).orElse(rootSegment);
+    }
+
+    private static Optional<String> compileFunction(String input) {
+        if (!input.startsWith("def ")) return Optional.empty();
+        final var afterKeyword = input.substring("def ".length());
+
+        final var paramStart = input.indexOf('(');
+        if (paramStart == -1) return Optional.empty();
+
+        final var name = afterKeyword.substring(0, paramStart).strip();
+        return Optional.of("label " + name + " = {\n}");
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
