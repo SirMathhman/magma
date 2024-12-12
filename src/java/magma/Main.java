@@ -73,8 +73,10 @@ public class Main {
         final var split = split(content);
 
         var output = new StringBuilder();
-        for (String s : split) {
-            output.append(compileStatement(s));
+        for (String statement : split) {
+            if (!statement.isBlank()) {
+                output.append(compileStatement(statement));
+            }
         }
 
         return Optional.of("label " + name + " = {\n" +
@@ -83,7 +85,7 @@ public class Main {
     }
 
     private static String compileStatement(String statement) {
-        return "\t" + statement;
+        return "\t" + statement + "\n";
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {

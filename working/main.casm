@@ -1,7 +1,7 @@
 label exit = {
 	native {
-        exit;
-    }	
+        halt;
+    }
 }
 
 type InterruptHandler = () => Void;
