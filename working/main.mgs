@@ -1,0 +1,45 @@
+type InterruptHandler = () => Void;
+let DefaultInterruptHandler = () => {};
+
+class def Interrupt(index : U8) => {
+    let mut set : Bool = false;
+
+    def clear() {
+        set = false;
+        native {
+            ldv DefaultInterruptHandler;
+            stoid index;
+        }
+    }
+
+    def set(handler : InterruptHandler) : Bool {
+        if(set) return false;
+        native {
+            ldv handler;
+            stoid index;
+        }
+        set = true;
+        return true;
+    }
+
+    def get() => Option<InterruptHandler> {
+        let mut value = DefaultInterruptHandler;
+        if (!set) return None;
+        native {
+            ldid index;
+            stod value;
+        }
+        return Some(value);
+    }
+}
+
+/*
+Interrupt(_) is equivalent for index => Interrupt(index);
+_ is just a placeholder like in Scala.
+*/
+let mut array : [Interrupt; 256] = [Interrupt(_)];
+
+// Usage
+array[0].set(() => {
+    // do stuff
+});
