@@ -1,28 +1,36 @@
+def exit() => {
+    native {
+        exit;
+    }
+}
+
 type InterruptHandler = () => Void;
-let DefaultInterruptHandler = () => {};
+let DefaultInterruptHandler = () => {
+    exit();
+};
 
 class def Interrupt(index : U8) => {
     let mut set : Bool = false;
 
-    def clear() => {
-        set = false;
+    def clear(this : *mut This) => {
+        this.set = false;
         native {
             ldv DefaultInterruptHandler;
-            stoid index;
+            stoid this.index;
         }
     }
 
-    def set(handler : InterruptHandler) : Bool {
-        if(set) return false;
+    def set(this : *mut This, handler : InterruptHandler) : Bool {
+        if(this.set) return false;
         native {
             ldv handler;
             stoid index;
         }
-        set = true;
+        this.set = true;
         return true;
     }
 
-    def get(): Option<InterruptHandler> => {
+    def get(this : *This): Option<InterruptHandler> => {
         let mut value = DefaultInterruptHandler;
         if (!set) return None;
         native {

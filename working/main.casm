@@ -1,0 +1,36 @@
+label exit = {
+    exit;
+}
+
+label DefaultInterruptHandler = {
+    jp exit;
+}
+
+namespace Interrupt = {
+    label clear = {
+
+    }
+
+    label set = {
+    }
+
+    label get = {
+    }
+
+    label Interrupt = {
+
+    }
+}
+
+/*
+Invocations are in order in the calling frame:
+
+- Return value
+- Label pointer
+- Array of params
+*/
+Interrupt = {
+    index = pop;
+
+
+}
