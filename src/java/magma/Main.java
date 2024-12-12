@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class Main {
@@ -66,6 +67,10 @@ public class Main {
     private static Optional<String> compileFunction(String input) {
         final var keywordIndex = input.indexOf("def ");
         if (keywordIndex == -1) return Optional.empty();
+
+        final var modifiers = Arrays.stream(input.substring(0, keywordIndex).strip().split(" ")).toList();
+        final var shouldGenerateNamespace = modifiers.contains("class");
+
         final var afterKeyword = input.substring(keywordIndex + "def ".length());
 
         final var paramStart = afterKeyword.indexOf('(');
@@ -83,17 +88,26 @@ public class Main {
         var output = new StringBuilder();
         for (String statement : split) {
             if (!statement.isBlank()) {
-                output.append(compileStatement(statement));
+                output.append(compileStatement(statement, shouldGenerateNamespace));
             }
         }
 
-        return Optional.of("label " + name + " = {\n" +
-                output +
-                "}\n");
+        final var labelOutput = "label " + name + " = {\n" +
+                output + (shouldGenerateNamespace ? "\t" : "") +
+                "}\n";
+
+        String output0;
+        if (shouldGenerateNamespace) {
+            output0 = "namespace " + name + " = {\n\t" + labelOutput + "}";
+        } else {
+            output0 = labelOutput;
+        }
+
+        return Optional.of(output0);
     }
 
-    private static String compileStatement(String statement) {
-        return "\t" + compileInvocation(statement.strip()).orElse(statement) + "\n";
+    private static String compileStatement(String statement, boolean shouldGenerateNamespace) {
+        return (shouldGenerateNamespace ? "\t\t" : "\t") + compileInvocation(statement.strip()).orElse(statement) + "\n";
     }
 
     private static Optional<String> compileInvocation(String statement) {

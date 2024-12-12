@@ -6,13 +6,14 @@ label exit = {
 label DefaultInterruptHandler = {
 	jp exit;
 }
-label Interrupt = {
-	let mut set : Bool = false;
-	jp def clear;
-	jp def set;
-	jp def get;
+namespace Interrupt = {
+	label Interrupt = {
+		let mut set : Bool = false;
+		jp def clear;
+		jp def set;
+		jp def get;
+	}
 }
-
 
 /*
 Interrupt(_) is equivalent for index => Interrupt(index);
