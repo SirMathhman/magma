@@ -17,7 +17,7 @@ namespace Interrupt = {
     label get = {
     }
 
-    label Interrupt = {
+    label = {
 
     }
 }
