@@ -64,8 +64,9 @@ public class Main {
     }
 
     private static Optional<String> compileFunction(String input) {
-        if (!input.startsWith("def ")) return Optional.empty();
-        final var afterKeyword = input.substring("def ".length());
+        final var keywordIndex = input.indexOf("def ");
+        if (keywordIndex == -1) return Optional.empty();
+        final var afterKeyword = input.substring(keywordIndex + "def ".length());
 
         final var paramStart = afterKeyword.indexOf('(');
         if (paramStart == -1) return Optional.empty();

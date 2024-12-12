@@ -6,39 +6,13 @@ label exit = {
 label DefaultInterruptHandler = {
 	jp exit;
 }
-
-
-class def Interrupt(index : U8) => {
-    let mut set : Bool = false;
-
-    def clear(this : *mut This) => {
-        this.set = false;
-        native {
-            ldv DefaultInterruptHandler;
-            stoid this.index;
-        }
-    }
-
-    def set(this : *mut This, handler : InterruptHandler) : Bool {
-        if(this.set) return false;
-        native {
-            ldv handler;
-            stoid index;
-        }
-        this.set = true;
-        return true;
-    }
-
-    def get(this : *This): Option<InterruptHandler> => {
-        let mut value = DefaultInterruptHandler;
-        if (!set) return None;
-        native {
-            ldid index;
-            stod value;
-        }
-        return Some(value);
-    }
+label Interrupt = {
+	let mut set : Bool = false;
+	jp def clear;
+	jp def set;
+	jp def get;
 }
+
 
 /*
 Interrupt(_) is equivalent for index => Interrupt(index);
