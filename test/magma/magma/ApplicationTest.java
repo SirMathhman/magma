@@ -8,22 +8,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ApplicationTest {
-
     public static final String RETURN_KEYWORD_WITH_SPACE = "return ";
     public static final String STATEMENT_END = ";";
 
     private static Result<String, RuntimeError> run(String input) {
         if (input.isEmpty()) return new Ok<>("");
-        if (input.startsWith(RETURN_KEYWORD_WITH_SPACE)) {
-            final var slice = input.substring(RETURN_KEYWORD_WITH_SPACE.length());
-            if(slice.endsWith(STATEMENT_END)) {
-                return new Ok<>(slice.substring(0, slice.length() - STATEMENT_END.length()));
-            }
-        }
+        return evaluateReturn(input);
+    }
 
+    private static Result<String, RuntimeError> evaluateReturn(String input) {
+        if (!input.startsWith(RETURN_KEYWORD_WITH_SPACE)) return new Err<>(new RuntimeError());
+        final var slice = input.substring(RETURN_KEYWORD_WITH_SPACE.length());
+
+        if (!slice.endsWith(STATEMENT_END)) return new Err<>(new RuntimeError());
+        final var value = slice.substring(0, slice.length() - STATEMENT_END.length());
+
+        return evaluateValue(value);
+    }
+
+    private static Result<String, RuntimeError> evaluateValue(String value) {
         try {
-            Integer.parseInt(input);
-            return new Ok<>(input);
+            Integer.parseInt(value);
+            return new Ok<>(value);
         } catch (NumberFormatException e) {
             return new Err<>(new RuntimeError());
         }
@@ -44,12 +50,6 @@ public class ApplicationTest {
     @Test
     void empty() {
         assertRun("");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"100", "200"})
-    void numeric(String value) {
-        assertRun(value);
     }
 
     @Test
