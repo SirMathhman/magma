@@ -18,6 +18,17 @@ public class Main {
     }
 
     private static String compile(String input) {
+        final var segments = split(input);
+
+        var output = new StringBuilder();
+        for (String segment : segments) {
+            output.append(compileRootSegment(segment));
+        }
+
+        return output.toString();
+    }
+
+    private static ArrayList<String> split(String input) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -37,13 +48,7 @@ public class Main {
             }
         }
         advance(buffer, segments);
-
-        var output = new StringBuilder();
-        for (String segment : segments) {
-            output.append(compileRootSegment(segment));
-        }
-
-        return output.toString();
+        return segments;
     }
 
     private static String compileRootSegment(String rootSegment) {
@@ -55,11 +60,30 @@ public class Main {
         if (!input.startsWith("def ")) return Optional.empty();
         final var afterKeyword = input.substring("def ".length());
 
-        final var paramStart = input.indexOf('(');
+        final var paramStart = afterKeyword.indexOf('(');
         if (paramStart == -1) return Optional.empty();
 
         final var name = afterKeyword.substring(0, paramStart).strip();
-        return Optional.of("label " + name + " = {\n}");
+        final var blockStart = afterKeyword.indexOf('{');
+        if (blockStart == -1) return Optional.empty();
+
+        final var withEnd = afterKeyword.substring(blockStart + 1).strip();
+        if (!withEnd.endsWith("}")) return Optional.empty();
+        final var content = withEnd.substring(0, withEnd.length() - "}".length());
+        final var split = split(content);
+
+        var output = new StringBuilder();
+        for (String s : split) {
+            output.append(compileStatement(s));
+        }
+
+        return Optional.of("label " + name + " = {\n" +
+                output +
+                "}");
+    }
+
+    private static String compileStatement(String statement) {
+        return "\t" + statement;
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
