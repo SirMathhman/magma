@@ -4,7 +4,7 @@ let DefaultInterruptHandler = () => {};
 class def Interrupt(index : U8) => {
     let mut set : Bool = false;
 
-    def clear() {
+    def clear() => {
         set = false;
         native {
             ldv DefaultInterruptHandler;
@@ -22,7 +22,7 @@ class def Interrupt(index : U8) => {
         return true;
     }
 
-    def get() => Option<InterruptHandler> {
+    def get(): Option<InterruptHandler> => {
         let mut value = DefaultInterruptHandler;
         if (!set) return None;
         native {
