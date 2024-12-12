@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 
 public class Main {
@@ -115,7 +116,8 @@ public class Main {
         if (argStart == -1) return Optional.empty();
 
         var name = statement.substring(0, argStart);
-        return Optional.of("jp " + name + ";");
+        return new SuffixRule(new PrefixRule("jp", new StringRule("label")), ";")
+                .generate(new MapNode(Map.of("label", name)));
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
