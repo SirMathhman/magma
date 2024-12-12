@@ -54,21 +54,6 @@ public class Main {
                 .list();
     }
 
-    private static JavaList<Integer> operate(Operation operation, int addressOffset, JavaList<Integer> loadLeft) {
-        return loadLeft.addAll(mapOffset(addressOffset, new JavaList<Integer>()
-                .add(of(LoadIndirect, STACK_POINTER))
-                .add(of(operation, SPILL))));
-    }
-
-    private static JavaList<Integer> mapOffset(int offset, JavaList<Integer> instructions) {
-        return new JavaList<Integer>()
-                .addAll(move(offset))
-                .addAll(instructions)
-                .add(of(StoreDirect, SPILL))
-                .addAll(move(-offset))
-                .add(of(LoadDirect, SPILL));
-    }
-
     private static JavaList<Integer> value(int value) {
         return new JavaList<Integer>().add(of(LoadValue, value));
     }
