@@ -36,11 +36,21 @@ public class Main {
     }
 
     private static String compileFromMagmaToJava(String input, List<String> namespace) {
-        final var packageStatement = "package " + String.join(".", namespace) + ";";
+        final var packageStatement = "package " + String.join(".", namespace) + ";\n";
         return packageStatement + compileRoot(input, Main::compileMagmaRootMember);
     }
 
     private static String compileMagmaRootMember(String input) {
+        final var stripped = input.strip();
+        if(stripped.startsWith("import ")) {
+            return stripped + "\n";
+        }
+        if (stripped.startsWith("class def ")) {
+            final var name = stripped.substring("class def ".length(), stripped.indexOf("(")).strip();
+            final var contentStart = stripped.indexOf('{');
+            final var contentEnd = stripped.lastIndexOf('}');
+            return "record " + name + "(){" + stripped.substring(contentStart + 1, contentEnd) + "}";
+        }
         return input;
     }
 
@@ -60,18 +70,21 @@ public class Main {
     }
 
     private static String compileJavaRootMember(String segment) {
-        if (segment.startsWith("package ")) return "";
-        final var classIndex = segment.indexOf("class");
+        final var stripped = segment.strip();
+        if (stripped.startsWith("package ")) return "";
+        if (stripped.startsWith("import ")) return stripped + "\n";
+
+        final var classIndex = stripped.indexOf("class");
         if (classIndex == -1) return segment;
 
-        final var contentStart = segment.indexOf("{");
+        final var contentStart = stripped.indexOf("{");
         if (contentStart == -1) return segment;
 
-        final var contentEnd = segment.indexOf('}');
+        final var contentEnd = stripped.lastIndexOf('}');
         if (contentEnd == -1) return segment;
 
-        final var name = segment.substring(classIndex + "class".length(), contentStart).strip();
-        return "class def " + name + "() => {\n" + segment.substring(contentStart + 1, contentEnd).strip() + "}";
+        final var name = stripped.substring(classIndex + "class".length(), contentStart).strip();
+        return "class def " + name + "() => {\n" + stripped.substring(contentStart + 1, contentEnd).strip() + "}";
     }
 
     private static ArrayList<String> split(String input) {
