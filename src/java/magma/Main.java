@@ -12,6 +12,8 @@ public class Main {
         var input = new LinkedList<>(Stream.of(
                 set(2, Jump.of(0)),
                 set(3, NoOp.empty()),
+                set(4, 5),
+                set(5, 0),
                 set(2, Jump.of(3))
         ).flatMap(Collection::stream).toList());
 
