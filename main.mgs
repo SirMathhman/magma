@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define BUFFER_SIZE 1024
 
@@ -44,6 +45,27 @@ struct Result {
         return Result<T, X>{Err, T(), error};
     }
 };
+
+struct String {
+    size_t length;
+    char* data;
+
+    static String fromCString(char* data) {
+        size_t length = strlen(data);
+
+        char* allocated = new char[length + 1];
+        memcpy(allocated, data, length);
+
+        return String{length, allocated};
+    }
+
+    void drop() {
+        free(data);
+    }
+};
+
+namespace Files {
+}
 
 int main() {
     // Open the source file in read mode
