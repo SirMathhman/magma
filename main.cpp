@@ -26,12 +26,8 @@ struct Option {
 };
 
 int main() {
-    FILE *sourceFile, *destinationFile;
-    char *buffer;
-    long fileSize;
-
     // Open the source file in read mode
-    sourceFile = fopen("./main.mgs", "r");
+    FILE *sourceFile = fopen("./main.mgs", "r");
     Option<FILE*> sourceOption = sourceFile ? Option<FILE*>::Some(sourceFile) : Option<FILE*>::None();
     if (!sourceOption.has_value()) {
         perror("Error opening source file");
@@ -40,11 +36,11 @@ int main() {
 
     // Determine the size of the source file
     fseek(sourceFile, 0, SEEK_END);
-    fileSize = ftell(sourceFile);
+    long fileSize = ftell(sourceFile);
     rewind(sourceFile);
 
     // Allocate memory for the buffer
-    buffer = (char *)malloc(fileSize + 1);
+    char *buffer = (char *)malloc(fileSize + 1);
     Option<char*> bufferOption = buffer ? Option<char*>::Some(buffer) : Option<char*>::None();
     if (!bufferOption.has_value()) {
         perror("Memory allocation failed");
@@ -57,7 +53,7 @@ int main() {
     buffer[fileSize] = '\0'; // Null-terminate the string
 
     // Open the destination file in write mode
-    destinationFile = fopen("./main.cpp", "w");
+    FILE *destinationFile = fopen("./main.cpp", "w");
     Option<FILE*> destOption = destinationFile ? Option<FILE*>::Some(destinationFile) : Option<FILE*>::None();
     if (!destOption.has_value()) {
         perror("Error opening destination file");
