@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/NativeTarget/JavaTarget.iml" filepath="$PROJECT_DIR$/NativeTarget/JavaTarget.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Magma.iml" filepath="$PROJECT_DIR$/.idea/Magma.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Source/Source.iml" filepath="$PROJECT_DIR$/Source/Source.iml" />
       <module fileurl="file://$PROJECT_DIR$/magmac/src/magmac.iml" filepath="$PROJECT_DIR$/magmac/src/magmac.iml" />
       <module fileurl="file://$PROJECT_DIR$/magmac/test/test.iml" filepath="$PROJECT_DIR$/magmac/test/test.iml" />
     </modules>
