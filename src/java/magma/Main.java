@@ -28,7 +28,7 @@ public class Main {
             final var operation = values()[opCode];
             switch (operation) {
                 case InAndStore -> {
-                    final var next = input.pollFirst();
+                    final var next = input.isEmpty() ? 0 : input.pollFirst();
                     set(memory, addressOrValue, next);
                 }
                 case Jump -> {
