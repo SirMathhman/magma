@@ -1,7 +1,7 @@
 package magma;
 
 public enum Operation {
-    InAndStore, Jump, NoOp, LoadValue, StoreIndirectly;
+    InDirect, JumpValue, NoOp, LoadValue, StoreIndirect;
 
     public int of(int addressOrValue) {
         return (ordinal() << 24) + addressOrValue;
