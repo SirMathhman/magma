@@ -61,18 +61,36 @@ public class Main {
 
     private static String compileJavaRootMember(String segment) {
         if (segment.startsWith("package ")) return "";
-        return segment;
+        final var classIndex = segment.indexOf("class");
+        if (classIndex == -1) return segment;
+
+        final var contentStart = segment.indexOf("{");
+        if (contentStart == -1) return segment;
+
+        final var contentEnd = segment.indexOf('}');
+        if (contentEnd == -1) return segment;
+
+        final var name = segment.substring(classIndex + "class".length(), contentStart).strip();
+        return "class def " + name + "() => {\n" + segment.substring(contentStart + 1, contentEnd).strip() + "}";
     }
 
     private static ArrayList<String> split(String input) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
+        var depth = 0;
         for (int i = 0; i < input.length(); i++) {
             var c = input.charAt(i);
             buffer.append(c);
-            if (c == ';') {
+            if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else if (c == '}' && depth == 1) {
+                depth--;
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            } else {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
             }
         }
         advance(buffer, segments);

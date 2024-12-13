@@ -6,78 +6,15 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
-
-public class Main {
-    public static void main(String[] args) {
+import java.util.function.Function;class def Main() => {
+public static void main(String[] args) {
         try {
             final var source = Paths.get(".", "Source", "src", "magma", "Main.java");
             final var input = Files.readString(source);
 
             final var targetDirectory = Paths.get(".", "CompiledTarget", "src", "magma");
             if (!Files.exists(targetDirectory)) {
-                Files.createDirectories(targetDirectory);
-            }
-
-            final var target = targetDirectory.resolve("Main.mgs");
-            Files.writeString(target, compileFromJavaToMagma(input));
-
-            final var source0 = Files.readString(target);
-            final var otherTarget = Paths.get(".", "NativeTarget", "src", "magma");
-            if (!Files.exists(otherTarget)) {
-                Files.createDirectories(otherTarget);
-            }
-
-            final var namespace = Collections.singletonList("magma");
-            Files.writeString(otherTarget.resolve("Main.java"), compileFromMagmaToJava(source0, namespace));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static String compileFromMagmaToJava(String input, List<String> namespace) {
-        final var packageStatement = "package " + String.join(".", namespace) + ";";
-        return packageStatement + compileRoot(input, Main::compileMagmaRootMember);
-    }
-
-    private static String compileMagmaRootMember(String input) {
-        return input;
-    }
-
-    private static String compileFromJavaToMagma(String input) {
-        return compileRoot(input, Main::compileJavaRootMember);
-    }
-
-    private static String compileRoot(String input, Function<String, String> mapper) {
-        final var segments = split(input);
-
-        var output = new StringBuilder();
-        for (String segment : segments) {
-            output.append(mapper.apply(segment));
-        }
-
-        return output.toString();
-    }
-
-    private static String compileJavaRootMember(String segment) {
-        if (segment.startsWith("package ")) return "";
-        return segment;
-    }
-
-    private static ArrayList<String> split(String input) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        for (int i = 0; i < input.length(); i++) {
-            var c = input.charAt(i);
-            buffer.append(c);
-            if (c == ';') {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            }
-        }
-        advance(buffer, segments);
-        return segments;
-    }
+                Files.createDirectories(targetDirectory);}
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
