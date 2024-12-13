@@ -1,15 +1,13 @@
 package magma;
-
-import java.io.IOException;
+package magma;import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-
-record Main() {
-    public static void main(String[] args) {
+record Main(){
+public static void main(String[] args) {
         try {
             final var source = Paths.get(".", "Source", "src", "magma", "Main.java");
             final var input = Files.readString(source);
@@ -36,8 +34,13 @@ record Main() {
     }
 
     private static String compileFromMagmaToJava(String input, List<String> namespace) {
-        final var packageStatement = "package " + String.join(".", namespace) + ";\n";
+        var node = new MapNode().withStringList("segments", namespace);
+        final var packageStatement = createPackageRule().generate(node).orElse("");
         return packageStatement + compileRoot(input, Main::compileMagmaRootMember);
+    }
+
+    private static PrefixRule createPackageRule() {
+        return new PrefixRule("package ", new SuffixRule(new StringListRule("segments", "."), ";\n"));
     }
 
     private static String compileMagmaRootMember(String input) {
@@ -71,7 +74,8 @@ record Main() {
 
     private static String compileJavaRootMember(String segment) {
         final var stripped = segment.strip();
-        if (stripped.startsWith("package ")) return "";
+        if (createPackageRule().parse(stripped).isPresent()) return "";
+
         if (stripped.startsWith("import ")) return stripped + "\n";
 
         final var classIndex = stripped.indexOf("class");
@@ -107,8 +111,7 @@ record Main() {
             }
         }
         advance(buffer, segments);
-        return segments;
-    }
+        return segments;}
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());

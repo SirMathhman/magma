@@ -36,13 +36,18 @@ public class Main {
     }
 
     private static String compileFromMagmaToJava(String input, List<String> namespace) {
-        final var packageStatement = "package " + String.join(".", namespace) + ";\n";
+        var node = new MapNode().withStringList("segments", namespace);
+        final var packageStatement = createPackageRule().generate(node).orElse("");
         return packageStatement + compileRoot(input, Main::compileMagmaRootMember);
+    }
+
+    private static PrefixRule createPackageRule() {
+        return new PrefixRule("package ", new SuffixRule(new StringListRule("segments", "."), ";\n"));
     }
 
     private static String compileMagmaRootMember(String input) {
         final var stripped = input.strip();
-        if(stripped.startsWith("import ")) {
+        if (stripped.startsWith("import ")) {
             return stripped + "\n";
         }
         if (stripped.startsWith("class def ")) {
@@ -71,7 +76,8 @@ public class Main {
 
     private static String compileJavaRootMember(String segment) {
         final var stripped = segment.strip();
-        if (stripped.startsWith("package ")) return "";
+        if (createPackageRule().parse(stripped).isPresent()) return "";
+
         if (stripped.startsWith("import ")) return stripped + "\n";
 
         final var classIndex = stripped.indexOf("class");
