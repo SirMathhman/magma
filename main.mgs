@@ -52,4 +52,4 @@ int main() {
     fclose(destinationFile);
 
     return EXIT_SUCCESS;
-}WVC16t
+}
