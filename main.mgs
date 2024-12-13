@@ -25,6 +25,26 @@ struct Option {
     }
 };
 
+enum ResultVariant {
+    Ok,
+    Err
+};
+
+template <typename T, typename X>
+struct Result {
+    ResultVariant variant;
+    T value;
+    X error;
+
+    static Result<T, X> Ok(T value) {
+        return Result<T, X>{Ok, value, X()};
+    }
+
+    static Result<T, X> Err(X error) {
+        return Result<T, X>{Err, T(), error};
+    }
+};
+
 int main() {
     // Open the source file in read mode
     FILE *sourceFile = fopen("./main.mgs", "r");
