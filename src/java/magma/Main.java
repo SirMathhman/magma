@@ -1,24 +1,19 @@
 package magma;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static magma.Operation.*;
 
 public class Main {
     public static void main(String[] args) {
-        var input = new LinkedList<Integer>(List.of(
-                InAndStore.of(2),
-                Jump.of(0),
-                InAndStore.of(3),
-                NoOp.empty(),
-                InAndStore.of(2),
-                Jump.of(3)
-        ));
+        var input = new LinkedList<>(Stream.of(
+                set(2, Jump.of(0)),
+                set(3, NoOp.empty()),
+                set(2, Jump.of(3))
+        ).flatMap(Collection::stream).toList());
 
         var memory = new ArrayList<>(Collections.singletonList(InAndStore.of(1)));
         var programCounter = 0;
@@ -45,6 +40,10 @@ public class Main {
         }
 
         System.out.println(display(memory));
+    }
+
+    private static List<Integer> set(int address, int instruction) {
+        return List.of(InAndStore.of(address), instruction);
     }
 
     private static String display(ArrayList<Integer> memory) {
