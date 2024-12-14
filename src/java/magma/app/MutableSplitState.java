@@ -1,6 +1,7 @@
 package magma.app;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MutableSplitState implements SplitState {
@@ -14,7 +15,7 @@ public class MutableSplitState implements SplitState {
         this.depth = depth;
     }
 
-    public MutableSplitState() {
+    public MutableSplitState(LinkedList<Character> queue) {
         this(new ArrayList<>(), new StringBuilder(), 0);
     }
 

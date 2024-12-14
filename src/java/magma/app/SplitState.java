@@ -1,5 +1,8 @@
 package magma.app;
 
+import magma.api.Tuple;
+import magma.api.option.Option;
+
 import java.util.List;
 
 public interface SplitState {
@@ -16,4 +19,6 @@ public interface SplitState {
     boolean isLevel();
 
     List<String> asList();
+
+    Option<Tuple<Character, SplitState>> pop();
 }

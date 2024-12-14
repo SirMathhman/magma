@@ -15,8 +15,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main {
     public static void main(String[] args) {
@@ -64,7 +67,7 @@ public class Main {
 
         Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
-            output = output.and(() -> segmentCompiler.apply(segment))
+            output = output.and(() -> segmentCompiler.apply(segment.strip()))
                     .mapValue(tuple -> tuple.left().append(tuple.right()));
         }
 
@@ -72,31 +75,46 @@ public class Main {
     }
 
     private static List<String> split(String input) {
-        return processChars(new MutableSplitState(), input)
+        return processChars(input)
                 .advance()
                 .asList();
     }
 
-    private static SplitState processChars(SplitState initial, String input) {
-        var current = initial;
-        for (int i = 0; i < input.length(); i++) {
-            final var c = input.charAt(i);
-            final var appended = current.next(c);
-            current = processChar(c, appended);
+    private static SplitState processChars(String input) {
+        final var length = input.length();
+
+        final var queue = IntStream.range(0, length)
+                .mapToObj(input::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        SplitState state = new MutableSplitState(queue);
+        while (true) {
+            final var tuple = processChar(state)
+                    .toTuple(state);
+            if (tuple.left()) {
+                state = tuple.right();
+            } else {
+                break;
+            }
         }
-        return current;
+        return state;
     }
 
-    private static SplitState processChar(char c, SplitState state) {
-        if (c == ';' && state.isLevel()) {
-            return state.advance();
-        }
-        if (c == '}' && state.isShallow()) {
-            return state.exit().advance();
-        }
-        if (c == '{') return state.enter();
-        if (c == '}') return state.exit();
-        return state;
+    private static Option<SplitState> processChar(SplitState state) {
+        return state.pop().map(tuple -> {
+            final var c = tuple.left();
+            final var current = tuple.right();
+            return processPoppedChar(current, c);
+        });
+    }
+
+    private static SplitState processPoppedChar(SplitState current, Character c) {
+        final var appended = current.next(c);
+        if (c == ';' && appended.isLevel()) return appended.advance();
+        if (c == '}' && appended.isShallow()) return appended.exit().advance();
+        if (c == '{') return appended.enter();
+        if (c == '}') return appended.exit();
+        return appended;
     }
 
     private static Result<String, CompileException> compileRootSegment(String segment) {
@@ -141,7 +159,13 @@ public class Main {
     private static Result<String, CompileException> compileStatement(String input) {
         return compileDefinition(input)
                 .or(() -> compileInvocation(input))
+                .or(() -> compileReturn(input))
                 .orElseGet(() -> new Err<>(new CompileException("Unknown statement", input)));
+    }
+
+    private static Option<Result<String, CompileException>> compileReturn(String input) {
+        if (input.startsWith("return ")) return new Some<>(new Ok<>("return 0;"));
+        return new None<>();
     }
 
     private static Option<Result<String, CompileException>> compileInvocation(String input) {
