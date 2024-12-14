@@ -115,6 +115,18 @@ public class Main {
     }
 
     private static Option<Result<String, CompileException>> compileClass(String input) {
+        return compileBlock(input, Main::compileClassMember);
+    }
+
+    private static Result<String, CompileException> compileClassMember(String classMember) {
+        return compileMethod(classMember).orElseGet(() -> new Err<>(new CompileException("Unknown class member", classMember)));
+    }
+
+    private static Option<Result<String, CompileException>> compileMethod(String input) {
+        return compileBlock(input, Main::compileStatement);
+    }
+
+    private static Option<Result<String, CompileException>> compileBlock(String input, Function<String, Result<String, CompileException>> compiler) {
         final var contentStart = input.indexOf('{');
         if (contentStart == -1) return new None<>();
 
@@ -122,12 +134,11 @@ public class Main {
         if (contentEnd == -1) return new None<>();
 
         final var inputContent = input.substring(contentStart + 1, contentEnd).strip();
-        final var outputContent = compileSegments(inputContent, Main::compileClassMember);
+        final var outputContent = compileSegments(inputContent, compiler);
         return new Some<>(outputContent);
     }
 
-    private static Result<String, CompileException> compileClassMember(String classMember) {
-        return new Err<>(new CompileException("Unknown class member", classMember));
+    private static Result<String, CompileException> compileStatement(String input) {
+        return new Err<>(new CompileException("Unknown statement", input));
     }
-
 }
