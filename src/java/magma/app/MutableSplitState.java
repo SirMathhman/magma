@@ -1,22 +1,29 @@
 package magma.app;
 
+import magma.api.Tuple;
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.option.Some;
+
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Deque;
 import java.util.List;
 
 public class MutableSplitState implements SplitState {
     private final List<String> segments;
     private StringBuilder buffer;
     private int depth;
+    private final Deque<Character> queue;
 
-    public MutableSplitState(List<String> segments, StringBuilder buffer, int depth) {
+    public MutableSplitState(Deque<Character> queue, List<String> segments, StringBuilder buffer, int depth) {
         this.segments = segments;
         this.buffer = buffer;
         this.depth = depth;
+        this.queue = queue;
     }
 
-    public MutableSplitState(LinkedList<Character> queue) {
-        this(new ArrayList<>(), new StringBuilder(), 0);
+    public MutableSplitState(Deque<Character> queue) {
+        this(queue, new ArrayList<>(), new StringBuilder(), 0);
     }
 
     @Override
@@ -57,5 +64,13 @@ public class MutableSplitState implements SplitState {
     @Override
     public List<String> asList() {
         return segments;
+    }
+
+    @Override
+    public Option<Tuple<Character, SplitState>> pop() {
+        if(queue.isEmpty()) return new None<>();
+
+        final var popped = queue.pop();
+        return new Some<>(new Tuple<>(popped, this));
     }
 }
