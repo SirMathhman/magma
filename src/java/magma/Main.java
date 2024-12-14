@@ -33,12 +33,16 @@ public class Main {
     private static List<String> split(String input) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
+        var depth = 0;
         for (int i = 0; i < input.length(); i++) {
             var c = input.charAt(i);
             buffer.append(c);
-            if (c == ';') {
+            if (c == ';' && depth == 0) {
                 append(buffer, segments);
                 buffer = new StringBuilder();
+            } else {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
             }
         }
         append(buffer, segments);
