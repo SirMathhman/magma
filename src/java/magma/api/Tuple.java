@@ -1,4 +1,9 @@
 package magma.api;
 
-public record Tuple<T, R>(T left, R right) {
+import java.util.function.BiFunction;
+
+public record Tuple<A, B>(A left, B right) {
+    public <R> R merge(BiFunction<A, B, R> folder) {
+        return folder.apply(left, right);
+    }
 }

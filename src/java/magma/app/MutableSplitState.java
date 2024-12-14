@@ -33,7 +33,7 @@ public class MutableSplitState implements SplitState {
     }
 
     @Override
-    public SplitState next(char c) {
+    public SplitState append(char c) {
         buffer.append(c);
         return this;
     }
@@ -67,10 +67,15 @@ public class MutableSplitState implements SplitState {
     }
 
     @Override
-    public Option<Tuple<Character, SplitState>> pop() {
+    public Option<Tuple<SplitState, Character>> pop() {
         if(queue.isEmpty()) return new None<>();
 
         final var popped = queue.pop();
-        return new Some<>(new Tuple<>(popped, this));
+        return new Some<>(new Tuple<>(this, popped));
+    }
+
+    @Override
+    public Tuple<SplitState, Character> appendNext(Character c) {
+        return new Tuple<>(append(c), c);
     }
 }

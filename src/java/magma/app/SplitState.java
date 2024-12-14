@@ -6,9 +6,11 @@ import magma.api.option.Option;
 import java.util.List;
 
 public interface SplitState {
+    Tuple<SplitState, Character> appendNext(Character c);
+
     SplitState enter();
 
-    SplitState next(char c);
+    SplitState append(char c);
 
     SplitState exit();
 
@@ -20,5 +22,5 @@ public interface SplitState {
 
     List<String> asList();
 
-    Option<Tuple<Character, SplitState>> pop();
+    Option<Tuple<SplitState, Character>> pop();
 }
