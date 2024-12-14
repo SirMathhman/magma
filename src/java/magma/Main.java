@@ -71,6 +71,10 @@ public class Main {
             if (c == ';' && depth == 0) {
                 append(buffer, segments);
                 buffer = new StringBuilder();
+            } else if (c == '}' && depth == 1) {
+                depth--;
+                append(buffer, segments);
+                buffer = new StringBuilder();
             } else {
                 if (c == '{') depth++;
                 if (c == '}') depth--;
@@ -111,7 +115,7 @@ public class Main {
         return new Err<>(new CompileException("Unknown class member", classMember));
     }
 
-    private static void append(StringBuilder buffer, ArrayList<String> segments) {
+    private static void append(StringBuilder buffer, List<String> segments) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 }
