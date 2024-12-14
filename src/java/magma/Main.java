@@ -46,7 +46,12 @@ public class Main {
     }
 
     private static String compileRootSegment(String segment) throws CompileException {
-        throw new CompileException("Unknown root segment", segment);
+        final var stripped = segment.strip();
+        if (stripped.startsWith("package ")) return "";
+        if (stripped.startsWith("import ")) return stripped;
+
+
+        throw new CompileException("Unknown root segment", stripped);
     }
 
     private static void append(StringBuilder buffer, ArrayList<String> segments) {
