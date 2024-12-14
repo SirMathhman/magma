@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -62,26 +61,31 @@ public class Main {
     }
 
     private static List<String> split(String input) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
+        return processChars(new MutableSplitState(), input)
+                .advance()
+                .asList();
+    }
+
+    private static SplitState processChars(SplitState initial, String input) {
+        var current = initial;
         for (int i = 0; i < input.length(); i++) {
-            var c = input.charAt(i);
-            buffer.append(c);
-            if (c == ';' && depth == 0) {
-                append(buffer, segments);
-                buffer = new StringBuilder();
-            } else if (c == '}' && depth == 1) {
-                depth--;
-                append(buffer, segments);
-                buffer = new StringBuilder();
-            } else {
-                if (c == '{') depth++;
-                if (c == '}') depth--;
-            }
+            final var c = input.charAt(i);
+            final var appended = current.next(c);
+            current = processChar(c, appended);
         }
-        append(buffer, segments);
-        return segments;
+        return current;
+    }
+
+    private static SplitState processChar(char c, SplitState state) {
+        if (c == ';' && state.isLevel()) {
+            return state.advance();
+        }
+        if (c == '}' && state.isShallow()) {
+            return state.exit().advance();
+        }
+        if (c == '{') return state.enter();
+        if (c == '}') return state.exit();
+        return state;
     }
 
     private static Result<String, CompileException> compileRootSegment(String segment) {
@@ -115,7 +119,4 @@ public class Main {
         return new Err<>(new CompileException("Unknown class member", classMember));
     }
 
-    private static void append(StringBuilder buffer, List<String> segments) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
-    }
 }
