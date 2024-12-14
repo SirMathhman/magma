@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class Main {
     public static void main(String[] args) {
@@ -42,11 +43,18 @@ public class Main {
     }
 
     private static Result<String, CompileException> compile(String input) {
+        return compileSegments(input, Main::compileRootSegment);
+    }
+
+    private static Result<String, CompileException> compileSegments(
+            String input,
+            Function<String, Result<String, CompileException>> segmentCompiler
+    ) {
         final var segments = split(input);
 
         Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
-            output = output.and(() -> compileRootSegment(segment))
+            output = output.and(() -> segmentCompiler.apply(segment))
                     .mapValue(tuple -> tuple.left().append(tuple.right()));
         }
 
@@ -74,14 +82,33 @@ public class Main {
 
     private static Result<String, CompileException> compileRootSegment(String segment) {
         final var stripped = segment.strip();
-        if (stripped.startsWith("package ")) return new Ok<>("");
-        if (stripped.startsWith("import ")) return new Ok<>(stripped);
 
-        final var contentStart = stripped.indexOf('{');
-        final var contentEnd = stripped.lastIndexOf('}');
+        return compilePackage(stripped, "package ")
+                .or(() -> compilePackage(stripped, "import "))
+                .or(() -> compileClass(stripped))
+                .orElseGet(() -> new Err<>(new CompileException("Unknown root segment", segment)));
+    }
 
-        final var content = stripped.substring(contentStart + 1, contentEnd).strip();
-        return new Err<>(new CompileException("Unknown root segment", stripped));
+    private static Option<Result<String, CompileException>> compilePackage(String stripped, String prefix) {
+        return stripped.startsWith(prefix)
+                ? new Some<>(new Ok<>(""))
+                : new None<>();
+    }
+
+    private static Option<Result<String, CompileException>> compileClass(String input) {
+        final var contentStart = input.indexOf('{');
+        if (contentStart == -1) return new None<>();
+
+        final var contentEnd = input.lastIndexOf('}');
+        if (contentEnd == -1) return new None<>();
+
+        final var inputContent = input.substring(contentStart + 1, contentEnd).strip();
+        final var outputContent = compileSegments(inputContent, Main::compileClassMember);
+        return new Some<>(outputContent);
+    }
+
+    private static Result<String, CompileException> compileClassMember(String classMember) {
+        return new Err<>(new CompileException("Unknown class member", classMember));
     }
 
     private static void append(StringBuilder buffer, ArrayList<String> segments) {
