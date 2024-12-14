@@ -9,9 +9,14 @@ public class Main {
         try {
             final var source = Paths.get(".", "src", "java", "magma", "Main.java");
             final var input = Files.readString(source);
-            Files.writeString(source.resolveSibling("Main.mgs"), input);
-        } catch (IOException e) {
+            final var target = source.resolveSibling("Main.mgs");
+            Files.writeString(target, compile(input));
+        } catch (IOException | CompileException e) {
             e.printStackTrace();
         }
+    }
+
+    private static String compile(String input) throws CompileException {
+        throw new CompileException("Unknown root", input);
     }
 }
