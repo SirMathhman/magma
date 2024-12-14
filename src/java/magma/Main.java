@@ -2,32 +2,55 @@ package magma;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+        final var source = Paths.get(".", "src", "java", "magma", "Main.java");
+        final var target = source.resolveSibling("Main.mgs");
+        readSafe(source)
+                .mapValue(input -> runWithInput(input, target))
+                .match(value -> value, Some::new)
+                .ifPresent(Throwable::printStackTrace);
+    }
+
+    private static Option<ApplicationException> runWithInput(String input, Path target) {
+        return compile(input)
+                .mapErr(ApplicationException::new)
+                .mapValue(output -> writeSafe(output, target).map(ApplicationException::new))
+                .match(value -> value, Some::new);
+    }
+
+    private static Option<IOException> writeSafe(String output, Path target) {
         try {
-            final var source = Paths.get(".", "src", "java", "magma", "Main.java");
-            final var input = Files.readString(source);
-            final var target = source.resolveSibling("Main.mgs");
-            Files.writeString(target, compile(input));
-        } catch (IOException | CompileException e) {
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
+            Files.writeString(target, output);
+            return new None<>();
+        } catch (IOException e) {
+            return new Some<>(e);
         }
     }
 
-    private static String compile(String input) throws CompileException {
+    private static Result<String, IOException> readSafe(Path source) {
+        try {
+            return new Ok<>(Files.readString(source));
+        } catch (IOException e) {
+            return new Err<>(e);
+        }
+    }
+
+    private static Result<String, CompileException> compile(String input) {
         final var segments = split(input);
 
-        var output = new StringBuilder();
+        Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
-            output.append(compileRootSegment(segment));
+            output = output.and(() -> compileRootSegment(segment))
+                    .mapValue(tuple -> tuple.left().append(tuple.right()));
         }
 
-        return output.toString();
+        return output.mapValue(StringBuilder::toString);
     }
 
     private static List<String> split(String input) {
@@ -49,13 +72,16 @@ public class Main {
         return segments;
     }
 
-    private static String compileRootSegment(String segment) throws CompileException {
+    private static Result<String, CompileException> compileRootSegment(String segment) {
         final var stripped = segment.strip();
-        if (stripped.startsWith("package ")) return "";
-        if (stripped.startsWith("import ")) return stripped;
+        if (stripped.startsWith("package ")) return new Ok<>("");
+        if (stripped.startsWith("import ")) return new Ok<>(stripped);
 
+        final var contentStart = stripped.indexOf('{');
+        final var contentEnd = stripped.lastIndexOf('}');
 
-        throw new CompileException("Unknown root segment", stripped);
+        final var content = stripped.substring(contentStart + 1, contentEnd).strip();
+        return new Err<>(new CompileException("Unknown root segment", stripped));
     }
 
     private static void append(StringBuilder buffer, ArrayList<String> segments) {
