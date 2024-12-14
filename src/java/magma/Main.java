@@ -139,6 +139,15 @@ public class Main {
     }
 
     private static Result<String, CompileException> compileStatement(String input) {
-        return new Err<>(new CompileException("Unknown statement", input));
+        return compileDefinition(input).orElseGet(() -> new Err<>(new CompileException("Unknown statement", input)));
+    }
+
+    private static Option<Result<String, CompileException>> compileDefinition(String input) {
+        final var separator = input.indexOf("=");
+        if (separator == -1) {
+            return new None<>();
+        }
+
+        return new Some<>(new Ok<>("let value = 0;"));
     }
 }
