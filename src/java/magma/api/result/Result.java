@@ -1,4 +1,6 @@
-package magma;
+package magma.api.result;
+
+import magma.api.Tuple;
 
 import java.util.function.Function;
 import java.util.function.Supplier;

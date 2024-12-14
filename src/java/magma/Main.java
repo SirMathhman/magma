@@ -1,5 +1,16 @@
 package magma;
 
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.option.Some;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.app.ApplicationException;
+import magma.app.CompileException;
+import magma.app.MutableSplitState;
+import magma.app.SplitState;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

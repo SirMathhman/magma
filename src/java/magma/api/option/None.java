@@ -1,27 +1,26 @@
-package magma;
+package magma.api.option;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public record Some<T>(T value) implements Option<T> {
+public class None<T> implements Option<T> {
     @Override
     public void ifPresent(Consumer<T> consumer) {
-        consumer.accept(value);
     }
 
     @Override
     public <R> Option<R> map(Function<T, R> mapper) {
-        return new Some<>(mapper.apply(value));
+        return new None<>();
     }
 
     @Override
     public Option<T> or(Supplier<Option<T>> other) {
-        return this;
+        return other.get();
     }
 
     @Override
     public T orElseGet(Supplier<T> other) {
-        return value;
+        return other.get();
     }
 }
