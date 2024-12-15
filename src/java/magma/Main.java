@@ -69,8 +69,15 @@ public class Main {
     }
 
     private static Option<String> compileClass(String stripped) {
-        if(stripped.contains("class ")) return new Some<>("class def Temp() => {}");
-        return new None<>();
+        final var classIndex = stripped.indexOf("class ");
+        if (classIndex == -1) return new None<>();
+
+        final var right = stripped.substring(classIndex + "class ".length());
+        final var contentStart = right.indexOf('{');
+        if (contentStart == -1) return new None<>();
+
+        final var name = right.substring(0, contentStart).strip();
+        return new Some<>("class def " + name + "() => {}");
     }
 
     private static Option<String> compileNamespace(String prefix, String input, String output) {
