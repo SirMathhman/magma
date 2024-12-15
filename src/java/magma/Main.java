@@ -1,8 +1,5 @@
 package magma;
 
-import magma.option.None;
-import magma.option.Option;
-import magma.option.Some;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
@@ -12,6 +9,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 
 public class Main {
     public static void main(String[] args) {
@@ -19,24 +18,28 @@ public class Main {
             final var source = Paths.get(".", "src", "java", "magma", "Main.java");
             final var input = Files.readString(source);
             final var target = source.resolveSibling("Main.mgs");
-            Files.writeString(target, compile(input));
+            Files.writeString(target, Results.unwrap(compileRoot(input)));
         } catch (IOException | CompileException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static String compile(String input) throws CompileException {
-        final var segments = split(input);
-
-        var output = new StringBuilder();
-        for (String segment : segments) {
-            output.append(Results.unwrap(compileRootSegment(segment)));
-        }
-
-        return output.toString();
+    private static Result<String, CompileException> compileRoot(String input) {
+        return splitAndCompile(input, Main::compileRootSegment);
     }
 
-    private static ArrayList<String> split(String input) {
+    private static Result<String, CompileException> splitAndCompile(String input, Function<String, Result<String, CompileException>> compiler) {
+        final var segments = split(input);
+
+        Result<StringBuilder, CompileException> current = new Ok<>(new StringBuilder());
+        for (String segment : segments) {
+            current = current.flatMapValue(output -> compiler.apply(segment).mapValue(output::append));
+        }
+
+        return current.mapValue(StringBuilder::toString);
+    }
+
+    private static List<String> split(String input) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -61,27 +64,40 @@ public class Main {
 
     private static Result<String, CompileException> compileRootSegment(String input) {
         final var stripped = input.strip();
-        return compileNamespace("package ", stripped, "")
-                .or(() -> compileNamespace("import ", stripped, stripped + "\n"))
-                .or(() -> compileClass(stripped))
-                .<Result<String, CompileException>>map(Ok::new)
-                .orElseGet(() -> new Err<>(new CompileException("Unknown root segment", stripped)));
+        final var packageResult = compileNamespace("package ", stripped, "");
+        if (packageResult.isOk()) return packageResult;
+
+        final var importResult = compileNamespace("import ", stripped, stripped + "\n");
+        if (importResult.isOk()) return importResult;
+
+        final var classResult = compileClass(stripped);
+        if (classResult.isOk()) return classResult;
+
+        return new Err<>(new CompileException("Unknown root segment", stripped));
     }
 
-    private static Option<String> compileClass(String stripped) {
+    private static Result<String, CompileException> compileClass(String stripped) {
         final var classIndex = stripped.indexOf("class ");
-        if (classIndex == -1) return new None<>();
+        if (classIndex == -1) return new Err<>(new CompileException("Infix 'class ' not present", stripped));
 
-        final var right = stripped.substring(classIndex + "class ".length());
+        final var right = stripped.substring(classIndex + "class ".length()).strip();
         final var contentStart = right.indexOf('{');
-        if (contentStart == -1) return new None<>();
+        if (contentStart == -1) return new Err<>(new CompileException("Infix '{' not present", right));
 
         final var name = right.substring(0, contentStart).strip();
-        return new Some<>("class def " + name + "() => {}");
+
+        if (!right.endsWith("}")) return new Err<>(new CompileException("Suffix '}' not present", right));
+        final var content = right.substring(0, right.length() - 1);
+        return splitAndCompile(content, Main::compileClassMember)
+                .mapValue(outputContent -> "class def " + name + "() => {" + outputContent + "}");
     }
 
-    private static Option<String> compileNamespace(String prefix, String input, String output) {
-        if (input.startsWith(prefix)) return new Some<>(output);
-        else return new None<>();
+    private static Result<String, CompileException> compileClassMember(String classMember) {
+        return new Err<>(new CompileException("Unknown class member", classMember));
+    }
+
+    private static Result<String, CompileException> compileNamespace(String prefix, String input, String output) {
+        if (input.startsWith(prefix)) return new Ok<>(output);
+        else return new Err<>(new CompileException("Prefix '%s' not present".formatted(prefix), input));
     }
 }
