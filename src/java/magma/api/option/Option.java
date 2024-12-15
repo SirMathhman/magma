@@ -16,4 +16,8 @@ public interface Option<T> {
     T orElseGet(Supplier<T> other);
 
     Tuple<Boolean, T> toTuple(T other);
+
+    <R> R match(Function<T, R> ifPresent, Supplier<R> ifEmpty);
+
+    T orElse(T other);
 }

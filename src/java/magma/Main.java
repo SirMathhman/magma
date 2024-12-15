@@ -6,8 +6,8 @@ import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.app.ApplicationException;
-import magma.app.CompileException;
+import magma.app.ApplicationError;
+import magma.app.CompileError;
 import magma.app.MutableSplitState;
 import magma.app.SplitState;
 
@@ -25,11 +25,21 @@ public class Main {
     public static void main(String[] args) {
         final var source = Paths.get(".", "src", "java", "magma", "Main.java");
         final var target = source.resolveSibling("Main.mgs");
-        readSafe(source).mapValue(input -> runWithInput(input, target)).match(value -> value, Some::new).ifPresent(Throwable::printStackTrace);
+        readSafe(source)
+                .mapErr(JavaError::new)
+                .mapErr(ApplicationError::new)
+                .mapValue(input -> runWithInput(input, target))
+                .match(value -> value, Some::new)
+                .ifPresent(error -> System.err.println(error.display()));
     }
 
-    private static Option<ApplicationException> runWithInput(String input, Path target) {
-        return compile(input).mapErr(ApplicationException::new).mapValue(output -> writeSafe(output, target).map(ApplicationException::new)).match(value -> value, Some::new);
+    private static Option<ApplicationError> runWithInput(String input, Path target) {
+        return compile(input)
+                .mapErr(ApplicationError::new)
+                .mapValue(output -> writeSafe(output, target)
+                        .map(JavaError::new)
+                        .map(ApplicationError::new))
+                .match(value -> value, Some::new);
     }
 
     private static Option<IOException> writeSafe(String output, Path target) {
@@ -49,14 +59,14 @@ public class Main {
         }
     }
 
-    private static Result<String, CompileException> compile(String input) {
+    private static Result<String, CompileError> compile(String input) {
         return compileSegments(input, Main::compileRootSegment);
     }
 
-    private static Result<String, CompileException> compileSegments(String input, Function<String, Result<String, CompileException>> segmentCompiler) {
+    private static Result<String, CompileError> compileSegments(String input, Function<String, Result<String, CompileError>> segmentCompiler) {
         final var segments = split(input);
 
-        Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
+        Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
             output = output.and(() -> segmentCompiler.apply(segment.strip())).mapValue(tuple -> tuple.left().append(tuple.right()));
         }
@@ -101,32 +111,34 @@ public class Main {
         return state;
     }
 
-    private static Result<String, CompileException> compileRootSegment(String segment) {
+    private static Result<String, CompileError> compileRootSegment(String segment) {
         final var stripped = segment.strip();
 
         return compilePackage(stripped, "package ")
                 .or(() -> compilePackage(stripped, "import "))
                 .or(() -> compileClass(stripped))
-                .orElseGet(() -> new Err<>(new CompileException("Unknown root segment", segment)));
+                .orElseGet(() -> new Err<>(new CompileError("Unknown root segment", new StringContext(segment))));
     }
 
-    private static Option<Result<String, CompileException>> compilePackage(String stripped, String prefix) {
+    private static Option<Result<String, CompileError>> compilePackage(String stripped, String prefix) {
         return stripped.startsWith(prefix) ? new Some<>(new Ok<>("")) : new None<>();
     }
 
-    private static Option<Result<String, CompileException>> compileClass(String input) {
+    private static Option<Result<String, CompileError>> compileClass(String input) {
         return compileBlock(input, Main::compileClassMember);
     }
 
-    private static Result<String, CompileException> compileClassMember(String classMember) {
-        return compileMethod(classMember).map(result -> result.mapErr(err -> new CompileException("Invalid class member", classMember, err))).orElseGet(() -> new Err<>(new CompileException("Unknown class member", classMember)));
+    private static Result<String, CompileError> compileClassMember(String classMember) {
+        return compileMethod(classMember)
+                .map(result -> result.mapErr(err -> new CompileError("Invalid class member", new StringContext(classMember), err)))
+                .orElseGet(() -> new Err<>(new CompileError("Unknown class member", new StringContext(classMember))));
     }
 
-    private static Option<Result<String, CompileException>> compileMethod(String input) {
+    private static Option<Result<String, CompileError>> compileMethod(String input) {
         return compileBlock(input, Main::compileStatement);
     }
 
-    private static Option<Result<String, CompileException>> compileBlock(String input, Function<String, Result<String, CompileException>> compiler) {
+    private static Option<Result<String, CompileError>> compileBlock(String input, Function<String, Result<String, CompileError>> compiler) {
         final var contentStart = input.indexOf('{');
         if (contentStart == -1) return new None<>();
 
@@ -138,16 +150,19 @@ public class Main {
         return new Some<>(outputContent);
     }
 
-    private static Result<String, CompileException> compileStatement(String input) {
-        return compileDefinition(input).or(() -> compileInvocationStatement(input)).or(() -> compileReturn(input)).orElseGet(() -> new Err<>(new CompileException("Unknown statement", input)));
+    private static Result<String, CompileError> compileStatement(String input) {
+        return compileDefinition(input)
+                .or(() -> compileInvocationStatement(input))
+                .or(() -> compileReturn(input))
+                .orElseGet(() -> new Err<>(new CompileError("Unknown statement", new StringContext(input))));
     }
 
-    private static Option<Result<String, CompileException>> compileReturn(String input) {
+    private static Option<Result<String, CompileError>> compileReturn(String input) {
         if (input.startsWith("return ")) return new Some<>(new Ok<>("return 0;"));
         return new None<>();
     }
 
-    private static Option<Result<String, CompileException>> compileInvocationStatement(String input) {
+    private static Option<Result<String, CompileError>> compileInvocationStatement(String input) {
         final var paramStart = input.lastIndexOf('(');
         if (paramStart == -1) return new None<>();
 
@@ -157,7 +172,7 @@ public class Main {
         return new Some<>(new Ok<>("empty();"));
     }
 
-    private static Option<Result<String, CompileException>> compileDefinition(String input) {
+    private static Option<Result<String, CompileError>> compileDefinition(String input) {
         final var stripped = input.strip();
 
         final var valueSeparator = stripped.indexOf("=");
@@ -169,15 +184,15 @@ public class Main {
         return new Some<>(compileValue(value));
     }
 
-    private static Result<String, CompileException> compileValue(String value) {
+    private static Result<String, CompileError> compileValue(String value) {
         return compileConstruction(value)
                 .or(() -> compileInvocation(value))
                 .or(() -> compileAccess(value))
                 .or(() -> compileSymbol(value))
-                .orElseGet(() -> new Err<>(new CompileException("Unknown value", value)));
+                .orElseGet(() -> new Err<>(new CompileError("Unknown value", new StringContext(value))));
     }
 
-    private static Option<Result<String, CompileException>> compileConstruction(String value) {
+    private static Option<Result<String, CompileError>> compileConstruction(String value) {
         final var stripped = value.strip();
         if (stripped.startsWith("new ")) {
             final var endIndex = stripped.indexOf('(');
@@ -193,7 +208,7 @@ public class Main {
         return new None<>();
     }
 
-    private static Option<Result<String, CompileException>> compileSymbol(String value) {
+    private static Option<Result<String, CompileError>> compileSymbol(String value) {
         final var stripped = value.strip();
         for (int i = 0; i < stripped.length(); i++) {
             var c = stripped.charAt(i);
@@ -202,10 +217,16 @@ public class Main {
             }
         }
 
-        return new Some<>(new Ok<>(stripped));
+        return new Some<>(generateString(new MapNode().withString("value", stripped)));
     }
 
-    private static Option<Result<String, CompileException>> compileAccess(String value) {
+    private static Result<String, CompileError> generateString(MapNode mapNode) {
+        return mapNode.findString("value")
+                .<Result<String, CompileError>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileError("String '" + "value" + "' not present", new NodeContext(mapNode))));
+    }
+
+    private static Option<Result<String, CompileError>> compileAccess(String value) {
         final var separator = value.indexOf('.');
         if (separator == -1) return new None<>();
 
@@ -213,7 +234,7 @@ public class Main {
         return new Some<>(compileValue(caller));
     }
 
-    private static Option<Result<String, CompileException>> compileInvocation(String value) {
+    private static Option<Result<String, CompileError>> compileInvocation(String value) {
         final var paramStart = value.lastIndexOf('(');
         if (paramStart == -1) return new None<>();
 
