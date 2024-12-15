@@ -62,7 +62,7 @@ public class Main {
     private static Result<String, CompileException> compileRootSegment(String input) {
         final var stripped = input.strip();
         return compileNamespace("package ", stripped, "")
-                .or(() -> compileNamespace("import ", stripped, stripped))
+                .or(() -> compileNamespace("import ", stripped, stripped + "\n"))
                 .or(() -> compileClass(stripped))
                 .<Result<String, CompileException>>map(Ok::new)
                 .orElseGet(() -> new Err<>(new CompileException("Unknown root segment", stripped)));

@@ -1,1 +1,12 @@
-import magma.option.None;import magma.option.Option;import magma.option.Some;import magma.result.Err;import magma.result.Ok;import magma.result.Result;import magma.result.Results;import java.io.IOException;import java.nio.file.Files;import java.nio.file.Paths;import java.util.ArrayList;class def Temp() => {}
+import magma.option.None;
+import magma.option.Option;
+import magma.option.Some;
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
+import magma.result.Results;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+class def Temp() => {}
