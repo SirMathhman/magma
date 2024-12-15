@@ -1,5 +1,13 @@
 package magma;
 
+import magma.option.None;
+import magma.option.Option;
+import magma.option.Some;
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
+import magma.result.Results;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -22,7 +30,7 @@ public class Main {
 
         var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootSegment(segment));
+            output.append(Results.unwrap(compileRootSegment(segment)));
         }
 
         return output.toString();
@@ -47,7 +55,16 @@ public class Main {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static String compileRootSegment(String input) throws CompileException {
-        throw new CompileException("Unknown root segment", input);
+    private static Result<String, CompileException> compileRootSegment(String input) {
+        final var stripped = input.strip();
+        return compileNamespace("package ", stripped, "")
+                .or(() -> compileNamespace("import ", stripped, stripped))
+                .<Result<String, CompileException>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileException("Unknown root segment", stripped)));
+    }
+
+    private static Option<String> compileNamespace(String prefix, String input, String output) {
+        if (input.startsWith(prefix)) return new Some<>(output);
+        else return new None<>();
     }
 }
