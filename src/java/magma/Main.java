@@ -71,7 +71,9 @@ public class Main {
     private static SplitState processChars(String input) {
         final var length = input.length();
 
-        final var queue = IntStream.range(0, length).mapToObj(input::charAt).collect(Collectors.toCollection(LinkedList::new));
+        final var queue = IntStream.range(0, length)
+                .mapToObj(input::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));
 
         SplitState state = new MutableSplitState(queue);
         while (true) {
@@ -86,7 +88,9 @@ public class Main {
     }
 
     private static Option<SplitState> processNextChar(SplitState state) {
-        return state.pop().map(tuple -> tuple.merge(SplitState::appendNext)).map(tuple -> tuple.merge(Main::processChar));
+        return state.pop()
+                .map(tuple -> tuple.merge(SplitState::appendNext))
+                .map(tuple -> tuple.merge(Main::processChar));
     }
 
     private static SplitState processChar(SplitState state, Character c) {
@@ -100,7 +104,10 @@ public class Main {
     private static Result<String, CompileException> compileRootSegment(String segment) {
         final var stripped = segment.strip();
 
-        return compilePackage(stripped, "package ").or(() -> compilePackage(stripped, "import ")).or(() -> compileClass(stripped)).orElseGet(() -> new Err<>(new CompileException("Unknown root segment", segment)));
+        return compilePackage(stripped, "package ")
+                .or(() -> compilePackage(stripped, "import "))
+                .or(() -> compileClass(stripped))
+                .orElseGet(() -> new Err<>(new CompileException("Unknown root segment", segment)));
     }
 
     private static Option<Result<String, CompileException>> compilePackage(String stripped, String prefix) {
@@ -163,10 +170,27 @@ public class Main {
     }
 
     private static Result<String, CompileException> compileValue(String value) {
-        return compileInvocation(value)
+        return compileConstruction(value)
+                .or(() -> compileInvocation(value))
                 .or(() -> compileAccess(value))
                 .or(() -> compileSymbol(value))
                 .orElseGet(() -> new Err<>(new CompileException("Unknown value", value)));
+    }
+
+    private static Option<Result<String, CompileException>> compileConstruction(String value) {
+        final var stripped = value.strip();
+        if (stripped.startsWith("new ")) {
+            final var endIndex = stripped.indexOf('(');
+            if (endIndex != -1) {
+                final var withoutNew = stripped.substring("new ".length(), endIndex);
+                final var genStart = withoutNew.indexOf('<');
+                if (genStart != -1) {
+                    final var caller = withoutNew.substring(0, genStart);
+                    return new Some<>(compileValue(caller));
+                }
+            }
+        }
+        return new None<>();
     }
 
     private static Option<Result<String, CompileException>> compileSymbol(String value) {
