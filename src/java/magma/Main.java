@@ -63,8 +63,14 @@ public class Main {
         final var stripped = input.strip();
         return compileNamespace("package ", stripped, "")
                 .or(() -> compileNamespace("import ", stripped, stripped))
+                .or(() -> compileClass(stripped))
                 .<Result<String, CompileException>>map(Ok::new)
                 .orElseGet(() -> new Err<>(new CompileException("Unknown root segment", stripped)));
+    }
+
+    private static Option<String> compileClass(String stripped) {
+        if(stripped.contains("class ")) return new Some<>("class def Temp() => {}");
+        return new None<>();
     }
 
     private static Option<String> compileNamespace(String prefix, String input, String output) {
