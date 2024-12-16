@@ -17,6 +17,15 @@ public class Main {
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "magma");
 
     public static void main(String[] args) {
+        try {
+            run();
+        } catch (ApplicationException e) {
+            //noinspection CallToPrintStackTrace
+            e.printStackTrace();
+        }
+    }
+
+    private static void run() throws ApplicationException {
         try (var stream = Files.walk(SOURCE_DIRECTORY)) {
             final var sources = stream.filter(Files::isRegularFile)
                     .filter(file -> file.toString().endsWith(".java"))
@@ -25,33 +34,55 @@ public class Main {
             for (Path source : sources) {
                 runWithSource(source);
             }
-        } catch (IOException | CompileException e) {
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new ApplicationException(e);
         }
     }
 
-    private static void runWithSource(Path source) throws IOException, CompileException {
+    private static void runWithSource(Path source) throws ApplicationException {
         final var relativeSourceParent = Main.SOURCE_DIRECTORY.relativize(source.getParent());
         final var targetParent = TARGET_DIRECTORY.resolve(relativeSourceParent);
-        if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
+        if (!Files.exists(targetParent)) createDirectoriesSafe(targetParent);
 
         final var name = source.getFileName().toString();
         final var separator = name.indexOf('.');
         final var nameWithoutExt = name.substring(0, separator);
         final var target = targetParent.resolve(nameWithoutExt + ".mgs");
-        final var input = Files.readString(source);
-        Files.writeString(target, Results.unwrap(compile(input)));
+        final var input = readSafe(source);
+        final var output = Results.unwrap(compile(input));
+        writeSafe(target, output);
     }
 
-    private static Result<String, CompileException> compile(String root) {
+    private static void writeSafe(Path target, String output) throws ApplicationException {
+        try {
+            Files.writeString(target, output);
+        } catch (IOException e) {
+            throw new ApplicationException(e);
+        }
+    }
+
+    private static String readSafe(Path source) throws ApplicationException {
+        try {
+            return Files.readString(source);
+        } catch (IOException e) {
+            throw new ApplicationException(e);
+        }
+    }
+
+    private static void createDirectoriesSafe(Path targetParent) throws ApplicationException {
+        try {
+            Files.createDirectories(targetParent);
+        } catch (IOException e) {
+            throw new ApplicationException(e);
+        }
+    }
+
+    private static Result<String, ApplicationException> compile(String root) {
         final var segments = split(root);
 
-        Result<StringBuilder, CompileException> result = new Ok<>(new StringBuilder());
+        Result<StringBuilder, ApplicationException> result = new Ok<>(new StringBuilder());
         for (String segment : segments) {
-            result = result.flatMap(builder -> {
-                return compileRootSegment(segment).mapValue(builder::append);
-            });
+            result = result.flatMap(builder -> compileRootSegment(segment).mapValue(builder::append));
         }
 
         return result.mapValue(StringBuilder::toString);
@@ -76,7 +107,7 @@ public class Main {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static Result<String, CompileException> compileRootSegment(String rootSegment) {
+    private static Result<String, ApplicationException> compileRootSegment(String rootSegment) {
         if (rootSegment.startsWith("package ")) return new Ok<>("");
         return new Err<>(new CompileException("Invalid root segment", rootSegment));
     }
