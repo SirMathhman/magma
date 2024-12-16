@@ -19,13 +19,13 @@ public class Main {
             for (Path source : sources) {
                 runWithSource(source);
             }
-        } catch (IOException e) {
+        } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
     }
 
-    private static void runWithSource(Path source) throws IOException {
+    private static void runWithSource(Path source) throws IOException, CompileException {
         final var relativeSourceParent = Main.SOURCE_DIRECTORY.relativize(source.getParent());
         final var targetParent = TARGET_DIRECTORY.resolve(relativeSourceParent);
         if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
@@ -34,6 +34,11 @@ public class Main {
         final var separator = name.indexOf('.');
         final var nameWithoutExt = name.substring(0, separator);
         final var target = targetParent.resolve(nameWithoutExt + ".mgs");
-        Files.writeString(target, Files.readString(source));
+        final var input = Files.readString(source);
+        Files.writeString(target, compile(input));
+    }
+
+    private static String compile(String root) throws CompileException {
+        throw new CompileException("Invalid root", root);
     }
 }
