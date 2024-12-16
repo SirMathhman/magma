@@ -1,5 +1,10 @@
 package magma;
 
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
+import magma.result.Results;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,10 +41,23 @@ public class Main {
         final var nameWithoutExt = name.substring(0, separator);
         final var target = targetParent.resolve(nameWithoutExt + ".mgs");
         final var input = Files.readString(source);
-        Files.writeString(target, compile(input));
+        Files.writeString(target, Results.unwrap(compile(input)));
     }
 
-    private static String compile(String root) throws CompileException {
+    private static Result<String, CompileException> compile(String root) {
+        final var segments = split(root);
+
+        Result<StringBuilder, CompileException> result = new Ok<>(new StringBuilder());
+        for (String segment : segments) {
+            result = result.flatMap(builder -> {
+                return compileRootSegment(segment).mapValue(builder::append);
+            });
+        }
+
+        return result.mapValue(StringBuilder::toString);
+    }
+
+    private static ArrayList<String> split(String root) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         for (int i = 0; i < root.length(); i++) {
@@ -51,19 +69,14 @@ public class Main {
             }
         }
         advance(buffer, segments);
-
-        final var builder = new StringBuilder();
-        for (String segment : segments) {
-            builder.append(Results.unwrap(compileRootSegment(segment)));
-        }
-        return builder.toString();
+        return segments;
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static Result<String, CompileException> compileRootSegment(String rootSegment) throws CompileException {
+    private static Result<String, CompileException> compileRootSegment(String rootSegment) {
         if (rootSegment.startsWith("package ")) return new Ok<>("");
         return new Err<>(new CompileException("Invalid root segment", rootSegment));
     }
