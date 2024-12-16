@@ -131,7 +131,7 @@ public class Main {
     private static Result<String, CompileError> compileRootSegment(String rootSegment) {
         final var stripped = rootSegment.strip();
         if (stripped.startsWith("package ")) return new Ok<>("");
-        if (stripped.startsWith("import ")) return new Ok<>(stripped);
+        if (stripped.startsWith("import ")) return new Ok<>(stripped + "\n");
         if (stripped.contains("record ")) return new Ok<>("class def Record() => {}");
         if (stripped.contains("class ")) return new Ok<>("class def Class() => {}");
         if (stripped.contains("interface ")) return new Ok<>("trait Trait {}");

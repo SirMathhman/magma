@@ -1,1 +1,5 @@
-import magma.option.None;import magma.option.Option;import magma.option.Some;import java.util.function.Function;class def Record() => {}
+import magma.option.None;
+import magma.option.Option;
+import magma.option.Some;
+import java.util.function.Function;
+class def Record() => {}
