@@ -1,5 +1,7 @@
 package magma.option;
 
+import magma.Tuple;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -44,5 +46,10 @@ public record Some<T>(T value) implements Option<T> {
     @Override
     public Option<T> filter(Predicate<T> predicate) {
         return predicate.test(value) ? this : new None<>();
+    }
+
+    @Override
+    public Tuple<Boolean, T> toTuple(T other) {
+        return new Tuple<>(true, value);
     }
 }

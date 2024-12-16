@@ -1,5 +1,7 @@
 package magma.option;
 
+import magma.Tuple;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -21,4 +23,6 @@ public interface Option<T> {
     <R> R match(Function<T, R> ifPresent, Supplier<R> ifEmpty);
 
     Option<T> filter(Predicate<T> predicate);
+
+    Tuple<Boolean, T> toTuple(T other);
 }
