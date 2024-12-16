@@ -1,1 +1,1 @@
-import temp;def temp() => {}
+import java.util.stream.Stream;def temp() => {}

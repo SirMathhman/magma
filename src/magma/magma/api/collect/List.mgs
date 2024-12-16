@@ -1,1 +1,1 @@
-import temp;trait Temp {}
+import magma.api.stream.Stream;trait Temp {}

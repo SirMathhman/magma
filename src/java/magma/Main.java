@@ -118,17 +118,17 @@ public class Main {
         return root.withNodeList("children", children);
     }
 
-    private static SplitRule createMagmaRootRule() {
-        return new SplitRule(new BracketSplitter(), "children", createMagmaRootMemberRule());
+    private static NodeListRule createMagmaRootRule() {
+        return new NodeListRule("children", new BracketSplitter(), createMagmaRootMemberRule());
     }
 
-    private static SplitRule createJavaRootRule() {
-        return new SplitRule(new BracketSplitter(), "children", new StripRule(createJavaRootMemberRule()));
+    private static NodeListRule createJavaRootRule() {
+        return new NodeListRule("children", new BracketSplitter(), new StripRule(createJavaRootMemberRule()));
     }
 
     private static OrRule createMagmaRootMemberRule() {
         return new OrRule(java.util.List.of(
-                new TypeRule("import", new ExactRule("import temp;")),
+                createImportRule(),
                 new TypeRule("function", new ExactRule("def temp() => {}")),
                 new TypeRule("trait", new ExactRule("trait Temp {}"))
         ));
@@ -136,11 +136,20 @@ public class Main {
 
     private static OrRule createJavaRootMemberRule() {
         return new OrRule(java.util.List.of(
-                new TypeRule("package", new PrefixRule("package ", new DiscardRule())),
-                new TypeRule("import", new PrefixRule("import ", new DiscardRule())),
+                new TypeRule("package", createNamespaceRule("package ")),
+                createImportRule(),
                 new TypeRule("record", new InfixRule(new DiscardRule(), "record ", new DiscardRule())),
                 new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new DiscardRule())),
                 new TypeRule("interface", new InfixRule(new DiscardRule(), "interface ", new DiscardRule()))
         ));
+    }
+
+    private static TypeRule createImportRule() {
+        return new TypeRule("import", createNamespaceRule("import "));
+    }
+
+    private static Rule createNamespaceRule(String prefix) {
+        final var namespace = new NodeListRule("namespace", new DelimiterSplitter("."), new StringRule("value"));
+        return new PrefixRule(prefix, new SuffixRule(namespace, ";"));
     }
 }

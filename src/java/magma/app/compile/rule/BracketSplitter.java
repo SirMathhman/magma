@@ -26,6 +26,11 @@ public class BracketSplitter implements Splitter {
         return state.advance().segments;
     }
 
+    @Override
+    public StringBuilder merge(StringBuilder buffer, String slice) {
+        return buffer.append(slice);
+    }
+
     record State(
             List<String> segments,
             StringBuilder buffer,
