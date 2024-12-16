@@ -1,6 +1,7 @@
 package magma.app.rule;
 
 import magma.app.compile.Node;
+import magma.app.error.FormattedError;
 import magma.app.error.StringContext;
 import magma.app.error.CompileError;
 import magma.api.result.Err;
@@ -8,7 +9,7 @@ import magma.api.result.Result;
 
 public record InfixRule(Rule leftRule, String slice, Rule rightRule) implements Rule {
     @Override
-    public Result<Node, CompileError> parse(String input) {
+    public Result<Node, FormattedError> parse(String input) {
         final var index = input.indexOf(slice);
         if (index == -1)
             return new Err<>(new CompileError("Infix '" + slice + "' not present", new StringContext(input)));
@@ -20,7 +21,7 @@ public record InfixRule(Rule leftRule, String slice, Rule rightRule) implements 
     }
 
     @Override
-    public Result<String, CompileError> generate(Node node) {
+    public Result<String, FormattedError> generate(Node node) {
         return leftRule.generate(node).flatMapValue(leftValue -> rightRule.generate(node).mapValue(rightValue -> leftValue + slice + rightValue));
     }
 }

@@ -1,8 +1,24 @@
 package magma.app.error;
 
-public record CompileError(String message, Context context) implements Error {
+import magma.api.collect.List;
+import magma.api.collect.MutableList;
+
+public record CompileError(String message, Context context, List<FormattedError> causes) implements FormattedError {
+    public CompileError(String message, Context context) {
+        this(message, context, new MutableList<>());
+    }
+
     @Override
     public String display() {
-        return message + ": " + context.display();
+        return format(0);
+    }
+
+    @Override
+    public String format(int depth) {
+        final var joinedCauses = causes.stream()
+                .map(cause -> cause.format(depth + 1))
+                .foldLeft("", (previous, next) -> previous + "\n" + next);
+
+        return "\t".repeat(depth) + depth + ") " + message + ": " + context.display() + joinedCauses;
     }
 }

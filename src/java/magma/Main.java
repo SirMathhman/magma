@@ -1,9 +1,6 @@
 package magma;
 
-import magma.app.error.ApplicationError;
-import magma.app.error.CompileError;
-import magma.app.error.Error;
-import magma.app.error.JavaError;
+import magma.app.error.*;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Options;
@@ -11,6 +8,7 @@ import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.app.error.Error;
 import magma.app.rule.*;
 
 import java.io.IOException;
@@ -94,7 +92,7 @@ public class Main {
         }
     }
 
-    private static Result<String, CompileError> compile(String root) {
+    private static Result<String, FormattedError> compile(String root) {
         return createJavaRootRule().parse(root)
                 .flatMapValue(node -> createMagmaRootRule().generate(node));
     }
