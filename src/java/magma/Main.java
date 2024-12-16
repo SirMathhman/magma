@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -39,6 +40,31 @@ public class Main {
     }
 
     private static String compile(String root) throws CompileException {
-        throw new CompileException("Invalid root", root);
+        var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        for (int i = 0; i < root.length(); i++) {
+            var c = root.charAt(i);
+            buffer.append(c);
+            if (c == ';') {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            }
+        }
+        advance(buffer, segments);
+
+        final var builder = new StringBuilder();
+        for (String segment : segments) {
+            builder.append(compileRootSegment(segment));
+        }
+        return builder.toString();
+    }
+
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
+    }
+
+    private static String compileRootSegment(String rootSegment) throws CompileException {
+        if (rootSegment.startsWith("package ")) return "";
+        throw new CompileException("Invalid root segment", rootSegment);
     }
 }
