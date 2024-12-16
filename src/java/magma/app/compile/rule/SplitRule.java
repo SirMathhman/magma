@@ -5,14 +5,11 @@ import magma.api.collect.MutableList;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.api.stream.Streams;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.error.CompileError;
 import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
-
-import java.util.ArrayList;
 
 public final class SplitRule implements Rule {
     private final String propertyKey;
@@ -23,32 +20,10 @@ public final class SplitRule implements Rule {
         this.segmentRule = segmentRule;
     }
 
-    private static java.util.List<String> split(String root) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
-            buffer.append(c);
-            if (c == ';' && depth == 0) {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            } else {
-                if (c == '{') depth++;
-                if (c == '}') depth--;
-            }
-        }
-        advance(buffer, segments);
-        return segments;
-    }
-
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
-    }
-
     @Override
     public Result<Node, FormattedError> parse(String root) {
-        return Streams.from(split(root))
+        return new BracketSplitter().split(root)
+                .stream()
                 .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableList<>()), (current, s) -> current.flatMapValue(inner -> segmentRule.parse(s).mapValue(inner::add)))
                 .mapValue(nodes -> new MapNode().withNodeList(propertyKey, nodes));
     }
@@ -79,4 +54,5 @@ public final class SplitRule implements Rule {
     ) {
         return current.flatMapValue(inner -> segmentRule.generate(next).mapValue(inner::append));
     }
+
 }
