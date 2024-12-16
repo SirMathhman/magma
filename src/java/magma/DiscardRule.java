@@ -4,9 +4,9 @@ import magma.error.CompileError;
 import magma.result.Ok;
 import magma.result.Result;
 
-public record ExactRule(String value) implements Rule {
+public class DiscardRule implements Rule {
     @Override
     public Result<String, CompileError> generate(Node node) {
-        return new Ok<>(value());
+        return new Ok<>("");
     }
 }
