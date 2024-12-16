@@ -11,10 +11,10 @@ import magma.app.error.CompileError;
 import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
 
-public record SplitRule(String propertyKey, Rule segmentRule) implements Rule {
+public record SplitRule(Splitter splitter, String propertyKey, Rule segmentRule) implements Rule {
     @Override
     public Result<Node, FormattedError> parse(String root) {
-        return new BracketSplitter().split(root)
+        return splitter.split(root)
                 .stream()
                 .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableList<>()), (current, s) -> current.flatMapValue(inner -> segmentRule.parse(s).mapValue(inner::add)))
                 .mapValue(nodes -> new MapNode().withNodeList(propertyKey, nodes));

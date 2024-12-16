@@ -119,11 +119,11 @@ public class Main {
     }
 
     private static SplitRule createMagmaRootRule() {
-        return new SplitRule("children", createMagmaRootMemberRule());
+        return new SplitRule(new BracketSplitter(), "children", createMagmaRootMemberRule());
     }
 
     private static SplitRule createJavaRootRule() {
-        return new SplitRule("children", new StripRule(createJavaRootMemberRule()));
+        return new SplitRule(new BracketSplitter(), "children", new StripRule(createJavaRootMemberRule()));
     }
 
     private static OrRule createMagmaRootMemberRule() {
