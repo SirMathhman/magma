@@ -125,7 +125,9 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRootSegment(String rootSegment) {
-        if (rootSegment.startsWith("package ")) return new Ok<>("");
-        return new Err<>(new CompileError("Invalid root segment", rootSegment));
+        final var stripped = rootSegment.strip();
+        if (stripped.startsWith("package ")) return new Ok<>("");
+        if (stripped.startsWith("import ")) return new Ok<>(stripped);
+        return new Err<>(new CompileError("Invalid root segment", stripped));
     }
 }
