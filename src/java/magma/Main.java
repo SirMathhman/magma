@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
 
@@ -96,47 +94,20 @@ public class Main {
     }
 
     private static Result<String, CompileError> compile(String root) {
-        final var segments = split(root);
-
-        Result<StringBuilder, CompileError> result = new Ok<>(new StringBuilder());
-        for (String segment : segments) {
-            result = result.flatMap(builder -> compileRootSegment(segment.strip()).mapValue(builder::append));
-        }
-
-        return result.mapValue(StringBuilder::toString);
+        return createJavaRootRule().parse(root)
+                .flatMapValue(node -> createMagmaRootRule().generate(node));
     }
 
-    private static ArrayList<String> split(String root) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
-            buffer.append(c);
-            if (c == ';' && depth == 0) {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            } else {
-                if (c == '{') depth++;
-                if (c == '}') depth--;
-            }
-        }
-        advance(buffer, segments);
-        return segments;
+    private static SplitRule createMagmaRootRule() {
+        return new SplitRule("children", createMagmaRootMemberRule());
     }
 
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
-    }
-
-    private static Result<String, CompileError> compileRootSegment(String input) {
-        return createJavaRootMemberRule().parse(input).flatMap(javaRootMemberRule -> {
-            return createMagmaRootMemberRule().generate(javaRootMemberRule);
-        });
+    private static SplitRule createJavaRootRule() {
+        return new SplitRule("children", createJavaRootMemberRule());
     }
 
     private static OrRule createMagmaRootMemberRule() {
-        return new OrRule(List.of(
+        return new OrRule(java.util.List.of(
                 new TypeRule("import", new ExactRule("import temp;")),
                 new TypeRule("function", new ExactRule("def temp() => {}")),
                 new TypeRule("trait", new ExactRule("trait Temp {}"))
@@ -144,7 +115,7 @@ public class Main {
     }
 
     private static OrRule createJavaRootMemberRule() {
-        return new OrRule(List.of(
+        return new OrRule(java.util.List.of(
                 new TypeRule("package", new PrefixRule("package ", new DiscardRule())),
                 new TypeRule("import", new PrefixRule("import ", new DiscardRule())),
                 new TypeRule("record ", new InfixRule(new DiscardRule(), "record ", new DiscardRule())),

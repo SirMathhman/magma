@@ -23,7 +23,7 @@ public record Ok<T, X>(T value) implements Result<T, X> {
     }
 
     @Override
-    public <R> Result<R, X> flatMap(Function<T, Result<R, X>> mapper) {
+    public <R> Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper) {
         return mapper.apply(value);
     }
 

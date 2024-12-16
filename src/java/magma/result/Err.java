@@ -23,7 +23,7 @@ public record Err<T, X>(X error) implements Result<T, X> {
     }
 
     @Override
-    public <R> Result<R, X> flatMap(Function<T, Result<R, X>> mapper) {
+    public <R> Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper) {
         return new Err<>(error);
     }
 

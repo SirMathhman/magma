@@ -2,6 +2,7 @@ package magma.option;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public interface Option<T> {
@@ -18,4 +19,6 @@ public interface Option<T> {
     Option<T> or(Supplier<Option<T>> other);
 
     <R> R match(Function<T, R> ifPresent, Supplier<R> ifEmpty);
+
+    Option<T> filter(Predicate<T> predicate);
 }

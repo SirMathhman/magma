@@ -14,11 +14,11 @@ public record InfixRule(Rule leftRule, String slice, Rule rightRule) implements 
         final var left = input.substring(0, index);
         final var right = input.substring(index + slice.length());
 
-        return leftRule.parse(left).flatMap(leftNode -> rightRule.parse(right).mapValue(leftNode::merge));
+        return leftRule.parse(left).flatMapValue(leftNode -> rightRule.parse(right).mapValue(leftNode::merge));
     }
 
     @Override
     public Result<String, CompileError> generate(Node node) {
-        return leftRule.generate(node).flatMap(leftValue -> rightRule.generate(node).mapValue(rightValue -> leftValue + slice + rightValue));
+        return leftRule.generate(node).flatMapValue(leftValue -> rightRule.generate(node).mapValue(rightValue -> leftValue + slice + rightValue));
     }
 }
