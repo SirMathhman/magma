@@ -108,7 +108,11 @@ public class Main {
                 .orElseGet(MutableList::new)
                 .stream()
                 .filter(node -> !node.is("package"))
-                .map(node -> node)
+                .map(node -> {
+                    if (node.is("interface")) return node.retype("trait");
+                    if (node.is("class") || node.is("record")) return node.retype("function");
+                    return node;
+                })
                 .<List<Node>>foldLeft(new MutableList<>(), List::add);
 
         return root.withNodeList("children", children);
@@ -134,9 +138,9 @@ public class Main {
         return new OrRule(java.util.List.of(
                 new TypeRule("package", new PrefixRule("package ", new DiscardRule())),
                 new TypeRule("import", new PrefixRule("import ", new DiscardRule())),
-                new TypeRule("record ", new InfixRule(new DiscardRule(), "record ", new DiscardRule())),
-                new TypeRule("class ", new InfixRule(new DiscardRule(), "class ", new DiscardRule())),
-                new TypeRule("interface ", new InfixRule(new DiscardRule(), "interface ", new DiscardRule()))
+                new TypeRule("record", new InfixRule(new DiscardRule(), "record ", new DiscardRule())),
+                new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new DiscardRule())),
+                new TypeRule("interface", new InfixRule(new DiscardRule(), "interface ", new DiscardRule()))
         ));
     }
 }
