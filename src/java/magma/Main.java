@@ -1,7 +1,7 @@
 package magma;
 
-import magma.app.compile.rule.*;
-import magma.app.error.*;
+import magma.api.collect.List;
+import magma.api.collect.MutableList;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Options;
@@ -9,7 +9,12 @@ import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.app.compile.Node;
+import magma.app.compile.rule.*;
+import magma.app.error.ApplicationError;
 import magma.app.error.Error;
+import magma.app.error.FormattedError;
+import magma.app.error.JavaError;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -94,7 +99,19 @@ public class Main {
 
     private static Result<String, FormattedError> compile(String root) {
         return createJavaRootRule().parse(root)
+                .mapValue(Main::pass)
                 .flatMapValue(node -> createMagmaRootRule().generate(node));
+    }
+
+    private static Node pass(Node root) {
+        final var children = root.findNodeList("children")
+                .orElseGet(MutableList::new)
+                .stream()
+                .filter(node -> !node.is("package"))
+                .map(node -> node)
+                .<List<Node>>foldLeft(new MutableList<>(), List::add);
+
+        return root.withNodeList("children", children);
     }
 
     private static SplitRule createMagmaRootRule() {
