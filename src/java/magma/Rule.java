@@ -4,5 +4,5 @@ import magma.error.CompileError;
 import magma.result.Result;
 
 public interface Rule {
-    Result<String, CompileError> generate();
+    Result<String, CompileError> generate(String value);
 }

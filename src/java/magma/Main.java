@@ -130,11 +130,11 @@ public class Main {
 
     private static Result<String, CompileError> compileRootSegment(String rootSegment) {
         final var stripped = rootSegment.strip();
-        if (stripped.startsWith("package ")) return new ExactRule("").generate();
-        if (stripped.startsWith("import ")) return new ExactRule(stripped + "\n").generate();
-        if (stripped.contains("record ")) return new ExactRule("class def Record() => {}").generate();
-        if (stripped.contains("class ")) return new ExactRule("class def Class() => {}").generate();
-        if (stripped.contains("interface ")) return new ExactRule("trait Trait {}").generate();
+        if (stripped.startsWith("package ")) return new ExactRule("").generate("");
+        if (stripped.startsWith("import ")) return new SuffixRule(new StringRule(), "\n").generate(stripped);
+        if (stripped.contains("record ")) return new ExactRule("class def Record() => {}").generate("");
+        if (stripped.contains("class ")) return new ExactRule("class def Class() => {}").generate("");
+        if (stripped.contains("interface ")) return new ExactRule("trait Trait {}").generate("");
         return new Err<>(new CompileError("Invalid root segment", stripped));
     }
 }
