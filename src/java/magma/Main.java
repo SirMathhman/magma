@@ -1,5 +1,6 @@
 package magma;
 
+import magma.app.compile.rule.*;
 import magma.app.error.*;
 import magma.api.option.None;
 import magma.api.option.Option;
@@ -9,7 +10,6 @@ import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.error.Error;
-import magma.app.rule.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -102,7 +102,7 @@ public class Main {
     }
 
     private static SplitRule createJavaRootRule() {
-        return new SplitRule("children", createJavaRootMemberRule());
+        return new SplitRule("children", new StripRule(createJavaRootMemberRule()));
     }
 
     private static OrRule createMagmaRootMemberRule() {

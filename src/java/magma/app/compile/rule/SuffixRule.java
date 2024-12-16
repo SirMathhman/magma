@@ -1,4 +1,4 @@
-package magma.app.rule;
+package magma.app.compile.rule;
 
 import magma.app.error.FormattedError;
 import magma.app.error.StringContext;

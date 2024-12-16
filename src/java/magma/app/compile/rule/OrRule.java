@@ -1,4 +1,4 @@
-package magma.app.rule;
+package magma.app.compile.rule;
 
 import magma.api.collect.MutableList;
 import magma.api.result.Err;
