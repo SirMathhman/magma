@@ -1,16 +1,17 @@
 package magma;
 
-import magma.error.ApplicationError;
-import magma.error.CompileError;
-import magma.error.Error;
-import magma.error.JavaError;
-import magma.option.None;
-import magma.option.Option;
-import magma.option.Options;
-import magma.option.Some;
-import magma.result.Err;
-import magma.result.Ok;
-import magma.result.Result;
+import magma.app.error.ApplicationError;
+import magma.app.error.CompileError;
+import magma.app.error.Error;
+import magma.app.error.JavaError;
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.option.Options;
+import magma.api.option.Some;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.app.rule.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
