@@ -108,12 +108,16 @@ public class Main {
     private static ArrayList<String> split(String root) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
+        var depth = 0;
         for (int i = 0; i < root.length(); i++) {
             var c = root.charAt(i);
             buffer.append(c);
-            if (c == ';') {
+            if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
             }
         }
         advance(buffer, segments);
@@ -128,6 +132,9 @@ public class Main {
         final var stripped = rootSegment.strip();
         if (stripped.startsWith("package ")) return new Ok<>("");
         if (stripped.startsWith("import ")) return new Ok<>(stripped);
+        if (stripped.contains("record ")) return new Ok<>("class def Record() => {}");
+        if (stripped.contains("class ")) return new Ok<>("class def Class() => {}");
+        if (stripped.contains("interface ")) return new Ok<>("trait Trait {}");
         return new Err<>(new CompileError("Invalid root segment", stripped));
     }
 }
