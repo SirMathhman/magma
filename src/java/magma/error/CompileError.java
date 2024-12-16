@@ -1,14 +1,6 @@
 package magma.error;
 
-public class CompileError implements Error {
-    private final String message;
-    private final String context;
-
-    public CompileError(String message, String context) {
-        this.message = message;
-        this.context = context;
-    }
-
+public record CompileError(String message, String context) implements Error {
     @Override
     public String display() {
         return message + ": " + context;
