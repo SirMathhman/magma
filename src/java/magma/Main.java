@@ -54,7 +54,7 @@ public class Main {
 
         final var builder = new StringBuilder();
         for (String segment : segments) {
-            builder.append(compileRootSegment(segment));
+            builder.append(Results.unwrap(compileRootSegment(segment)));
         }
         return builder.toString();
     }
@@ -63,8 +63,8 @@ public class Main {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static String compileRootSegment(String rootSegment) throws CompileException {
-        if (rootSegment.startsWith("package ")) return "";
-        throw new CompileException("Invalid root segment", rootSegment);
+    private static Result<String, CompileException> compileRootSegment(String rootSegment) throws CompileException {
+        if (rootSegment.startsWith("package ")) return new Ok<>("");
+        return new Err<>(new CompileException("Invalid root segment", rootSegment));
     }
 }
