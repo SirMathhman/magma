@@ -1,23 +1,29 @@
 package magma.app.compile.rule;
 
-import magma.api.stream.Streams;
 import magma.api.collect.List;
 import magma.api.collect.MutableList;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.api.stream.Streams;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.error.CompileError;
 import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
-import magma.api.result.Err;
-import magma.api.result.Ok;
-import magma.api.result.Result;
 
 import java.util.ArrayList;
-import java.util.function.BiFunction;
 
-public record SplitRule(String propertyKey, Rule segmentRule) implements Rule {
+public final class SplitRule implements Rule {
+    private final String propertyKey;
+    private final Rule segmentRule;
 
-    private static ArrayList<String> split(String root) {
+    public SplitRule(String propertyKey, Rule segmentRule) {
+        this.propertyKey = propertyKey;
+        this.segmentRule = segmentRule;
+    }
+
+    private static java.util.List<String> split(String root) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -43,18 +49,34 @@ public record SplitRule(String propertyKey, Rule segmentRule) implements Rule {
     @Override
     public Result<Node, FormattedError> parse(String root) {
         return Streams.from(split(root))
-                .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableList<>()), (current, s) -> current.flatMapValue(inner -> segmentRule().parse(s).mapValue(inner::add)))
-                .mapValue(nodes -> new MapNode().withNodeList(propertyKey(), nodes));
+                .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableList<>()), (current, s) -> current.flatMapValue(inner -> segmentRule.parse(s).mapValue(inner::add)))
+                .mapValue(nodes -> new MapNode().withNodeList(propertyKey, nodes));
     }
-
 
     @Override
     public Result<String, FormattedError> generate(Node node) {
-        return node.findNodeList(propertyKey())
-                .map(list -> list.stream()
-                        .foldLeft(new Ok<>(new StringBuilder()), (BiFunction<Result<StringBuilder, FormattedError>, Node, Result<StringBuilder, FormattedError>>)
-                                (current, next) -> current.flatMapValue(inner -> segmentRule().generate(next).mapValue(inner::append)))
-                        .mapValue(StringBuilder::toString))
-                .orElseGet(() -> new Err<>(new CompileError("Node list '" + propertyKey() + "' not present", new NodeContext(node))));
+        return node.findNodeList(propertyKey)
+                .map(this::generateAllIntoBuilder)
+                .orElseGet(() -> createErr(node));
+    }
+
+    private Err<String, FormattedError> createErr(Node node) {
+        final var format = "Node list '%s' not present";
+        final var message = format.formatted(propertyKey);
+        final var context = new NodeContext(node);
+        return new Err<>(new CompileError(message, context));
+    }
+
+    private Result<String, FormattedError> generateAllIntoBuilder(List<Node> list) {
+        return list.stream()
+                .foldLeft(new Ok<>(new StringBuilder()), this::generateIntoBuilder)
+                .mapValue(StringBuilder::toString);
+    }
+
+    private Result<StringBuilder, FormattedError> generateIntoBuilder(
+            Result<StringBuilder, FormattedError> current,
+            Node next
+    ) {
+        return current.flatMapValue(inner -> segmentRule.generate(next).mapValue(inner::append));
     }
 }
