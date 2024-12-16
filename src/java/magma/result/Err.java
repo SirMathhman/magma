@@ -36,4 +36,9 @@ public record Err<T, X>(X error) implements Result<T, X> {
     public <R> Result<T, R> mapErr(Function<X, R> mapper) {
         return new Err<>(mapper.apply(error));
     }
+
+    @Override
+    public boolean isOk() {
+        return false;
+    }
 }

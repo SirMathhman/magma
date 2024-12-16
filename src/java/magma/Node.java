@@ -1,6 +1,8 @@
 package magma;
 
+import magma.error.CompileError;
 import magma.option.Option;
+import magma.result.Result;
 
 public interface Node {
     Node retype(String type);
@@ -20,4 +22,6 @@ public interface Node {
     Stream<Tuple<String, List<Node>>> streamNodeLists();
 
     Option<List<Node>> findNodeList(String propertyKey);
+
+    Option<String> findString(String propertyKey);
 }

@@ -2,6 +2,7 @@ package magma.option;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class None<T> implements Option<T> {
@@ -37,5 +38,10 @@ public class None<T> implements Option<T> {
     @Override
     public <R> R match(Function<T, R> ifPresent, Supplier<R> ifEmpty) {
         return ifEmpty.get();
+    }
+
+    @Override
+    public Option<T> filter(Predicate<T> predicate) {
+        return new None<>();
     }
 }

@@ -11,7 +11,7 @@ public record OrRule(List<Rule> rules) implements Rule {
     public Result<Node, CompileError> parse(String input) {
         for (Rule rule : rules) {
             final var parsed = rule.parse(input);
-            if (parsed.isPresent()) return parsed;
+            if (parsed.isOk()) return parsed;
         }
 
         return new Err<>(new CompileError("Invalid input", new StringContext(input)));
@@ -21,7 +21,7 @@ public record OrRule(List<Rule> rules) implements Rule {
     public Result<String, CompileError> generate(Node node) {
         for (Rule rule : rules) {
             final var generated = rule.generate(node);
-            if (generated.isPresent()) return generated;
+            if (generated.isOk()) return generated;
         }
 
         return new Err<>(new CompileError("Invalid node", new NodeContext(node)));

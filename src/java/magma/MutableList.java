@@ -12,4 +12,9 @@ public record MutableList<T>(java.util.List<T> list) implements List<T> {
         list.add(other);
         return this;
     }
+
+    @Override
+    public Stream<T> stream() {
+        return Streams.from(list);
+    }
 }

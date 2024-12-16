@@ -17,5 +17,5 @@ public interface Result<T, X> {
 
     <R> Result<T, R> mapErr(Function<X, R> mapper);
 
-    boolean isPresent();
+    boolean isOk();
 }

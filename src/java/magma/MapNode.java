@@ -4,8 +4,11 @@ import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
 
-public record MapNode(Option<String> type, Map<String, String> strings,
-                      Map<String, List<Node>> nodeLists) implements Node {
+public record MapNode(
+        Option<String> type,
+        Map<String, String> strings,
+        Map<String, List<Node>> nodeLists
+) implements Node {
     public MapNode() {
         this(new None<>(), new MutableMap<>(), new MutableMap<>());
     }
@@ -52,5 +55,15 @@ public record MapNode(Option<String> type, Map<String, String> strings,
     @Override
     public Stream<Tuple<String, List<Node>>> streamNodeLists() {
         return nodeLists.stream();
+    }
+
+    @Override
+    public Option<List<Node>> findNodeList(String propertyKey) {
+        return nodeLists.find(propertyKey);
+    }
+
+    @Override
+    public Option<String> findString(String propertyKey) {
+        return strings.find(propertyKey);
     }
 }
