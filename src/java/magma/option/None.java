@@ -33,4 +33,9 @@ public class None<T> implements Option<T> {
     public Option<T> or(Supplier<Option<T>> other) {
         return other.get();
     }
+
+    @Override
+    public <R> R match(Function<T, R> ifPresent, Supplier<R> ifEmpty) {
+        return ifEmpty.get();
+    }
 }

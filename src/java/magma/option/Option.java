@@ -16,4 +16,6 @@ public interface Option<T> {
     void ifPresent(Consumer<T> consumer);
 
     Option<T> or(Supplier<Option<T>> other);
+
+    <R> R match(Function<T, R> ifPresent, Supplier<R> ifEmpty);
 }

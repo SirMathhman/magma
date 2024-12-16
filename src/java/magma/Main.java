@@ -19,24 +19,24 @@ public class Main {
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "magma");
 
     public static void main(String[] args) {
-        run().ifPresent(ApplicationException::printStackTrace);
+        run().map(Error::display).ifPresent(System.err::println);
     }
 
-    private static Option<ApplicationException> run() {
+    private static Option<ApplicationError> run() {
         try (var stream = Files.walk(SOURCE_DIRECTORY)) {
             return stream.filter(Files::isRegularFile)
                     .filter(file -> file.toString().endsWith(".java"))
                     .map(Main::runWithSource)
                     .flatMap(Options::asStream)
                     .findFirst()
-                    .<Option<ApplicationException>>map(Some::new)
+                    .<Option<ApplicationError>>map(Some::new)
                     .orElseGet(None::new);
         } catch (IOException e) {
-            return new Some<>(new ApplicationException(e));
+            return new Some<>(new ApplicationError(new JavaError(e)));
         }
     }
 
-    private static Option<ApplicationException> runWithSource(Path source) {
+    private static Option<ApplicationError> runWithSource(Path source) {
         final var relativeSourceParent = Main.SOURCE_DIRECTORY.relativize(source.getParent());
         final var targetParent = TARGET_DIRECTORY.resolve(relativeSourceParent);
         if (!Files.exists(targetParent)) {
@@ -46,7 +46,7 @@ public class Main {
         return compileAndRead(source, targetParent);
     }
 
-    private static Option<ApplicationException> compileAndRead(Path source, Path targetParent) {
+    private static Option<ApplicationError> compileAndRead(Path source, Path targetParent) {
         final var name = source.getFileName().toString();
         final var separator = name.indexOf('.');
         final var nameWithoutExt = name.substring(0, separator);
@@ -56,42 +56,43 @@ public class Main {
                 .match(value -> value, Some::new);
     }
 
-    private static Option<ApplicationException> compileAndWrite(String input, Path target) {
+    private static Option<ApplicationError> compileAndWrite(String input, Path target) {
         return compile(input)
+                .mapErr(ApplicationError::new)
                 .mapValue(output -> writeSafe(target, output))
                 .match(value -> value, Some::new);
     }
 
-    private static Option<ApplicationException> writeSafe(Path target, String output) {
+    private static Option<ApplicationError> writeSafe(Path target, String output) {
         try {
             Files.writeString(target, output);
             return new None<>();
         } catch (IOException e) {
-            return new Some<>(new ApplicationException(e));
+            return new Some<>(new ApplicationError(new JavaError(e)));
         }
     }
 
-    private static Result<String, ApplicationException> readSafe(Path source) {
+    private static Result<String, ApplicationError> readSafe(Path source) {
         try {
             return new Ok<>(Files.readString(source));
         } catch (IOException e) {
-            return new Err<>(new ApplicationException(e));
+            return new Err<>(new ApplicationError(new JavaError(e)));
         }
     }
 
-    private static Option<ApplicationException> createDirectoriesSafe(Path targetParent) {
+    private static Option<ApplicationError> createDirectoriesSafe(Path targetParent) {
         try {
             Files.createDirectories(targetParent);
             return new None<>();
         } catch (IOException e) {
-            return new Some<>(new ApplicationException(e));
+            return new Some<>(new ApplicationError(new JavaError(e)));
         }
     }
 
-    private static Result<String, ApplicationException> compile(String root) {
+    private static Result<String, CompileError> compile(String root) {
         final var segments = split(root);
 
-        Result<StringBuilder, ApplicationException> result = new Ok<>(new StringBuilder());
+        Result<StringBuilder, CompileError> result = new Ok<>(new StringBuilder());
         for (String segment : segments) {
             result = result.flatMap(builder -> compileRootSegment(segment).mapValue(builder::append));
         }
@@ -118,8 +119,8 @@ public class Main {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static Result<String, ApplicationException> compileRootSegment(String rootSegment) {
+    private static Result<String, CompileError> compileRootSegment(String rootSegment) {
         if (rootSegment.startsWith("package ")) return new Ok<>("");
-        return new Err<>(new CompileException("Invalid root segment", rootSegment));
+        return new Err<>(new CompileError("Invalid root segment", rootSegment));
     }
 }
