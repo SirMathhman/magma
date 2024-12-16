@@ -1,7 +1,12 @@
 package magma;
 
+import magma.error.ApplicationError;
+import magma.error.CompileError;
+import magma.error.Error;
+import magma.error.JavaError;
 import magma.option.None;
 import magma.option.Option;
+import magma.option.Options;
 import magma.option.Some;
 import magma.result.Err;
 import magma.result.Ok;

@@ -1,6 +1,4 @@
-package magma;
-
-import magma.option.Option;
+package magma.option;
 
 import java.util.stream.Stream;
 

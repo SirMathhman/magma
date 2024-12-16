@@ -1,4 +1,4 @@
-package magma;
+package magma.error;
 
 import magma.option.None;
 import magma.option.Option;
