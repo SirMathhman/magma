@@ -26,4 +26,9 @@ public record Ok<T, X>(T value) implements Result<T, X> {
     public <R> Result<R, X> flatMap(Function<T, Result<R, X>> mapper) {
         return mapper.apply(value);
     }
+
+    @Override
+    public <R> R match(Function<T, R> onOk, Function<X, R> onErr) {
+        return onOk.apply(value);
+    }
 }

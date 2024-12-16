@@ -1,9 +1,11 @@
 package magma;
 
+import magma.option.None;
+import magma.option.Option;
+import magma.option.Some;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
-import magma.result.Results;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,63 +19,72 @@ public class Main {
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "magma");
 
     public static void main(String[] args) {
-        try {
-            run();
-        } catch (ApplicationException e) {
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
-        }
+        run().ifPresent(ApplicationException::printStackTrace);
     }
 
-    private static void run() throws ApplicationException {
+    private static Option<ApplicationException> run() {
         try (var stream = Files.walk(SOURCE_DIRECTORY)) {
-            final var sources = stream.filter(Files::isRegularFile)
+            return stream.filter(Files::isRegularFile)
                     .filter(file -> file.toString().endsWith(".java"))
-                    .toList();
-
-            for (Path source : sources) {
-                runWithSource(source);
-            }
+                    .map(Main::runWithSource)
+                    .flatMap(Options::asStream)
+                    .findFirst()
+                    .<Option<ApplicationException>>map(Some::new)
+                    .orElseGet(None::new);
         } catch (IOException e) {
-            throw new ApplicationException(e);
+            return new Some<>(new ApplicationException(e));
         }
     }
 
-    private static void runWithSource(Path source) throws ApplicationException {
+    private static Option<ApplicationException> runWithSource(Path source) {
         final var relativeSourceParent = Main.SOURCE_DIRECTORY.relativize(source.getParent());
         final var targetParent = TARGET_DIRECTORY.resolve(relativeSourceParent);
-        if (!Files.exists(targetParent)) createDirectoriesSafe(targetParent);
+        if (!Files.exists(targetParent)) {
+            return createDirectoriesSafe(targetParent).or(() -> compileAndRead(source, targetParent));
+        }
 
+        return compileAndRead(source, targetParent);
+    }
+
+    private static Option<ApplicationException> compileAndRead(Path source, Path targetParent) {
         final var name = source.getFileName().toString();
         final var separator = name.indexOf('.');
         final var nameWithoutExt = name.substring(0, separator);
         final var target = targetParent.resolve(nameWithoutExt + ".mgs");
-        final var input = readSafe(source);
-        final var output = Results.unwrap(compile(input));
-        writeSafe(target, output);
+        return readSafe(source)
+                .mapValue(input -> compileAndWrite(input, target))
+                .match(value -> value, Some::new);
     }
 
-    private static void writeSafe(Path target, String output) throws ApplicationException {
+    private static Option<ApplicationException> compileAndWrite(String input, Path target) {
+        return compile(input)
+                .mapValue(output -> writeSafe(target, output))
+                .match(value -> value, Some::new);
+    }
+
+    private static Option<ApplicationException> writeSafe(Path target, String output) {
         try {
             Files.writeString(target, output);
+            return new None<>();
         } catch (IOException e) {
-            throw new ApplicationException(e);
+            return new Some<>(new ApplicationException(e));
         }
     }
 
-    private static String readSafe(Path source) throws ApplicationException {
+    private static Result<String, ApplicationException> readSafe(Path source) {
         try {
-            return Files.readString(source);
+            return new Ok<>(Files.readString(source));
         } catch (IOException e) {
-            throw new ApplicationException(e);
+            return new Err<>(new ApplicationException(e));
         }
     }
 
-    private static void createDirectoriesSafe(Path targetParent) throws ApplicationException {
+    private static Option<ApplicationException> createDirectoriesSafe(Path targetParent) {
         try {
             Files.createDirectories(targetParent);
+            return new None<>();
         } catch (IOException e) {
-            throw new ApplicationException(e);
+            return new Some<>(new ApplicationException(e));
         }
     }
 

@@ -8,6 +8,6 @@ public class Results {
         final var error = result.findError();
         if (error.isPresent()) throw error.orElseNull();
 
-        throw new RuntimeException("Neither a value nor an error is present.");
+        throw new RuntimeException("Neither a value nor an value is present.");
     }
 }
