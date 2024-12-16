@@ -11,15 +11,7 @@ import magma.app.error.CompileError;
 import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
 
-public final class SplitRule implements Rule {
-    private final String propertyKey;
-    private final Rule segmentRule;
-
-    public SplitRule(String propertyKey, Rule segmentRule) {
-        this.propertyKey = propertyKey;
-        this.segmentRule = segmentRule;
-    }
-
+public record SplitRule(String propertyKey, Rule segmentRule) implements Rule {
     @Override
     public Result<Node, FormattedError> parse(String root) {
         return new BracketSplitter().split(root)
