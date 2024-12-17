@@ -29,7 +29,7 @@ import java.util.function.Function;
 public class Main {
 
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
-    public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "magma");
+    public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 
     public static void main(String[] args) {
         run().map(Error::display).ifPresent(System.err::println);
@@ -63,7 +63,7 @@ public class Main {
         final var name = source.getFileName().toString();
         final var separator = name.indexOf('.');
         final var nameWithoutExt = name.substring(0, separator);
-        final var target = targetParent.resolve(nameWithoutExt + ".mgs");
+        final var target = targetParent.resolve(nameWithoutExt + ".c");
         return readSafe(source)
                 .mapValue(input -> compileAndWrite(input, target))
                 .match(value -> value, Some::new);
