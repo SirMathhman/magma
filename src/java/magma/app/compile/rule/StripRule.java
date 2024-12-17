@@ -4,7 +4,11 @@ import magma.api.result.Result;
 import magma.app.compile.Node;
 import magma.app.error.FormattedError;
 
-public record StripRule(Rule childRule) implements Rule {
+public record StripRule(Rule childRule, String beforeChildKey, String afterChildKey) implements Rule {
+    public StripRule(Rule childRule) {
+        this(childRule, "", "");
+    }
+
     @Override
     public Result<Node, FormattedError> parse(String input) {
         return childRule.parse(input.strip());
@@ -12,6 +16,8 @@ public record StripRule(Rule childRule) implements Rule {
 
     @Override
     public Result<String, FormattedError> generate(Node node) {
-        return childRule.generate(node);
+        final var beforeChild = node.findString(beforeChildKey).orElseGet(() -> "");
+        final var afterChild = node.findString(afterChildKey).orElseGet(() -> "");
+        return childRule.generate(node).mapValue(generated -> beforeChild + generated + afterChild);
     }
 }

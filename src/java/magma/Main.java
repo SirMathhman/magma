@@ -119,7 +119,7 @@ public class Main {
     }
 
     private static NodeListRule createMagmaRootRule() {
-        return new NodeListRule("children", new BracketSplitter(), createMagmaRootMemberRule());
+        return new NodeListRule("children", new BracketSplitter(), new StripRule( createMagmaRootMemberRule()));
     }
 
     private static NodeListRule createJavaRootRule() {
