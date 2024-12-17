@@ -1,1 +1,1 @@
-def temp() => {}
+void Tuple<A, B>(){}

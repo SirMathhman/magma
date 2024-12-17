@@ -6,4 +6,4 @@ import magma.api.option.Option;
 import magma.api.option.Some;
 import java.util.HashMap;
 import java.util.Map;
-def temp() => {}
+void MutableJavaMap<K, V>(){}

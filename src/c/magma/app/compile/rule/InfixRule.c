@@ -4,4 +4,4 @@ import magma.app.error.StringContext;
 import magma.app.error.CompileError;
 import magma.api.result.Err;
 import magma.api.result.Result;
-def temp() => {}
+void InfixRule(){}

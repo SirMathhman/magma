@@ -6,4 +6,4 @@ import magma.api.stream.HeadedStream;
 import magma.api.stream.Stream;
 import magma.api.stream.Streams;
 import java.util.ArrayList;
-def temp() => {}
+void MutableJavaList<T>(){}

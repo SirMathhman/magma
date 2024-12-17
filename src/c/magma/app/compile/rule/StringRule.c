@@ -6,4 +6,4 @@ import magma.app.error.NodeContext;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-def temp() => {}
+void StringRule(){}

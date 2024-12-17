@@ -1,2 +1,2 @@
 import java.util.List;
-def temp() => {}
+void Streams(){}

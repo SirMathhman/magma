@@ -7,4 +7,4 @@ import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
 import magma.app.error.StringContext;
 import java.util.List;
-def temp() => {}
+void OrRule(){}

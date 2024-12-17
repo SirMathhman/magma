@@ -181,9 +181,13 @@ public class Main {
     private static OrRule createCRootMemberRule() {
         return new OrRule(java.util.List.of(
                 createImportRule(),
-                new TypeRule("function", new ExactRule("def temp() => {}")),
+                createFunctionRule(),
                 createStructRule()
         ));
+    }
+
+    private static TypeRule createFunctionRule() {
+        return new TypeRule("function", new PrefixRule("void ", new SuffixRule(new StringRule("name"), "(){}")));
     }
 
     private static TypeRule createStructRule() {
@@ -194,10 +198,24 @@ public class Main {
         return new OrRule(java.util.List.of(
                 new TypeRule("package", createNamespaceRule("package ")),
                 createImportRule(),
-                new TypeRule("record", new InfixRule(new DiscardRule(), "record ", new DiscardRule())),
-                new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new DiscardRule())),
+                createRecordRule(),
+                createClassRule(),
                 createInterfaceRule()
         ));
+    }
+
+    private static TypeRule createRecordRule() {
+        final var name = new StripRule(new StringRule("name"));
+        return new TypeRule("record", new InfixRule(new DiscardRule(), "record ", new InfixRule(name, "(", new StringRule("params-body"))));
+    }
+
+    private static TypeRule createClassRule() {
+        final var name = new StripRule(new StringRule("name"));
+        final var name1 = new OrRule(java.util.List.of(
+                new InfixRule(name, "implements ", new StringRule("type")),
+                name
+        ));
+        return new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new InfixRule(name1, "{", new StringRule("with-end"))));
     }
 
     private static TypeRule createInterfaceRule() {

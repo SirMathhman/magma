@@ -1,2 +1,2 @@
 import magma.api.option.Option;
-def temp() => {}
+void ConcatHead<T>(){}
