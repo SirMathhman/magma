@@ -1,6 +1,6 @@
 package magma.app.compile;
 
-import magma.api.collect.MutableMap;
+import magma.api.java.MutableJavaMap;
 import magma.api.stream.Stream;
 import magma.api.Tuple;
 import magma.api.collect.List;
@@ -15,7 +15,7 @@ public record MapNode(
         Map<String, List<Node>> nodeLists
 ) implements Node {
     public MapNode() {
-        this(new None<>(), new MutableMap<>(), new MutableMap<>());
+        this(new None<>(), new MutableJavaMap<>(), new MutableJavaMap<>());
     }
 
     @Override

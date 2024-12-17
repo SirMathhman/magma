@@ -1,4 +1,4 @@
-package magma.api.collect;
+package magma.api.java;
 
 import magma.api.stream.Stream;
 import magma.api.stream.Streams;
@@ -10,8 +10,8 @@ import magma.api.option.Some;
 import java.util.HashMap;
 import java.util.Map;
 
-public record MutableMap<K, V>(Map<K, V> map) implements magma.api.collect.Map<K, V> {
-    public MutableMap() {
+public record MutableJavaMap<K, V>(Map<K, V> map) implements magma.api.collect.Map<K, V> {
+    public MutableJavaMap() {
         this(new HashMap<>());
     }
 
