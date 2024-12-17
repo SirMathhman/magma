@@ -1,7 +1,7 @@
 package magma.app.compile.rule;
 
 import magma.api.collect.List;
-import magma.api.collect.MutableList;
+import magma.api.java.MutableJavaList;
 
 public class BracketSplitter implements Splitter {
     static State processChar(State state, char c) {
@@ -37,7 +37,7 @@ public class BracketSplitter implements Splitter {
             int depth
     ) {
         public State() {
-            this(new MutableList<>(), new StringBuilder(), 0);
+            this(new MutableJavaList<>(), new StringBuilder(), 0);
         }
 
         private boolean isLevel() {

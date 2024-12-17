@@ -2,7 +2,7 @@ package magma;
 
 import magma.api.Tuple;
 import magma.api.collect.List;
-import magma.api.collect.MutableList;
+import magma.api.java.MutableJavaList;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Options;
@@ -111,7 +111,7 @@ public class Main {
 
     private static Result<Node, FormattedError> format(Node node) {
         if (node.is("group")) {
-            final var newChildren = node.findNodeList("children").orElseGet(MutableList::new)
+            final var newChildren = node.findNodeList("children").orElseGet(MutableJavaList::new)
                     .streamWithIndices()
                     .map(tuple -> {
                         final var index = tuple.left();
@@ -120,7 +120,7 @@ public class Main {
                         if (index == 0) return child;
                         return child.withString("before-child", "\n");
                     })
-                    .collect(MutableList.collector());
+                    .collect(MutableJavaList.collector());
 
             return new Ok<>(node.withNodeList("children", newChildren));
         }
@@ -136,7 +136,7 @@ public class Main {
 
     private static Result<Node, FormattedError> modify(Node child) {
         final var children = child.findNodeList("children")
-                .orElseGet(MutableList::new)
+                .orElseGet(MutableJavaList::new)
                 .stream()
                 .filter(node -> !node.is("package"))
                 .flatMap(node -> {
@@ -152,7 +152,7 @@ public class Main {
                     }
                     return Streams.of(node);
                 })
-                .<List<Node>>foldLeft(new MutableList<>(), List::add);
+                .<List<Node>>foldLeft(new MutableJavaList<>(), List::add);
 
         return new Ok<>(child.withNodeList("children", children));
     }
@@ -163,7 +163,7 @@ public class Main {
             final var propertyValues = tuple.right();
 
             return propertyValues.stream()
-                    .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableList<>()), (currentResult1, node) -> currentResult1.flatMapValue(current1 -> pass(node, Main::modify).mapValue(current1::add)))
+                    .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableJavaList<>()), (currentResult1, node) -> currentResult1.flatMapValue(current1 -> pass(node, Main::modify).mapValue(current1::add)))
                     .mapValue(newValues -> current.withNodeList(propertyKey, newValues));
         });
     }

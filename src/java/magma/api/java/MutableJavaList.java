@@ -1,14 +1,17 @@
-package magma.api.collect;
+package magma.api.java;
 
 import magma.api.Tuple;
+import magma.api.collect.Collector;
+import magma.api.collect.List;
+import magma.api.collect.RangeHead;
 import magma.api.stream.HeadedStream;
 import magma.api.stream.Stream;
 import magma.api.stream.Streams;
 
 import java.util.ArrayList;
 
-public record MutableList<T>(java.util.List<T> list) implements List<T> {
-    public MutableList() {
+public record MutableJavaList<T>(java.util.List<T> list) implements List<T> {
+    public MutableJavaList() {
         this(new ArrayList<>());
     }
 
@@ -36,7 +39,7 @@ public record MutableList<T>(java.util.List<T> list) implements List<T> {
     private static class ListCollector<T> implements Collector<T, List<T>> {
         @Override
         public List<T> createInitial() {
-            return new MutableList<>();
+            return new MutableJavaList<>();
         }
 
         @Override

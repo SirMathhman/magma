@@ -1,7 +1,7 @@
 package magma.app.compile.rule;
 
 import magma.api.collect.List;
-import magma.api.collect.MutableList;
+import magma.api.java.MutableJavaList;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
@@ -19,7 +19,7 @@ public record NodeListRule(String propertyKey, Splitter splitter, Rule segmentRu
     public Result<Node, FormattedError> parse(String root) {
         return splitter.split(root)
                 .stream()
-                .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableList<>()), (current, s) -> current.flatMapValue(inner -> segmentRule.parse(s).mapValue(inner::add)))
+                .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableJavaList<>()), (current, s) -> current.flatMapValue(inner -> segmentRule.parse(s).mapValue(inner::add)))
                 .mapValue(nodes -> new MapNode().withNodeList(propertyKey, nodes));
     }
 

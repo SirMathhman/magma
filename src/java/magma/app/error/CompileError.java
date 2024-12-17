@@ -1,11 +1,11 @@
 package magma.app.error;
 
 import magma.api.collect.List;
-import magma.api.collect.MutableList;
+import magma.api.java.MutableJavaList;
 
 public record CompileError(String message, Context context, List<FormattedError> causes) implements FormattedError {
     public CompileError(String message, Context context) {
-        this(message, context, new MutableList<>());
+        this(message, context, new MutableJavaList<>());
     }
 
     @Override

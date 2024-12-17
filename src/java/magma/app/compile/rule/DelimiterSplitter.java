@@ -1,12 +1,12 @@
 package magma.app.compile.rule;
 
 import magma.api.collect.List;
-import magma.api.collect.MutableList;
+import magma.api.java.MutableJavaList;
 
 public record DelimiterSplitter(String delimiter) implements Splitter {
     @Override
     public List<String> split(String root) {
-        List<String> parts = new MutableList<>();
+        List<String> parts = new MutableJavaList<>();
         int start = 0;
         int index;
 

@@ -1,6 +1,6 @@
 package magma.app.compile.rule;
 
-import magma.api.collect.MutableList;
+import magma.api.java.MutableJavaList;
 import magma.api.result.Err;
 import magma.api.result.Result;
 import magma.app.compile.Node;
@@ -14,7 +14,7 @@ import java.util.List;
 public record OrRule(List<Rule> rules) implements Rule {
     @Override
     public Result<Node, FormattedError> parse(String input) {
-        var errors = new MutableList<FormattedError>();
+        var errors = new MutableJavaList<FormattedError>();
         for (Rule rule : rules) {
             final var parsed = rule.parse(input);
             if (parsed.isOk()) return parsed;
@@ -26,7 +26,7 @@ public record OrRule(List<Rule> rules) implements Rule {
 
     @Override
     public Result<String, FormattedError> generate(Node node) {
-        var errors = new MutableList<FormattedError>();
+        var errors = new MutableJavaList<FormattedError>();
         for (Rule rule : rules) {
             final var generated = rule.generate(node);
             if (generated.isOk()) return generated;
