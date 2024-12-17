@@ -15,6 +15,11 @@ public record ResultStream<T, X>(Stream<Result<T, X>> stream) implements Stream<
     }
 
     @Override
+    public <R> Stream<R> flatMap(Function<Result<T, X>, Head<R>> mapper) {
+        return stream.flatMap(mapper);
+    }
+
+    @Override
     public <C> C collect(Collector<Result<T, X>, C> collector) {
         return stream.collect(collector);
     }

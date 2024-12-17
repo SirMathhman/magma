@@ -1,1 +1,1 @@
-trait Collector {}
+struct Collector {}

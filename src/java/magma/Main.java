@@ -139,8 +139,10 @@ public class Main {
                 .stream()
                 .filter(node -> !node.is("package"))
                 .map(node -> {
-                    if (node.is("interface")) return node.retype("trait");
-                    if (node.is("class") || node.is("record")) return node.retype("function");
+                    if (node.is("interface")) return node.retype("struct");
+                    if (node.is("class") || node.is("record")) {
+                        return node.retype("function");
+                    }
                     return node;
                 })
                 .<List<Node>>foldLeft(new MutableList<>(), List::add);
@@ -178,7 +180,7 @@ public class Main {
     }
 
     private static TypeRule createTraitRule() {
-        return new TypeRule("trait", new PrefixRule("trait ", new SuffixRule(new StringRule("name"), " {}")));
+        return new TypeRule("struct", new PrefixRule("struct ", new SuffixRule(new StringRule("name"), " {}")));
     }
 
     private static OrRule createJavaRootMemberRule() {
@@ -199,7 +201,12 @@ public class Main {
                 name
         ));
 
-        final var afterKeyword = new InfixRule(nameAndTypeParams, "{", new DiscardRule());
+        final var maybeExtends = new OrRule(java.util.List.of(
+                new InfixRule(nameAndTypeParams, "extends ", new StringRule("type")),
+                nameAndTypeParams
+        ));
+
+        final var afterKeyword = new InfixRule(maybeExtends, "{", new DiscardRule());
         return new TypeRule("interface", new InfixRule(new DiscardRule(), "interface ", afterKeyword));
     }
 

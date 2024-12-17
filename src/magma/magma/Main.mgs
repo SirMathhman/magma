@@ -9,6 +9,8 @@ import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.Node;
+import magma.app.compile.SymbolRule;
+import magma.app.compile.TypeSplitter;
 import magma.app.compile.rule.*;
 import magma.app.error.ApplicationError;
 import magma.app.error.Error;

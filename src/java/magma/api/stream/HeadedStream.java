@@ -40,6 +40,7 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
         return head.next();
     }
 
+    @Override
     public <R> Stream<R> flatMap(Function<T, Head<R>> mapper) {
         return new HeadedStream<>(this.foldLeft(new EmptyHead<>(), (BiFunction<Head<R>, T, Head<R>>) (rHead, t) -> new ConcatHead<>(rHead, mapper.apply(t))));
     }

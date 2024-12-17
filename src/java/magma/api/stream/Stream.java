@@ -13,6 +13,8 @@ public interface Stream<T> extends Head<T> {
 
     <R> Stream<R> map(Function<T, R> mapper);
 
+    <R> Stream<R> flatMap(Function<T, Head<R>> mapper);
+
     Stream<T> filter(Predicate<T> predicate);
 
     <C> C collect(Collector<T, C> collector);
