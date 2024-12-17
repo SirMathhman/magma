@@ -1,9 +1,13 @@
 package magma.app.compile.rule;
 
-import magma.api.collect.List;
+import magma.api.Tuple;
+import magma.api.option.Option;
+import magma.app.error.CompileError;
 
 public interface Splitter {
-    StringBuilder merge(StringBuilder buffer, String slice);
+    String merge(String leftValue, String rightValue);
 
-    List<String> split(String root);
+    CompileError createError(String input);
+
+    Option<Tuple<String, String>> split(String input);
 }

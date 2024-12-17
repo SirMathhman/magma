@@ -14,10 +14,10 @@ import magma.app.error.CompileError;
 import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
 
-public record NodeListRule(String propertyKey, Splitter splitter, Rule segmentRule) implements Rule {
+public record NodeListRule(String propertyKey, Divider divider, Rule segmentRule) implements Rule {
     @Override
     public Result<Node, FormattedError> parse(String root) {
-        return splitter.split(root)
+        return divider.divide(root)
                 .stream()
                 .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableJavaList<>()), (current, s) -> current.flatMapValue(inner -> segmentRule.parse(s).mapValue(inner::add)))
                 .mapValue(nodes -> new MapNode().withNodeList(propertyKey, nodes));
@@ -52,7 +52,7 @@ public record NodeListRule(String propertyKey, Splitter splitter, Rule segmentRu
 
     private Some<StringBuilder> mergeWithBuffer(Option<StringBuilder> maybeBuffer, String slice) {
         return new Some<>(maybeBuffer
-                .map(buffer -> splitter.merge(buffer, slice))
+                .map(buffer -> divider.concat(buffer, slice))
                 .orElseGet(() -> new StringBuilder().append(slice)));
     }
 }

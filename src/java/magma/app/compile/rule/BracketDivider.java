@@ -3,7 +3,7 @@ package magma.app.compile.rule;
 import magma.api.collect.List;
 import magma.api.java.MutableJavaList;
 
-public class BracketSplitter implements Splitter {
+public class BracketDivider implements Divider {
     static State processChar(State state, char c) {
         final var appended = state.append(c);
         if (c == ';' && appended.isLevel()) {
@@ -16,7 +16,7 @@ public class BracketSplitter implements Splitter {
     }
 
     @Override
-    public List<String> split(String root) {
+    public List<String> divide(String root) {
         var state = new State();
         for (int i = 0; i < root.length(); i++) {
             var c = root.charAt(i);
@@ -27,7 +27,7 @@ public class BracketSplitter implements Splitter {
     }
 
     @Override
-    public StringBuilder merge(StringBuilder buffer, String slice) {
+    public StringBuilder concat(StringBuilder buffer, String slice) {
         return buffer.append(slice);
     }
 

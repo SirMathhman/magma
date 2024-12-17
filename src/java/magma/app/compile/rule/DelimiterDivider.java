@@ -3,9 +3,9 @@ package magma.app.compile.rule;
 import magma.api.collect.List;
 import magma.api.java.MutableJavaList;
 
-public record DelimiterSplitter(String delimiter) implements Splitter {
+public record DelimiterDivider(String delimiter) implements Divider {
     @Override
-    public List<String> split(String root) {
+    public List<String> divide(String root) {
         List<String> parts = new MutableJavaList<>();
         int start = 0;
         int index;
@@ -21,7 +21,7 @@ public record DelimiterSplitter(String delimiter) implements Splitter {
     }
 
     @Override
-    public StringBuilder merge(StringBuilder buffer, String slice) {
+    public StringBuilder concat(StringBuilder buffer, String slice) {
         return buffer.append(delimiter).append(slice);
     }
 }

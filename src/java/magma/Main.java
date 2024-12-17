@@ -13,7 +13,7 @@ import magma.api.result.Result;
 import magma.api.stream.Streams;
 import magma.app.compile.Node;
 import magma.app.compile.SymbolRule;
-import magma.app.compile.TypeSplitter;
+import magma.app.compile.TypeDivider;
 import magma.app.compile.rule.*;
 import magma.app.error.ApplicationError;
 import magma.app.error.Error;
@@ -25,6 +25,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Function;
+
+import static magma.app.compile.rule.LocatingSplitter.LocateFirst;
+import static magma.app.compile.rule.LocatingSplitter.LocateLast;
 
 public class Main {
 
@@ -169,12 +172,12 @@ public class Main {
     }
 
     private static Rule createCRootRule() {
-        final var children = new NodeListRule("children", new BracketSplitter(), new StripRule(createCRootMemberRule(), "before-child", ""));
+        final var children = new NodeListRule("children", new BracketDivider(), new StripRule(createCRootMemberRule(), "before-child", ""));
         return new TypeRule("group", children);
     }
 
     private static Rule createJavaRootRule() {
-        final var children = new NodeListRule("children", new BracketSplitter(), new StripRule(createJavaRootMemberRule()));
+        final var children = new NodeListRule("children", new BracketDivider(), new StripRule(createJavaRootMemberRule()));
         return new TypeRule("group", children);
     }
 
@@ -206,38 +209,38 @@ public class Main {
 
     private static TypeRule createRecordRule() {
         final var name = new StripRule(new StringRule("name"));
-        return new TypeRule("record", new InfixRule(new DiscardRule(), "record ", new InfixRule(name, "(", new StringRule("params-body"))));
+        return new TypeRule("record", new InfixRule(new DiscardRule(), LocateFirst("record "), new InfixRule(name, LocateFirst("("), new StringRule("params-body"))));
     }
 
     private static TypeRule createClassRule() {
         final var name = new StripRule(new StringRule("name"));
         final var name1 = new OrRule(java.util.List.of(
-                new InfixRule(name, "implements ", new StringRule("type")),
+                new InfixRule(name, LocateFirst("implements "), new StringRule("type")),
                 name
         ));
-        final var content = new NodeListRule("children", new BracketSplitter(), createClassMemberRule());
-        return new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new InfixRule(name1, "{", new SuffixRule(content, "}"))));
+        final var content = new NodeListRule("children", new BracketDivider(), new StripRule(createClassMemberRule()));
+        return new TypeRule("class", new InfixRule(new DiscardRule(), LocateFirst("class "), new InfixRule(name1, LocateFirst("{"), new SuffixRule(content, "}"))));
     }
 
     private static TypeRule createClassMemberRule() {
-        return new TypeRule("empty", new ExactRule(""));
+        return new TypeRule("definition", new SuffixRule(new InfixRule(new DiscardRule(), LocateLast(" "), new StringRule("name")), ";"));
     }
 
     private static TypeRule createInterfaceRule() {
         final var name = new StripRule(new SymbolRule(new StringRule("name")));
-        final var typeParams = new NodeListRule("type-params", new TypeSplitter(), new StringRule("value"));
+        final var typeParams = new NodeListRule("type-params", new TypeDivider(), new StringRule("value"));
         final var nameAndTypeParams = new OrRule(java.util.List.of(
-                new InfixRule(name, "<", new StripRule(new SuffixRule(typeParams, ">"))),
+                new InfixRule(name, LocateFirst("<"), new StripRule(new SuffixRule(typeParams, ">"))),
                 name
         ));
 
         final var maybeExtends = new OrRule(java.util.List.of(
-                new InfixRule(nameAndTypeParams, "extends ", new StringRule("type")),
+                new InfixRule(nameAndTypeParams, LocateFirst("extends "), new StringRule("type")),
                 nameAndTypeParams
         ));
 
-        final var afterKeyword = new InfixRule(maybeExtends, "{", new DiscardRule());
-        return new TypeRule("interface", new InfixRule(new DiscardRule(), "interface ", afterKeyword));
+        final var afterKeyword = new InfixRule(maybeExtends, LocateFirst("{"), new DiscardRule());
+        return new TypeRule("interface", new InfixRule(new DiscardRule(), LocateFirst("interface "), afterKeyword));
     }
 
     private static TypeRule createImportRule() {
@@ -245,7 +248,7 @@ public class Main {
     }
 
     private static Rule createNamespaceRule(String prefix) {
-        final var namespace = new NodeListRule("namespace", new DelimiterSplitter("."), new StringRule("value"));
+        final var namespace = new NodeListRule("namespace", new DelimiterDivider("."), new StringRule("value"));
         return new PrefixRule(prefix, new SuffixRule(namespace, ";"));
     }
 }
