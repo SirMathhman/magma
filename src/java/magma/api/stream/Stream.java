@@ -1,6 +1,6 @@
 package magma.api.stream;
 
-import magma.api.option.Option;
+import magma.api.collect.Collector;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -14,4 +14,6 @@ public interface Stream<T> extends Head<T> {
     <R> Stream<R> map(Function<T, R> mapper);
 
     Stream<T> filter(Predicate<T> predicate);
+
+    <C> C collect(Collector<T, C> collector);
 }

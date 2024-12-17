@@ -1,1 +1,6 @@
-import magma.api.stream.Stream;import magma.api.stream.Streams;import java.util.ArrayList;def temp() => {}
+import magma.api.Tuple;
+import magma.api.stream.HeadedStream;
+import magma.api.stream.Stream;
+import magma.api.stream.Streams;
+import java.util.ArrayList;
+def temp() => {}

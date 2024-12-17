@@ -1,1 +1,2 @@
-import magma.api.option.Option;trait Temp {}
+import magma.api.option.Option;
+trait Temp {}

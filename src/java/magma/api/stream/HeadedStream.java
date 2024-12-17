@@ -1,5 +1,6 @@
 package magma.api.stream;
 
+import magma.api.collect.Collector;
 import magma.api.option.Option;
 
 import java.util.function.BiFunction;
@@ -46,5 +47,10 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     @Override
     public Stream<T> filter(Predicate<T> predicate) {
         return flatMap(value -> predicate.test(value) ? new SingleHead<>(value) : new EmptyHead<>());
+    }
+
+    @Override
+    public <C> C collect(Collector<T, C> collector) {
+        return foldLeft(collector.createInitial(), collector::fold);
     }
 }

@@ -1,1 +1,2 @@
-import magma.api.collect.List;trait Temp {}
+import magma.api.collect.List;
+trait Temp {}

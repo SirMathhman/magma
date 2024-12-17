@@ -1,5 +1,6 @@
 package magma;
 
+import magma.api.Tuple;
 import magma.api.collect.List;
 import magma.api.collect.MutableList;
 import magma.api.option.None;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.Function;
 
 public class Main {
 
@@ -97,14 +99,40 @@ public class Main {
         }
     }
 
-    private static Result<String, FormattedError> compile(String root) {
-        return createJavaRootRule().parse(root)
-                .mapValue(Main::pass)
+    private static Result<String, FormattedError> compile(String input) {
+        return createJavaRootRule().parse(input)
+                .flatMapValue(root -> pass(root, Main::modify))
+                .flatMapValue(root -> pass(root, Main::format))
                 .flatMapValue(node -> createMagmaRootRule().generate(node));
     }
 
-    private static Node pass(Node root) {
-        final var children = root.findNodeList("children")
+    private static Result<Node, FormattedError> format(Node node) {
+        if (node.is("group")) {
+            final var newChildren = node.findNodeList("children").orElseGet(MutableList::new)
+                    .streamWithIndices()
+                    .map(tuple -> {
+                        final var index = tuple.left();
+                        final var child = tuple.right();
+
+                        if (index == 0) return child;
+                        return child.withString("before-child", "\n");
+                    })
+                    .collect(MutableList.collector());
+
+            return new Ok<>(node.withNodeList("children", newChildren));
+        }
+
+        return new Ok<>(node);
+    }
+
+    private static Result<Node, FormattedError> pass(Node root, Function<Node, Result<Node, FormattedError>> after) {
+        return root.streamNodeLists()
+                .foldLeft(new Ok<>(root), Main::fold)
+                .flatMapValue(after);
+    }
+
+    private static Result<Node, FormattedError> modify(Node child) {
+        final var children = child.findNodeList("children")
                 .orElseGet(MutableList::new)
                 .stream()
                 .filter(node -> !node.is("package"))
@@ -115,15 +143,28 @@ public class Main {
                 })
                 .<List<Node>>foldLeft(new MutableList<>(), List::add);
 
-        return root.withNodeList("children", children);
+        return new Ok<>(child.withNodeList("children", children));
     }
 
-    private static NodeListRule createMagmaRootRule() {
-        return new NodeListRule("children", new BracketSplitter(), new StripRule( createMagmaRootMemberRule()));
+    private static Result<Node, FormattedError> fold(Result<Node, FormattedError> currentResult, Tuple<String, List<Node>> tuple) {
+        return currentResult.flatMapValue(current -> {
+            final var propertyKey = tuple.left();
+            final var propertyValues = tuple.right();
+
+            return propertyValues.stream()
+                    .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableList<>()), (currentResult1, node) -> currentResult1.flatMapValue(current1 -> pass(node, Main::modify).mapValue(current1::add)))
+                    .mapValue(newValues -> current.withNodeList(propertyKey, newValues));
+        });
     }
 
-    private static NodeListRule createJavaRootRule() {
-        return new NodeListRule("children", new BracketSplitter(), new StripRule(createJavaRootMemberRule()));
+    private static Rule createMagmaRootRule() {
+        final var children = new NodeListRule("children", new BracketSplitter(), new StripRule(createMagmaRootMemberRule(), "before-child", ""));
+        return new TypeRule("group", children);
+    }
+
+    private static Rule createJavaRootRule() {
+        final var children = new NodeListRule("children", new BracketSplitter(), new StripRule(createJavaRootMemberRule()));
+        return new TypeRule("group", children);
     }
 
     private static OrRule createMagmaRootMemberRule() {

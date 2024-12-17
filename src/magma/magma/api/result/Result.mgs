@@ -1,1 +1,3 @@
-import magma.api.option.Option;import java.util.function.Function;trait Temp {}
+import magma.api.option.Option;
+import java.util.function.Function;
+trait Temp {}

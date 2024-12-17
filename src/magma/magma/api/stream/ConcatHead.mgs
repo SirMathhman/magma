@@ -1,1 +1,2 @@
-import magma.api.option.Option;def temp() => {}
+import magma.api.option.Option;
+def temp() => {}

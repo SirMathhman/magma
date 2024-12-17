@@ -14,7 +14,7 @@ public interface Node {
 
     Node merge(Node node);
 
-    MapNode withNodeList(String propertyKey, List<Node> propertyValues);
+    Node withNodeList(String propertyKey, List<Node> propertyValues);
 
     Stream<Tuple<String, String>> streamStrings();
 
