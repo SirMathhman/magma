@@ -1,2 +1,4 @@
 import magma.api.collect.List;
-struct Splitter {}
+struct Splitter {
+	void* __this__;
+}

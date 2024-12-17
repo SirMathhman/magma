@@ -1,3 +1,5 @@
 import magma.api.option.Option;
 import java.util.function.Function;
-struct Result {}
+struct Result {
+	void* __this__;
+}

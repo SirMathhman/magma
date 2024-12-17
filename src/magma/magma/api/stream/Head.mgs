@@ -1,2 +1,4 @@
 import magma.api.option.Option;
-struct Head {}
+struct Head {
+	void* __this__;
+}

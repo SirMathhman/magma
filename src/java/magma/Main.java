@@ -180,7 +180,7 @@ public class Main {
     }
 
     private static TypeRule createTraitRule() {
-        return new TypeRule("struct", new PrefixRule("struct ", new SuffixRule(new StringRule("name"), " {}")));
+        return new TypeRule("struct", new PrefixRule("struct ", new SuffixRule(new StringRule("name"), " {\n\tvoid* __this__;\n}")));
     }
 
     private static OrRule createJavaRootMemberRule() {
