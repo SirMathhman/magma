@@ -8,6 +8,7 @@ import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.api.stream.Streams;
 import magma.app.compile.Node;
 import magma.app.compile.SymbolRule;
 import magma.app.compile.TypeSplitter;

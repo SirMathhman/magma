@@ -10,6 +10,7 @@ import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.api.stream.Streams;
 import magma.app.compile.Node;
 import magma.app.compile.SymbolRule;
 import magma.app.compile.TypeSplitter;
@@ -138,12 +139,18 @@ public class Main {
                 .orElseGet(MutableList::new)
                 .stream()
                 .filter(node -> !node.is("package"))
-                .map(node -> {
-                    if (node.is("interface")) return node.retype("struct");
-                    if (node.is("class") || node.is("record")) {
-                        return node.retype("function");
+                .flatMap(node -> {
+                    if (node.is("interface")) {
+                        if (node.findNodeList("type-params").isPresent()) {
+                            return Streams.empty();
+                        } else {
+                            return Streams.of(node.retype("struct"));
+                        }
                     }
-                    return node;
+                    if (node.is("class") || node.is("record")) {
+                        return Streams.of(node.retype("function"));
+                    }
+                    return Streams.of(node);
                 })
                 .<List<Node>>foldLeft(new MutableList<>(), List::add);
 

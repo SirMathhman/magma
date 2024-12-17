@@ -1,3 +1,0 @@
-struct Collector {
-	void* __this__;
-}
