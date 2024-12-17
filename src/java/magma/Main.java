@@ -191,7 +191,13 @@ public class Main {
 
     private static TypeRule createInterfaceRule() {
         final var name = new StripRule(new StringRule("name"));
-        final var afterKeyword = new InfixRule(name, "{", new DiscardRule());
+        final var typeParams = new NodeListRule("type-params", new TypeSplitter(), new StringRule("value"));
+        final var nameAndTypeParams = new OrRule(java.util.List.of(
+                new InfixRule(name, "<", new SuffixRule(typeParams, ">")),
+                name
+        ));
+
+        final var afterKeyword = new InfixRule(nameAndTypeParams, "{", new DiscardRule());
         return new TypeRule("interface", new InfixRule(new DiscardRule(), "interface ", afterKeyword));
     }
 
