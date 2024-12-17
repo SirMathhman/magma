@@ -215,7 +215,12 @@ public class Main {
                 new InfixRule(name, "implements ", new StringRule("type")),
                 name
         ));
-        return new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new InfixRule(name1, "{", new StringRule("with-end"))));
+        final var content = new NodeListRule("children", new BracketSplitter(), createClassMemberRule());
+        return new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new InfixRule(name1, "{", new SuffixRule(content, "}"))));
+    }
+
+    private static TypeRule createClassMemberRule() {
+        return new TypeRule("empty", new ExactRule(""));
     }
 
     private static TypeRule createInterfaceRule() {

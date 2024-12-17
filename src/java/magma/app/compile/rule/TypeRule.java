@@ -6,11 +6,14 @@ import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
 import magma.api.result.Err;
 import magma.api.result.Result;
+import magma.app.error.StringContext;
 
 public record TypeRule(String type, Rule childRule) implements Rule {
     @Override
     public Result<Node, FormattedError> parse(String input) {
-        return childRule.parse(input).mapValue(node -> node.retype(type));
+        return childRule.parse(input)
+                .mapValue(node -> node.retype(type))
+                .mapErr(err -> new CompileError("Failed to assign type '" + type + "'", new StringContext(input), err));
     }
 
     @Override
