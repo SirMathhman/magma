@@ -1,1 +1,1 @@
-void JavaError(){}
+struct JavaError {}

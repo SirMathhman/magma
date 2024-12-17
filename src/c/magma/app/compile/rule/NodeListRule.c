@@ -11,4 +11,4 @@ import magma.app.compile.Node;
 import magma.app.error.CompileError;
 import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
-void NodeListRule(){}
+struct NodeListRule {}

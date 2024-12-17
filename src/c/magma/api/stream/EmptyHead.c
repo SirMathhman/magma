@@ -1,3 +1,3 @@
 import magma.api.option.None;
 import magma.api.option.Option;
-void EmptyHead<T>(){}
+struct EmptyHead<T> {}

@@ -6,4 +6,4 @@ import magma.api.collect.Map;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
-void MapNode(){}
+struct MapNode {}

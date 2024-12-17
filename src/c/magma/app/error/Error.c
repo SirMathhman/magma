@@ -1,3 +1,1 @@
-struct Error {
-	void* __this__;
-}
+struct Error {}

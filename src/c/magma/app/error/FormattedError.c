@@ -1,3 +1,1 @@
-struct FormattedError {
-	void* __this__;
-}
+struct FormattedError {}

@@ -22,4 +22,4 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Function;
-void ", new InfixRule(){}
+struct ", new InfixRule {}

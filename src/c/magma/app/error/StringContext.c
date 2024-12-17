@@ -1,1 +1,1 @@
-void StringContext(){}
+struct StringContext {}

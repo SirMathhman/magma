@@ -1,3 +1,1 @@
-struct Context {
-	void* __this__;
-}
+struct Context {}

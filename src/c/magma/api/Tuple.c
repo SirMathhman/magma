@@ -1,1 +1,1 @@
-void Tuple<A, B>(){}
+struct Tuple<A, B> {}

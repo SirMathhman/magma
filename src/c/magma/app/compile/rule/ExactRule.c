@@ -6,4 +6,4 @@ import magma.app.error.CompileError;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-void ExactRule(){}
+struct ExactRule {}

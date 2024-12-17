@@ -4,4 +4,4 @@ import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
 import magma.api.result.Err;
 import magma.api.result.Result;
-void TypeRule(){}
+struct TypeRule {}

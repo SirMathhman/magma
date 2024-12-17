@@ -4,4 +4,4 @@ import magma.app.compile.Node;
 import magma.app.error.CompileError;
 import magma.api.result.Err;
 import magma.api.result.Result;
-void SuffixRule(){}
+struct SuffixRule {}

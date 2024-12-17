@@ -148,7 +148,7 @@ public class Main {
                         }
                     }
                     if (node.is("class") || node.is("record")) {
-                        return Streams.of(node.retype("function"));
+                        return Streams.of(node.retype("struct"));
                     }
                     return Streams.of(node);
                 })
@@ -191,7 +191,7 @@ public class Main {
     }
 
     private static TypeRule createStructRule() {
-        return new TypeRule("struct", new PrefixRule("struct ", new SuffixRule(new StringRule("name"), " {\n\tvoid* __this__;\n}")));
+        return new TypeRule("struct", new PrefixRule("struct ", new SuffixRule(new StringRule("name"), " {}")));
     }
 
     private static OrRule createJavaRootMemberRule() {
