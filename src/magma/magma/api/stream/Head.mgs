@@ -1,2 +1,2 @@
 import magma.api.option.Option;
-trait Temp {}
+trait Head<T> {}

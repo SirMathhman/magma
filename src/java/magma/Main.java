@@ -171,8 +171,12 @@ public class Main {
         return new OrRule(java.util.List.of(
                 createImportRule(),
                 new TypeRule("function", new ExactRule("def temp() => {}")),
-                new TypeRule("trait", new ExactRule("trait Temp {}"))
+                createTraitRule()
         ));
+    }
+
+    private static TypeRule createTraitRule() {
+        return new TypeRule("trait", new PrefixRule("trait ", new SuffixRule(new StringRule("name"), " {}")));
     }
 
     private static OrRule createJavaRootMemberRule() {
@@ -181,8 +185,14 @@ public class Main {
                 createImportRule(),
                 new TypeRule("record", new InfixRule(new DiscardRule(), "record ", new DiscardRule())),
                 new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new DiscardRule())),
-                new TypeRule("interface", new InfixRule(new DiscardRule(), "interface ", new DiscardRule()))
+                createInterfaceRule()
         ));
+    }
+
+    private static TypeRule createInterfaceRule() {
+        final var name = new StripRule(new StringRule("name"));
+        final var afterKeyword = new InfixRule(name, "{", new DiscardRule());
+        return new TypeRule("interface", new InfixRule(new DiscardRule(), "interface ", afterKeyword));
     }
 
     private static TypeRule createImportRule() {

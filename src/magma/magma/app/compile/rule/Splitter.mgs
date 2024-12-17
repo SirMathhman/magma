@@ -1,2 +1,2 @@
 import magma.api.collect.List;
-trait Temp {}
+trait Splitter {}
