@@ -11,6 +11,8 @@ import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.app.compile.Node;
+import magma.app.compile.SymbolRule;
+import magma.app.compile.TypeSplitter;
 import magma.app.compile.rule.*;
 import magma.app.error.ApplicationError;
 import magma.app.error.Error;
@@ -190,10 +192,10 @@ public class Main {
     }
 
     private static TypeRule createInterfaceRule() {
-        final var name = new StripRule(new StringRule("name"));
+        final var name = new StripRule(new SymbolRule(new StringRule("name")));
         final var typeParams = new NodeListRule("type-params", new TypeSplitter(), new StringRule("value"));
         final var nameAndTypeParams = new OrRule(java.util.List.of(
-                new InfixRule(name, "<", new SuffixRule(typeParams, ">")),
+                new InfixRule(name, "<", new StripRule(new SuffixRule(typeParams, ">"))),
                 name
         ));
 
