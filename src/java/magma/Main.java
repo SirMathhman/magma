@@ -30,7 +30,6 @@ import static magma.app.compile.rule.LocatingSplitter.LocateFirst;
 import static magma.app.compile.rule.LocatingSplitter.LocateLast;
 
 public class Main {
-
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 
@@ -185,7 +184,8 @@ public class Main {
         return new OrRule(java.util.List.of(
                 createImportRule(),
                 createFunctionRule(),
-                createStructRule()
+                createStructRule(),
+                createWhitespaceRule()
         ));
     }
 
@@ -203,8 +203,13 @@ public class Main {
                 createImportRule(),
                 createRecordRule(),
                 createClassRule(),
-                createInterfaceRule()
+                createInterfaceRule(),
+                createWhitespaceRule()
         ));
+    }
+
+    private static TypeRule createWhitespaceRule() {
+        return new TypeRule("whitespace", new StripRule(new ExactRule("")));
     }
 
     private static TypeRule createRecordRule() {

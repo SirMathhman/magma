@@ -8,6 +8,8 @@ public class BracketDivider implements Divider {
         final var appended = state.append(c);
         if (c == ';' && appended.isLevel()) {
             return appended.advance();
+        } else if (c == '}' && appended.isShallow()) {
+            return appended.advance().exit();
         } else {
             if (c == '{') return appended.enter();
             if (c == '}') return appended.exit();
@@ -59,6 +61,10 @@ public class BracketDivider implements Divider {
 
         public State exit() {
             return new State(segments, buffer, depth - 1);
+        }
+
+        public boolean isShallow() {
+            return depth == 1;
         }
     }
 }
