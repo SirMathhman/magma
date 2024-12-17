@@ -105,7 +105,7 @@ public class Main {
         return createJavaRootRule().parse(input)
                 .flatMapValue(root -> pass(root, Main::modify))
                 .flatMapValue(root -> pass(root, Main::format))
-                .flatMapValue(node -> createMagmaRootRule().generate(node));
+                .flatMapValue(node -> createCRootRule().generate(node));
     }
 
     private static Result<Node, FormattedError> format(Node node) {
@@ -161,8 +161,8 @@ public class Main {
         });
     }
 
-    private static Rule createMagmaRootRule() {
-        final var children = new NodeListRule("children", new BracketSplitter(), new StripRule(createMagmaRootMemberRule(), "before-child", ""));
+    private static Rule createCRootRule() {
+        final var children = new NodeListRule("children", new BracketSplitter(), new StripRule(createCRootMemberRule(), "before-child", ""));
         return new TypeRule("group", children);
     }
 
@@ -171,15 +171,15 @@ public class Main {
         return new TypeRule("group", children);
     }
 
-    private static OrRule createMagmaRootMemberRule() {
+    private static OrRule createCRootMemberRule() {
         return new OrRule(java.util.List.of(
                 createImportRule(),
                 new TypeRule("function", new ExactRule("def temp() => {}")),
-                createTraitRule()
+                createStructRule()
         ));
     }
 
-    private static TypeRule createTraitRule() {
+    private static TypeRule createStructRule() {
         return new TypeRule("struct", new PrefixRule("struct ", new SuffixRule(new StringRule("name"), " {\n\tvoid* __this__;\n}")));
     }
 
