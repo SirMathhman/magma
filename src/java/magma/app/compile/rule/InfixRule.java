@@ -1,5 +1,6 @@
 package magma.app.compile.rule;
 
+import magma.api.Tuple;
 import magma.api.result.Err;
 import magma.api.result.Result;
 import magma.app.compile.Node;
@@ -18,14 +19,15 @@ public final class InfixRule implements Rule {
 
     @Override
     public Result<Node, FormattedError> parse(Input input) {
-        Input input1 = new Input(input.input());
-        return splitter.split(input1).map(tuple1 -> tuple1
-                .mapLeft(Input::input)
-                .mapRight(Input::input)).map(tuple -> {
-            var left = tuple.left();
-            var right = tuple.right();
-            return leftRule.parse(new Input(left)).flatMapValue(leftNode -> rightRule.parse(new Input(right)).mapValue(leftNode::merge));
-        }).orElseGet(() -> new Err<>(splitter.createError(new Input(input.input()))));
+        return splitter.split(input)
+                .map(this::parseFromTuple)
+                .orElseGet(() -> new Err<>(splitter.createError(input)));
+    }
+
+    private Result<Node, FormattedError> parseFromTuple(Tuple<Input, Input> tuple) {
+        var left = tuple.left();
+        var right = tuple.right();
+        return leftRule.parse(left).flatMapValue(leftNode -> rightRule.parse(right).mapValue(leftNode::merge));
     }
 
     @Override
