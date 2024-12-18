@@ -11,6 +11,7 @@ import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.api.stream.Streams;
+import magma.app.Input;
 import magma.app.compile.Node;
 import magma.app.compile.SymbolRule;
 import magma.app.compile.TypeDivider;
@@ -105,7 +106,9 @@ public class Main {
     }
 
     private static Result<String, FormattedError> compile(String input) {
-        return createJavaRootRule().parse(input)
+        Rule rule = createJavaRootRule();
+
+        return rule.parse(new Input(input, 0, input.length()))
                 .flatMapValue(root -> pass(root, Main::modify))
                 .flatMapValue(root -> pass(root, Main::format))
                 .flatMapValue(node -> createCRootRule().generate(node));
@@ -227,7 +230,19 @@ public class Main {
         return new TypeRule("class", new InfixRule(new DiscardRule(), LocateFirst("class "), new InfixRule(name1, LocateFirst("{"), new SuffixRule(content, "}"))));
     }
 
-    private static TypeRule createClassMemberRule() {
+    private static Rule createClassMemberRule() {
+        return new OrRule(java.util.List.of(
+                createDefinitionRule(),
+                createMethodRule()
+        ));
+    }
+
+    private static TypeRule createMethodRule() {
+        final var name = new StripRule(new StringRule("name"));
+        return new TypeRule("method", new InfixRule(new InfixRule(new DiscardRule(), LocateLast(" "), name), LocateFirst("("), new DiscardRule()));
+    }
+
+    private static TypeRule createDefinitionRule() {
         return new TypeRule("definition", new SuffixRule(new InfixRule(new DiscardRule(), LocateLast(" "), new StringRule("name")), ";"));
     }
 

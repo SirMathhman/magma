@@ -3,25 +3,26 @@ package magma.app.compile.rule;
 import magma.api.java.MutableJavaList;
 import magma.api.result.Err;
 import magma.api.result.Result;
+import magma.app.Input;
 import magma.app.compile.Node;
 import magma.app.error.CompileError;
 import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
-import magma.app.error.StringContext;
+import magma.app.error.InputContext;
 
 import java.util.List;
 
 public record OrRule(List<Rule> rules) implements Rule {
-    @Override
-    public Result<Node, FormattedError> parse(String input) {
+    private Result<Node, FormattedError> parse0(String input) {
         var errors = new MutableJavaList<FormattedError>();
         for (Rule rule : rules) {
-            final var parsed = rule.parse(input);
+
+            final var parsed = rule.parse(new Input(input, 0, input.length()));
             if (parsed.isOk()) return parsed;
             errors.add(parsed.findError().orElseNull());
         }
 
-        return new Err<>(new CompileError("Invalid input", new StringContext(input), errors));
+        return new Err<>(new CompileError("Invalid input", new InputContext(new Input(input, 0, input.length())), errors));
     }
 
     @Override
@@ -34,5 +35,10 @@ public record OrRule(List<Rule> rules) implements Rule {
         }
 
         return new Err<>(new CompileError("Invalid node", new NodeContext(node), errors));
+    }
+
+    @Override
+    public Result<Node, FormattedError> parse(Input input) {
+        return parse0(input.slice());
     }
 }

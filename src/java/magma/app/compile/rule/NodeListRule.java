@@ -8,6 +8,7 @@ import magma.api.option.Some;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.app.Input;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.error.CompileError;
@@ -15,11 +16,10 @@ import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
 
 public record NodeListRule(String propertyKey, Divider divider, Rule segmentRule) implements Rule {
-    @Override
-    public Result<Node, FormattedError> parse(String root) {
+    private Result<Node, FormattedError> parse0(String root) {
         return divider.divide(root)
                 .stream()
-                .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableJavaList<>()), (current, s) -> current.flatMapValue(inner -> segmentRule.parse(s).mapValue(inner::add)))
+                .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableJavaList<>()), (current, s) -> current.flatMapValue(inner -> segmentRule.parse(new Input(s, 0, s.length())).mapValue(inner::add)))
                 .mapValue(nodes -> new MapNode().withNodeList(propertyKey, nodes));
     }
 
@@ -54,5 +54,10 @@ public record NodeListRule(String propertyKey, Divider divider, Rule segmentRule
         return new Some<>(maybeBuffer
                 .map(buffer -> divider.concat(buffer, slice))
                 .orElseGet(() -> new StringBuilder().append(slice)));
+    }
+
+    @Override
+    public Result<Node, FormattedError> parse(Input input) {
+        return parse0(input.slice());
     }
 }
