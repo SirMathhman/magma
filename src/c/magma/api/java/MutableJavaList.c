@@ -6,4 +6,5 @@ import magma.api.stream.HeadedStream;
 import magma.api.stream.Stream;
 import magma.api.stream.Streams;
 import java.util.ArrayList;
+import java.util.Comparator;
 struct MutableJavaList<T> {}
