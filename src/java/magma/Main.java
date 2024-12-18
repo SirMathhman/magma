@@ -230,7 +230,8 @@ public class Main {
     private static Rule createClassMemberRule() {
         return new OrRule(java.util.List.of(
                 createDefinitionRule(),
-                createMethodRule()
+                createMethodRule(),
+                createWhitespaceRule()
         ));
     }
 
