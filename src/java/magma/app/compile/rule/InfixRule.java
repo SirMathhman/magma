@@ -18,11 +18,14 @@ public final class InfixRule implements Rule {
 
     @Override
     public Result<Node, FormattedError> parse(Input input) {
-        return splitter.split(input.input()).map(tuple -> {
+        Input input1 = new Input(input.input());
+        return splitter.split(input1).map(tuple1 -> tuple1
+                .mapLeft(Input::input)
+                .mapRight(Input::input)).map(tuple -> {
             var left = tuple.left();
             var right = tuple.right();
             return leftRule.parse(new Input(left)).flatMapValue(leftNode -> rightRule.parse(new Input(right)).mapValue(leftNode::merge));
-        }).orElseGet(() -> new Err<>(splitter.createError(input.input())));
+        }).orElseGet(() -> new Err<>(splitter.createError(new Input(input.input()))));
     }
 
     @Override

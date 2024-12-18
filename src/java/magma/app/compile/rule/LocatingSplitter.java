@@ -35,19 +35,23 @@ public final class LocatingSplitter implements Splitter {
     }
 
     @Override
-    public CompileError createError(String input) {
+    public CompileError createError(Input input) {
         final var format = "Infix '%s' not present";
         final var message = format.formatted(slice);
-        final var context = new StringContext(input);
+        final var context = new StringContext(input.getInput());
         return new CompileError(message, context);
     }
 
-    @Override
-    public Option<Tuple<String, String>> split(String input) {
-        return locator.locate(input, slice).map(index -> {
-            final var left = input.substring(0, index);
-            final var right = input.substring(index + slice.length());
+    private Option<Tuple<String, String>> split0(Input input) {
+        return locator.locate(input.getInput(), slice).map(index -> {
+            final var left = input.getInput().substring(0, index);
+            final var right = input.getInput().substring(index + slice.length());
             return new Tuple<>(left, right);
         });
+    }
+
+    @Override
+    public Option<Tuple<Input, Input>> split(Input input) {
+        return split0(input).map(tuple -> tuple.mapLeft(Input::new).mapRight(Input::new));
     }
 }

@@ -7,7 +7,7 @@ import magma.app.error.CompileError;
 public interface Splitter {
     String merge(String leftValue, String rightValue);
 
-    CompileError createError(String input);
+    CompileError createError(Input input);
 
-    Option<Tuple<String, String>> split(String input);
+    Option<Tuple<Input, Input>> split(Input input);
 }
