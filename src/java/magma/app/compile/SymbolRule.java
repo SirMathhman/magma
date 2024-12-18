@@ -6,7 +6,7 @@ import magma.app.compile.rule.Input;
 import magma.app.compile.rule.Rule;
 import magma.app.error.CompileError;
 import magma.app.error.FormattedError;
-import magma.app.error.StringContext;
+import magma.app.error.InputContext;
 
 public record SymbolRule(Rule childRule) implements Rule {
     @Override
@@ -14,7 +14,7 @@ public record SymbolRule(Rule childRule) implements Rule {
         if (isSymbol(input)) {
             return childRule.parse(new Input(input.input()));
         } else {
-            return new Err<>(new CompileError("Not a symbol", new StringContext(input.input())));
+            return new Err<>(new CompileError("Not a symbol", new InputContext(new Input(input.input()))));
         }
     }
 
