@@ -11,8 +11,8 @@ public class FirstLocator implements Locator {
     }
 
     @Override
-    public Option<Integer> locate(String value, String slice) {
-        final var index = value.indexOf(slice);
+    public Option<Integer> locate(Input input, String slice) {
+        final var index = input.getInput().indexOf(slice);
         return index == -1 ? new None<Integer>() : new Some<Integer>(index);
     }
 }

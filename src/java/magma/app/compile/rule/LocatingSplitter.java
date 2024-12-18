@@ -43,7 +43,7 @@ public final class LocatingSplitter implements Splitter {
     }
 
     private Option<Tuple<String, String>> split0(Input input) {
-        return locator.locate(input.getInput(), slice).map(index -> {
+        return locator.locate(new Input(input.getInput()), slice).map(index -> {
             final var left = input.getInput().substring(0, index);
             final var right = input.getInput().substring(index + slice.length());
             return new Tuple<>(left, right);

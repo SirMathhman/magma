@@ -11,8 +11,8 @@ public class LastLocator implements Locator {
     }
 
     @Override
-    public Option<Integer> locate(String value, String slice) {
-        final var index = value.lastIndexOf(slice);
+    public Option<Integer> locate(Input input, String slice) {
+        final var index = input.input().lastIndexOf(slice);
         return index == -1 ? new None<Integer>() : new Some<Integer>(index);
     }
 }
