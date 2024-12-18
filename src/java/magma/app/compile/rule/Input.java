@@ -9,6 +9,11 @@ public record Input(String input, int start, int length) {
         return input;
     }
 
+    @Override
+    public String toString() {
+        return computeSlice();
+    }
+
     public String display() {
         return computeSlice();
     }

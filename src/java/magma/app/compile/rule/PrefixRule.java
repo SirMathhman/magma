@@ -1,5 +1,7 @@
 package magma.app.compile.rule;
 
+import magma.api.java.MutableJavaList;
+import magma.app.error.ContextDetail;
 import magma.app.error.FormattedError;
 import magma.app.error.InputContext;
 import magma.app.compile.Node;
@@ -12,7 +14,7 @@ public record PrefixRule(String prefix, Rule childRule) implements Rule {
     public Result<Node, FormattedError> parse(Input input) {
         return input.input().startsWith(prefix)
                 ? childRule.parse(new Input(input.input().substring(prefix.length())))
-                : new Err<>(new CompileError("Prefix '" + prefix + "' not present", new InputContext(new Input(input.input()))));
+                : new Err<>(new CompileError(new ContextDetail("Prefix '" + prefix + "' not present", new InputContext(new Input(input.input()))), new MutableJavaList<>()));
     }
 
     @Override

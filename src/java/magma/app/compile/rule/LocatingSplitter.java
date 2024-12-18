@@ -1,8 +1,10 @@
 package magma.app.compile.rule;
 
 import magma.api.Tuple;
+import magma.api.java.MutableJavaList;
 import magma.api.option.Option;
 import magma.app.error.CompileError;
+import magma.app.error.ContextDetail;
 import magma.app.error.InputContext;
 
 import static magma.app.compile.rule.FirstLocator.First;
@@ -39,7 +41,7 @@ public final class LocatingSplitter implements Splitter {
         final var format = "Infix '%s' not present";
         final var message = format.formatted(slice);
         final var context = new InputContext(new Input(input.getInput()));
-        return new CompileError(message, context);
+        return new CompileError(new ContextDetail(message, context), new MutableJavaList<>());
     }
 
     private Option<Tuple<String, String>> split0(Input input) {

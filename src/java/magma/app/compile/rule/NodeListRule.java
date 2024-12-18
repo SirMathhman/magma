@@ -11,6 +11,7 @@ import magma.api.result.Result;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.error.CompileError;
+import magma.app.error.ContextDetail;
 import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
 
@@ -38,7 +39,7 @@ public record NodeListRule(String propertyKey, Divider divider, Rule segmentRule
         final var format = "Node list '%s' not present";
         final var message = format.formatted(propertyKey);
         final var context = new NodeContext(node);
-        return new Err<>(new CompileError(message, context));
+        return new Err<>(new CompileError(new ContextDetail(message, context), new MutableJavaList<>()));
     }
 
     private Result<String, FormattedError> generateAllIntoBuilder(List<Node> list) {

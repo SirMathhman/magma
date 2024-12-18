@@ -6,13 +6,17 @@ import magma.api.java.MutableJavaList;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public record CompileError(String message, Context context, List<FormattedError> causes) implements FormattedError {
-    public CompileError(String message, Context context) {
-        this(message, context, new MutableJavaList<>());
+public final class CompileError implements FormattedError {
+    private final Detail detail;
+    private final List<FormattedError> causes;
+
+    public CompileError(Detail detail, List<FormattedError> causes) {
+        this.detail = detail;
+        this.causes = causes;
     }
 
-    public CompileError(String message, Context context, FormattedError... errors) {
-        this(message, context, new MutableJavaList<>(new ArrayList<>(java.util.List.of(errors))));
+    public CompileError(Detail detail, FormattedError... errors) {
+        this(detail, new MutableJavaList<>(new ArrayList<>(java.util.List.of(errors))));
     }
 
     @Override
@@ -34,6 +38,6 @@ public record CompileError(String message, Context context, List<FormattedError>
                 .map(cause -> cause.format(depth + 1))
                 .foldLeft("", (previous, next) -> previous + "\n" + next);
 
-        return "\t".repeat(depth) + depth + ") " + message + ": " + context.display() + joinedCauses;
+        return "\t".repeat(depth) + depth + ") " + detail.display() + joinedCauses;
     }
 }

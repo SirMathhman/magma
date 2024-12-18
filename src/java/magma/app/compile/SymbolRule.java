@@ -1,10 +1,12 @@
 package magma.app.compile;
 
+import magma.api.java.MutableJavaList;
 import magma.api.result.Err;
 import magma.api.result.Result;
 import magma.app.compile.rule.Input;
 import magma.app.compile.rule.Rule;
 import magma.app.error.CompileError;
+import magma.app.error.ContextDetail;
 import magma.app.error.FormattedError;
 import magma.app.error.InputContext;
 
@@ -14,7 +16,7 @@ public record SymbolRule(Rule childRule) implements Rule {
         if (isSymbol(input)) {
             return childRule.parse(new Input(input.input()));
         } else {
-            return new Err<>(new CompileError("Not a symbol", new InputContext(new Input(input.input()))));
+            return new Err<>(new CompileError(new ContextDetail("Not a symbol", new InputContext(new Input(input.input()))), new MutableJavaList<>()));
         }
     }
 

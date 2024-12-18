@@ -38,6 +38,11 @@ public record MutableJavaList<T>(java.util.List<T> list) implements List<T> {
     }
 
     @Override
+    public String toString() {
+        return list.toString();
+    }
+
+    @Override
     public List<T> sort(Comparator<T> comparator) {
         list.sort(comparator);
         return new MutableJavaList<>(list);

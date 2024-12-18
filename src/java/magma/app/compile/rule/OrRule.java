@@ -4,10 +4,7 @@ import magma.api.java.MutableJavaList;
 import magma.api.result.Err;
 import magma.api.result.Result;
 import magma.app.compile.Node;
-import magma.app.error.CompileError;
-import magma.app.error.FormattedError;
-import magma.app.error.NodeContext;
-import magma.app.error.InputContext;
+import magma.app.error.*;
 
 import java.util.List;
 
@@ -21,7 +18,7 @@ public record OrRule(List<Rule> rules) implements Rule {
             errors.add(parsed.findError().orElseNull());
         }
 
-        return new Err<>(new CompileError("Invalid input", new InputContext(new Input(input.input())), errors));
+        return new Err<>(new CompileError(new ContextDetail("Invalid input", new InputContext(new Input(input.input()))), errors));
     }
 
     @Override
@@ -33,6 +30,6 @@ public record OrRule(List<Rule> rules) implements Rule {
             errors.add(generated.findError().orElseNull());
         }
 
-        return new Err<>(new CompileError("Invalid node", new NodeContext(node), errors));
+        return new Err<>(new CompileError(new ContextDetail("Invalid node", new NodeContext(node)), errors));
     }
 }
