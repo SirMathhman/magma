@@ -17,10 +17,14 @@ import magma.app.error.NodeContext;
 public record NodeListRule(String propertyKey, Divider divider, Rule segmentRule) implements Rule {
     @Override
     public Result<Node, FormattedError> parse(Input input) {
-        return divider.divide(input.input())
-                .stream()
-                .<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableJavaList<>()), (current, s) -> current.flatMapValue(inner -> segmentRule.parse(new Input(s)).mapValue(inner::add)))
+        return divider.divide(input)
+                .flatMapValue(this::processDivided)
                 .mapValue(nodes -> new MapNode().withNodeList(propertyKey, nodes));
+    }
+
+    private Result<List<Node>, FormattedError> processDivided(List<Input> divided) {
+        return divided.stream().<Result<List<Node>, FormattedError>>foldLeft(new Ok<>(new MutableJavaList<>()),
+                (current, input) -> current.flatMapValue(inner -> segmentRule.parse(input).mapValue(inner::add)));
     }
 
     @Override

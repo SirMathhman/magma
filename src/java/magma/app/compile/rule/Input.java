@@ -10,14 +10,7 @@ public record Input(String input, int start, int length) {
     }
 
     public String display() {
-        var buffer = new StringBuilder().append("\n");
-        final var slices = computeSlice().split("\\n");
-        for (int i = 0; i < slices.length; i++) {
-            var slice = slices[i];
-            buffer.append(slice).append("\n");
-            buffer.append("^".repeat(slice.length())).append("\n");
-        }
-        return buffer.toString();
+        return computeSlice();
     }
 
     private String computeSlice() {

@@ -2,6 +2,12 @@ package magma.app.compile.rule;
 
 import magma.api.collect.List;
 import magma.api.java.MutableJavaList;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.app.error.CompileError;
+import magma.app.error.FormattedError;
+import magma.app.error.InputContext;
 
 public class BracketDivider implements Divider {
     static State processChar(State state, char c) {
@@ -18,14 +24,18 @@ public class BracketDivider implements Divider {
     }
 
     @Override
-    public List<String> divide(String root) {
+    public Result<List<Input>, FormattedError> divide(Input input) {
         var state = new State();
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
+        for (int i = 0; i < input.getInput().length(); i++) {
+            var c = input.getInput().charAt(i);
             state = processChar(state, c);
         }
 
-        return state.advance().segments;
+        if (state.isLevel()) {
+            return new Ok<>(state.advance().segments);
+        } else {
+            return new Err<>(new CompileError("Invalid depth of '" + state.depth + "'", new InputContext(input)));
+        }
     }
 
     @Override
@@ -34,7 +44,7 @@ public class BracketDivider implements Divider {
     }
 
     record State(
-            List<String> segments,
+            List<Input> segments,
             StringBuilder buffer,
             int depth
     ) {
@@ -52,7 +62,7 @@ public class BracketDivider implements Divider {
 
         State advance() {
             if (buffer().isEmpty()) return this;
-            return new State(segments.add(buffer.toString()), new StringBuilder(), 0);
+            return new State(segments.add(new Input(buffer.toString())), new StringBuilder(), 0);
         }
 
         public State enter() {

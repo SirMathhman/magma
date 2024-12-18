@@ -2,22 +2,25 @@ package magma.app.compile.rule;
 
 import magma.api.collect.List;
 import magma.api.java.MutableJavaList;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.app.error.FormattedError;
 
 public record DelimiterDivider(String delimiter) implements Divider {
     @Override
-    public List<String> divide(String root) {
-        List<String> parts = new MutableJavaList<>();
+    public Result<List<Input>, FormattedError> divide(Input input) {
+        List<Input> parts = new MutableJavaList<>();
         int start = 0;
         int index;
 
-        while ((index = root.indexOf(delimiter, start)) != -1) {
-            parts = parts.add(root.substring(start, index)); // Add substring before the delimiter
+        while ((index = input.getInput().indexOf(delimiter, start)) != -1) {
+            parts = parts.add(new Input(input.getInput().substring(start, index))); // Add substring before the delimiter
             start = index + delimiter.length();     // Move past the delimiter
         }
 
         // Add the remaining part of the string
-        parts = parts.add(root.substring(start));
-        return parts; // Wrap the result in magma.api.collect.List
+        parts = parts.add(new Input(input.getInput().substring(start)));
+        return new Ok<>(parts); // Wrap the result in magma.api.collect.List
     }
 
     @Override
