@@ -227,7 +227,19 @@ public class Main {
         return new TypeRule("class", new InfixRule(new DiscardRule(), LocateFirst("class "), new InfixRule(name1, LocateFirst("{"), new SuffixRule(content, "}"))));
     }
 
-    private static TypeRule createClassMemberRule() {
+    private static Rule createClassMemberRule() {
+        return new OrRule(java.util.List.of(
+                createDefinitionRule(),
+                createMethodRule()
+        ));
+    }
+
+    private static TypeRule createMethodRule() {
+        final var beforeParams = new InfixRule(new DiscardRule(), LocateLast(" "), new StringRule("name"));
+        return new TypeRule("method", new InfixRule(beforeParams, LocateFirst("("), new DiscardRule()));
+    }
+
+    private static TypeRule createDefinitionRule() {
         return new TypeRule("definition", new SuffixRule(new InfixRule(new DiscardRule(), LocateLast(" "), new StringRule("name")), ";"));
     }
 

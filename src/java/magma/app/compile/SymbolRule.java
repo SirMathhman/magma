@@ -9,22 +9,22 @@ import magma.app.error.FormattedError;
 import magma.app.error.StringContext;
 
 public record SymbolRule(Rule childRule) implements Rule {
-    private static boolean isSymbol(String input) {
-        for (int i = 0; i < input.length(); i++) {
-            if (!Character.isLetter(input.charAt(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     @Override
     public Result<Node, FormattedError> parse(Input input) {
-        if (isSymbol(input.input())) {
+        if (isSymbol(input)) {
             return childRule.parse(new Input(input.input()));
         } else {
             return new Err<>(new CompileError("Not a symbol", new StringContext(input.input())));
         }
+    }
+
+    private static boolean isSymbol(Input input) {
+        for (int i = 0; i < input.input().length(); i++) {
+            if (!Character.isLetter(input.input().charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
