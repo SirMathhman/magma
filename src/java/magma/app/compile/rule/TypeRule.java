@@ -10,10 +10,10 @@ import magma.app.error.StringContext;
 
 public record TypeRule(String type, Rule childRule) implements Rule {
     @Override
-    public Result<Node, FormattedError> parse(String input) {
-        return childRule.parse(input)
+    public Result<Node, FormattedError> parse(Input input) {
+        return childRule.parse(new Input(input.input()))
                 .mapValue(node -> node.retype(type))
-                .mapErr(err -> new CompileError("Failed to assign type '" + type + "'", new StringContext(input), err));
+                .mapErr(err -> new CompileError("Failed to assign type '" + type + "'", new StringContext(input.input()), err));
     }
 
     @Override

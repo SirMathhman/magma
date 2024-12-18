@@ -17,12 +17,12 @@ public final class InfixRule implements Rule {
     }
 
     @Override
-    public Result<Node, FormattedError> parse(String input) {
-        return splitter.split(input).map(tuple -> {
+    public Result<Node, FormattedError> parse(Input input) {
+        return splitter.split(input.input()).map(tuple -> {
             var left = tuple.left();
             var right = tuple.right();
-            return leftRule.parse(left).flatMapValue(leftNode -> rightRule.parse(right).mapValue(leftNode::merge));
-        }).orElseGet(() -> new Err<>(splitter.createError(input)));
+            return leftRule.parse(new Input(left)).flatMapValue(leftNode -> rightRule.parse(new Input(right)).mapValue(leftNode::merge));
+        }).orElseGet(() -> new Err<>(splitter.createError(input.input())));
     }
 
     @Override

@@ -11,8 +11,8 @@ import magma.api.result.Result;
 
 public record StringRule(String propertyKey) implements Rule {
     @Override
-    public Result<Node, FormattedError> parse(String input) {
-        return new Ok<>(new MapNode().withString(propertyKey, input));
+    public Result<Node, FormattedError> parse(Input input) {
+        return new Ok<>(new MapNode().withString(propertyKey, input.input()));
     }
 
     @Override

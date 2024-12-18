@@ -9,10 +9,10 @@ import magma.api.result.Result;
 
 public record SuffixRule(Rule childRule, String suffix) implements Rule {
     @Override
-    public Result<Node, FormattedError> parse(String input) {
-        return input.endsWith(suffix)
-                ? childRule.parse(input.substring(0, input.length() - suffix.length()))
-                : new Err<>(new CompileError("Suffix '" + suffix + "' not present", new StringContext(input)));
+    public Result<Node, FormattedError> parse(Input input) {
+        return input.input().endsWith(suffix)
+                ? childRule.parse(new Input(input.input().substring(0, input.input().length() - suffix.length())))
+                : new Err<>(new CompileError("Suffix '" + suffix + "' not present", new StringContext(input.input())));
     }
 
     @Override

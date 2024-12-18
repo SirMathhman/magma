@@ -13,15 +13,15 @@ import java.util.List;
 
 public record OrRule(List<Rule> rules) implements Rule {
     @Override
-    public Result<Node, FormattedError> parse(String input) {
+    public Result<Node, FormattedError> parse(Input input) {
         var errors = new MutableJavaList<FormattedError>();
         for (Rule rule : rules) {
-            final var parsed = rule.parse(input);
+            final var parsed = rule.parse(new Input(input.input()));
             if (parsed.isOk()) return parsed;
             errors.add(parsed.findError().orElseNull());
         }
 
-        return new Err<>(new CompileError("Invalid input", new StringContext(input), errors));
+        return new Err<>(new CompileError("Invalid input", new StringContext(input.input()), errors));
     }
 
     @Override

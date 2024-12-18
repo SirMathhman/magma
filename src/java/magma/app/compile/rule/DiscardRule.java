@@ -8,7 +8,7 @@ import magma.app.error.FormattedError;
 
 public class DiscardRule implements Rule {
     @Override
-    public Result<Node, FormattedError> parse(String input) {
+    public Result<Node, FormattedError> parse(Input input) {
         return new Ok<>(new MapNode());
     }
 

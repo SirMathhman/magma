@@ -10,8 +10,8 @@ public record StripRule(Rule childRule, String beforeChildKey, String afterChild
     }
 
     @Override
-    public Result<Node, FormattedError> parse(String input) {
-        return childRule.parse(input.strip());
+    public Result<Node, FormattedError> parse(Input input) {
+        return childRule.parse(new Input(input.input().strip()));
     }
 
     @Override

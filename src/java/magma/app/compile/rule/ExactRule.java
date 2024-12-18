@@ -11,10 +11,10 @@ import magma.api.result.Result;
 
 public record ExactRule(String value) implements Rule {
     @Override
-    public Result<Node, FormattedError> parse(String input) {
-        return input.equals(value)
+    public Result<Node, FormattedError> parse(Input input) {
+        return input.input().equals(value)
                 ? new Ok<>(new MapNode())
-                : new Err<>(new CompileError("Input did not match exact '" + value + "'", new StringContext(input)));
+                : new Err<>(new CompileError("Input did not match exact '" + value + "'", new StringContext(input.input())));
     }
 
     @Override

@@ -105,7 +105,7 @@ public class Main {
     }
 
     private static Result<String, FormattedError> compile(String input) {
-        return createJavaRootRule().parse(input)
+        return createJavaRootRule().parse(new Input(input))
                 .flatMapValue(root -> pass(root, Main::modify))
                 .flatMapValue(root -> pass(root, Main::format))
                 .flatMapValue(node -> createCRootRule().generate(node));
