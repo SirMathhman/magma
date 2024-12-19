@@ -27,4 +27,6 @@ public interface Option<T> {
     Tuple<Boolean, T> toTuple(T other);
 
     <R> Option<R> flatMap(Function<T, Option<R>> mapper);
+
+    boolean isEmpty();
 }

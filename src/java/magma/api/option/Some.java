@@ -58,4 +58,9 @@ public record Some<T>(T value) implements Option<T> {
         return mapper.apply(value);
     }
 
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
 }

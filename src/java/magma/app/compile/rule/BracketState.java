@@ -59,6 +59,15 @@ record BracketState(
         return new Ok<>(new BracketState(queue, segments, buffer, depth - 1));
     }
 
+    @Override
+    public String toString() {
+        return "BracketState{" +
+                "segments=" + segments +
+                ", buffer=" + buffer +
+                ", depth=" + depth +
+                '}';
+    }
+
     public boolean isShallow() {
         return depth == 1;
     }
