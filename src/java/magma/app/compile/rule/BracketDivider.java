@@ -20,7 +20,7 @@ public class BracketDivider implements Divider {
             final var appended = tuple.left();
             final var c = tuple.right();
 
-            return processChar(c, appended).orElseGet(() -> {
+            return processChar(appended, c).or(() -> processString(appended, c)).orElseGet(() -> {
                 if (c == ';' && appended.isLevel()) {
                     return new Ok<>(appended.advance());
                 } else if (c == '}' && appended.isShallow()) {
@@ -34,7 +34,33 @@ public class BracketDivider implements Divider {
         });
     }
 
-    private static Option<Result<BracketState, FormattedError>> processChar(Character c, BracketState appended) {
+    private static Option<Result<BracketState, FormattedError>> processString(BracketState state, char c) {
+        if (c != '\"') return new None<>();
+
+        var current = state;
+        while (true) {
+            final var nextOption = current.appendAndPop();
+            if (nextOption.isEmpty()) break;
+            final var next = nextOption.orElseNull();
+
+            final var appended = next.left();
+            final var appendedChar = next.right();
+
+            current = appended;
+            if (appendedChar == '\"') {
+                break;
+            } else if (appendedChar == '\\') {
+                final var escapedOption = current.appendAndPop();
+                if (escapedOption.isEmpty()) break;
+                final var escaped = escapedOption.orElseNull();
+                current = escaped.left();
+            }
+        }
+
+        return new Some<>(new Ok<>(current));
+    }
+
+    private static Option<Result<BracketState, FormattedError>> processChar(BracketState appended, char c) {
         if (c != '\'') return new None<>();
 
         return appended.appendAndPop()
