@@ -25,4 +25,6 @@ public interface Option<T> {
     Option<T> filter(Predicate<T> predicate);
 
     Tuple<Boolean, T> toTuple(T other);
+
+    <R> Option<R> flatMap(Function<T, Option<R>> mapper);
 }

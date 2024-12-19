@@ -1,6 +1,8 @@
+import magma.api.java.MutableJavaList;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.error.CompileError;
+import magma.app.error.ContextDetail;
 import magma.app.error.FormattedError;
 import magma.app.error.NodeContext;
 import magma.api.result.Err;
