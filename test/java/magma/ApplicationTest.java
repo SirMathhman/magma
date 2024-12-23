@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +29,32 @@ public class ApplicationTest {
     }
 
     private static String compileRoot(String root) throws CompileException {
-        return compileRootStatement(root);
+        final var segments = split(root);
+        var buffer = new StringBuilder();
+        for (String segment : segments) {
+            buffer.append(compileRootStatement(segment));
+        }
+
+        return buffer.toString();
+    }
+
+    private static ArrayList<String> split(String root) {
+        var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        for (int i = 0; i < root.length(); i++) {
+            var c = root.charAt(i);
+            buffer.append(c);
+            if (c == ';') {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            }
+        }
+        advance(buffer, segments);
+        return segments;
+    }
+
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
     private static String compileRootStatement(String rootStatement) throws CompileException {
@@ -75,6 +101,12 @@ public class ApplicationTest {
     @ValueSource(strings = {"first", "second"})
     void importStatement(String namespace) {
         assertRun(renderImport(namespace), renderImport(namespace));
+    }
+
+    @Test
+    void multipleStatements() {
+        final var generatedImport = renderImport("test");
+        assertRun(renderPackage("test") + generatedImport, generatedImport);
     }
 
     @ParameterizedTest
