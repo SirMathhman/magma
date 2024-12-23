@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ApplicationTest {
     public static final Path SOURCE = Paths.get(".", "temp.java");
-    public static final Path TARGET = Paths.get(".", "temp.mgs");
+    public static final Path TARGET = Paths.get(".", "temp.c");
 
     private static void run() throws IOException {
         if (Files.exists(SOURCE)) {
