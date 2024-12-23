@@ -2,6 +2,8 @@ package magma;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,6 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ApplicationTest {
     public static final Path SOURCE = Paths.get(".", "temp.java");
     public static final Path TARGET = Paths.get(".", "temp.c");
+    public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
+    public static final String STATEMENT_END = ";";
 
     private static void run() throws IOException, CompileException {
         if (!Files.exists(SOURCE)) return;
@@ -23,7 +27,7 @@ public class ApplicationTest {
     }
 
     private static String compileInput(String root) throws CompileException {
-        if (root.equals(renderPackage())) return "";
+        if (root.startsWith(PACKAGE_KEYWORD_WITH_SPACE) && root.endsWith(STATEMENT_END)) return "";
         throw new CompileException("Unknown root", root);
     }
 
@@ -40,13 +44,14 @@ public class ApplicationTest {
         run();
     }
 
-    private static String renderPackage() {
-        return "package temp;";
+    private static String renderPackage(String namespace) {
+        return PACKAGE_KEYWORD_WITH_SPACE + namespace + STATEMENT_END;
     }
 
-    @Test
-    void packageStatement() throws IOException {
-        runWithInput(renderPackage());
+    @ParameterizedTest
+    @ValueSource(strings = {"first", "second"})
+    void packageStatement(String namespace) throws IOException {
+        runWithInput(renderPackage(namespace));
         assertEquals("", Files.readString(TARGET));
     }
 
