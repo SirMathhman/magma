@@ -16,19 +16,29 @@ public class ApplicationTest {
     public static final Path SOURCE = Paths.get(".", "temp.java");
     public static final Path TARGET = Paths.get(".", "temp.c");
     public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
-    public static final String STATEMENT_END = ";";
+    public static final String STATEMENT_TERMINATOR = ";";
+    public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
 
     private static void run() throws IOException, CompileException {
         if (!Files.exists(SOURCE)) return;
 
         final var input = Files.readString(SOURCE);
-        final var output = input.isEmpty() ? "" : compileInput(input);
+        final var output = input.isEmpty() ? "" : compileRoot(input);
         Files.writeString(TARGET, output);
     }
 
-    private static String compileInput(String root) throws CompileException {
-        if (root.startsWith(PACKAGE_KEYWORD_WITH_SPACE) && root.endsWith(STATEMENT_END)) return "";
-        throw new CompileException("Unknown root", root);
+    private static String compileRoot(String root) throws CompileException {
+        return compileRootStatement(root);
+    }
+
+    private static String compileRootStatement(String rootStatement) throws CompileException {
+        if (rootStatement.startsWith(PACKAGE_KEYWORD_WITH_SPACE) && rootStatement.endsWith(STATEMENT_TERMINATOR))
+            return "";
+
+        if (rootStatement.startsWith(IMPORT_KEYWORD_WITH_SPACE) && rootStatement.endsWith(STATEMENT_TERMINATOR))
+            return rootStatement;
+
+        throw new CompileException("Unknown root statement", rootStatement);
     }
 
     private static void runWithInput(String input) {
@@ -45,14 +55,32 @@ public class ApplicationTest {
     }
 
     private static String renderPackage(String namespace) {
-        return PACKAGE_KEYWORD_WITH_SPACE + namespace + STATEMENT_END;
+        return PACKAGE_KEYWORD_WITH_SPACE + namespace + STATEMENT_TERMINATOR;
+    }
+
+    private static void assertRun(String input, String output) {
+        try {
+            runWithInput(input);
+            assertEquals(output, Files.readString(TARGET));
+        } catch (IOException e) {
+            fail(e);
+        }
+    }
+
+    private static String renderImport(String namespace) {
+        return IMPORT_KEYWORD_WITH_SPACE + namespace + STATEMENT_TERMINATOR;
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"first", "second"})
-    void packageStatement(String namespace) throws IOException {
-        runWithInput(renderPackage(namespace));
-        assertEquals("", Files.readString(TARGET));
+    void importStatement(String namespace) {
+        assertRun(renderImport(namespace), renderImport(namespace));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"first", "second"})
+    void packageStatement(String namespace) {
+        assertRun(renderPackage(namespace), "");
     }
 
     @AfterEach
