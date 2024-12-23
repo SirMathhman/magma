@@ -7,62 +7,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ApplicationTest {
-    public static final Path SOURCE = Paths.get(".", "temp.java");
-    public static final Path TARGET = Paths.get(".", "temp.c");
-    public static final String PACKAGE_KEYWORD_WITH_SPACE = "package ";
-    public static final String STATEMENT_TERMINATOR = ";";
-    public static final String IMPORT_KEYWORD_WITH_SPACE = "import ";
-
-    private static void run() throws IOException, CompileException {
-        if (!Files.exists(SOURCE)) return;
-
-        final var input = Files.readString(SOURCE);
-        final var output = input.isEmpty() ? "" : compileRoot(input);
-        Files.writeString(TARGET, output);
-    }
-
-    private static String compileRoot(String root) throws CompileException {
-        final var segments = split(root);
-        var buffer = new StringBuilder();
-        for (String segment : segments) {
-            buffer.append(compileRootStatement(segment));
-        }
-
-        return buffer.toString();
-    }
-
-    private static List<String> split(String root) {
-        var state = new State();
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
-            state = splitAtChar(state, c);
-        }
-        return state.advance().segments();
-    }
-
-    private static State splitAtChar(State state, char c) {
-        final var appended = state.append(c);
-        if (c == ';') return appended.advance();
-        return appended;
-    }
-
-    private static String compileRootStatement(String rootStatement) throws CompileException {
-        if (rootStatement.startsWith(PACKAGE_KEYWORD_WITH_SPACE) && rootStatement.endsWith(STATEMENT_TERMINATOR))
-            return "";
-
-        if (rootStatement.startsWith(IMPORT_KEYWORD_WITH_SPACE) && rootStatement.endsWith(STATEMENT_TERMINATOR))
-            return rootStatement;
-
-        throw new CompileException("Unknown root statement", rootStatement);
-    }
-
     private static void runWithInput(String input) {
         try {
             runWithInputExceptionally(input);
@@ -72,25 +20,25 @@ public class ApplicationTest {
     }
 
     private static void runWithInputExceptionally(String input) throws IOException, CompileException {
-        Files.writeString(SOURCE, input);
-        run();
+        Files.writeString(Application.SOURCE, input);
+        Application.run(Application.SOURCE);
     }
 
     private static String renderPackage(String namespace) {
-        return PACKAGE_KEYWORD_WITH_SPACE + namespace + STATEMENT_TERMINATOR;
+        return Application.PACKAGE_KEYWORD_WITH_SPACE + namespace + Application.STATEMENT_TERMINATOR;
     }
 
     private static void assertRun(String input, String output) {
         try {
             runWithInput(input);
-            assertEquals(output, Files.readString(TARGET));
+            assertEquals(output, Files.readString(Application.TARGET));
         } catch (IOException e) {
             fail(e);
         }
     }
 
     private static String renderImport(String namespace) {
-        return IMPORT_KEYWORD_WITH_SPACE + namespace + STATEMENT_TERMINATOR;
+        return Application.IMPORT_KEYWORD_WITH_SPACE + namespace + Application.STATEMENT_TERMINATOR;
     }
 
     @ParameterizedTest
@@ -113,8 +61,8 @@ public class ApplicationTest {
 
     @AfterEach
     void tearDown() throws IOException {
-        Files.deleteIfExists(TARGET);
-        Files.deleteIfExists(SOURCE);
+        Files.deleteIfExists(Application.TARGET);
+        Files.deleteIfExists(Application.SOURCE);
     }
 
     @Test
@@ -124,13 +72,13 @@ public class ApplicationTest {
 
     @Test
     void generateNothing() throws IOException, CompileException {
-        run();
-        assertFalse(Files.exists(TARGET));
+        Application.run(Application.SOURCE);
+        assertFalse(Files.exists(Application.TARGET));
     }
 
     @Test
-    void generateSomething() throws IOException, CompileException {
+    void generateSomething() throws CompileException {
         runWithInput("");
-        assertTrue(Files.exists(TARGET));
+        assertTrue(Files.exists(Application.TARGET));
     }
 }
