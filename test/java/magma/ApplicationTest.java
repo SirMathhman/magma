@@ -23,12 +23,31 @@ public class ApplicationTest {
     }
 
     private static String compileInput(String root) throws CompileException {
+        if (root.equals(renderPackage())) return "";
         throw new CompileException("Unknown root", root);
     }
 
-    private static void runWithInput(String input) throws IOException, CompileException {
+    private static void runWithInput(String input) {
+        try {
+            runWithInputExceptionally(input);
+        } catch (IOException | CompileException e) {
+            fail(e);
+        }
+    }
+
+    private static void runWithInputExceptionally(String input) throws IOException, CompileException {
         Files.writeString(SOURCE, input);
         run();
+    }
+
+    private static String renderPackage() {
+        return "package temp;";
+    }
+
+    @Test
+    void packageStatement() throws IOException {
+        runWithInput(renderPackage());
+        assertEquals("", Files.readString(TARGET));
     }
 
     @AfterEach
@@ -39,7 +58,7 @@ public class ApplicationTest {
 
     @Test
     void invalidate() {
-        assertThrows(CompileException.class, () -> runWithInput("test"));
+        assertThrows(CompileException.class, () -> runWithInputExceptionally("test"));
     }
 
     @Test
