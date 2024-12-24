@@ -40,6 +40,7 @@ public class Main {
 
     private static String compileRootSegment(String root) throws CompileException {
         if (root.startsWith("package ")) return "";
+        if (root.startsWith("import ")) return "#include <temp.h>";
         throw new CompileException("Invalid root", root);
     }
 }
