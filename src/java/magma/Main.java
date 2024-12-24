@@ -67,7 +67,13 @@ public class Main {
     }
 
     private static TypeRule createClassRule() {
-        return new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new InfixRule(new StripRule(new SymbolRule(new StringRule("name"))), "{", new DiscardRule())));
+        final var name = new StripRule(new SymbolRule(new StringRule("name")));
+        final var children = new NodeListRule("children", createClassMemberRule());
+        return new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new InfixRule(name, "{", new StripRule(new SuffixRule(children, "}")))));
+    }
+
+    private static ExactRule createClassMemberRule() {
+        return new ExactRule("");
     }
 
     private static Rule createNamespacedRule(String type, String prefix) {

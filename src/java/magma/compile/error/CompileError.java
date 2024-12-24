@@ -1,6 +1,7 @@
 package magma.compile.error;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,10 +26,19 @@ public class CompileError implements Error {
     }
 
     private String format(int depth) {
+        errors.sort(Comparator.comparing(CompileError::computeMaxDepth));
+
         final var joinedErrors = errors.stream()
                 .map(compileError -> compileError.format(depth + 1))
                 .collect(Collectors.joining("\n"));
 
         return depth + ") " + message + ": " + context.display() + joinedErrors;
+    }
+
+    private int computeMaxDepth() {
+        return 1 + errors.stream()
+                .mapToInt(CompileError::computeMaxDepth)
+                .max()
+                .orElse(0);
     }
 }
