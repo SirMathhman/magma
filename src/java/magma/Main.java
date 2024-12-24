@@ -149,6 +149,6 @@ public class Main {
 
     private static Rule createIncludesRule() {
         final var namespace = new StringListRule("namespace", "/");
-        return new TypeRule("include", new PrefixRule("#include <", new SuffixRule(namespace, ".h>\n")));
+        return new TypeRule("include", new PrefixRule("#include \"", new SuffixRule(namespace, ".h\"\n")));
     }
 }
