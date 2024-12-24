@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException, CompileException {
@@ -16,10 +17,23 @@ public class Main {
 
     private static String compile(String root) throws CompileException {
         final var segments = split(root);
-        var buffer = new StringBuilder();
+        var nodes = new ArrayList<Node>();
         for (String segment : segments) {
-            buffer.append(compileRootSegment(segment.strip()));
+            final var parsed = createJavaRootSegmentRule()
+                    .parse(segment.strip())
+                    .orElseThrow(() -> new CompileException("Invalid root member", segment));
+            nodes.add(parsed);
         }
+
+        var buffer = new StringBuilder();
+        for (Node node : nodes) {
+            final var generated = createCRootSegmentRule()
+                    .generate(node)
+                    .orElseThrow(() -> new CompileException("Cannot generate", node.toString()));
+
+            buffer.append(generated);
+        }
+
         return buffer.toString();
     }
 
@@ -48,21 +62,23 @@ public class Main {
         return segments;
     }
 
-    private static String compileRootSegment(String rootSegment) throws CompileException {
-        if (rootSegment.startsWith("package ")) return "";
-
-        final var generated = createImportRule()
-                .parse(rootSegment)
-                .flatMap(node -> createIncludesRule().generate(node));
-        if (generated.isPresent()) return generated.get();
-
-        if (rootSegment.contains("class ")) return "struct Temp {}";
-        throw new CompileException("Invalid root", rootSegment);
+    private static OrRule createCRootSegmentRule() {
+        return new OrRule(List.of(
+                createIncludesRule(),
+                new TypeRule("struct", new ExactRule("struct Temp {}"))
+        ));
     }
 
-    private static Rule createImportRule() {
+    private static OrRule createJavaRootSegmentRule() {
+        return new OrRule(List.of(
+                createNamespacedRule("package", "package "),
+                createNamespacedRule("import", "import ")
+        ));
+    }
+
+    private static Rule createNamespacedRule(String type, String prefix) {
         final var namespace = new StringListRule("namespace", "\\.");
-        return new PrefixRule("import ", new SuffixRule(namespace, ";"));
+        return new TypeRule(type, new PrefixRule(prefix, new SuffixRule(namespace, ";")));
     }
 
     private static Rule createIncludesRule() {
