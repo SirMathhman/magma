@@ -50,7 +50,7 @@ public class Main {
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
         if (rootSegment.startsWith("package ")) return "";
-        if (rootSegment.startsWith("import ")) return "#include <temp.h>";
+        if (rootSegment.startsWith("import ")) return "#include <temp.h>\n";
         if (rootSegment.contains("class ")) return "struct Temp {}";
         throw new CompileException("Invalid root", rootSegment);
     }
