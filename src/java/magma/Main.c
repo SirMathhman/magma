@@ -27,22 +27,24 @@
 #include "java/util/List.h"
 #include "java/util/Optional.h"
 #include "java/util/function/BiFunction.h"
-struct Main {void main(){}
-void format(){}
-void pass(){}
-void passNode(){}
-void passNodeLists(){}
-void modify(){}
-void writeGenerated(){}
-void createCRootRule(){}
-void createCRootMemberRule(){}
-void createStructRule(){}
-void createGroupRule(){}
-void createStructMemberRule(){}
-void createJavaRootRule(){}
-void createClassRule(){}
-void createClassMemberRule(){}
-void createMethodRule(){}
-void createWhitespaceRule(){}
-void createNamespacedRule(){}
-void createIncludesRule(){}}
+struct Main{void main(){}
+	void formatBefore(){}
+	void formatAfter(){}
+	void pass(){}
+	void passNode(){}
+	void passNodeLists(){}
+	void modify(){}
+	void writeGenerated(){}
+	void createCRootRule(){}
+	void createCRootMemberRule(){}
+	void createStructRule(){}
+	void createGroupRule(){}
+	void createStructMemberRule(){}
+	void createJavaRootRule(){}
+	void createClassRule(){}
+	void wrapInBlock(){}
+	void createClassMemberRule(){}
+	void createMethodRule(){}
+	void createWhitespaceRule(){}
+	void createNamespacedRule(){}
+	void createIncludesRule(){}}

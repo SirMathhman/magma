@@ -39,38 +39,67 @@ public class Main {
         createJavaRootRule()
                 .parse(input)
                 .mapErr(ApplicationError::new)
-                .mapValue(node -> pass(new State(), node, Main::modify).right())
-                .mapValue(node -> pass(new State(), node, Main::format).right())
+                .mapValue(node -> pass(new State(), node, Tuple::new, Main::modify).right())
+                .mapValue(node -> pass(new State(), node, Main::formatBefore, Main::formatAfter).right())
                 .flatMapValue(parsed -> createCRootRule().generate(parsed).mapErr(ApplicationError::new))
                 .mapValue(generated -> writeGenerated(source, generated)).match(value -> value, Optional::of)
                 .ifPresent(error -> System.err.println(error.display()));
     }
 
-    private static Tuple<State, Node> format(State state, Node node) {
-        if (!node.is("group")) return new Tuple<>(state, node);
-
-        final var oldChildren = node.findNodeList("children");
-        final var newChildren = new ArrayList<Node>();
-        List<Node> orElse = oldChildren.orElse(Collections.emptyList());
-        for (int i = 0; i < orElse.size(); i++) {
-            Node child = orElse.get(i);
-            Node withString = i == 0 ? child : child.withString("before-child", "\n");
-            newChildren.add(withString);
+    private static Tuple<State, Node> formatBefore(State state, Node node) {
+        if (node.is("block")) {
+            return new Tuple<>(state.enter(), node);
         }
 
-        return new Tuple<>(state, node.withNodeList("children", newChildren));
+        return new Tuple<>(state, node);
     }
 
-    private static Tuple<State, Node> pass(State state, Node node, BiFunction<State, Node, Tuple<State, Node>> afterPass) {
-        final var withNodeLists = node.streamNodeLists()
-                .reduce(new Tuple<>(state, node), (node1, tuple) -> passNodeLists(node1, tuple, afterPass), (_, next) -> next);
-        final var withNodes = withNodeLists.right().streamNodes().reduce(withNodeLists, (node1, tuple) -> passNode(node1, tuple, afterPass), (_, next) -> next);
+    private static Tuple<State, Node> formatAfter(State state, Node node) {
+        if (node.is("group")) {
+            final var oldChildren = node.findNodeList("children");
+            final var newChildren = new ArrayList<Node>();
+            List<Node> orElse = oldChildren.orElse(Collections.emptyList());
+            for (int i = 0; i < orElse.size(); i++) {
+                Node child = orElse.get(i);
+                Node withString;
+                if (i == 0) withString = child;
+                else {
+                    final var indent = "\n" + "\t".repeat(state.depth());
+                    withString = child.withString("before-child", indent);
+                }
+                newChildren.add(withString);
+            }
+
+            return new Tuple<>(state, node.withNodeList("children", newChildren));
+        } else if (node.is("block")) {
+            return new Tuple<>(state.exit(), node);
+        } else {
+            return new Tuple<>(state, node);
+        }
+    }
+
+    private static Tuple<State, Node> pass(
+            State state,
+            Node node,
+            BiFunction<State, Node, Tuple<State, Node>> beforePass,
+            BiFunction<State, Node, Tuple<State, Node>> afterPass
+    ) {
+        final var withBefore = beforePass.apply(state, node);
+        final var withNodeLists = withBefore.right()
+                .streamNodeLists()
+                .reduce(withBefore, (node1, tuple) -> passNodeLists(node1, tuple, beforePass, afterPass), (_, next) -> next);
+
+        final var withNodes = withNodeLists.right()
+                .streamNodes()
+                .reduce(withNodeLists, (node1, tuple) -> passNode(node1, tuple, beforePass, afterPass), (_, next) -> next);
+
         return afterPass.apply(withNodes.left(), withNodes.right());
     }
 
     private static Tuple<State, Node> passNode(
             Tuple<State, Node> current,
             Tuple<String, Node> entry,
+            BiFunction<State, Node, Tuple<State, Node>> beforePass,
             BiFunction<State, Node, Tuple<State, Node>> afterPass
     ) {
         final var oldState = current.left();
@@ -79,12 +108,13 @@ public class Main {
         final var key = entry.left();
         final var value = entry.right();
 
-        return pass(oldState, value, afterPass).mapRight(right -> oldNode.withNode(key, right));
+        return pass(oldState, value, beforePass, afterPass).mapRight(right -> oldNode.withNode(key, right));
     }
 
     private static Tuple<State, Node> passNodeLists(
             Tuple<State, Node> current,
             Tuple<String, List<Node>> entry,
+            BiFunction<State, Node, Tuple<State, Node>> beforePass,
             BiFunction<State, Node, Tuple<State, Node>> afterPass
     ) {
         final var oldState = current.left();
@@ -96,7 +126,7 @@ public class Main {
         var currentState = oldState;
         var currentChildren = new ArrayList<Node>();
         for (Node value : values) {
-            final var passed = pass(currentState, value, afterPass);
+            final var passed = pass(currentState, value, beforePass, afterPass);
 
             currentState = passed.left();
             currentChildren.add(passed.right());
@@ -153,8 +183,8 @@ public class Main {
 
     private static Rule createStructRule() {
         final var name = new StringRule("name");
-        final var value = new NodeRule("value", createGroupRule(createStructMemberRule()));
-        return new TypeRule("struct", new PrefixRule("struct ", new SplitRule(name, new InfixSplitter(" {", new FirstLocator()), new SuffixRule(value, "}"))));
+        final var wrapped = wrapInBlock(name, createStructMemberRule());
+        return new TypeRule("struct", new PrefixRule("struct ", wrapped));
     }
 
     private static Rule createGroupRule(Rule childRule) {
@@ -180,8 +210,14 @@ public class Main {
 
     private static TypeRule createClassRule() {
         final var name = new StripRule(new SymbolRule(new StringRule("name")));
-        final var value = new NodeRule("value", createGroupRule(createClassMemberRule()));
-        return new TypeRule("class", new SplitRule(new DiscardRule(), new InfixSplitter("class ", new FirstLocator()), new SplitRule(name, new InfixSplitter("{", new FirstLocator()), new StripRule(new SuffixRule(value, "}")))));
+        final var rightRule = wrapInBlock(name, createClassMemberRule());
+        return new TypeRule("class", new SplitRule(new DiscardRule(), new InfixSplitter("class ", new FirstLocator()), rightRule));
+    }
+
+    private static SplitRule wrapInBlock(Rule beforeBlock, Rule blockMember) {
+        final var value = new NodeRule("value", createGroupRule(blockMember));
+        final var blockRule = new TypeRule("block", value);
+        return new SplitRule(beforeBlock, new InfixSplitter("{", new FirstLocator()), new StripRule(new SuffixRule(new NodeRule("value", blockRule), "}")));
     }
 
     private static Rule createClassMemberRule() {
