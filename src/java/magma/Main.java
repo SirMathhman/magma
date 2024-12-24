@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -39,15 +39,15 @@ public class Main {
         createJavaRootRule()
                 .parse(input)
                 .mapErr(ApplicationError::new)
-                .mapValue(node -> pass(node, Main::modify))
-                .mapValue(node -> pass(node, Main::format))
+                .mapValue(node -> pass(new State(), node, Main::modify).right())
+                .mapValue(node -> pass(new State(), node, Main::format).right())
                 .flatMapValue(parsed -> createCRootRule().generate(parsed).mapErr(ApplicationError::new))
                 .mapValue(generated -> writeGenerated(source, generated)).match(value -> value, Optional::of)
                 .ifPresent(error -> System.err.println(error.display()));
     }
 
-    private static Node format(Node node) {
-        if (!node.is("group")) return node;
+    private static Tuple<State, Node> format(State state, Node node) {
+        if (!node.is("group")) return new Tuple<>(state, node);
 
         final var oldChildren = node.findNodeList("children");
         final var newChildren = new ArrayList<Node>();
@@ -58,34 +58,56 @@ public class Main {
             newChildren.add(withString);
         }
 
-        return node.withNodeList("children", newChildren);
+        return new Tuple<>(state, node.withNodeList("children", newChildren));
     }
 
-    private static Node pass(Node node, Function<Node, Node> afterPass) {
-        final var withNodeLists = node.streamNodeLists().reduce(node, (node1, tuple) -> passNodeLists(node1, tuple, afterPass), (_, next) -> next);
-        final var withNodes = withNodeLists.streamNodes().reduce(withNodeLists, (node1, tuple) -> passNode(node1, tuple, afterPass), (_, next) -> next);
-        return afterPass.apply(withNodes);
+    private static Tuple<State, Node> pass(State state, Node node, BiFunction<State, Node, Tuple<State, Node>> afterPass) {
+        final var withNodeLists = node.streamNodeLists()
+                .reduce(new Tuple<>(state, node), (node1, tuple) -> passNodeLists(node1, tuple, afterPass), (_, next) -> next);
+        final var withNodes = withNodeLists.right().streamNodes().reduce(withNodeLists, (node1, tuple) -> passNode(node1, tuple, afterPass), (_, next) -> next);
+        return afterPass.apply(withNodes.left(), withNodes.right());
     }
 
-    private static Node passNode(Node node, Tuple<String, Node> tuple, Function<Node, Node> afterPass) {
-        final var key = tuple.left();
-        final var value = tuple.right();
-        final var passed = pass(value, afterPass);
-        return node.withNode(key, passed);
+    private static Tuple<State, Node> passNode(
+            Tuple<State, Node> current,
+            Tuple<String, Node> entry,
+            BiFunction<State, Node, Tuple<State, Node>> afterPass
+    ) {
+        final var oldState = current.left();
+        final var oldNode = current.right();
+
+        final var key = entry.left();
+        final var value = entry.right();
+
+        return pass(oldState, value, afterPass).mapRight(right -> oldNode.withNode(key, right));
     }
 
-    private static Node passNodeLists(Node node1, Tuple<String, List<Node>> tuple, Function<Node, Node> afterPass) {
-        final var key = tuple.left();
-        final var values = tuple.right();
-        var newChildren = new ArrayList<Node>();
+    private static Tuple<State, Node> passNodeLists(
+            Tuple<State, Node> current,
+            Tuple<String, List<Node>> entry,
+            BiFunction<State, Node, Tuple<State, Node>> afterPass
+    ) {
+        final var oldState = current.left();
+        final var oldChildren = current.right();
+
+        final var key = entry.left();
+        final var values = entry.right();
+
+        var currentState = oldState;
+        var currentChildren = new ArrayList<Node>();
         for (Node value : values) {
-            final var passed = pass(value, afterPass);
-            newChildren.add(passed);
+            final var passed = pass(currentState, value, afterPass);
+
+            currentState = passed.left();
+            currentChildren.add(passed.right());
         }
-        return node1.withNodeList(key, newChildren);
+
+        final var newNode = oldChildren.withNodeList(key, currentChildren);
+        return new Tuple<>(oldState, newNode);
     }
 
-    private static Node modify(Node node) {
+    private static Tuple<State, Node> modify(State state, Node node) {
+        Node result;
         if (node.is("group")) {
             final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>());
             final var newChildren = new ArrayList<Node>();
@@ -94,16 +116,17 @@ public class Main {
                 newChildren.add(oldChild);
             }
 
-            return node.withNodeList("children", newChildren);
+            result = node.withNodeList("children", newChildren);
         } else if (node.is("class")) {
-            return node.retype("struct");
+            result = node.retype("struct");
         } else if (node.is("import")) {
-            return node.retype("include");
+            result = node.retype("include");
         } else if (node.is("method")) {
-            return node.retype("function");
+            result = node.retype("function");
         } else {
-            return node;
+            result = node;
         }
+        return new Tuple<>(state, result);
     }
 
     private static Optional<ApplicationError> writeGenerated(Path source, String generated) {

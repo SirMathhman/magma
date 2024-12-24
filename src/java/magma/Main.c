@@ -26,7 +26,7 @@
 #include "java/util/Collections.h"
 #include "java/util/List.h"
 #include "java/util/Optional.h"
-#include "java/util/function/Function.h"
+#include "java/util/function/BiFunction.h"
 struct Main {void main(){}
 void format(){}
 void pass(){}
