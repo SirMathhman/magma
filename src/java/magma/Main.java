@@ -62,8 +62,13 @@ public class Main {
         return new NodeListRule("children", new OrRule(List.of(
                 createNamespacedRule("package", "package "),
                 createNamespacedRule("import", "import "),
-                new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new DiscardRule()))
+                createClassRule()
         )));
+    }
+
+    private static TypeRule createClassRule() {
+        final var name = new StringRule("name");
+        return new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new InfixRule(name, "{", new DiscardRule())));
     }
 
     private static Rule createNamespacedRule(String type, String prefix) {
