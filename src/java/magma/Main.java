@@ -52,29 +52,41 @@ public class Main {
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
         if (rootSegment.startsWith("package ")) return "";
-        if (rootSegment.startsWith("import ")) {
-            final var afterKeyword = rootSegment.substring("import ".length());
-            if (afterKeyword.endsWith(";")) {
-                final var namespace = Arrays.stream(afterKeyword.substring(0, afterKeyword.length() - ";".length())
-                                .split("\\."))
-                        .toList();
-
-                final var generated = generate(new Node(namespace));
-                if (generated.isPresent()) {
-                    return generated.get();
-                }
-            }
-        }
+        final var generated = truncateLeft(rootSegment, "import ");
+        if (generated.isPresent()) return generated.get();
 
         if (rootSegment.contains("class ")) return "struct Temp {}";
         throw new CompileException("Invalid root", rootSegment);
     }
 
-    private static Optional<String> generate(Node node) {
-        final var namespace = node.findNamespace();
-        if (namespace.isEmpty()) return Optional.empty();
+    private static Optional<String> truncateLeft(String rootSegment, String prefix) {
+        if (!rootSegment.startsWith(prefix)) return Optional.empty();
+        final var afterKeyword = rootSegment.substring(prefix.length());
+        return truncateRight(afterKeyword, ";");
+    }
 
-        final var namespaceString = String.join("/", namespace.get());
-        return Optional.of("#include <" + namespaceString + ".h>\n");
+    private static Optional<String> truncateRight(String afterKeyword, String suffix) {
+        if (afterKeyword.endsWith(suffix)) {
+            final var substring = afterKeyword.substring(0, afterKeyword.length() - suffix.length());
+
+            final var node = parseStringList(substring, "namespace");
+            if (node.isPresent()) {
+                final StringListRule namespace = new StringListRule("namespace", "/");
+                final var generated = createIncludesRule(namespace).generate(node.get());
+                if (generated.isPresent()) {
+                    return generated;
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static PrefixRule createIncludesRule(StringListRule namespace) {
+        return new PrefixRule("#include <", new SuffixRule(namespace, ".h>\n"));
+    }
+
+    private static Optional<Node> parseStringList(String input, String propertyKey) {
+        final var namespace = Arrays.stream(input.split("\\.")).toList();
+        return Optional.of(new Node().withStringList(propertyKey, namespace));
     }
 }
