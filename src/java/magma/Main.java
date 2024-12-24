@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) throws IOException, CompileException {
@@ -53,12 +55,26 @@ public class Main {
         if (rootSegment.startsWith("import ")) {
             final var afterKeyword = rootSegment.substring("import ".length());
             if (afterKeyword.endsWith(";")) {
-                final var namespace = afterKeyword.substring(0, afterKeyword.length() - 1)
-                        .replaceAll("\\.", "/");
-                return "#include <" + namespace + ".h>\n";
+                final var namespace = Arrays.stream(afterKeyword.substring(0, afterKeyword.length() - ";".length())
+                                .split("\\."))
+                        .toList();
+
+                final var generated = generate(new Node(namespace));
+                if (generated.isPresent()) {
+                    return generated.get();
+                }
             }
         }
+
         if (rootSegment.contains("class ")) return "struct Temp {}";
         throw new CompileException("Invalid root", rootSegment);
+    }
+
+    private static Optional<String> generate(Node node) {
+        final var namespace = node.findNamespace();
+        if (namespace.isEmpty()) return Optional.empty();
+
+        final var namespaceString = String.join("/", namespace.get());
+        return Optional.of("#include <" + namespaceString + ".h>\n");
     }
 }
