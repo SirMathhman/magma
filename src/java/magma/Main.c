@@ -25,4 +25,4 @@
 #include "java/util/ArrayList.h"
 #include "java/util/List.h"
 #include "java/util/Optional.h"
-struct Main {void main(){}void pass(){}void passNodeLists(){}void passNodeLists(){}void afterPass(){}void writeGenerated(){}void createCRootRule(){}void createStructMemberRule(){}void createJavaRootRule(){}void createClassRule(){}void createClassMemberRule(){}void createMethodRule(){}void createWhitespaceRule(){}void createNamespacedRule(){}void createIncludesRule(){}}
+struct Main {void main(){}void pass(){}void passNodeLists(){}void passNodeLists(){}void afterPass(){}void writeGenerated(){}void createCRootRule(){}void createStructRule(){}void createStructMemberRule(){}void createJavaRootRule(){}void createClassRule(){}void createClassMemberRule(){}void createMethodRule(){}void createWhitespaceRule(){}void createNamespacedRule(){}void createIncludesRule(){}}

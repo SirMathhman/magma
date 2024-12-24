@@ -95,13 +95,17 @@ public class Main {
     }
 
     private static Rule createCRootRule() {
-        final var name = new StringRule("name");
-        final var children = new NodeListRule("children", createStructMemberRule());
         return new TypeRule("group", new NodeListRule("children", new OrRule(List.of(
                 createIncludesRule(),
-                new TypeRule("struct", new PrefixRule("struct ", new SplitRule(name, new InfixSplitter(" {", new FirstLocator()), new SuffixRule(children, "}")))),
+                createStructRule(),
                 createWhitespaceRule()
         ))));
+    }
+
+    private static Rule createStructRule() {
+        final var name = new StringRule("name");
+        final var children = new NodeListRule("children", createStructMemberRule());
+        return new TypeRule("struct", new PrefixRule("struct ", new SplitRule(name, new InfixSplitter(" {", new FirstLocator()), new SuffixRule(children, "}"))));
     }
 
     private static Rule createStructMemberRule() {
