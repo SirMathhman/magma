@@ -1,21 +1,16 @@
 package magma;
 
-import java.util.Optional;
-
 public record SuffixRule(Rule childRule, String suffix) implements Rule {
     @Override
-    public Optional<Node> parse(String input) {
-        if (!input.endsWith(suffix())) return Optional.empty();
+    public Result<Node, CompileError> parse(String input) {
+        if (!input.endsWith(suffix()))
+            return new Err<>(new CompileError("Suffix '" + suffix + "' not present", new StringContext(input)));
         final var slice = input.substring(0, input.length() - suffix().length());
-        return getChildRule().parse(slice);
+        return childRule.parse(slice);
     }
 
     @Override
-    public Optional<String> generate(Node node) {
-        return childRule().generate(node).map(value -> value + suffix());
-    }
-
-    public Rule getChildRule() {
-        return childRule;
+    public Result<String, CompileError> generate(Node node) {
+        return childRule().generate(node).mapValue(value -> value + suffix());
     }
 }

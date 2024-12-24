@@ -2,72 +2,40 @@ package magma;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Main {
-    public static void main(String[] args) throws IOException, CompileException {
+    public static void main(String[] args) throws IOException {
         final var source = Paths.get(".", "src", "java", "magma", "Main.java");
         final var input = Files.readString(source);
-        final var output = compile(input);
-        final var target = source.resolveSibling("Main.c");
-        Files.writeString(target, output);
+
+        createJavaRootRule()
+                .parse(input)
+                .mapErr(ApplicationError::new)
+                .flatMapValue(parsed -> createCRootRule().generate(parsed).mapErr(ApplicationError::new))
+                .mapValue(generated -> writeGenerated(source, generated)).match(value -> value, Optional::of)
+                .ifPresent(error -> System.err.println(error.display()));
     }
 
-    private static String compile(String root) throws CompileException {
-        final var nodes = parse(root);
-        return getString(nodes);
+    private static Optional<ApplicationError> writeGenerated(Path source, String generated) {
+        try {
+            final var target = source.resolveSibling("Main.c");
+            Files.writeString(target, generated);
+            return Optional.empty();
+        } catch (IOException e) {
+            return Optional.of(new ApplicationError(new JavaError(e)));
+        }
     }
 
-    private static String getString(ArrayList<Node> nodes) throws CompileException {
-        var buffer1 = new StringBuilder();
-        for (Node node : nodes) {
-            final var generated = createCRootSegmentRule()
-                    .generate(node)
-                    .orElseThrow(() -> new CompileException("Cannot generate", node.toString()));
-
-            buffer1.append(generated);
-        }
-
-        return buffer1.toString();
+    private static NodeListRule createCRootRule() {
+        return new NodeListRule("children", createCRootSegmentRule());
     }
 
-    private static ArrayList<Node> parse(String root) throws CompileException {
-        final var segments = Results.unwrap(split(root));
-        var nodes = new ArrayList<Node>();
-        for (String segment : segments) {
-            final var parsed = createJavaRootSegmentRule()
-                    .parse(segment.strip())
-                    .orElseThrow(() -> new CompileException("Invalid root member", segment));
-            nodes.add(parsed);
-        }
-        return nodes;
-    }
-
-    private static Result<List<String>, CompileException> split(String root) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
-
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
-            buffer.append(c);
-            if (c == ';' && depth == 0) {
-                if (!buffer.isEmpty()) segments.add(buffer.toString());
-                buffer = new StringBuilder();
-            } else {
-                if (c == '{') depth++;
-                if (c == '}') depth--;
-            }
-        }
-
-        if (depth != 0) {
-            return new Err<>(new CompileException("Invalid depth"));
-        }
-
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
-        return new Ok<>(segments);
+    private static NodeListRule createJavaRootRule() {
+        return new NodeListRule("children", createJavaRootSegmentRule());
     }
 
     private static OrRule createCRootSegmentRule() {

@@ -4,12 +4,12 @@ import java.util.Optional;
 
 public class DiscardRule implements Rule {
     @Override
-    public Optional<Node> parse(String input) {
-        return Optional.of(new Node());
+    public Result<Node, CompileError> parse(String input) {
+        return new Ok<>(new Node());
     }
 
     @Override
-    public Optional<String> generate(Node node) {
-        return Optional.of("");
+    public Result<String, CompileError> generate(Node node) {
+        return new Ok<>("");
     }
 }

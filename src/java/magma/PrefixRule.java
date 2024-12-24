@@ -1,17 +1,16 @@
 package magma;
 
-import java.util.Optional;
-
 public record PrefixRule(String prefix, Rule childRule) implements Rule {
     @Override
-    public Optional<Node> parse(String input) {
-        if (!input.startsWith(prefix)) return Optional.empty();
+    public Result<Node, CompileError> parse(String input) {
+        if (!input.startsWith(prefix))
+            return new Err<>(new CompileError("Prefix '" + prefix + "' not present", new StringContext(input)));
         final var afterKeyword = input.substring(prefix.length());
         return childRule().parse(afterKeyword);
     }
 
     @Override
-    public Optional<String> generate(Node node) {
-        return childRule().generate(node).map(value -> prefix() + value);
+    public Result<String, CompileError> generate(Node node) {
+        return childRule().generate(node).mapValue(value -> prefix() + value);
     }
 }

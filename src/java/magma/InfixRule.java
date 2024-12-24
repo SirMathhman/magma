@@ -4,18 +4,18 @@ import java.util.Optional;
 
 public record InfixRule(Rule leftRule, String infix, Rule rightRule) implements Rule {
     @Override
-    public Optional<Node> parse(String input) {
+    public Result<Node, CompileError> parse(String input) {
         final var index = input.indexOf(input);
-        if (index == -1) return Optional.empty();
+        if (index == -1) return new Err<>(new CompileError("Infix '" + infix + "' not present", new StringContext(input)));
 
         final var leftSlice = input.substring(0, index);
         final var rightSlice = input.substring(index + infix.length());
 
-        return leftRule.parse(leftSlice).flatMap(parsedLeft -> rightRule.parse(rightSlice).map(parsedLeft::merge));
+        return leftRule.parse(leftSlice).flatMapValue(parsedLeft -> rightRule.parse(rightSlice).mapValue(parsedLeft::merge));
     }
 
     @Override
-    public Optional<String> generate(Node node) {
-        return leftRule.generate(node).flatMap(generatedLeft -> rightRule.generate(node).map(generatedRight -> generatedLeft + infix + generatedRight));
+    public Result<String, CompileError> generate(Node node) {
+        return leftRule.generate(node).flatMapValue(generatedLeft -> rightRule.generate(node).mapValue(generatedRight -> generatedLeft + infix + generatedRight));
     }
 }

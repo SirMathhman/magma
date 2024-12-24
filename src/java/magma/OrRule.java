@@ -1,26 +1,30 @@
 package magma;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public record OrRule(List<Rule> rules) implements Rule {
     @Override
-    public Optional<Node> parse(String input) {
+    public Result<Node, CompileError> parse(String input) {
+        var errors = new ArrayList<CompileError>();
         for (Rule rule : rules) {
             final var parsed = rule.parse(input);
-            if (parsed.isPresent()) return parsed;
+            if (parsed.isOk()) return parsed;
+            errors.add(parsed.findError().orElseThrow());
         }
 
-        return Optional.empty();
+        return new Err<>(new CompileError("No valid combination", new StringContext(input), errors));
     }
 
     @Override
-    public Optional<String> generate(Node node) {
+    public Result<String, CompileError> generate(Node node) {
+        var errors = new ArrayList<CompileError>();
         for (Rule rule : rules) {
             final var generated = rule.generate(node);
-            if (generated.isPresent()) return generated;
+            if (generated.isOk()) return generated;
+            errors.add(generated.findError().orElseThrow());
         }
 
-        return Optional.empty();
+        return new Err<>(new CompileError("No valid combination", new NodeContext(node), errors));
     }
 }
