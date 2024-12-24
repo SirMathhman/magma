@@ -18,7 +18,7 @@ public class Main {
         final var segments = split(root);
         var buffer = new StringBuilder();
         for (String segment : segments) {
-            buffer.append(compileRootSegment(segment));
+            buffer.append(compileRootSegment(segment.strip()));
         }
         return buffer.toString();
     }
@@ -38,9 +38,9 @@ public class Main {
         return segments;
     }
 
-    private static String compileRootSegment(String root) throws CompileException {
-        if (root.startsWith("package ")) return "";
-        if (root.startsWith("import ")) return "#include <temp.h>";
-        throw new CompileException("Invalid root", root);
+    private static String compileRootSegment(String rootSegment) throws CompileException {
+        if (rootSegment.startsWith("package ")) return "";
+        if (rootSegment.startsWith("import ")) return "#include <temp.h>";
+        throw new CompileException("Invalid root", rootSegment);
     }
 }
