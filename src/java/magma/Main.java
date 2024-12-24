@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,9 +16,24 @@ public class Main {
         createJavaRootRule()
                 .parse(input)
                 .mapErr(ApplicationError::new)
+                .mapValue(Main::pass)
                 .flatMapValue(parsed -> createCRootRule().generate(parsed).mapErr(ApplicationError::new))
                 .mapValue(generated -> writeGenerated(source, generated)).match(value -> value, Optional::of)
                 .ifPresent(error -> System.err.println(error.display()));
+    }
+
+    private static Node pass(Node node) {
+        final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>());
+        final var newChildren = new ArrayList<Node>();
+        for (Node oldChild : oldChildren) {
+            var newChild = oldChild.is("class")
+                    ? oldChild.retype("struct")
+                    : oldChild;
+
+            newChildren.add(newChild);
+        }
+
+        return node.withNodeList("children", newChildren);
     }
 
     private static Optional<ApplicationError> writeGenerated(Path source, String generated) {
@@ -31,25 +47,18 @@ public class Main {
     }
 
     private static NodeListRule createCRootRule() {
-        return new NodeListRule("children", createCRootSegmentRule());
+        return new NodeListRule("children", new OrRule(List.of(
+                createIncludesRule(),
+                new TypeRule("struct", new ExactRule("struct Temp {}"))
+        )));
     }
 
     private static NodeListRule createJavaRootRule() {
-        return new NodeListRule("children", createJavaRootSegmentRule());
-    }
-
-    private static OrRule createCRootSegmentRule() {
-        return new OrRule(List.of(
-                createIncludesRule(),
-                new TypeRule("struct", new ExactRule("struct Temp {}"))
-        ));
-    }
-
-    private static OrRule createJavaRootSegmentRule() {
-        return new OrRule(List.of(
+        return new NodeListRule("children", new OrRule(List.of(
                 createNamespacedRule("package", "package "),
-                createNamespacedRule("import", "import ")
-        ));
+                createNamespacedRule("import", "import "),
+                new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new DiscardRule()))
+        )));
     }
 
     private static Rule createNamespacedRule(String type, String prefix) {

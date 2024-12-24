@@ -21,10 +21,14 @@ public class CompileError implements Error {
 
     @Override
     public String display() {
+        return format(0);
+    }
+
+    private String format(int depth) {
         final var joinedErrors = errors.stream()
-                .map(Error::display)
+                .map(compileError -> compileError.format(depth + 1))
                 .collect(Collectors.joining());
 
-        return message + ": " + context.display() + joinedErrors;
+        return depth + ") " + message + ": " + context.display() + joinedErrors;
     }
 }
