@@ -1,3 +1,4 @@
+#include <magma/api/Tuple.h>
 #include <magma/compile/Node.h>
 #include <magma/compile/error/ApplicationError.h>
 #include <magma/compile/error/JavaError.h>
@@ -9,4 +10,4 @@
 #include <java/util/ArrayList.h>
 #include <java/util/List.h>
 #include <java/util/Optional.h>
-struct Main {}
+struct Main {void temp(){}void temp(){}void temp(){}void temp(){}void temp(){}void temp(){}void temp(){}void temp(){}void temp(){}void temp(){}void temp(){}void temp(){}void temp(){}void temp(){}}

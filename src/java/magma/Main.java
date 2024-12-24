@@ -1,5 +1,6 @@
 package magma;
 
+import magma.api.Tuple;
 import magma.compile.Node;
 import magma.compile.error.ApplicationError;
 import magma.compile.error.JavaError;
@@ -28,22 +29,44 @@ public class Main {
     }
 
     private static Node pass(Node node) {
-        final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>());
-        final var newChildren = new ArrayList<Node>();
-        for (Node oldChild : oldChildren) {
-            if (oldChild.is("package")) continue;
+        final var mapped = passNodeLists(node);
+        return afterPass(mapped);
+    }
 
-            Node newChild;
-            if (oldChild.is("class")) {
-                newChild = oldChild.retype("struct");
-            } else if (oldChild.is("import")) {
-                newChild = oldChild.retype("include");
-            } else newChild = oldChild;
+    private static Node passNodeLists(Node node) {
+        return node.streamNodeLists().reduce(node, Main::passNodeLists, (_, next) -> next);
+    }
 
-            newChildren.add(newChild);
+    private static Node passNodeLists(Node node1, Tuple<String, List<Node>> tuple) {
+        final var key = tuple.left();
+        final var values = tuple.right();
+        var newChildren = new ArrayList<Node>();
+        for (Node value : values) {
+            final var passed = pass(value);
+            newChildren.add(passed);
         }
+        return node1.withNodeList(key, newChildren);
+    }
 
-        return node.withNodeList("children", newChildren);
+    private static Node afterPass(Node node) {
+        if (node.is("group")) {
+            final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>());
+            final var newChildren = new ArrayList<Node>();
+            for (Node oldChild : oldChildren) {
+                if (oldChild.is("package")) continue;
+                newChildren.add(oldChild);
+            }
+
+            return node.withNodeList("children", newChildren);
+        } else if (node.is("class")) {
+            return node.retype("struct");
+        } else if (node.is("import")) {
+            return node.retype("include");
+        } else if(node.is("method")) {
+            return node.retype("function");
+        } else {
+            return node;
+        }
     }
 
     private static Optional<ApplicationError> writeGenerated(Path source, String generated) {
@@ -56,29 +79,30 @@ public class Main {
         }
     }
 
-    private static NodeListRule createCRootRule() {
+    private static Rule createCRootRule() {
         final var name = new StringRule("name");
         final var children = new NodeListRule("children", createStructMemberRule());
-        return new NodeListRule("children", new OrRule(List.of(
+        return new TypeRule("group", new NodeListRule("children", new OrRule(List.of(
                 createIncludesRule(),
                 new TypeRule("struct", new PrefixRule("struct ", new SplitRule(name, new InfixSplitter(" {", new FirstLocator()), new SuffixRule(children, "}")))),
                 createWhitespaceRule()
-        )));
+        ))));
     }
 
     private static Rule createStructMemberRule() {
         return new OrRule(List.of(
-
+                new TypeRule("function", new ExactRule("void temp(){}")),
+                createWhitespaceRule()
         ));
     }
 
-    private static NodeListRule createJavaRootRule() {
-        return new NodeListRule("children", new OrRule(List.of(
+    private static Rule createJavaRootRule() {
+        return new TypeRule("group", new NodeListRule("children", new OrRule(List.of(
                 createNamespacedRule("package", "package "),
                 createNamespacedRule("import", "import "),
                 createClassRule(),
                 createWhitespaceRule()
-        )));
+        ))));
     }
 
     private static TypeRule createClassRule() {

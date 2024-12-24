@@ -1,9 +1,12 @@
 package magma.compile;
 
+import magma.api.Tuple;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public record Node(
         Optional<String> type,
@@ -54,5 +57,11 @@ public record Node(
 
     public Optional<String> findString(String propertyKey) {
         return Optional.ofNullable(strings.get(propertyKey));
+    }
+
+    public Stream<Tuple<String, List<Node>>> streamNodeLists() {
+        return nodeLists.entrySet()
+                .stream()
+                .map(list -> new Tuple<>(list.getKey(), list.getValue()));
     }
 }
