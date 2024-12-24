@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) throws IOException, CompileException {
@@ -52,41 +50,23 @@ public class Main {
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
         if (rootSegment.startsWith("package ")) return "";
-        final var generated = truncateLeft(rootSegment, "import ");
+
+        final var generated = createImportRule()
+                .parse(rootSegment)
+                .flatMap(node -> createIncludesRule().generate(node));
         if (generated.isPresent()) return generated.get();
 
         if (rootSegment.contains("class ")) return "struct Temp {}";
         throw new CompileException("Invalid root", rootSegment);
     }
 
-    private static Optional<String> truncateLeft(String rootSegment, String prefix) {
-        if (!rootSegment.startsWith(prefix)) return Optional.empty();
-        final var afterKeyword = rootSegment.substring(prefix.length());
-        return truncateRight(afterKeyword, ";");
+    private static Rule createImportRule() {
+        final var namespace = new StringListRule("namespace", "\\.");
+        return new PrefixRule("import ", new SuffixRule(namespace, ";"));
     }
 
-    private static Optional<String> truncateRight(String afterKeyword, String suffix) {
-        if (afterKeyword.endsWith(suffix)) {
-            final var substring = afterKeyword.substring(0, afterKeyword.length() - suffix.length());
-
-            final var node = parseStringList(substring, "namespace");
-            if (node.isPresent()) {
-                final StringListRule namespace = new StringListRule("namespace", "/");
-                final var generated = createIncludesRule(namespace).generate(node.get());
-                if (generated.isPresent()) {
-                    return generated;
-                }
-            }
-        }
-        return Optional.empty();
-    }
-
-    private static PrefixRule createIncludesRule(StringListRule namespace) {
+    private static Rule createIncludesRule() {
+        final var namespace = new StringListRule("namespace", "/");
         return new PrefixRule("#include <", new SuffixRule(namespace, ".h>\n"));
-    }
-
-    private static Optional<Node> parseStringList(String input, String propertyKey) {
-        final var namespace = Arrays.stream(input.split("\\.")).toList();
-        return Optional.of(new Node().withStringList(propertyKey, namespace));
     }
 }

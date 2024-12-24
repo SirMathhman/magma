@@ -1,13 +1,10 @@
 package magma;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public record Node(Map<String, List<String>> stringLists) {
     public Node() {
-        this(Collections.emptyMap());
+        this(new HashMap<>());
     }
 
     public Optional<List<String>> findStringList(String propertyKey) {
