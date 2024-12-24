@@ -91,7 +91,7 @@ public class Main {
 
     private static Rule createStructMemberRule() {
         return new OrRule(List.of(
-                new TypeRule("function", new ExactRule("void temp(){}")),
+                new TypeRule("function", new PrefixRule("void ", new SuffixRule(new StringRule("name"), "(){}"))),
                 createWhitespaceRule()
         ));
     }
@@ -113,9 +113,14 @@ public class Main {
 
     private static Rule createClassMemberRule() {
         return new OrRule(List.of(
-                new TypeRule("method", new SplitRule(new DiscardRule(), new InfixSplitter("(", new FirstLocator()), new DiscardRule())),
+                createMethodRule(),
                 createWhitespaceRule()
         ));
+    }
+
+    private static TypeRule createMethodRule() {
+        final var beforeParams = new SplitRule(new DiscardRule(), new InfixSplitter(" ", new LastLocator()), new StringRule("name"));
+        return new TypeRule("method", new SplitRule(beforeParams, new InfixSplitter("(", new FirstLocator()), new DiscardRule()));
     }
 
     private static TypeRule createWhitespaceRule() {
