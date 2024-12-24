@@ -54,7 +54,8 @@ public class Main {
     private static NodeListRule createCRootRule() {
         return new NodeListRule("children", new OrRule(List.of(
                 createIncludesRule(),
-                new TypeRule("struct", new PrefixRule("struct ", new SuffixRule(new StringRule("name"), " {}")))
+                new TypeRule("struct", new PrefixRule("struct ", new SuffixRule(new StringRule("name"), " {}"))),
+                createWhitespaceRule()
         )));
     }
 
@@ -62,7 +63,8 @@ public class Main {
         return new NodeListRule("children", new OrRule(List.of(
                 createNamespacedRule("package", "package "),
                 createNamespacedRule("import", "import "),
-                createClassRule()
+                createClassRule(),
+                createWhitespaceRule()
         )));
     }
 
@@ -72,8 +74,15 @@ public class Main {
         return new TypeRule("class", new SplitRule(new DiscardRule(), new InfixSplitter("class ", new FirstLocator()), new SplitRule(name, new InfixSplitter("{", new FirstLocator()), new StripRule(new SuffixRule(children, "}")))));
     }
 
-    private static ExactRule createClassMemberRule() {
-        return new ExactRule("");
+    private static Rule createClassMemberRule() {
+        return new OrRule(List.of(
+                new TypeRule("method", new SplitRule(new DiscardRule(), new InfixSplitter("(", new FirstLocator()), new DiscardRule())),
+                createWhitespaceRule()
+        ));
+    }
+
+    private static TypeRule createWhitespaceRule() {
+        return new TypeRule("whitespace", new StripRule(new ExactRule("")));
     }
 
     private static Rule createNamespacedRule(String type, String prefix) {
