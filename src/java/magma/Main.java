@@ -16,6 +16,24 @@ public class Main {
     }
 
     private static String compile(String root) throws CompileException {
+        final var nodes = parse(root);
+        return getString(nodes);
+    }
+
+    private static String getString(ArrayList<Node> nodes) throws CompileException {
+        var buffer1 = new StringBuilder();
+        for (Node node : nodes) {
+            final var generated = createCRootSegmentRule()
+                    .generate(node)
+                    .orElseThrow(() -> new CompileException("Cannot generate", node.toString()));
+
+            buffer1.append(generated);
+        }
+
+        return buffer1.toString();
+    }
+
+    private static ArrayList<Node> parse(String root) throws CompileException {
         final var segments = split(root);
         var nodes = new ArrayList<Node>();
         for (String segment : segments) {
@@ -24,17 +42,7 @@ public class Main {
                     .orElseThrow(() -> new CompileException("Invalid root member", segment));
             nodes.add(parsed);
         }
-
-        var buffer = new StringBuilder();
-        for (Node node : nodes) {
-            final var generated = createCRootSegmentRule()
-                    .generate(node)
-                    .orElseThrow(() -> new CompileException("Cannot generate", node.toString()));
-
-            buffer.append(generated);
-        }
-
-        return buffer.toString();
+        return nodes;
     }
 
     private static ArrayList<String> split(String root) throws CompileException {
