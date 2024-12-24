@@ -54,7 +54,7 @@ public class Main {
     private static NodeListRule createCRootRule() {
         return new NodeListRule("children", new OrRule(List.of(
                 createIncludesRule(),
-                new TypeRule("struct", new ExactRule("struct Temp {}"))
+                new TypeRule("struct", new PrefixRule("struct ", new SuffixRule(new StringRule("name"), " {}")))
         )));
     }
 
@@ -67,8 +67,7 @@ public class Main {
     }
 
     private static TypeRule createClassRule() {
-        final var name = new StringRule("name");
-        return new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new InfixRule(name, "{", new DiscardRule())));
+        return new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new InfixRule(new StripRule(new SymbolRule(new StringRule("name"))), "{", new DiscardRule())));
     }
 
     private static Rule createNamespacedRule(String type, String prefix) {

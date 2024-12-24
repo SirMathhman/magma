@@ -1,16 +1,17 @@
 package magma.compile.rule;
 
+import magma.api.result.Err;
+import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.CompileError;
 import magma.compile.error.StringContext;
-import magma.api.result.Err;
-import magma.api.result.Result;
 
 public record InfixRule(Rule leftRule, String infix, Rule rightRule) implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
-        final var index = input.indexOf(input);
-        if (index == -1) return new Err<>(new CompileError("Infix '" + infix + "' not present", new StringContext(input)));
+        final var index = input.indexOf(infix);
+        if (index == -1)
+            return new Err<>(new CompileError("Infix '" + infix + "' not present", new StringContext(input)));
 
         final var leftSlice = input.substring(0, index);
         final var rightSlice = input.substring(index + infix.length());

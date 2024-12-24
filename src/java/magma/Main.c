@@ -10,4 +10,4 @@
 #include <java/util/ArrayList.h>
 #include <java/util/List.h>
 #include <java/util/Optional.h>
-struct Temp {}
+struct Main {}

@@ -24,7 +24,9 @@ public record Node(
     }
 
     public Node merge(Node other) {
+        strings.putAll(other.strings);
         stringLists.putAll(other.stringLists);
+        nodeLists.putAll(other.nodeLists);
         return this;
     }
 

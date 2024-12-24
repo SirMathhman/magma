@@ -27,7 +27,7 @@ public class CompileError implements Error {
     private String format(int depth) {
         final var joinedErrors = errors.stream()
                 .map(compileError -> compileError.format(depth + 1))
-                .collect(Collectors.joining());
+                .collect(Collectors.joining("\n"));
 
         return depth + ") " + message + ": " + context.display() + joinedErrors;
     }
