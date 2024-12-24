@@ -34,7 +34,7 @@ public class Main {
     }
 
     private static ArrayList<Node> parse(String root) throws CompileException {
-        final var segments = split(root);
+        final var segments = Results.unwrap(split(root));
         var nodes = new ArrayList<Node>();
         for (String segment : segments) {
             final var parsed = createJavaRootSegmentRule()
@@ -45,7 +45,7 @@ public class Main {
         return nodes;
     }
 
-    private static ArrayList<String> split(String root) throws CompileException {
+    private static Result<List<String>, CompileException> split(String root) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -63,11 +63,11 @@ public class Main {
         }
 
         if (depth != 0) {
-            throw new CompileException("Invalid depth");
+            return new Err<>(new CompileException("Invalid depth"));
         }
 
         if (!buffer.isEmpty()) segments.add(buffer.toString());
-        return segments;
+        return new Ok<>(segments);
     }
 
     private static OrRule createCRootSegmentRule() {
