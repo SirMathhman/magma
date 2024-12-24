@@ -1,4 +1,11 @@
-package magma;
+package magma.compile.rule;
+
+import magma.compile.Node;
+import magma.compile.error.CompileError;
+import magma.compile.error.NodeContext;
+import magma.compile.error.StringContext;
+import magma.api.result.Err;
+import magma.api.result.Result;
 
 import java.util.ArrayList;
 import java.util.List;

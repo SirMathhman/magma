@@ -1,6 +1,7 @@
-package magma;
+package magma.api.result;
 
-import java.util.ArrayList;
+import magma.api.Tuple;
+
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;

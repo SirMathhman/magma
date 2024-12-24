@@ -1,4 +1,4 @@
-package magma;
+package magma.compile.error;
 
 import java.util.Collections;
 import java.util.List;

@@ -1,4 +1,10 @@
-package magma;
+package magma.compile.rule;
+
+import magma.compile.Node;
+import magma.compile.error.CompileError;
+import magma.compile.error.NodeContext;
+import magma.api.result.Err;
+import magma.api.result.Result;
 
 public record TypeRule(String type, Rule childRule) implements Rule {
     @Override

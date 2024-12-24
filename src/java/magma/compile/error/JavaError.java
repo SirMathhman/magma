@@ -1,6 +1,4 @@
-package magma;
-
-import java.io.IOException;
+package magma.compile.error;
 
 public record JavaError(Exception exception) implements Error {
     @Override

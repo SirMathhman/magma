@@ -1,4 +1,4 @@
-package magma;
+package magma.api.result;
 
 public class Results {
     public static <T, X extends Exception> T unwrap(Result<T, X> result) throws X {

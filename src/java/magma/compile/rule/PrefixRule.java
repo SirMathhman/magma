@@ -1,4 +1,10 @@
-package magma;
+package magma.compile.rule;
+
+import magma.compile.Node;
+import magma.compile.error.CompileError;
+import magma.compile.error.StringContext;
+import magma.api.result.Err;
+import magma.api.result.Result;
 
 public record PrefixRule(String prefix, Rule childRule) implements Rule {
     @Override

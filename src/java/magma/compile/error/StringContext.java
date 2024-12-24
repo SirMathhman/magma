@@ -1,4 +1,4 @@
-package magma;
+package magma.compile.error;
 
 public class StringContext implements Context {
     private final String value;

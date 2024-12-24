@@ -1,6 +1,10 @@
-package magma;
+package magma.compile.rule;
 
-import java.util.Optional;
+import magma.compile.Node;
+import magma.compile.error.CompileError;
+import magma.compile.error.StringContext;
+import magma.api.result.Err;
+import magma.api.result.Result;
 
 public record InfixRule(Rule leftRule, String infix, Rule rightRule) implements Rule {
     @Override

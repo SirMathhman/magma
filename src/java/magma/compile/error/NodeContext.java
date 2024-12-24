@@ -1,4 +1,6 @@
-package magma;
+package magma.compile.error;
+
+import magma.compile.Node;
 
 public class NodeContext implements Context {
     private final Node node;
