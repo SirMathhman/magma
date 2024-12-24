@@ -4,7 +4,22 @@ import magma.api.Tuple;
 import magma.compile.Node;
 import magma.compile.error.ApplicationError;
 import magma.compile.error.JavaError;
-import magma.compile.rule.*;
+import magma.compile.rule.DiscardRule;
+import magma.compile.rule.ExactRule;
+import magma.compile.rule.FirstLocator;
+import magma.compile.rule.InfixSplitter;
+import magma.compile.rule.LastLocator;
+import magma.compile.rule.NodeListRule;
+import magma.compile.rule.OrRule;
+import magma.compile.rule.PrefixRule;
+import magma.compile.rule.Rule;
+import magma.compile.rule.SplitRule;
+import magma.compile.rule.StringListRule;
+import magma.compile.rule.StringRule;
+import magma.compile.rule.StripRule;
+import magma.compile.rule.SuffixRule;
+import magma.compile.rule.SymbolRule;
+import magma.compile.rule.TypeRule;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,7 +77,7 @@ public class Main {
             return node.retype("struct");
         } else if (node.is("import")) {
             return node.retype("include");
-        } else if(node.is("method")) {
+        } else if (node.is("method")) {
             return node.retype("function");
         } else {
             return node;
