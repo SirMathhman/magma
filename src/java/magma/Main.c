@@ -1,4 +1,3 @@
-#include <magma.h>
 #include <magma/compile/Node.h>
 #include <magma/compile/error/ApplicationError.h>
 #include <magma/compile/error/JavaError.h>

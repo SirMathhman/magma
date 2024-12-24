@@ -31,9 +31,14 @@ public class Main {
         final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>());
         final var newChildren = new ArrayList<Node>();
         for (Node oldChild : oldChildren) {
-            var newChild = oldChild.is("class")
-                    ? oldChild.retype("struct")
-                    : oldChild;
+            if (oldChild.is("package")) continue;
+
+            Node newChild;
+            if (oldChild.is("class")) {
+                newChild = oldChild.retype("struct");
+            } else if (oldChild.is("import")) {
+                newChild = oldChild.retype("include");
+            } else newChild = oldChild;
 
             newChildren.add(newChild);
         }
@@ -52,11 +57,19 @@ public class Main {
     }
 
     private static NodeListRule createCRootRule() {
+        final var name = new StringRule("name");
+        final var children = new NodeListRule("children", createStructMemberRule());
         return new NodeListRule("children", new OrRule(List.of(
                 createIncludesRule(),
-                new TypeRule("struct", new PrefixRule("struct ", new SuffixRule(new StringRule("name"), " {}"))),
+                new TypeRule("struct", new PrefixRule("struct ", new SplitRule(name, new InfixSplitter(" {", new FirstLocator()), new SuffixRule(children, "}")))),
                 createWhitespaceRule()
         )));
+    }
+
+    private static Rule createStructMemberRule() {
+        return new OrRule(List.of(
+
+        ));
     }
 
     private static NodeListRule createJavaRootRule() {
@@ -92,6 +105,6 @@ public class Main {
 
     private static Rule createIncludesRule() {
         final var namespace = new StringListRule("namespace", "/");
-        return new PrefixRule("#include <", new SuffixRule(namespace, ".h>\n"));
+        return new TypeRule("include", new PrefixRule("#include <", new SuffixRule(namespace, ".h>\n")));
     }
 }

@@ -30,9 +30,10 @@ public class CompileError implements Error {
 
         final var joinedErrors = errors.stream()
                 .map(compileError -> compileError.format(depth + 1))
-                .collect(Collectors.joining("\n"));
+                .map(value -> "\n" + value)
+                .collect(Collectors.joining());
 
-        return depth + ") " + message + ": " + context.display() + joinedErrors;
+        return " ".repeat(depth) + depth + ") " + message + ": " + context.display() + joinedErrors;
     }
 
     private int computeMaxDepth() {

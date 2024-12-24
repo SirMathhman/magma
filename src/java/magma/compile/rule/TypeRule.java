@@ -6,6 +6,8 @@ import magma.compile.error.NodeContext;
 import magma.api.result.Err;
 import magma.api.result.Result;
 
+import java.util.Collections;
+
 public record TypeRule(String type, Rule childRule) implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
@@ -16,6 +18,6 @@ public record TypeRule(String type, Rule childRule) implements Rule {
     public Result<String, CompileError> generate(Node node) {
         if (!node.is(type))
             return new Err<>(new CompileError("Type '" + type + "' not present", new NodeContext(node)));
-        return childRule.generate(node);
+        return childRule.generate(node).mapErr(err -> new CompileError("Cannot assign type '" + type + "'", new NodeContext(node), Collections.singletonList(err)));
     }
 }
