@@ -8,11 +8,19 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) throws IOException, CompileException {
         final var source = Paths.get(".", "src", "java", "magma", "Main.java");
-        final var root = Files.readString(source);
+        final var input = Files.readString(source);
+        final var output = compile(input);
+        final var target = source.resolveSibling("Main.c");
+        Files.writeString(target, output);
+    }
+
+    private static String compile(String root) throws CompileException {
         final var segments = split(root);
+        var buffer = new StringBuilder();
         for (String segment : segments) {
-            compileRootSegment(segment);
+            buffer.append(compileRootSegment(segment));
         }
+        return buffer.toString();
     }
 
     private static ArrayList<String> split(String root) {
@@ -30,7 +38,8 @@ public class Main {
         return segments;
     }
 
-    private static void compileRootSegment(String root) throws CompileException {
+    private static String compileRootSegment(String root) throws CompileException {
+        if (root.startsWith("package ")) return "";
         throw new CompileException("Invalid root", root);
     }
 }
