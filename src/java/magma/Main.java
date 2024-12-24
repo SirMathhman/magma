@@ -26,8 +26,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -37,33 +39,53 @@ public class Main {
         createJavaRootRule()
                 .parse(input)
                 .mapErr(ApplicationError::new)
-                .mapValue(Main::pass)
+                .mapValue(node -> pass(node, Main::modify))
+                .mapValue(node -> pass(node, Main::format))
                 .flatMapValue(parsed -> createCRootRule().generate(parsed).mapErr(ApplicationError::new))
                 .mapValue(generated -> writeGenerated(source, generated)).match(value -> value, Optional::of)
                 .ifPresent(error -> System.err.println(error.display()));
     }
 
-    private static Node pass(Node node) {
-        final var mapped = passNodeLists(node);
-        return afterPass(mapped);
+    private static Node format(Node node) {
+        if (!node.is("group")) return node;
+
+        final var oldChildren = node.findNodeList("children");
+        final var newChildren = new ArrayList<Node>();
+        List<Node> orElse = oldChildren.orElse(Collections.emptyList());
+        for (int i = 0; i < orElse.size(); i++) {
+            Node child = orElse.get(i);
+            Node withString = i == 0 ? child : child.withString("before-child", "\n");
+            newChildren.add(withString);
+        }
+
+        return node.withNodeList("children", newChildren);
     }
 
-    private static Node passNodeLists(Node node) {
-        return node.streamNodeLists().reduce(node, Main::passNodeLists, (_, next) -> next);
+    private static Node pass(Node node, Function<Node, Node> afterPass) {
+        final var withNodeLists = node.streamNodeLists().reduce(node, (node1, tuple) -> passNodeLists(node1, tuple, afterPass), (_, next) -> next);
+        final var withNodes = withNodeLists.streamNodes().reduce(withNodeLists, (node1, tuple) -> passNode(node1, tuple, afterPass), (_, next) -> next);
+        return afterPass.apply(withNodes);
     }
 
-    private static Node passNodeLists(Node node1, Tuple<String, List<Node>> tuple) {
+    private static Node passNode(Node node, Tuple<String, Node> tuple, Function<Node, Node> afterPass) {
+        final var key = tuple.left();
+        final var value = tuple.right();
+        final var passed = pass(value, afterPass);
+        return node.withNode(key, passed);
+    }
+
+    private static Node passNodeLists(Node node1, Tuple<String, List<Node>> tuple, Function<Node, Node> afterPass) {
         final var key = tuple.left();
         final var values = tuple.right();
         var newChildren = new ArrayList<Node>();
         for (Node value : values) {
-            final var passed = pass(value);
+            final var passed = pass(value, afterPass);
             newChildren.add(passed);
         }
         return node1.withNodeList(key, newChildren);
     }
 
-    private static Node afterPass(Node node) {
+    private static Node modify(Node node) {
         if (node.is("group")) {
             final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>());
             final var newChildren = new ArrayList<Node>();
@@ -95,17 +117,26 @@ public class Main {
     }
 
     private static Rule createCRootRule() {
-        return new TypeRule("group", new NodeListRule("children", new OrRule(List.of(
+        return createGroupRule(createCRootMemberRule());
+    }
+
+    private static OrRule createCRootMemberRule() {
+        return new OrRule(List.of(
                 createIncludesRule(),
                 createStructRule(),
                 createWhitespaceRule()
-        ))));
+        ));
     }
 
     private static Rule createStructRule() {
         final var name = new StringRule("name");
-        final var children = new NodeListRule("children", createStructMemberRule());
-        return new TypeRule("struct", new PrefixRule("struct ", new SplitRule(name, new InfixSplitter(" {", new FirstLocator()), new SuffixRule(children, "}"))));
+        final var value = new NodeRule("value", createGroupRule(createStructMemberRule()));
+        return new TypeRule("struct", new PrefixRule("struct ", new SplitRule(name, new InfixSplitter(" {", new FirstLocator()), new SuffixRule(value, "}"))));
+    }
+
+    private static Rule createGroupRule(Rule childRule) {
+        final var children = new NodeListRule("children", new StripRule("before-child", childRule, "after-child"));
+        return new TypeRule("group", new StripRule("before-children", children, ""));
     }
 
     private static Rule createStructMemberRule() {
@@ -126,8 +157,8 @@ public class Main {
 
     private static TypeRule createClassRule() {
         final var name = new StripRule(new SymbolRule(new StringRule("name")));
-        final var children = new NodeListRule("children", createClassMemberRule());
-        return new TypeRule("class", new SplitRule(new DiscardRule(), new InfixSplitter("class ", new FirstLocator()), new SplitRule(name, new InfixSplitter("{", new FirstLocator()), new StripRule(new SuffixRule(children, "}")))));
+        final var value = new NodeRule("value", createGroupRule(createClassMemberRule()));
+        return new TypeRule("class", new SplitRule(new DiscardRule(), new InfixSplitter("class ", new FirstLocator()), new SplitRule(name, new InfixSplitter("{", new FirstLocator()), new StripRule(new SuffixRule(value, "}")))));
     }
 
     private static Rule createClassMemberRule() {
@@ -153,6 +184,6 @@ public class Main {
 
     private static Rule createIncludesRule() {
         final var namespace = new StringListRule("namespace", "/");
-        return new TypeRule("include", new PrefixRule("#include \"", new SuffixRule(namespace, ".h\"\n")));
+        return new TypeRule("include", new PrefixRule("#include \"", new SuffixRule(namespace, ".h\"")));
     }
 }

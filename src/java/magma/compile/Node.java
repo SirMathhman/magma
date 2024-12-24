@@ -10,11 +10,13 @@ import java.util.stream.Stream;
 
 public record Node(
         Optional<String> type,
-        Map<String, String> strings, Map<String, List<String>> stringLists,
+        Map<String, String> strings,
+        Map<String, List<String>> stringLists,
+        Map<String, Node> nodes,
         Map<String, List<Node>> nodeLists
 ) {
     public Node() {
-        this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>());
+        this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
     public Optional<List<String>> findStringList(String propertyKey) {
@@ -29,12 +31,13 @@ public record Node(
     public Node merge(Node other) {
         strings.putAll(other.strings);
         stringLists.putAll(other.stringLists);
+        nodes.putAll(other.nodes);
         nodeLists.putAll(other.nodeLists);
         return this;
     }
 
     public Node retype(String type) {
-        return new Node(Optional.of(type), strings, stringLists, nodeLists);
+        return new Node(Optional.of(type), strings, stringLists, nodes, nodeLists);
     }
 
     public boolean is(String type) {
@@ -63,5 +66,20 @@ public record Node(
         return nodeLists.entrySet()
                 .stream()
                 .map(list -> new Tuple<>(list.getKey(), list.getValue()));
+    }
+
+    public Node withNode(String propertyKey, Node propertyValue) {
+        nodes.put(propertyKey, propertyValue);
+        return this;
+    }
+
+    public Optional<Node> findNode(String propertyKey) {
+        return Optional.ofNullable(nodes.get(propertyKey));
+    }
+
+    public Stream<Tuple<String, Node>> streamNodes() {
+        return nodes.entrySet()
+                .stream()
+                .map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));
     }
 }

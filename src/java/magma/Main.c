@@ -23,6 +23,26 @@
 #include "java/nio/file/Path.h"
 #include "java/nio/file/Paths.h"
 #include "java/util/ArrayList.h"
+#include "java/util/Collections.h"
 #include "java/util/List.h"
 #include "java/util/Optional.h"
-struct Main {void main(){}void pass(){}void passNodeLists(){}void passNodeLists(){}void afterPass(){}void writeGenerated(){}void createCRootRule(){}void createStructRule(){}void createStructMemberRule(){}void createJavaRootRule(){}void createClassRule(){}void createClassMemberRule(){}void createMethodRule(){}void createWhitespaceRule(){}void createNamespacedRule(){}void createIncludesRule(){}}
+#include "java/util/function/Function.h"
+struct Main {void main(){}
+void format(){}
+void pass(){}
+void passNode(){}
+void passNodeLists(){}
+void modify(){}
+void writeGenerated(){}
+void createCRootRule(){}
+void createCRootMemberRule(){}
+void createStructRule(){}
+void createGroupRule(){}
+void createStructMemberRule(){}
+void createJavaRootRule(){}
+void createClassRule(){}
+void createClassMemberRule(){}
+void createMethodRule(){}
+void createWhitespaceRule(){}
+void createNamespacedRule(){}
+void createIncludesRule(){}}
