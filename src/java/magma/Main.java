@@ -69,7 +69,7 @@ public class Main {
     private static TypeRule createClassRule() {
         final var name = new StripRule(new SymbolRule(new StringRule("name")));
         final var children = new NodeListRule("children", createClassMemberRule());
-        return new TypeRule("class", new InfixRule(new DiscardRule(), "class ", new InfixRule(name, "{", new StripRule(new SuffixRule(children, "}")))));
+        return new TypeRule("class", new SplitRule(new DiscardRule(), new InfixSplitter("class ", new FirstLocator()), new SplitRule(name, new InfixSplitter("{", new FirstLocator()), new StripRule(new SuffixRule(children, "}")))));
     }
 
     private static ExactRule createClassMemberRule() {
