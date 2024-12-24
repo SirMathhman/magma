@@ -27,7 +27,8 @@
 #include "java/util/List.h"
 #include "java/util/Optional.h"
 #include "java/util/function/BiFunction.h"
-struct Main{void main(){}
+struct Main {
+	void main(){}
 	void formatBefore(){}
 	void formatAfter(){}
 	void pass(){}
@@ -47,4 +48,6 @@ struct Main{void main(){}
 	void createMethodRule(){}
 	void createWhitespaceRule(){}
 	void createNamespacedRule(){}
-	void createIncludesRule(){}}
+	void createIncludesRule(){}
+}
+

@@ -62,15 +62,18 @@ public class Main {
             for (int i = 0; i < orElse.size(); i++) {
                 Node child = orElse.get(i);
                 Node withString;
-                if (i == 0) withString = child;
-                else {
+                if (state.depth() == 0 && i == 0) {
+                    withString = child;
+                } else {
                     final var indent = "\n" + "\t".repeat(state.depth());
                     withString = child.withString("before-child", indent);
                 }
                 newChildren.add(withString);
             }
 
-            return new Tuple<>(state, node.withNodeList("children", newChildren));
+            return new Tuple<>(state, node
+                    .withNodeList("children", newChildren)
+                    .withString("after-children", "\n" + "\t".repeat(Math.max(state.depth() - 1, 0))));
         } else if (node.is("block")) {
             return new Tuple<>(state.exit(), node);
         } else {
@@ -189,7 +192,7 @@ public class Main {
 
     private static Rule createGroupRule(Rule childRule) {
         final var children = new NodeListRule("children", new StripRule("before-child", childRule, "after-child"));
-        return new TypeRule("group", new StripRule("before-children", children, ""));
+        return new TypeRule("group", new StripRule("before-children", children, "after-children"));
     }
 
     private static Rule createStructMemberRule() {
@@ -217,7 +220,7 @@ public class Main {
     private static SplitRule wrapInBlock(Rule beforeBlock, Rule blockMember) {
         final var value = new NodeRule("value", createGroupRule(blockMember));
         final var blockRule = new TypeRule("block", value);
-        return new SplitRule(beforeBlock, new InfixSplitter("{", new FirstLocator()), new StripRule(new SuffixRule(new NodeRule("value", blockRule), "}")));
+        return new SplitRule(beforeBlock, new InfixSplitter(" {", new FirstLocator()), new StripRule(new SuffixRule(new NodeRule("value", blockRule), "}")));
     }
 
     private static Rule createClassMemberRule() {
