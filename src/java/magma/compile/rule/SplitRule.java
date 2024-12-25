@@ -1,8 +1,12 @@
 package magma.compile.rule;
 
+import magma.api.Tuple;
+import magma.api.result.Err;
 import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.CompileError;
+
+import java.util.ArrayList;
 
 public final class SplitRule implements Rule {
     private final Rule leftRule;
@@ -17,9 +21,22 @@ public final class SplitRule implements Rule {
 
     @Override
     public Result<Node, CompileError> parse(String input) {
-        return splitter.split(input).flatMapValue(
-                tuple -> leftRule.parse(tuple.left()).flatMapValue(
-                        parsedLeft -> rightRule.parse(tuple.right()).mapValue(parsedLeft::merge)));
+        final var pairs = splitter.split(input).toList();
+
+        // TODO: duplicate logic in OrRule
+        var errors = new ArrayList<CompileError>();
+        for (Tuple<String, String> pair : pairs) {
+            final var parsedLeft = leftRule.parse(pair.left());
+            final var parsedRight = rightRule.parse(pair.right());
+            final var result = parsedLeft.and(() -> parsedRight).mapValue(tuple -> tuple.left().merge(tuple.right()));
+            if (result.isOk()) {
+                return result;
+            } else {
+                errors.add(result.findError().orElseThrow());
+            }
+        }
+
+        return new Err<>(splitter.createError(input, errors));
     }
 
     @Override

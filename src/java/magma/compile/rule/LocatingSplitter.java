@@ -1,34 +1,34 @@
 package magma.compile.rule;
 
 import magma.api.Tuple;
-import magma.api.result.Err;
-import magma.api.result.Ok;
-import magma.api.result.Result;
 import magma.compile.error.CompileError;
 import magma.compile.error.StringContext;
+import magma.compile.rule.locate.Locator;
 
-public final class InfixSplitter implements Splitter {
+import java.util.List;
+import java.util.stream.Stream;
+
+public final class LocatingSplitter implements Splitter {
     private final String infix;
     private final Locator locator;
 
-    public InfixSplitter(String infix, Locator locator) {
+    public LocatingSplitter(String infix, Locator locator) {
         this.infix = infix;
         this.locator = locator;
     }
 
-    CompileError createError(String input) {
+    @Override
+    public CompileError createError(String input, List<CompileError> errors) {
         final var format = "Infix '%s' not present";
         final var message = format.formatted(infix);
         final var context = new StringContext(input);
-        return new CompileError(message, context);
+        return new CompileError(message, context, errors);
     }
 
     @Override
-    public Result<Tuple<String, String>, CompileError> split(String input) {
+    public Stream<Tuple<String, String>> split(String input) {
         return locator.locate(input, infix)
-                .map(index -> splitAtIndex(input, index))
-                .<Result<Tuple<String, String>, CompileError>>map(Ok::new)
-                .orElseGet(() -> new Err<>(createError(input)));
+                .map(index -> splitAtIndex(input, index));
     }
 
     private Tuple<String, String> splitAtIndex(String input, int index) {

@@ -6,9 +6,10 @@ import magma.compile.error.ApplicationError;
 import magma.compile.error.JavaError;
 import magma.compile.rule.DiscardRule;
 import magma.compile.rule.ExactRule;
-import magma.compile.rule.FirstLocator;
-import magma.compile.rule.InfixSplitter;
-import magma.compile.rule.LastLocator;
+import magma.compile.rule.locate.BackwardsLocator;
+import magma.compile.rule.locate.FirstLocator;
+import magma.compile.rule.LocatingSplitter;
+import magma.compile.rule.locate.LastLocator;
 import magma.compile.rule.NodeListRule;
 import magma.compile.rule.OrRule;
 import magma.compile.rule.PrefixRule;
@@ -204,7 +205,7 @@ public class Main {
 
     private static TypeRule createFunctionRule() {
         final var type = new NodeRule("type", createTypeRule());
-        return new TypeRule("function", new SplitRule(type, new InfixSplitter(" ", new FirstLocator()), new SuffixRule(new StringRule("name"), "(){}")));
+        return new TypeRule("function", new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), new SuffixRule(new StringRule("name"), "(){}")));
     }
 
     private static Rule createJavaRootRule() {
@@ -219,13 +220,13 @@ public class Main {
     private static TypeRule createClassRule() {
         final var name = new StripRule(new SymbolRule(new StringRule("name")));
         final var rightRule = wrapInBlock(name, createClassMemberRule());
-        return new TypeRule("class", new SplitRule(new DiscardRule(), new InfixSplitter("class ", new FirstLocator()), rightRule));
+        return new TypeRule("class", new SplitRule(new DiscardRule(), new LocatingSplitter("class ", new FirstLocator()), rightRule));
     }
 
     private static SplitRule wrapInBlock(Rule beforeBlock, Rule blockMember) {
         final var value = new NodeRule("value", createGroupRule(blockMember));
         final var blockRule = new TypeRule("block", value);
-        return new SplitRule(beforeBlock, new InfixSplitter(" {", new FirstLocator()), new StripRule(new SuffixRule(new NodeRule("value", blockRule), "}")));
+        return new SplitRule(beforeBlock, new LocatingSplitter(" {", new FirstLocator()), new StripRule(new SuffixRule(new NodeRule("value", blockRule), "}")));
     }
 
     private static Rule createClassMemberRule() {
@@ -237,9 +238,9 @@ public class Main {
 
     private static TypeRule createMethodRule() {
         final var type = new NodeRule("type", createTypeRule());
-        final var leftRule = new SplitRule(new DiscardRule(), new InfixSplitter(" ", new LastLocator()), type);
-        final var beforeParams = new SplitRule(leftRule, new InfixSplitter(" ", new LastLocator()), new StringRule("name"));
-        return new TypeRule("method", new SplitRule(beforeParams, new InfixSplitter("(", new FirstLocator()), new DiscardRule()));
+        final var leftRule = new SplitRule(new DiscardRule(), new LocatingSplitter(" ", new BackwardsLocator()), type);
+        final var beforeParams = new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), new StringRule("name"));
+        return new TypeRule("method", new SplitRule(beforeParams, new LocatingSplitter("(", new FirstLocator()), new DiscardRule()));
     }
 
     private static TypeRule createTypeRule() {
