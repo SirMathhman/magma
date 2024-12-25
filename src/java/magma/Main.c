@@ -47,6 +47,7 @@ struct Main {
 	SplitRule wrapInBlock(){}
 	Rule createClassMemberRule(){}
 	TypeRule createMethodRule(){}
+	TypeRule createTypeRule(){}
 	TypeRule createWhitespaceRule(){}
 	Rule createNamespacedRule(){}
 	Rule createIncludesRule(){}

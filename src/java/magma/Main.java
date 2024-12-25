@@ -203,7 +203,8 @@ public class Main {
     }
 
     private static TypeRule createFunctionRule() {
-        return new TypeRule("function", new SplitRule(new StringRule("type"), new InfixSplitter(" ", new FirstLocator()), new SuffixRule(new StringRule("name"), "(){}")));
+        final var type = new NodeRule("type", createTypeRule());
+        return new TypeRule("function", new SplitRule(type, new InfixSplitter(" ", new FirstLocator()), new SuffixRule(new StringRule("name"), "(){}")));
     }
 
     private static Rule createJavaRootRule() {
@@ -235,9 +236,14 @@ public class Main {
     }
 
     private static TypeRule createMethodRule() {
-        final var leftRule = new SplitRule(new DiscardRule(), new InfixSplitter(" ", new LastLocator()), new StringRule("type"));
+        final var type = new NodeRule("type", createTypeRule());
+        final var leftRule = new SplitRule(new DiscardRule(), new InfixSplitter(" ", new LastLocator()), type);
         final var beforeParams = new SplitRule(leftRule, new InfixSplitter(" ", new LastLocator()), new StringRule("name"));
         return new TypeRule("method", new SplitRule(beforeParams, new InfixSplitter("(", new FirstLocator()), new DiscardRule()));
+    }
+
+    private static TypeRule createTypeRule() {
+        return new TypeRule("symbol", new SymbolRule(new StringRule("value")));
     }
 
     private static TypeRule createWhitespaceRule() {
