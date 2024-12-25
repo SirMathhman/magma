@@ -1,110 +1,58 @@
 package magma.compile.rule;
 
-import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.CompileError;
-import magma.compile.error.StringContext;
+import magma.compile.rule.split.Splitter;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Optional;
 
-public record NodeListRule(String propertyKey, Rule childRule) implements Rule {
-    static Result<List<String>, CompileError> split(String root) {
-        var queue = IntStream.range(0, root.length())
-                .mapToObj(root::charAt)
-                .collect(Collectors.toCollection(LinkedList::new));
+public final class NodeListRule implements Rule {
+    private final String propertyKey;
+    private final Rule childRule;
+    private final Splitter splitter;
 
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
-
-        while (!queue.isEmpty()) {
-            var c = queue.pop();
-            buffer.append(c);
-            if (c == '\'' && !queue.isEmpty()) {
-                final var next = queue.pop();
-                buffer.append(next);
-
-                if (next == '\\') {
-                    if (!queue.isEmpty()) buffer.append(queue.pop());
-                }
-
-                if (!queue.isEmpty()) buffer.append(queue.pop());
-            } else if (c == '\"') {
-                while (!queue.isEmpty()) {
-                    final var next = queue.pop();
-                    buffer.append(next);
-
-                    if (next == '\"') {
-                        break;
-                    } else if (next == '\\') {
-                        if (!queue.isEmpty()) {
-                            buffer.append(queue.pop());
-                        }
-                    }
-                }
-            } else {
-                if (c == ';' && depth == 0) {
-                    advance(buffer, segments);
-                    buffer = new StringBuilder();
-                } else if (c == '}' && depth == 1) {
-                    depth--;
-                    advance(buffer, segments);
-                    buffer = new StringBuilder();
-                } else {
-                    if (c == '{') depth++;
-                    if (c == '}') depth--;
-                }
-            }
-        }
-
-        if (depth != 0) {
-            return new Err<>(new CompileError("Invalid depth", new StringContext(root)));
-        }
-
-        advance(buffer, segments);
-        return new Ok<>(segments);
-    }
-
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
+    public NodeListRule(Splitter splitter, String propertyKey, Rule childRule) {
+        this.propertyKey = propertyKey;
+        this.childRule = childRule;
+        this.splitter = splitter;
     }
 
     @Override
     public Result<String, CompileError> generate(Node node) {
-        final var children = node.findNodeList(getPropertyKey()).orElseThrow();
+        final var children = node.findNodeList(propertyKey).orElseThrow();
 
-        Result<StringBuilder, CompileError> result = new Ok<>(new StringBuilder());
+        Result<Optional<StringBuilder>, CompileError> result = new Ok<>(Optional.empty());
         for (var child : children) {
-            result = result.and(() -> childRule().generate(child))
-                    .mapValue(tuple -> tuple.left().append(tuple.right()));
+            result = result.and(() -> childRule.generate(child)).mapValue(tuple -> {
+                final var maybeBuilder = tuple.left();
+                final var value = tuple.right();
+                return Optional.of(maybeBuilder.map(builder -> splitter.merge(builder, value)).orElse(new StringBuilder().append(value)));
+            });
         }
 
-        return result.mapValue(StringBuilder::toString);
+        return result.mapValue(builder -> builder.orElse(new StringBuilder())).mapValue(StringBuilder::toString);
     }
 
     @Override
     public Result<Node, CompileError> parse(String input) {
-        final var split = split(input);
-        return split.flatMapValue(segments -> {
-            Result<List<Node>, CompileError> result1 = new Ok<>(new ArrayList<>());
-            for (String segment : segments) {
-                result1 = result1.and(() -> childRule().parse(segment.strip()))
-                        .mapValue(tuple -> {
-                            tuple.left().add(tuple.right());
-                            return tuple.left();
-                        });
-            }
-            return result1;
-        }).mapValue(nodes -> new Node().withNodeList(propertyKey(), nodes));
+        return splitter.split(input)
+                .flatMapValue(this::parseSegments)
+                .mapValue(nodes -> new Node().withNodeList(propertyKey, nodes));
     }
 
-    public String getPropertyKey() {
-        return propertyKey;
+    private Result<List<Node>, CompileError> parseSegments(List<String> segments) {
+        Result<List<Node>, CompileError> result1 = new Ok<>(new ArrayList<>());
+        for (String segment : segments) {
+            result1 = result1.and(() -> childRule.parse(segment.strip()))
+                    .mapValue(tuple -> {
+                        tuple.left().add(tuple.right());
+                        return tuple.left();
+                    });
+        }
+        return result1;
     }
 }

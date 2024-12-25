@@ -4,9 +4,8 @@
 #include "magma/compile/error/JavaError.h"
 #include "magma/compile/rule/DiscardRule.h"
 #include "magma/compile/rule/ExactRule.h"
-#include "magma/compile/rule/FirstLocator.h"
-#include "magma/compile/rule/InfixSplitter.h"
-#include "magma/compile/rule/LastLocator.h"
+#include "magma/compile/rule/LazyRule.h"
+#include "magma/compile/rule/LocatingSplitter.h"
 #include "magma/compile/rule/NodeListRule.h"
 #include "magma/compile/rule/OrRule.h"
 #include "magma/compile/rule/PrefixRule.h"
@@ -18,6 +17,11 @@
 #include "magma/compile/rule/SuffixRule.h"
 #include "magma/compile/rule/SymbolRule.h"
 #include "magma/compile/rule/TypeRule.h"
+#include "magma/compile/rule/locate/BackwardsLocator.h"
+#include "magma/compile/rule/locate/FirstLocator.h"
+#include "magma/compile/rule/locate/LastLocator.h"
+#include "magma/compile/rule/split/StatementSplitter.h"
+#include "magma/compile/rule/split/TypeSplitter.h"
 #include "java/io/IOException.h"
 #include "java/nio/file/Files.h"
 #include "java/nio/file/Path.h"
@@ -29,12 +33,12 @@
 #include "java/util/function/BiFunction.h"
 struct Main {
 	void main(){}
-	Node> formatBefore(){}
-	Node> formatAfter(){}
-	Node> pass(){}
-	Node> passNode(){}
-	Node> passNodeLists(){}
-	Node> modify(){}
+	Tuple<State, Node> formatBefore(){}
+	Tuple<State, Node> formatAfter(){}
+	Tuple<State, Node> pass(){}
+	Tuple<State, Node> passNode(){}
+	Tuple<State, Node> passNodeLists(){}
+	Tuple<State, Node> modify(){}
 	Optional<ApplicationError> writeGenerated(){}
 	Rule createCRootRule(){}
 	OrRule createCRootMemberRule(){}
@@ -47,7 +51,9 @@ struct Main {
 	SplitRule wrapInBlock(){}
 	Rule createClassMemberRule(){}
 	TypeRule createMethodRule(){}
-	TypeRule createTypeRule(){}
+	Rule createTypeRule(){}
+	TypeRule createSymbolRule(){}
+	TypeRule createGenericRule(){}
 	TypeRule createWhitespaceRule(){}
 	Rule createNamespacedRule(){}
 	Rule createIncludesRule(){}
