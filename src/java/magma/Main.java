@@ -6,10 +6,8 @@ import magma.compile.error.ApplicationError;
 import magma.compile.error.JavaError;
 import magma.compile.rule.DiscardRule;
 import magma.compile.rule.ExactRule;
-import magma.compile.rule.locate.BackwardsLocator;
-import magma.compile.rule.locate.FirstLocator;
+import magma.compile.rule.LazyRule;
 import magma.compile.rule.LocatingSplitter;
-import magma.compile.rule.locate.LastLocator;
 import magma.compile.rule.NodeListRule;
 import magma.compile.rule.OrRule;
 import magma.compile.rule.PrefixRule;
@@ -21,6 +19,9 @@ import magma.compile.rule.StripRule;
 import magma.compile.rule.SuffixRule;
 import magma.compile.rule.SymbolRule;
 import magma.compile.rule.TypeRule;
+import magma.compile.rule.locate.BackwardsLocator;
+import magma.compile.rule.locate.FirstLocator;
+import magma.compile.rule.locate.LastLocator;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -243,8 +244,22 @@ public class Main {
         return new TypeRule("method", new SplitRule(beforeParams, new LocatingSplitter("(", new FirstLocator()), new DiscardRule()));
     }
 
-    private static TypeRule createTypeRule() {
+    private static Rule createTypeRule() {
+        final LazyRule type = new LazyRule();
+        type.set(new OrRule(List.of(
+                createGenericRule(type),
+                createSymbolRule()
+        )));
+        return type;
+    }
+
+    private static TypeRule createSymbolRule() {
         return new TypeRule("symbol", new SymbolRule(new StringRule("value")));
+    }
+
+    private static TypeRule createGenericRule(LazyRule type) {
+        final var parent = new StringRule("parent");
+        return new TypeRule("generic", new SplitRule(parent, new LocatingSplitter("<", new FirstLocator()), new SuffixRule(type, ">")));
     }
 
     private static TypeRule createWhitespaceRule() {
