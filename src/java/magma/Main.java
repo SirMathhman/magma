@@ -197,9 +197,13 @@ public class Main {
 
     private static Rule createStructMemberRule() {
         return new OrRule(List.of(
-                new TypeRule("function", new PrefixRule("void ", new SuffixRule(new StringRule("name"), "(){}"))),
+                createFunctionRule(),
                 createWhitespaceRule()
         ));
+    }
+
+    private static TypeRule createFunctionRule() {
+        return new TypeRule("function", new SplitRule(new StringRule("type"), new InfixSplitter(" ", new FirstLocator()), new SuffixRule(new StringRule("name"), "(){}")));
     }
 
     private static Rule createJavaRootRule() {
@@ -231,7 +235,8 @@ public class Main {
     }
 
     private static TypeRule createMethodRule() {
-        final var beforeParams = new SplitRule(new DiscardRule(), new InfixSplitter(" ", new LastLocator()), new StringRule("name"));
+        final var leftRule = new SplitRule(new DiscardRule(), new InfixSplitter(" ", new LastLocator()), new StringRule("type"));
+        final var beforeParams = new SplitRule(leftRule, new InfixSplitter(" ", new LastLocator()), new StringRule("name"));
         return new TypeRule("method", new SplitRule(beforeParams, new InfixSplitter("(", new FirstLocator()), new DiscardRule()));
     }
 

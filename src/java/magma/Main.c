@@ -29,25 +29,26 @@
 #include "java/util/function/BiFunction.h"
 struct Main {
 	void main(){}
-	void formatBefore(){}
-	void formatAfter(){}
-	void pass(){}
-	void passNode(){}
-	void passNodeLists(){}
-	void modify(){}
-	void writeGenerated(){}
-	void createCRootRule(){}
-	void createCRootMemberRule(){}
-	void createStructRule(){}
-	void createGroupRule(){}
-	void createStructMemberRule(){}
-	void createJavaRootRule(){}
-	void createClassRule(){}
-	void wrapInBlock(){}
-	void createClassMemberRule(){}
-	void createMethodRule(){}
-	void createWhitespaceRule(){}
-	void createNamespacedRule(){}
-	void createIncludesRule(){}
+	Node> formatBefore(){}
+	Node> formatAfter(){}
+	Node> pass(){}
+	Node> passNode(){}
+	Node> passNodeLists(){}
+	Node> modify(){}
+	Optional<ApplicationError> writeGenerated(){}
+	Rule createCRootRule(){}
+	OrRule createCRootMemberRule(){}
+	Rule createStructRule(){}
+	Rule createGroupRule(){}
+	Rule createStructMemberRule(){}
+	TypeRule createFunctionRule(){}
+	Rule createJavaRootRule(){}
+	TypeRule createClassRule(){}
+	SplitRule wrapInBlock(){}
+	Rule createClassMemberRule(){}
+	TypeRule createMethodRule(){}
+	TypeRule createWhitespaceRule(){}
+	Rule createNamespacedRule(){}
+	Rule createIncludesRule(){}
 }
 
