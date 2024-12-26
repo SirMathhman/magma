@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -116,11 +117,14 @@ public class Main {
 
         var currentState = oldState;
         var currentChildren = new ArrayList<Node>();
-        for (Node value : values) {
+        int i = 0;
+        while (i < values.size()) {
+            Node value = values.get(i);
             final var passed = pass(currentState, value, beforePass, afterPass);
 
             currentState = passed.left();
             currentChildren.add(passed.right());
+            i++;
         }
 
         final var newNode = oldChildren.withNodeList(key, currentChildren);
@@ -131,11 +135,9 @@ public class Main {
         Node result;
         if (node.is("group")) {
             final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>());
-            final var newChildren = new ArrayList<Node>();
-            for (Node oldChild : oldChildren) {
-                if (oldChild.is("package")) continue;
-                newChildren.add(oldChild);
-            }
+            final var newChildren = oldChildren.stream()
+                    .filter(oldChild -> !oldChild.is("package"))
+                    .collect(Collectors.toCollection(ArrayList::new));
 
             result = node.withNodeList("children", newChildren);
         } else if (node.is("class")) {
