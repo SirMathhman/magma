@@ -4,26 +4,8 @@ import magma.api.Tuple;
 import magma.compile.Node;
 import magma.compile.error.ApplicationError;
 import magma.compile.error.JavaError;
-import magma.compile.rule.DiscardRule;
-import magma.compile.rule.ExactRule;
-import magma.compile.rule.LazyRule;
-import magma.compile.rule.split.LocatingSplitter;
-import magma.compile.rule.slice.NodeListRule;
-import magma.compile.rule.OrRule;
-import magma.compile.rule.string.PrefixRule;
-import magma.compile.rule.Rule;
-import magma.compile.rule.split.SplitRule;
-import magma.compile.rule.string.StringListRule;
-import magma.compile.rule.string.StringRule;
-import magma.compile.rule.string.StripRule;
-import magma.compile.rule.string.SuffixRule;
-import magma.compile.rule.string.SymbolRule;
-import magma.compile.rule.TypeRule;
-import magma.compile.rule.split.locate.BackwardsLocator;
-import magma.compile.rule.split.locate.FirstLocator;
-import magma.compile.rule.split.locate.LastLocator;
-import magma.compile.rule.slice.StatementSlicer;
-import magma.compile.rule.slice.TypeSlicer;
+import magma.compile.lang.CLang;
+import magma.compile.lang.JavaLang;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,12 +22,12 @@ public class Main {
         final var source = Paths.get(".", "src", "java", "magma", "Main.java");
         final var input = Files.readString(source);
 
-        createJavaRootRule()
+        JavaLang.createJavaRootRule()
                 .parse(input)
                 .mapErr(ApplicationError::new)
                 .mapValue(node -> pass(new State(), node, Tuple::new, Main::modify).right())
                 .mapValue(node -> pass(new State(), node, Main::formatBefore, Main::formatAfter).right())
-                .flatMapValue(parsed -> createCRootRule().generate(parsed).mapErr(ApplicationError::new))
+                .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))
                 .mapValue(generated -> writeGenerated(source, generated)).match(value -> value, Optional::of)
                 .ifPresent(error -> System.err.println(error.display()));
     }
@@ -176,113 +158,4 @@ public class Main {
         }
     }
 
-    private static Rule createCRootRule() {
-        return createGroupRule(createCRootMemberRule());
-    }
-
-    private static OrRule createCRootMemberRule() {
-        return new OrRule(List.of(
-                createIncludesRule(),
-                createStructRule(),
-                createWhitespaceRule()
-        ));
-    }
-
-    private static Rule createStructRule() {
-        final var name = new StringRule("name");
-        final var wrapped = wrapInBlock(name, createStructMemberRule());
-        return new TypeRule("struct", new PrefixRule("struct ", wrapped));
-    }
-
-    private static Rule createGroupRule(Rule childRule) {
-        final var children = new NodeListRule(new StatementSlicer(), "children", new StripRule("before-child", childRule, "after-child"));
-        return new TypeRule("group", new StripRule("before-children", children, "after-children"));
-    }
-
-    private static Rule createStructMemberRule() {
-        return new OrRule(List.of(
-                createFunctionRule(),
-                createWhitespaceRule()
-        ));
-    }
-
-    private static TypeRule createFunctionRule() {
-        final var type = new NodeRule("type", createTypeRule());
-        return new TypeRule("function", new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), new SuffixRule(new StringRule("name"), "(){}")));
-    }
-
-    private static Rule createJavaRootRule() {
-        return new TypeRule("group", new NodeListRule(new StatementSlicer(), "children", new OrRule(List.of(
-                createNamespacedRule("package", "package "),
-                createNamespacedRule("import", "import "),
-                createClassRule(),
-                createWhitespaceRule()
-        ))));
-    }
-
-    private static TypeRule createClassRule() {
-        final var name = new StripRule(new SymbolRule(new StringRule("name")));
-        final var rightRule = wrapInBlock(name, createClassMemberRule());
-        return new TypeRule("class", new SplitRule(new DiscardRule(), new LocatingSplitter("class ", new FirstLocator()), rightRule));
-    }
-
-    private static SplitRule wrapInBlock(Rule beforeBlock, Rule blockMember) {
-        final var value = new NodeRule("value", createGroupRule(blockMember));
-        final var blockRule = new TypeRule("block", value);
-        return new SplitRule(beforeBlock, new LocatingSplitter(" {", new FirstLocator()), new StripRule(new SuffixRule(new NodeRule("value", blockRule), "}")));
-    }
-
-    private static Rule createClassMemberRule() {
-        return new OrRule(List.of(
-                createMethodRule(),
-                createWhitespaceRule()
-        ));
-    }
-
-    private static TypeRule createMethodRule() {
-        final var type = new NodeRule("type", createTypeRule());
-        final var leftRule = new OrRule(List.of(
-                new SplitRule(new DiscardRule(), new LocatingSplitter(" ", new BackwardsLocator()), type),
-                type
-        ));
-
-        final var beforeParams = new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), new StringRule("name"));
-        final var params = new NodeListRule(new TypeSlicer(), "params", new TypeRule("definition", beforeParams));
-        final var withParams = new SplitRule(params, new LocatingSplitter(")", new FirstLocator()), new DiscardRule());
-        return new TypeRule("method", new SplitRule(beforeParams, new LocatingSplitter("(", new FirstLocator()), withParams));
-    }
-
-    private static Rule createTypeRule() {
-        final LazyRule type = new LazyRule();
-        type.set(new OrRule(List.of(
-                new TypeRule("array", new SuffixRule(new NodeRule("child", type), "[]")),
-                createGenericRule(type),
-                createSymbolRule()
-        )));
-        return type;
-    }
-
-    private static TypeRule createSymbolRule() {
-        return new TypeRule("symbol", new SymbolRule(new StringRule("value")));
-    }
-
-    private static TypeRule createGenericRule(LazyRule type) {
-        final var parent = new StringRule("parent");
-        final var children = new NodeListRule(new TypeSlicer(), "children", type);
-        return new TypeRule("generic", new SplitRule(parent, new LocatingSplitter("<", new FirstLocator()), new SuffixRule(children, ">")));
-    }
-
-    private static TypeRule createWhitespaceRule() {
-        return new TypeRule("whitespace", new StripRule(new ExactRule("")));
-    }
-
-    private static Rule createNamespacedRule(String type, String prefix) {
-        final var namespace = new StringListRule("namespace", "\\.");
-        return new TypeRule(type, new PrefixRule(prefix, new SuffixRule(namespace, ";")));
-    }
-
-    private static Rule createIncludesRule() {
-        final var namespace = new StringListRule("namespace", "/");
-        return new TypeRule("include", new PrefixRule("#include \"", new SuffixRule(namespace, ".h\"")));
-    }
 }
