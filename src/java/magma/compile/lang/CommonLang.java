@@ -25,7 +25,7 @@ public class CommonLang {
         return new TypeRule("group", new StripRule("before-children", children, "after-children"));
     }
 
-    static SplitRule wrapInBlock(Rule beforeBlock, Rule blockMember) {
+    static SplitRule createBlock(Rule beforeBlock, Rule blockMember) {
         final var value = new NodeRule("value", createGroupRule(blockMember));
         final var blockRule = new TypeRule("block", value);
         return new SplitRule(beforeBlock, new LocatingSplitter(" {", new FirstLocator()), new StripRule(new SuffixRule(new NodeRule("value", blockRule), "}")));

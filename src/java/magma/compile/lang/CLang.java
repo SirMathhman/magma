@@ -1,6 +1,7 @@
 package magma.compile.lang;
 
 import magma.NodeRule;
+import magma.compile.rule.ExactRule;
 import magma.compile.rule.OrRule;
 import magma.compile.rule.Rule;
 import magma.compile.rule.TypeRule;
@@ -31,7 +32,7 @@ public class CLang {
 
     private static Rule createStructRule() {
         final var name = new StringRule("name");
-        final var wrapped = CommonLang.wrapInBlock(name, createStructMemberRule());
+        final var wrapped = CommonLang.createBlock(name, createStructMemberRule());
         return new TypeRule("struct", new PrefixRule("struct ", wrapped));
     }
 
@@ -46,8 +47,13 @@ public class CLang {
         final var type = new NodeRule("type", CommonLang.createTypeRule());
         final var name = new StringRule("name");
         final var params = new NodeListRule(new TypeSlicer(), "params", new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), name));
-        final var rightRule = new SplitRule(name, new LocatingSplitter("(", new FirstLocator()), new SuffixRule(params, "){}"));
-        return new TypeRule("function", new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), rightRule));
+        final var rightRule = new SplitRule(name, new LocatingSplitter("(", new FirstLocator()), new SuffixRule(params, ")"));
+        final var childRule = new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), rightRule);
+        return new TypeRule("function", CommonLang.createBlock(childRule, createStatementRule()));
+    }
+
+    private static Rule createStatementRule() {
+        return new TypeRule("invocation", new ExactRule("empty()"));
     }
 
     private static Rule createIncludesRule() {
