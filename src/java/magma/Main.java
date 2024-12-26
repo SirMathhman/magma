@@ -45,7 +45,8 @@ public class Main {
             final var oldChildren = node.findNodeList("children");
             final var newChildren = new ArrayList<Node>();
             List<Node> orElse = oldChildren.orElse(Collections.emptyList());
-            for (int i = 0; i < orElse.size(); i++) {
+            int i = 0;
+            while (i < orElse.size()) {
                 Node child = orElse.get(i);
                 Node withString;
                 if (state.depth() == 0 && i == 0) {
@@ -55,6 +56,7 @@ public class Main {
                     withString = child.withString("before-child", indent);
                 }
                 newChildren.add(withString);
+                i++;
             }
 
             return new Tuple<>(state, node
