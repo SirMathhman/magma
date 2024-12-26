@@ -66,8 +66,8 @@ public class StatementSlicer implements Slicer {
                     advance(buffer, segments);
                     buffer = new StringBuilder();
                 } else {
-                    if (c == '{') depth++;
-                    if (c == '}') depth--;
+                    if (c == '{' || c == '(') depth++;
+                    if (c == '}' || c == ')') depth--;
                 }
             }
         }
