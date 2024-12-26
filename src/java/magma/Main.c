@@ -14,13 +14,13 @@
 #include "java/util/Optional.h"
 #include "java/util/function/BiFunction.h"
 struct Main {
-	void main(){}
-	Tuple<State, Node> formatBefore(){}
-	Tuple<State, Node> formatAfter(){}
-	Tuple<State, Node> pass(){}
-	Tuple<State, Node> passNode(){}
-	Tuple<State, Node> passNodeLists(){}
-	Tuple<State, Node> modify(){}
-	Optional<ApplicationError> writeGenerated(){}
+	void main(String[] args){}
+	Tuple<State, Node> formatBefore(State state, Node node){}
+	Tuple<State, Node> formatAfter(State state, Node node){}
+	Tuple<State, Node> pass(State state, Node node, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass){}
+	Tuple<State, Node> passNode(Tuple<State, Node> current, Tuple<String, Node> entry, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass){}
+	Tuple<State, Node> passNodeLists(Tuple<State, Node> current, Tuple<String, List<Node>> entry, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass){}
+	Tuple<State, Node> modify(State state, Node node){}
+	Optional<ApplicationError> writeGenerated(Path source, String generated){}
 }
 

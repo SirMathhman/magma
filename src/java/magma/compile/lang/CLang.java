@@ -4,6 +4,8 @@ import magma.NodeRule;
 import magma.compile.rule.OrRule;
 import magma.compile.rule.Rule;
 import magma.compile.rule.TypeRule;
+import magma.compile.rule.slice.NodeListRule;
+import magma.compile.rule.slice.TypeSlicer;
 import magma.compile.rule.split.LocatingSplitter;
 import magma.compile.rule.split.SplitRule;
 import magma.compile.rule.split.locate.FirstLocator;
@@ -42,7 +44,10 @@ public class CLang {
 
     private static TypeRule createFunctionRule() {
         final var type = new NodeRule("type", CommonLang.createTypeRule());
-        return new TypeRule("function", new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), new SuffixRule(new StringRule("name"), "(){}")));
+        final var name = new StringRule("name");
+        final var params = new NodeListRule(new TypeSlicer(), "params", new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), name));
+        final var rightRule = new SplitRule(name, new LocatingSplitter("(", new FirstLocator()), new SuffixRule(params, "){}"));
+        return new TypeRule("function", new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), rightRule));
     }
 
     private static Rule createIncludesRule() {
