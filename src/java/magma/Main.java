@@ -241,14 +241,21 @@ public class Main {
 
     private static TypeRule createMethodRule() {
         final var type = new NodeRule("type", createTypeRule());
-        final var leftRule = new SplitRule(new DiscardRule(), new LocatingSplitter(" ", new BackwardsLocator()), type);
+        final var leftRule = new OrRule(List.of(
+                new SplitRule(new DiscardRule(), new LocatingSplitter(" ", new BackwardsLocator()), type),
+                type
+        ));
+
         final var beforeParams = new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), new StringRule("name"));
-        return new TypeRule("method", new SplitRule(beforeParams, new LocatingSplitter("(", new FirstLocator()), new DiscardRule()));
+        final var params = new NodeListRule(new TypeSplitter(), "params", new TypeRule("definition", beforeParams));
+        final var withParams = new SplitRule(params, new LocatingSplitter(")", new FirstLocator()), new DiscardRule());
+        return new TypeRule("method", new SplitRule(beforeParams, new LocatingSplitter("(", new FirstLocator()), withParams));
     }
 
     private static Rule createTypeRule() {
         final LazyRule type = new LazyRule();
         type.set(new OrRule(List.of(
+                new TypeRule("array", new SuffixRule(new NodeRule("child", type), "[]")),
                 createGenericRule(type),
                 createSymbolRule()
         )));
