@@ -1,8 +1,9 @@
-package magma.compile.rule;
+package magma.compile.rule.string;
 
 import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.CompileError;
+import magma.compile.rule.Rule;
 
 public record StripRule(String beforeKey, Rule childRule, String afterKey) implements Rule {
     public StripRule(Rule childRule) {

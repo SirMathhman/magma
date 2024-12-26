@@ -1,4 +1,4 @@
-package magma.compile.rule;
+package magma.compile.rule.string;
 
 import magma.api.result.Err;
 import magma.api.result.Ok;
@@ -6,6 +6,7 @@ import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.CompileError;
 import magma.compile.error.NodeContext;
+import magma.compile.rule.Rule;
 
 public record StringRule(String propertyKey) implements Rule {
     @Override

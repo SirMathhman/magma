@@ -1,9 +1,9 @@
-package magma.compile.rule;
+package magma.compile.rule.split;
 
 import magma.api.Tuple;
 import magma.compile.error.CompileError;
 import magma.compile.error.StringContext;
-import magma.compile.rule.locate.Locator;
+import magma.compile.rule.split.locate.Locator;
 
 import java.util.List;
 import java.util.stream.Stream;

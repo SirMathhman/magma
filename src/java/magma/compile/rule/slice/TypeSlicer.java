@@ -1,4 +1,4 @@
-package magma.compile.rule.split;
+package magma.compile.rule.slice;
 
 import magma.api.result.Ok;
 import magma.api.result.Result;
@@ -7,7 +7,7 @@ import magma.compile.error.CompileError;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TypeSplitter implements Splitter {
+public class TypeSlicer implements Slicer {
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
@@ -18,7 +18,7 @@ public class TypeSplitter implements Splitter {
     }
 
     @Override
-    public Result<List<String>, CompileError> split(String root) {
+    public Result<List<String>, CompileError> slice(String root) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;

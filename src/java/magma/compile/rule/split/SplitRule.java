@@ -1,10 +1,11 @@
-package magma.compile.rule;
+package magma.compile.rule.split;
 
 import magma.api.Tuple;
 import magma.api.result.Err;
 import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.CompileError;
+import magma.compile.rule.Rule;
 
 import java.util.ArrayList;
 

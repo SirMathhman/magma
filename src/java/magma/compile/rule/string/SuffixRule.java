@@ -1,10 +1,11 @@
-package magma.compile.rule;
+package magma.compile.rule.string;
 
 import magma.compile.Node;
 import magma.compile.error.CompileError;
 import magma.compile.error.StringContext;
 import magma.api.result.Err;
 import magma.api.result.Result;
+import magma.compile.rule.Rule;
 
 public record SuffixRule(Rule childRule, String suffix) implements Rule {
     @Override

@@ -1,13 +1,15 @@
 package magma.compile.rule.split;
 
 import magma.api.Tuple;
-import magma.api.result.Result;
 import magma.compile.error.CompileError;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public interface Splitter {
-    StringBuilder merge(StringBuilder builder, String value);
+    CompileError createError(String input, List<CompileError> errors);
 
-    Result<List<String>, CompileError> split(String root);
+    Stream<Tuple<String, String>> split(String input);
+
+    String merge(String left, String right);
 }

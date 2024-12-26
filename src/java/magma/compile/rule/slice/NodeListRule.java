@@ -1,10 +1,10 @@
-package magma.compile.rule;
+package magma.compile.rule.slice;
 
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.CompileError;
-import magma.compile.rule.split.Splitter;
+import magma.compile.rule.Rule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,12 @@ import java.util.Optional;
 public final class NodeListRule implements Rule {
     private final String propertyKey;
     private final Rule childRule;
-    private final Splitter splitter;
+    private final Slicer slicer;
 
-    public NodeListRule(Splitter splitter, String propertyKey, Rule childRule) {
+    public NodeListRule(Slicer slicer, String propertyKey, Rule childRule) {
         this.propertyKey = propertyKey;
         this.childRule = childRule;
-        this.splitter = splitter;
+        this.slicer = slicer;
     }
 
     @Override
@@ -30,7 +30,7 @@ public final class NodeListRule implements Rule {
             result = result.and(() -> childRule.generate(child)).mapValue(tuple -> {
                 final var maybeBuilder = tuple.left();
                 final var value = tuple.right();
-                return Optional.of(maybeBuilder.map(builder -> splitter.merge(builder, value)).orElse(new StringBuilder().append(value)));
+                return Optional.of(maybeBuilder.map(builder -> slicer.merge(builder, value)).orElse(new StringBuilder().append(value)));
             });
         }
 
@@ -39,7 +39,7 @@ public final class NodeListRule implements Rule {
 
     @Override
     public Result<Node, CompileError> parse(String input) {
-        return splitter.split(input)
+        return slicer.slice(input)
                 .flatMapValue(this::parseSegments)
                 .mapValue(nodes -> new Node().withNodeList(propertyKey, nodes));
     }

@@ -1,4 +1,4 @@
-package magma.compile.rule.split;
+package magma.compile.rule.slice;
 
 import magma.api.result.Err;
 import magma.api.result.Ok;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class StatementSplitter implements Splitter {
+public class StatementSlicer implements Slicer {
     public static void advance(StringBuilder buffer, ArrayList<String> segments) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
@@ -23,7 +23,7 @@ public class StatementSplitter implements Splitter {
     }
 
     @Override
-    public Result<List<String>, CompileError> split(String root) {
+    public Result<List<String>, CompileError> slice(String root) {
         var queue = IntStream.range(0, root.length())
                 .mapToObj(root::charAt)
                 .collect(Collectors.toCollection(LinkedList::new));

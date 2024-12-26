@@ -7,23 +7,23 @@ import magma.compile.error.JavaError;
 import magma.compile.rule.DiscardRule;
 import magma.compile.rule.ExactRule;
 import magma.compile.rule.LazyRule;
-import magma.compile.rule.LocatingSplitter;
-import magma.compile.rule.NodeListRule;
+import magma.compile.rule.split.LocatingSplitter;
+import magma.compile.rule.slice.NodeListRule;
 import magma.compile.rule.OrRule;
-import magma.compile.rule.PrefixRule;
+import magma.compile.rule.string.PrefixRule;
 import magma.compile.rule.Rule;
-import magma.compile.rule.SplitRule;
-import magma.compile.rule.StringListRule;
-import magma.compile.rule.StringRule;
-import magma.compile.rule.StripRule;
-import magma.compile.rule.SuffixRule;
-import magma.compile.rule.SymbolRule;
+import magma.compile.rule.split.SplitRule;
+import magma.compile.rule.string.StringListRule;
+import magma.compile.rule.string.StringRule;
+import magma.compile.rule.string.StripRule;
+import magma.compile.rule.string.SuffixRule;
+import magma.compile.rule.string.SymbolRule;
 import magma.compile.rule.TypeRule;
-import magma.compile.rule.locate.BackwardsLocator;
-import magma.compile.rule.locate.FirstLocator;
-import magma.compile.rule.locate.LastLocator;
-import magma.compile.rule.split.StatementSplitter;
-import magma.compile.rule.split.TypeSplitter;
+import magma.compile.rule.split.locate.BackwardsLocator;
+import magma.compile.rule.split.locate.FirstLocator;
+import magma.compile.rule.split.locate.LastLocator;
+import magma.compile.rule.slice.StatementSlicer;
+import magma.compile.rule.slice.TypeSlicer;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -195,7 +195,7 @@ public class Main {
     }
 
     private static Rule createGroupRule(Rule childRule) {
-        final var children = new NodeListRule(new StatementSplitter(), "children", new StripRule("before-child", childRule, "after-child"));
+        final var children = new NodeListRule(new StatementSlicer(), "children", new StripRule("before-child", childRule, "after-child"));
         return new TypeRule("group", new StripRule("before-children", children, "after-children"));
     }
 
@@ -212,7 +212,7 @@ public class Main {
     }
 
     private static Rule createJavaRootRule() {
-        return new TypeRule("group", new NodeListRule(new StatementSplitter(), "children", new OrRule(List.of(
+        return new TypeRule("group", new NodeListRule(new StatementSlicer(), "children", new OrRule(List.of(
                 createNamespacedRule("package", "package "),
                 createNamespacedRule("import", "import "),
                 createClassRule(),
@@ -247,7 +247,7 @@ public class Main {
         ));
 
         final var beforeParams = new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), new StringRule("name"));
-        final var params = new NodeListRule(new TypeSplitter(), "params", new TypeRule("definition", beforeParams));
+        final var params = new NodeListRule(new TypeSlicer(), "params", new TypeRule("definition", beforeParams));
         final var withParams = new SplitRule(params, new LocatingSplitter(")", new FirstLocator()), new DiscardRule());
         return new TypeRule("method", new SplitRule(beforeParams, new LocatingSplitter("(", new FirstLocator()), withParams));
     }
@@ -268,7 +268,7 @@ public class Main {
 
     private static TypeRule createGenericRule(LazyRule type) {
         final var parent = new StringRule("parent");
-        final var children = new NodeListRule(new TypeSplitter(), "children", type);
+        final var children = new NodeListRule(new TypeSlicer(), "children", type);
         return new TypeRule("generic", new SplitRule(parent, new LocatingSplitter("<", new FirstLocator()), new SuffixRule(children, ">")));
     }
 

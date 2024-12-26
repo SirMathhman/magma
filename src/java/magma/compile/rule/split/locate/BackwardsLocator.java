@@ -1,4 +1,4 @@
-package magma.compile.rule.locate;
+package magma.compile.rule.split.locate;
 
 import java.util.ArrayList;
 import java.util.List;
