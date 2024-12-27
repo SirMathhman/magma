@@ -8,8 +8,6 @@ import magma.compile.error.JavaError;
 import magma.compile.lang.CLang;
 import magma.compile.lang.JavaLang;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -20,18 +18,23 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         final var source = Paths.get(".", "src", "java", "magma", "Main.java");
-        final var input = Files.readString(source);
+        JavaFiles.readString(source)
+                .mapErr(JavaError::new)
+                .mapErr(ApplicationError::new)
+                .match(input -> runWithInput(source, input), Optional::of)
+                .ifPresent(error -> System.err.println(error.display()));
+    }
 
-        JavaLang.createJavaRootRule()
+    private static Optional<ApplicationError> runWithInput(Path source, String input) {
+        return JavaLang.createJavaRootRule()
                 .parse(input)
                 .mapErr(ApplicationError::new)
                 .mapValue(node -> pass(new State(), node, Tuple::new, Main::modify).right())
                 .mapValue(node -> pass(new State(), node, Main::formatBefore, Main::formatAfter).right())
                 .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))
-                .mapValue(generated -> writeGenerated(generated, source.resolveSibling("Main.c"))).match(value -> value, Optional::of)
-                .ifPresent(error -> System.err.println(error.display()));
+                .mapValue(generated -> writeGenerated(generated, source.resolveSibling("Main.c"))).match(value -> value, Optional::of);
     }
 
     private static Tuple<State, Node> formatBefore(State state, Node node) {

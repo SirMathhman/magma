@@ -1,6 +1,7 @@
 package magma.compile.lang;
 
 import magma.NodeRule;
+import magma.compile.rule.DiscardRule;
 import magma.compile.rule.ExactRule;
 import magma.compile.rule.LazyRule;
 import magma.compile.rule.OrRule;
@@ -11,7 +12,9 @@ import magma.compile.rule.slice.StatementSlicer;
 import magma.compile.rule.slice.TypeSlicer;
 import magma.compile.rule.split.LocatingSplitter;
 import magma.compile.rule.split.SplitRule;
+import magma.compile.rule.split.locate.BackwardsLocator;
 import magma.compile.rule.split.locate.FirstLocator;
+import magma.compile.rule.split.locate.LastLocator;
 import magma.compile.rule.string.StringRule;
 import magma.compile.rule.string.StripRule;
 import magma.compile.rule.string.SuffixRule;
@@ -53,5 +56,35 @@ public class CommonLang {
 
     static TypeRule createWhitespaceRule() {
         return new TypeRule("whitespace", new StripRule(new ExactRule("")));
+    }
+
+    static Rule createDefinitionRule() {
+        final var type = new NodeRule("type", createTypeRule());
+        final var leftRule = new OrRule(List.of(
+                new SplitRule(new DiscardRule(), new LocatingSplitter(" ", new BackwardsLocator()), type),
+                type
+        ));
+
+        final var beforeParams = new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), new StringRule("name"));
+
+        final var params = new NodeListRule(new TypeSlicer(), "params", new TypeRule("definition", beforeParams));
+        final var definition = new SplitRule(beforeParams, new LocatingSplitter("(", new FirstLocator()), new SplitRule(params, new LocatingSplitter(")", new FirstLocator()), new DiscardRule()));
+        return new OrRule(List.of(beforeParams, definition));
+    }
+
+    static TypeRule createInitializationRule(Rule valueRule) {
+        final var definition = new NodeRule("definition", createDefinitionRule());
+        final var value = new NodeRule("value", valueRule);
+        return new TypeRule("initialization", new SplitRule(definition, new LocatingSplitter("=", new FirstLocator()), new SuffixRule(value, ";")));
+    }
+
+    static Rule createValueRule() {
+        return new OrRule(List.of(
+                createInvocationRule()
+        ));
+    }
+
+    static TypeRule createInvocationRule() {
+        return new TypeRule("invocation", new DiscardRule());
     }
 }

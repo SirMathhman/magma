@@ -53,7 +53,10 @@ public class CLang {
     }
 
     private static Rule createStatementRule() {
-        return new TypeRule("invocation", new ExactRule("empty()"));
+        return new OrRule(List.of(
+                new TypeRule("invocation", new ExactRule("empty()")),
+                CommonLang.createInitializationRule(CommonLang.createValueRule())
+        ));
     }
 
     private static Rule createIncludesRule() {
