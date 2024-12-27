@@ -38,8 +38,8 @@ group {
 	}, import {
 		"namespace": ["java", "util", "stream", "Collectors"]
 	}, class {
-		"before-keyword": "public ", 
 		"name": "Main", 
+		"modifiers": ["public"], 
 		"value": block {
 			"value": group {
 				"children": [method {

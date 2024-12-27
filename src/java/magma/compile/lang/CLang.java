@@ -69,7 +69,7 @@ public class CLang {
     }
 
     private static Rule createIncludesRule() {
-        final var namespace = new StringListRule("namespace", "/");
+        final var namespace = new StringListRule("/", "namespace");
         return new TypeRule("include", new PrefixRule("#include \"", new SuffixRule(namespace, ".h\"")));
     }
 }

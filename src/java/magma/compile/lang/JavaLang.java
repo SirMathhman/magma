@@ -32,7 +32,7 @@ public class JavaLang {
     private static TypeRule createClassRule() {
         final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
         final var rightRule = CommonLang.createBlock(name, createClassMemberRule());
-        return new TypeRule("class", new SplitRule(new StringRule("before-keyword"), new LocatingSplitter("class ", new FirstLocator()), rightRule));
+        return new TypeRule("class", new SplitRule(new StringListRule(" ", "modifiers"), new LocatingSplitter("class ", new FirstLocator()), rightRule));
     }
 
     private static Rule createClassMemberRule() {
@@ -65,7 +65,7 @@ public class JavaLang {
     }
 
     private static Rule createNamespacedRule(String type, String prefix) {
-        final var namespace = new StringListRule("namespace", "\\.");
+        final var namespace = new StringListRule("\\.", "namespace");
         return new TypeRule(type, new PrefixRule(prefix, new SuffixRule(namespace, ";")));
     }
 

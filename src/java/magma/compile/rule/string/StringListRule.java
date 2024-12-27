@@ -10,7 +10,7 @@ import magma.compile.rule.Rule;
 
 import java.util.Arrays;
 
-public record StringListRule(String propertyKey, String delimiter) implements Rule {
+public record StringListRule(String delimiter, String propertyKey) implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
         final var namespace = Arrays.stream(input.split(delimiter)).toList();

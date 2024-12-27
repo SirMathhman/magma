@@ -64,7 +64,7 @@ public class CommonLang {
     static Rule createDefinitionRule() {
         final var type = new NodeRule("type", createTypeRule());
         final var leftRule = new OrRule(List.of(
-                new SplitRule(new StringListRule("modifiers", " "), new LocatingSplitter(" ", new BackwardsLocator()), type),
+                new SplitRule(new StringListRule(" ", "modifiers"), new LocatingSplitter(" ", new BackwardsLocator()), type),
                 type
         ));
 
