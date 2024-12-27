@@ -11,6 +11,6 @@ public class NodeContext implements Context {
 
     @Override
     public String display() {
-        return node.toString();
+        return "\n" + node.toString();
     }
 }

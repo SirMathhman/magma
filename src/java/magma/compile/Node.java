@@ -6,10 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringJoiner;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public record Node(
-        Optional<String> type,
+        Optional<String> maybeType,
         Map<String, String> strings,
         Map<String, List<String>> stringLists,
         Map<String, Node> nodes,
@@ -17,6 +20,50 @@ public record Node(
 ) {
     public Node() {
         this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
+    }
+
+    private static String formatString(String value) {
+        return "\"" + value.replaceAll("\\n", "\\\\n") + "\"";
+    }
+
+    @Override
+    public String toString() {
+        return format(0);
+    }
+
+    private String format(int depth) {
+        final var typeString = maybeType.map(type -> type + " ").orElse("");
+        final var strings = formatMap(this.strings, Node::formatString, depth);
+        final var stringLists = formatMap(this.stringLists, strings1 -> strings1.stream()
+                .map(Node::formatString)
+                .collect(Collectors.joining(", ", "[", "]")), depth);
+        final var nodes = formatMap(this.nodes, node -> node.format(depth + 1), depth);
+        final var nodeLists = formatMap(this.nodeLists, nodeList -> nodeList.stream()
+                .map(node -> node.format(depth + 1))
+                .collect(Collectors.joining(",", "[", "]")), depth);
+
+        final var values = Stream.of(strings, stringLists, nodes, nodeLists)
+                .flatMap(Optional::stream)
+                .collect(Collectors.joining(", "));
+
+        final var after = "\t".repeat(Math.max(depth, 0));
+        return typeString + "{" + values + "\n" + after + "}";
+    }
+
+    private <T> Optional<String> formatMap(Map<String, T> map, Function<T, String> mapper, int depth) {
+        if (map.isEmpty()) return Optional.empty();
+
+        var stringsBuilder = new StringJoiner(", ");
+        for (Map.Entry<String, T> entry : map.entrySet()) {
+            stringsBuilder.add(new StringBuilder()
+                    .append("\n")
+                    .append("\t".repeat(depth + 1))
+                    .append("\"")
+                    .append(entry.getKey())
+                    .append("\": ")
+                    .append(mapper.apply(entry.getValue())));
+        }
+        return Optional.of(stringsBuilder.toString());
     }
 
     public Optional<List<String>> findStringList(String propertyKey) {
@@ -41,7 +88,7 @@ public record Node(
     }
 
     public boolean is(String type) {
-        return this.type.filter(value -> value.equals(type)).isPresent();
+        return this.maybeType.filter(value -> value.equals(type)).isPresent();
     }
 
     public Node withNodeList(String propertyKey, List<Node> propertyValues) {

@@ -18,6 +18,6 @@ public record TypeRule(String type, Rule childRule) implements Rule {
     public Result<String, CompileError> generate(Node node) {
         if (!node.is(type))
             return new Err<>(new CompileError("Type '" + type + "' not present", new NodeContext(node)));
-        return childRule.generate(node).mapErr(err -> new CompileError("Cannot assign type '" + type + "'", new NodeContext(node), Collections.singletonList(err)));
+        return childRule.generate(node).mapErr(err -> new CompileError("Cannot assign maybeType '" + type + "'", new NodeContext(node), Collections.singletonList(err)));
     }
 }
