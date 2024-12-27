@@ -53,7 +53,7 @@ public class CommonLang {
         return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("symbol-value"))));
     }
 
-    private static TypeRule createGenericRule(LazyRule type) {
+    private static TypeRule createGenericRule(Rule type) {
         final var parent = new StringRule("parent");
         final var children = new NodeListRule(new ValueSlicer(), "children", type);
         return new TypeRule("generic", new SplitRule(parent, new LocatingSplitter("<", new FirstLocator()), new SuffixRule(children, ">")));
@@ -84,7 +84,7 @@ public class CommonLang {
         return new TypeRule("initialization", new SplitRule(definition, new LocatingSplitter("=", new FirstLocator()), new SuffixRule(value, ";")));
     }
 
-    static Rule createValueRule(Rule statement) {
+    static Rule createValueRule() {
         final var value = new LazyRule();
         value.set(new OrRule(List.of(
                 createSymbolRule(),
@@ -99,7 +99,7 @@ public class CommonLang {
         return value;
     }
 
-    private static TypeRule createLambdaRule(LazyRule value) {
+    private static TypeRule createLambdaRule(Rule value) {
         return new TypeRule("lambda", new SplitRule(new StringRule("before-arrow"), new LocatingSplitter("->", new FirstLocator()), new NodeRule("value", value)));
     }
 
@@ -107,7 +107,7 @@ public class CommonLang {
         return new TypeRule("string", new StripRule(new PrefixRule("\"", new SuffixRule(new StringRule("string-value"), "\""))));
     }
 
-    private static TypeRule createOperatorRule(LazyRule value) {
+    private static TypeRule createOperatorRule(Rule value) {
         return new TypeRule("less-than", new SplitRule(new NodeRule("left", value), new LocatingSplitter("<", new FirstLocator()), new NodeRule("right", value)));
     }
 
@@ -127,13 +127,13 @@ public class CommonLang {
         return new TypeRule("invocation", new StripRule(new SuffixRule(new SplitRule(caller, new LocatingSplitter("(", new InvocationLocator()), arguments), ")")));
     }
 
-    static TypeRule createConditionedRule(String type, String prefix, Rule value, LazyRule statement) {
+    static TypeRule createConditionedRule(String type, String prefix, Rule value, Rule statement) {
         final var condition = new NodeRule("condition", value);
         final var anIf = new PrefixRule(prefix, new StripRule(new PrefixRule("(", new SuffixRule(condition, ")"))));
         return new TypeRule(type, createBlock(new StripRule(anIf), statement));
     }
 
-    static TypeRule createElseRule(LazyRule statement) {
+    static TypeRule createElseRule(Rule statement) {
         final var withBlock = createBlock(new ExactRule("else "), statement);
         final var withoutBlock = new PrefixRule("else ", new NodeRule("value", statement));
         return new TypeRule("else", new OrRule(List.of(withBlock, withoutBlock)));

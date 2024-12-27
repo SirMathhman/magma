@@ -1,10 +1,10 @@
 package magma.compile.rule;
 
+import magma.api.result.Err;
+import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.CompileError;
 import magma.compile.error.NodeContext;
-import magma.api.result.Err;
-import magma.api.result.Result;
 import magma.compile.error.StringContext;
 
 import java.util.Collections;
