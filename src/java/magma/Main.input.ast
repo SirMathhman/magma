@@ -58,17 +58,24 @@ group {
 										"value": "Path"
 									}
 								}, 
-								"value": access {
-									"property": "java")", 
-									"object": access {
-										"property": "", "src", "java", "magma", "Main", 
-										"object": access {
-											"property": "get("", 
-											"object": symbol {
-												"value": "Paths"
-											}
+								"value": invocation {
+									"caller": access {
+										"property": "get", 
+										"object": symbol {
+											"value": "Paths"
 										}
-									}
+									}, 
+									"arguments": [string {
+										"value": "."
+									}, string {
+										"value": "src"
+									}, string {
+										"value": "java"
+									}, string {
+										"value": "magma"
+									}, string {
+										"value": "Main.java"
+									}]
 								}
 							}, invocation {
 								"caller": {
@@ -134,11 +141,16 @@ group {
 					"value": block {
 						"value": group {
 							"children": [if {
-								"condition": access {
-									"property": "is("block")", 
-									"object": symbol {
-										"value": "node"
-									}
+								"condition": invocation {
+									"caller": access {
+										"property": "is", 
+										"object": symbol {
+											"value": "node"
+										}
+									}, 
+									"arguments": [string {
+										"value": "block"
+									}]
 								}, 
 								"value": block {
 									"value": group {
@@ -191,11 +203,16 @@ group {
 					"value": block {
 						"value": group {
 							"children": [if {
-								"condition": access {
-									"property": "is("group")", 
-									"object": symbol {
-										"value": "node"
-									}
+								"condition": invocation {
+									"caller": access {
+										"property": "is", 
+										"object": symbol {
+											"value": "node"
+										}
+									}, 
+									"arguments": [string {
+										"value": "group"
+									}]
 								}, 
 								"value": block {
 									"value": group {
@@ -207,11 +224,16 @@ group {
 													"value": "var"
 												}
 											}, 
-											"value": access {
-												"property": "findNodeList("children")", 
-												"object": symbol {
-													"value": "node"
-												}
+											"value": invocation {
+												"caller": access {
+													"property": "findNodeList", 
+													"object": symbol {
+														"value": "node"
+													}
+												}, 
+												"arguments": [string {
+													"value": "children"
+												}]
 											}
 										}, invocation {
 											"caller": {
@@ -343,11 +365,16 @@ group {
 								}
 							}, else {
 								"value": if {
-									"condition": access {
-										"property": "is("block")", 
-										"object": symbol {
-											"value": "node"
-										}
+									"condition": invocation {
+										"caller": access {
+											"property": "is", 
+											"object": symbol {
+												"value": "node"
+											}
+										}, 
+										"arguments": [string {
+											"value": "block"
+										}]
 									}, 
 									"value": block {
 										"value": group {
@@ -404,13 +431,31 @@ group {
 							"children": [assignment {
 								"destination": "if (state.depth() ", 
 								"source": "= 0 && i == 0) return child"
-							}, invocation {
-								"caller": {
-									"value": "final var indent = "\n" + "\t".repeat"
+							}, initialization {
+								"definition": definition {
+									"name": "indent", 
+									"modifiers": ["final"], 
+									"type": symbol {
+										"value": "var"
+									}
 								}, 
-								"arguments": [{
-									"value": "state.depth()"
-								}]
+								"value": invocation {
+									"caller": access {
+										"property": "repeat", 
+										"object": string {
+											"value": "\n" + "\t"
+										}
+									}, 
+									"arguments": [invocation {
+										"caller": access {
+											"property": "depth", 
+											"object": symbol {
+												"value": "state"
+											}
+										}, 
+										"arguments": []
+									}]
+								}
 							}, invocation {
 								"caller": {
 									"value": "return child.withString"
@@ -473,46 +518,28 @@ group {
 										"value": "node"
 									}]
 								}
-							}, initialization {
-								"definition": definition {
-									"name": "withNodeLists", 
-									"modifiers": ["final"], 
-									"type": symbol {
-										"value": "var"
-									}
+							}, invocation {
+								"caller": {
+									"value": "final var withNodeLists = withBefore.right"
 								}, 
-								"value": access {
-									"property": "reduce(withBefore, (node1, tuple) -> passNodeLists(node1, tuple, beforePass, afterPass), (_, next) -> next)", 
-									"object": access {
-										"property": "streamNodeLists()\n                ", 
-										"object": access {
-											"property": "right()\n                ", 
-											"object": symbol {
-												"value": "withBefore"
-											}
-										}
-									}
-								}
-							}, initialization {
-								"definition": definition {
-									"name": "withNodes", 
-									"modifiers": ["final"], 
-									"type": symbol {
-										"value": "var"
-									}
+								"arguments": [{
+									"value": ")\n                .streamNodeLists()\n                .reduce(withBefore"
+								}, {
+									"value": "(node1"
+								}, {
+									"value": "tuple) -> passNodeLists(node1, tuple, beforePass, afterPass), (_, next) -> next"
+								}]
+							}, invocation {
+								"caller": {
+									"value": "final var withNodes = withNodeLists.right"
 								}, 
-								"value": access {
-									"property": "reduce(withNodeLists, (node1, tuple) -> passNode(node1, tuple, beforePass, afterPass), (_, next) -> next)", 
-									"object": access {
-										"property": "streamNodes()\n                ", 
-										"object": access {
-											"property": "right()\n                ", 
-											"object": symbol {
-												"value": "withNodeLists"
-											}
-										}
-									}
-								}
+								"arguments": [{
+									"value": ")\n                .streamNodes()\n                .reduce(withNodeLists"
+								}, {
+									"value": "(node1"
+								}, {
+									"value": "tuple) -> passNode(node1, tuple, beforePass, afterPass), (_, next) -> next"
+								}]
 							}, invocation {
 								"caller": {
 									"value": "return afterPass.apply"
@@ -1055,57 +1082,33 @@ group {
 					"value": block {
 						"value": group {
 							"children": [if {
-								"condition": access {
-									"property": "is("group")", 
-									"object": symbol {
-										"value": "node"
-									}
+								"condition": invocation {
+									"caller": access {
+										"property": "is", 
+										"object": symbol {
+											"value": "node"
+										}
+									}, 
+									"arguments": [string {
+										"value": "group"
+									}]
 								}, 
 								"value": block {
 									"value": group {
-										"children": [initialization {
-											"definition": definition {
-												"name": "oldChildren", 
-												"modifiers": ["final"], 
-												"type": symbol {
-													"value": "var"
-												}
+										"children": [invocation {
+											"caller": {
+												"value": "final var oldChildren = node.findNodeList"
 											}, 
-											"value": access {
-												"property": "orElse(new ArrayList<>())", 
-												"object": access {
-													"property": "findNodeList("children")", 
-													"object": symbol {
-														"value": "node"
-													}
-												}
-											}
-										}, initialization {
-											"definition": definition {
-												"name": "newChildren", 
-												"modifiers": ["final"], 
-												"type": symbol {
-													"value": "var"
-												}
+											"arguments": [{
+												"value": ""children").orElse(new ArrayList<>()"
+											}]
+										}, invocation {
+											"caller": {
+												"value": "final var newChildren = oldChildren.stream"
 											}, 
-											"value": access {
-												"property": "toCollection(ArrayList::new))", 
-												"object": access {
-													"property": "collect(Collectors", 
-													"object": access {
-														"property": "is("package"))\n                    ", 
-														"object": access {
-															"property": "filter(oldChild -> !oldChild", 
-															"object": access {
-																"property": "stream()\n                    ", 
-																"object": symbol {
-																	"value": "oldChildren"
-																}
-															}
-														}
-													}
-												}
-											}
+											"arguments": [{
+												"value": ")\n                    .filter(oldChild -> !oldChild.is("package"))\n                    .collect(Collectors.toCollection(ArrayList::new)"
+											}]
 										}, invocation {
 											"caller": {
 												"value": "return node.withNodeList"
@@ -1120,11 +1123,16 @@ group {
 								}
 							}, else {
 								"value": if {
-									"condition": access {
-										"property": "is("class")", 
-										"object": symbol {
-											"value": "node"
-										}
+									"condition": invocation {
+										"caller": access {
+											"property": "is", 
+											"object": symbol {
+												"value": "node"
+											}
+										}, 
+										"arguments": [string {
+											"value": "class"
+										}]
 									}, 
 									"value": block {
 										"value": group {
@@ -1141,11 +1149,16 @@ group {
 								}
 							}, else {
 								"value": if {
-									"condition": access {
-										"property": "is("import")", 
-										"object": symbol {
-											"value": "node"
-										}
+									"condition": invocation {
+										"caller": access {
+											"property": "is", 
+											"object": symbol {
+												"value": "node"
+											}
+										}, 
+										"arguments": [string {
+											"value": "import"
+										}]
 									}, 
 									"value": block {
 										"value": group {
@@ -1162,11 +1175,16 @@ group {
 								}
 							}, else {
 								"value": if {
-									"condition": access {
-										"property": "is("method")", 
-										"object": symbol {
-											"value": "node"
-										}
+									"condition": invocation {
+										"caller": access {
+											"property": "is", 
+											"object": symbol {
+												"value": "node"
+											}
+										}, 
+										"arguments": [string {
+											"value": "method"
+										}]
 									}, 
 									"value": block {
 										"value": group {

@@ -89,9 +89,14 @@ public class CommonLang {
                 createNumberRule(),
                 createAccessRule(value),
                 createSymbolRule(),
-                createOperatorRule(value)
+                createOperatorRule(value),
+                createStringRule()
         )));
         return value;
+    }
+
+    private static TypeRule createStringRule() {
+        return new TypeRule("string", new StripRule(new PrefixRule("\"", new SuffixRule(new StringRule("value"), "\""))));
     }
 
     private static TypeRule createOperatorRule(LazyRule value) {
@@ -99,7 +104,9 @@ public class CommonLang {
     }
 
     private static TypeRule createAccessRule(LazyRule value) {
-        return new TypeRule("access", new SplitRule(new NodeRule("object", value), new LocatingSplitter(".", new LastLocator()), new StringRule("property")));
+        final var object = new NodeRule("object", value);
+        final var property = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("property")));
+        return new TypeRule("access", new SplitRule(object, new LocatingSplitter(".", new LastLocator()), property));
     }
 
     private static TypeRule createNumberRule() {

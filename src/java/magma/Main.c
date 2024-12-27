@@ -53,17 +53,13 @@ struct Main{
 	}
 	Node getNode(State state, int i, Node child){
 		if (state.depth() == 0 && i == 0) return child;
-		empty()
+		final var indent="\n" + "\t".repeat(state.depth());
 		empty()
 	}
 	Tuple<State, Node> pass(State state, Node node, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass){
 		final var withBefore=beforePass.apply(state, node);
-		final var withNodeLists=withBefore.right()
-                .streamNodeLists()
-                .reduce(withBefore, (node1, tuple) -> passNodeLists(node1, tuple, beforePass, afterPass), (_, next) -> next);
-		final var withNodes=withNodeLists.right()
-                .streamNodes()
-                .reduce(withNodeLists, (node1, tuple) -> passNode(node1, tuple, beforePass, afterPass), (_, next) -> next);
+		empty()
+		empty()
 		empty()
 	}
 	Tuple<State, Node> passNode(Tuple<State, Node> current, Tuple<String, Node> entry, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass){
@@ -97,10 +93,8 @@ struct Main{
 	}
 	Node modifyStateless(Node node){
 		if (node.is("group")){
-			final var oldChildren=node.findNodeList("children").orElse(new ArrayList<>());
-			final var newChildren=oldChildren.stream()
-                    .filter(oldChild -> !oldChild.is("package"))
-                    .collect(Collectors.toCollection(ArrayList::new));
+			empty()
+			empty()
 			empty()
 		}
 		else if (node.is("class")){
