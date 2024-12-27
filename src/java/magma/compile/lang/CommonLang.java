@@ -8,7 +8,7 @@ import magma.compile.rule.Rule;
 import magma.compile.rule.TypeRule;
 import magma.compile.rule.slice.NodeListRule;
 import magma.compile.rule.slice.StatementSlicer;
-import magma.compile.rule.slice.TypeSlicer;
+import magma.compile.rule.slice.ValueSlicer;
 import magma.compile.rule.split.LocatingSplitter;
 import magma.compile.rule.split.SplitRule;
 import magma.compile.rule.split.locate.BackwardsLocator;
@@ -55,7 +55,7 @@ public class CommonLang {
 
     private static TypeRule createGenericRule(LazyRule type) {
         final var parent = new StringRule("parent");
-        final var children = new NodeListRule(new TypeSlicer(), "children", type);
+        final var children = new NodeListRule(new ValueSlicer(), "children", type);
         return new TypeRule("generic", new SplitRule(parent, new LocatingSplitter("<", new FirstLocator()), new SuffixRule(children, ">")));
     }
 
@@ -73,7 +73,7 @@ public class CommonLang {
         final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
         final var beforeParams = new StripRule(new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), name));
 
-        final var params = new NodeListRule(new TypeSlicer(), "params", new TypeRule("definition", beforeParams));
+        final var params = new NodeListRule(new ValueSlicer(), "params", new TypeRule("definition", beforeParams));
         final var definition = new SplitRule(beforeParams, new LocatingSplitter("(", new FirstLocator()), new StripRule(new SuffixRule(params, ")")));
         return new TypeRule("definition", new OrRule(List.of(beforeParams, definition)));
     }
@@ -89,7 +89,8 @@ public class CommonLang {
         value.set(new OrRule(List.of(
                 createInvocationRule(value),
                 createNumberRule(),
-                createAccessRule(value),
+                createAccessRule("data-access", ".", value),
+                createAccessRule("function-access", "::", value),
                 createSymbolRule(),
                 createOperatorRule(value),
                 createStringRule()
@@ -105,10 +106,10 @@ public class CommonLang {
         return new TypeRule("less-than", new SplitRule(new NodeRule("left", value), new LocatingSplitter("<", new FirstLocator()), new NodeRule("right", value)));
     }
 
-    private static TypeRule createAccessRule(LazyRule value) {
+    private static TypeRule createAccessRule(String type, String infix, Rule value) {
         final var object = new NodeRule("object", value);
         final var property = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("property")));
-        return new TypeRule("access", new SplitRule(object, new LocatingSplitter(".", new LastLocator()), property));
+        return new TypeRule(type, new SplitRule(object, new LocatingSplitter(infix, new LastLocator()), property));
     }
 
     private static TypeRule createNumberRule() {
@@ -117,7 +118,7 @@ public class CommonLang {
 
     static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
-        final var arguments = new NodeListRule(new TypeSlicer(), "arguments", value);
+        final var arguments = new NodeListRule(new ValueSlicer(), "arguments", value);
         return new TypeRule("invocation", new StripRule(new SuffixRule(new SplitRule(caller, new LocatingSplitter("(", new InvocationLocator()), arguments), ")")));
     }
 
