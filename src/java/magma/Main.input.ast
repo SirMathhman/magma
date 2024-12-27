@@ -46,7 +46,7 @@ group {
 					"name": "main", 
 					"modifiers": ["public", "static"], 
 					"type": symbol {
-						"value": "void"
+						"symbol-value": "void"
 					}, 
 					"value": block {
 						"value": group {
@@ -55,26 +55,26 @@ group {
 									"name": "source", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "Path"
+										"symbol-value": "Path"
 									}
 								}, 
 								"value": invocation {
 									"caller": access {
 										"property": "get", 
 										"object": symbol {
-											"value": "Paths"
+											"symbol-value": "Paths"
 										}
 									}, 
 									"arguments": [string {
-										"value": "."
+										"string-value": "."
 									}, string {
-										"value": "src"
+										"string-value": "src"
 									}, string {
-										"value": "java"
+										"string-value": "java"
 									}, string {
-										"value": "magma"
+										"string-value": "magma"
 									}, string {
-										"value": "Main.java"
+										"string-value": "Main.java"
 									}]
 								}
 							}, invocation {
@@ -91,7 +91,7 @@ group {
 						"name": "args", 
 						"type": array {
 							"child": symbol {
-								"value": "String"
+								"symbol-value": "String"
 							}
 						}
 					}]
@@ -101,7 +101,7 @@ group {
 					"type": generic {
 						"parent": "Optional", 
 						"children": [symbol {
-							"value": "ApplicationError"
+							"symbol-value": "ApplicationError"
 						}]
 					}, 
 					"value": block {
@@ -119,12 +119,12 @@ group {
 					"params": [definition {
 						"name": "source", 
 						"type": symbol {
-							"value": "Path"
+							"symbol-value": "Path"
 						}
 					}, definition {
 						"name": "input", 
 						"type": symbol {
-							"value": "String"
+							"symbol-value": "String"
 						}
 					}]
 				}, method {
@@ -133,9 +133,9 @@ group {
 					"type": generic {
 						"parent": "Tuple", 
 						"children": [symbol {
-							"value": "State"
+							"symbol-value": "State"
 						}, symbol {
-							"value": "Node"
+							"symbol-value": "Node"
 						}]
 					}, 
 					"value": block {
@@ -145,11 +145,11 @@ group {
 									"caller": access {
 										"property": "is", 
 										"object": symbol {
-											"value": "node"
+											"symbol-value": "node"
 										}
 									}, 
 									"arguments": [string {
-										"value": "block"
+										"string-value": "block"
 									}]
 								}, 
 								"value": block {
@@ -181,12 +181,12 @@ group {
 					"params": [definition {
 						"name": "state", 
 						"type": symbol {
-							"value": "State"
+							"symbol-value": "State"
 						}
 					}, definition {
 						"name": "node", 
 						"type": symbol {
-							"value": "Node"
+							"symbol-value": "Node"
 						}
 					}]
 				}, method {
@@ -195,9 +195,9 @@ group {
 					"type": generic {
 						"parent": "Tuple", 
 						"children": [symbol {
-							"value": "State"
+							"symbol-value": "State"
 						}, symbol {
-							"value": "Node"
+							"symbol-value": "Node"
 						}]
 					}, 
 					"value": block {
@@ -207,11 +207,11 @@ group {
 									"caller": access {
 										"property": "is", 
 										"object": symbol {
-											"value": "node"
+											"symbol-value": "node"
 										}
 									}, 
 									"arguments": [string {
-										"value": "group"
+										"string-value": "group"
 									}]
 								}, 
 								"value": block {
@@ -221,18 +221,18 @@ group {
 												"name": "oldChildren", 
 												"modifiers": ["final"], 
 												"type": symbol {
-													"value": "var"
+													"symbol-value": "var"
 												}
 											}, 
 											"value": invocation {
 												"caller": access {
 													"property": "findNodeList", 
 													"object": symbol {
-														"value": "node"
+														"symbol-value": "node"
 													}
 												}, 
 												"arguments": [string {
-													"value": "children"
+													"string-value": "children"
 												}]
 											}
 										}, invocation {
@@ -246,7 +246,7 @@ group {
 												"type": generic {
 													"parent": "List", 
 													"children": [symbol {
-														"value": "Node"
+														"symbol-value": "Node"
 													}]
 												}
 											}, 
@@ -254,14 +254,14 @@ group {
 												"caller": access {
 													"property": "orElse", 
 													"object": symbol {
-														"value": "oldChildren"
+														"symbol-value": "oldChildren"
 													}
 												}, 
 												"arguments": [invocation {
 													"caller": access {
 														"property": "emptyList", 
 														"object": symbol {
-															"value": "Collections"
+															"symbol-value": "Collections"
 														}
 													}, 
 													"arguments": []
@@ -271,11 +271,11 @@ group {
 											"definition": definition {
 												"name": "i", 
 												"type": symbol {
-													"value": "int"
+													"symbol-value": "int"
 												}
 											}, 
 											"value": number {
-												"value": "0"
+												"number-value": "0"
 											}
 										}, while {
 											"condition": invocation {
@@ -283,10 +283,10 @@ group {
 													"property": "size", 
 													"object": less-than {
 														"left": symbol {
-															"value": "i"
+															"symbol-value": "i"
 														}, 
 														"right": symbol {
-															"value": "orElse"
+															"symbol-value": "orElse"
 														}
 													}
 												}, 
@@ -298,18 +298,18 @@ group {
 														"definition": definition {
 															"name": "child", 
 															"type": symbol {
-																"value": "Node"
+																"symbol-value": "Node"
 															}
 														}, 
 														"value": invocation {
 															"caller": access {
 																"property": "get", 
 																"object": symbol {
-																	"value": "orElse"
+																	"symbol-value": "orElse"
 																}
 															}, 
 															"arguments": [symbol {
-																"value": "i"
+																"symbol-value": "i"
 															}]
 														}
 													}, initialization {
@@ -317,19 +317,19 @@ group {
 															"name": "withString", 
 															"modifiers": ["final"], 
 															"type": symbol {
-																"value": "var"
+																"symbol-value": "var"
 															}
 														}, 
 														"value": invocation {
 															"caller": symbol {
-																"value": "getNode"
+																"symbol-value": "getNode"
 															}, 
 															"arguments": [symbol {
-																"value": "state"
+																"symbol-value": "state"
 															}, symbol {
-																"value": "i"
+																"symbol-value": "i"
 															}, symbol {
-																"value": "child"
+																"symbol-value": "child"
 															}]
 														}
 													}, invocation {
@@ -369,11 +369,11 @@ group {
 										"caller": access {
 											"property": "is", 
 											"object": symbol {
-												"value": "node"
+												"symbol-value": "node"
 											}
 										}, 
 										"arguments": [string {
-											"value": "block"
+											"string-value": "block"
 										}]
 									}, 
 									"value": block {
@@ -412,19 +412,19 @@ group {
 					"params": [definition {
 						"name": "state", 
 						"type": symbol {
-							"value": "State"
+							"symbol-value": "State"
 						}
 					}, definition {
 						"name": "node", 
 						"type": symbol {
-							"value": "Node"
+							"symbol-value": "Node"
 						}
 					}]
 				}, method {
 					"name": "getNode", 
 					"modifiers": ["private", "static"], 
 					"type": symbol {
-						"value": "Node"
+						"symbol-value": "Node"
 					}, 
 					"value": block {
 						"value": group {
@@ -436,21 +436,21 @@ group {
 									"name": "indent", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": invocation {
 									"caller": access {
 										"property": "repeat", 
 										"object": string {
-											"value": "\n" + "\t"
+											"string-value": "\n" + "\t"
 										}
 									}, 
 									"arguments": [invocation {
 										"caller": access {
 											"property": "depth", 
 											"object": symbol {
-												"value": "state"
+												"symbol-value": "state"
 											}
 										}, 
 										"arguments": []
@@ -471,17 +471,17 @@ group {
 					"params": [definition {
 						"name": "state", 
 						"type": symbol {
-							"value": "State"
+							"symbol-value": "State"
 						}
 					}, definition {
 						"name": "i", 
 						"type": symbol {
-							"value": "int"
+							"symbol-value": "int"
 						}
 					}, definition {
 						"name": "child", 
 						"type": symbol {
-							"value": "Node"
+							"symbol-value": "Node"
 						}
 					}]
 				}, method {
@@ -490,9 +490,9 @@ group {
 					"type": generic {
 						"parent": "Tuple", 
 						"children": [symbol {
-							"value": "State"
+							"symbol-value": "State"
 						}, symbol {
-							"value": "Node"
+							"symbol-value": "Node"
 						}]
 					}, 
 					"value": block {
@@ -502,20 +502,20 @@ group {
 									"name": "withBefore", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": invocation {
 									"caller": access {
 										"property": "apply", 
 										"object": symbol {
-											"value": "beforePass"
+											"symbol-value": "beforePass"
 										}
 									}, 
 									"arguments": [symbol {
-										"value": "state"
+										"symbol-value": "state"
 									}, symbol {
-										"value": "node"
+										"symbol-value": "node"
 									}]
 								}
 							}, invocation {
@@ -555,27 +555,27 @@ group {
 					"params": [definition {
 						"name": "state", 
 						"type": symbol {
-							"value": "State"
+							"symbol-value": "State"
 						}
 					}, definition {
 						"name": "node", 
 						"type": symbol {
-							"value": "Node"
+							"symbol-value": "Node"
 						}
 					}, definition {
 						"name": "beforePass", 
 						"type": generic {
 							"parent": "BiFunction", 
 							"children": [symbol {
-								"value": "State"
+								"symbol-value": "State"
 							}, symbol {
-								"value": "Node"
+								"symbol-value": "Node"
 							}, generic {
 								"parent": "Tuple", 
 								"children": [symbol {
-									"value": "State"
+									"symbol-value": "State"
 								}, symbol {
-									"value": "Node"
+									"symbol-value": "Node"
 								}]
 							}]
 						}
@@ -584,15 +584,15 @@ group {
 						"type": generic {
 							"parent": "BiFunction", 
 							"children": [symbol {
-								"value": "State"
+								"symbol-value": "State"
 							}, symbol {
-								"value": "Node"
+								"symbol-value": "Node"
 							}, generic {
 								"parent": "Tuple", 
 								"children": [symbol {
-									"value": "State"
+									"symbol-value": "State"
 								}, symbol {
-									"value": "Node"
+									"symbol-value": "Node"
 								}]
 							}]
 						}
@@ -603,9 +603,9 @@ group {
 					"type": generic {
 						"parent": "Tuple", 
 						"children": [symbol {
-							"value": "State"
+							"symbol-value": "State"
 						}, symbol {
-							"value": "Node"
+							"symbol-value": "Node"
 						}]
 					}, 
 					"value": block {
@@ -615,14 +615,14 @@ group {
 									"name": "oldState", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": invocation {
 									"caller": access {
 										"property": "left", 
 										"object": symbol {
-											"value": "current"
+											"symbol-value": "current"
 										}
 									}, 
 									"arguments": []
@@ -632,14 +632,14 @@ group {
 									"name": "oldNode", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": invocation {
 									"caller": access {
 										"property": "right", 
 										"object": symbol {
-											"value": "current"
+											"symbol-value": "current"
 										}
 									}, 
 									"arguments": []
@@ -649,14 +649,14 @@ group {
 									"name": "key", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": invocation {
 									"caller": access {
 										"property": "left", 
 										"object": symbol {
-											"value": "entry"
+											"symbol-value": "entry"
 										}
 									}, 
 									"arguments": []
@@ -666,14 +666,14 @@ group {
 									"name": "value", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": invocation {
 									"caller": access {
 										"property": "right", 
 										"object": symbol {
-											"value": "entry"
+											"symbol-value": "entry"
 										}
 									}, 
 									"arguments": []
@@ -693,9 +693,9 @@ group {
 						"type": generic {
 							"parent": "Tuple", 
 							"children": [symbol {
-								"value": "State"
+								"symbol-value": "State"
 							}, symbol {
-								"value": "Node"
+								"symbol-value": "Node"
 							}]
 						}
 					}, definition {
@@ -703,9 +703,9 @@ group {
 						"type": generic {
 							"parent": "Tuple", 
 							"children": [symbol {
-								"value": "String"
+								"symbol-value": "String"
 							}, symbol {
-								"value": "Node"
+								"symbol-value": "Node"
 							}]
 						}
 					}, definition {
@@ -713,15 +713,15 @@ group {
 						"type": generic {
 							"parent": "BiFunction", 
 							"children": [symbol {
-								"value": "State"
+								"symbol-value": "State"
 							}, symbol {
-								"value": "Node"
+								"symbol-value": "Node"
 							}, generic {
 								"parent": "Tuple", 
 								"children": [symbol {
-									"value": "State"
+									"symbol-value": "State"
 								}, symbol {
-									"value": "Node"
+									"symbol-value": "Node"
 								}]
 							}]
 						}
@@ -730,15 +730,15 @@ group {
 						"type": generic {
 							"parent": "BiFunction", 
 							"children": [symbol {
-								"value": "State"
+								"symbol-value": "State"
 							}, symbol {
-								"value": "Node"
+								"symbol-value": "Node"
 							}, generic {
 								"parent": "Tuple", 
 								"children": [symbol {
-									"value": "State"
+									"symbol-value": "State"
 								}, symbol {
-									"value": "Node"
+									"symbol-value": "Node"
 								}]
 							}]
 						}
@@ -749,9 +749,9 @@ group {
 					"type": generic {
 						"parent": "Tuple", 
 						"children": [symbol {
-							"value": "State"
+							"symbol-value": "State"
 						}, symbol {
-							"value": "Node"
+							"symbol-value": "Node"
 						}]
 					}, 
 					"value": block {
@@ -761,14 +761,14 @@ group {
 									"name": "oldState", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": invocation {
 									"caller": access {
 										"property": "left", 
 										"object": symbol {
-											"value": "current"
+											"symbol-value": "current"
 										}
 									}, 
 									"arguments": []
@@ -778,14 +778,14 @@ group {
 									"name": "oldChildren", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": invocation {
 									"caller": access {
 										"property": "right", 
 										"object": symbol {
-											"value": "current"
+											"symbol-value": "current"
 										}
 									}, 
 									"arguments": []
@@ -795,14 +795,14 @@ group {
 									"name": "key", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": invocation {
 									"caller": access {
 										"property": "left", 
 										"object": symbol {
-											"value": "entry"
+											"symbol-value": "entry"
 										}
 									}, 
 									"arguments": []
@@ -812,14 +812,14 @@ group {
 									"name": "values", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": invocation {
 									"caller": access {
 										"property": "right", 
 										"object": symbol {
-											"value": "entry"
+											"symbol-value": "entry"
 										}
 									}, 
 									"arguments": []
@@ -828,11 +828,11 @@ group {
 								"definition": definition {
 									"name": "currentState", 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": symbol {
-									"value": "oldState"
+									"symbol-value": "oldState"
 								}
 							}, invocation {
 								"caller": {
@@ -843,11 +843,11 @@ group {
 								"definition": definition {
 									"name": "i", 
 									"type": symbol {
-										"value": "int"
+										"symbol-value": "int"
 									}
 								}, 
 								"value": number {
-									"value": "0"
+									"number-value": "0"
 								}
 							}, while {
 								"condition": invocation {
@@ -855,10 +855,10 @@ group {
 										"property": "size", 
 										"object": less-than {
 											"left": symbol {
-												"value": "i"
+												"symbol-value": "i"
 											}, 
 											"right": symbol {
-												"value": "values"
+												"symbol-value": "values"
 											}
 										}
 									}, 
@@ -870,18 +870,18 @@ group {
 											"definition": definition {
 												"name": "value", 
 												"type": symbol {
-													"value": "Node"
+													"symbol-value": "Node"
 												}
 											}, 
 											"value": invocation {
 												"caller": access {
 													"property": "get", 
 													"object": symbol {
-														"value": "values"
+														"symbol-value": "values"
 													}
 												}, 
 												"arguments": [symbol {
-													"value": "i"
+													"symbol-value": "i"
 												}]
 											}
 										}, initialization {
@@ -889,21 +889,21 @@ group {
 												"name": "passed", 
 												"modifiers": ["final"], 
 												"type": symbol {
-													"value": "var"
+													"symbol-value": "var"
 												}
 											}, 
 											"value": invocation {
 												"caller": symbol {
-													"value": "pass"
+													"symbol-value": "pass"
 												}, 
 												"arguments": [symbol {
-													"value": "currentState"
+													"symbol-value": "currentState"
 												}, symbol {
-													"value": "value"
+													"symbol-value": "value"
 												}, symbol {
-													"value": "beforePass"
+													"symbol-value": "beforePass"
 												}, symbol {
-													"value": "afterPass"
+													"symbol-value": "afterPass"
 												}]
 											}
 										}, invocation {
@@ -929,20 +929,20 @@ group {
 									"name": "newNode", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": invocation {
 									"caller": access {
 										"property": "withNodeList", 
 										"object": symbol {
-											"value": "oldChildren"
+											"symbol-value": "oldChildren"
 										}
 									}, 
 									"arguments": [symbol {
-										"value": "key"
+										"symbol-value": "key"
 									}, symbol {
-										"value": "currentChildren"
+										"symbol-value": "currentChildren"
 									}]
 								}
 							}, invocation {
@@ -962,9 +962,9 @@ group {
 						"type": generic {
 							"parent": "Tuple", 
 							"children": [symbol {
-								"value": "State"
+								"symbol-value": "State"
 							}, symbol {
-								"value": "Node"
+								"symbol-value": "Node"
 							}]
 						}
 					}, definition {
@@ -972,11 +972,11 @@ group {
 						"type": generic {
 							"parent": "Tuple", 
 							"children": [symbol {
-								"value": "String"
+								"symbol-value": "String"
 							}, generic {
 								"parent": "List", 
 								"children": [symbol {
-									"value": "Node"
+									"symbol-value": "Node"
 								}]
 							}]
 						}
@@ -985,15 +985,15 @@ group {
 						"type": generic {
 							"parent": "BiFunction", 
 							"children": [symbol {
-								"value": "State"
+								"symbol-value": "State"
 							}, symbol {
-								"value": "Node"
+								"symbol-value": "Node"
 							}, generic {
 								"parent": "Tuple", 
 								"children": [symbol {
-									"value": "State"
+									"symbol-value": "State"
 								}, symbol {
-									"value": "Node"
+									"symbol-value": "Node"
 								}]
 							}]
 						}
@@ -1002,15 +1002,15 @@ group {
 						"type": generic {
 							"parent": "BiFunction", 
 							"children": [symbol {
-								"value": "State"
+								"symbol-value": "State"
 							}, symbol {
-								"value": "Node"
+								"symbol-value": "Node"
 							}, generic {
 								"parent": "Tuple", 
 								"children": [symbol {
-									"value": "State"
+									"symbol-value": "State"
 								}, symbol {
-									"value": "Node"
+									"symbol-value": "Node"
 								}]
 							}]
 						}
@@ -1021,9 +1021,9 @@ group {
 					"type": generic {
 						"parent": "Tuple", 
 						"children": [symbol {
-							"value": "State"
+							"symbol-value": "State"
 						}, symbol {
-							"value": "Node"
+							"symbol-value": "Node"
 						}]
 					}, 
 					"value": block {
@@ -1033,15 +1033,15 @@ group {
 									"name": "result", 
 									"modifiers": ["final"], 
 									"type": symbol {
-										"value": "var"
+										"symbol-value": "var"
 									}
 								}, 
 								"value": invocation {
 									"caller": symbol {
-										"value": "modifyStateless"
+										"symbol-value": "modifyStateless"
 									}, 
 									"arguments": [symbol {
-										"value": "node"
+										"symbol-value": "node"
 									}]
 								}
 							}, invocation {
@@ -1059,19 +1059,19 @@ group {
 					"params": [definition {
 						"name": "state", 
 						"type": symbol {
-							"value": "State"
+							"symbol-value": "State"
 						}
 					}, definition {
 						"name": "node", 
 						"type": symbol {
-							"value": "Node"
+							"symbol-value": "Node"
 						}
 					}]
 				}, method {
 					"name": "modifyStateless", 
 					"modifiers": ["private", "static"], 
 					"type": symbol {
-						"value": "Node"
+						"symbol-value": "Node"
 					}, 
 					"value": block {
 						"value": group {
@@ -1080,11 +1080,11 @@ group {
 									"caller": access {
 										"property": "is", 
 										"object": symbol {
-											"value": "node"
+											"symbol-value": "node"
 										}
 									}, 
 									"arguments": [string {
-										"value": "group"
+										"string-value": "group"
 									}]
 								}, 
 								"value": block {
@@ -1121,11 +1121,11 @@ group {
 										"caller": access {
 											"property": "is", 
 											"object": symbol {
-												"value": "node"
+												"symbol-value": "node"
 											}
 										}, 
 										"arguments": [string {
-											"value": "class"
+											"string-value": "class"
 										}]
 									}, 
 									"value": block {
@@ -1147,11 +1147,11 @@ group {
 										"caller": access {
 											"property": "is", 
 											"object": symbol {
-												"value": "node"
+												"symbol-value": "node"
 											}
 										}, 
 										"arguments": [string {
-											"value": "import"
+											"string-value": "import"
 										}]
 									}, 
 									"value": block {
@@ -1173,11 +1173,11 @@ group {
 										"caller": access {
 											"property": "is", 
 											"object": symbol {
-												"value": "node"
+												"symbol-value": "node"
 											}
 										}, 
 										"arguments": [string {
-											"value": "method"
+											"string-value": "method"
 										}]
 									}, 
 									"value": block {
@@ -1207,7 +1207,7 @@ group {
 					"params": [definition {
 						"name": "node", 
 						"type": symbol {
-							"value": "Node"
+							"symbol-value": "Node"
 						}
 					}]
 				}, method {
@@ -1216,7 +1216,7 @@ group {
 					"type": generic {
 						"parent": "Optional", 
 						"children": [symbol {
-							"value": "ApplicationError"
+							"symbol-value": "ApplicationError"
 						}]
 					}, 
 					"value": block {
@@ -1234,12 +1234,12 @@ group {
 					"params": [definition {
 						"name": "generated", 
 						"type": symbol {
-							"value": "String"
+							"symbol-value": "String"
 						}
 					}, definition {
 						"name": "target", 
 						"type": symbol {
-							"value": "Path"
+							"symbol-value": "Path"
 						}
 					}]
 				}]

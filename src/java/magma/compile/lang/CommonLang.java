@@ -50,7 +50,7 @@ public class CommonLang {
     }
 
     private static TypeRule createSymbolRule() {
-        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
+        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("symbol-value"))));
     }
 
     private static TypeRule createGenericRule(LazyRule type) {
@@ -98,7 +98,7 @@ public class CommonLang {
     }
 
     private static TypeRule createStringRule() {
-        return new TypeRule("string", new StripRule(new PrefixRule("\"", new SuffixRule(new StringRule("value"), "\""))));
+        return new TypeRule("string", new StripRule(new PrefixRule("\"", new SuffixRule(new StringRule("string-value"), "\""))));
     }
 
     private static TypeRule createOperatorRule(LazyRule value) {
@@ -112,13 +112,13 @@ public class CommonLang {
     }
 
     private static TypeRule createNumberRule() {
-        return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule("value"))));
+        return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule("number-value"))));
     }
 
     static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
         final var arguments = new NodeListRule(new TypeSlicer(), "arguments", value);
-        return new TypeRule("invocation", new SuffixRule(new SplitRule(caller, new LocatingSplitter("(", new InvocationLocator()), arguments), ")"));
+        return new TypeRule("invocation", new StripRule(new SuffixRule(new SplitRule(caller, new LocatingSplitter("(", new InvocationLocator()), arguments), ")")));
     }
 
     static TypeRule createConditionedRule(String type, String prefix, Rule value, LazyRule statement) {
