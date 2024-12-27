@@ -63,15 +63,9 @@ public class Main {
             int i = 0;
             while (i < orElse.size()) {
                 Node child = orElse.get(i);
-                Node withString;
-                if (state.depth() == 0 && i == 0) {
-                    withString = child;
-                } else {
-                    final var indent = "\n" + "\t".repeat(state.depth());
-                    withString = child.withString("before-child", indent);
-                }
+                final var withString = getNode(state, i, child);
                 newChildren.add(withString);
-                i++;
+                i = i + 1;
             }
 
             return new Tuple<>(state, node
@@ -82,6 +76,12 @@ public class Main {
         } else {
             return new Tuple<>(state, node);
         }
+    }
+
+    private static Node getNode(State state, int i, Node child) {
+        if (state.depth() == 0 && i == 0) return child;
+        final var indent = "\n" + "\t".repeat(state.depth());
+        return child.withString("before-child", indent);
     }
 
     private static Tuple<State, Node> pass(
