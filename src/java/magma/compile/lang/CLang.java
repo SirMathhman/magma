@@ -61,7 +61,9 @@ public class CLang {
                 CommonLang.createInitializationRule(value),
                 CommonLang.createConditionedRule("if", "if ", value, statement),
                 CommonLang.createConditionedRule("while", "while ", value, statement),
-                CommonLang.createElseRule(statement)
+                CommonLang.createElseRule(statement),
+                CommonLang.createAssignmentRule(),
+                CommonLang.createReturnRule()
         )));
         return statement;
     }

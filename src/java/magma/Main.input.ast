@@ -50,10 +50,21 @@ group {
 					}, 
 					"value": block {
 						"value": group {
-							"children": [invocation {
-								"content": "final Path source = Paths.get(".", "src", "java", "magma", "Main.java")"
+							"children": [initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "source", 
+									"type": symbol {
+										"value": "Path"
+									}
+								}, 
+								"value": invocation {
+									"caller": " Paths.get", 
+									"arguments": "".", "src", "java", "magma", "Main.java""
+								}
 							}, invocation {
-								"content": "JavaFiles.readString(source)\n                .mapErr(JavaError::new)\n                .mapErr(ApplicationError::new)\n                .match(input -> runWithInput(source, input), Optional::of)\n                .ifPresent(error -> System.err.println(error.display()))"
+								"caller": "JavaFiles.readString", 
+								"arguments": "source)\n                .mapErr(JavaError::new)\n                .mapErr(ApplicationError::new)\n                .match(input -> runWithInput(source, input), Optional::of)\n                .ifPresent(error -> System.err.println(error.display())"
 							}]
 						}
 					}, 
@@ -77,7 +88,8 @@ group {
 					"value": block {
 						"value": group {
 							"children": [invocation {
-								"content": "return JavaLang.createJavaRootRule()\n                .parse(input)\n                .mapErr(ApplicationError::new)\n                .flatMapValue(parsed -> {\n                    return JavaFiles.writeString(source.resolveSibling("Main.input.ast"), parsed.toString())\n                            .map(JavaError::new)\n                            .map(ApplicationError::new)\n                            .<Result<Node, ApplicationError>>map(Err::new)\n                            .orElseGet(() -> new Ok<>(parsed));\n                })\n                .mapValue(node -> pass(new State(), node, Tuple::new, Main::modify).right())\n                .mapValue(node -> pass(new State(), node, Main::formatBefore, Main::formatAfter).right())\n                .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))\n                .mapValue(generated -> writeGenerated(generated, source.resolveSibling("Main.c"))).match(value -> value, Optional::of)"
+								"caller": "return JavaLang.createJavaRootRule", 
+								"arguments": ")\n                .parse(input)\n                .mapErr(ApplicationError::new)\n                .flatMapValue(parsed -> {\n                    return JavaFiles.writeString(source.resolveSibling("Main.input.ast"), parsed.toString())\n                            .map(JavaError::new)\n                            .map(ApplicationError::new)\n                            .<Result<Node, ApplicationError>>map(Err::new)\n                            .orElseGet(() -> new Ok<>(parsed));\n                })\n                .mapValue(node -> pass(new State(), node, Tuple::new, Main::modify).right())\n                .mapValue(node -> pass(new State(), node, Main::formatBefore, Main::formatAfter).right())\n                .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))\n                .mapValue(generated -> writeGenerated(generated, source.resolveSibling("Main.c"))).match(value -> value, Optional::of"
 							}]
 						}
 					}, 
@@ -107,17 +119,20 @@ group {
 						"value": group {
 							"children": [if {
 								"condition": invocation {
-									"content": "node.is("block")"
+									"caller": "node.is", 
+									"arguments": ""block""
 								}, 
 								"value": block {
 									"value": group {
 										"children": [invocation {
-											"content": "return new Tuple<>(state.enter(), node)"
+											"caller": "return new Tuple<>", 
+											"arguments": "state.enter(), node"
 										}]
 									}
 								}
 							}, invocation {
-								"content": "return new Tuple<>(state, node)"
+								"caller": "return new Tuple<>", 
+								"arguments": "state, node"
 							}]
 						}
 					}, 
@@ -147,70 +162,115 @@ group {
 						"value": group {
 							"children": [if {
 								"condition": invocation {
-									"content": "node.is("group")"
+									"caller": "node.is", 
+									"arguments": ""group""
 								}, 
 								"value": block {
 									"value": group {
-										"children": [invocation {
-											"content": "final var oldChildren = node.findNodeList("children")"
-										}, invocation {
-											"content": "final var newChildren = new ArrayList<Node>()"
-										}, invocation {
-											"content": "List<Node> orElse = oldChildren.orElse(Collections.emptyList())"
-										}, invocation {
-											"content": "int i = 0"
+										"children": [initialization {
+											"definition": definition {
+												"before-type": "final", 
+												"name": "oldChildren", 
+												"type": symbol {
+													"value": "var"
+												}
+											}, 
+											"value": invocation {
+												"caller": " node.findNodeList", 
+												"arguments": ""children""
+											}
+										}, initialization {
+											"definition": definition {
+												"before-type": "final", 
+												"name": "newChildren", 
+												"type": symbol {
+													"value": "var"
+												}
+											}, 
+											"value": invocation {
+												"caller": " new ArrayList<Node>", 
+												"arguments": ""
+											}
+										}, initialization {
+											"definition": definition {
+												"name": "orElse", 
+												"type": generic {
+													"parent": "List", 
+													"children": [symbol {
+														"value": "Node"
+													}]
+												}
+											}, 
+											"value": invocation {
+												"caller": " oldChildren.orElse", 
+												"arguments": "Collections.emptyList()"
+											}
+										}, initialization {
+											"definition": definition {
+												"name": "i", 
+												"type": symbol {
+													"value": "int"
+												}
+											}, 
+											"value": number {
+												"value": "0"
+											}
 										}, while {
 											"condition": invocation {
-												"content": "i < orElse.size()"
+												"caller": "i < orElse.size", 
+												"arguments": ""
 											}, 
 											"value": block {
 												"value": group {
-													"children": [invocation {
-														"content": "Node child = orElse.get(i)"
-													}, invocation {
-														"content": "Node withString"
-													}, if {
-														"condition": invocation {
-															"content": "state.depth() == 0 && i == 0"
+													"children": [initialization {
+														"definition": definition {
+															"name": "child", 
+															"type": symbol {
+																"value": "Node"
+															}
 														}, 
-														"value": block {
-															"value": group {
-																"children": [invocation {
-																	"content": "withString = child"
-																}]
-															}
+														"value": invocation {
+															"caller": " orElse.get", 
+															"arguments": "i"
 														}
-													}, else {
-														"value": block {
-															"value": group {
-																"children": [invocation {
-																	"content": "final var indent = "\n" + "\t".repeat(state.depth())"
-																}, invocation {
-																	"content": "withString = child.withString("before-child", indent)"
-																}]
+													}, initialization {
+														"definition": definition {
+															"before-type": "final", 
+															"name": "withString", 
+															"type": symbol {
+																"value": "var"
 															}
+														}, 
+														"value": invocation {
+															"caller": " getNode", 
+															"arguments": "state, i, child"
 														}
 													}, invocation {
-														"content": "newChildren.add(withString)"
-													}, invocation {
-														"content": "i++"
+														"caller": "newChildren.add", 
+														"arguments": "withString"
+													}, assignment {
+														"destination": "i ", 
+														"source": " i + 1"
 													}]
 												}
 											}
 										}, invocation {
-											"content": "return new Tuple<>(state, node\n                    .withNodeList("children", newChildren)\n                    .withString("after-children", "\n" + "\t".repeat(Math.max(state.depth() - 1, 0))))"
+											"caller": "return new Tuple<>", 
+											"arguments": "state, node\n                    .withNodeList("children", newChildren)\n                    .withString("after-children", "\n" + "\t".repeat(Math.max(state.depth() - 1, 0)))"
 										}]
 									}
 								}
 							}, else {
 								"value": if {
 									"condition": invocation {
-										"content": "node.is("block")"
+										"caller": "node.is", 
+										"arguments": ""block""
 									}, 
 									"value": block {
 										"value": group {
 											"children": [invocation {
-												"content": "return new Tuple<>(state.exit(), node)"
+												"caller": "return new Tuple<>", 
+												"arguments": "state.exit(), node"
 											}]
 										}
 									}
@@ -219,7 +279,8 @@ group {
 								"value": block {
 									"value": group {
 										"children": [invocation {
-											"content": "return new Tuple<>(state, node)"
+											"caller": "return new Tuple<>", 
+											"arguments": "state, node"
 										}]
 									}
 								}
@@ -239,6 +300,51 @@ group {
 					}]
 				}, method {
 					"before-type": "private static", 
+					"name": "getNode", 
+					"type": symbol {
+						"value": "Node"
+					}, 
+					"value": block {
+						"value": group {
+							"children": [assignment {
+								"destination": "if (state.depth() ", 
+								"source": "= 0 && i == 0) return child"
+							}, initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "indent", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " "\n" + "\t".repeat", 
+									"arguments": "state.depth()"
+								}
+							}, invocation {
+								"caller": "return child.withString", 
+								"arguments": ""before-child", indent"
+							}]
+						}
+					}, 
+					"params": [definition {
+						"name": "state", 
+						"type": symbol {
+							"value": "State"
+						}
+					}, definition {
+						"name": "i", 
+						"type": symbol {
+							"value": "int"
+						}
+					}, definition {
+						"name": "child", 
+						"type": symbol {
+							"value": "Node"
+						}
+					}]
+				}, method {
+					"before-type": "private static", 
 					"name": "pass", 
 					"type": generic {
 						"parent": "Tuple", 
@@ -250,14 +356,45 @@ group {
 					}, 
 					"value": block {
 						"value": group {
-							"children": [invocation {
-								"content": "final var withBefore = beforePass.apply(state, node)"
+							"children": [initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "withBefore", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " beforePass.apply", 
+									"arguments": "state, node"
+								}
+							}, initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "withNodeLists", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " withBefore.right", 
+									"arguments": ")\n                .streamNodeLists()\n                .reduce(withBefore, (node1, tuple) -> passNodeLists(node1, tuple, beforePass, afterPass), (_, next) -> next"
+								}
+							}, initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "withNodes", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " withNodeLists.right", 
+									"arguments": ")\n                .streamNodes()\n                .reduce(withNodeLists, (node1, tuple) -> passNode(node1, tuple, beforePass, afterPass), (_, next) -> next"
+								}
 							}, invocation {
-								"content": "final var withNodeLists = withBefore.right()\n                .streamNodeLists()\n                .reduce(withBefore, (node1, tuple) -> passNodeLists(node1, tuple, beforePass, afterPass), (_, next) -> next)"
-							}, invocation {
-								"content": "final var withNodes = withNodeLists.right()\n                .streamNodes()\n                .reduce(withNodeLists, (node1, tuple) -> passNode(node1, tuple, beforePass, afterPass), (_, next) -> next)"
-							}, invocation {
-								"content": "return afterPass.apply(withNodes.left(), withNodes.right())"
+								"caller": "return afterPass.apply", 
+								"arguments": "withNodes.left(), withNodes.right()"
 							}]
 						}
 					}, 
@@ -319,16 +456,57 @@ group {
 					}, 
 					"value": block {
 						"value": group {
-							"children": [invocation {
-								"content": "final var oldState = current.left()"
+							"children": [initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "oldState", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " current.left", 
+									"arguments": ""
+								}
+							}, initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "oldNode", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " current.right", 
+									"arguments": ""
+								}
+							}, initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "key", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " entry.left", 
+									"arguments": ""
+								}
+							}, initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "value", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " entry.right", 
+									"arguments": ""
+								}
 							}, invocation {
-								"content": "final var oldNode = current.right()"
-							}, invocation {
-								"content": "final var key = entry.left()"
-							}, invocation {
-								"content": "final var value = entry.right()"
-							}, invocation {
-								"content": "return pass(oldState, value, beforePass, afterPass).mapRight(right -> oldNode.withNode(key, right))"
+								"caller": "return pass", 
+								"arguments": "oldState, value, beforePass, afterPass).mapRight(right -> oldNode.withNode(key, right)"
 							}]
 						}
 					}, 
@@ -400,43 +578,135 @@ group {
 					}, 
 					"value": block {
 						"value": group {
-							"children": [invocation {
-								"content": "final var oldState = current.left()"
-							}, invocation {
-								"content": "final var oldChildren = current.right()"
-							}, invocation {
-								"content": "final var key = entry.left()"
-							}, invocation {
-								"content": "final var values = entry.right()"
-							}, invocation {
-								"content": "var currentState = oldState"
-							}, invocation {
-								"content": "var currentChildren = new ArrayList<Node>()"
-							}, invocation {
-								"content": "int i = 0"
+							"children": [initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "oldState", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " current.left", 
+									"arguments": ""
+								}
+							}, initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "oldChildren", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " current.right", 
+									"arguments": ""
+								}
+							}, initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "key", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " entry.left", 
+									"arguments": ""
+								}
+							}, initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "values", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " entry.right", 
+									"arguments": ""
+								}
+							}, assignment {
+								"destination": "var currentState ", 
+								"source": " oldState"
+							}, initialization {
+								"definition": definition {
+									"name": "currentChildren", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " new ArrayList<Node>", 
+									"arguments": ""
+								}
+							}, initialization {
+								"definition": definition {
+									"name": "i", 
+									"type": symbol {
+										"value": "int"
+									}
+								}, 
+								"value": number {
+									"value": "0"
+								}
 							}, while {
 								"condition": invocation {
-									"content": "i < values.size()"
+									"caller": "i < values.size", 
+									"arguments": ""
 								}, 
 								"value": block {
 									"value": group {
-										"children": [invocation {
-											"content": "Node value = values.get(i)"
+										"children": [initialization {
+											"definition": definition {
+												"name": "value", 
+												"type": symbol {
+													"value": "Node"
+												}
+											}, 
+											"value": invocation {
+												"caller": " values.get", 
+												"arguments": "i"
+											}
+										}, initialization {
+											"definition": definition {
+												"before-type": "final", 
+												"name": "passed", 
+												"type": symbol {
+													"value": "var"
+												}
+											}, 
+											"value": invocation {
+												"caller": " pass", 
+												"arguments": "currentState, value, beforePass, afterPass"
+											}
 										}, invocation {
-											"content": "final var passed = pass(currentState, value, beforePass, afterPass)"
+											"caller": "currentState = passed.left", 
+											"arguments": ""
 										}, invocation {
-											"content": "currentState = passed.left()"
-										}, invocation {
-											"content": "currentChildren.add(passed.right())"
-										}, invocation {
-											"content": "i++"
+											"caller": "currentChildren.add", 
+											"arguments": "passed.right()"
+										}, assignment {
+											"destination": "i ", 
+											"source": " i + 1"
 										}]
 									}
 								}
+							}, initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "newNode", 
+									"type": symbol {
+										"value": "var"
+									}
+								}, 
+								"value": invocation {
+									"caller": " oldChildren.withNodeList", 
+									"arguments": "key, currentChildren"
+								}
 							}, invocation {
-								"content": "final var newNode = oldChildren.withNodeList(key, currentChildren)"
-							}, invocation {
-								"content": "return new Tuple<>(oldState, newNode)"
+								"caller": "return new Tuple<>", 
+								"arguments": "oldState, newNode"
 							}]
 						}
 					}, 
@@ -511,72 +781,21 @@ group {
 					}, 
 					"value": block {
 						"value": group {
-							"children": [invocation {
-								"content": "Node result"
-							}, if {
-								"condition": invocation {
-									"content": "node.is("group")"
+							"children": [initialization {
+								"definition": definition {
+									"before-type": "final", 
+									"name": "result", 
+									"type": symbol {
+										"value": "var"
+									}
 								}, 
-								"value": block {
-									"value": group {
-										"children": [invocation {
-											"content": "final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>())"
-										}, invocation {
-											"content": "final var newChildren = oldChildren.stream()\n                    .filter(oldChild -> !oldChild.is("package"))\n                    .collect(Collectors.toCollection(ArrayList::new))"
-										}, invocation {
-											"content": "result = node.withNodeList("children", newChildren)"
-										}]
-									}
-								}
-							}, else {
-								"value": if {
-									"condition": invocation {
-										"content": "node.is("class")"
-									}, 
-									"value": block {
-										"value": group {
-											"children": [invocation {
-												"content": "result = node.retype("struct")"
-											}]
-										}
-									}
-								}
-							}, else {
-								"value": if {
-									"condition": invocation {
-										"content": "node.is("import")"
-									}, 
-									"value": block {
-										"value": group {
-											"children": [invocation {
-												"content": "result = node.retype("include")"
-											}]
-										}
-									}
-								}
-							}, else {
-								"value": if {
-									"condition": invocation {
-										"content": "node.is("method")"
-									}, 
-									"value": block {
-										"value": group {
-											"children": [invocation {
-												"content": "result = node.retype("function")"
-											}]
-										}
-									}
-								}
-							}, else {
-								"value": block {
-									"value": group {
-										"children": [invocation {
-											"content": "result = node"
-										}]
-									}
+								"value": invocation {
+									"caller": " modifyStateless", 
+									"arguments": "node"
 								}
 							}, invocation {
-								"content": "return new Tuple<>(state, result)"
+								"caller": "return new Tuple<>", 
+								"arguments": "state, result"
 							}]
 						}
 					}, 
@@ -586,6 +805,113 @@ group {
 							"value": "State"
 						}
 					}, definition {
+						"name": "node", 
+						"type": symbol {
+							"value": "Node"
+						}
+					}]
+				}, method {
+					"before-type": "private static", 
+					"name": "modifyStateless", 
+					"type": symbol {
+						"value": "Node"
+					}, 
+					"value": block {
+						"value": group {
+							"children": [if {
+								"condition": invocation {
+									"caller": "node.is", 
+									"arguments": ""group""
+								}, 
+								"value": block {
+									"value": group {
+										"children": [initialization {
+											"definition": definition {
+												"before-type": "final", 
+												"name": "oldChildren", 
+												"type": symbol {
+													"value": "var"
+												}
+											}, 
+											"value": invocation {
+												"caller": " node.findNodeList", 
+												"arguments": ""children").orElse(new ArrayList<>()"
+											}
+										}, initialization {
+											"definition": definition {
+												"before-type": "final", 
+												"name": "newChildren", 
+												"type": symbol {
+													"value": "var"
+												}
+											}, 
+											"value": invocation {
+												"caller": " oldChildren.stream", 
+												"arguments": ")\n                    .filter(oldChild -> !oldChild.is("package"))\n                    .collect(Collectors.toCollection(ArrayList::new)"
+											}
+										}, invocation {
+											"caller": "return node.withNodeList", 
+											"arguments": ""children", newChildren"
+										}]
+									}
+								}
+							}, else {
+								"value": if {
+									"condition": invocation {
+										"caller": "node.is", 
+										"arguments": ""class""
+									}, 
+									"value": block {
+										"value": group {
+											"children": [invocation {
+												"caller": "return node.retype", 
+												"arguments": ""struct""
+											}]
+										}
+									}
+								}
+							}, else {
+								"value": if {
+									"condition": invocation {
+										"caller": "node.is", 
+										"arguments": ""import""
+									}, 
+									"value": block {
+										"value": group {
+											"children": [invocation {
+												"caller": "return node.retype", 
+												"arguments": ""include""
+											}]
+										}
+									}
+								}
+							}, else {
+								"value": if {
+									"condition": invocation {
+										"caller": "node.is", 
+										"arguments": ""method""
+									}, 
+									"value": block {
+										"value": group {
+											"children": [invocation {
+												"caller": "return node.retype", 
+												"arguments": ""function""
+											}]
+										}
+									}
+								}
+							}, else {
+								"value": block {
+									"value": group {
+										"children": [return {
+											"value": "node"
+										}]
+									}
+								}
+							}]
+						}
+					}, 
+					"params": [definition {
 						"name": "node", 
 						"type": symbol {
 							"value": "Node"
@@ -603,7 +929,8 @@ group {
 					"value": block {
 						"value": group {
 							"children": [invocation {
-								"content": "return JavaFiles.writeString(target, generated)\n                .map(JavaError::new)\n                .map(ApplicationError::new)"
+								"caller": "return JavaFiles.writeString", 
+								"arguments": "target, generated)\n                .map(JavaError::new)\n                .map(ApplicationError::new"
 							}]
 						}
 					}, 

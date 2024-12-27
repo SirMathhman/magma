@@ -104,4 +104,12 @@ public class CommonLang {
         final var asBlock = createBlock(new ExactRule("else"), statement);
         return new TypeRule("else", new OrRule(List.of(asBlock, new PrefixRule("else", new NodeRule("value", statement)))));
     }
+
+    static TypeRule createAssignmentRule() {
+        return new TypeRule("assignment", new SplitRule(new StringRule("destination"), new LocatingSplitter("=", new FirstLocator()), new SuffixRule(new StringRule("source"), ";")));
+    }
+
+    static TypeRule createReturnRule() {
+        return new TypeRule("return", new PrefixRule("return ", new SuffixRule(new StringRule("value"), ";")));
+    }
 }

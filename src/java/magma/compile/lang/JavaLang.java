@@ -9,12 +9,12 @@ import magma.compile.rule.slice.StatementSlicer;
 import magma.compile.rule.split.LocatingSplitter;
 import magma.compile.rule.split.SplitRule;
 import magma.compile.rule.split.locate.FirstLocator;
+import magma.compile.rule.string.FilterRule;
 import magma.compile.rule.string.PrefixRule;
 import magma.compile.rule.string.StringListRule;
 import magma.compile.rule.string.StringRule;
 import magma.compile.rule.string.StripRule;
 import magma.compile.rule.string.SuffixRule;
-import magma.compile.rule.string.FilterRule;
 import magma.compile.rule.string.filter.SymbolFilter;
 
 import java.util.List;
@@ -56,7 +56,9 @@ public class JavaLang {
                 CommonLang.createConditionedRule("while", "while ", value, statement),
                 CommonLang.createElseRule(statement),
                 CommonLang.createInitializationRule(value),
-                new SuffixRule(CommonLang.createInvocationRule(), ";")
+                new SuffixRule(CommonLang.createInvocationRule(), ";"),
+                CommonLang.createAssignmentRule(),
+                CommonLang.createReturnRule()
         )));
 
         return statement;

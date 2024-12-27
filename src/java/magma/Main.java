@@ -138,7 +138,7 @@ public class Main {
 
             currentState = passed.left();
             currentChildren.add(passed.right());
-            i++;
+            i = i + 1;
         }
 
         final var newNode = oldChildren.withNodeList(key, currentChildren);
@@ -146,24 +146,27 @@ public class Main {
     }
 
     private static Tuple<State, Node> modify(State state, Node node) {
-        Node result;
+        final var result = modifyStateless(node);
+        return new Tuple<>(state, result);
+    }
+
+    private static Node modifyStateless(Node node) {
         if (node.is("group")) {
             final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>());
             final var newChildren = oldChildren.stream()
                     .filter(oldChild -> !oldChild.is("package"))
                     .collect(Collectors.toCollection(ArrayList::new));
 
-            result = node.withNodeList("children", newChildren);
+            return node.withNodeList("children", newChildren);
         } else if (node.is("class")) {
-            result = node.retype("struct");
+            return node.retype("struct");
         } else if (node.is("import")) {
-            result = node.retype("include");
+            return node.retype("include");
         } else if (node.is("method")) {
-            result = node.retype("function");
+            return node.retype("function");
         } else {
-            result = node;
+            return node;
         }
-        return new Tuple<>(state, result);
     }
 
     private static Optional<ApplicationError> writeGenerated(String generated, Path target) {
