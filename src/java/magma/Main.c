@@ -16,27 +16,27 @@
 #include "java/util/Optional.h"
 #include "java/util/function/BiFunction.h"
 #include "java/util/stream/Collectors.h"
-struct Main {
-	void main(String[] args) {
+struct Main{
+	void main(String[] args){
 		final Path source= Paths.get(".", "src", "java", "magma", "Main.java");
 		empty()
 	}
-	Optional<ApplicationError> runWithInput(Path source, String input) {
+	Optional<ApplicationError> runWithInput(Path source, String input){
 		empty()
 	}
-	Tuple<State, Node> formatBefore(State state, Node node) {
-		if (node.is("block")) {
+	Tuple<State, Node> formatBefore(State state, Node node){
+		if (node.is("block")){
 			empty()
 		}
 		empty()
 	}
-	Tuple<State, Node> formatAfter(State state, Node node) {
-		if (node.is("group")) {
+	Tuple<State, Node> formatAfter(State state, Node node){
+		if (node.is("group")){
 			final var oldChildren= node.findNodeList("children");
 			final var newChildren= new ArrayList<Node>();
 			List<Node> orElse= oldChildren.orElse(Collections.emptyList());
 			int i=0;
-			while (i < orElse.size()) {
+			while (i < orElse.size()){
 				Node child= orElse.get(i);
 				final var withString= getNode(state, i, child);
 				empty()
@@ -44,19 +44,19 @@ struct Main {
 			}
 			empty()
 		}
-		elseif (node.is("block")) {
+		else if (node.is("block")){
 			empty()
 		}
 		else {
 			empty()
 		}
 	}
-	Node getNode(State state, int i, Node child) {
+	Node getNode(State state, int i, Node child){
 		if (state.depth() == 0 && i == 0) return child;
 		final var indent= "\n" + "\t".repeat(state.depth());
 		empty()
 	}
-	Tuple<State, Node> pass(State state, Node node, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass) {
+	Tuple<State, Node> pass(State state, Node node, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass){
 		final var withBefore= beforePass.apply(state, node);
 		final var withNodeLists= withBefore.right()
                 .streamNodeLists()
@@ -66,14 +66,14 @@ struct Main {
                 .reduce(withNodeLists, (node1, tuple) -> passNode(node1, tuple, beforePass, afterPass), (_, next) -> next);
 		empty()
 	}
-	Tuple<State, Node> passNode(Tuple<State, Node> current, Tuple<String, Node> entry, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass) {
+	Tuple<State, Node> passNode(Tuple<State, Node> current, Tuple<String, Node> entry, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass){
 		final var oldState= current.left();
 		final var oldNode= current.right();
 		final var key= entry.left();
 		final var value= entry.right();
 		empty()
 	}
-	Tuple<State, Node> passNodeLists(Tuple<State, Node> current, Tuple<String, List<Node>> entry, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass) {
+	Tuple<State, Node> passNodeLists(Tuple<State, Node> current, Tuple<String, List<Node>> entry, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass){
 		final var oldState= current.left();
 		final var oldChildren= current.right();
 		final var key= entry.left();
@@ -81,7 +81,7 @@ struct Main {
 		var currentState = oldState;
 		var currentChildren= new ArrayList<Node>();
 		int i=0;
-		while (i < values.size()) {
+		while (i < values.size()){
 			Node value= values.get(i);
 			final var passed= pass(currentState, value, beforePass, afterPass);
 			empty()
@@ -91,32 +91,32 @@ struct Main {
 		final var newNode= oldChildren.withNodeList(key, currentChildren);
 		empty()
 	}
-	Tuple<State, Node> modify(State state, Node node) {
+	Tuple<State, Node> modify(State state, Node node){
 		final var result= modifyStateless(node);
 		empty()
 	}
-	Node modifyStateless(Node node) {
-		if (node.is("group")) {
+	Node modifyStateless(Node node){
+		if (node.is("group")){
 			final var oldChildren= node.findNodeList("children").orElse(new ArrayList<>());
 			final var newChildren= oldChildren.stream()
                     .filter(oldChild -> !oldChild.is("package"))
                     .collect(Collectors.toCollection(ArrayList::new));
 			empty()
 		}
-		elseif (node.is("class")) {
+		else if (node.is("class")){
 			empty()
 		}
-		elseif (node.is("import")) {
+		else if (node.is("import")){
 			empty()
 		}
-		elseif (node.is("method")) {
+		else if (node.is("method")){
 			empty()
 		}
 		else {
 			return node;
 		}
 	}
-	Optional<ApplicationError> writeGenerated(String generated, Path target) {
+	Optional<ApplicationError> writeGenerated(String generated, Path target){
 		empty()
 	}
 }
