@@ -1,6 +1,5 @@
 package magma.compile.lang;
 
-import magma.compile.rule.DiscardRule;
 import magma.compile.rule.LazyRule;
 import magma.compile.rule.OrRule;
 import magma.compile.rule.Rule;
@@ -32,7 +31,7 @@ public class JavaLang {
     private static TypeRule createClassRule() {
         final var name = new StripRule(new SymbolRule(new StringRule("name")));
         final var rightRule = CommonLang.createBlock(name, createClassMemberRule());
-        return new TypeRule("class", new SplitRule(new DiscardRule(), new LocatingSplitter("class ", new FirstLocator()), rightRule));
+        return new TypeRule("class", new SplitRule(new StringRule("before-keyword"), new LocatingSplitter("class ", new FirstLocator()), rightRule));
     }
 
     private static Rule createClassMemberRule() {

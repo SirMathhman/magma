@@ -18,40 +18,40 @@
 #include "java/util/stream/Collectors.h"
 struct Main {
 	void main(String[] args) {
-		 source =;
+		empty()
 		empty()
 	}
 	Optional<ApplicationError> runWithInput(Path source, String input) {
 		empty()
 	}
 	Tuple<State, Node> formatBefore(State state, Node node) {
-		if () {
+		if (node.is("block")) {
 			empty()
 		}
 		empty()
 	}
 	Tuple<State, Node> formatAfter(State state, Node node) {
-		if () {
-			 oldChildren =;
-			 newChildren =;
-			 orElse =;
-			 i =;
-			while () {
-				 child =;
+		if (node.is("group")) {
+			empty()
+			empty()
+			empty()
+			empty()
+			while (i < orElse.size()) {
 				empty()
-				if () {
-					 withString =;
+				empty()
+				if (state.depth() == 0 && i == 0) {
+					empty()
 				}
 				else {
-					 indent =;
-					 withString =;
+					empty()
+					empty()
 				}
 				empty()
 				empty()
 			}
 			empty()
 		}
-		elseif () {
+		elseif (node.is("block")) {
 			empty()
 		}
 		else {
@@ -59,54 +59,54 @@ struct Main {
 		}
 	}
 	Tuple<State, Node> pass(State state, Node node, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass) {
-		 withBefore =;
-		 withNodeLists =;
-		 withNodes =;
+		empty()
+		empty()
+		empty()
 		empty()
 	}
 	Tuple<State, Node> passNode(Tuple<State, Node> current, Tuple<String, Node> entry, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass) {
-		 oldState =;
-		 oldNode =;
-		 key =;
-		 value =;
+		empty()
+		empty()
+		empty()
+		empty()
 		empty()
 	}
 	Tuple<State, Node> passNodeLists(Tuple<State, Node> current, Tuple<String, List<Node>> entry, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass) {
-		 oldState =;
-		 oldChildren =;
-		 key =;
-		 values =;
-		 currentState =;
-		 currentChildren =;
-		 i =;
-		while () {
-			 value =;
-			 passed =;
-			 currentState =;
+		empty()
+		empty()
+		empty()
+		empty()
+		empty()
+		empty()
+		empty()
+		while (i < values.size()) {
+			empty()
+			empty()
+			empty()
 			empty()
 			empty()
 		}
-		 newNode =;
+		empty()
 		empty()
 	}
 	Tuple<State, Node> modify(State state, Node node) {
 		empty()
-		if () {
-			 oldChildren =;
-			 newChildren =;
-			 result =;
+		if (node.is("group")) {
+			empty()
+			empty()
+			empty()
 		}
-		elseif () {
-			 result =;
+		elseif (node.is("class")) {
+			empty()
 		}
-		elseif () {
-			 result =;
+		elseif (node.is("import")) {
+			empty()
 		}
-		elseif () {
-			 result =;
+		elseif (node.is("method")) {
+			empty()
 		}
 		else {
-			 result =;
+			empty()
 		}
 		empty()
 	}

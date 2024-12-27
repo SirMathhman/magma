@@ -1,7 +1,6 @@
 package magma.compile.lang;
 
 import magma.NodeRule;
-import magma.compile.rule.DiscardRule;
 import magma.compile.rule.ExactRule;
 import magma.compile.rule.LazyRule;
 import magma.compile.rule.OrRule;
@@ -62,14 +61,15 @@ public class CommonLang {
     static Rule createDefinitionRule() {
         final var type = new NodeRule("type", createTypeRule());
         final var leftRule = new OrRule(List.of(
-                new SplitRule(new DiscardRule(), new LocatingSplitter(" ", new BackwardsLocator()), type),
+                new SplitRule(new StringRule("before-type"), new LocatingSplitter(" ", new BackwardsLocator()), type),
                 type
         ));
 
-        final var beforeParams = new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), new StripRule(new SymbolRule(new StringRule("name"))));
+        final var name = new StripRule(new SymbolRule(new StringRule("name")));
+        final var beforeParams = new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), name);
 
         final var params = new NodeListRule(new TypeSlicer(), "params", new TypeRule("definition", beforeParams));
-        final var definition = new SplitRule(beforeParams, new LocatingSplitter("(", new FirstLocator()), new SplitRule(params, new LocatingSplitter(")", new FirstLocator()), new DiscardRule()));
+        final var definition = new SplitRule(beforeParams, new LocatingSplitter("(", new FirstLocator()), new SuffixRule(params, ")"));
         return new OrRule(List.of(beforeParams, definition));
     }
 
@@ -86,7 +86,7 @@ public class CommonLang {
     }
 
     static TypeRule createInvocationRule() {
-        return new TypeRule("invocation", new DiscardRule());
+        return new TypeRule("invocation", new StringRule("content"));
     }
 
     static TypeRule createConditionedRule(String type, String prefix, Rule value, LazyRule statement) {

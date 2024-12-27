@@ -15,6 +15,8 @@ public record SymbolRule(Rule childRule) implements Rule {
     }
 
     private boolean isSymbol(String input) {
+        if (input.isEmpty()) return false;
+
         for (int i = 0; i < input.length(); i++) {
             var c = input.charAt(i);
             if (!Character.isLetter(c)) {
