@@ -48,7 +48,7 @@ public class CommonLang {
     }
 
     private static TypeRule createSymbolRule() {
-        return new TypeRule("symbol", new FilterRule(new SymbolFilter(), new StringRule("value")));
+        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
     }
 
     private static TypeRule createGenericRule(LazyRule type) {
@@ -83,15 +83,32 @@ public class CommonLang {
     }
 
     static Rule createValueRule() {
-        return new OrRule(List.of(
-                createInvocationRule(),
-                new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule("value"))))
-        ));
+        final var value = new LazyRule();
+        value.set(new OrRule(List.of(
+                createInvocationRule(value),
+                createNumberRule(),
+                createAccessRule(value),
+                createSymbolRule(),
+                createOperatorRule(value)
+        )));
+        return value;
     }
 
-    static TypeRule createInvocationRule() {
-        final var caller = new StringRule("caller");
-        final var arguments = new StringRule("arguments");
+    private static TypeRule createOperatorRule(LazyRule value) {
+        return new TypeRule("less-than", new SplitRule(new NodeRule("left", value), new LocatingSplitter("<", new FirstLocator()), new NodeRule("right", value)));
+    }
+
+    private static TypeRule createAccessRule(LazyRule value) {
+        return new TypeRule("access", new SplitRule(new NodeRule("object", value), new LocatingSplitter(".", new LastLocator()), new StringRule("property")));
+    }
+
+    private static TypeRule createNumberRule() {
+        return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule("value"))));
+    }
+
+    static TypeRule createInvocationRule(Rule value) {
+        final var caller = new NodeRule("caller", value);
+        final var arguments = new NodeListRule(new TypeSlicer(), "arguments", value);
         return new TypeRule("invocation", new SplitRule(caller, new LocatingSplitter("(", new FirstLocator()), new SuffixRule(arguments, ")")));
     }
 
