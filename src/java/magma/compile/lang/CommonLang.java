@@ -15,6 +15,7 @@ import magma.compile.rule.split.SplitRule;
 import magma.compile.rule.split.locate.BackwardsLocator;
 import magma.compile.rule.split.locate.FirstLocator;
 import magma.compile.rule.split.locate.LastLocator;
+import magma.compile.rule.string.PrefixRule;
 import magma.compile.rule.string.StringRule;
 import magma.compile.rule.string.StripRule;
 import magma.compile.rule.string.SuffixRule;
@@ -65,7 +66,7 @@ public class CommonLang {
                 type
         ));
 
-        final var beforeParams = new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), new StringRule("name"));
+        final var beforeParams = new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), new StripRule(new SymbolRule(new StringRule("name"))));
 
         final var params = new NodeListRule(new TypeSlicer(), "params", new TypeRule("definition", beforeParams));
         final var definition = new SplitRule(beforeParams, new LocatingSplitter("(", new FirstLocator()), new SplitRule(params, new LocatingSplitter(")", new FirstLocator()), new DiscardRule()));
@@ -86,5 +87,16 @@ public class CommonLang {
 
     static TypeRule createInvocationRule() {
         return new TypeRule("invocation", new DiscardRule());
+    }
+
+    static TypeRule createConditionedRule(String type, String prefix, Rule value, LazyRule statement) {
+        final var condition = new NodeRule("condition", value);
+        final var anIf = new PrefixRule(prefix, new StripRule(new PrefixRule("(", new SuffixRule(condition, ")"))));
+        return new TypeRule(type, createBlock(new StripRule(anIf), statement));
+    }
+
+    static TypeRule createElseRule(LazyRule statement) {
+        final var asBlock = createBlock(new ExactRule("else"), statement);
+        return new TypeRule("else", new OrRule(List.of(asBlock, new PrefixRule("else", new NodeRule("value", statement)))));
     }
 }

@@ -1,8 +1,6 @@
 package magma.compile.lang;
 
-import magma.NodeRule;
 import magma.compile.rule.DiscardRule;
-import magma.compile.rule.ExactRule;
 import magma.compile.rule.LazyRule;
 import magma.compile.rule.OrRule;
 import magma.compile.rule.Rule;
@@ -54,25 +52,14 @@ public class JavaLang {
         final var value = CommonLang.createValueRule();
         final LazyRule statement = new LazyRule();
         statement.set(new OrRule(List.of(
-                createConditionedRule("if", "if ", value, statement),
-                createConditionedRule("while", "while ", value, statement),
-                new TypeRule("else", createElseRule(statement)),
+                CommonLang.createConditionedRule("if", "if ", value, statement),
+                CommonLang.createConditionedRule("while", "while ", value, statement),
+                CommonLang.createElseRule(statement),
                 CommonLang.createInitializationRule(value),
                 new SuffixRule(CommonLang.createInvocationRule(), ";")
         )));
 
         return statement;
-    }
-
-    private static OrRule createElseRule(LazyRule statement) {
-        final var asBlock = CommonLang.createBlock(new ExactRule("else"), statement);
-        return new OrRule(List.of(asBlock, new PrefixRule("else", new NodeRule("value", statement))));
-    }
-
-    private static TypeRule createConditionedRule(String type, String prefix, Rule value, LazyRule statement) {
-        final var condition = new NodeRule("condition", value);
-        final var anIf = new PrefixRule(prefix, new StripRule(new PrefixRule("(", new SuffixRule(condition, ")"))));
-        return new TypeRule(type, CommonLang.createBlock(new StripRule(anIf), statement));
     }
 
     private static Rule createNamespacedRule(String type, String prefix) {

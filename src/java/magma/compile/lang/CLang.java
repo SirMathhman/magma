@@ -2,6 +2,7 @@ package magma.compile.lang;
 
 import magma.NodeRule;
 import magma.compile.rule.ExactRule;
+import magma.compile.rule.LazyRule;
 import magma.compile.rule.OrRule;
 import magma.compile.rule.Rule;
 import magma.compile.rule.TypeRule;
@@ -53,10 +54,16 @@ public class CLang {
     }
 
     private static Rule createStatementRule() {
-        return new OrRule(List.of(
+        final var statement = new LazyRule();
+        final var value = CommonLang.createValueRule();
+        statement.set(new OrRule(List.of(
                 new TypeRule("invocation", new ExactRule("empty()")),
-                CommonLang.createInitializationRule(CommonLang.createValueRule())
-        ));
+                CommonLang.createInitializationRule(value),
+                CommonLang.createConditionedRule("if", "if ", value, statement),
+                CommonLang.createConditionedRule("while", "while ", value, statement),
+                CommonLang.createElseRule(statement)
+        )));
+        return statement;
     }
 
     private static Rule createIncludesRule() {
