@@ -66,7 +66,7 @@ public class CommonLang {
         ));
 
         final var name = new StripRule(new SymbolRule(new StringRule("name")));
-        final var beforeParams = new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), name);
+        final var beforeParams = new StripRule(new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), name));
 
         final var params = new NodeListRule(new TypeSlicer(), "params", new TypeRule("definition", beforeParams));
         final var definition = new SplitRule(beforeParams, new LocatingSplitter("(", new FirstLocator()), new SuffixRule(params, ")"));

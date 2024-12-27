@@ -19,7 +19,7 @@ public final class LocatingSplitter implements Splitter {
 
     @Override
     public CompileError createError(String input, List<CompileError> errors) {
-        final var format = "Infix '%s' not present";
+        final var format = "Failed to split with infix '%s'";
         final var message = format.formatted(infix);
         final var context = new StringContext(input);
         return new CompileError(message, context, errors);
