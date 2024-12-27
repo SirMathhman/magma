@@ -1,5 +1,8 @@
 #include "magma/api/JavaFiles.h"
 #include "magma/api/Tuple.h"
+#include "magma/api/result/Err.h"
+#include "magma/api/result/Ok.h"
+#include "magma/api/result/Result.h"
 #include "magma/compile/Node.h"
 #include "magma/compile/error/ApplicationError.h"
 #include "magma/compile/error/JavaError.h"

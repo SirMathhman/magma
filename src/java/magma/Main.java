@@ -2,6 +2,9 @@ package magma;
 
 import magma.api.JavaFiles;
 import magma.api.Tuple;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.ApplicationError;
 import magma.compile.error.JavaError;
@@ -19,7 +22,7 @@ import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
-        final var source = Paths.get(".", "src", "java", "magma", "Main.java");
+        final Path source = Paths.get(".", "src", "java", "magma", "Main.java");
         JavaFiles.readString(source)
                 .mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
@@ -31,6 +34,13 @@ public class Main {
         return JavaLang.createJavaRootRule()
                 .parse(input)
                 .mapErr(ApplicationError::new)
+                .flatMapValue(parsed -> {
+                    return JavaFiles.writeString(source.resolveSibling("Main.input.ast"), parsed.toString())
+                            .map(JavaError::new)
+                            .map(ApplicationError::new)
+                            .<Result<Node, ApplicationError>>map(Err::new)
+                            .orElseGet(() -> new Ok<>(parsed));
+                })
                 .mapValue(node -> pass(new State(), node, Tuple::new, Main::modify).right())
                 .mapValue(node -> pass(new State(), node, Main::formatBefore, Main::formatAfter).right())
                 .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))

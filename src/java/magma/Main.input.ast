@@ -1,0 +1,826 @@
+group {
+	"children": [package {
+		"namespace": ["magma"]
+	}, import {
+		"namespace": ["magma", "api", "JavaFiles"]
+	}, import {
+		"namespace": ["magma", "api", "Tuple"]
+	}, import {
+		"namespace": ["magma", "api", "result", "Err"]
+	}, import {
+		"namespace": ["magma", "api", "result", "Ok"]
+	}, import {
+		"namespace": ["magma", "api", "result", "Result"]
+	}, import {
+		"namespace": ["magma", "compile", "Node"]
+	}, import {
+		"namespace": ["magma", "compile", "error", "ApplicationError"]
+	}, import {
+		"namespace": ["magma", "compile", "error", "JavaError"]
+	}, import {
+		"namespace": ["magma", "compile", "lang", "CLang"]
+	}, import {
+		"namespace": ["magma", "compile", "lang", "JavaLang"]
+	}, import {
+		"namespace": ["java", "nio", "file", "Path"]
+	}, import {
+		"namespace": ["java", "nio", "file", "Paths"]
+	}, import {
+		"namespace": ["java", "util", "ArrayList"]
+	}, import {
+		"namespace": ["java", "util", "Collections"]
+	}, import {
+		"namespace": ["java", "util", "List"]
+	}, import {
+		"namespace": ["java", "util", "Optional"]
+	}, import {
+		"namespace": ["java", "util", "function", "BiFunction"]
+	}, import {
+		"namespace": ["java", "util", "stream", "Collectors"]
+	}, class {
+		"name": "Main", 
+		"value": block {
+			"value": group {
+				"children": [method {
+					"name": "main", 
+					"type": symbol {
+						"value": "void"
+					}, 
+					"value": block {
+						"value": group {
+							"children": [initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "source"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, invocation {
+							}]
+						}
+					}, 
+					"params": [definition {
+						"name": "args", 
+						"type": array {
+							"child": symbol {
+								"value": "String"
+							}
+						}
+					}]
+				}, method {
+					"name": "runWithInput", 
+					"type": generic {
+						"parent": "Optional", 
+						"children": [symbol {
+							"value": "ApplicationError"
+						}]
+					}, 
+					"value": block {
+						"value": group {
+							"children": [invocation {
+							}]
+						}
+					}, 
+					"params": [definition {
+						"name": "source", 
+						"type": symbol {
+							"value": "Path"
+						}
+					}, definition {
+						"name": "input", 
+						"type": symbol {
+							"value": "String"
+						}
+					}]
+				}, method {
+					"name": "formatBefore", 
+					"type": generic {
+						"parent": "Tuple", 
+						"children": [symbol {
+							"value": "State"
+						}, symbol {
+							"value": "Node"
+						}]
+					}, 
+					"value": block {
+						"value": group {
+							"children": [if {
+								"condition": invocation {
+								}, 
+								"value": block {
+									"value": group {
+										"children": [invocation {
+										}]
+									}
+								}
+							}, invocation {
+							}]
+						}
+					}, 
+					"params": [definition {
+						"name": "state", 
+						"type": symbol {
+							"value": "State"
+						}
+					}, definition {
+						"name": "node", 
+						"type": symbol {
+							"value": "Node"
+						}
+					}]
+				}, method {
+					"name": "formatAfter", 
+					"type": generic {
+						"parent": "Tuple", 
+						"children": [symbol {
+							"value": "State"
+						}, symbol {
+							"value": "Node"
+						}]
+					}, 
+					"value": block {
+						"value": group {
+							"children": [if {
+								"condition": invocation {
+								}, 
+								"value": block {
+									"value": group {
+										"children": [initialization {
+											"definition": {
+												"name": "", 
+												"type": symbol {
+													"value": "oldChildren"
+												}
+											}, 
+											"value": invocation {
+											}
+										}, initialization {
+											"definition": {
+												"name": "", 
+												"type": symbol {
+													"value": "newChildren"
+												}
+											}, 
+											"value": invocation {
+											}
+										}, initialization {
+											"definition": {
+												"name": "", 
+												"type": symbol {
+													"value": "orElse"
+												}
+											}, 
+											"value": invocation {
+											}
+										}, initialization {
+											"definition": {
+												"name": "", 
+												"type": symbol {
+													"value": "i"
+												}
+											}, 
+											"value": invocation {
+											}
+										}, while {
+											"condition": invocation {
+											}, 
+											"value": block {
+												"value": group {
+													"children": [initialization {
+														"definition": {
+															"name": "", 
+															"type": symbol {
+																"value": "child"
+															}
+														}, 
+														"value": invocation {
+														}
+													}, invocation {
+													}, if {
+														"condition": invocation {
+														}, 
+														"value": block {
+															"value": group {
+																"children": [initialization {
+																	"definition": {
+																		"name": "", 
+																		"type": symbol {
+																			"value": "withString"
+																		}
+																	}, 
+																	"value": invocation {
+																	}
+																}]
+															}
+														}
+													}, else {
+														"value": block {
+															"value": group {
+																"children": [initialization {
+																	"definition": {
+																		"name": "", 
+																		"type": symbol {
+																			"value": "indent"
+																		}
+																	}, 
+																	"value": invocation {
+																	}
+																}, initialization {
+																	"definition": {
+																		"name": "", 
+																		"type": symbol {
+																			"value": "withString"
+																		}
+																	}, 
+																	"value": invocation {
+																	}
+																}]
+															}
+														}
+													}, invocation {
+													}, invocation {
+													}]
+												}
+											}
+										}, invocation {
+										}]
+									}
+								}
+							}, else {
+								"value": if {
+									"condition": invocation {
+									}, 
+									"value": block {
+										"value": group {
+											"children": [invocation {
+											}]
+										}
+									}
+								}
+							}, else {
+								"value": block {
+									"value": group {
+										"children": [invocation {
+										}]
+									}
+								}
+							}]
+						}
+					}, 
+					"params": [definition {
+						"name": "state", 
+						"type": symbol {
+							"value": "State"
+						}
+					}, definition {
+						"name": "node", 
+						"type": symbol {
+							"value": "Node"
+						}
+					}]
+				}, method {
+					"name": "pass", 
+					"type": generic {
+						"parent": "Tuple", 
+						"children": [symbol {
+							"value": "State"
+						}, symbol {
+							"value": "Node"
+						}]
+					}, 
+					"value": block {
+						"value": group {
+							"children": [initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "withBefore"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "withNodeLists"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "withNodes"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, invocation {
+							}]
+						}
+					}, 
+					"params": [definition {
+						"name": "state", 
+						"type": symbol {
+							"value": "State"
+						}
+					}, definition {
+						"name": "node", 
+						"type": symbol {
+							"value": "Node"
+						}
+					}, definition {
+						"name": "beforePass", 
+						"type": generic {
+							"parent": "BiFunction", 
+							"children": [symbol {
+								"value": "State"
+							}, symbol {
+								"value": "Node"
+							}, generic {
+								"parent": "Tuple", 
+								"children": [symbol {
+									"value": "State"
+								}, symbol {
+									"value": "Node"
+								}]
+							}]
+						}
+					}, definition {
+						"name": "afterPass", 
+						"type": generic {
+							"parent": "BiFunction", 
+							"children": [symbol {
+								"value": "State"
+							}, symbol {
+								"value": "Node"
+							}, generic {
+								"parent": "Tuple", 
+								"children": [symbol {
+									"value": "State"
+								}, symbol {
+									"value": "Node"
+								}]
+							}]
+						}
+					}]
+				}, method {
+					"name": "passNode", 
+					"type": generic {
+						"parent": "Tuple", 
+						"children": [symbol {
+							"value": "State"
+						}, symbol {
+							"value": "Node"
+						}]
+					}, 
+					"value": block {
+						"value": group {
+							"children": [initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "oldState"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "oldNode"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "key"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "value"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, invocation {
+							}]
+						}
+					}, 
+					"params": [definition {
+						"name": "current", 
+						"type": generic {
+							"parent": "Tuple", 
+							"children": [symbol {
+								"value": "State"
+							}, symbol {
+								"value": "Node"
+							}]
+						}
+					}, definition {
+						"name": "entry", 
+						"type": generic {
+							"parent": "Tuple", 
+							"children": [symbol {
+								"value": "String"
+							}, symbol {
+								"value": "Node"
+							}]
+						}
+					}, definition {
+						"name": "beforePass", 
+						"type": generic {
+							"parent": "BiFunction", 
+							"children": [symbol {
+								"value": "State"
+							}, symbol {
+								"value": "Node"
+							}, generic {
+								"parent": "Tuple", 
+								"children": [symbol {
+									"value": "State"
+								}, symbol {
+									"value": "Node"
+								}]
+							}]
+						}
+					}, definition {
+						"name": "afterPass", 
+						"type": generic {
+							"parent": "BiFunction", 
+							"children": [symbol {
+								"value": "State"
+							}, symbol {
+								"value": "Node"
+							}, generic {
+								"parent": "Tuple", 
+								"children": [symbol {
+									"value": "State"
+								}, symbol {
+									"value": "Node"
+								}]
+							}]
+						}
+					}]
+				}, method {
+					"name": "passNodeLists", 
+					"type": generic {
+						"parent": "Tuple", 
+						"children": [symbol {
+							"value": "State"
+						}, symbol {
+							"value": "Node"
+						}]
+					}, 
+					"value": block {
+						"value": group {
+							"children": [initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "oldState"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "oldChildren"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "key"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "values"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "currentState"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "currentChildren"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "i"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, while {
+								"condition": invocation {
+								}, 
+								"value": block {
+									"value": group {
+										"children": [initialization {
+											"definition": {
+												"name": "", 
+												"type": symbol {
+													"value": "value"
+												}
+											}, 
+											"value": invocation {
+											}
+										}, initialization {
+											"definition": {
+												"name": "", 
+												"type": symbol {
+													"value": "passed"
+												}
+											}, 
+											"value": invocation {
+											}
+										}, initialization {
+											"definition": {
+												"name": "", 
+												"type": symbol {
+													"value": "currentState"
+												}
+											}, 
+											"value": invocation {
+											}
+										}, invocation {
+										}, invocation {
+										}]
+									}
+								}
+							}, initialization {
+								"definition": {
+									"name": "", 
+									"type": symbol {
+										"value": "newNode"
+									}
+								}, 
+								"value": invocation {
+								}
+							}, invocation {
+							}]
+						}
+					}, 
+					"params": [definition {
+						"name": "current", 
+						"type": generic {
+							"parent": "Tuple", 
+							"children": [symbol {
+								"value": "State"
+							}, symbol {
+								"value": "Node"
+							}]
+						}
+					}, definition {
+						"name": "entry", 
+						"type": generic {
+							"parent": "Tuple", 
+							"children": [symbol {
+								"value": "String"
+							}, generic {
+								"parent": "List", 
+								"children": [symbol {
+									"value": "Node"
+								}]
+							}]
+						}
+					}, definition {
+						"name": "beforePass", 
+						"type": generic {
+							"parent": "BiFunction", 
+							"children": [symbol {
+								"value": "State"
+							}, symbol {
+								"value": "Node"
+							}, generic {
+								"parent": "Tuple", 
+								"children": [symbol {
+									"value": "State"
+								}, symbol {
+									"value": "Node"
+								}]
+							}]
+						}
+					}, definition {
+						"name": "afterPass", 
+						"type": generic {
+							"parent": "BiFunction", 
+							"children": [symbol {
+								"value": "State"
+							}, symbol {
+								"value": "Node"
+							}, generic {
+								"parent": "Tuple", 
+								"children": [symbol {
+									"value": "State"
+								}, symbol {
+									"value": "Node"
+								}]
+							}]
+						}
+					}]
+				}, method {
+					"name": "modify", 
+					"type": generic {
+						"parent": "Tuple", 
+						"children": [symbol {
+							"value": "State"
+						}, symbol {
+							"value": "Node"
+						}]
+					}, 
+					"value": block {
+						"value": group {
+							"children": [invocation {
+							}, if {
+								"condition": invocation {
+								}, 
+								"value": block {
+									"value": group {
+										"children": [initialization {
+											"definition": {
+												"name": "", 
+												"type": symbol {
+													"value": "oldChildren"
+												}
+											}, 
+											"value": invocation {
+											}
+										}, initialization {
+											"definition": {
+												"name": "", 
+												"type": symbol {
+													"value": "newChildren"
+												}
+											}, 
+											"value": invocation {
+											}
+										}, initialization {
+											"definition": {
+												"name": "", 
+												"type": symbol {
+													"value": "result"
+												}
+											}, 
+											"value": invocation {
+											}
+										}]
+									}
+								}
+							}, else {
+								"value": if {
+									"condition": invocation {
+									}, 
+									"value": block {
+										"value": group {
+											"children": [initialization {
+												"definition": {
+													"name": "", 
+													"type": symbol {
+														"value": "result"
+													}
+												}, 
+												"value": invocation {
+												}
+											}]
+										}
+									}
+								}
+							}, else {
+								"value": if {
+									"condition": invocation {
+									}, 
+									"value": block {
+										"value": group {
+											"children": [initialization {
+												"definition": {
+													"name": "", 
+													"type": symbol {
+														"value": "result"
+													}
+												}, 
+												"value": invocation {
+												}
+											}]
+										}
+									}
+								}
+							}, else {
+								"value": if {
+									"condition": invocation {
+									}, 
+									"value": block {
+										"value": group {
+											"children": [initialization {
+												"definition": {
+													"name": "", 
+													"type": symbol {
+														"value": "result"
+													}
+												}, 
+												"value": invocation {
+												}
+											}]
+										}
+									}
+								}
+							}, else {
+								"value": block {
+									"value": group {
+										"children": [initialization {
+											"definition": {
+												"name": "", 
+												"type": symbol {
+													"value": "result"
+												}
+											}, 
+											"value": invocation {
+											}
+										}]
+									}
+								}
+							}, invocation {
+							}]
+						}
+					}, 
+					"params": [definition {
+						"name": "state", 
+						"type": symbol {
+							"value": "State"
+						}
+					}, definition {
+						"name": "node", 
+						"type": symbol {
+							"value": "Node"
+						}
+					}]
+				}, method {
+					"name": "writeGenerated", 
+					"type": generic {
+						"parent": "Optional", 
+						"children": [symbol {
+							"value": "ApplicationError"
+						}]
+					}, 
+					"value": block {
+						"value": group {
+							"children": [invocation {
+							}]
+						}
+					}, 
+					"params": [definition {
+						"name": "generated", 
+						"type": symbol {
+							"value": "String"
+						}
+					}, definition {
+						"name": "target", 
+						"type": symbol {
+							"value": "Path"
+						}
+					}]
+				}]
+			}
+		}
+	}, whitespace {
+	}]
+}
