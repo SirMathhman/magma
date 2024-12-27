@@ -84,7 +84,7 @@ public class CommonLang {
         return new TypeRule("initialization", new SplitRule(definition, new LocatingSplitter("=", new FirstLocator()), new SuffixRule(value, ";")));
     }
 
-    static Rule createValueRule() {
+    static Rule createValueRule(Rule statement) {
         final var value = new LazyRule();
         value.set(new OrRule(List.of(
                 createInvocationRule(value),
@@ -93,7 +93,8 @@ public class CommonLang {
                 createAccessRule("function-access", "::", value),
                 createSymbolRule(),
                 createOperatorRule(value),
-                createStringRule()
+                createStringRule(),
+                new TypeRule("lambda", new SplitRule(new StringRule("before-arrow"), new LocatingSplitter("->", new FirstLocator()), new NodeRule("value", value)))
         )));
         return value;
     }

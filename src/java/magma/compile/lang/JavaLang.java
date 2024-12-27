@@ -49,8 +49,8 @@ public class JavaLang {
     }
 
     private static Rule createStatementRule() {
-        final var value = CommonLang.createValueRule();
         final LazyRule statement = new LazyRule();
+        final var value = CommonLang.createValueRule(statement);
         statement.set(new OrRule(List.of(
                 CommonLang.createConditionedRule("if", "if ", value, statement),
                 CommonLang.createConditionedRule("while", "while ", value, statement),

@@ -55,7 +55,7 @@ public class CLang {
 
     private static Rule createStatementRule() {
         final var statement = new LazyRule();
-        final var value = CommonLang.createValueRule();
+        final var value = CommonLang.createValueRule(statement);
         statement.set(new OrRule(List.of(
                 new TypeRule("invocation", new ExactRule("empty()")),
                 CommonLang.createInitializationRule(value),
