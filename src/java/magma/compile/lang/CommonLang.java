@@ -101,8 +101,8 @@ public class CommonLang {
     }
 
     static TypeRule createElseRule(LazyRule statement) {
-        final var asBlock = createBlock(new ExactRule("else"), statement);
-        return new TypeRule("else", new OrRule(List.of(asBlock, new PrefixRule("else", new NodeRule("value", statement)))));
+        final var asBlock = createBlock(new ExactRule("else "), statement);
+        return new TypeRule("else", new OrRule(List.of(asBlock, new PrefixRule("else ", new NodeRule("value", statement)))));
     }
 
     static TypeRule createAssignmentRule() {
