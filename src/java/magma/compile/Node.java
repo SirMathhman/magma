@@ -40,7 +40,7 @@ public record Node(
         final var nodes = formatMap(this.nodes, node -> node.format(depth + 1), depth);
         final var nodeLists = formatMap(this.nodeLists, nodeList -> nodeList.stream()
                 .map(node -> node.format(depth + 1))
-                .collect(Collectors.joining(",", "[", "]")), depth);
+                .collect(Collectors.joining(", ", "[", "]")), depth);
 
         final var values = Stream.of(strings, stringLists, nodes, nodeLists)
                 .flatMap(Optional::stream)
