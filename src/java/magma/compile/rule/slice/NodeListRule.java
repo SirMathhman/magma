@@ -1,9 +1,11 @@
 package magma.compile.rule.slice;
 
+import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.CompileError;
+import magma.compile.error.NodeContext;
 import magma.compile.rule.Rule;
 
 import java.util.ArrayList;
@@ -23,10 +25,13 @@ public final class NodeListRule implements Rule {
 
     @Override
     public Result<String, CompileError> generate(Node node) {
-        final var children = node.findNodeList(propertyKey).orElseThrow();
+        final var maybeChildren = node.findNodeList(propertyKey);
+        if (maybeChildren.isEmpty()) {
+            return new Err<>(new CompileError("Node list '" + propertyKey + "' not present", new NodeContext(node)));
+        }
 
         Result<Optional<StringBuilder>, CompileError> result = new Ok<>(Optional.empty());
-        for (var child : children) {
+        for (var child : maybeChildren.get()) {
             result = result.and(() -> childRule.generate(child)).mapValue(tuple -> {
                 final var maybeBuilder = tuple.left();
                 final var value = tuple.right();
