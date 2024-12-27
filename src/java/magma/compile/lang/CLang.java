@@ -63,7 +63,7 @@ public class CLang {
                 CommonLang.createConditionedRule("while", "while ", value, statement),
                 CommonLang.createElseRule(statement),
                 CommonLang.createAssignmentRule(),
-                CommonLang.createReturnRule()
+                CommonLang.createReturnRule(value)
         )));
         return statement;
     }

@@ -58,7 +58,7 @@ public class JavaLang {
                 CommonLang.createInitializationRule(value),
                 new SuffixRule(CommonLang.createInvocationRule(value), ";"),
                 CommonLang.createAssignmentRule(),
-                CommonLang.createReturnRule()
+                CommonLang.createReturnRule(value)
         )));
 
         return statement;

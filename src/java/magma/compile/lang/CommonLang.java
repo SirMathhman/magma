@@ -87,16 +87,20 @@ public class CommonLang {
     static Rule createValueRule(Rule statement) {
         final var value = new LazyRule();
         value.set(new OrRule(List.of(
-                createInvocationRule(value),
+                createSymbolRule(),
+                createStringRule(),
                 createNumberRule(),
                 createAccessRule("data-access", ".", value),
                 createAccessRule("function-access", "::", value),
-                createSymbolRule(),
                 createOperatorRule(value),
-                createStringRule(),
-                new TypeRule("lambda", new SplitRule(new StringRule("before-arrow"), new LocatingSplitter("->", new FirstLocator()), new NodeRule("value", value)))
+                createInvocationRule(value),
+                createLambdaRule(value)
         )));
         return value;
+    }
+
+    private static TypeRule createLambdaRule(LazyRule value) {
+        return new TypeRule("lambda", new SplitRule(new StringRule("before-arrow"), new LocatingSplitter("->", new FirstLocator()), new NodeRule("value", value)));
     }
 
     private static TypeRule createStringRule() {
@@ -139,8 +143,9 @@ public class CommonLang {
         return new TypeRule("assignment", new SplitRule(new StringRule("destination"), new LocatingSplitter("=", new FirstLocator()), new SuffixRule(new StringRule("source"), ";")));
     }
 
-    static TypeRule createReturnRule() {
-        return new TypeRule("return", new PrefixRule("return ", new SuffixRule(new StringRule("value"), ";")));
+    static TypeRule createReturnRule(Rule value) {
+        final var value0 = new NodeRule("value", value);
+        return new TypeRule("return", new PrefixRule("return ", new SuffixRule(value0, ";")));
     }
 
     private static class InvocationLocator implements Locator {
