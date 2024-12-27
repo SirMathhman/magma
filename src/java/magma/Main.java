@@ -1,5 +1,6 @@
 package magma;
 
+import magma.api.JavaFiles;
 import magma.api.Tuple;
 import magma.compile.Node;
 import magma.compile.error.ApplicationError;
@@ -29,7 +30,7 @@ public class Main {
                 .mapValue(node -> pass(new State(), node, Tuple::new, Main::modify).right())
                 .mapValue(node -> pass(new State(), node, Main::formatBefore, Main::formatAfter).right())
                 .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))
-                .mapValue(generated -> writeGenerated(source, generated)).match(value -> value, Optional::of)
+                .mapValue(generated -> writeGenerated(generated, source.resolveSibling("Main.c"))).match(value -> value, Optional::of)
                 .ifPresent(error -> System.err.println(error.display()));
     }
 
@@ -152,14 +153,9 @@ public class Main {
         return new Tuple<>(state, result);
     }
 
-    private static Optional<ApplicationError> writeGenerated(Path source, String generated) {
-        try {
-            final var target = source.resolveSibling("Main.c");
-            Files.writeString(target, generated);
-            return Optional.empty();
-        } catch (IOException e) {
-            return Optional.of(new ApplicationError(new JavaError(e)));
-        }
+    private static Optional<ApplicationError> writeGenerated(String generated, Path target) {
+        return JavaFiles.writeString(target, generated)
+                .map(JavaError::new)
+                .map(ApplicationError::new);
     }
-
 }
