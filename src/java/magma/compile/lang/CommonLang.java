@@ -86,7 +86,9 @@ public class CommonLang {
     }
 
     static TypeRule createInvocationRule() {
-        return new TypeRule("invocation", new StringRule("content"));
+        final var caller = new StringRule("caller");
+        final var arguments = new StringRule("arguments");
+        return new TypeRule("invocation", new SplitRule(caller, new LocatingSplitter("(", new FirstLocator()), new SuffixRule(arguments, ")")));
     }
 
     static TypeRule createConditionedRule(String type, String prefix, Rule value, LazyRule statement) {
