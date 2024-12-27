@@ -79,10 +79,10 @@ group {
 								}
 							}, invocation {
 								"caller": {
-									"value": "JavaFiles.readString"
+									"value": "JavaFiles.readString(source)\n                .mapErr(JavaError::new)\n                .mapErr(ApplicationError::new)\n                .match(input -> runWithInput(source, input), Optional::of)\n                .ifPresent"
 								}, 
 								"arguments": [{
-									"value": "source)\n                .mapErr(JavaError::new)\n                .mapErr(ApplicationError::new)\n                .match(input -> runWithInput(source, input), Optional::of)\n                .ifPresent(error -> System.err.println(error.display())"
+									"value": "error -> System.err.println(error.display())"
 								}]
 							}]
 						}
@@ -108,10 +108,10 @@ group {
 						"value": group {
 							"children": [invocation {
 								"caller": {
-									"value": "return JavaLang.createJavaRootRule"
+									"value": "return JavaLang.createJavaRootRule()\n                .parse(input)\n                .mapErr(ApplicationError::new)\n                .flatMapValue(parsed -> {\n                    return JavaFiles.writeString(source.resolveSibling("Main.input.ast"), parsed.toString())\n                            .map(JavaError::new)\n                            .map(ApplicationError::new)\n                            .<Result<Node, ApplicationError>>map(Err::new)\n                            .orElseGet(() -> new Ok<>(parsed));\n                })\n                .mapValue(node -> pass(new State(), node, Tuple::new, Main::modify).right())\n                .mapValue(node -> pass(new State(), node, Main::formatBefore, Main::formatAfter).right())\n                .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))\n                .mapValue(generated -> writeGenerated(generated, source.resolveSibling("Main.c"))).match"
 								}, 
 								"arguments": [{
-									"value": ")\n                .parse(input)\n                .mapErr(ApplicationError::new)\n                .flatMapValue(parsed -> {\n                    return JavaFiles.writeString(source.resolveSibling("Main.input.ast"), parsed.toString())\n                            .map(JavaError::new)\n                            .map(ApplicationError::new)\n                            .<Result<Node, ApplicationError>>map(Err::new)\n                            .orElseGet(() -> new Ok<>(parsed));\n                })\n                .mapValue(node -> pass(new State(), node, Tuple::new, Main::modify).right())\n                .mapValue(node -> pass(new State(), node, Main::formatBefore, Main::formatAfter).right())\n                .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))\n                .mapValue(generated -> writeGenerated(generated, source.resolveSibling("Main.c"))).match(value -> value, Optional::of"
+									"value": "value -> value, Optional::of"
 								}]
 							}]
 						}
@@ -520,10 +520,10 @@ group {
 								}
 							}, invocation {
 								"caller": {
-									"value": "final var withNodeLists = withBefore.right"
+									"value": "final var withNodeLists = withBefore.right()\n                .streamNodeLists()\n                .reduce"
 								}, 
 								"arguments": [{
-									"value": ")\n                .streamNodeLists()\n                .reduce(withBefore"
+									"value": "withBefore"
 								}, {
 									"value": "(node1"
 								}, {
@@ -531,10 +531,10 @@ group {
 								}]
 							}, invocation {
 								"caller": {
-									"value": "final var withNodes = withNodeLists.right"
+									"value": "final var withNodes = withNodeLists.right()\n                .streamNodes()\n                .reduce"
 								}, 
 								"arguments": [{
-									"value": ")\n                .streamNodes()\n                .reduce(withNodeLists"
+									"value": "withNodeLists"
 								}, {
 									"value": "(node1"
 								}, {
@@ -680,16 +680,10 @@ group {
 								}
 							}, invocation {
 								"caller": {
-									"value": "return pass"
+									"value": "return pass(oldState, value, beforePass, afterPass).mapRight"
 								}, 
 								"arguments": [{
-									"value": "oldState"
-								}, {
-									"value": "value"
-								}, {
-									"value": "beforePass"
-								}, {
-									"value": "afterPass).mapRight(right -> oldNode.withNode(key, right)"
+									"value": "right -> oldNode.withNode(key, right)"
 								}]
 							}]
 						}
@@ -1097,17 +1091,17 @@ group {
 									"value": group {
 										"children": [invocation {
 											"caller": {
-												"value": "final var oldChildren = node.findNodeList"
+												"value": "final var oldChildren = node.findNodeList("children").orElse"
 											}, 
 											"arguments": [{
-												"value": ""children").orElse(new ArrayList<>()"
+												"value": "new ArrayList<>()"
 											}]
 										}, invocation {
 											"caller": {
-												"value": "final var newChildren = oldChildren.stream"
+												"value": "final var newChildren = oldChildren.stream()\n                    .filter(oldChild -> !oldChild.is("package"))\n                    .collect"
 											}, 
 											"arguments": [{
-												"value": ")\n                    .filter(oldChild -> !oldChild.is("package"))\n                    .collect(Collectors.toCollection(ArrayList::new)"
+												"value": "Collectors.toCollection(ArrayList::new)"
 											}]
 										}, invocation {
 											"caller": {
@@ -1229,12 +1223,10 @@ group {
 						"value": group {
 							"children": [invocation {
 								"caller": {
-									"value": "return JavaFiles.writeString"
+									"value": "return JavaFiles.writeString(target, generated)\n                .map(JavaError::new)\n                .map"
 								}, 
 								"arguments": [{
-									"value": "target"
-								}, {
-									"value": "generated)\n                .map(JavaError::new)\n                .map(ApplicationError::new"
+									"value": "ApplicationError::new"
 								}]
 							}]
 						}

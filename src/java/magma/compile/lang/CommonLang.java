@@ -14,6 +14,7 @@ import magma.compile.rule.split.SplitRule;
 import magma.compile.rule.split.locate.BackwardsLocator;
 import magma.compile.rule.split.locate.FirstLocator;
 import magma.compile.rule.split.locate.LastLocator;
+import magma.compile.rule.split.locate.Locator;
 import magma.compile.rule.string.FilterRule;
 import magma.compile.rule.string.PrefixRule;
 import magma.compile.rule.string.StringListRule;
@@ -24,6 +25,7 @@ import magma.compile.rule.string.filter.NumberFilter;
 import magma.compile.rule.string.filter.SymbolFilter;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class CommonLang {
     static Rule createGroupRule(Rule childRule) {
@@ -116,7 +118,7 @@ public class CommonLang {
     static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
         final var arguments = new NodeListRule(new TypeSlicer(), "arguments", value);
-        return new TypeRule("invocation", new SplitRule(caller, new LocatingSplitter("(", new FirstLocator()), new SuffixRule(arguments, ")")));
+        return new TypeRule("invocation", new SuffixRule(new SplitRule(caller, new LocatingSplitter("(", new InvocationLocator()), arguments), ")"));
     }
 
     static TypeRule createConditionedRule(String type, String prefix, Rule value, LazyRule statement) {
@@ -137,5 +139,23 @@ public class CommonLang {
 
     static TypeRule createReturnRule() {
         return new TypeRule("return", new PrefixRule("return ", new SuffixRule(new StringRule("value"), ";")));
+    }
+
+    private static class InvocationLocator implements Locator {
+        @Override
+        public Stream<Integer> locate(String input, String infix) {
+            var depth = 0;
+            for (int i = input.length() - 1; i >= 0; i--) {
+                final var c = input.charAt(i);
+                if (c == '(' && depth == 0) {
+                    return Stream.of(i);
+                } else {
+                    if (c == ')') depth++;
+                    if (c == '(') depth--;
+                }
+            }
+
+            return Stream.empty();
+        }
     }
 }
