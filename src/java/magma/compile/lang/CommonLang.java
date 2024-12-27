@@ -18,7 +18,9 @@ import magma.compile.rule.string.PrefixRule;
 import magma.compile.rule.string.StringRule;
 import magma.compile.rule.string.StripRule;
 import magma.compile.rule.string.SuffixRule;
-import magma.compile.rule.string.SymbolRule;
+import magma.compile.rule.string.FilterRule;
+import magma.compile.rule.string.filter.NumberFilter;
+import magma.compile.rule.string.filter.SymbolFilter;
 
 import java.util.List;
 
@@ -45,7 +47,7 @@ public class CommonLang {
     }
 
     private static TypeRule createSymbolRule() {
-        return new TypeRule("symbol", new SymbolRule(new StringRule("value")));
+        return new TypeRule("symbol", new FilterRule(new SymbolFilter(), new StringRule("value")));
     }
 
     private static TypeRule createGenericRule(LazyRule type) {
@@ -65,7 +67,7 @@ public class CommonLang {
                 type
         ));
 
-        final var name = new StripRule(new SymbolRule(new StringRule("name")));
+        final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
         final var beforeParams = new StripRule(new SplitRule(leftRule, new LocatingSplitter(" ", new LastLocator()), name));
 
         final var params = new NodeListRule(new TypeSlicer(), "params", new TypeRule("definition", beforeParams));
@@ -81,7 +83,8 @@ public class CommonLang {
 
     static Rule createValueRule() {
         return new OrRule(List.of(
-                createInvocationRule()
+                createInvocationRule(),
+                new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule("value"))))
         ));
     }
 

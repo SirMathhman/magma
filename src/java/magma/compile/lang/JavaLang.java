@@ -14,7 +14,8 @@ import magma.compile.rule.string.StringListRule;
 import magma.compile.rule.string.StringRule;
 import magma.compile.rule.string.StripRule;
 import magma.compile.rule.string.SuffixRule;
-import magma.compile.rule.string.SymbolRule;
+import magma.compile.rule.string.FilterRule;
+import magma.compile.rule.string.filter.SymbolFilter;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class JavaLang {
     }
 
     private static TypeRule createClassRule() {
-        final var name = new StripRule(new SymbolRule(new StringRule("name")));
+        final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
         final var rightRule = CommonLang.createBlock(name, createClassMemberRule());
         return new TypeRule("class", new SplitRule(new StringRule("before-keyword"), new LocatingSplitter("class ", new FirstLocator()), rightRule));
     }
