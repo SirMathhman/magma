@@ -34,17 +34,19 @@ public class Main {
         return JavaLang.createJavaRootRule()
                 .parse(input)
                 .mapErr(ApplicationError::new)
-                .flatMapValue(parsed -> {
-                    return JavaFiles.writeString(source.resolveSibling("Main.input.ast"), parsed.toString())
-                            .map(JavaError::new)
-                            .map(ApplicationError::new)
-                            .<Result<Node, ApplicationError>>map(Err::new)
-                            .orElseGet(() -> new Ok<>(parsed));
-                })
+                .flatMapValue(parsed -> writeInputAST(source, parsed))
                 .mapValue(node -> pass(new State(), node, Tuple::new, Main::modify).right())
                 .mapValue(node -> pass(new State(), node, Main::formatBefore, Main::formatAfter).right())
                 .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))
                 .mapValue(generated -> writeGenerated(generated, source.resolveSibling("Main.c"))).match(value -> value, Optional::of);
+    }
+
+    private static Result<Node, ApplicationError> writeInputAST(Path source, Node parsed) {
+        return JavaFiles.writeString(source.resolveSibling("Main.input.ast"), parsed.toString())
+                .map(JavaError::new)
+                .map(ApplicationError::new)
+                .<Result<Node, ApplicationError>>map(Err::new)
+                .orElseGet(() -> new Ok<>(parsed));
     }
 
     private static Tuple<State, Node> formatBefore(State state, Node node) {
