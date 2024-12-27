@@ -43,8 +43,8 @@ group {
 		"value": block {
 			"value": group {
 				"children": [method {
-					"before-type": "public static", 
 					"name": "main", 
+					"modifiers": ["public", "static"], 
 					"type": symbol {
 						"value": "void"
 					}, 
@@ -52,8 +52,8 @@ group {
 						"value": group {
 							"children": [initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "source", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "Path"
 									}
@@ -77,8 +77,8 @@ group {
 						}
 					}]
 				}, method {
-					"before-type": "private static", 
 					"name": "runWithInput", 
+					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Optional", 
 						"children": [symbol {
@@ -105,8 +105,8 @@ group {
 						}
 					}]
 				}, method {
-					"before-type": "private static", 
 					"name": "formatBefore", 
+					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Tuple", 
 						"children": [symbol {
@@ -148,8 +148,8 @@ group {
 						}
 					}]
 				}, method {
-					"before-type": "private static", 
 					"name": "formatAfter", 
+					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Tuple", 
 						"children": [symbol {
@@ -169,8 +169,8 @@ group {
 									"value": group {
 										"children": [initialization {
 											"definition": definition {
-												"before-type": "final", 
 												"name": "oldChildren", 
+												"modifiers": ["final"], 
 												"type": symbol {
 													"value": "var"
 												}
@@ -181,8 +181,8 @@ group {
 											}
 										}, initialization {
 											"definition": definition {
-												"before-type": "final", 
 												"name": "newChildren", 
+												"modifiers": ["final"], 
 												"type": symbol {
 													"value": "var"
 												}
@@ -235,8 +235,8 @@ group {
 														}
 													}, initialization {
 														"definition": definition {
-															"before-type": "final", 
 															"name": "withString", 
+															"modifiers": ["final"], 
 															"type": symbol {
 																"value": "var"
 															}
@@ -299,8 +299,8 @@ group {
 						}
 					}]
 				}, method {
-					"before-type": "private static", 
 					"name": "getNode", 
+					"modifiers": ["private", "static"], 
 					"type": symbol {
 						"value": "Node"
 					}, 
@@ -311,8 +311,8 @@ group {
 								"source": "= 0 && i == 0) return child"
 							}, initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "indent", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -344,8 +344,8 @@ group {
 						}
 					}]
 				}, method {
-					"before-type": "private static", 
 					"name": "pass", 
+					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Tuple", 
 						"children": [symbol {
@@ -358,8 +358,8 @@ group {
 						"value": group {
 							"children": [initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "withBefore", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -370,8 +370,8 @@ group {
 								}
 							}, initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "withNodeLists", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -382,8 +382,8 @@ group {
 								}
 							}, initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "withNodes", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -444,8 +444,8 @@ group {
 						}
 					}]
 				}, method {
-					"before-type": "private static", 
 					"name": "passNode", 
+					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Tuple", 
 						"children": [symbol {
@@ -458,8 +458,8 @@ group {
 						"value": group {
 							"children": [initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "oldState", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -470,8 +470,8 @@ group {
 								}
 							}, initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "oldNode", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -482,8 +482,8 @@ group {
 								}
 							}, initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "key", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -494,8 +494,8 @@ group {
 								}
 							}, initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "value", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -566,8 +566,8 @@ group {
 						}
 					}]
 				}, method {
-					"before-type": "private static", 
 					"name": "passNodeLists", 
+					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Tuple", 
 						"children": [symbol {
@@ -580,8 +580,8 @@ group {
 						"value": group {
 							"children": [initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "oldState", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -592,8 +592,8 @@ group {
 								}
 							}, initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "oldChildren", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -604,8 +604,8 @@ group {
 								}
 							}, initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "key", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -616,8 +616,8 @@ group {
 								}
 							}, initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "values", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -670,8 +670,8 @@ group {
 											}
 										}, initialization {
 											"definition": definition {
-												"before-type": "final", 
 												"name": "passed", 
+												"modifiers": ["final"], 
 												"type": symbol {
 													"value": "var"
 												}
@@ -694,8 +694,8 @@ group {
 								}
 							}, initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "newNode", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -769,8 +769,8 @@ group {
 						}
 					}]
 				}, method {
-					"before-type": "private static", 
 					"name": "modify", 
+					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Tuple", 
 						"children": [symbol {
@@ -783,8 +783,8 @@ group {
 						"value": group {
 							"children": [initialization {
 								"definition": definition {
-									"before-type": "final", 
 									"name": "result", 
+									"modifiers": ["final"], 
 									"type": symbol {
 										"value": "var"
 									}
@@ -811,8 +811,8 @@ group {
 						}
 					}]
 				}, method {
-					"before-type": "private static", 
 					"name": "modifyStateless", 
+					"modifiers": ["private", "static"], 
 					"type": symbol {
 						"value": "Node"
 					}, 
@@ -827,8 +827,8 @@ group {
 									"value": group {
 										"children": [initialization {
 											"definition": definition {
-												"before-type": "final", 
 												"name": "oldChildren", 
+												"modifiers": ["final"], 
 												"type": symbol {
 													"value": "var"
 												}
@@ -839,8 +839,8 @@ group {
 											}
 										}, initialization {
 											"definition": definition {
-												"before-type": "final", 
 												"name": "newChildren", 
+												"modifiers": ["final"], 
 												"type": symbol {
 													"value": "var"
 												}
@@ -918,8 +918,8 @@ group {
 						}
 					}]
 				}, method {
-					"before-type": "private static", 
 					"name": "writeGenerated", 
+					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Optional", 
 						"children": [symbol {

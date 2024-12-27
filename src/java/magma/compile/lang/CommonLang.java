@@ -16,6 +16,7 @@ import magma.compile.rule.split.locate.FirstLocator;
 import magma.compile.rule.split.locate.LastLocator;
 import magma.compile.rule.string.FilterRule;
 import magma.compile.rule.string.PrefixRule;
+import magma.compile.rule.string.StringListRule;
 import magma.compile.rule.string.StringRule;
 import magma.compile.rule.string.StripRule;
 import magma.compile.rule.string.SuffixRule;
@@ -63,7 +64,7 @@ public class CommonLang {
     static Rule createDefinitionRule() {
         final var type = new NodeRule("type", createTypeRule());
         final var leftRule = new OrRule(List.of(
-                new SplitRule(new StringRule("before-type"), new LocatingSplitter(" ", new BackwardsLocator()), type),
+                new SplitRule(new StringListRule("modifiers", " "), new LocatingSplitter(" ", new BackwardsLocator()), type),
                 type
         ));
 
