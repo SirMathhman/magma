@@ -100,7 +100,10 @@ public class CommonLang {
     }
 
     private static TypeRule createLambdaRule(Rule value) {
-        return new TypeRule("lambda", new SplitRule(createSymbolRule(), new LocatingSplitter("->", new FirstLocator()), new NodeRule("value", value)));
+        return new TypeRule("lambda", new SplitRule(new OrRule(List.of(
+                createSymbolRule(),
+                new StripRule(new ExactRule("()"))
+        )), new LocatingSplitter("->", new FirstLocator()), new NodeRule("value", value)));
     }
 
     private static TypeRule createStringRule() {
@@ -130,7 +133,12 @@ public class CommonLang {
     }
 
     static TypeRule createConstructionRule(Rule value) {
-        return createArgumentRule("construction", new PrefixRule("new ", new NodeRule("caller", value)), value);
+        final var caller1 = new NodeRule("caller", value);
+        final var caller = new OrRule(List.of(
+                caller1,
+                new StripRule(new SuffixRule(caller1, "<>"))
+        ));
+        return createArgumentRule("construction", new StripRule(new PrefixRule("new ", caller)), value);
     }
 
     private static TypeRule createArgumentRule(String type, Rule caller, Rule value) {
