@@ -33,32 +33,32 @@ public class CLang {
 
     private static Rule createStructRule() {
         final var name = new StringRule("name");
-        final var wrapped = CommonLang.createBlock(name, createStructMemberRule());
+        final var wrapped = CommonLang.createBlock(name, createStructMemberRule(CommonLang.createTypeRule()));
         return new TypeRule("struct", new PrefixRule("struct ", wrapped));
     }
 
-    private static Rule createStructMemberRule() {
+    private static Rule createStructMemberRule(Rule typeRule) {
         return new OrRule(List.of(
-                createFunctionRule(),
+                createFunctionRule(typeRule),
                 CommonLang.createWhitespaceRule()
         ));
     }
 
-    private static TypeRule createFunctionRule() {
-        final var type = new NodeRule("type", CommonLang.createTypeRule());
+    private static TypeRule createFunctionRule(Rule typeRule) {
+        final var type = new NodeRule("type", typeRule);
         final var name = new StringRule("name");
         final var params = new NodeListRule(new ValueSlicer(), "params", new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), name));
         final var rightRule = new SplitRule(name, new LocatingSplitter("(", new FirstLocator()), new SuffixRule(params, ")"));
         final var childRule = new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), rightRule);
-        return new TypeRule("function", CommonLang.createBlock(childRule, createStatementRule()));
+        return new TypeRule("function", CommonLang.createBlock(childRule, createStatementRule(typeRule)));
     }
 
-    private static Rule createStatementRule() {
+    private static Rule createStatementRule(Rule typeRule) {
         final var statement = new LazyRule();
-        final var value = CommonLang.createValueRule();
+        final var value = CommonLang.createValueRule(typeRule);
         statement.set(new OrRule(List.of(
                 new TypeRule("invocation", new ExactRule("empty()")),
-                CommonLang.createInitializationRule(value),
+                CommonLang.createInitializationRule(value, typeRule),
                 CommonLang.createConditionedRule("if", "if ", value, statement),
                 CommonLang.createConditionedRule("while", "while ", value, statement),
                 CommonLang.createElseRule(statement),

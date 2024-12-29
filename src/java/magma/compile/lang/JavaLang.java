@@ -37,20 +37,20 @@ public class JavaLang {
 
     private static Rule createClassMemberRule() {
         return new OrRule(List.of(
-                createMethodRule(),
+                createMethodRule(CommonLang.createTypeRule()),
                 CommonLang.createWhitespaceRule()
         ));
     }
 
-    private static TypeRule createMethodRule() {
-        final var definition = CommonLang.createDefinitionRule();
-        final var wrapped = CommonLang.createBlock(definition, createStatementRule());
+    private static TypeRule createMethodRule(Rule typeRule) {
+        final var definition = CommonLang.createDefinitionRule(typeRule);
+        final var wrapped = CommonLang.createBlock(definition, createStatementRule(typeRule));
         return new TypeRule("method", wrapped);
     }
 
-    private static Rule createStatementRule() {
+    private static Rule createStatementRule(Rule typeRule) {
         final LazyRule statement = new LazyRule();
-        final var value = CommonLang.createValueRule();
+        final var value = CommonLang.createValueRule(typeRule);
         statement.set(new OrRule(List.of(
                 CommonLang.createReturnRule(value),
                 CommonLang.createConditionedRule("if", "if ", value, statement),
@@ -58,7 +58,7 @@ public class JavaLang {
                 CommonLang.createElseRule(statement),
                 new SuffixRule(CommonLang.createInvocationRule(value), ";"),
                 new SuffixRule(CommonLang.createConstructionRule(value), ";"),
-                CommonLang.createInitializationRule(value),
+                CommonLang.createInitializationRule(value, typeRule),
                 CommonLang.createAssignmentRule()
         )));
 

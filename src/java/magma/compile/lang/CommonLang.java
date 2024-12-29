@@ -62,8 +62,8 @@ public class CommonLang {
         return new TypeRule("whitespace", new StripRule(new ExactRule("")));
     }
 
-    static Rule createDefinitionRule() {
-        final var type = new NodeRule("type", createTypeRule());
+    static Rule createDefinitionRule(Rule typeRule) {
+        final var type = new NodeRule("type", typeRule);
         final var leftRule = new OrRule(List.of(
                 new SplitRule(new StringListRule(" ", "modifiers"), new LocatingSplitter(" ", new TypeStartLocator()), type),
                 type
@@ -77,20 +77,20 @@ public class CommonLang {
         return new TypeRule("definition", new OrRule(List.of(beforeParams, definition)));
     }
 
-    static TypeRule createInitializationRule(Rule valueRule) {
-        final var definition = new NodeRule("definition", createDefinitionRule());
+    static TypeRule createInitializationRule(Rule valueRule, Rule typeRule) {
+        final var definition = new NodeRule("definition", createDefinitionRule(typeRule));
         final var value = new NodeRule("value", valueRule);
         return new TypeRule("initialization", new SplitRule(definition, new LocatingSplitter("=", new FirstLocator()), new SuffixRule(value, ";")));
     }
 
-    static Rule createValueRule() {
+    static Rule createValueRule(Rule typeRule) {
         final var value = new LazyRule();
         value.set(new OrRule(List.of(
                 createSymbolRule(),
                 createStringRule(),
                 createNumberRule(),
-                createAccessRule("data-access", ".", value),
-                createAccessRule("function-access", "::", value),
+                createAccessRule("data-access", ".", value, typeRule),
+                createAccessRule("function-access", "::", value, typeRule),
                 createOperatorRule(value),
                 createInvocationRule(value),
                 createConstructionRule(value),
@@ -111,10 +111,14 @@ public class CommonLang {
         return new TypeRule("less-than", new SplitRule(new NodeRule("left", value), new LocatingSplitter("<", new FirstLocator()), new NodeRule("right", value)));
     }
 
-    private static TypeRule createAccessRule(String type, String infix, Rule value) {
+    private static TypeRule createAccessRule(String type, String infix, Rule value, Rule typeRule) {
         final var object = new NodeRule("object", value);
         final var property = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("property")));
-        return new TypeRule(type, new SplitRule(object, new LocatingSplitter(infix, new LastLocator()), property, true));
+        final var maybeWithTypeArgument = new OrRule(List.of(
+                new PrefixRule("<", new SplitRule(new NodeListRule(new ValueSlicer(), "type-arguments", typeRule), new LocatingSplitter(">", new LastLocator()), property)),
+                property
+        ));
+        return new TypeRule(type, new SplitRule(object, new LocatingSplitter(infix, new LastLocator()), maybeWithTypeArgument, true));
     }
 
     private static TypeRule createNumberRule() {
