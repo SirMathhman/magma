@@ -119,7 +119,9 @@ group {
 										}, 
 										"arguments": [invocation {
 											"caller": lambda {
-												"symbol-value": "input", 
+												"param": symbol {
+													"symbol-value": "input"
+												}, 
 												"value": symbol {
 													"symbol-value": "runWithInput"
 												}
@@ -143,7 +145,9 @@ group {
 										"object": data-access {
 											"property": "err", 
 											"object": lambda {
-												"symbol-value": "error", 
+												"param": symbol {
+													"symbol-value": "error"
+												}, 
 												"value": symbol {
 													"symbol-value": "System"
 												}
@@ -232,7 +236,9 @@ group {
 																			}, 
 																			"arguments": [invocation {
 																				"caller": lambda {
-																					"symbol-value": "parsed", 
+																					"param": symbol {
+																						"symbol-value": "parsed"
+																					}, 
 																					"value": symbol {
 																						"symbol-value": "writeInputAST"
 																					}
@@ -250,7 +256,9 @@ group {
 																			"property": "right", 
 																			"object": invocation {
 																				"caller": lambda {
-																					"symbol-value": "node", 
+																					"param": symbol {
+																						"symbol-value": "node"
+																					}, 
 																					"value": symbol {
 																						"symbol-value": "pass"
 																					}
@@ -284,7 +292,9 @@ group {
 																	"property": "right", 
 																	"object": invocation {
 																		"caller": lambda {
-																			"symbol-value": "node", 
+																			"param": symbol {
+																				"symbol-value": "node"
+																			}, 
 																			"value": symbol {
 																				"symbol-value": "pass"
 																			}
@@ -323,7 +333,9 @@ group {
 																		"caller": data-access {
 																			"property": "createCRootRule", 
 																			"object": lambda {
-																				"symbol-value": "parsed", 
+																				"param": symbol {
+																					"symbol-value": "parsed"
+																				}, 
 																				"value": symbol {
 																					"symbol-value": "CLang"
 																				}
@@ -348,7 +360,9 @@ group {
 											}, 
 											"arguments": [invocation {
 												"caller": lambda {
-													"symbol-value": "generated", 
+													"param": symbol {
+														"symbol-value": "generated"
+													}, 
 													"value": symbol {
 														"symbol-value": "writeGenerated"
 													}
@@ -370,7 +384,9 @@ group {
 										}
 									}, 
 									"arguments": [lambda {
-										"symbol-value": "value", 
+										"param": symbol {
+											"symbol-value": "value"
+										}, 
 										"value": symbol {
 											"symbol-value": "value"
 										}
@@ -1152,7 +1168,9 @@ group {
 										"caller": data-access {
 											"property": "withNode", 
 											"object": lambda {
-												"symbol-value": "right", 
+												"param": symbol {
+													"symbol-value": "right"
+												}, 
 												"value": symbol {
 													"symbol-value": "oldNode"
 												}

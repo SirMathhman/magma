@@ -102,7 +102,7 @@ public class CommonLang {
 
     private static TypeRule createLambdaRule(Rule value) {
         return new TypeRule("lambda", new SplitRule(new OrRule(List.of(
-                createSymbolRule(),
+                new NodeRule("param", createSymbolRule()),
                 new StripRule(new ExactRule("()"))
         )), new LocatingSplitter("->", new FirstLocator()), new NodeRule("value", value)));
     }
