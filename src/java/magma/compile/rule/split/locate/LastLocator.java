@@ -1,11 +1,12 @@
 package magma.compile.rule.split.locate;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class LastLocator implements Locator {
     @Override
-    public Stream<Integer> locate(String input, String infix) {
+    public Optional<Integer> locate(String input, String infix) {
         final var index = input.lastIndexOf(infix);
-        return index == -1 ? Stream.empty() : Stream.of(index);
+        return index == -1 ? Optional.empty() : Optional.of(index);
     }
 }

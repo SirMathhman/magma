@@ -6,7 +6,7 @@ import magma.compile.error.StringContext;
 import magma.compile.rule.split.locate.Locator;
 
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 public final class LocatingSplitter implements Splitter {
     private final String infix;
@@ -26,9 +26,8 @@ public final class LocatingSplitter implements Splitter {
     }
 
     @Override
-    public Stream<Tuple<String, String>> split(String input) {
-        return locator.locate(input, infix)
-                .map(index -> splitAtIndex(input, index));
+    public Optional<Tuple<String, String>> split(String input) {
+        return locator.locate(input, infix).map(index -> splitAtIndex(input, index));
     }
 
     private Tuple<String, String> splitAtIndex(String input, int index) {

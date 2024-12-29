@@ -11,7 +11,6 @@ import magma.compile.rule.slice.StatementSlicer;
 import magma.compile.rule.slice.ValueSlicer;
 import magma.compile.rule.split.LocatingSplitter;
 import magma.compile.rule.split.SplitRule;
-import magma.compile.rule.split.locate.BackwardsLocator;
 import magma.compile.rule.split.locate.FirstLocator;
 import magma.compile.rule.split.locate.LastLocator;
 import magma.compile.rule.split.locate.Locator;
@@ -25,7 +24,7 @@ import magma.compile.rule.string.filter.NumberFilter;
 import magma.compile.rule.string.filter.SymbolFilter;
 
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 public class CommonLang {
     static Rule createGroupRule(Rule childRule) {
@@ -66,7 +65,7 @@ public class CommonLang {
     static Rule createDefinitionRule() {
         final var type = new NodeRule("type", createTypeRule());
         final var leftRule = new OrRule(List.of(
-                new SplitRule(new StringListRule(" ", "modifiers"), new LocatingSplitter(" ", new BackwardsLocator()), type),
+                new SplitRule(new StringListRule(" ", "modifiers"), new LocatingSplitter(" ", new TypeStartLocator()), type),
                 type
         ));
 
@@ -150,19 +149,37 @@ public class CommonLang {
 
     private static class InvocationLocator implements Locator {
         @Override
-        public Stream<Integer> locate(String input, String infix) {
+        public Optional<Integer> locate(String input, String infix) {
             var depth = 0;
             for (int i = input.length() - 1; i >= 0; i--) {
                 final var c = input.charAt(i);
                 if (c == '(' && depth == 0) {
-                    return Stream.of(i);
+                    return Optional.of(i);
                 } else {
                     if (c == ')') depth++;
                     if (c == '(') depth--;
                 }
             }
 
-            return Stream.empty();
+            return Optional.empty();
+        }
+    }
+
+    private static class TypeStartLocator implements Locator {
+        @Override
+        public Optional<Integer> locate(String input, String infix) {
+            var depth = 0;
+            for (int i = input.length() - 1; i >= 0; i--) {
+                var c = input.charAt(i);
+                if (c == ' ' && depth == 0) {
+                    return Optional.of(i);
+                } else {
+                    if (c == '>') depth++;
+                    if (c == '<') depth--;
+                }
+            }
+
+            return Optional.empty();
         }
     }
 }

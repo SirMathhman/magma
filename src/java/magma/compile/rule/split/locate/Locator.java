@@ -1,7 +1,7 @@
 package magma.compile.rule.split.locate;
 
-import java.util.stream.Stream;
+import java.util.Optional;
 
 public interface Locator {
-    Stream<Integer> locate(String input, String infix);
+    Optional<Integer> locate(String input, String infix);
 }
