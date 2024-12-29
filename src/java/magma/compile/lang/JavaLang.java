@@ -57,6 +57,7 @@ public class JavaLang {
                 CommonLang.createConditionedRule("while", "while ", value, statement),
                 CommonLang.createElseRule(statement),
                 new SuffixRule(CommonLang.createInvocationRule(value), ";"),
+                new SuffixRule(CommonLang.createConstructionRule(value), ";"),
                 CommonLang.createInitializationRule(value),
                 CommonLang.createAssignmentRule()
         )));

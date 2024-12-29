@@ -93,6 +93,7 @@ public class CommonLang {
                 createAccessRule("function-access", "::", value),
                 createOperatorRule(value),
                 createInvocationRule(value),
+                createConstructionRule(value),
                 createLambdaRule(value)
         )));
         return value;
@@ -121,9 +122,16 @@ public class CommonLang {
     }
 
     static TypeRule createInvocationRule(Rule value) {
-        final var caller = new NodeRule("caller", value);
+        return createArgumentRule("invocation", new NodeRule("caller", value), value);
+    }
+
+    static TypeRule createConstructionRule(Rule value) {
+        return createArgumentRule("construction", new PrefixRule("new ", new NodeRule("caller", value)), value);
+    }
+
+    private static TypeRule createArgumentRule(String type, Rule caller, Rule value) {
         final var arguments = new NodeListRule(new ValueSlicer(), "arguments", value);
-        return new TypeRule("invocation", new StripRule(new SuffixRule(new SplitRule(caller, new LocatingSplitter("(", new InvocationLocator()), arguments), ")")));
+        return new TypeRule(type, new StripRule(new SuffixRule(new SplitRule(caller, new LocatingSplitter("(", new InvocationLocator()), arguments), ")")));
     }
 
     static TypeRule createConditionedRule(String type, String prefix, Rule value, Rule statement) {
