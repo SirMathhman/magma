@@ -57,7 +57,8 @@ public class CLang {
         final var statement = new LazyRule();
         final var value = CommonLang.createValueRule(typeRule);
         statement.set(new OrRule(List.of(
-                new TypeRule("invocation", new ExactRule("empty()")),
+                new SuffixRule(CommonLang.createInvocationRule(value), ";"),
+                new SuffixRule(CommonLang.createConstructionRule(value), ";"),
                 CommonLang.createInitializationRule(value, typeRule),
                 CommonLang.createConditionedRule("if", "if ", value, statement),
                 CommonLang.createConditionedRule("while", "while ", value, statement),

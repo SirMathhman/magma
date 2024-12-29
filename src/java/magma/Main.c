@@ -19,7 +19,7 @@
 struct Main{
 	void main(String[] args){
 		final Path source=Paths.get(".", "src", "java", "magma", "Main.java");
-		empty()
+		JavaFiles.readString(source).mapErr(JavaError::new).mapErr(ApplicationError::new).match(input->runWithInput(source, input), Optional::of).ifPresent(error->System.err.println(error.display()));
 	}
 	Optional<ApplicationError> runWithInput(Path source, String input){
 		return JavaLang.createJavaRootRule().parse(input).mapErr(ApplicationError::new).flatMapValue(parsed->writeInputAST(source, parsed)).mapValue(node->pass(new State(), node, Tuple::new, Main::modify).right()).mapValue(node->pass(new State(), node, Main::formatBefore, Main::formatAfter).right()).flatMapValue(parsed->CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new)).mapValue(generated->writeGenerated(generated, source.resolveSibling("Main.c"))).match(value->value, Optional::of);
@@ -42,7 +42,7 @@ struct Main{
 			while (i<orElse.size()){
 				Node child=orElse.get(i);
 				final var withString=getNode(state, i, child);
-				empty()
+				newChildren.add(withString);
 				i = i + 1;
 			}
 			return new Tuple(state, node.withNodeList("children", newChildren).withString("after-children", "\n" + "\t".repeat(Math.max(state.depth()-1, 0))));
@@ -88,7 +88,7 @@ struct Main{
 			Node value=values.get(i);
 			final var passed=pass(currentState, value, beforePass, afterPass);
 			currentState = passed.left();
-			empty()
+			currentChildren.add(passed.right());
 			i = i + 1;
 		}
 		final var newNode=oldChildren.withNodeList(key, currentChildren);
