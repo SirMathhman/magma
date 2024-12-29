@@ -52,13 +52,13 @@ public class JavaLang {
         final LazyRule statement = new LazyRule();
         final var value = CommonLang.createValueRule();
         statement.set(new OrRule(List.of(
+                CommonLang.createReturnRule(value),
                 CommonLang.createConditionedRule("if", "if ", value, statement),
                 CommonLang.createConditionedRule("while", "while ", value, statement),
                 CommonLang.createElseRule(statement),
-                CommonLang.createInitializationRule(value),
                 new SuffixRule(CommonLang.createInvocationRule(value), ";"),
-                CommonLang.createAssignmentRule(),
-                CommonLang.createReturnRule(value)
+                CommonLang.createInitializationRule(value),
+                CommonLang.createAssignmentRule()
         )));
 
         return statement;

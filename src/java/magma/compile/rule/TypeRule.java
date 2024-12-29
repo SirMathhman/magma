@@ -10,12 +10,12 @@ import magma.compile.error.StringContext;
 import java.util.Collections;
 
 public record TypeRule(String type, Rule childRule) implements Rule {
+    static int depth = -1;
+
     @Override
     public Result<Node, CompileError> parse(String input) {
-        return childRule.parse(input)
-                .mapValue(node -> {
-                    return node.retype(type);
-                })
+        final var parsed = childRule.parse(input);
+        return parsed.mapValue(node -> node.retype(type))
                 .mapErr(err -> new CompileError("Cannot assign type '" + type + "'", new StringContext(input), Collections.singletonList(err)));
     }
 

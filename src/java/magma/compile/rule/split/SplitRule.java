@@ -12,11 +12,17 @@ public final class SplitRule implements Rule {
     private final Rule leftRule;
     private final Rule rightRule;
     private final Splitter splitter;
+    private final boolean inverted;
 
-    public SplitRule(Rule leftRule, Splitter splitter, Rule rightRule) {
+    public SplitRule(Rule leftRule, Splitter splitter, Rule rightRule, boolean inverted) {
         this.leftRule = leftRule;
         this.rightRule = rightRule;
         this.splitter = splitter;
+        this.inverted = inverted;
+    }
+
+    public SplitRule(Rule leftRule, Splitter splitter, Rule rightRule) {
+        this(leftRule, splitter, rightRule, false);
     }
 
     @Override
@@ -27,8 +33,11 @@ public final class SplitRule implements Rule {
     }
 
     private Result<Node, CompileError> parseAndMerge(String left, String right) {
-        return leftRule.parse(left)
-                .and(() -> rightRule.parse(right))
+        final var result = inverted
+                ? rightRule.parse(right).and(() -> leftRule.parse(left))
+                : leftRule.parse(left).and(() -> rightRule.parse(right));
+
+        return result
                 .mapValue(tuple -> tuple.left().merge(tuple.right()));
     }
 

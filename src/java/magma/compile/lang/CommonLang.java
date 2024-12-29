@@ -113,7 +113,7 @@ public class CommonLang {
     private static TypeRule createAccessRule(String type, String infix, Rule value) {
         final var object = new NodeRule("object", value);
         final var property = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("property")));
-        return new TypeRule(type, new SplitRule(object, new LocatingSplitter(infix, new LastLocator()), property));
+        return new TypeRule(type, new SplitRule(object, new LocatingSplitter(infix, new LastLocator()), property, true));
     }
 
     private static TypeRule createNumberRule() {
