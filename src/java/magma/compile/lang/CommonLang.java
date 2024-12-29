@@ -91,7 +91,8 @@ public class CommonLang {
                 createNumberRule(),
                 createAccessRule("data-access", ".", value, typeRule),
                 createAccessRule("function-access", "::", value, typeRule),
-                createOperatorRule(value),
+                createOperatorRule("less-than", "<", value),
+                createOperatorRule("subtract", "-", value),
                 createInvocationRule(value),
                 createConstructionRule(value),
                 createLambdaRule(value)
@@ -110,8 +111,8 @@ public class CommonLang {
         return new TypeRule("string", new StripRule(new PrefixRule("\"", new SuffixRule(new StringRule("string-value"), "\""))));
     }
 
-    private static TypeRule createOperatorRule(Rule value) {
-        return new TypeRule("less-than", new SplitRule(new NodeRule("left", value), new LocatingSplitter("<", new FirstLocator()), new NodeRule("right", value)));
+    private static TypeRule createOperatorRule(String type, String infix, Rule value) {
+        return new TypeRule(type, new SplitRule(new NodeRule("left", value), new LocatingSplitter(infix, new FirstLocator()), new NodeRule("right", value)));
     }
 
     private static TypeRule createAccessRule(String type, String infix, Rule value, Rule typeRule) {

@@ -22,27 +22,16 @@ struct Main{
 		empty()
 	}
 	Optional<ApplicationError> runWithInput(Path source, String input){
-		return JavaLang.createJavaRootRule()
-                .parse(input)
-                .mapErr(ApplicationError::new)
-                .flatMapValue(parsed -> writeInputAST(source, parsed))
-                .mapValue(node -> pass(new State(), node, Tuple::new, Main::modify).right())
-                .mapValue(node -> pass(new State(), node, Main::formatBefore, Main::formatAfter).right())
-                .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))
-                .mapValue(generated -> writeGenerated(generated, source.resolveSibling("Main.c"))).match(value -> value, Optional::of);
+		return JavaLang.createJavaRootRule().parse(input).mapErr(ApplicationError::new).flatMapValue(()->writeInputAST(source, parsed)).mapValue(()->pass(new State(), node, Tuple::new, Main::modify).right()).mapValue(()->pass(new State(), node, Main::formatBefore, Main::formatAfter).right()).flatMapValue(()->CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new)).mapValue(()->writeGenerated(generated, source.resolveSibling("Main.c"))).match(()->value, Optional::of);
 	}
 	Result<Node, ApplicationError> writeInputAST(Path source, Node parsed){
-		return JavaFiles.writeString(source.resolveSibling("Main.input.ast"), parsed.toString())
-                .map(JavaError::new)
-                .map(ApplicationError::new)
-                .<Result<Node, ApplicationError>>map(Err::new)
-                .orElseGet(() -> new Ok<>(parsed));
+		return JavaFiles.writeString(source.resolveSibling("Main.input.ast"), parsed.toString()).map(JavaError::new).map(ApplicationError::new).<Result<Node, ApplicationError>>map(Err::new).orElseGet(()->new Ok(parsed));
 	}
 	Tuple<State, Node> formatBefore(State state, Node node){
 		if (node.is("block")){
-			return new Tuple<>(state.enter(), node);
+			return new Tuple(state.enter(), node);
 		}
-		return new Tuple<>(state, node);
+		return new Tuple(state, node);
 	}
 	Tuple<State, Node> formatAfter(State state, Node node){
 		if (node.is("group")){
@@ -56,15 +45,13 @@ struct Main{
 				empty()
 				i = i + 1;
 			}
-			return new Tuple<>(state, node
-                    .withNodeList("children", newChildren)
-                    .withString("after-children", "\n" + "\t".repeat(Math.max(state.depth() - 1, 0))));
+			return new Tuple(state, node.withNodeList("children", newChildren).withString("after-children", "\n" + "\t".repeat(Math.max(state.depth()-1, 0))));
 		}
 		else if (node.is("block")){
-			return new Tuple<>(state.exit(), node);
+			return new Tuple(state.exit(), node);
 		}
 		else {
-			return new Tuple<>(state, node);
+			return new Tuple(state, node);
 		}
 	}
 	Node getNode(State state, int i, Node child){
@@ -87,7 +74,7 @@ struct Main{
 		final var oldNode=current.right();
 		final var key=entry.left();
 		final var value=entry.right();
-		return pass(oldState, value, beforePass, afterPass).mapRight(right -> oldNode.withNode(key, right));
+		return pass(oldState, value, beforePass, afterPass).mapRight(()->oldNode.withNode(key, right));
 	}
 	Tuple<State, Node> passNodeLists(Tuple<State, Node> current, Tuple<String, List<Node>> entry, BiFunction<State, Node, Tuple<State, Node>> beforePass, BiFunction<State, Node, Tuple<State, Node>> afterPass){
 		final var oldState=current.left();
@@ -105,15 +92,15 @@ struct Main{
 			i = i + 1;
 		}
 		final var newNode=oldChildren.withNodeList(key, currentChildren);
-		return new Tuple<>(oldState, newNode);
+		return new Tuple(oldState, newNode);
 	}
 	Tuple<State, Node> modify(State state, Node node){
 		final var result=modifyStateless(node);
-		return new Tuple<>(state, result);
+		return new Tuple(state, result);
 	}
 	Node modifyStateless(Node node){
 		if (node.is("group")){
-			final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>());
+			final var oldChildren=node.findNodeList("children").orElse(new ArrayList());
 			final var newChildren = oldChildren.stream()
                     .filter(oldChild -> !oldChild.is("package"))
                     .collect(Collectors.toCollection(ArrayList::new));
@@ -133,9 +120,7 @@ struct Main{
 		}
 	}
 	Optional<ApplicationError> writeGenerated(String generated, Path target){
-		return JavaFiles.writeString(target, generated)
-                .map(JavaError::new)
-                .map(ApplicationError::new);
+		return JavaFiles.writeString(target, generated).map(JavaError::new).map(ApplicationError::new);
 	}
 }
 

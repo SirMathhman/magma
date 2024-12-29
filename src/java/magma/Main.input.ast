@@ -119,7 +119,7 @@ group {
 										}, 
 										"arguments": [invocation {
 											"caller": lambda {
-												"before-arrow": "input ", 
+												"symbol-value": "input", 
 												"value": symbol {
 													"symbol-value": "runWithInput"
 												}
@@ -143,7 +143,7 @@ group {
 										"object": data-access {
 											"property": "err", 
 											"object": lambda {
-												"before-arrow": "error ", 
+												"symbol-value": "error", 
 												"value": symbol {
 													"symbol-value": "System"
 												}
@@ -183,7 +183,204 @@ group {
 					"value": block {
 						"value": group {
 							"children": [return {
-								"value": "JavaLang.createJavaRootRule()\n                .parse(input)\n                .mapErr(ApplicationError::new)\n                .flatMapValue(parsed -> writeInputAST(source, parsed))\n                .mapValue(node -> pass(new State(), node, Tuple::new, Main::modify).right())\n                .mapValue(node -> pass(new State(), node, Main::formatBefore, Main::formatAfter).right())\n                .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))\n                .mapValue(generated -> writeGenerated(generated, source.resolveSibling("Main.c"))).match(value -> value, Optional::of)"
+								"value": invocation {
+									"caller": data-access {
+										"property": "match", 
+										"object": invocation {
+											"caller": data-access {
+												"property": "mapValue", 
+												"object": invocation {
+													"caller": data-access {
+														"property": "flatMapValue", 
+														"object": invocation {
+															"caller": data-access {
+																"property": "mapValue", 
+																"object": invocation {
+																	"caller": data-access {
+																		"property": "mapValue", 
+																		"object": invocation {
+																			"caller": data-access {
+																				"property": "flatMapValue", 
+																				"object": invocation {
+																					"caller": data-access {
+																						"property": "mapErr", 
+																						"object": invocation {
+																							"caller": data-access {
+																								"property": "parse", 
+																								"object": invocation {
+																									"caller": data-access {
+																										"property": "createJavaRootRule", 
+																										"object": symbol {
+																											"symbol-value": "JavaLang"
+																										}
+																									}, 
+																									"arguments": []
+																								}
+																							}, 
+																							"arguments": [symbol {
+																								"symbol-value": "input"
+																							}]
+																						}
+																					}, 
+																					"arguments": [function-access {
+																						"property": "new", 
+																						"object": symbol {
+																							"symbol-value": "ApplicationError"
+																						}
+																					}]
+																				}
+																			}, 
+																			"arguments": [invocation {
+																				"caller": lambda {
+																					"symbol-value": "parsed", 
+																					"value": symbol {
+																						"symbol-value": "writeInputAST"
+																					}
+																				}, 
+																				"arguments": [symbol {
+																					"symbol-value": "source"
+																				}, symbol {
+																					"symbol-value": "parsed"
+																				}]
+																			}]
+																		}
+																	}, 
+																	"arguments": [invocation {
+																		"caller": data-access {
+																			"property": "right", 
+																			"object": invocation {
+																				"caller": lambda {
+																					"symbol-value": "node", 
+																					"value": symbol {
+																						"symbol-value": "pass"
+																					}
+																				}, 
+																				"arguments": [construction {
+																					"caller": symbol {
+																						"symbol-value": "State"
+																					}, 
+																					"arguments": []
+																				}, symbol {
+																					"symbol-value": "node"
+																				}, function-access {
+																					"property": "new", 
+																					"object": symbol {
+																						"symbol-value": "Tuple"
+																					}
+																				}, function-access {
+																					"property": "modify", 
+																					"object": symbol {
+																						"symbol-value": "Main"
+																					}
+																				}]
+																			}
+																		}, 
+																		"arguments": []
+																	}]
+																}
+															}, 
+															"arguments": [invocation {
+																"caller": data-access {
+																	"property": "right", 
+																	"object": invocation {
+																		"caller": lambda {
+																			"symbol-value": "node", 
+																			"value": symbol {
+																				"symbol-value": "pass"
+																			}
+																		}, 
+																		"arguments": [construction {
+																			"caller": symbol {
+																				"symbol-value": "State"
+																			}, 
+																			"arguments": []
+																		}, symbol {
+																			"symbol-value": "node"
+																		}, function-access {
+																			"property": "formatBefore", 
+																			"object": symbol {
+																				"symbol-value": "Main"
+																			}
+																		}, function-access {
+																			"property": "formatAfter", 
+																			"object": symbol {
+																				"symbol-value": "Main"
+																			}
+																		}]
+																	}
+																}, 
+																"arguments": []
+															}]
+														}
+													}, 
+													"arguments": [invocation {
+														"caller": data-access {
+															"property": "mapErr", 
+															"object": invocation {
+																"caller": data-access {
+																	"property": "generate", 
+																	"object": invocation {
+																		"caller": data-access {
+																			"property": "createCRootRule", 
+																			"object": lambda {
+																				"symbol-value": "parsed", 
+																				"value": symbol {
+																					"symbol-value": "CLang"
+																				}
+																			}
+																		}, 
+																		"arguments": []
+																	}
+																}, 
+																"arguments": [symbol {
+																	"symbol-value": "parsed"
+																}]
+															}
+														}, 
+														"arguments": [function-access {
+															"property": "new", 
+															"object": symbol {
+																"symbol-value": "ApplicationError"
+															}
+														}]
+													}]
+												}
+											}, 
+											"arguments": [invocation {
+												"caller": lambda {
+													"symbol-value": "generated", 
+													"value": symbol {
+														"symbol-value": "writeGenerated"
+													}
+												}, 
+												"arguments": [symbol {
+													"symbol-value": "generated"
+												}, invocation {
+													"caller": data-access {
+														"property": "resolveSibling", 
+														"object": symbol {
+															"symbol-value": "source"
+														}
+													}, 
+													"arguments": [string {
+														"string-value": "Main.c"
+													}]
+												}]
+											}]
+										}
+									}, 
+									"arguments": [lambda {
+										"symbol-value": "value", 
+										"value": symbol {
+											"symbol-value": "value"
+										}
+									}, function-access {
+										"property": "of", 
+										"object": symbol {
+											"symbol-value": "Optional"
+										}
+									}]
+								}
 							}]
 						}
 					}, 
@@ -212,7 +409,89 @@ group {
 					"value": block {
 						"value": group {
 							"children": [return {
-								"value": "JavaFiles.writeString(source.resolveSibling("Main.input.ast"), parsed.toString())\n                .map(JavaError::new)\n                .map(ApplicationError::new)\n                .<Result<Node, ApplicationError>>map(Err::new)\n                .orElseGet(() -> new Ok<>(parsed))"
+								"value": invocation {
+									"caller": data-access {
+										"property": "orElseGet", 
+										"object": invocation {
+											"caller": data-access {
+												"property": "map", 
+												"object": invocation {
+													"caller": data-access {
+														"property": "map", 
+														"object": invocation {
+															"caller": data-access {
+																"property": "map", 
+																"object": invocation {
+																	"caller": data-access {
+																		"property": "writeString", 
+																		"object": symbol {
+																			"symbol-value": "JavaFiles"
+																		}
+																	}, 
+																	"arguments": [invocation {
+																		"caller": data-access {
+																			"property": "resolveSibling", 
+																			"object": symbol {
+																				"symbol-value": "source"
+																			}
+																		}, 
+																		"arguments": [string {
+																			"string-value": "Main.input.ast"
+																		}]
+																	}, invocation {
+																		"caller": data-access {
+																			"property": "toString", 
+																			"object": symbol {
+																				"symbol-value": "parsed"
+																			}
+																		}, 
+																		"arguments": []
+																	}]
+																}
+															}, 
+															"arguments": [function-access {
+																"property": "new", 
+																"object": symbol {
+																	"symbol-value": "JavaError"
+																}
+															}]
+														}
+													}, 
+													"arguments": [function-access {
+														"property": "new", 
+														"object": symbol {
+															"symbol-value": "ApplicationError"
+														}
+													}]
+												}, 
+												"type-arguments": [generic {
+													"parent": "Result", 
+													"children": [symbol {
+														"symbol-value": "Node"
+													}, symbol {
+														"symbol-value": "ApplicationError"
+													}]
+												}]
+											}, 
+											"arguments": [function-access {
+												"property": "new", 
+												"object": symbol {
+													"symbol-value": "Err"
+												}
+											}]
+										}
+									}, 
+									"arguments": [lambda {
+										"value": construction {
+											"caller": symbol {
+												"symbol-value": "Ok"
+											}, 
+											"arguments": [symbol {
+												"symbol-value": "parsed"
+											}]
+										}
+									}]
+								}
 							}]
 						}
 					}, 
@@ -255,12 +534,36 @@ group {
 								"value": block {
 									"value": group {
 										"children": [return {
-											"value": "new Tuple<>(state.enter(), node)"
+											"value": construction {
+												"caller": symbol {
+													"symbol-value": "Tuple"
+												}, 
+												"arguments": [invocation {
+													"caller": data-access {
+														"property": "enter", 
+														"object": symbol {
+															"symbol-value": "state"
+														}
+													}, 
+													"arguments": []
+												}, symbol {
+													"symbol-value": "node"
+												}]
+											}
 										}]
 									}
 								}
 							}, return {
-								"value": "new Tuple<>(state, node)"
+								"value": construction {
+									"caller": symbol {
+										"symbol-value": "Tuple"
+									}, 
+									"arguments": [symbol {
+										"symbol-value": "state"
+									}, symbol {
+										"symbol-value": "node"
+									}]
+								}
 							}]
 						}
 					}, 
@@ -362,19 +665,19 @@ group {
 												"number-value": "0"
 											}
 										}, while {
-											"condition": invocation {
-												"caller": data-access {
-													"property": "size", 
-													"object": less-than {
-														"left": symbol {
-															"symbol-value": "i"
-														}, 
-														"right": symbol {
+											"condition": less-than {
+												"left": symbol {
+													"symbol-value": "i"
+												}, 
+												"right": invocation {
+													"caller": data-access {
+														"property": "size", 
+														"object": symbol {
 															"symbol-value": "orElse"
 														}
-													}
-												}, 
-												"arguments": []
+													}, 
+													"arguments": []
+												}
 											}, 
 											"value": block {
 												"value": group {
@@ -433,7 +736,65 @@ group {
 												}
 											}
 										}, return {
-											"value": "new Tuple<>(state, node\n                    .withNodeList("children", newChildren)\n                    .withString("after-children", "\n" + "\t".repeat(Math.max(state.depth() - 1, 0))))"
+											"value": construction {
+												"caller": symbol {
+													"symbol-value": "Tuple"
+												}, 
+												"arguments": [symbol {
+													"symbol-value": "state"
+												}, invocation {
+													"caller": data-access {
+														"property": "withString", 
+														"object": invocation {
+															"caller": data-access {
+																"property": "withNodeList", 
+																"object": symbol {
+																	"symbol-value": "node"
+																}
+															}, 
+															"arguments": [string {
+																"string-value": "children"
+															}, symbol {
+																"symbol-value": "newChildren"
+															}]
+														}
+													}, 
+													"arguments": [string {
+														"string-value": "after-children"
+													}, invocation {
+														"caller": data-access {
+															"property": "repeat", 
+															"object": string {
+																"string-value": "\n" + "\t"
+															}
+														}, 
+														"arguments": [invocation {
+															"caller": data-access {
+																"property": "max", 
+																"object": symbol {
+																	"symbol-value": "Math"
+																}
+															}, 
+															"arguments": [subtract {
+																"left": invocation {
+																	"caller": data-access {
+																		"property": "depth", 
+																		"object": symbol {
+																			"symbol-value": "state"
+																		}
+																	}, 
+																	"arguments": []
+																}, 
+																"right": number {
+																	"number-value": "1"
+																}
+															}, number {
+																"number-value": "0"
+															}]
+														}]
+													}]
+												}]
+											}
 										}]
 									}
 								}
@@ -453,7 +814,22 @@ group {
 									"value": block {
 										"value": group {
 											"children": [return {
-												"value": "new Tuple<>(state.exit(), node)"
+												"value": construction {
+													"caller": symbol {
+														"symbol-value": "Tuple"
+													}, 
+													"arguments": [invocation {
+														"caller": data-access {
+															"property": "exit", 
+															"object": symbol {
+																"symbol-value": "state"
+															}
+														}, 
+														"arguments": []
+													}, symbol {
+														"symbol-value": "node"
+													}]
+												}
 											}]
 										}
 									}
@@ -462,7 +838,16 @@ group {
 								"value": block {
 									"value": group {
 										"children": [return {
-											"value": "new Tuple<>(state, node)"
+											"value": construction {
+												"caller": symbol {
+													"symbol-value": "Tuple"
+												}, 
+												"arguments": [symbol {
+													"symbol-value": "state"
+												}, symbol {
+													"symbol-value": "node"
+												}]
+											}
 										}]
 									}
 								}
@@ -517,7 +902,19 @@ group {
 									}]
 								}
 							}, return {
-								"value": "child.withString("before-child", indent)"
+								"value": invocation {
+									"caller": data-access {
+										"property": "withString", 
+										"object": symbol {
+											"symbol-value": "child"
+										}
+									}, 
+									"arguments": [string {
+										"string-value": "before-child"
+									}, symbol {
+										"symbol-value": "indent"
+									}]
+								}
 							}]
 						}
 					}, 
@@ -578,7 +975,31 @@ group {
 								"destination": "final var withNodes ", 
 								"source": " withNodeLists.right()\n                .streamNodes()\n                .reduce(withNodeLists, (node1, tuple) -> passNode(node1, tuple, beforePass, afterPass), (_, next) -> next)"
 							}, return {
-								"value": "afterPass.apply(withNodes.left(), withNodes.right())"
+								"value": invocation {
+									"caller": data-access {
+										"property": "apply", 
+										"object": symbol {
+											"symbol-value": "afterPass"
+										}
+									}, 
+									"arguments": [invocation {
+										"caller": data-access {
+											"property": "left", 
+											"object": symbol {
+												"symbol-value": "withNodes"
+											}
+										}, 
+										"arguments": []
+									}, invocation {
+										"caller": data-access {
+											"property": "right", 
+											"object": symbol {
+												"symbol-value": "withNodes"
+											}
+										}, 
+										"arguments": []
+									}]
+								}
 							}]
 						}
 					}, 
@@ -709,7 +1130,41 @@ group {
 									"arguments": []
 								}
 							}, return {
-								"value": "pass(oldState, value, beforePass, afterPass).mapRight(right -> oldNode.withNode(key, right))"
+								"value": invocation {
+									"caller": data-access {
+										"property": "mapRight", 
+										"object": invocation {
+											"caller": symbol {
+												"symbol-value": "pass"
+											}, 
+											"arguments": [symbol {
+												"symbol-value": "oldState"
+											}, symbol {
+												"symbol-value": "value"
+											}, symbol {
+												"symbol-value": "beforePass"
+											}, symbol {
+												"symbol-value": "afterPass"
+											}]
+										}
+									}, 
+									"arguments": [invocation {
+										"caller": data-access {
+											"property": "withNode", 
+											"object": lambda {
+												"symbol-value": "right", 
+												"value": symbol {
+													"symbol-value": "oldNode"
+												}
+											}
+										}, 
+										"arguments": [symbol {
+											"symbol-value": "key"
+										}, symbol {
+											"symbol-value": "right"
+										}]
+									}]
+								}
 							}]
 						}
 					}, 
@@ -873,19 +1328,19 @@ group {
 									"number-value": "0"
 								}
 							}, while {
-								"condition": invocation {
-									"caller": data-access {
-										"property": "size", 
-										"object": less-than {
-											"left": symbol {
-												"symbol-value": "i"
-											}, 
-											"right": symbol {
+								"condition": less-than {
+									"left": symbol {
+										"symbol-value": "i"
+									}, 
+									"right": invocation {
+										"caller": data-access {
+											"property": "size", 
+											"object": symbol {
 												"symbol-value": "values"
 											}
-										}
-									}, 
-									"arguments": []
+										}, 
+										"arguments": []
+									}
 								}, 
 								"value": block {
 									"value": group {
@@ -976,7 +1431,16 @@ group {
 									}]
 								}
 							}, return {
-								"value": "new Tuple<>(oldState, newNode)"
+								"value": construction {
+									"caller": symbol {
+										"symbol-value": "Tuple"
+									}, 
+									"arguments": [symbol {
+										"symbol-value": "oldState"
+									}, symbol {
+										"symbol-value": "newNode"
+									}]
+								}
 							}]
 						}
 					}, 
@@ -1068,7 +1532,16 @@ group {
 									}]
 								}
 							}, return {
-								"value": "new Tuple<>(state, result)"
+								"value": construction {
+									"caller": symbol {
+										"symbol-value": "Tuple"
+									}, 
+									"arguments": [symbol {
+										"symbol-value": "state"
+									}, symbol {
+										"symbol-value": "result"
+									}]
+								}
 							}]
 						}
 					}, 
@@ -1105,14 +1578,53 @@ group {
 								}, 
 								"value": block {
 									"value": group {
-										"children": [assignment {
-											"destination": "final var oldChildren ", 
-											"source": " node.findNodeList("children").orElse(new ArrayList<>())"
+										"children": [initialization {
+											"definition": definition {
+												"name": "oldChildren", 
+												"modifiers": ["final"], 
+												"type": symbol {
+													"symbol-value": "var"
+												}
+											}, 
+											"value": invocation {
+												"caller": data-access {
+													"property": "orElse", 
+													"object": invocation {
+														"caller": data-access {
+															"property": "findNodeList", 
+															"object": symbol {
+																"symbol-value": "node"
+															}
+														}, 
+														"arguments": [string {
+															"string-value": "children"
+														}]
+													}
+												}, 
+												"arguments": [construction {
+													"caller": symbol {
+														"symbol-value": "ArrayList"
+													}, 
+													"arguments": []
+												}]
+											}
 										}, assignment {
 											"destination": "final var newChildren ", 
 											"source": " oldChildren.stream()\n                    .filter(oldChild -> !oldChild.is("package"))\n                    .collect(Collectors.toCollection(ArrayList::new))"
 										}, return {
-											"value": "node.withNodeList("children", newChildren)"
+											"value": invocation {
+												"caller": data-access {
+													"property": "withNodeList", 
+													"object": symbol {
+														"symbol-value": "node"
+													}
+												}, 
+												"arguments": [string {
+													"string-value": "children"
+												}, symbol {
+													"symbol-value": "newChildren"
+												}]
+											}
 										}]
 									}
 								}
@@ -1132,7 +1644,17 @@ group {
 									"value": block {
 										"value": group {
 											"children": [return {
-												"value": "node.retype("struct")"
+												"value": invocation {
+													"caller": data-access {
+														"property": "retype", 
+														"object": symbol {
+															"symbol-value": "node"
+														}
+													}, 
+													"arguments": [string {
+														"string-value": "struct"
+													}]
+												}
 											}]
 										}
 									}
@@ -1153,7 +1675,17 @@ group {
 									"value": block {
 										"value": group {
 											"children": [return {
-												"value": "node.retype("include")"
+												"value": invocation {
+													"caller": data-access {
+														"property": "retype", 
+														"object": symbol {
+															"symbol-value": "node"
+														}
+													}, 
+													"arguments": [string {
+														"string-value": "include"
+													}]
+												}
 											}]
 										}
 									}
@@ -1174,7 +1706,17 @@ group {
 									"value": block {
 										"value": group {
 											"children": [return {
-												"value": "node.retype("function")"
+												"value": invocation {
+													"caller": data-access {
+														"property": "retype", 
+														"object": symbol {
+															"symbol-value": "node"
+														}
+													}, 
+													"arguments": [string {
+														"string-value": "function"
+													}]
+												}
 											}]
 										}
 									}
@@ -1183,7 +1725,9 @@ group {
 								"value": block {
 									"value": group {
 										"children": [return {
-											"value": "node"
+											"value": symbol {
+												"symbol-value": "node"
+											}
 										}]
 									}
 								}
@@ -1208,7 +1752,41 @@ group {
 					"value": block {
 						"value": group {
 							"children": [return {
-								"value": "JavaFiles.writeString(target, generated)\n                .map(JavaError::new)\n                .map(ApplicationError::new)"
+								"value": invocation {
+									"caller": data-access {
+										"property": "map", 
+										"object": invocation {
+											"caller": data-access {
+												"property": "map", 
+												"object": invocation {
+													"caller": data-access {
+														"property": "writeString", 
+														"object": symbol {
+															"symbol-value": "JavaFiles"
+														}
+													}, 
+													"arguments": [symbol {
+														"symbol-value": "target"
+													}, symbol {
+														"symbol-value": "generated"
+													}]
+												}
+											}, 
+											"arguments": [function-access {
+												"property": "new", 
+												"object": symbol {
+													"symbol-value": "JavaError"
+												}
+											}]
+										}
+									}, 
+									"arguments": [function-access {
+										"property": "new", 
+										"object": symbol {
+											"symbol-value": "ApplicationError"
+										}
+									}]
+								}
 							}]
 						}
 					}, 
