@@ -15,7 +15,7 @@
 #include "java/nio/file/Paths.h"
 #include "java/util/Optional.h"
 struct Main{
-	void main(String[] args){
+	void main(Array<String> args){
 		final Path source=Paths.get(".", "src", "java", "magma", "Main.java");
 		{
 			auto __local5__={

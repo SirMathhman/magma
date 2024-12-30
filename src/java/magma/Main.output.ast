@@ -280,10 +280,11 @@ group {
 					}, 
 					"params": [definition {
 						"name": "args", 
-						"type": array {
-							"child": symbol {
+						"type": generic {
+							"parent": "Array", 
+							"children": [symbol {
 								"symbol-value": "String"
-							}
+							}]
 						}
 					}]
 				}, function {

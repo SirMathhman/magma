@@ -33,7 +33,19 @@ public class Modifier implements Passer {
 
         return modifyInvocation(node)
                 .or(() -> modifyFunctionAccess(node))
+                .or(() -> modifyArray(node))
                 .orElse(node);
+    }
+
+    private Optional<? extends Node> modifyArray(Node node) {
+        if(node.is("array")) {
+            final var child = node.findNode("child").orElse(new Node());
+            return Optional.of(new Node("generic")
+                    .withString("parent", "Array")
+                    .withNodeList("children", List.of(child)));
+        } else {
+            return Optional.empty();
+        }
     }
 
     private Optional<? extends Node> modifyFunctionAccess(Node node) {
