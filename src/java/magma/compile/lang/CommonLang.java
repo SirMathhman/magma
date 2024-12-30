@@ -89,9 +89,10 @@ public class CommonLang {
         return new TypeRule("initialization", new SplitRule(definition, new LocatingSplitter("=", new FirstLocator()), new SuffixRule(value, ";")));
     }
 
-    static Rule createValueRule(Rule typeRule) {
+    static Rule createValueRule(Rule typeRule, LazyRule statement) {
         final var value = new LazyRule();
         value.set(new OrRule(List.of(
+                CommonLang.createBlockStatementRule(statement),
                 createSymbolRule(),
                 createStringRule(),
                 createNumberRule(),
@@ -99,7 +100,7 @@ public class CommonLang {
                 createAccessRule("function-access", "::", value, typeRule),
                 createOperatorRule("less-than", "<", value),
                 createOperatorRule("subtract", "-", value),
-                createInvocationRule(value),
+                createInvocationRule(value, "invocation-value"),
                 createConstructionRule(value),
                 createLambdaRule(value)
         )));
@@ -135,8 +136,12 @@ public class CommonLang {
         return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule("number-value"))));
     }
 
-    static TypeRule createInvocationRule(Rule value) {
-        return createArgumentRule("invocation", new NodeRule("caller", value), value);
+    static TypeRule createInvocationStatementRule(Rule value) {
+        return createInvocationRule(value, "invocation-statement");
+    }
+
+    static TypeRule createInvocationRule(Rule value, String type) {
+        return createArgumentRule(type, new NodeRule("caller", value), value);
     }
 
     static TypeRule createConstructionRule(Rule value) {

@@ -22,6 +22,10 @@ public record Node(
         this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
+    public Node(String type) {
+        this(Optional.of(type), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
+    }
+
     private static String formatString(String value) {
         return "\"" + value.replaceAll("\\n", "\\\\n") + "\"";
     }

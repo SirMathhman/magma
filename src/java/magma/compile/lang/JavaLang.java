@@ -50,14 +50,14 @@ public class JavaLang {
 
     private static Rule createStatementRule(Rule typeRule) {
         final LazyRule statement = new LazyRule();
-        final var value = CommonLang.createValueRule(typeRule);
+        final var value = CommonLang.createValueRule(typeRule, statement);
         statement.set(new OrRule(List.of(
                 CommonLang.createBlockStatementRule(statement),
                 CommonLang.createReturnRule(value),
                 CommonLang.createConditionedRule("if", "if ", value, statement),
                 CommonLang.createConditionedRule("while", "while ", value, statement),
                 CommonLang.createElseRule(statement),
-                new SuffixRule(CommonLang.createInvocationRule(value), ";"),
+                new SuffixRule(CommonLang.createInvocationStatementRule(value), ";"),
                 new SuffixRule(CommonLang.createConstructionRule(value), ";"),
                 CommonLang.createInitializationRule(value, typeRule),
                 CommonLang.createAssignmentRule()

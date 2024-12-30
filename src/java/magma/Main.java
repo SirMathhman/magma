@@ -20,10 +20,6 @@ import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) {
-        {
-
-        }
-
         final Path source = Paths.get(".", "src", "java", "magma", "Main.java");
         JavaFiles.readString(source)
                 .mapErr(JavaError::new)
@@ -36,19 +32,20 @@ public class Main {
         return JavaLang.createJavaRootRule()
                 .parse(input)
                 .mapErr(ApplicationError::new)
-                .flatMapValue(parsed -> writeInputAST(source, parsed))
+                .flatMapValue(parsed -> writeAST(source.resolveSibling("Main.input.ast"), parsed))
                 .mapValue(node -> new TreePassingStage(new Modifier()).pass(new State(), node).right())
                 .mapValue(node -> new TreePassingStage(new Formatter()).pass(new State(), node).right())
+                .flatMapValue(parsed -> writeAST(source.resolveSibling("Main.output.ast"), parsed))
                 .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))
                 .mapValue(generated -> writeGenerated(generated, source.resolveSibling("Main.c"))).match(value -> value, Optional::of);
     }
 
-    private static Result<Node, ApplicationError> writeInputAST(Path source, Node parsed) {
-        return JavaFiles.writeString(source.resolveSibling("Main.input.ast"), parsed.toString())
+    private static Result<Node, ApplicationError> writeAST(Path path, Node node) {
+        return JavaFiles.writeString(path, node.toString())
                 .map(JavaError::new)
                 .map(ApplicationError::new)
                 .<Result<Node, ApplicationError>>map(Err::new)
-                .orElseGet(() -> new Ok<>(parsed));
+                .orElseGet(() -> new Ok<>(node));
     }
 
     private static Optional<ApplicationError> writeGenerated(String generated, Path target) {

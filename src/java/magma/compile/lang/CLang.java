@@ -54,17 +54,18 @@ public class CLang {
 
     private static Rule createStatementRule(Rule typeRule) {
         final var statement = new LazyRule();
-        final var value = CommonLang.createValueRule(typeRule);
+        final var value = CommonLang.createValueRule(typeRule, statement);
         statement.set(new OrRule(List.of(
                 CommonLang.createBlockStatementRule(statement),
-                new SuffixRule(CommonLang.createInvocationRule(value), ";"),
+                new SuffixRule(CommonLang.createInvocationStatementRule(value), ";"),
                 new SuffixRule(CommonLang.createConstructionRule(value), ";"),
                 CommonLang.createInitializationRule(value, typeRule),
                 CommonLang.createConditionedRule("if", "if ", value, statement),
                 CommonLang.createConditionedRule("while", "while ", value, statement),
                 CommonLang.createElseRule(statement),
                 CommonLang.createAssignmentRule(),
-                CommonLang.createReturnRule(value)
+                CommonLang.createReturnRule(value),
+                CommonLang.createValueRule(typeRule, statement)
         )));
         return statement;
     }
