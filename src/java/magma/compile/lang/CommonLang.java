@@ -1,8 +1,8 @@
 package magma.compile.lang;
 
-import magma.compile.rule.NodeRule;
 import magma.compile.rule.ExactRule;
 import magma.compile.rule.LazyRule;
+import magma.compile.rule.NodeRule;
 import magma.compile.rule.OrRule;
 import magma.compile.rule.Rule;
 import magma.compile.rule.TypeRule;
@@ -32,10 +32,16 @@ public class CommonLang {
         return new TypeRule("group", new StripRule("before-children", children, "after-children"));
     }
 
-    static SplitRule createBlock(Rule beforeBlock, Rule blockMember) {
+    static SplitRule createBlockValueRule(Rule beforeBlock, Rule blockMember) {
+        final var blockRule = createBlockTypeRule(blockMember);
+        final var splitter = new LocatingSplitter("{", new FirstLocator());
+        final var stripped = new StripRule(new SuffixRule(new NodeRule("value", blockRule), "}"));
+        return new SplitRule(beforeBlock, splitter, stripped);
+    }
+
+    public static TypeRule createBlockTypeRule(Rule blockMember) {
         final var value = new NodeRule("value", createGroupRule(blockMember));
-        final var blockRule = new TypeRule("block", value);
-        return new SplitRule(beforeBlock, new LocatingSplitter("{", new FirstLocator()), new StripRule(new SuffixRule(new NodeRule("value", blockRule), "}")));
+        return new TypeRule("block", value);
     }
 
     static Rule createTypeRule() {
@@ -150,11 +156,11 @@ public class CommonLang {
     static TypeRule createConditionedRule(String type, String prefix, Rule value, Rule statement) {
         final var condition = new NodeRule("condition", value);
         final var anIf = new PrefixRule(prefix, new StripRule(new PrefixRule("(", new SuffixRule(condition, ")"))));
-        return new TypeRule(type, createBlock(new StripRule(anIf), statement));
+        return new TypeRule(type, createBlockValueRule(new StripRule(anIf), statement));
     }
 
     static TypeRule createElseRule(Rule statement) {
-        final var withBlock = createBlock(new ExactRule("else "), statement);
+        final var withBlock = createBlockValueRule(new ExactRule("else "), statement);
         final var withoutBlock = new PrefixRule("else ", new NodeRule("value", statement));
         return new TypeRule("else", new OrRule(List.of(withBlock, withoutBlock)));
     }
@@ -166,6 +172,10 @@ public class CommonLang {
     static TypeRule createReturnRule(Rule value) {
         final var value0 = new NodeRule("value", value);
         return new TypeRule("return", new PrefixRule("return ", new SuffixRule(value0, ";")));
+    }
+
+    static StripRule createBlockStatementRule(LazyRule statement) {
+        return new StripRule(new PrefixRule("{", new SuffixRule(createBlockTypeRule(statement), "}")));
     }
 
     private static class InvocationLocator implements Locator {

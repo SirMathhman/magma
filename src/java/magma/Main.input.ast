@@ -46,7 +46,11 @@ group {
 					}, 
 					"value": block {
 						"value": group {
-							"children": [initialization {
+							"children": [block {
+								"value": group {
+									"children": []
+								}
+							}, initialization {
 								"definition": definition {
 									"name": "source", 
 									"modifiers": ["final"], 

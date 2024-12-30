@@ -16,6 +16,8 @@
 #include "java/util/Optional.h"
 struct Main{
 	void main(String[] args){
+		{
+		}
 		final Path source=Paths.get(".", "src", "java", "magma", "Main.java");
 		JavaFiles.readString(source).mapErr(JavaError::new).mapErr(ApplicationError::new).match(input->runWithInput(source, input), Optional::of).ifPresent(error->System.err.println(error.display()));
 	}

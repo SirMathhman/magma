@@ -31,7 +31,7 @@ public class JavaLang {
 
     private static TypeRule createClassRule() {
         final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
-        final var rightRule = CommonLang.createBlock(name, createClassMemberRule());
+        final var rightRule = CommonLang.createBlockValueRule(name, createClassMemberRule());
         return new TypeRule("class", new SplitRule(new StringListRule(" ", "modifiers"), new LocatingSplitter("class ", new FirstLocator()), rightRule));
     }
 
@@ -44,7 +44,7 @@ public class JavaLang {
 
     private static TypeRule createMethodRule(Rule typeRule) {
         final var definition = CommonLang.createDefinitionRule(typeRule);
-        final var wrapped = CommonLang.createBlock(definition, createStatementRule(typeRule));
+        final var wrapped = CommonLang.createBlockValueRule(definition, createStatementRule(typeRule));
         return new TypeRule("method", wrapped);
     }
 
@@ -52,6 +52,7 @@ public class JavaLang {
         final LazyRule statement = new LazyRule();
         final var value = CommonLang.createValueRule(typeRule);
         statement.set(new OrRule(List.of(
+                CommonLang.createBlockStatementRule(statement),
                 CommonLang.createReturnRule(value),
                 CommonLang.createConditionedRule("if", "if ", value, statement),
                 CommonLang.createConditionedRule("while", "while ", value, statement),

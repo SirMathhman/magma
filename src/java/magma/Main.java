@@ -20,6 +20,10 @@ import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) {
+        {
+
+        }
+
         final Path source = Paths.get(".", "src", "java", "magma", "Main.java");
         JavaFiles.readString(source)
                 .mapErr(JavaError::new)
