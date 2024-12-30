@@ -99,7 +99,7 @@ group {
 									"children": [initialization {
 										"before-child": "\n			", 
 										"definition": definition {
-											"name": "local", 
+											"name": "__local5__", 
 											"type": symbol {
 												"symbol-value": "auto"
 											}
@@ -110,7 +110,7 @@ group {
 												"children": [initialization {
 													"before-child": "\n				", 
 													"definition": definition {
-														"name": "local", 
+														"name": "__local4__", 
 														"type": symbol {
 															"symbol-value": "auto"
 														}
@@ -121,7 +121,7 @@ group {
 															"children": [initialization {
 																"before-child": "\n					", 
 																"definition": definition {
-																	"name": "local", 
+																	"name": "__local3__", 
 																	"type": symbol {
 																		"symbol-value": "auto"
 																	}
@@ -132,7 +132,7 @@ group {
 																		"children": [initialization {
 																			"before-child": "\n						", 
 																			"definition": definition {
-																				"name": "local", 
+																				"name": "__local2__", 
 																				"type": symbol {
 																					"symbol-value": "auto"
 																				}
@@ -153,11 +153,11 @@ group {
 																			"caller": data-access {
 																				"property": "mapErr", 
 																				"object": symbol {
-																					"symbol-value": "local"
+																					"symbol-value": "__local2__"
 																				}
 																			}, 
 																			"arguments": [symbol {
-																				"symbol-value": "local"
+																				"symbol-value": "__local2__"
 																			}, function-access {
 																				"property": "new", 
 																				"object": symbol {
@@ -172,11 +172,11 @@ group {
 																"caller": data-access {
 																	"property": "mapErr", 
 																	"object": symbol {
-																		"symbol-value": "local"
+																		"symbol-value": "__local3__"
 																	}
 																}, 
 																"arguments": [symbol {
-																	"symbol-value": "local"
+																	"symbol-value": "__local3__"
 																}, function-access {
 																	"property": "new", 
 																	"object": symbol {
@@ -191,11 +191,11 @@ group {
 													"caller": data-access {
 														"property": "match", 
 														"object": symbol {
-															"symbol-value": "local"
+															"symbol-value": "__local4__"
 														}
 													}, 
 													"arguments": [symbol {
-														"symbol-value": "local"
+														"symbol-value": "__local4__"
 													}, invocation-value {
 														"caller": lambda {
 															"param": symbol {
@@ -224,18 +224,18 @@ group {
 										"caller": data-access {
 											"property": "ifPresent", 
 											"object": symbol {
-												"symbol-value": "local"
+												"symbol-value": "__local5__"
 											}
 										}, 
 										"arguments": [symbol {
-											"symbol-value": "local"
+											"symbol-value": "__local5__"
 										}, block {
 											"value": group {
 												"after-children": "\n			", 
 												"children": [initialization {
 													"before-child": "\n				", 
 													"definition": definition {
-														"name": "local", 
+														"name": "__local1__", 
 														"type": symbol {
 															"symbol-value": "auto"
 														}
@@ -256,11 +256,11 @@ group {
 													"caller": data-access {
 														"property": "println", 
 														"object": symbol {
-															"symbol-value": "local"
+															"symbol-value": "__local1__"
 														}
 													}, 
 													"arguments": [symbol {
-														"symbol-value": "local"
+														"symbol-value": "__local1__"
 													}, invocation-value {
 														"caller": data-access {
 															"property": "display", 
@@ -307,7 +307,7 @@ group {
 										"children": [initialization {
 											"before-child": "\n			", 
 											"definition": definition {
-												"name": "local", 
+												"name": "__local21__", 
 												"type": symbol {
 													"symbol-value": "auto"
 												}
@@ -318,7 +318,7 @@ group {
 													"children": [initialization {
 														"before-child": "\n				", 
 														"definition": definition {
-															"name": "local", 
+															"name": "__local20__", 
 															"type": symbol {
 																"symbol-value": "auto"
 															}
@@ -329,7 +329,7 @@ group {
 																"children": [initialization {
 																	"before-child": "\n					", 
 																	"definition": definition {
-																		"name": "local", 
+																		"name": "__local19__", 
 																		"type": symbol {
 																			"symbol-value": "auto"
 																		}
@@ -340,7 +340,7 @@ group {
 																			"children": [initialization {
 																				"before-child": "\n						", 
 																				"definition": definition {
-																					"name": "local", 
+																					"name": "__local18__", 
 																					"type": symbol {
 																						"symbol-value": "auto"
 																					}
@@ -351,7 +351,7 @@ group {
 																						"children": [initialization {
 																							"before-child": "\n							", 
 																							"definition": definition {
-																								"name": "local", 
+																								"name": "__local17__", 
 																								"type": symbol {
 																									"symbol-value": "auto"
 																								}
@@ -362,7 +362,7 @@ group {
 																									"children": [initialization {
 																										"before-child": "\n								", 
 																										"definition": definition {
-																											"name": "local", 
+																											"name": "__local16__", 
 																											"type": symbol {
 																												"symbol-value": "auto"
 																											}
@@ -373,7 +373,7 @@ group {
 																												"children": [initialization {
 																													"before-child": "\n									", 
 																													"definition": definition {
-																														"name": "local", 
+																														"name": "__local15__", 
 																														"type": symbol {
 																															"symbol-value": "auto"
 																														}
@@ -384,7 +384,7 @@ group {
 																															"children": [initialization {
 																																"before-child": "\n										", 
 																																"definition": definition {
-																																	"name": "local", 
+																																	"name": "__local14__", 
 																																	"type": symbol {
 																																		"symbol-value": "auto"
 																																	}
@@ -395,7 +395,7 @@ group {
 																																		"children": [initialization {
 																																			"before-child": "\n											", 
 																																			"definition": definition {
-																																				"name": "local", 
+																																				"name": "__local13__", 
 																																				"type": symbol {
 																																					"symbol-value": "auto"
 																																				}
@@ -414,11 +414,11 @@ group {
 																																			"caller": data-access {
 																																				"property": "parse", 
 																																				"object": symbol {
-																																					"symbol-value": "local"
+																																					"symbol-value": "__local13__"
 																																				}
 																																			}, 
 																																			"arguments": [symbol {
-																																				"symbol-value": "local"
+																																				"symbol-value": "__local13__"
 																																			}, symbol {
 																																				"symbol-value": "input"
 																																			}]
@@ -430,11 +430,11 @@ group {
 																																"caller": data-access {
 																																	"property": "mapErr", 
 																																	"object": symbol {
-																																		"symbol-value": "local"
+																																		"symbol-value": "__local14__"
 																																	}
 																																}, 
 																																"arguments": [symbol {
-																																	"symbol-value": "local"
+																																	"symbol-value": "__local14__"
 																																}, function-access {
 																																	"property": "new", 
 																																	"object": symbol {
@@ -449,11 +449,11 @@ group {
 																													"caller": data-access {
 																														"property": "flatMapValue", 
 																														"object": symbol {
-																															"symbol-value": "local"
+																															"symbol-value": "__local15__"
 																														}
 																													}, 
 																													"arguments": [symbol {
-																														"symbol-value": "local"
+																														"symbol-value": "__local15__"
 																													}, invocation-value {
 																														"caller": lambda {
 																															"param": symbol {
@@ -485,18 +485,18 @@ group {
 																										"caller": data-access {
 																											"property": "mapValue", 
 																											"object": symbol {
-																												"symbol-value": "local"
+																												"symbol-value": "__local16__"
 																											}
 																										}, 
 																										"arguments": [symbol {
-																											"symbol-value": "local"
+																											"symbol-value": "__local16__"
 																										}, block {
 																											"value": group {
 																												"after-children": "\n								", 
 																												"children": [initialization {
 																													"before-child": "\n									", 
 																													"definition": definition {
-																														"name": "local", 
+																														"name": "__local12__", 
 																														"type": symbol {
 																															"symbol-value": "auto"
 																														}
@@ -507,7 +507,7 @@ group {
 																															"children": [initialization {
 																																"before-child": "\n										", 
 																																"definition": definition {
-																																	"name": "local", 
+																																	"name": "__local11__", 
 																																	"type": symbol {
 																																		"symbol-value": "auto"
 																																	}
@@ -533,11 +533,11 @@ group {
 																																"caller": data-access {
 																																	"property": "pass", 
 																																	"object": symbol {
-																																		"symbol-value": "local"
+																																		"symbol-value": "__local11__"
 																																	}
 																																}, 
 																																"arguments": [symbol {
-																																	"symbol-value": "local"
+																																	"symbol-value": "__local11__"
 																																}, construction {
 																																	"caller": symbol {
 																																		"symbol-value": "State"
@@ -554,11 +554,11 @@ group {
 																													"caller": data-access {
 																														"property": "right", 
 																														"object": symbol {
-																															"symbol-value": "local"
+																															"symbol-value": "__local12__"
 																														}
 																													}, 
 																													"arguments": [symbol {
-																														"symbol-value": "local"
+																														"symbol-value": "__local12__"
 																													}]
 																												}]
 																											}
@@ -571,18 +571,18 @@ group {
 																							"caller": data-access {
 																								"property": "mapValue", 
 																								"object": symbol {
-																									"symbol-value": "local"
+																									"symbol-value": "__local17__"
 																								}
 																							}, 
 																							"arguments": [symbol {
-																								"symbol-value": "local"
+																								"symbol-value": "__local17__"
 																							}, block {
 																								"value": group {
 																									"after-children": "\n							", 
 																									"children": [initialization {
 																										"before-child": "\n								", 
 																										"definition": definition {
-																											"name": "local", 
+																											"name": "__local10__", 
 																											"type": symbol {
 																												"symbol-value": "auto"
 																											}
@@ -593,7 +593,7 @@ group {
 																												"children": [initialization {
 																													"before-child": "\n									", 
 																													"definition": definition {
-																														"name": "local", 
+																														"name": "__local9__", 
 																														"type": symbol {
 																															"symbol-value": "auto"
 																														}
@@ -619,11 +619,11 @@ group {
 																													"caller": data-access {
 																														"property": "pass", 
 																														"object": symbol {
-																															"symbol-value": "local"
+																															"symbol-value": "__local9__"
 																														}
 																													}, 
 																													"arguments": [symbol {
-																														"symbol-value": "local"
+																														"symbol-value": "__local9__"
 																													}, construction {
 																														"caller": symbol {
 																															"symbol-value": "State"
@@ -640,11 +640,11 @@ group {
 																										"caller": data-access {
 																											"property": "right", 
 																											"object": symbol {
-																												"symbol-value": "local"
+																												"symbol-value": "__local10__"
 																											}
 																										}, 
 																										"arguments": [symbol {
-																											"symbol-value": "local"
+																											"symbol-value": "__local10__"
 																										}]
 																									}]
 																								}
@@ -657,11 +657,11 @@ group {
 																				"caller": data-access {
 																					"property": "flatMapValue", 
 																					"object": symbol {
-																						"symbol-value": "local"
+																						"symbol-value": "__local18__"
 																					}
 																				}, 
 																				"arguments": [symbol {
-																					"symbol-value": "local"
+																					"symbol-value": "__local18__"
 																				}, invocation-value {
 																					"caller": lambda {
 																						"param": symbol {
@@ -693,18 +693,18 @@ group {
 																	"caller": data-access {
 																		"property": "flatMapValue", 
 																		"object": symbol {
-																			"symbol-value": "local"
+																			"symbol-value": "__local19__"
 																		}
 																	}, 
 																	"arguments": [symbol {
-																		"symbol-value": "local"
+																		"symbol-value": "__local19__"
 																	}, block {
 																		"value": group {
 																			"after-children": "\n					", 
 																			"children": [initialization {
 																				"before-child": "\n						", 
 																				"definition": definition {
-																					"name": "local", 
+																					"name": "__local8__", 
 																					"type": symbol {
 																						"symbol-value": "auto"
 																					}
@@ -715,7 +715,7 @@ group {
 																						"children": [initialization {
 																							"before-child": "\n							", 
 																							"definition": definition {
-																								"name": "local", 
+																								"name": "__local7__", 
 																								"type": symbol {
 																									"symbol-value": "auto"
 																								}
@@ -726,7 +726,7 @@ group {
 																									"children": [initialization {
 																										"before-child": "\n								", 
 																										"definition": definition {
-																											"name": "local", 
+																											"name": "__local6__", 
 																											"type": symbol {
 																												"symbol-value": "auto"
 																											}
@@ -744,11 +744,11 @@ group {
 																										"caller": data-access {
 																											"property": "createCRootRule", 
 																											"object": symbol {
-																												"symbol-value": "local"
+																												"symbol-value": "__local6__"
 																											}
 																										}, 
 																										"arguments": [symbol {
-																											"symbol-value": "local"
+																											"symbol-value": "__local6__"
 																										}]
 																									}]
 																								}
@@ -758,11 +758,11 @@ group {
 																							"caller": data-access {
 																								"property": "generate", 
 																								"object": symbol {
-																									"symbol-value": "local"
+																									"symbol-value": "__local7__"
 																								}
 																							}, 
 																							"arguments": [symbol {
-																								"symbol-value": "local"
+																								"symbol-value": "__local7__"
 																							}, symbol {
 																								"symbol-value": "parsed"
 																							}]
@@ -774,11 +774,11 @@ group {
 																				"caller": data-access {
 																					"property": "mapErr", 
 																					"object": symbol {
-																						"symbol-value": "local"
+																						"symbol-value": "__local8__"
 																					}
 																				}, 
 																				"arguments": [symbol {
-																					"symbol-value": "local"
+																					"symbol-value": "__local8__"
 																				}, function-access {
 																					"property": "new", 
 																					"object": symbol {
@@ -796,11 +796,11 @@ group {
 														"caller": data-access {
 															"property": "mapValue", 
 															"object": symbol {
-																"symbol-value": "local"
+																"symbol-value": "__local20__"
 															}
 														}, 
 														"arguments": [symbol {
-															"symbol-value": "local"
+															"symbol-value": "__local20__"
 														}, invocation-value {
 															"caller": lambda {
 																"param": symbol {
@@ -832,11 +832,11 @@ group {
 											"caller": data-access {
 												"property": "match", 
 												"object": symbol {
-													"symbol-value": "local"
+													"symbol-value": "__local21__"
 												}
 											}, 
 											"arguments": [symbol {
-												"symbol-value": "local"
+												"symbol-value": "__local21__"
 											}, lambda {
 												"param": symbol {
 													"symbol-value": "value"
@@ -890,7 +890,7 @@ group {
 										"children": [initialization {
 											"before-child": "\n			", 
 											"definition": definition {
-												"name": "local", 
+												"name": "__local25__", 
 												"type": symbol {
 													"symbol-value": "auto"
 												}
@@ -901,7 +901,7 @@ group {
 													"children": [initialization {
 														"before-child": "\n				", 
 														"definition": definition {
-															"name": "local", 
+															"name": "__local24__", 
 															"type": symbol {
 																"symbol-value": "auto"
 															}
@@ -912,7 +912,7 @@ group {
 																"children": [initialization {
 																	"before-child": "\n					", 
 																	"definition": definition {
-																		"name": "local", 
+																		"name": "__local23__", 
 																		"type": symbol {
 																			"symbol-value": "auto"
 																		}
@@ -923,7 +923,7 @@ group {
 																			"children": [initialization {
 																				"before-child": "\n						", 
 																				"definition": definition {
-																					"name": "local", 
+																					"name": "__local22__", 
 																					"type": symbol {
 																						"symbol-value": "auto"
 																					}
@@ -952,11 +952,11 @@ group {
 																				"caller": data-access {
 																					"property": "map", 
 																					"object": symbol {
-																						"symbol-value": "local"
+																						"symbol-value": "__local22__"
 																					}
 																				}, 
 																				"arguments": [symbol {
-																					"symbol-value": "local"
+																					"symbol-value": "__local22__"
 																				}, function-access {
 																					"property": "new", 
 																					"object": symbol {
@@ -971,11 +971,11 @@ group {
 																	"caller": data-access {
 																		"property": "map", 
 																		"object": symbol {
-																			"symbol-value": "local"
+																			"symbol-value": "__local23__"
 																		}
 																	}, 
 																	"arguments": [symbol {
-																		"symbol-value": "local"
+																		"symbol-value": "__local23__"
 																	}, function-access {
 																		"property": "new", 
 																		"object": symbol {
@@ -990,11 +990,11 @@ group {
 														"caller": data-access {
 															"property": "map", 
 															"object": symbol {
-																"symbol-value": "local"
+																"symbol-value": "__local24__"
 															}
 														}, 
 														"arguments": [symbol {
-															"symbol-value": "local"
+															"symbol-value": "__local24__"
 														}, function-access {
 															"property": "new", 
 															"object": symbol {
@@ -1009,11 +1009,11 @@ group {
 											"caller": data-access {
 												"property": "orElseGet", 
 												"object": symbol {
-													"symbol-value": "local"
+													"symbol-value": "__local25__"
 												}
 											}, 
 											"arguments": [symbol {
-												"symbol-value": "local"
+												"symbol-value": "__local25__"
 											}, lambda {
 												"value": construction {
 													"caller": symbol {
@@ -1062,7 +1062,7 @@ group {
 										"children": [initialization {
 											"before-child": "\n			", 
 											"definition": definition {
-												"name": "local", 
+												"name": "__local27__", 
 												"type": symbol {
 													"symbol-value": "auto"
 												}
@@ -1073,7 +1073,7 @@ group {
 													"children": [initialization {
 														"before-child": "\n				", 
 														"definition": definition {
-															"name": "local", 
+															"name": "__local26__", 
 															"type": symbol {
 																"symbol-value": "auto"
 															}
@@ -1096,11 +1096,11 @@ group {
 														"caller": data-access {
 															"property": "map", 
 															"object": symbol {
-																"symbol-value": "local"
+																"symbol-value": "__local26__"
 															}
 														}, 
 														"arguments": [symbol {
-															"symbol-value": "local"
+															"symbol-value": "__local26__"
 														}, function-access {
 															"property": "new", 
 															"object": symbol {
@@ -1115,11 +1115,11 @@ group {
 											"caller": data-access {
 												"property": "map", 
 												"object": symbol {
-													"symbol-value": "local"
+													"symbol-value": "__local27__"
 												}
 											}, 
 											"arguments": [symbol {
-												"symbol-value": "local"
+												"symbol-value": "__local27__"
 											}, function-access {
 												"property": "new", 
 												"object": symbol {

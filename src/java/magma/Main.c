@@ -18,95 +18,95 @@ struct Main{
 	void main(String[] args){
 		final Path source=Paths.get(".", "src", "java", "magma", "Main.java");
 		{
-			auto local={
-				auto local={
-					auto local={
-						auto local=JavaFiles.readString(source);
-						local.mapErr(local, JavaError::new)
+			auto __local5__={
+				auto __local4__={
+					auto __local3__={
+						auto __local2__=JavaFiles.readString(source);
+						__local2__.mapErr(__local2__, JavaError::new)
 					};
-					local.mapErr(local, ApplicationError::new)
+					__local3__.mapErr(__local3__, ApplicationError::new)
 				};
-				local.match(local, input->runWithInput(source, input), Optional::of)
+				__local4__.match(__local4__, input->runWithInput(source, input), Optional::of)
 			};
-			local.ifPresent(local, {
-				auto local=error->System.err;
-				local.println(local, error.display())
+			__local5__.ifPresent(__local5__, {
+				auto __local1__=error->System.err;
+				__local1__.println(__local1__, error.display())
 			})
 		}
 	}
 	Optional<ApplicationError> runWithInput(Path source, String input){
 		return {
-			auto local={
-				auto local={
-					auto local={
-						auto local={
-							auto local={
-								auto local={
-									auto local={
-										auto local={
-											auto local=JavaLang.createJavaRootRule();
-											local.parse(local, input)
+			auto __local21__={
+				auto __local20__={
+					auto __local19__={
+						auto __local18__={
+							auto __local17__={
+								auto __local16__={
+									auto __local15__={
+										auto __local14__={
+											auto __local13__=JavaLang.createJavaRootRule();
+											__local13__.parse(__local13__, input)
 										};
-										local.mapErr(local, ApplicationError::new)
+										__local14__.mapErr(__local14__, ApplicationError::new)
 									};
-									local.flatMapValue(local, parsed->writeAST(source.resolveSibling("Main.input.ast"), parsed))
+									__local15__.flatMapValue(__local15__, parsed->writeAST(source.resolveSibling("Main.input.ast"), parsed))
 								};
-								local.mapValue(local, {
-									auto local={
-										auto local=node->new TreePassingStage(new Modifier());
-										local.pass(local, new State(), node)
+								__local16__.mapValue(__local16__, {
+									auto __local12__={
+										auto __local11__=node->new TreePassingStage(new Modifier());
+										__local11__.pass(__local11__, new State(), node)
 									};
-									local.right(local)
+									__local12__.right(__local12__)
 								})
 							};
-							local.mapValue(local, {
-								auto local={
-									auto local=node->new TreePassingStage(new Formatter());
-									local.pass(local, new State(), node)
+							__local17__.mapValue(__local17__, {
+								auto __local10__={
+									auto __local9__=node->new TreePassingStage(new Formatter());
+									__local9__.pass(__local9__, new State(), node)
 								};
-								local.right(local)
+								__local10__.right(__local10__)
 							})
 						};
-						local.flatMapValue(local, parsed->writeAST(source.resolveSibling("Main.output.ast"), parsed))
+						__local18__.flatMapValue(__local18__, parsed->writeAST(source.resolveSibling("Main.output.ast"), parsed))
 					};
-					local.flatMapValue(local, {
-						auto local={
-							auto local={
-								auto local=parsed->CLang;
-								local.createCRootRule(local)
+					__local19__.flatMapValue(__local19__, {
+						auto __local8__={
+							auto __local7__={
+								auto __local6__=parsed->CLang;
+								__local6__.createCRootRule(__local6__)
 							};
-							local.generate(local, parsed)
+							__local7__.generate(__local7__, parsed)
 						};
-						local.mapErr(local, ApplicationError::new)
+						__local8__.mapErr(__local8__, ApplicationError::new)
 					})
 				};
-				local.mapValue(local, generated->writeGenerated(generated, source.resolveSibling("Main.c")))
+				__local20__.mapValue(__local20__, generated->writeGenerated(generated, source.resolveSibling("Main.c")))
 			};
-			local.match(local, value->value, Optional::of)
+			__local21__.match(__local21__, value->value, Optional::of)
 		};
 	}
 	Result<Node, ApplicationError> writeAST(Path path, Node node){
 		return {
-			auto local={
-				auto local={
-					auto local={
-						auto local=JavaFiles.writeString(path, node.toString());
-						local.map(local, JavaError::new)
+			auto __local25__={
+				auto __local24__={
+					auto __local23__={
+						auto __local22__=JavaFiles.writeString(path, node.toString());
+						__local22__.map(__local22__, JavaError::new)
 					};
-					local.map(local, ApplicationError::new)
+					__local23__.map(__local23__, ApplicationError::new)
 				};
-				local.map(local, Err::new)
+				__local24__.map(__local24__, Err::new)
 			};
-			local.orElseGet(local, ()->new Ok(node))
+			__local25__.orElseGet(__local25__, ()->new Ok(node))
 		};
 	}
 	Optional<ApplicationError> writeGenerated(String generated, Path target){
 		return {
-			auto local={
-				auto local=JavaFiles.writeString(target, generated);
-				local.map(local, JavaError::new)
+			auto __local27__={
+				auto __local26__=JavaFiles.writeString(target, generated);
+				__local26__.map(__local26__, JavaError::new)
 			};
-			local.map(local, ApplicationError::new)
+			__local27__.map(__local27__, ApplicationError::new)
 		};
 	}
 }

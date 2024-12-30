@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Modifier implements Passer {
-    private static Node modifyStateless(Node node) {
+    private int counter = 0;
+
+    private Node modifyStateless(Node node) {
         if (node.is("group")) {
             final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>());
             final var newChildren = oldChildren.stream()
@@ -31,12 +33,13 @@ public class Modifier implements Passer {
                 final var object = caller.findNode("object").orElse(new Node());
                 final var property = caller.findString("property").orElse("");
 
-                if(object.is("symbol")) {
+                if (object.is("symbol")) {
                     return node;
                 }
 
+                final var name = createUniqueName("local");
                 final var symbol = new Node("symbol")
-                        .withString("symbol-value", "local");
+                        .withString("symbol-value", name);
                 final var newArguments = new ArrayList<Node>();
                 newArguments.add(symbol);
                 newArguments.addAll(arguments);
@@ -44,7 +47,7 @@ public class Modifier implements Passer {
                 final var children = List.of(
                         new Node("initialization")
                                 .withNode("definition", new Node("definition")
-                                        .withString("name", "local")
+                                        .withString("name", name)
                                         .withNode("type", new Node("symbol").withString("symbol-value", "auto"))
                                 ).withNode("value", object),
                         new Node("invocation-value")
@@ -62,6 +65,11 @@ public class Modifier implements Passer {
         } else {
             return node;
         }
+    }
+
+    private String createUniqueName(String prefix) {
+        counter++;
+        return "__" + prefix + counter + "__";
     }
 
     @Override
