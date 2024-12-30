@@ -158,7 +158,7 @@ group {
 																			}, 
 																			"arguments": [symbol {
 																				"symbol-value": "__local2__"
-																			}, function-access {
+																			}, data-access {
 																				"property": "new", 
 																				"object": symbol {
 																					"symbol-value": "JavaError"
@@ -177,7 +177,7 @@ group {
 																}, 
 																"arguments": [symbol {
 																	"symbol-value": "__local3__"
-																}, function-access {
+																}, data-access {
 																	"property": "new", 
 																	"object": symbol {
 																		"symbol-value": "ApplicationError"
@@ -210,7 +210,7 @@ group {
 																"symbol-value": "input"
 															}]
 														}
-													}, function-access {
+													}, data-access {
 														"property": "of", 
 														"object": symbol {
 															"symbol-value": "Optional"
@@ -435,7 +435,7 @@ group {
 																																}, 
 																																"arguments": [symbol {
 																																	"symbol-value": "__local13__"
-																																}, function-access {
+																																}, data-access {
 																																	"property": "new", 
 																																	"object": symbol {
 																																		"symbol-value": "ApplicationError"
@@ -759,7 +759,7 @@ group {
 																					}, 
 																					"arguments": [symbol {
 																						"symbol-value": "__local7__"
-																					}, function-access {
+																					}, data-access {
 																						"property": "new", 
 																						"object": symbol {
 																							"symbol-value": "ApplicationError"
@@ -825,7 +825,7 @@ group {
 												"value": symbol {
 													"symbol-value": "value"
 												}
-											}, function-access {
+											}, data-access {
 												"property": "of", 
 												"object": symbol {
 													"symbol-value": "Optional"
@@ -938,7 +938,7 @@ group {
 																				}, 
 																				"arguments": [symbol {
 																					"symbol-value": "__local21__"
-																				}, function-access {
+																				}, data-access {
 																					"property": "new", 
 																					"object": symbol {
 																						"symbol-value": "JavaError"
@@ -957,7 +957,7 @@ group {
 																	}, 
 																	"arguments": [symbol {
 																		"symbol-value": "__local22__"
-																	}, function-access {
+																	}, data-access {
 																		"property": "new", 
 																		"object": symbol {
 																			"symbol-value": "ApplicationError"
@@ -976,7 +976,7 @@ group {
 														}, 
 														"arguments": [symbol {
 															"symbol-value": "__local23__"
-														}, function-access {
+														}, data-access {
 															"property": "new", 
 															"object": symbol {
 																"symbol-value": "Err"
@@ -1082,7 +1082,7 @@ group {
 														}, 
 														"arguments": [symbol {
 															"symbol-value": "__local25__"
-														}, function-access {
+														}, data-access {
 															"property": "new", 
 															"object": symbol {
 																"symbol-value": "JavaError"
@@ -1101,7 +1101,7 @@ group {
 											}, 
 											"arguments": [symbol {
 												"symbol-value": "__local26__"
-											}, function-access {
+											}, data-access {
 												"property": "new", 
 												"object": symbol {
 													"symbol-value": "ApplicationError"

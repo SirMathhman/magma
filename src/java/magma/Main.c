@@ -22,11 +22,11 @@ struct Main{
 				auto __local4__={
 					auto __local3__={
 						auto __local2__=JavaFiles.readString(source);
-						__local2__.mapErr(__local2__, JavaError::new)
+						__local2__.mapErr(__local2__, JavaError.new)
 					};
-					__local3__.mapErr(__local3__, ApplicationError::new)
+					__local3__.mapErr(__local3__, ApplicationError.new)
 				};
-				__local4__.match(__local4__, input->runWithInput(source, input), Optional::of)
+				__local4__.match(__local4__, input->runWithInput(source, input), Optional.of)
 			};
 			__local5__.ifPresent(__local5__, error->{
 				auto __local1__=System.err;
@@ -47,7 +47,7 @@ struct Main{
 											auto __local12__=JavaLang.createJavaRootRule();
 											__local12__.parse(__local12__, input)
 										};
-										__local13__.mapErr(__local13__, ApplicationError::new)
+										__local13__.mapErr(__local13__, ApplicationError.new)
 									};
 									__local14__.flatMapValue(__local14__, parsed->writeAST(source.resolveSibling("Main.input.ast"), parsed))
 								};
@@ -74,12 +74,12 @@ struct Main{
 							auto __local6__=CLang.createCRootRule();
 							__local6__.generate(__local6__, parsed)
 						};
-						__local7__.mapErr(__local7__, ApplicationError::new)
+						__local7__.mapErr(__local7__, ApplicationError.new)
 					})
 				};
 				__local19__.mapValue(__local19__, generated->writeGenerated(generated, source.resolveSibling("Main.c")))
 			};
-			__local20__.match(__local20__, value->value, Optional::of)
+			__local20__.match(__local20__, value->value, Optional.of)
 		};
 	}
 	Result<Node, ApplicationError> writeAST(Path path, Node node){
@@ -88,11 +88,11 @@ struct Main{
 				auto __local23__={
 					auto __local22__={
 						auto __local21__=JavaFiles.writeString(path, node.toString());
-						__local21__.map(__local21__, JavaError::new)
+						__local21__.map(__local21__, JavaError.new)
 					};
-					__local22__.map(__local22__, ApplicationError::new)
+					__local22__.map(__local22__, ApplicationError.new)
 				};
-				__local23__.map(__local23__, Err::new)
+				__local23__.map(__local23__, Err.new)
 			};
 			__local24__.orElseGet(__local24__, ()->new Ok(node))
 		};
@@ -101,9 +101,9 @@ struct Main{
 		return {
 			auto __local26__={
 				auto __local25__=JavaFiles.writeString(target, generated);
-				__local25__.map(__local25__, JavaError::new)
+				__local25__.map(__local25__, JavaError.new)
 			};
-			__local26__.map(__local26__, ApplicationError::new)
+			__local26__.map(__local26__, ApplicationError.new)
 		};
 	}
 }
