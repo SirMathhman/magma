@@ -23,7 +23,7 @@ public class Modifier implements Passer {
             return node.retype("include");
         } else if (node.is("method")) {
             return node.retype("function");
-        } else if (node.is("invocation")) {
+        } else if (node.is("invocation-statement") || node.is("invocation-value")) {
             final var caller = node.findNode("caller").orElse(new Node());
             final var arguments = node.findNodeList("arguments").orElse(new ArrayList<>());
 

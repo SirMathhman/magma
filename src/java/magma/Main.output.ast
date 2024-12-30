@@ -92,94 +92,189 @@ group {
 										"string-value": "Main.java"
 									}]
 								}
-							}, invocation-statement {
+							}, block {
 								"before-child": "\n		", 
-								"caller": data-access {
-									"property": "ifPresent", 
-									"object": invocation-value {
-										"caller": data-access {
-											"property": "match", 
-											"object": invocation-value {
-												"caller": data-access {
-													"property": "mapErr", 
-													"object": invocation-value {
-														"caller": data-access {
-															"property": "mapErr", 
-															"object": invocation-value {
+								"value": group {
+									"after-children": "\n		", 
+									"children": [initialization {
+										"before-child": "\n			", 
+										"definition": definition {
+											"name": "local", 
+											"type": symbol {
+												"symbol-value": "auto"
+											}
+										}, 
+										"value": block {
+											"value": group {
+												"after-children": "\n			", 
+												"children": [initialization {
+													"before-child": "\n				", 
+													"definition": definition {
+														"name": "local", 
+														"type": symbol {
+															"symbol-value": "auto"
+														}
+													}, 
+													"value": block {
+														"value": group {
+															"after-children": "\n				", 
+															"children": [initialization {
+																"before-child": "\n					", 
+																"definition": definition {
+																	"name": "local", 
+																	"type": symbol {
+																		"symbol-value": "auto"
+																	}
+																}, 
+																"value": block {
+																	"value": group {
+																		"after-children": "\n					", 
+																		"children": [initialization {
+																			"before-child": "\n						", 
+																			"definition": definition {
+																				"name": "local", 
+																				"type": symbol {
+																					"symbol-value": "auto"
+																				}
+																			}, 
+																			"value": invocation-value {
+																				"caller": data-access {
+																					"property": "readString", 
+																					"object": symbol {
+																						"symbol-value": "JavaFiles"
+																					}
+																				}, 
+																				"arguments": [symbol {
+																					"symbol-value": "source"
+																				}]
+																			}
+																		}, invocation-value {
+																			"before-child": "\n						", 
+																			"caller": data-access {
+																				"property": "mapErr", 
+																				"object": symbol {
+																					"symbol-value": "local"
+																				}
+																			}, 
+																			"arguments": [symbol {
+																				"symbol-value": "local"
+																			}, function-access {
+																				"property": "new", 
+																				"object": symbol {
+																					"symbol-value": "JavaError"
+																				}
+																			}]
+																		}]
+																	}
+																}
+															}, invocation-value {
+																"before-child": "\n					", 
 																"caller": data-access {
-																	"property": "readString", 
+																	"property": "mapErr", 
 																	"object": symbol {
-																		"symbol-value": "JavaFiles"
+																		"symbol-value": "local"
 																	}
 																}, 
 																"arguments": [symbol {
-																	"symbol-value": "source"
+																	"symbol-value": "local"
+																}, function-access {
+																	"property": "new", 
+																	"object": symbol {
+																		"symbol-value": "ApplicationError"
+																	}
 																}]
+															}]
+														}
+													}
+												}, invocation-value {
+													"before-child": "\n				", 
+													"caller": data-access {
+														"property": "match", 
+														"object": symbol {
+															"symbol-value": "local"
+														}
+													}, 
+													"arguments": [symbol {
+														"symbol-value": "local"
+													}, invocation-value {
+														"caller": lambda {
+															"param": symbol {
+																"symbol-value": "input"
+															}, 
+															"value": symbol {
+																"symbol-value": "runWithInput"
 															}
 														}, 
-														"arguments": [function-access {
-															"property": "new", 
-															"object": symbol {
-																"symbol-value": "JavaError"
-															}
+														"arguments": [symbol {
+															"symbol-value": "source"
+														}, symbol {
+															"symbol-value": "input"
 														}]
-													}
-												}, 
-												"arguments": [function-access {
-													"property": "new", 
-													"object": symbol {
-														"symbol-value": "ApplicationError"
-													}
+													}, function-access {
+														"property": "of", 
+														"object": symbol {
+															"symbol-value": "Optional"
+														}
+													}]
 												}]
 											}
-										}, 
-										"arguments": [invocation-value {
-											"caller": lambda {
-												"param": symbol {
-													"symbol-value": "input"
-												}, 
-												"value": symbol {
-													"symbol-value": "runWithInput"
-												}
-											}, 
-											"arguments": [symbol {
-												"symbol-value": "source"
-											}, symbol {
-												"symbol-value": "input"
-											}]
-										}, function-access {
-											"property": "of", 
+										}
+									}, invocation-value {
+										"before-child": "\n			", 
+										"caller": data-access {
+											"property": "ifPresent", 
 											"object": symbol {
-												"symbol-value": "Optional"
+												"symbol-value": "local"
+											}
+										}, 
+										"arguments": [symbol {
+											"symbol-value": "local"
+										}, block {
+											"value": group {
+												"after-children": "\n			", 
+												"children": [initialization {
+													"before-child": "\n				", 
+													"definition": definition {
+														"name": "local", 
+														"type": symbol {
+															"symbol-value": "auto"
+														}
+													}, 
+													"value": data-access {
+														"property": "err", 
+														"object": lambda {
+															"param": symbol {
+																"symbol-value": "error"
+															}, 
+															"value": symbol {
+																"symbol-value": "System"
+															}
+														}
+													}
+												}, invocation-value {
+													"before-child": "\n				", 
+													"caller": data-access {
+														"property": "println", 
+														"object": symbol {
+															"symbol-value": "local"
+														}
+													}, 
+													"arguments": [symbol {
+														"symbol-value": "local"
+													}, invocation-value {
+														"caller": data-access {
+															"property": "display", 
+															"object": symbol {
+																"symbol-value": "error"
+															}
+														}, 
+														"arguments": []
+													}]
+												}]
 											}
 										}]
-									}
-								}, 
-								"arguments": [invocation-value {
-									"caller": data-access {
-										"property": "println", 
-										"object": data-access {
-											"property": "err", 
-											"object": lambda {
-												"param": symbol {
-													"symbol-value": "error"
-												}, 
-												"value": symbol {
-													"symbol-value": "System"
-												}
-											}
-										}
-									}, 
-									"arguments": [invocation-value {
-										"caller": data-access {
-											"property": "display", 
-											"object": symbol {
-												"symbol-value": "error"
-											}
-										}, 
-										"arguments": []
 									}]
-								}]
+								}
 							}]
 						}
 					}, 
@@ -206,253 +301,557 @@ group {
 							"after-children": "\n	", 
 							"children": [return {
 								"before-child": "\n		", 
-								"value": invocation-value {
-									"caller": data-access {
-										"property": "match", 
-										"object": invocation-value {
-											"caller": data-access {
-												"property": "mapValue", 
-												"object": invocation-value {
-													"caller": data-access {
-														"property": "flatMapValue", 
-														"object": invocation-value {
-															"caller": data-access {
-																"property": "flatMapValue", 
-																"object": invocation-value {
-																	"caller": data-access {
-																		"property": "mapValue", 
-																		"object": invocation-value {
-																			"caller": data-access {
-																				"property": "mapValue", 
-																				"object": invocation-value {
-																					"caller": data-access {
-																						"property": "flatMapValue", 
-																						"object": invocation-value {
-																							"caller": data-access {
-																								"property": "mapErr", 
-																								"object": invocation-value {
-																									"caller": data-access {
-																										"property": "parse", 
-																										"object": invocation-value {
-																											"caller": data-access {
-																												"property": "createJavaRootRule", 
-																												"object": symbol {
-																													"symbol-value": "JavaLang"
-																												}
-																											}, 
-																											"arguments": []
-																										}
-																									}, 
-																									"arguments": [symbol {
-																										"symbol-value": "input"
-																									}]
+								"value": block {
+									"value": group {
+										"after-children": "\n		", 
+										"children": [initialization {
+											"before-child": "\n			", 
+											"definition": definition {
+												"name": "local", 
+												"type": symbol {
+													"symbol-value": "auto"
+												}
+											}, 
+											"value": block {
+												"value": group {
+													"after-children": "\n			", 
+													"children": [initialization {
+														"before-child": "\n				", 
+														"definition": definition {
+															"name": "local", 
+															"type": symbol {
+																"symbol-value": "auto"
+															}
+														}, 
+														"value": block {
+															"value": group {
+																"after-children": "\n				", 
+																"children": [initialization {
+																	"before-child": "\n					", 
+																	"definition": definition {
+																		"name": "local", 
+																		"type": symbol {
+																			"symbol-value": "auto"
+																		}
+																	}, 
+																	"value": block {
+																		"value": group {
+																			"after-children": "\n					", 
+																			"children": [initialization {
+																				"before-child": "\n						", 
+																				"definition": definition {
+																					"name": "local", 
+																					"type": symbol {
+																						"symbol-value": "auto"
+																					}
+																				}, 
+																				"value": block {
+																					"value": group {
+																						"after-children": "\n						", 
+																						"children": [initialization {
+																							"before-child": "\n							", 
+																							"definition": definition {
+																								"name": "local", 
+																								"type": symbol {
+																									"symbol-value": "auto"
 																								}
 																							}, 
-																							"arguments": [function-access {
-																								"property": "new", 
+																							"value": block {
+																								"value": group {
+																									"after-children": "\n							", 
+																									"children": [initialization {
+																										"before-child": "\n								", 
+																										"definition": definition {
+																											"name": "local", 
+																											"type": symbol {
+																												"symbol-value": "auto"
+																											}
+																										}, 
+																										"value": block {
+																											"value": group {
+																												"after-children": "\n								", 
+																												"children": [initialization {
+																													"before-child": "\n									", 
+																													"definition": definition {
+																														"name": "local", 
+																														"type": symbol {
+																															"symbol-value": "auto"
+																														}
+																													}, 
+																													"value": block {
+																														"value": group {
+																															"after-children": "\n									", 
+																															"children": [initialization {
+																																"before-child": "\n										", 
+																																"definition": definition {
+																																	"name": "local", 
+																																	"type": symbol {
+																																		"symbol-value": "auto"
+																																	}
+																																}, 
+																																"value": block {
+																																	"value": group {
+																																		"after-children": "\n										", 
+																																		"children": [initialization {
+																																			"before-child": "\n											", 
+																																			"definition": definition {
+																																				"name": "local", 
+																																				"type": symbol {
+																																					"symbol-value": "auto"
+																																				}
+																																			}, 
+																																			"value": invocation-value {
+																																				"caller": data-access {
+																																					"property": "createJavaRootRule", 
+																																					"object": symbol {
+																																						"symbol-value": "JavaLang"
+																																					}
+																																				}, 
+																																				"arguments": []
+																																			}
+																																		}, invocation-value {
+																																			"before-child": "\n											", 
+																																			"caller": data-access {
+																																				"property": "parse", 
+																																				"object": symbol {
+																																					"symbol-value": "local"
+																																				}
+																																			}, 
+																																			"arguments": [symbol {
+																																				"symbol-value": "local"
+																																			}, symbol {
+																																				"symbol-value": "input"
+																																			}]
+																																		}]
+																																	}
+																																}
+																															}, invocation-value {
+																																"before-child": "\n										", 
+																																"caller": data-access {
+																																	"property": "mapErr", 
+																																	"object": symbol {
+																																		"symbol-value": "local"
+																																	}
+																																}, 
+																																"arguments": [symbol {
+																																	"symbol-value": "local"
+																																}, function-access {
+																																	"property": "new", 
+																																	"object": symbol {
+																																		"symbol-value": "ApplicationError"
+																																	}
+																																}]
+																															}]
+																														}
+																													}
+																												}, invocation-value {
+																													"before-child": "\n									", 
+																													"caller": data-access {
+																														"property": "flatMapValue", 
+																														"object": symbol {
+																															"symbol-value": "local"
+																														}
+																													}, 
+																													"arguments": [symbol {
+																														"symbol-value": "local"
+																													}, invocation-value {
+																														"caller": lambda {
+																															"param": symbol {
+																																"symbol-value": "parsed"
+																															}, 
+																															"value": symbol {
+																																"symbol-value": "writeAST"
+																															}
+																														}, 
+																														"arguments": [invocation-value {
+																															"caller": data-access {
+																																"property": "resolveSibling", 
+																																"object": symbol {
+																																	"symbol-value": "source"
+																																}
+																															}, 
+																															"arguments": [string {
+																																"string-value": "Main.input.ast"
+																															}]
+																														}, symbol {
+																															"symbol-value": "parsed"
+																														}]
+																													}]
+																												}]
+																											}
+																										}
+																									}, invocation-value {
+																										"before-child": "\n								", 
+																										"caller": data-access {
+																											"property": "mapValue", 
+																											"object": symbol {
+																												"symbol-value": "local"
+																											}
+																										}, 
+																										"arguments": [symbol {
+																											"symbol-value": "local"
+																										}, block {
+																											"value": group {
+																												"after-children": "\n								", 
+																												"children": [initialization {
+																													"before-child": "\n									", 
+																													"definition": definition {
+																														"name": "local", 
+																														"type": symbol {
+																															"symbol-value": "auto"
+																														}
+																													}, 
+																													"value": block {
+																														"value": group {
+																															"after-children": "\n									", 
+																															"children": [initialization {
+																																"before-child": "\n										", 
+																																"definition": definition {
+																																	"name": "local", 
+																																	"type": symbol {
+																																		"symbol-value": "auto"
+																																	}
+																																}, 
+																																"value": lambda {
+																																	"param": symbol {
+																																		"symbol-value": "node"
+																																	}, 
+																																	"value": construction {
+																																		"caller": symbol {
+																																			"symbol-value": "TreePassingStage"
+																																		}, 
+																																		"arguments": [construction {
+																																			"caller": symbol {
+																																				"symbol-value": "Modifier"
+																																			}, 
+																																			"arguments": []
+																																		}]
+																																	}
+																																}
+																															}, invocation-value {
+																																"before-child": "\n										", 
+																																"caller": data-access {
+																																	"property": "pass", 
+																																	"object": symbol {
+																																		"symbol-value": "local"
+																																	}
+																																}, 
+																																"arguments": [symbol {
+																																	"symbol-value": "local"
+																																}, construction {
+																																	"caller": symbol {
+																																		"symbol-value": "State"
+																																	}, 
+																																	"arguments": []
+																																}, symbol {
+																																	"symbol-value": "node"
+																																}]
+																															}]
+																														}
+																													}
+																												}, invocation-value {
+																													"before-child": "\n									", 
+																													"caller": data-access {
+																														"property": "right", 
+																														"object": symbol {
+																															"symbol-value": "local"
+																														}
+																													}, 
+																													"arguments": [symbol {
+																														"symbol-value": "local"
+																													}]
+																												}]
+																											}
+																										}]
+																									}]
+																								}
+																							}
+																						}, invocation-value {
+																							"before-child": "\n							", 
+																							"caller": data-access {
+																								"property": "mapValue", 
 																								"object": symbol {
-																									"symbol-value": "ApplicationError"
+																									"symbol-value": "local"
+																								}
+																							}, 
+																							"arguments": [symbol {
+																								"symbol-value": "local"
+																							}, block {
+																								"value": group {
+																									"after-children": "\n							", 
+																									"children": [initialization {
+																										"before-child": "\n								", 
+																										"definition": definition {
+																											"name": "local", 
+																											"type": symbol {
+																												"symbol-value": "auto"
+																											}
+																										}, 
+																										"value": block {
+																											"value": group {
+																												"after-children": "\n								", 
+																												"children": [initialization {
+																													"before-child": "\n									", 
+																													"definition": definition {
+																														"name": "local", 
+																														"type": symbol {
+																															"symbol-value": "auto"
+																														}
+																													}, 
+																													"value": lambda {
+																														"param": symbol {
+																															"symbol-value": "node"
+																														}, 
+																														"value": construction {
+																															"caller": symbol {
+																																"symbol-value": "TreePassingStage"
+																															}, 
+																															"arguments": [construction {
+																																"caller": symbol {
+																																	"symbol-value": "Formatter"
+																																}, 
+																																"arguments": []
+																															}]
+																														}
+																													}
+																												}, invocation-value {
+																													"before-child": "\n									", 
+																													"caller": data-access {
+																														"property": "pass", 
+																														"object": symbol {
+																															"symbol-value": "local"
+																														}
+																													}, 
+																													"arguments": [symbol {
+																														"symbol-value": "local"
+																													}, construction {
+																														"caller": symbol {
+																															"symbol-value": "State"
+																														}, 
+																														"arguments": []
+																													}, symbol {
+																														"symbol-value": "node"
+																													}]
+																												}]
+																											}
+																										}
+																									}, invocation-value {
+																										"before-child": "\n								", 
+																										"caller": data-access {
+																											"property": "right", 
+																											"object": symbol {
+																												"symbol-value": "local"
+																											}
+																										}, 
+																										"arguments": [symbol {
+																											"symbol-value": "local"
+																										}]
+																									}]
 																								}
 																							}]
+																						}]
+																					}
+																				}
+																			}, invocation-value {
+																				"before-child": "\n						", 
+																				"caller": data-access {
+																					"property": "flatMapValue", 
+																					"object": symbol {
+																						"symbol-value": "local"
+																					}
+																				}, 
+																				"arguments": [symbol {
+																					"symbol-value": "local"
+																				}, invocation-value {
+																					"caller": lambda {
+																						"param": symbol {
+																							"symbol-value": "parsed"
+																						}, 
+																						"value": symbol {
+																							"symbol-value": "writeAST"
 																						}
 																					}, 
 																					"arguments": [invocation-value {
-																						"caller": lambda {
-																							"param": symbol {
-																								"symbol-value": "parsed"
-																							}, 
-																							"value": symbol {
-																								"symbol-value": "writeAST"
+																						"caller": data-access {
+																							"property": "resolveSibling", 
+																							"object": symbol {
+																								"symbol-value": "source"
 																							}
 																						}, 
-																						"arguments": [invocation-value {
-																							"caller": data-access {
-																								"property": "resolveSibling", 
-																								"object": symbol {
-																									"symbol-value": "source"
+																						"arguments": [string {
+																							"string-value": "Main.output.ast"
+																						}]
+																					}, symbol {
+																						"symbol-value": "parsed"
+																					}]
+																				}]
+																			}]
+																		}
+																	}
+																}, invocation-value {
+																	"before-child": "\n					", 
+																	"caller": data-access {
+																		"property": "flatMapValue", 
+																		"object": symbol {
+																			"symbol-value": "local"
+																		}
+																	}, 
+																	"arguments": [symbol {
+																		"symbol-value": "local"
+																	}, block {
+																		"value": group {
+																			"after-children": "\n					", 
+																			"children": [initialization {
+																				"before-child": "\n						", 
+																				"definition": definition {
+																					"name": "local", 
+																					"type": symbol {
+																						"symbol-value": "auto"
+																					}
+																				}, 
+																				"value": block {
+																					"value": group {
+																						"after-children": "\n						", 
+																						"children": [initialization {
+																							"before-child": "\n							", 
+																							"definition": definition {
+																								"name": "local", 
+																								"type": symbol {
+																									"symbol-value": "auto"
 																								}
 																							}, 
-																							"arguments": [string {
-																								"string-value": "Main.input.ast"
-																							}]
-																						}, symbol {
-																							"symbol-value": "parsed"
-																						}]
-																					}]
-																				}
-																			}, 
-																			"arguments": [invocation-value {
-																				"caller": data-access {
-																					"property": "right", 
-																					"object": invocation-value {
-																						"caller": data-access {
-																							"property": "pass", 
-																							"object": lambda {
-																								"param": symbol {
-																									"symbol-value": "node"
-																								}, 
-																								"value": construction {
-																									"caller": symbol {
-																										"symbol-value": "TreePassingStage"
-																									}, 
-																									"arguments": [construction {
-																										"caller": symbol {
-																											"symbol-value": "Modifier"
+																							"value": block {
+																								"value": group {
+																									"after-children": "\n							", 
+																									"children": [initialization {
+																										"before-child": "\n								", 
+																										"definition": definition {
+																											"name": "local", 
+																											"type": symbol {
+																												"symbol-value": "auto"
+																											}
 																										}, 
-																										"arguments": []
+																										"value": lambda {
+																											"param": symbol {
+																												"symbol-value": "parsed"
+																											}, 
+																											"value": symbol {
+																												"symbol-value": "CLang"
+																											}
+																										}
+																									}, invocation-value {
+																										"before-child": "\n								", 
+																										"caller": data-access {
+																											"property": "createCRootRule", 
+																											"object": symbol {
+																												"symbol-value": "local"
+																											}
+																										}, 
+																										"arguments": [symbol {
+																											"symbol-value": "local"
+																										}]
 																									}]
 																								}
 																							}
-																						}, 
-																						"arguments": [construction {
-																							"caller": symbol {
-																								"symbol-value": "State"
+																						}, invocation-value {
+																							"before-child": "\n							", 
+																							"caller": data-access {
+																								"property": "generate", 
+																								"object": symbol {
+																									"symbol-value": "local"
+																								}
 																							}, 
-																							"arguments": []
-																						}, symbol {
-																							"symbol-value": "node"
+																							"arguments": [symbol {
+																								"symbol-value": "local"
+																							}, symbol {
+																								"symbol-value": "parsed"
+																							}]
 																						}]
 																					}
-																				}, 
-																				"arguments": []
-																			}]
-																		}
-																	}, 
-																	"arguments": [invocation-value {
-																		"caller": data-access {
-																			"property": "right", 
-																			"object": invocation-value {
+																				}
+																			}, invocation-value {
+																				"before-child": "\n						", 
 																				"caller": data-access {
-																					"property": "pass", 
-																					"object": lambda {
-																						"param": symbol {
-																							"symbol-value": "node"
-																						}, 
-																						"value": construction {
-																							"caller": symbol {
-																								"symbol-value": "TreePassingStage"
-																							}, 
-																							"arguments": [construction {
-																								"caller": symbol {
-																									"symbol-value": "Formatter"
-																								}, 
-																								"arguments": []
-																							}]
-																						}
+																					"property": "mapErr", 
+																					"object": symbol {
+																						"symbol-value": "local"
 																					}
 																				}, 
-																				"arguments": [construction {
-																					"caller": symbol {
-																						"symbol-value": "State"
-																					}, 
-																					"arguments": []
-																				}, symbol {
-																					"symbol-value": "node"
+																				"arguments": [symbol {
+																					"symbol-value": "local"
+																				}, function-access {
+																					"property": "new", 
+																					"object": symbol {
+																						"symbol-value": "ApplicationError"
+																					}
 																				}]
-																			}
-																		}, 
-																		"arguments": []
-																	}]
-																}
-															}, 
-															"arguments": [invocation-value {
-																"caller": lambda {
-																	"param": symbol {
-																		"symbol-value": "parsed"
-																	}, 
-																	"value": symbol {
-																		"symbol-value": "writeAST"
-																	}
-																}, 
-																"arguments": [invocation-value {
-																	"caller": data-access {
-																		"property": "resolveSibling", 
-																		"object": symbol {
-																			"symbol-value": "source"
+																			}]
 																		}
-																	}, 
-																	"arguments": [string {
-																		"string-value": "Main.output.ast"
 																	}]
-																}, symbol {
-																	"symbol-value": "parsed"
 																}]
-															}]
+															}
 														}
-													}, 
-													"arguments": [invocation-value {
+													}, invocation-value {
+														"before-child": "\n				", 
 														"caller": data-access {
-															"property": "mapErr", 
-															"object": invocation-value {
-																"caller": data-access {
-																	"property": "generate", 
-																	"object": invocation-value {
-																		"caller": data-access {
-																			"property": "createCRootRule", 
-																			"object": lambda {
-																				"param": symbol {
-																					"symbol-value": "parsed"
-																				}, 
-																				"value": symbol {
-																					"symbol-value": "CLang"
-																				}
-																			}
-																		}, 
-																		"arguments": []
-																	}
-																}, 
-																"arguments": [symbol {
-																	"symbol-value": "parsed"
-																}]
+															"property": "mapValue", 
+															"object": symbol {
+																"symbol-value": "local"
 															}
 														}, 
-														"arguments": [function-access {
-															"property": "new", 
-															"object": symbol {
-																"symbol-value": "ApplicationError"
-															}
+														"arguments": [symbol {
+															"symbol-value": "local"
+														}, invocation-value {
+															"caller": lambda {
+																"param": symbol {
+																	"symbol-value": "generated"
+																}, 
+																"value": symbol {
+																	"symbol-value": "writeGenerated"
+																}
+															}, 
+															"arguments": [symbol {
+																"symbol-value": "generated"
+															}, invocation-value {
+																"caller": data-access {
+																	"property": "resolveSibling", 
+																	"object": symbol {
+																		"symbol-value": "source"
+																	}
+																}, 
+																"arguments": [string {
+																	"string-value": "Main.c"
+																}]
+															}]
 														}]
 													}]
 												}
+											}
+										}, invocation-value {
+											"before-child": "\n			", 
+											"caller": data-access {
+												"property": "match", 
+												"object": symbol {
+													"symbol-value": "local"
+												}
 											}, 
-											"arguments": [invocation-value {
-												"caller": lambda {
-													"param": symbol {
-														"symbol-value": "generated"
-													}, 
-													"value": symbol {
-														"symbol-value": "writeGenerated"
-													}
+											"arguments": [symbol {
+												"symbol-value": "local"
+											}, lambda {
+												"param": symbol {
+													"symbol-value": "value"
 												}, 
-												"arguments": [symbol {
-													"symbol-value": "generated"
-												}, invocation-value {
-													"caller": data-access {
-														"property": "resolveSibling", 
-														"object": symbol {
-															"symbol-value": "source"
-														}
-													}, 
-													"arguments": [string {
-														"string-value": "Main.c"
-													}]
-												}]
+												"value": symbol {
+													"symbol-value": "value"
+												}
+											}, function-access {
+												"property": "of", 
+												"object": symbol {
+													"symbol-value": "Optional"
+												}
 											}]
-										}
-									}, 
-									"arguments": [lambda {
-										"param": symbol {
-											"symbol-value": "value"
-										}, 
-										"value": symbol {
-											"symbol-value": "value"
-										}
-									}, function-access {
-										"property": "of", 
-										"object": symbol {
-											"symbol-value": "Optional"
-										}
-									}]
+										}]
+									}
 								}
 							}]
 						}
@@ -485,80 +884,148 @@ group {
 							"after-children": "\n	", 
 							"children": [return {
 								"before-child": "\n		", 
-								"value": invocation-value {
-									"caller": data-access {
-										"property": "orElseGet", 
-										"object": invocation-value {
-											"caller": data-access {
-												"property": "map", 
-												"object": invocation-value {
-													"caller": data-access {
-														"property": "map", 
-														"object": invocation-value {
-															"caller": data-access {
-																"property": "map", 
-																"object": invocation-value {
+								"value": block {
+									"value": group {
+										"after-children": "\n		", 
+										"children": [initialization {
+											"before-child": "\n			", 
+											"definition": definition {
+												"name": "local", 
+												"type": symbol {
+													"symbol-value": "auto"
+												}
+											}, 
+											"value": block {
+												"value": group {
+													"after-children": "\n			", 
+													"children": [initialization {
+														"before-child": "\n				", 
+														"definition": definition {
+															"name": "local", 
+															"type": symbol {
+																"symbol-value": "auto"
+															}
+														}, 
+														"value": block {
+															"value": group {
+																"after-children": "\n				", 
+																"children": [initialization {
+																	"before-child": "\n					", 
+																	"definition": definition {
+																		"name": "local", 
+																		"type": symbol {
+																			"symbol-value": "auto"
+																		}
+																	}, 
+																	"value": block {
+																		"value": group {
+																			"after-children": "\n					", 
+																			"children": [initialization {
+																				"before-child": "\n						", 
+																				"definition": definition {
+																					"name": "local", 
+																					"type": symbol {
+																						"symbol-value": "auto"
+																					}
+																				}, 
+																				"value": invocation-value {
+																					"caller": data-access {
+																						"property": "writeString", 
+																						"object": symbol {
+																							"symbol-value": "JavaFiles"
+																						}
+																					}, 
+																					"arguments": [symbol {
+																						"symbol-value": "path"
+																					}, invocation-value {
+																						"caller": data-access {
+																							"property": "toString", 
+																							"object": symbol {
+																								"symbol-value": "node"
+																							}
+																						}, 
+																						"arguments": []
+																					}]
+																				}
+																			}, invocation-value {
+																				"before-child": "\n						", 
+																				"caller": data-access {
+																					"property": "map", 
+																					"object": symbol {
+																						"symbol-value": "local"
+																					}
+																				}, 
+																				"arguments": [symbol {
+																					"symbol-value": "local"
+																				}, function-access {
+																					"property": "new", 
+																					"object": symbol {
+																						"symbol-value": "JavaError"
+																					}
+																				}]
+																			}]
+																		}
+																	}
+																}, invocation-value {
+																	"before-child": "\n					", 
 																	"caller": data-access {
-																		"property": "writeString", 
+																		"property": "map", 
 																		"object": symbol {
-																			"symbol-value": "JavaFiles"
+																			"symbol-value": "local"
 																		}
 																	}, 
 																	"arguments": [symbol {
-																		"symbol-value": "path"
-																	}, invocation-value {
-																		"caller": data-access {
-																			"property": "toString", 
-																			"object": symbol {
-																				"symbol-value": "node"
-																			}
-																		}, 
-																		"arguments": []
+																		"symbol-value": "local"
+																	}, function-access {
+																		"property": "new", 
+																		"object": symbol {
+																			"symbol-value": "ApplicationError"
+																		}
 																	}]
-																}
-															}, 
-															"arguments": [function-access {
-																"property": "new", 
-																"object": symbol {
-																	"symbol-value": "JavaError"
-																}
-															}]
+																}]
+															}
 														}
-													}, 
-													"arguments": [function-access {
-														"property": "new", 
-														"object": symbol {
-															"symbol-value": "ApplicationError"
-														}
+													}, invocation-value {
+														"before-child": "\n				", 
+														"caller": data-access {
+															"property": "map", 
+															"object": symbol {
+																"symbol-value": "local"
+															}
+														}, 
+														"arguments": [symbol {
+															"symbol-value": "local"
+														}, function-access {
+															"property": "new", 
+															"object": symbol {
+																"symbol-value": "Err"
+															}
+														}]
 													}]
-												}, 
-												"type-arguments": [generic {
-													"parent": "Result", 
-													"children": [symbol {
-														"symbol-value": "Node"
-													}, symbol {
-														"symbol-value": "ApplicationError"
-													}]
-												}]
-											}, 
-											"arguments": [function-access {
-												"property": "new", 
-												"object": symbol {
-													"symbol-value": "Err"
 												}
-											}]
-										}
-									}, 
-									"arguments": [lambda {
-										"value": construction {
-											"caller": symbol {
-												"symbol-value": "Ok"
+											}
+										}, invocation-value {
+											"before-child": "\n			", 
+											"caller": data-access {
+												"property": "orElseGet", 
+												"object": symbol {
+													"symbol-value": "local"
+												}
 											}, 
 											"arguments": [symbol {
-												"symbol-value": "node"
+												"symbol-value": "local"
+											}, lambda {
+												"value": construction {
+													"caller": symbol {
+														"symbol-value": "Ok"
+													}, 
+													"arguments": [symbol {
+														"symbol-value": "node"
+													}]
+												}
 											}]
-										}
-									}]
+										}]
+									}
 								}
 							}]
 						}
@@ -589,40 +1056,78 @@ group {
 							"after-children": "\n	", 
 							"children": [return {
 								"before-child": "\n		", 
-								"value": invocation-value {
-									"caller": data-access {
-										"property": "map", 
-										"object": invocation-value {
-											"caller": data-access {
-												"property": "map", 
-												"object": invocation-value {
-													"caller": data-access {
-														"property": "writeString", 
-														"object": symbol {
-															"symbol-value": "JavaFiles"
-														}
-													}, 
-													"arguments": [symbol {
-														"symbol-value": "target"
-													}, symbol {
-														"symbol-value": "generated"
-													}]
+								"value": block {
+									"value": group {
+										"after-children": "\n		", 
+										"children": [initialization {
+											"before-child": "\n			", 
+											"definition": definition {
+												"name": "local", 
+												"type": symbol {
+													"symbol-value": "auto"
 												}
 											}, 
-											"arguments": [function-access {
+											"value": block {
+												"value": group {
+													"after-children": "\n			", 
+													"children": [initialization {
+														"before-child": "\n				", 
+														"definition": definition {
+															"name": "local", 
+															"type": symbol {
+																"symbol-value": "auto"
+															}
+														}, 
+														"value": invocation-value {
+															"caller": data-access {
+																"property": "writeString", 
+																"object": symbol {
+																	"symbol-value": "JavaFiles"
+																}
+															}, 
+															"arguments": [symbol {
+																"symbol-value": "target"
+															}, symbol {
+																"symbol-value": "generated"
+															}]
+														}
+													}, invocation-value {
+														"before-child": "\n				", 
+														"caller": data-access {
+															"property": "map", 
+															"object": symbol {
+																"symbol-value": "local"
+															}
+														}, 
+														"arguments": [symbol {
+															"symbol-value": "local"
+														}, function-access {
+															"property": "new", 
+															"object": symbol {
+																"symbol-value": "JavaError"
+															}
+														}]
+													}]
+												}
+											}
+										}, invocation-value {
+											"before-child": "\n			", 
+											"caller": data-access {
+												"property": "map", 
+												"object": symbol {
+													"symbol-value": "local"
+												}
+											}, 
+											"arguments": [symbol {
+												"symbol-value": "local"
+											}, function-access {
 												"property": "new", 
 												"object": symbol {
-													"symbol-value": "JavaError"
+													"symbol-value": "ApplicationError"
 												}
 											}]
-										}
-									}, 
-									"arguments": [function-access {
-										"property": "new", 
-										"object": symbol {
-											"symbol-value": "ApplicationError"
-										}
-									}]
+										}]
+									}
 								}
 							}]
 						}

@@ -17,16 +17,97 @@
 struct Main{
 	void main(String[] args){
 		final Path source=Paths.get(".", "src", "java", "magma", "Main.java");
-		JavaFiles.readString(source).mapErr(JavaError::new).mapErr(ApplicationError::new).match(input->runWithInput(source, input), Optional::of).ifPresent(error->System.err.println(error.display()));
+		{
+			auto local={
+				auto local={
+					auto local={
+						auto local=JavaFiles.readString(source);
+						local.mapErr(local, JavaError::new)
+					};
+					local.mapErr(local, ApplicationError::new)
+				};
+				local.match(local, input->runWithInput(source, input), Optional::of)
+			};
+			local.ifPresent(local, {
+				auto local=error->System.err;
+				local.println(local, error.display())
+			})
+		}
 	}
 	Optional<ApplicationError> runWithInput(Path source, String input){
-		return JavaLang.createJavaRootRule().parse(input).mapErr(ApplicationError::new).flatMapValue(parsed->writeAST(source.resolveSibling("Main.input.ast"), parsed)).mapValue(node->new TreePassingStage(new Modifier()).pass(new State(), node).right()).mapValue(node->new TreePassingStage(new Formatter()).pass(new State(), node).right()).flatMapValue(parsed->writeAST(source.resolveSibling("Main.output.ast"), parsed)).flatMapValue(parsed->CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new)).mapValue(generated->writeGenerated(generated, source.resolveSibling("Main.c"))).match(value->value, Optional::of);
+		return {
+			auto local={
+				auto local={
+					auto local={
+						auto local={
+							auto local={
+								auto local={
+									auto local={
+										auto local={
+											auto local=JavaLang.createJavaRootRule();
+											local.parse(local, input)
+										};
+										local.mapErr(local, ApplicationError::new)
+									};
+									local.flatMapValue(local, parsed->writeAST(source.resolveSibling("Main.input.ast"), parsed))
+								};
+								local.mapValue(local, {
+									auto local={
+										auto local=node->new TreePassingStage(new Modifier());
+										local.pass(local, new State(), node)
+									};
+									local.right(local)
+								})
+							};
+							local.mapValue(local, {
+								auto local={
+									auto local=node->new TreePassingStage(new Formatter());
+									local.pass(local, new State(), node)
+								};
+								local.right(local)
+							})
+						};
+						local.flatMapValue(local, parsed->writeAST(source.resolveSibling("Main.output.ast"), parsed))
+					};
+					local.flatMapValue(local, {
+						auto local={
+							auto local={
+								auto local=parsed->CLang;
+								local.createCRootRule(local)
+							};
+							local.generate(local, parsed)
+						};
+						local.mapErr(local, ApplicationError::new)
+					})
+				};
+				local.mapValue(local, generated->writeGenerated(generated, source.resolveSibling("Main.c")))
+			};
+			local.match(local, value->value, Optional::of)
+		};
 	}
 	Result<Node, ApplicationError> writeAST(Path path, Node node){
-		return JavaFiles.writeString(path, node.toString()).map(JavaError::new).map(ApplicationError::new).<Result<Node, ApplicationError>>map(Err::new).orElseGet(()->new Ok(node));
+		return {
+			auto local={
+				auto local={
+					auto local={
+						auto local=JavaFiles.writeString(path, node.toString());
+						local.map(local, JavaError::new)
+					};
+					local.map(local, ApplicationError::new)
+				};
+				local.map(local, Err::new)
+			};
+			local.orElseGet(local, ()->new Ok(node))
+		};
 	}
 	Optional<ApplicationError> writeGenerated(String generated, Path target){
-		return JavaFiles.writeString(target, generated).map(JavaError::new).map(ApplicationError::new);
+		return {
+			auto local={
+				auto local=JavaFiles.writeString(target, generated);
+				local.map(local, JavaError::new)
+			};
+			local.map(local, ApplicationError::new)
+		};
 	}
 }
 
