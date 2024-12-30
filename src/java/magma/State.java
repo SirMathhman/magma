@@ -1,6 +1,6 @@
 package magma;
 
-class State {
+public class State {
     private int depth;
 
     State() {
