@@ -1,42 +1,40 @@
 group {
-	"children": [package {
-		"namespace": ["magma"]
-	}, import {
+	"children": [include {
 		"namespace": ["magma", "api", "JavaFiles"]
-	}, import {
+	}, include {
 		"namespace": ["magma", "api", "result", "Err"]
-	}, import {
+	}, include {
 		"namespace": ["magma", "api", "result", "Ok"]
-	}, import {
+	}, include {
 		"namespace": ["magma", "api", "result", "Result"]
-	}, import {
+	}, include {
 		"namespace": ["magma", "compile", "Node"]
-	}, import {
+	}, include {
 		"namespace": ["magma", "compile", "State"]
-	}, import {
+	}, include {
 		"namespace": ["magma", "compile", "error", "ApplicationError"]
-	}, import {
+	}, include {
 		"namespace": ["magma", "compile", "error", "JavaError"]
-	}, import {
+	}, include {
 		"namespace": ["magma", "compile", "lang", "CLang"]
-	}, import {
+	}, include {
 		"namespace": ["magma", "compile", "lang", "JavaLang"]
-	}, import {
+	}, include {
 		"namespace": ["magma", "compile", "pass", "Modifier"]
-	}, import {
+	}, include {
 		"namespace": ["magma", "compile", "pass", "TreePassingStage"]
-	}, import {
+	}, include {
 		"namespace": ["java", "nio", "file", "Path"]
-	}, import {
+	}, include {
 		"namespace": ["java", "nio", "file", "Paths"]
-	}, import {
+	}, include {
 		"namespace": ["java", "util", "Optional"]
-	}, class {
+	}, struct {
 		"name": "Main", 
 		"modifiers": ["public"], 
 		"value": block {
 			"value": group {
-				"children": [method {
+				"children": [function {
 					"name": "main", 
 					"modifiers": ["public", "static"], 
 					"type": symbol {
@@ -169,7 +167,7 @@ group {
 							}
 						}
 					}]
-				}, method {
+				}, function {
 					"name": "runWithInput", 
 					"modifiers": ["private", "static"], 
 					"type": generic {
@@ -403,7 +401,7 @@ group {
 							"symbol-value": "String"
 						}
 					}]
-				}, method {
+				}, function {
 					"name": "writeAST", 
 					"modifiers": ["private", "static"], 
 					"type": generic {
@@ -506,7 +504,7 @@ group {
 							"symbol-value": "Node"
 						}
 					}]
-				}, method {
+				}, function {
 					"name": "writeGenerated", 
 					"modifiers": ["private", "static"], 
 					"type": generic {

@@ -2,6 +2,7 @@ package magma.compile;
 
 import magma.api.Tuple;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,12 @@ public record Node(
 
     private static String formatString(String value) {
         return "\"" + value.replaceAll("\\n", "\\\\n") + "\"";
+    }
+
+    public Node map(String propertyKey, Function<List<Node>, List<Node>> mapper) {
+        final var children = findNodeList(propertyKey).orElse(new ArrayList<>());
+        final var newChildren = mapper.apply(children);
+        return withNodeList(propertyKey, newChildren);
     }
 
     @Override

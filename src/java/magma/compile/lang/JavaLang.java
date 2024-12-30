@@ -20,10 +20,17 @@ import magma.compile.rule.string.filter.SymbolFilter;
 import java.util.List;
 
 public class JavaLang {
+    public static final String ROOT_TYPE = "group";
+    public static final String ROOT_CHILDREN = "children";
+    public static final String PACKAGE_TYPE = "package";
+    public static final String IMPORT_TYPE = "import";
+    public static final String CLASS_TYPE = "class";
+    public static final String METHOD_TYPE = "method";
+
     public static Rule createJavaRootRule() {
-        return new TypeRule("group", new NodeListRule(new StatementSlicer(), "children", new OrRule(List.of(
-                createNamespacedRule("package", "package "),
-                createNamespacedRule("import", "import "),
+        return new TypeRule(ROOT_TYPE, new NodeListRule(new StatementSlicer(), ROOT_CHILDREN, new OrRule(List.of(
+                createNamespacedRule(PACKAGE_TYPE, "package "),
+                createNamespacedRule(IMPORT_TYPE, "import "),
                 createClassRule(),
                 CommonLang.createWhitespaceRule()
         ))));
@@ -32,7 +39,7 @@ public class JavaLang {
     private static TypeRule createClassRule() {
         final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
         final var rightRule = CommonLang.createBlockValueRule(name, createClassMemberRule());
-        return new TypeRule("class", new SplitRule(new StringListRule(" ", "modifiers"), new LocatingSplitter("class ", new FirstLocator()), rightRule));
+        return new TypeRule(CLASS_TYPE, new SplitRule(new StringListRule(" ", "modifiers"), new LocatingSplitter("class ", new FirstLocator()), rightRule));
     }
 
     private static Rule createClassMemberRule() {
@@ -46,7 +53,7 @@ public class JavaLang {
         final LazyRule method = new LazyRule();
         final var definition = CommonLang.createDefinitionRule(typeRule);
         final var wrapped = CommonLang.createBlockValueRule(definition, createStatementRule(typeRule, method));
-        method.set(new TypeRule("method", wrapped));
+        method.set(new TypeRule(METHOD_TYPE, wrapped));
         return method;
     }
 

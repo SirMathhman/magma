@@ -18,6 +18,11 @@ import magma.compile.rule.string.SuffixRule;
 import java.util.List;
 
 public class CLang {
+
+    public static final String INCLUDE_TYPE = "include";
+    public static final String STRUCT_TYPE = "struct";
+    public static final String FUNCTION_TYPE = "function";
+
     public static Rule createCRootRule() {
         return CommonLang.createGroupRule(createCRootMemberRule());
     }
@@ -33,7 +38,7 @@ public class CLang {
     private static Rule createStructRule() {
         final var name = new StringRule("name");
         final var wrapped = CommonLang.createBlockValueRule(name, createStructMemberRule(CommonLang.createTypeRule()));
-        return new TypeRule("struct", new PrefixRule("struct ", wrapped));
+        return new TypeRule(STRUCT_TYPE, new PrefixRule("struct ", wrapped));
     }
 
     private static Rule createStructMemberRule(Rule typeRule) {
@@ -50,7 +55,7 @@ public class CLang {
         final var params = new NodeListRule(new ValueSlicer(), "params", new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), name));
         final var rightRule = new SplitRule(name, new LocatingSplitter("(", new FirstLocator()), new SuffixRule(params, ")"));
         final var childRule = new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), rightRule);
-        function.set(new TypeRule("function", CommonLang.createBlockValueRule(childRule, createStatementRule(typeRule, function))));
+        function.set(new TypeRule(FUNCTION_TYPE, CommonLang.createBlockValueRule(childRule, createStatementRule(typeRule, function))));
         return function;
     }
 
@@ -74,6 +79,6 @@ public class CLang {
 
     private static Rule createIncludesRule() {
         final var namespace = new StringListRule("/", "namespace");
-        return new TypeRule("include", new PrefixRule("#include \"", new SuffixRule(namespace, ".h\"")));
+        return new TypeRule(INCLUDE_TYPE, new PrefixRule("#include \"", new SuffixRule(namespace, ".h\"")));
     }
 }
