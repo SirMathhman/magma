@@ -42,15 +42,17 @@ public class JavaLang {
         ));
     }
 
-    private static TypeRule createMethodRule(Rule typeRule) {
+    private static LazyRule createMethodRule(Rule typeRule) {
+        final LazyRule method = new LazyRule();
         final var definition = CommonLang.createDefinitionRule(typeRule);
-        final var wrapped = CommonLang.createBlockValueRule(definition, createStatementRule(typeRule));
-        return new TypeRule("method", wrapped);
+        final var wrapped = CommonLang.createBlockValueRule(definition, createStatementRule(typeRule, method));
+        method.set(new TypeRule("method", wrapped));
+        return method;
     }
 
-    private static Rule createStatementRule(Rule typeRule) {
+    private static Rule createStatementRule(Rule typeRule, LazyRule function) {
         final LazyRule statement = new LazyRule();
-        final var value = CommonLang.createValueRule(typeRule, statement);
+        final var value = CommonLang.createValueRule(typeRule, statement, function);
         statement.set(new OrRule(List.of(
                 CommonLang.createBlockStatementRule(statement),
                 CommonLang.createReturnRule(value),

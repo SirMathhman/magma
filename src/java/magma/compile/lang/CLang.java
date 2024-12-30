@@ -43,18 +43,20 @@ public class CLang {
         ));
     }
 
-    private static TypeRule createFunctionRule(Rule typeRule) {
+    private static Rule createFunctionRule(Rule typeRule) {
+        final LazyRule function = new LazyRule();
         final var type = new NodeRule("type", typeRule);
         final var name = new StringRule("name");
         final var params = new NodeListRule(new ValueSlicer(), "params", new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), name));
         final var rightRule = new SplitRule(name, new LocatingSplitter("(", new FirstLocator()), new SuffixRule(params, ")"));
         final var childRule = new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), rightRule);
-        return new TypeRule("function", CommonLang.createBlockValueRule(childRule, createStatementRule(typeRule)));
+        function.set(new TypeRule("function", CommonLang.createBlockValueRule(childRule, createStatementRule(typeRule, function))));
+        return function;
     }
 
-    private static Rule createStatementRule(Rule typeRule) {
+    private static Rule createStatementRule(Rule typeRule, LazyRule function) {
         final var statement = new LazyRule();
-        final var value = CommonLang.createValueRule(typeRule, statement);
+        final var value = CommonLang.createValueRule(typeRule, statement,function);
         statement.set(new OrRule(List.of(
                 CommonLang.createBlockStatementRule(statement),
                 new SuffixRule(CommonLang.createInvocationStatementRule(value), ";"),
@@ -65,7 +67,7 @@ public class CLang {
                 CommonLang.createElseRule(statement),
                 CommonLang.createAssignmentRule(),
                 CommonLang.createReturnRule(value),
-                CommonLang.createValueRule(typeRule, statement)
+                CommonLang.createValueRule(typeRule, statement, function)
         )));
         return statement;
     }

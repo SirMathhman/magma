@@ -89,7 +89,7 @@ public class CommonLang {
         return new TypeRule("initialization", new SplitRule(definition, new LocatingSplitter("=", new FirstLocator()), new SuffixRule(value, ";")));
     }
 
-    static Rule createValueRule(Rule typeRule, LazyRule statement) {
+    static Rule createValueRule(Rule typeRule, LazyRule statement, LazyRule function) {
         final var value = new LazyRule();
         value.set(new OrRule(List.of(
                 CommonLang.createBlockStatementRule(statement),
@@ -102,7 +102,8 @@ public class CommonLang {
                 createOperatorRule("subtract", "-", value),
                 createLambdaRule(value),
                 createInvocationRule(value, "invocation-value"),
-                createConstructionRule(value)
+                createConstructionRule(value),
+                function
         )));
         return value;
     }

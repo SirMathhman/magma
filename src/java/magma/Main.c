@@ -18,92 +18,112 @@ struct Main{
 	void main(Array<String> args){
 		final Path source=Paths.get(".", "src", "java", "magma", "Main.java");
 		{
-			auto __local5__={
-				auto __local4__={
-					auto __local3__={
-						auto __local2__=JavaFiles.readString(source);
-						__local2__.mapErr(__local2__, JavaError.new)
+			auto __local7__={
+				auto __local6__={
+					auto __local5__={
+						auto __local4__=JavaFiles.readString(source);
+						__local4__.mapErr(__local4__, JavaError.new)
 					};
-					__local3__.mapErr(__local3__, ApplicationError.new)
+					__local5__.mapErr(__local5__, ApplicationError.new)
 				};
-				__local4__.match(__local4__, input->runWithInput(source, input), Optional.of)
+				__local6__.match(__local6__, auto __function3__(auto input){
+					return runWithInput(source, input);
+				}, Optional.of)
 			};
-			__local5__.ifPresent(__local5__, error->{
-				auto __local1__=System.err;
-				__local1__.println(__local1__, error.display())
+			__local7__.ifPresent(__local7__, auto __function2__(auto error){
+				return {
+					auto __local1__=System.err;
+					__local1__.println(__local1__, error.display())
+				};
 			})
 		}
 	}
 	Optional<ApplicationError> runWithInput(Path source, String input){
 		return {
-			auto __local20__={
-				auto __local19__={
-					auto __local18__={
-						auto __local17__={
-							auto __local16__={
-								auto __local15__={
-									auto __local14__={
-										auto __local13__={
-											auto __local12__=JavaLang.createJavaRootRule();
-											__local12__.parse(__local12__, input)
+			auto __local29__={
+				auto __local28__={
+					auto __local27__={
+						auto __local26__={
+							auto __local25__={
+								auto __local24__={
+									auto __local23__={
+										auto __local22__={
+											auto __local21__=JavaLang.createJavaRootRule();
+											__local21__.parse(__local21__, input)
 										};
-										__local13__.mapErr(__local13__, ApplicationError.new)
+										__local22__.mapErr(__local22__, ApplicationError.new)
 									};
-									__local14__.flatMapValue(__local14__, parsed->writeAST(source.resolveSibling("Main.input.ast"), parsed))
+									__local23__.flatMapValue(__local23__, auto __function20__(auto parsed){
+										return writeAST(source.resolveSibling("Main.input.ast"), parsed);
+									})
 								};
-								__local15__.mapValue(__local15__, node->{
-									auto __local11__={
-										auto __local10__=new TreePassingStage(new Modifier());
-										__local10__.pass(__local10__, new State(), node)
+								__local24__.mapValue(__local24__, auto __function19__(auto node){
+									return {
+										auto __local18__={
+											auto __local17__=new TreePassingStage(new Modifier());
+											__local17__.pass(__local17__, new State(), node)
+										};
+										__local18__.right(__local18__)
 									};
-									__local11__.right(__local11__)
 								})
 							};
-							__local16__.mapValue(__local16__, node->{
-								auto __local9__={
-									auto __local8__=new TreePassingStage(new Formatter());
-									__local8__.pass(__local8__, new State(), node)
+							__local25__.mapValue(__local25__, auto __function16__(auto node){
+								return {
+									auto __local15__={
+										auto __local14__=new TreePassingStage(new Formatter());
+										__local14__.pass(__local14__, new State(), node)
+									};
+									__local15__.right(__local15__)
 								};
-								__local9__.right(__local9__)
 							})
 						};
-						__local17__.flatMapValue(__local17__, parsed->writeAST(source.resolveSibling("Main.output.ast"), parsed))
+						__local26__.flatMapValue(__local26__, auto __function13__(auto parsed){
+							return writeAST(source.resolveSibling("Main.output.ast"), parsed);
+						})
 					};
-					__local18__.flatMapValue(__local18__, parsed->{
-						auto __local7__={
-							auto __local6__=CLang.createCRootRule();
-							__local6__.generate(__local6__, parsed)
+					__local27__.flatMapValue(__local27__, auto __function12__(auto parsed){
+						return {
+							auto __local11__={
+								auto __local10__=CLang.createCRootRule();
+								__local10__.generate(__local10__, parsed)
+							};
+							__local11__.mapErr(__local11__, ApplicationError.new)
 						};
-						__local7__.mapErr(__local7__, ApplicationError.new)
 					})
 				};
-				__local19__.mapValue(__local19__, generated->writeGenerated(generated, source.resolveSibling("Main.c")))
+				__local28__.mapValue(__local28__, auto __function9__(auto generated){
+					return writeGenerated(generated, source.resolveSibling("Main.c"));
+				})
 			};
-			__local20__.match(__local20__, value->value, Optional.of)
+			__local29__.match(__local29__, auto __function8__(auto value){
+				return value;
+			}, Optional.of)
 		};
 	}
 	Result<Node, ApplicationError> writeAST(Path path, Node node){
 		return {
-			auto __local24__={
-				auto __local23__={
-					auto __local22__={
-						auto __local21__=JavaFiles.writeString(path, node.toString());
-						__local21__.map(__local21__, JavaError.new)
+			auto __local34__={
+				auto __local33__={
+					auto __local32__={
+						auto __local31__=JavaFiles.writeString(path, node.toString());
+						__local31__.map(__local31__, JavaError.new)
 					};
-					__local22__.map(__local22__, ApplicationError.new)
+					__local32__.map(__local32__, ApplicationError.new)
 				};
-				__local23__.map(__local23__, Err.new)
+				__local33__.map(__local33__, Err.new)
 			};
-			__local24__.orElseGet(__local24__, ()->new Ok(node))
+			__local34__.orElseGet(__local34__, auto __function30__(){
+				return new Ok(node);
+			})
 		};
 	}
 	Optional<ApplicationError> writeGenerated(String generated, Path target){
 		return {
-			auto __local26__={
-				auto __local25__=JavaFiles.writeString(target, generated);
-				__local25__.map(__local25__, JavaError.new)
+			auto __local36__={
+				auto __local35__=JavaFiles.writeString(target, generated);
+				__local35__.map(__local35__, JavaError.new)
 			};
-			__local26__.map(__local26__, ApplicationError.new)
+			__local36__.map(__local36__, ApplicationError.new)
 		};
 	}
 }

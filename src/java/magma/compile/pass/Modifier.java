@@ -12,6 +12,22 @@ import java.util.stream.Collectors;
 public class Modifier implements Passer {
     private int counter = 0;
 
+    private static Node createAutoType() {
+        return new Node("symbol").withString("symbol-value", "auto");
+    }
+
+    private static Node modifyLambdaParam(Node param) {
+        final var name = param.findString("symbol-value").orElse("");
+        return new Node("definition")
+                .withString("name", name)
+                .withNode("type", createAutoType());
+    }
+
+    private static Node createBlock(List<Node> children) {
+        final var group = new Node("group").withNodeList("children", children);
+        return new Node("block").withNode("value", group);
+    }
+
     private Node modifyStateless(Node node) {
         if (node.is("group")) {
             final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>());
@@ -34,11 +50,32 @@ public class Modifier implements Passer {
         return modifyInvocation(node)
                 .or(() -> modifyFunctionAccess(node))
                 .or(() -> modifyArray(node))
+                .or(() -> modifyLambda(node))
                 .orElse(node);
     }
 
+    private Optional<? extends Node> modifyLambda(Node node) {
+        if (!node.is("lambda")) return Optional.empty();
+
+        final var params = node.findNode("param")
+                .stream()
+                .map(Modifier::modifyLambdaParam)
+                .toList();
+
+        final var value = node.findNode("value").orElse(new Node());
+        final var block = createBlock(List.of(new Node("return").withNode("value", value)));
+
+        final var function = node.retype("function")
+                .withString("name", createUniqueName("function"))
+                .withNode("type", createAutoType())
+                .withNodeList("params", params)
+                .withNode("value", block);
+
+        return Optional.of(function);
+    }
+
     private Optional<? extends Node> modifyArray(Node node) {
-        if(node.is("array")) {
+        if (node.is("array")) {
             final var child = node.findNode("child").orElse(new Node());
             return Optional.of(new Node("generic")
                     .withString("parent", "Array")
@@ -82,7 +119,7 @@ public class Modifier implements Passer {
                 new Node("initialization")
                         .withNode("definition", new Node("definition")
                                 .withString("name", name)
-                                .withNode("type", new Node("symbol").withString("symbol-value", "auto"))
+                                .withNode("type", createAutoType())
                         ).withNode("value", object),
                 new Node("invocation-value")
                         .withNode("caller", new Node("data-access")
@@ -91,8 +128,7 @@ public class Modifier implements Passer {
                         .withNodeList("arguments", newArguments)
         );
 
-        final var group = new Node("group").withNodeList("children", children);
-        return Optional.of(new Node("block").withNode("value", group));
+        return Optional.of(createBlock(children));
     }
 
     private String createUniqueName(String prefix) {
