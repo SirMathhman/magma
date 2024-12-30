@@ -100,9 +100,9 @@ public class CommonLang {
                 createAccessRule("function-access", "::", value, typeRule),
                 createOperatorRule("less-than", "<", value),
                 createOperatorRule("subtract", "-", value),
+                createLambdaRule(value),
                 createInvocationRule(value, "invocation-value"),
-                createConstructionRule(value),
-                createLambdaRule(value)
+                createConstructionRule(value)
         )));
         return value;
     }

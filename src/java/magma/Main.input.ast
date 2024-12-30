@@ -113,20 +113,20 @@ group {
 												}]
 											}
 										}, 
-										"arguments": [invocation-value {
-											"caller": lambda {
-												"param": symbol {
-													"symbol-value": "input"
-												}, 
-												"value": symbol {
-													"symbol-value": "runWithInput"
-												}
-											}, 
-											"arguments": [symbol {
-												"symbol-value": "source"
-											}, symbol {
+										"arguments": [lambda {
+											"param": symbol {
 												"symbol-value": "input"
-											}]
+											}, 
+											"value": invocation-value {
+												"caller": symbol {
+													"symbol-value": "runWithInput"
+												}, 
+												"arguments": [symbol {
+													"symbol-value": "source"
+												}, symbol {
+													"symbol-value": "input"
+												}]
+											}
 										}, function-access {
 											"property": "of", 
 											"object": symbol {
@@ -135,30 +135,30 @@ group {
 										}]
 									}
 								}, 
-								"arguments": [invocation-value {
-									"caller": data-access {
-										"property": "println", 
-										"object": data-access {
-											"property": "err", 
-											"object": lambda {
-												"param": symbol {
-													"symbol-value": "error"
-												}, 
-												"value": symbol {
+								"arguments": [lambda {
+									"param": symbol {
+										"symbol-value": "error"
+									}, 
+									"value": invocation-value {
+										"caller": data-access {
+											"property": "println", 
+											"object": data-access {
+												"property": "err", 
+												"object": symbol {
 													"symbol-value": "System"
 												}
 											}
-										}
-									}, 
-									"arguments": [invocation-value {
-										"caller": data-access {
-											"property": "display", 
-											"object": symbol {
-												"symbol-value": "error"
-											}
 										}, 
-										"arguments": []
-									}]
+										"arguments": [invocation-value {
+											"caller": data-access {
+												"property": "display", 
+												"object": symbol {
+													"symbol-value": "error"
+												}
+											}, 
+											"arguments": []
+										}]
+									}
 								}]
 							}]
 						}
@@ -233,42 +233,42 @@ group {
 																							}]
 																						}
 																					}, 
-																					"arguments": [invocation-value {
-																						"caller": lambda {
-																							"param": symbol {
-																								"symbol-value": "parsed"
-																							}, 
-																							"value": symbol {
-																								"symbol-value": "writeAST"
-																							}
-																						}, 
-																						"arguments": [invocation-value {
-																							"caller": data-access {
-																								"property": "resolveSibling", 
-																								"object": symbol {
-																									"symbol-value": "source"
-																								}
-																							}, 
-																							"arguments": [string {
-																								"string-value": "Main.input.ast"
-																							}]
-																						}, symbol {
+																					"arguments": [lambda {
+																						"param": symbol {
 																							"symbol-value": "parsed"
-																						}]
+																						}, 
+																						"value": invocation-value {
+																							"caller": symbol {
+																								"symbol-value": "writeAST"
+																							}, 
+																							"arguments": [invocation-value {
+																								"caller": data-access {
+																									"property": "resolveSibling", 
+																									"object": symbol {
+																										"symbol-value": "source"
+																									}
+																								}, 
+																								"arguments": [string {
+																									"string-value": "Main.input.ast"
+																								}]
+																							}, symbol {
+																								"symbol-value": "parsed"
+																							}]
+																						}
 																					}]
 																				}
 																			}, 
-																			"arguments": [invocation-value {
-																				"caller": data-access {
-																					"property": "right", 
-																					"object": invocation-value {
-																						"caller": data-access {
-																							"property": "pass", 
-																							"object": lambda {
-																								"param": symbol {
-																									"symbol-value": "node"
-																								}, 
-																								"value": construction {
+																			"arguments": [lambda {
+																				"param": symbol {
+																					"symbol-value": "node"
+																				}, 
+																				"value": invocation-value {
+																					"caller": data-access {
+																						"property": "right", 
+																						"object": invocation-value {
+																							"caller": data-access {
+																								"property": "pass", 
+																								"object": construction {
 																									"caller": symbol {
 																										"symbol-value": "TreePassingStage"
 																									}, 
@@ -279,33 +279,33 @@ group {
 																										"arguments": []
 																									}]
 																								}
-																							}
-																						}, 
-																						"arguments": [construction {
-																							"caller": symbol {
-																								"symbol-value": "State"
 																							}, 
-																							"arguments": []
-																						}, symbol {
-																							"symbol-value": "node"
-																						}]
-																					}
-																				}, 
-																				"arguments": []
+																							"arguments": [construction {
+																								"caller": symbol {
+																									"symbol-value": "State"
+																								}, 
+																								"arguments": []
+																							}, symbol {
+																								"symbol-value": "node"
+																							}]
+																						}
+																					}, 
+																					"arguments": []
+																				}
 																			}]
 																		}
 																	}, 
-																	"arguments": [invocation-value {
-																		"caller": data-access {
-																			"property": "right", 
-																			"object": invocation-value {
-																				"caller": data-access {
-																					"property": "pass", 
-																					"object": lambda {
-																						"param": symbol {
-																							"symbol-value": "node"
-																						}, 
-																						"value": construction {
+																	"arguments": [lambda {
+																		"param": symbol {
+																			"symbol-value": "node"
+																		}, 
+																		"value": invocation-value {
+																			"caller": data-access {
+																				"property": "right", 
+																				"object": invocation-value {
+																					"caller": data-access {
+																						"property": "pass", 
+																						"object": construction {
 																							"caller": symbol {
 																								"symbol-value": "TreePassingStage"
 																							}, 
@@ -316,104 +316,104 @@ group {
 																								"arguments": []
 																							}]
 																						}
-																					}
-																				}, 
-																				"arguments": [construction {
-																					"caller": symbol {
-																						"symbol-value": "State"
 																					}, 
-																					"arguments": []
-																				}, symbol {
-																					"symbol-value": "node"
-																				}]
-																			}
-																		}, 
-																		"arguments": []
+																					"arguments": [construction {
+																						"caller": symbol {
+																							"symbol-value": "State"
+																						}, 
+																						"arguments": []
+																					}, symbol {
+																						"symbol-value": "node"
+																					}]
+																				}
+																			}, 
+																			"arguments": []
+																		}
 																	}]
 																}
 															}, 
-															"arguments": [invocation-value {
-																"caller": lambda {
-																	"param": symbol {
-																		"symbol-value": "parsed"
-																	}, 
-																	"value": symbol {
-																		"symbol-value": "writeAST"
-																	}
-																}, 
-																"arguments": [invocation-value {
-																	"caller": data-access {
-																		"property": "resolveSibling", 
-																		"object": symbol {
-																			"symbol-value": "source"
-																		}
-																	}, 
-																	"arguments": [string {
-																		"string-value": "Main.output.ast"
-																	}]
-																}, symbol {
+															"arguments": [lambda {
+																"param": symbol {
 																	"symbol-value": "parsed"
-																}]
+																}, 
+																"value": invocation-value {
+																	"caller": symbol {
+																		"symbol-value": "writeAST"
+																	}, 
+																	"arguments": [invocation-value {
+																		"caller": data-access {
+																			"property": "resolveSibling", 
+																			"object": symbol {
+																				"symbol-value": "source"
+																			}
+																		}, 
+																		"arguments": [string {
+																			"string-value": "Main.output.ast"
+																		}]
+																	}, symbol {
+																		"symbol-value": "parsed"
+																	}]
+																}
 															}]
 														}
 													}, 
-													"arguments": [invocation-value {
-														"caller": data-access {
-															"property": "mapErr", 
-															"object": invocation-value {
-																"caller": data-access {
-																	"property": "generate", 
-																	"object": invocation-value {
-																		"caller": data-access {
-																			"property": "createCRootRule", 
-																			"object": lambda {
-																				"param": symbol {
-																					"symbol-value": "parsed"
-																				}, 
-																				"value": symbol {
+													"arguments": [lambda {
+														"param": symbol {
+															"symbol-value": "parsed"
+														}, 
+														"value": invocation-value {
+															"caller": data-access {
+																"property": "mapErr", 
+																"object": invocation-value {
+																	"caller": data-access {
+																		"property": "generate", 
+																		"object": invocation-value {
+																			"caller": data-access {
+																				"property": "createCRootRule", 
+																				"object": symbol {
 																					"symbol-value": "CLang"
 																				}
-																			}
-																		}, 
-																		"arguments": []
-																	}
-																}, 
-																"arguments": [symbol {
-																	"symbol-value": "parsed"
-																}]
-															}
-														}, 
-														"arguments": [function-access {
-															"property": "new", 
-															"object": symbol {
-																"symbol-value": "ApplicationError"
-															}
-														}]
+																			}, 
+																			"arguments": []
+																		}
+																	}, 
+																	"arguments": [symbol {
+																		"symbol-value": "parsed"
+																	}]
+																}
+															}, 
+															"arguments": [function-access {
+																"property": "new", 
+																"object": symbol {
+																	"symbol-value": "ApplicationError"
+																}
+															}]
+														}
 													}]
 												}
 											}, 
-											"arguments": [invocation-value {
-												"caller": lambda {
-													"param": symbol {
-														"symbol-value": "generated"
-													}, 
-													"value": symbol {
-														"symbol-value": "writeGenerated"
-													}
-												}, 
-												"arguments": [symbol {
+											"arguments": [lambda {
+												"param": symbol {
 													"symbol-value": "generated"
-												}, invocation-value {
-													"caller": data-access {
-														"property": "resolveSibling", 
-														"object": symbol {
-															"symbol-value": "source"
-														}
+												}, 
+												"value": invocation-value {
+													"caller": symbol {
+														"symbol-value": "writeGenerated"
 													}, 
-													"arguments": [string {
-														"string-value": "Main.c"
+													"arguments": [symbol {
+														"symbol-value": "generated"
+													}, invocation-value {
+														"caller": data-access {
+															"property": "resolveSibling", 
+															"object": symbol {
+																"symbol-value": "source"
+															}
+														}, 
+														"arguments": [string {
+															"string-value": "Main.c"
+														}]
 													}]
-												}]
+												}
 											}]
 										}
 									}, 

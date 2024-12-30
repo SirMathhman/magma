@@ -196,20 +196,20 @@ group {
 													}, 
 													"arguments": [symbol {
 														"symbol-value": "__local4__"
-													}, invocation-value {
-														"caller": lambda {
-															"param": symbol {
-																"symbol-value": "input"
-															}, 
-															"value": symbol {
-																"symbol-value": "runWithInput"
-															}
-														}, 
-														"arguments": [symbol {
-															"symbol-value": "source"
-														}, symbol {
+													}, lambda {
+														"param": symbol {
 															"symbol-value": "input"
-														}]
+														}, 
+														"value": invocation-value {
+															"caller": symbol {
+																"symbol-value": "runWithInput"
+															}, 
+															"arguments": [symbol {
+																"symbol-value": "source"
+															}, symbol {
+																"symbol-value": "input"
+															}]
+														}
 													}, function-access {
 														"property": "of", 
 														"object": symbol {
@@ -229,48 +229,48 @@ group {
 										}, 
 										"arguments": [symbol {
 											"symbol-value": "__local5__"
-										}, block {
-											"value": group {
-												"after-children": "\n			", 
-												"children": [initialization {
-													"before-child": "\n				", 
-													"definition": definition {
-														"name": "__local1__", 
-														"type": symbol {
-															"symbol-value": "auto"
-														}
-													}, 
-													"value": data-access {
-														"property": "err", 
-														"object": lambda {
-															"param": symbol {
-																"symbol-value": "error"
-															}, 
-															"value": symbol {
+										}, lambda {
+											"param": symbol {
+												"symbol-value": "error"
+											}, 
+											"value": block {
+												"value": group {
+													"after-children": "\n			", 
+													"children": [initialization {
+														"before-child": "\n				", 
+														"definition": definition {
+															"name": "__local1__", 
+															"type": symbol {
+																"symbol-value": "auto"
+															}
+														}, 
+														"value": data-access {
+															"property": "err", 
+															"object": symbol {
 																"symbol-value": "System"
 															}
 														}
-													}
-												}, invocation-value {
-													"before-child": "\n				", 
-													"caller": data-access {
-														"property": "println", 
-														"object": symbol {
-															"symbol-value": "__local1__"
-														}
-													}, 
-													"arguments": [symbol {
-														"symbol-value": "__local1__"
 													}, invocation-value {
+														"before-child": "\n				", 
 														"caller": data-access {
-															"property": "display", 
+															"property": "println", 
 															"object": symbol {
-																"symbol-value": "error"
+																"symbol-value": "__local1__"
 															}
 														}, 
-														"arguments": []
+														"arguments": [symbol {
+															"symbol-value": "__local1__"
+														}, invocation-value {
+															"caller": data-access {
+																"property": "display", 
+																"object": symbol {
+																	"symbol-value": "error"
+																}
+															}, 
+															"arguments": []
+														}]
 													}]
-												}]
+												}
 											}
 										}]
 									}]
@@ -307,7 +307,7 @@ group {
 										"children": [initialization {
 											"before-child": "\n			", 
 											"definition": definition {
-												"name": "__local21__", 
+												"name": "__local20__", 
 												"type": symbol {
 													"symbol-value": "auto"
 												}
@@ -318,7 +318,7 @@ group {
 													"children": [initialization {
 														"before-child": "\n				", 
 														"definition": definition {
-															"name": "__local20__", 
+															"name": "__local19__", 
 															"type": symbol {
 																"symbol-value": "auto"
 															}
@@ -329,7 +329,7 @@ group {
 																"children": [initialization {
 																	"before-child": "\n					", 
 																	"definition": definition {
-																		"name": "__local19__", 
+																		"name": "__local18__", 
 																		"type": symbol {
 																			"symbol-value": "auto"
 																		}
@@ -340,7 +340,7 @@ group {
 																			"children": [initialization {
 																				"before-child": "\n						", 
 																				"definition": definition {
-																					"name": "__local18__", 
+																					"name": "__local17__", 
 																					"type": symbol {
 																						"symbol-value": "auto"
 																					}
@@ -351,7 +351,7 @@ group {
 																						"children": [initialization {
 																							"before-child": "\n							", 
 																							"definition": definition {
-																								"name": "__local17__", 
+																								"name": "__local16__", 
 																								"type": symbol {
 																									"symbol-value": "auto"
 																								}
@@ -362,7 +362,7 @@ group {
 																									"children": [initialization {
 																										"before-child": "\n								", 
 																										"definition": definition {
-																											"name": "__local16__", 
+																											"name": "__local15__", 
 																											"type": symbol {
 																												"symbol-value": "auto"
 																											}
@@ -373,7 +373,7 @@ group {
 																												"children": [initialization {
 																													"before-child": "\n									", 
 																													"definition": definition {
-																														"name": "__local15__", 
+																														"name": "__local14__", 
 																														"type": symbol {
 																															"symbol-value": "auto"
 																														}
@@ -384,7 +384,7 @@ group {
 																															"children": [initialization {
 																																"before-child": "\n										", 
 																																"definition": definition {
-																																	"name": "__local14__", 
+																																	"name": "__local13__", 
 																																	"type": symbol {
 																																		"symbol-value": "auto"
 																																	}
@@ -395,7 +395,7 @@ group {
 																																		"children": [initialization {
 																																			"before-child": "\n											", 
 																																			"definition": definition {
-																																				"name": "__local13__", 
+																																				"name": "__local12__", 
 																																				"type": symbol {
 																																					"symbol-value": "auto"
 																																				}
@@ -414,11 +414,11 @@ group {
 																																			"caller": data-access {
 																																				"property": "parse", 
 																																				"object": symbol {
-																																					"symbol-value": "__local13__"
+																																					"symbol-value": "__local12__"
 																																				}
 																																			}, 
 																																			"arguments": [symbol {
-																																				"symbol-value": "__local13__"
+																																				"symbol-value": "__local12__"
 																																			}, symbol {
 																																				"symbol-value": "input"
 																																			}]
@@ -430,11 +430,11 @@ group {
 																																"caller": data-access {
 																																	"property": "mapErr", 
 																																	"object": symbol {
-																																		"symbol-value": "__local14__"
+																																		"symbol-value": "__local13__"
 																																	}
 																																}, 
 																																"arguments": [symbol {
-																																	"symbol-value": "__local14__"
+																																	"symbol-value": "__local13__"
 																																}, function-access {
 																																	"property": "new", 
 																																	"object": symbol {
@@ -449,33 +449,33 @@ group {
 																													"caller": data-access {
 																														"property": "flatMapValue", 
 																														"object": symbol {
-																															"symbol-value": "__local15__"
+																															"symbol-value": "__local14__"
 																														}
 																													}, 
 																													"arguments": [symbol {
-																														"symbol-value": "__local15__"
-																													}, invocation-value {
-																														"caller": lambda {
-																															"param": symbol {
-																																"symbol-value": "parsed"
-																															}, 
-																															"value": symbol {
-																																"symbol-value": "writeAST"
-																															}
-																														}, 
-																														"arguments": [invocation-value {
-																															"caller": data-access {
-																																"property": "resolveSibling", 
-																																"object": symbol {
-																																	"symbol-value": "source"
-																																}
-																															}, 
-																															"arguments": [string {
-																																"string-value": "Main.input.ast"
-																															}]
-																														}, symbol {
+																														"symbol-value": "__local14__"
+																													}, lambda {
+																														"param": symbol {
 																															"symbol-value": "parsed"
-																														}]
+																														}, 
+																														"value": invocation-value {
+																															"caller": symbol {
+																																"symbol-value": "writeAST"
+																															}, 
+																															"arguments": [invocation-value {
+																																"caller": data-access {
+																																	"property": "resolveSibling", 
+																																	"object": symbol {
+																																		"symbol-value": "source"
+																																	}
+																																}, 
+																																"arguments": [string {
+																																	"string-value": "Main.input.ast"
+																																}]
+																															}, symbol {
+																																"symbol-value": "parsed"
+																															}]
+																														}
 																													}]
 																												}]
 																											}
@@ -485,36 +485,36 @@ group {
 																										"caller": data-access {
 																											"property": "mapValue", 
 																											"object": symbol {
-																												"symbol-value": "__local16__"
+																												"symbol-value": "__local15__"
 																											}
 																										}, 
 																										"arguments": [symbol {
-																											"symbol-value": "__local16__"
-																										}, block {
-																											"value": group {
-																												"after-children": "\n								", 
-																												"children": [initialization {
-																													"before-child": "\n									", 
-																													"definition": definition {
-																														"name": "__local12__", 
-																														"type": symbol {
-																															"symbol-value": "auto"
-																														}
-																													}, 
-																													"value": block {
-																														"value": group {
-																															"after-children": "\n									", 
-																															"children": [initialization {
-																																"before-child": "\n										", 
-																																"definition": definition {
-																																	"name": "__local11__", 
-																																	"type": symbol {
-																																		"symbol-value": "auto"
-																																	}
-																																}, 
-																																"value": lambda {
-																																	"param": symbol {
-																																		"symbol-value": "node"
+																											"symbol-value": "__local15__"
+																										}, lambda {
+																											"param": symbol {
+																												"symbol-value": "node"
+																											}, 
+																											"value": block {
+																												"value": group {
+																													"after-children": "\n								", 
+																													"children": [initialization {
+																														"before-child": "\n									", 
+																														"definition": definition {
+																															"name": "__local11__", 
+																															"type": symbol {
+																																"symbol-value": "auto"
+																															}
+																														}, 
+																														"value": block {
+																															"value": group {
+																																"after-children": "\n									", 
+																																"children": [initialization {
+																																	"before-child": "\n										", 
+																																	"definition": definition {
+																																		"name": "__local10__", 
+																																		"type": symbol {
+																																			"symbol-value": "auto"
+																																		}
 																																	}, 
 																																	"value": construction {
 																																		"caller": symbol {
@@ -527,40 +527,40 @@ group {
 																																			"arguments": []
 																																		}]
 																																	}
-																																}
-																															}, invocation-value {
-																																"before-child": "\n										", 
-																																"caller": data-access {
-																																	"property": "pass", 
-																																	"object": symbol {
-																																		"symbol-value": "__local11__"
-																																	}
-																																}, 
-																																"arguments": [symbol {
-																																	"symbol-value": "__local11__"
-																																}, construction {
-																																	"caller": symbol {
-																																		"symbol-value": "State"
+																																}, invocation-value {
+																																	"before-child": "\n										", 
+																																	"caller": data-access {
+																																		"property": "pass", 
+																																		"object": symbol {
+																																			"symbol-value": "__local10__"
+																																		}
 																																	}, 
-																																	"arguments": []
-																																}, symbol {
-																																	"symbol-value": "node"
+																																	"arguments": [symbol {
+																																		"symbol-value": "__local10__"
+																																	}, construction {
+																																		"caller": symbol {
+																																			"symbol-value": "State"
+																																		}, 
+																																		"arguments": []
+																																	}, symbol {
+																																		"symbol-value": "node"
+																																	}]
 																																}]
-																															}]
+																															}
 																														}
-																													}
-																												}, invocation-value {
-																													"before-child": "\n									", 
-																													"caller": data-access {
-																														"property": "right", 
-																														"object": symbol {
-																															"symbol-value": "__local12__"
-																														}
-																													}, 
-																													"arguments": [symbol {
-																														"symbol-value": "__local12__"
+																													}, invocation-value {
+																														"before-child": "\n									", 
+																														"caller": data-access {
+																															"property": "right", 
+																															"object": symbol {
+																																"symbol-value": "__local11__"
+																															}
+																														}, 
+																														"arguments": [symbol {
+																															"symbol-value": "__local11__"
+																														}]
 																													}]
-																												}]
+																												}
 																											}
 																										}]
 																									}]
@@ -571,36 +571,36 @@ group {
 																							"caller": data-access {
 																								"property": "mapValue", 
 																								"object": symbol {
-																									"symbol-value": "__local17__"
+																									"symbol-value": "__local16__"
 																								}
 																							}, 
 																							"arguments": [symbol {
-																								"symbol-value": "__local17__"
-																							}, block {
-																								"value": group {
-																									"after-children": "\n							", 
-																									"children": [initialization {
-																										"before-child": "\n								", 
-																										"definition": definition {
-																											"name": "__local10__", 
-																											"type": symbol {
-																												"symbol-value": "auto"
-																											}
-																										}, 
-																										"value": block {
-																											"value": group {
-																												"after-children": "\n								", 
-																												"children": [initialization {
-																													"before-child": "\n									", 
-																													"definition": definition {
-																														"name": "__local9__", 
-																														"type": symbol {
-																															"symbol-value": "auto"
-																														}
-																													}, 
-																													"value": lambda {
-																														"param": symbol {
-																															"symbol-value": "node"
+																								"symbol-value": "__local16__"
+																							}, lambda {
+																								"param": symbol {
+																									"symbol-value": "node"
+																								}, 
+																								"value": block {
+																									"value": group {
+																										"after-children": "\n							", 
+																										"children": [initialization {
+																											"before-child": "\n								", 
+																											"definition": definition {
+																												"name": "__local9__", 
+																												"type": symbol {
+																													"symbol-value": "auto"
+																												}
+																											}, 
+																											"value": block {
+																												"value": group {
+																													"after-children": "\n								", 
+																													"children": [initialization {
+																														"before-child": "\n									", 
+																														"definition": definition {
+																															"name": "__local8__", 
+																															"type": symbol {
+																																"symbol-value": "auto"
+																															}
 																														}, 
 																														"value": construction {
 																															"caller": symbol {
@@ -613,40 +613,40 @@ group {
 																																"arguments": []
 																															}]
 																														}
-																													}
-																												}, invocation-value {
-																													"before-child": "\n									", 
-																													"caller": data-access {
-																														"property": "pass", 
-																														"object": symbol {
-																															"symbol-value": "__local9__"
-																														}
-																													}, 
-																													"arguments": [symbol {
-																														"symbol-value": "__local9__"
-																													}, construction {
-																														"caller": symbol {
-																															"symbol-value": "State"
+																													}, invocation-value {
+																														"before-child": "\n									", 
+																														"caller": data-access {
+																															"property": "pass", 
+																															"object": symbol {
+																																"symbol-value": "__local8__"
+																															}
 																														}, 
-																														"arguments": []
-																													}, symbol {
-																														"symbol-value": "node"
+																														"arguments": [symbol {
+																															"symbol-value": "__local8__"
+																														}, construction {
+																															"caller": symbol {
+																																"symbol-value": "State"
+																															}, 
+																															"arguments": []
+																														}, symbol {
+																															"symbol-value": "node"
+																														}]
 																													}]
-																												}]
+																												}
 																											}
-																										}
-																									}, invocation-value {
-																										"before-child": "\n								", 
-																										"caller": data-access {
-																											"property": "right", 
-																											"object": symbol {
-																												"symbol-value": "__local10__"
-																											}
-																										}, 
-																										"arguments": [symbol {
-																											"symbol-value": "__local10__"
+																										}, invocation-value {
+																											"before-child": "\n								", 
+																											"caller": data-access {
+																												"property": "right", 
+																												"object": symbol {
+																													"symbol-value": "__local9__"
+																												}
+																											}, 
+																											"arguments": [symbol {
+																												"symbol-value": "__local9__"
+																											}]
 																										}]
-																									}]
+																									}
 																								}
 																							}]
 																						}]
@@ -657,33 +657,33 @@ group {
 																				"caller": data-access {
 																					"property": "flatMapValue", 
 																					"object": symbol {
-																						"symbol-value": "__local18__"
+																						"symbol-value": "__local17__"
 																					}
 																				}, 
 																				"arguments": [symbol {
-																					"symbol-value": "__local18__"
-																				}, invocation-value {
-																					"caller": lambda {
-																						"param": symbol {
-																							"symbol-value": "parsed"
-																						}, 
-																						"value": symbol {
-																							"symbol-value": "writeAST"
-																						}
-																					}, 
-																					"arguments": [invocation-value {
-																						"caller": data-access {
-																							"property": "resolveSibling", 
-																							"object": symbol {
-																								"symbol-value": "source"
-																							}
-																						}, 
-																						"arguments": [string {
-																							"string-value": "Main.output.ast"
-																						}]
-																					}, symbol {
+																					"symbol-value": "__local17__"
+																				}, lambda {
+																					"param": symbol {
 																						"symbol-value": "parsed"
-																					}]
+																					}, 
+																					"value": invocation-value {
+																						"caller": symbol {
+																							"symbol-value": "writeAST"
+																						}, 
+																						"arguments": [invocation-value {
+																							"caller": data-access {
+																								"property": "resolveSibling", 
+																								"object": symbol {
+																									"symbol-value": "source"
+																								}
+																							}, 
+																							"arguments": [string {
+																								"string-value": "Main.output.ast"
+																							}]
+																						}, symbol {
+																							"symbol-value": "parsed"
+																						}]
+																					}
 																				}]
 																			}]
 																		}
@@ -693,99 +693,80 @@ group {
 																	"caller": data-access {
 																		"property": "flatMapValue", 
 																		"object": symbol {
-																			"symbol-value": "__local19__"
+																			"symbol-value": "__local18__"
 																		}
 																	}, 
 																	"arguments": [symbol {
-																		"symbol-value": "__local19__"
-																	}, block {
-																		"value": group {
-																			"after-children": "\n					", 
-																			"children": [initialization {
-																				"before-child": "\n						", 
-																				"definition": definition {
-																					"name": "__local8__", 
-																					"type": symbol {
-																						"symbol-value": "auto"
-																					}
-																				}, 
-																				"value": block {
-																					"value": group {
-																						"after-children": "\n						", 
-																						"children": [initialization {
-																							"before-child": "\n							", 
-																							"definition": definition {
-																								"name": "__local7__", 
-																								"type": symbol {
-																									"symbol-value": "auto"
-																								}
-																							}, 
-																							"value": block {
-																								"value": group {
-																									"after-children": "\n							", 
-																									"children": [initialization {
-																										"before-child": "\n								", 
-																										"definition": definition {
-																											"name": "__local6__", 
-																											"type": symbol {
-																												"symbol-value": "auto"
-																											}
-																										}, 
-																										"value": lambda {
-																											"param": symbol {
-																												"symbol-value": "parsed"
-																											}, 
-																											"value": symbol {
-																												"symbol-value": "CLang"
-																											}
+																		"symbol-value": "__local18__"
+																	}, lambda {
+																		"param": symbol {
+																			"symbol-value": "parsed"
+																		}, 
+																		"value": block {
+																			"value": group {
+																				"after-children": "\n					", 
+																				"children": [initialization {
+																					"before-child": "\n						", 
+																					"definition": definition {
+																						"name": "__local7__", 
+																						"type": symbol {
+																							"symbol-value": "auto"
+																						}
+																					}, 
+																					"value": block {
+																						"value": group {
+																							"after-children": "\n						", 
+																							"children": [initialization {
+																								"before-child": "\n							", 
+																								"definition": definition {
+																									"name": "__local6__", 
+																									"type": symbol {
+																										"symbol-value": "auto"
+																									}
+																								}, 
+																								"value": invocation-value {
+																									"caller": data-access {
+																										"property": "createCRootRule", 
+																										"object": symbol {
+																											"symbol-value": "CLang"
 																										}
-																									}, invocation-value {
-																										"before-child": "\n								", 
-																										"caller": data-access {
-																											"property": "createCRootRule", 
-																											"object": symbol {
-																												"symbol-value": "__local6__"
-																											}
-																										}, 
-																										"arguments": [symbol {
-																											"symbol-value": "__local6__"
-																										}]
-																									}]
+																									}, 
+																									"arguments": []
 																								}
-																							}
-																						}, invocation-value {
-																							"before-child": "\n							", 
-																							"caller": data-access {
-																								"property": "generate", 
-																								"object": symbol {
-																									"symbol-value": "__local7__"
-																								}
-																							}, 
-																							"arguments": [symbol {
-																								"symbol-value": "__local7__"
-																							}, symbol {
-																								"symbol-value": "parsed"
+																							}, invocation-value {
+																								"before-child": "\n							", 
+																								"caller": data-access {
+																									"property": "generate", 
+																									"object": symbol {
+																										"symbol-value": "__local6__"
+																									}
+																								}, 
+																								"arguments": [symbol {
+																									"symbol-value": "__local6__"
+																								}, symbol {
+																									"symbol-value": "parsed"
+																								}]
 																							}]
-																						}]
+																						}
 																					}
-																				}
-																			}, invocation-value {
-																				"before-child": "\n						", 
-																				"caller": data-access {
-																					"property": "mapErr", 
-																					"object": symbol {
-																						"symbol-value": "__local8__"
-																					}
-																				}, 
-																				"arguments": [symbol {
-																					"symbol-value": "__local8__"
-																				}, function-access {
-																					"property": "new", 
-																					"object": symbol {
-																						"symbol-value": "ApplicationError"
-																					}
+																				}, invocation-value {
+																					"before-child": "\n						", 
+																					"caller": data-access {
+																						"property": "mapErr", 
+																						"object": symbol {
+																							"symbol-value": "__local7__"
+																						}
+																					}, 
+																					"arguments": [symbol {
+																						"symbol-value": "__local7__"
+																					}, function-access {
+																						"property": "new", 
+																						"object": symbol {
+																							"symbol-value": "ApplicationError"
+																						}
+																					}]
 																				}]
-																			}]
+																			}
 																		}
 																	}]
 																}]
@@ -796,33 +777,33 @@ group {
 														"caller": data-access {
 															"property": "mapValue", 
 															"object": symbol {
-																"symbol-value": "__local20__"
+																"symbol-value": "__local19__"
 															}
 														}, 
 														"arguments": [symbol {
-															"symbol-value": "__local20__"
-														}, invocation-value {
-															"caller": lambda {
-																"param": symbol {
-																	"symbol-value": "generated"
-																}, 
-																"value": symbol {
-																	"symbol-value": "writeGenerated"
-																}
-															}, 
-															"arguments": [symbol {
+															"symbol-value": "__local19__"
+														}, lambda {
+															"param": symbol {
 																"symbol-value": "generated"
-															}, invocation-value {
-																"caller": data-access {
-																	"property": "resolveSibling", 
-																	"object": symbol {
-																		"symbol-value": "source"
-																	}
+															}, 
+															"value": invocation-value {
+																"caller": symbol {
+																	"symbol-value": "writeGenerated"
 																}, 
-																"arguments": [string {
-																	"string-value": "Main.c"
+																"arguments": [symbol {
+																	"symbol-value": "generated"
+																}, invocation-value {
+																	"caller": data-access {
+																		"property": "resolveSibling", 
+																		"object": symbol {
+																			"symbol-value": "source"
+																		}
+																	}, 
+																	"arguments": [string {
+																		"string-value": "Main.c"
+																	}]
 																}]
-															}]
+															}
 														}]
 													}]
 												}
@@ -832,11 +813,11 @@ group {
 											"caller": data-access {
 												"property": "match", 
 												"object": symbol {
-													"symbol-value": "__local21__"
+													"symbol-value": "__local20__"
 												}
 											}, 
 											"arguments": [symbol {
-												"symbol-value": "__local21__"
+												"symbol-value": "__local20__"
 											}, lambda {
 												"param": symbol {
 													"symbol-value": "value"
@@ -890,7 +871,7 @@ group {
 										"children": [initialization {
 											"before-child": "\n			", 
 											"definition": definition {
-												"name": "__local25__", 
+												"name": "__local24__", 
 												"type": symbol {
 													"symbol-value": "auto"
 												}
@@ -901,7 +882,7 @@ group {
 													"children": [initialization {
 														"before-child": "\n				", 
 														"definition": definition {
-															"name": "__local24__", 
+															"name": "__local23__", 
 															"type": symbol {
 																"symbol-value": "auto"
 															}
@@ -912,7 +893,7 @@ group {
 																"children": [initialization {
 																	"before-child": "\n					", 
 																	"definition": definition {
-																		"name": "__local23__", 
+																		"name": "__local22__", 
 																		"type": symbol {
 																			"symbol-value": "auto"
 																		}
@@ -923,7 +904,7 @@ group {
 																			"children": [initialization {
 																				"before-child": "\n						", 
 																				"definition": definition {
-																					"name": "__local22__", 
+																					"name": "__local21__", 
 																					"type": symbol {
 																						"symbol-value": "auto"
 																					}
@@ -952,11 +933,11 @@ group {
 																				"caller": data-access {
 																					"property": "map", 
 																					"object": symbol {
-																						"symbol-value": "__local22__"
+																						"symbol-value": "__local21__"
 																					}
 																				}, 
 																				"arguments": [symbol {
-																					"symbol-value": "__local22__"
+																					"symbol-value": "__local21__"
 																				}, function-access {
 																					"property": "new", 
 																					"object": symbol {
@@ -971,11 +952,11 @@ group {
 																	"caller": data-access {
 																		"property": "map", 
 																		"object": symbol {
-																			"symbol-value": "__local23__"
+																			"symbol-value": "__local22__"
 																		}
 																	}, 
 																	"arguments": [symbol {
-																		"symbol-value": "__local23__"
+																		"symbol-value": "__local22__"
 																	}, function-access {
 																		"property": "new", 
 																		"object": symbol {
@@ -990,11 +971,11 @@ group {
 														"caller": data-access {
 															"property": "map", 
 															"object": symbol {
-																"symbol-value": "__local24__"
+																"symbol-value": "__local23__"
 															}
 														}, 
 														"arguments": [symbol {
-															"symbol-value": "__local24__"
+															"symbol-value": "__local23__"
 														}, function-access {
 															"property": "new", 
 															"object": symbol {
@@ -1009,11 +990,11 @@ group {
 											"caller": data-access {
 												"property": "orElseGet", 
 												"object": symbol {
-													"symbol-value": "__local25__"
+													"symbol-value": "__local24__"
 												}
 											}, 
 											"arguments": [symbol {
-												"symbol-value": "__local25__"
+												"symbol-value": "__local24__"
 											}, lambda {
 												"value": construction {
 													"caller": symbol {
@@ -1062,7 +1043,7 @@ group {
 										"children": [initialization {
 											"before-child": "\n			", 
 											"definition": definition {
-												"name": "__local27__", 
+												"name": "__local26__", 
 												"type": symbol {
 													"symbol-value": "auto"
 												}
@@ -1073,7 +1054,7 @@ group {
 													"children": [initialization {
 														"before-child": "\n				", 
 														"definition": definition {
-															"name": "__local26__", 
+															"name": "__local25__", 
 															"type": symbol {
 																"symbol-value": "auto"
 															}
@@ -1096,11 +1077,11 @@ group {
 														"caller": data-access {
 															"property": "map", 
 															"object": symbol {
-																"symbol-value": "__local26__"
+																"symbol-value": "__local25__"
 															}
 														}, 
 														"arguments": [symbol {
-															"symbol-value": "__local26__"
+															"symbol-value": "__local25__"
 														}, function-access {
 															"property": "new", 
 															"object": symbol {
@@ -1115,11 +1096,11 @@ group {
 											"caller": data-access {
 												"property": "map", 
 												"object": symbol {
-													"symbol-value": "__local27__"
+													"symbol-value": "__local26__"
 												}
 											}, 
 											"arguments": [symbol {
-												"symbol-value": "__local27__"
+												"symbol-value": "__local26__"
 											}, function-access {
 												"property": "new", 
 												"object": symbol {
