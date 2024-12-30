@@ -26,15 +26,21 @@ struct Main{
 					};
 					__local5__.mapErr(__local5__, ApplicationError.new)
 				};
-				__local6__.match(__local6__, auto __function3__(auto input){
-					return runWithInput(source, input);
+				__local6__.match(__local6__, {
+					auto __function3__(auto input){
+						return runWithInput(source, input);
+					}
+					__function3__
 				}, Optional.of)
 			};
-			__local7__.ifPresent(__local7__, auto __function2__(auto error){
-				return {
-					auto __local1__=System.err;
-					__local1__.println(__local1__, error.display())
-				};
+			__local7__.ifPresent(__local7__, {
+				auto __function2__(auto error){
+					return {
+						auto __local1__=System.err;
+						__local1__.println(__local1__, error.display())
+					};
+				}
+				__function2__
 			})
 		}
 	}
@@ -53,50 +59,71 @@ struct Main{
 										};
 										__local22__.mapErr(__local22__, ApplicationError.new)
 									};
-									__local23__.flatMapValue(__local23__, auto __function20__(auto parsed){
-										return writeAST(source.resolveSibling("Main.input.ast"), parsed);
+									__local23__.flatMapValue(__local23__, {
+										auto __function20__(auto parsed){
+											return writeAST(source.resolveSibling("Main.input.ast"), parsed);
+										}
+										__function20__
 									})
 								};
-								__local24__.mapValue(__local24__, auto __function19__(auto node){
-									return {
-										auto __local18__={
-											auto __local17__=new TreePassingStage(new Modifier());
-											__local17__.pass(__local17__, new State(), node)
+								__local24__.mapValue(__local24__, {
+									auto __function19__(auto node){
+										return {
+											auto __local18__={
+												auto __local17__=new TreePassingStage(new Modifier());
+												__local17__.pass(__local17__, new State(), node)
+											};
+											__local18__.right(__local18__)
 										};
-										__local18__.right(__local18__)
-									};
+									}
+									__function19__
 								})
 							};
-							__local25__.mapValue(__local25__, auto __function16__(auto node){
-								return {
-									auto __local15__={
-										auto __local14__=new TreePassingStage(new Formatter());
-										__local14__.pass(__local14__, new State(), node)
+							__local25__.mapValue(__local25__, {
+								auto __function16__(auto node){
+									return {
+										auto __local15__={
+											auto __local14__=new TreePassingStage(new Formatter());
+											__local14__.pass(__local14__, new State(), node)
+										};
+										__local15__.right(__local15__)
 									};
-									__local15__.right(__local15__)
-								};
+								}
+								__function16__
 							})
 						};
-						__local26__.flatMapValue(__local26__, auto __function13__(auto parsed){
-							return writeAST(source.resolveSibling("Main.output.ast"), parsed);
+						__local26__.flatMapValue(__local26__, {
+							auto __function13__(auto parsed){
+								return writeAST(source.resolveSibling("Main.output.ast"), parsed);
+							}
+							__function13__
 						})
 					};
-					__local27__.flatMapValue(__local27__, auto __function12__(auto parsed){
-						return {
-							auto __local11__={
-								auto __local10__=CLang.createCRootRule();
-								__local10__.generate(__local10__, parsed)
+					__local27__.flatMapValue(__local27__, {
+						auto __function12__(auto parsed){
+							return {
+								auto __local11__={
+									auto __local10__=CLang.createCRootRule();
+									__local10__.generate(__local10__, parsed)
+								};
+								__local11__.mapErr(__local11__, ApplicationError.new)
 							};
-							__local11__.mapErr(__local11__, ApplicationError.new)
-						};
+						}
+						__function12__
 					})
 				};
-				__local28__.mapValue(__local28__, auto __function9__(auto generated){
-					return writeGenerated(generated, source.resolveSibling("Main.c"));
+				__local28__.mapValue(__local28__, {
+					auto __function9__(auto generated){
+						return writeGenerated(generated, source.resolveSibling("Main.c"));
+					}
+					__function9__
 				})
 			};
-			__local29__.match(__local29__, auto __function8__(auto value){
-				return value;
+			__local29__.match(__local29__, {
+				auto __function8__(auto value){
+					return value;
+				}
+				__function8__
 			}, Optional.of)
 		};
 	}
@@ -112,8 +139,11 @@ struct Main{
 				};
 				__local33__.map(__local33__, Err.new)
 			};
-			__local34__.orElseGet(__local34__, auto __function30__(){
-				return new Ok(node);
+			__local34__.orElseGet(__local34__, {
+				auto __function30__(){
+					return new Ok(node);
+				}
+				__function30__
 			})
 		};
 	}

@@ -65,13 +65,14 @@ public class Modifier implements Passer {
         final var value = node.findNode("value").orElse(new Node());
         final var block = createBlock(List.of(new Node("return").withNode("value", value)));
 
+        final var name = createUniqueName("function");
         final var function = node.retype("function")
-                .withString("name", createUniqueName("function"))
+                .withString("name", name)
                 .withNode("type", createAutoType())
                 .withNodeList("params", params)
                 .withNode("value", block);
 
-        return Optional.of(function);
+        return Optional.of(createBlock(List.of(function, new Node("symbol").withString("symbol-value", name))));
     }
 
     private Optional<? extends Node> modifyArray(Node node) {
