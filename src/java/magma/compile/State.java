@@ -1,9 +1,9 @@
-package magma;
+package magma.compile;
 
 public class State {
     private int depth;
 
-    State() {
+    public State() {
         this(0);
     }
 

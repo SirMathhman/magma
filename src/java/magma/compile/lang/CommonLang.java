@@ -1,6 +1,6 @@
 package magma.compile.lang;
 
-import magma.NodeRule;
+import magma.compile.rule.NodeRule;
 import magma.compile.rule.ExactRule;
 import magma.compile.rule.LazyRule;
 import magma.compile.rule.OrRule;

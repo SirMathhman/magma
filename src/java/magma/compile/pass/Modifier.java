@@ -1,12 +1,13 @@
-package magma;
+package magma.compile.pass;
 
+import magma.compile.State;
 import magma.api.Tuple;
 import magma.compile.Node;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-class Modifier implements Passer {
+public class Modifier implements Passer {
     private static Node modifyStateless(Node node) {
         if (node.is("group")) {
             final var oldChildren = node.findNodeList("children").orElse(new ArrayList<>());

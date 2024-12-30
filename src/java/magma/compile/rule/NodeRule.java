@@ -1,11 +1,10 @@
-package magma;
+package magma.compile.rule;
 
 import magma.api.result.Err;
 import magma.api.result.Result;
 import magma.compile.Node;
 import magma.compile.error.CompileError;
 import magma.compile.error.NodeContext;
-import magma.compile.rule.Rule;
 
 public record NodeRule(String propertyKey, Rule childRule) implements Rule {
     @Override

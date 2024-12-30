@@ -1,5 +1,6 @@
-package magma;
+package magma.compile.pass;
 
+import magma.compile.State;
 import magma.api.Tuple;
 import magma.compile.Node;
 
@@ -7,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class Formatter implements Passer {
+public class Formatter implements Passer {
     private static Node attachIndent(int depth, int index, Node child) {
         if (depth == 0 && index == 0) return child;
         final var indent = "\n" + "\t".repeat(depth);

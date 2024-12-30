@@ -1,5 +1,6 @@
-package magma;
+package magma.compile.pass;
 
+import magma.compile.State;
 import magma.api.Tuple;
 import magma.compile.Node;
 

@@ -5,10 +5,14 @@ import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.compile.Node;
+import magma.compile.State;
 import magma.compile.error.ApplicationError;
 import magma.compile.error.JavaError;
 import magma.compile.lang.CLang;
 import magma.compile.lang.JavaLang;
+import magma.compile.pass.Formatter;
+import magma.compile.pass.Modifier;
+import magma.compile.pass.TreePassingStage;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
