@@ -10,7 +10,6 @@ import magma.compile.error.ApplicationError;
 import magma.compile.error.JavaError;
 import magma.compile.lang.CLang;
 import magma.compile.lang.JavaLang;
-import magma.compile.pass.Formatter;
 import magma.compile.pass.Modifier;
 import magma.compile.pass.TreePassingStage;
 
@@ -34,7 +33,6 @@ public class Main {
                 .mapErr(ApplicationError::new)
                 .flatMapValue(parsed -> writeAST(source.resolveSibling("Main.input.ast"), parsed))
                 .mapValue(node -> new TreePassingStage(new Modifier()).pass(new State(), node).right())
-                .mapValue(node -> new TreePassingStage(new Formatter()).pass(new State(), node).right())
                 .flatMapValue(parsed -> writeAST(source.resolveSibling("Main.output.ast"), parsed))
                 .flatMapValue(parsed -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))
                 .mapValue(generated -> writeGenerated(generated, source.resolveSibling("Main.c"))).match(value -> value, Optional::of);
@@ -53,4 +51,5 @@ public class Main {
                 .map(JavaError::new)
                 .map(ApplicationError::new);
     }
+
 }

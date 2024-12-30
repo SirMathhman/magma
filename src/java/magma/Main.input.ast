@@ -22,8 +22,6 @@ group {
 	}, import {
 		"namespace": ["magma", "compile", "lang", "JavaLang"]
 	}, import {
-		"namespace": ["magma", "compile", "pass", "Formatter"]
-	}, import {
 		"namespace": ["magma", "compile", "pass", "Modifier"]
 	}, import {
 		"namespace": ["magma", "compile", "pass", "TreePassingStage"]
@@ -200,97 +198,57 @@ group {
 																		"property": "mapValue", 
 																		"object": invocation-value {
 																			"caller": data-access {
-																				"property": "mapValue", 
+																				"property": "flatMapValue", 
 																				"object": invocation-value {
 																					"caller": data-access {
-																						"property": "flatMapValue", 
+																						"property": "mapErr", 
 																						"object": invocation-value {
 																							"caller": data-access {
-																								"property": "mapErr", 
+																								"property": "parse", 
 																								"object": invocation-value {
 																									"caller": data-access {
-																										"property": "parse", 
-																										"object": invocation-value {
-																											"caller": data-access {
-																												"property": "createJavaRootRule", 
-																												"object": symbol {
-																													"symbol-value": "JavaLang"
-																												}
-																											}, 
-																											"arguments": []
+																										"property": "createJavaRootRule", 
+																										"object": symbol {
+																											"symbol-value": "JavaLang"
 																										}
 																									}, 
-																									"arguments": [symbol {
-																										"symbol-value": "input"
-																									}]
+																									"arguments": []
 																								}
 																							}, 
-																							"arguments": [function-access {
-																								"property": "new", 
-																								"object": symbol {
-																									"symbol-value": "ApplicationError"
-																								}
+																							"arguments": [symbol {
+																								"symbol-value": "input"
 																							}]
 																						}
 																					}, 
-																					"arguments": [lambda {
-																						"param": symbol {
-																							"symbol-value": "parsed"
-																						}, 
-																						"value": invocation-value {
-																							"caller": symbol {
-																								"symbol-value": "writeAST"
-																							}, 
-																							"arguments": [invocation-value {
-																								"caller": data-access {
-																									"property": "resolveSibling", 
-																									"object": symbol {
-																										"symbol-value": "source"
-																									}
-																								}, 
-																								"arguments": [string {
-																									"string-value": "Main.input.ast"
-																								}]
-																							}, symbol {
-																								"symbol-value": "parsed"
-																							}]
+																					"arguments": [function-access {
+																						"property": "new", 
+																						"object": symbol {
+																							"symbol-value": "ApplicationError"
 																						}
 																					}]
 																				}
 																			}, 
 																			"arguments": [lambda {
 																				"param": symbol {
-																					"symbol-value": "node"
+																					"symbol-value": "parsed"
 																				}, 
 																				"value": invocation-value {
-																					"caller": data-access {
-																						"property": "right", 
-																						"object": invocation-value {
-																							"caller": data-access {
-																								"property": "pass", 
-																								"object": construction {
-																									"caller": symbol {
-																										"symbol-value": "TreePassingStage"
-																									}, 
-																									"arguments": [construction {
-																										"caller": symbol {
-																											"symbol-value": "Modifier"
-																										}, 
-																										"arguments": []
-																									}]
-																								}
-																							}, 
-																							"arguments": [construction {
-																								"caller": symbol {
-																									"symbol-value": "State"
-																								}, 
-																								"arguments": []
-																							}, symbol {
-																								"symbol-value": "node"
-																							}]
-																						}
+																					"caller": symbol {
+																						"symbol-value": "writeAST"
 																					}, 
-																					"arguments": []
+																					"arguments": [invocation-value {
+																						"caller": data-access {
+																							"property": "resolveSibling", 
+																							"object": symbol {
+																								"symbol-value": "source"
+																							}
+																						}, 
+																						"arguments": [string {
+																							"string-value": "Main.input.ast"
+																						}]
+																					}, symbol {
+																						"symbol-value": "parsed"
+																					}]
 																				}
 																			}]
 																		}
@@ -311,7 +269,7 @@ group {
 																							}, 
 																							"arguments": [construction {
 																								"caller": symbol {
-																									"symbol-value": "Formatter"
+																									"symbol-value": "Modifier"
 																								}, 
 																								"arguments": []
 																							}]

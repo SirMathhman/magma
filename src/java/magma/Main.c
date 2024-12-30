@@ -34,13 +34,13 @@ struct Main{
 				}, Optional.of)
 			};
 			__local7__.ifPresent(__local7__, {
-				auto __function2__(auto error){
+				auto __function1__(auto error){
 					return {
-						auto __local1__=System.err;
-						__local1__.println(__local1__, error.display())
+						auto __local2__=System.err;
+						__local2__.println(__local2__, error.display())
 					};
 				}
-				__function2__
+				__function1__
 			})
 		}
 	}
@@ -67,29 +67,29 @@ struct Main{
 									})
 								};
 								__local24__.mapValue(__local24__, {
-									auto __function19__(auto node){
+									auto __function17__(auto node){
 										return {
-											auto __local18__={
-												auto __local17__=new TreePassingStage(new Modifier());
-												__local17__.pass(__local17__, new State(), node)
+											auto __local19__={
+												auto __local18__=new TreePassingStage(new Modifier());
+												__local18__.pass(__local18__, new State(), node)
 											};
-											__local18__.right(__local18__)
+											__local19__.right(__local19__)
 										};
 									}
-									__function19__
+									__function17__
 								})
 							};
 							__local25__.mapValue(__local25__, {
-								auto __function16__(auto node){
+								auto __function14__(auto node){
 									return {
-										auto __local15__={
-											auto __local14__=new TreePassingStage(new Formatter());
-											__local14__.pass(__local14__, new State(), node)
+										auto __local16__={
+											auto __local15__=new TreePassingStage(new Formatter());
+											__local15__.pass(__local15__, new State(), node)
 										};
-										__local15__.right(__local15__)
+										__local16__.right(__local16__)
 									};
 								}
-								__function16__
+								__function14__
 							})
 						};
 						__local26__.flatMapValue(__local26__, {
@@ -100,16 +100,16 @@ struct Main{
 						})
 					};
 					__local27__.flatMapValue(__local27__, {
-						auto __function12__(auto parsed){
+						auto __function10__(auto parsed){
 							return {
-								auto __local11__={
-									auto __local10__=CLang.createCRootRule();
-									__local10__.generate(__local10__, parsed)
+								auto __local12__={
+									auto __local11__=CLang.createCRootRule();
+									__local11__.generate(__local11__, parsed)
 								};
-								__local11__.mapErr(__local11__, ApplicationError.new)
+								__local12__.mapErr(__local12__, ApplicationError.new)
 							};
 						}
-						__function12__
+						__function10__
 					})
 				};
 				__local28__.mapValue(__local28__, {
