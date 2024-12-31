@@ -1,16 +1,14 @@
 package magma.compile.pass;
 
-import magma.compile.State;
 import magma.api.Tuple;
 import magma.compile.Node;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public record TreePassingStage(Passer<State> passer) {
-    public Tuple<State, Node> pass(
-            State state,
-            Node node) {
+public record TreePassingStage<S>(Passer<S> passer) implements PassingStage<S> {
+    @Override
+    public Tuple<S, Node> pass(S state, Node node) {
         final var withBefore = passer.beforePass(state, node);
         final var withNodeLists = withBefore.right()
                 .streamNodeLists()
@@ -23,7 +21,7 @@ public record TreePassingStage(Passer<State> passer) {
         return passer.afterPass(withNodes.left(), withNodes.right());
     }
 
-    public Tuple<State, Node> passNodeLists(Tuple<State, Node> node1, Tuple<String, List<Node>> tuple) {
+    public Tuple<S, Node> passNodeLists(Tuple<S, Node> node1, Tuple<String, List<Node>> tuple) {
         final var oldState = node1.left();
         final var oldChildren = node1.right();
 
@@ -46,7 +44,7 @@ public record TreePassingStage(Passer<State> passer) {
         return new Tuple<>(oldState, newNode);
     }
 
-    public Tuple<State, Node> passNode(Tuple<State, Node> node1, Tuple<String, Node> tuple) {
+    public Tuple<S, Node> passNode(Tuple<S, Node> node1, Tuple<String, Node> tuple) {
         final var oldState = node1.left();
         final var oldNode = node1.right();
 

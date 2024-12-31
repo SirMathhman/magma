@@ -32,7 +32,7 @@ public class Main {
                 .parse(input)
                 .mapErr(ApplicationError::new)
                 .flatMapValue((parsed) -> writeAST(source.resolveSibling("Main.input.ast"), parsed))
-                .mapValue((node) -> new TreePassingStage(new Modifier()).pass(new State(), node).right())
+                .mapValue((node) -> new TreePassingStage<>(new Modifier()).pass(new State(), node).right())
                 .flatMapValue((parsed) -> writeAST(source.resolveSibling("Main.output.ast"), parsed))
                 .flatMapValue((parsed) -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))
                 .mapValue((generated) -> writeGenerated(generated, source.resolveSibling("Main.c")))
