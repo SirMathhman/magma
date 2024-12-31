@@ -1,6 +1,5 @@
 group {
 	"children": [include {
-		"before-child": "\n", 
 		"namespace": ["magma", "api", "JavaFiles"]
 	}, include {
 		"before-child": "\n", 
@@ -52,7 +51,6 @@ group {
 			"value": group {
 				"children": [function {
 					"name": "main", 
-					"before-child": "\n", 
 					"modifiers": ["public", "static"], 
 					"type": symbol {
 						"symbol-value": "void"
@@ -60,7 +58,6 @@ group {
 					"value": block {
 						"value": group {
 							"children": [initialization {
-								"before-child": "\n", 
 								"definition": definition {
 									"name": "source", 
 									"modifiers": ["final"], 
@@ -199,7 +196,6 @@ group {
 					"value": block {
 						"value": group {
 							"children": [return {
-								"before-child": "\n", 
 								"value": invocation-value {
 									"caller": data-access {
 										"property": "match", 
@@ -437,7 +433,6 @@ group {
 					"value": block {
 						"value": group {
 							"children": [return {
-								"before-child": "\n", 
 								"value": invocation-value {
 									"caller": data-access {
 										"property": "orElseGet", 
@@ -540,7 +535,6 @@ group {
 					"value": block {
 						"value": group {
 							"children": [return {
-								"before-child": "\n", 
 								"value": invocation-value {
 									"caller": data-access {
 										"property": "map", 

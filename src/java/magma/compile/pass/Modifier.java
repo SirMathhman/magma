@@ -4,6 +4,8 @@ import magma.api.Tuple;
 import magma.compile.Node;
 import magma.compile.State;
 
+import java.util.stream.IntStream;
+
 import static magma.compile.lang.CLang.FUNCTION_TYPE;
 import static magma.compile.lang.CLang.INCLUDE_TYPE;
 import static magma.compile.lang.CLang.STRUCT_TYPE;
@@ -37,12 +39,20 @@ public class Modifier implements Passer {
         return node;
     }
 
+    private static Node getNode(Tuple<Integer, Node> tuple) {
+        final var index = tuple.left();
+        final var node = tuple.right();
+        if (index == 0) return node;
+        return node.withString(GROUP_BEFORE_CHILD, "\n");
+    }
+
     @Override
     public Tuple<State, Node> afterPass(State state, Node node) {
         if (node.is(GROUP_TYPE)) {
             final var map = node.map(GROUP_CHILDREN, children -> {
-                return children.stream()
-                        .map(child -> child.withString(GROUP_BEFORE_CHILD, "\n"))
+                return IntStream.range(0, children.size())
+                        .mapToObj(index -> new Tuple<>(index, children.get(index)))
+                        .map(Modifier::getNode)
                         .toList();
             });
             return new Tuple<>(state, map);
