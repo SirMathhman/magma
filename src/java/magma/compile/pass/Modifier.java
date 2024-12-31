@@ -16,16 +16,13 @@ import static magma.compile.lang.CommonLang.GROUP_BEFORE_CHILD;
 import static magma.compile.lang.CommonLang.GROUP_CHILDREN;
 import static magma.compile.lang.CommonLang.GROUP_TYPE;
 import static magma.compile.lang.CommonLang.LAMBDA_CAPTURED;
-import static magma.compile.lang.CommonLang.LAMBDA_PARAM;
-import static magma.compile.lang.CommonLang.LAMBDA_PARAMETERS;
 import static magma.compile.lang.CommonLang.LAMBDA_TYPE;
-import static magma.compile.lang.CommonLang.SYMBOL_VALUE;
 import static magma.compile.lang.JavaLang.CLASS_TYPE;
 import static magma.compile.lang.JavaLang.IMPORT_TYPE;
 import static magma.compile.lang.JavaLang.METHOD_TYPE;
 import static magma.compile.lang.JavaLang.PACKAGE_TYPE;
 
-public class Modifier implements Passer {
+public class Modifier implements Passer<State> {
     private static Node passRootChild(Node child) {
         if (child.is("import")) return child.retype("include");
         if (child.is("class")) return child.retype("struct");
@@ -65,6 +62,7 @@ public class Modifier implements Passer {
         }
 
         if (node.is(LAMBDA_TYPE)) {
+
             return new Tuple<>(state, node.withNodeList(LAMBDA_CAPTURED, Collections.emptyList()));
         }
 

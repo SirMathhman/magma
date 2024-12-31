@@ -16,7 +16,11 @@
 struct Main{
 	void main(String[] args){
 		final Path source=Paths.get(".", "src", "java", "magma", "Main.java");
-		JavaFiles.readString(source).mapErr(JavaError::new).mapErr(ApplicationError::new).match([](input)->runWithInput(source, input), Optional::of).ifPresent([](error)->System.err.println(error.display()));
+		JavaFiles.readString(source)
+		.mapErr(JavaError::new)
+		.mapErr(ApplicationError::new)
+		.match([source](input)->runWithInput(source, input), Optional::of)
+		.ifPresent([](error)->System.err.println(error.display()));
 	}
 	Optional<ApplicationError> runWithInput(Path source, String input){
 		return JavaLang.createJavaRootRule().parse(input).mapErr(ApplicationError::new).flatMapValue([](parsed)->writeAST(source.resolveSibling("Main.input.ast"), parsed)).mapValue([](node)->new TreePassingStage(new Modifier()).pass(new State(), node).right()).flatMapValue([](parsed)->writeAST(source.resolveSibling("Main.output.ast"), parsed)).flatMapValue([](parsed)->CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new)).mapValue([](generated)->writeGenerated(generated, source.resolveSibling("Main.c"))).match([](value)->value, Optional::of);

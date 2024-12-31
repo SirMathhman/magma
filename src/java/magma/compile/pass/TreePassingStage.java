@@ -7,7 +7,7 @@ import magma.compile.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-public record TreePassingStage(Passer passer) {
+public record TreePassingStage(Passer<State> passer) {
     public Tuple<State, Node> pass(
             State state,
             Node node) {
