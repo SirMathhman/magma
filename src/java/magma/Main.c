@@ -16,13 +16,13 @@
 struct Main{
 	void main(String[] args){
 		final Path source=Paths.get(".", "src", "java", "magma", "Main.java");
-		JavaFiles.readString(source).mapErr(JavaError::new).mapErr(ApplicationError::new).match([](input)->runWithInput(source, input), Optional::of).ifPresent([](error)->System.err.println(error.display()));
+		JavaFiles.readString(source).mapErr(JavaError::new).mapErr(ApplicationError::new).match([runWithInput, source](input)->runWithInput(source, input), Optional::of).ifPresent([System](error)->System.err.println(error.display()));
 	}
 	Optional<ApplicationError> runWithInput(Path source, String input){
-		return JavaLang.createJavaRootRule().parse(input).mapErr(ApplicationError::new).flatMapValue([](parsed)->writeAST(source.resolveSibling("Main.input.ast"), parsed)).mapValue([](node)->new TreePassingStage(new Modifier()).pass(new State(), node).right()).flatMapValue([](parsed)->writeAST(source.resolveSibling("Main.output.ast"), parsed)).flatMapValue([](parsed)->CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new)).mapValue([](generated)->writeGenerated(generated, source.resolveSibling("Main.c"))).match([](value)->value, Optional::of);
+		return JavaLang.createJavaRootRule().parse(input).mapErr(ApplicationError::new).flatMapValue([writeAST, source](parsed)->writeAST(source.resolveSibling("Main.input.ast"), parsed)).mapValue([TreePassingStage, State, Modifier](node)->new TreePassingStage(new Modifier()).pass(new State(), node).right()).flatMapValue([writeAST, source](parsed)->writeAST(source.resolveSibling("Main.output.ast"), parsed)).flatMapValue([CLang, ApplicationError](parsed)->CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new)).mapValue([writeGenerated, source](generated)->writeGenerated(generated, source.resolveSibling("Main.c"))).match([](value)->value, Optional::of);
 	}
 	Result<Node, ApplicationError> writeAST(Path path, Node node){
-		return JavaFiles.writeString(path, node.toString()).map(JavaError::new).map(ApplicationError::new).<Result<Node, ApplicationError>>map(Err::new).orElseGet([]()->new Ok(node));
+		return JavaFiles.writeString(path, node.toString()).map(JavaError::new).map(ApplicationError::new).<Result<Node, ApplicationError>>map(Err::new).orElseGet([node, Ok]()->new Ok(node));
 	}
 	Optional<ApplicationError> writeGenerated(String generated, Path target){
 		return JavaFiles.writeString(target, generated).map(JavaError::new).map(ApplicationError::new);

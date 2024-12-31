@@ -141,7 +141,11 @@ group {
 													"symbol-value": "input"
 												}]
 											}, 
-											"captured": [], 
+											"captured": [symbol {
+												"symbol-value": "runWithInput"
+											}, symbol {
+												"symbol-value": "source"
+											}], 
 											"parameters": [symbol {
 												"symbol-value": "input"
 											}]
@@ -174,7 +178,9 @@ group {
 											"arguments": []
 										}]
 									}, 
-									"captured": [], 
+									"captured": [symbol {
+										"symbol-value": "System"
+									}], 
 									"parameters": [symbol {
 										"symbol-value": "error"
 									}]
@@ -271,7 +277,11 @@ group {
 																						"symbol-value": "parsed"
 																					}]
 																				}, 
-																				"captured": [], 
+																				"captured": [symbol {
+																					"symbol-value": "writeAST"
+																				}, symbol {
+																					"symbol-value": "source"
+																				}], 
 																				"parameters": [symbol {
 																					"symbol-value": "parsed"
 																				}]
@@ -309,7 +319,13 @@ group {
 																			}, 
 																			"arguments": []
 																		}, 
-																		"captured": [], 
+																		"captured": [symbol {
+																			"symbol-value": "TreePassingStage"
+																		}, symbol {
+																			"symbol-value": "State"
+																		}, symbol {
+																			"symbol-value": "Modifier"
+																		}], 
 																		"parameters": [symbol {
 																			"symbol-value": "node"
 																		}]
@@ -335,7 +351,11 @@ group {
 																		"symbol-value": "parsed"
 																	}]
 																}, 
-																"captured": [], 
+																"captured": [symbol {
+																	"symbol-value": "writeAST"
+																}, symbol {
+																	"symbol-value": "source"
+																}], 
 																"parameters": [symbol {
 																	"symbol-value": "parsed"
 																}]
@@ -371,7 +391,11 @@ group {
 																}
 															}]
 														}, 
-														"captured": [], 
+														"captured": [symbol {
+															"symbol-value": "CLang"
+														}, symbol {
+															"symbol-value": "ApplicationError"
+														}], 
 														"parameters": [symbol {
 															"symbol-value": "parsed"
 														}]
@@ -397,7 +421,11 @@ group {
 														}]
 													}]
 												}, 
-												"captured": [], 
+												"captured": [symbol {
+													"symbol-value": "writeGenerated"
+												}, symbol {
+													"symbol-value": "source"
+												}], 
 												"parameters": [symbol {
 													"symbol-value": "generated"
 												}]
@@ -523,7 +551,11 @@ group {
 												"symbol-value": "node"
 											}]
 										}, 
-										"captured": [], 
+										"captured": [symbol {
+											"symbol-value": "node"
+										}, symbol {
+											"symbol-value": "Ok"
+										}], 
 										"parameters": []
 									}]
 								}

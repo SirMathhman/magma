@@ -4,8 +4,10 @@ import magma.api.Tuple;
 import magma.compile.Node;
 import magma.compile.State;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import static magma.compile.lang.CLang.FUNCTION_TYPE;
@@ -16,7 +18,10 @@ import static magma.compile.lang.CommonLang.GROUP_BEFORE_CHILD;
 import static magma.compile.lang.CommonLang.GROUP_CHILDREN;
 import static magma.compile.lang.CommonLang.GROUP_TYPE;
 import static magma.compile.lang.CommonLang.LAMBDA_CAPTURED;
+import static magma.compile.lang.CommonLang.LAMBDA_PARAMETERS;
 import static magma.compile.lang.CommonLang.LAMBDA_TYPE;
+import static magma.compile.lang.CommonLang.SYMBOL_TYPE;
+import static magma.compile.lang.CommonLang.SYMBOL_VALUE;
 import static magma.compile.lang.JavaLang.CLASS_TYPE;
 import static magma.compile.lang.JavaLang.IMPORT_TYPE;
 import static magma.compile.lang.JavaLang.METHOD_TYPE;
@@ -62,8 +67,23 @@ public class Modifier implements Passer<State> {
         }
 
         if (node.is(LAMBDA_TYPE)) {
+            final var params = node.findNodeList(LAMBDA_PARAMETERS)
+                    .orElse(new ArrayList<>())
+                    .stream()
+                    .map(value -> value.findString(SYMBOL_VALUE).orElse(""))
+                    .toList();
 
-            return new Tuple<>(state, node.withNodeList(LAMBDA_CAPTURED, Collections.emptyList()));
+            final var captureSet = new TreePassingStage<>(new CapturePasser())
+                    .pass(new HashSet<>(), node)
+                    .left();
+
+            captureSet.removeIf(params::contains);
+
+            final var captureList = captureSet.stream()
+                    .map(value -> new Node(SYMBOL_TYPE).withString(SYMBOL_VALUE, value))
+                    .toList();
+
+            return new Tuple<>(state, node.withNodeList(LAMBDA_CAPTURED, captureList));
         }
 
         return new Tuple<>(state, node);
@@ -84,6 +104,19 @@ public class Modifier implements Passer<State> {
             return new Tuple<>(state, node.retype(FUNCTION_TYPE));
         } else {
             return new Tuple<>(state, node);
+        }
+    }
+
+    private static class CapturePasser implements Passer<Set<String>> {
+        @Override
+        public Tuple<Set<String>, Node> afterPass(Set<String> state, Node node) {
+            if (node.is(SYMBOL_TYPE)) {
+                final var value = node.findString(SYMBOL_VALUE).orElse("");
+                state.add(value);
+                return new Tuple<>(state, node);
+            } else {
+                return new Tuple<>(state, node);
+            }
         }
     }
 }

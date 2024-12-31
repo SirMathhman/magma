@@ -36,6 +36,7 @@ public class CommonLang {
     public static final String LAMBDA_CAPTURED = "captured";
     public static final String LAMBDA_PARAMETERS = "parameters";
     public static final String SYMBOL_VALUE = "symbol-value";
+    public static final String SYMBOL_TYPE = "symbol";
 
     static Rule createGroupRule(Rule childRule) {
         final var children = new NodeListRule(new StatementSlicer(), GROUP_CHILDREN, new StripRule(GROUP_BEFORE_CHILD, childRule, "after-child"));
@@ -65,7 +66,7 @@ public class CommonLang {
     }
 
     private static TypeRule createSymbolRule() {
-        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(SYMBOL_VALUE))));
+        return new TypeRule(SYMBOL_TYPE, new StripRule(new FilterRule(new SymbolFilter(), new StringRule(SYMBOL_VALUE))));
     }
 
     private static TypeRule createGenericRule(Rule type) {
