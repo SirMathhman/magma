@@ -30,10 +30,11 @@ public class CommonLang {
     public static final String GROUP_TYPE = "group";
     public static final String GROUP_BEFORE_CHILD = "before-child";
     public static final String GROUP_CHILDREN = "children";
+    public static final String GROUP_AFTER_CHILDREN = "after-children";
 
     static Rule createGroupRule(Rule childRule) {
         final var children = new NodeListRule(new StatementSlicer(), GROUP_CHILDREN, new StripRule(GROUP_BEFORE_CHILD, childRule, "after-child"));
-        return new TypeRule(GROUP_TYPE, new StripRule("before-children", children, "after-children"));
+        return new TypeRule(GROUP_TYPE, new StripRule("before-children", children, GROUP_AFTER_CHILDREN));
     }
 
     static SplitRule createBlockValueRule(Rule beforeBlock, Rule blockMember) {

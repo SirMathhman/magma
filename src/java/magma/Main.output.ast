@@ -1,4 +1,5 @@
 group {
+	"after-children": "\n", 
 	"children": [include {
 		"namespace": ["magma", "api", "JavaFiles"]
 	}, include {
@@ -49,15 +50,19 @@ group {
 		"modifiers": ["public"], 
 		"value": block {
 			"value": group {
+				"after-children": "\n", 
 				"children": [function {
 					"name": "main", 
+					"before-child": "\n	", 
 					"modifiers": ["public", "static"], 
 					"type": symbol {
 						"symbol-value": "void"
 					}, 
 					"value": block {
 						"value": group {
+							"after-children": "\n	", 
 							"children": [initialization {
+								"before-child": "\n		", 
 								"definition": definition {
 									"name": "source", 
 									"modifiers": ["final"], 
@@ -85,7 +90,7 @@ group {
 									}]
 								}
 							}, invocation-statement {
-								"before-child": "\n", 
+								"before-child": "\n		", 
 								"caller": data-access {
 									"property": "ifPresent", 
 									"object": invocation-value {
@@ -185,7 +190,7 @@ group {
 					}]
 				}, function {
 					"name": "runWithInput", 
-					"before-child": "\n", 
+					"before-child": "\n	", 
 					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Optional", 
@@ -195,7 +200,9 @@ group {
 					}, 
 					"value": block {
 						"value": group {
+							"after-children": "\n	", 
 							"children": [return {
+								"before-child": "\n		", 
 								"value": invocation-value {
 									"caller": data-access {
 										"property": "match", 
@@ -420,7 +427,7 @@ group {
 					}]
 				}, function {
 					"name": "writeAST", 
-					"before-child": "\n", 
+					"before-child": "\n	", 
 					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Result", 
@@ -432,7 +439,9 @@ group {
 					}, 
 					"value": block {
 						"value": group {
+							"after-children": "\n	", 
 							"children": [return {
+								"before-child": "\n		", 
 								"value": invocation-value {
 									"caller": data-access {
 										"property": "orElseGet", 
@@ -524,7 +533,7 @@ group {
 					}]
 				}, function {
 					"name": "writeGenerated", 
-					"before-child": "\n", 
+					"before-child": "\n	", 
 					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Optional", 
@@ -534,7 +543,9 @@ group {
 					}, 
 					"value": block {
 						"value": group {
+							"after-children": "\n	", 
 							"children": [return {
+								"before-child": "\n		", 
 								"value": invocation-value {
 									"caller": data-access {
 										"property": "map", 
