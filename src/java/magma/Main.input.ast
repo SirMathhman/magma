@@ -24,6 +24,10 @@ group {
 	}, import {
 		"namespace": ["magma", "compile", "pass", "Flattener"]
 	}, import {
+		"namespace": ["magma", "compile", "pass", "Flattener0"]
+	}, import {
+		"namespace": ["magma", "compile", "pass", "Generator"]
+	}, import {
 		"namespace": ["magma", "compile", "pass", "Modifier"]
 	}, import {
 		"namespace": ["magma", "compile", "pass", "TreePassingStage"]
@@ -182,7 +186,21 @@ group {
 					}, 
 					"value": block {
 						"value": group {
-							"children": [return {
+							"children": [initialization {
+								"definition": definition {
+									"name": "generator", 
+									"modifiers": ["final"], 
+									"type": symbol {
+										"symbol-value": "var"
+									}
+								}, 
+								"value": construction {
+									"caller": symbol {
+										"symbol-value": "Generator"
+									}, 
+									"arguments": []
+								}
+							}, return {
 								"value": invocation-value {
 									"caller": data-access {
 										"property": "match", 
@@ -203,57 +221,99 @@ group {
 																				"property": "mapValue", 
 																				"object": invocation-value {
 																					"caller": data-access {
-																						"property": "flatMapValue", 
+																						"property": "mapValue", 
 																						"object": invocation-value {
 																							"caller": data-access {
-																								"property": "mapErr", 
+																								"property": "flatMapValue", 
 																								"object": invocation-value {
 																									"caller": data-access {
-																										"property": "parse", 
+																										"property": "mapErr", 
 																										"object": invocation-value {
 																											"caller": data-access {
-																												"property": "createJavaRootRule", 
-																												"object": symbol {
-																													"symbol-value": "JavaLang"
+																												"property": "parse", 
+																												"object": invocation-value {
+																													"caller": data-access {
+																														"property": "createJavaRootRule", 
+																														"object": symbol {
+																															"symbol-value": "JavaLang"
+																														}
+																													}, 
+																													"arguments": []
 																												}
 																											}, 
-																											"arguments": []
+																											"arguments": [symbol {
+																												"symbol-value": "input"
+																											}]
 																										}
 																									}, 
-																									"arguments": [symbol {
-																										"symbol-value": "input"
+																									"arguments": [function-access {
+																										"property": "new", 
+																										"object": symbol {
+																											"symbol-value": "ApplicationError"
+																										}
 																									}]
 																								}
 																							}, 
-																							"arguments": [function-access {
-																								"property": "new", 
-																								"object": symbol {
-																									"symbol-value": "ApplicationError"
-																								}
+																							"arguments": [lambda {
+																								"value": invocation-value {
+																									"caller": symbol {
+																										"symbol-value": "writeAST"
+																									}, 
+																									"arguments": [invocation-value {
+																										"caller": data-access {
+																											"property": "resolveSibling", 
+																											"object": symbol {
+																												"symbol-value": "source"
+																											}
+																										}, 
+																										"arguments": [string {
+																											"string-value": "Main.input.ast"
+																										}]
+																									}, symbol {
+																										"symbol-value": "parsed"
+																									}]
+																								}, 
+																								"parameters": [symbol {
+																									"symbol-value": "parsed"
+																								}]
 																							}]
 																						}
 																					}, 
 																					"arguments": [lambda {
 																						"value": invocation-value {
-																							"caller": symbol {
-																								"symbol-value": "writeAST"
+																							"caller": data-access {
+																								"property": "right", 
+																								"object": invocation-value {
+																									"caller": data-access {
+																										"property": "pass", 
+																										"object": construction {
+																											"caller": symbol {
+																												"symbol-value": "TreePassingStage"
+																											}, 
+																											"arguments": [construction {
+																												"caller": symbol {
+																													"symbol-value": "Flattener"
+																												}, 
+																												"arguments": [symbol {
+																													"symbol-value": "generator"
+																												}]
+																											}]
+																										}
+																									}, 
+																									"arguments": [construction {
+																										"caller": symbol {
+																											"symbol-value": "State"
+																										}, 
+																										"arguments": []
+																									}, symbol {
+																										"symbol-value": "node"
+																									}]
+																								}
 																							}, 
-																							"arguments": [invocation-value {
-																								"caller": data-access {
-																									"property": "resolveSibling", 
-																									"object": symbol {
-																										"symbol-value": "source"
-																									}
-																								}, 
-																								"arguments": [string {
-																									"string-value": "Main.input.ast"
-																								}]
-																							}, symbol {
-																								"symbol-value": "parsed"
-																							}]
+																							"arguments": []
 																						}, 
 																						"parameters": [symbol {
-																							"symbol-value": "parsed"
+																							"symbol-value": "node"
 																						}]
 																					}]
 																				}
@@ -271,9 +331,11 @@ group {
 																									}, 
 																									"arguments": [construction {
 																										"caller": symbol {
-																											"symbol-value": "Flattener"
+																											"symbol-value": "Modifier"
 																										}, 
-																										"arguments": []
+																										"arguments": [symbol {
+																											"symbol-value": "generator"
+																										}]
 																									}]
 																								}
 																							}, 
@@ -308,9 +370,11 @@ group {
 																							}, 
 																							"arguments": [construction {
 																								"caller": symbol {
-																									"symbol-value": "Modifier"
+																									"symbol-value": "Flattener0"
 																								}, 
-																								"arguments": []
+																								"arguments": [symbol {
+																									"symbol-value": "generator"
+																								}]
 																							}]
 																						}
 																					}, 

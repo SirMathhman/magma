@@ -17,18 +17,11 @@ import static magma.compile.lang.CommonLang.LAMBDA_VALUE;
 import static magma.compile.lang.CommonLang.SYMBOL_TYPE;
 import static magma.compile.lang.CommonLang.SYMBOL_VALUE;
 
-public class Flattener implements Passer<State> {
-    private int counter = -1;
-
-    private String generateUniqueName(String category) {
-        counter++;
-        return "__" + category + counter + "__";
-    }
-
+public record Flattener(Generator generator) implements Passer<State> {
     @Override
     public Tuple<State, Node> afterPass(State state, Node node) {
         if (node.is(FUNCTION_ACCESS)) {
-            final var symbol = new Node(SYMBOL_TYPE).withString(SYMBOL_VALUE, generateUniqueName("lambda"));
+            final var symbol = new Node(SYMBOL_TYPE).withString(SYMBOL_VALUE, generator.generateUniqueName("lambda"));
             final var lambda = new Node(LAMBDA_TYPE)
                     .withNodeList(LAMBDA_PARAMETERS, List.of(symbol))
                     .withNode(LAMBDA_VALUE, new Node(INVOCATION_VALUE)

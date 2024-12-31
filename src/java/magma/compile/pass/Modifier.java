@@ -32,6 +32,12 @@ import static magma.compile.lang.JavaLang.METHOD_TYPE;
 import static magma.compile.lang.JavaLang.PACKAGE_TYPE;
 
 public class Modifier implements Passer<State> {
+    private final Generator generator;
+
+    public Modifier(Generator generator) {
+        this.generator = generator;
+    }
+
     private static Node passRootChild(Node child) {
         if (child.is("import")) return child.retype("include");
         if (child.is("class")) return child.retype("struct");

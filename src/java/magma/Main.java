@@ -11,6 +11,8 @@ import magma.compile.error.JavaError;
 import magma.compile.lang.CLang;
 import magma.compile.lang.JavaLang;
 import magma.compile.pass.Flattener;
+import magma.compile.pass.Flattener0;
+import magma.compile.pass.Generator;
 import magma.compile.pass.Modifier;
 import magma.compile.pass.TreePassingStage;
 
@@ -29,12 +31,14 @@ public class Main {
     }
 
     private static Optional<ApplicationError> runWithInput(Path source, String input) {
+        final var generator = new Generator();
         return JavaLang.createJavaRootRule()
                 .parse(input)
                 .mapErr(ApplicationError::new)
                 .flatMapValue((parsed) -> writeAST(source.resolveSibling("Main.input.ast"), parsed))
-                .mapValue((node) -> new TreePassingStage<>(new Flattener()).pass(new State(), node).right())
-                .mapValue((node) -> new TreePassingStage<>(new Modifier()).pass(new State(), node).right())
+                .mapValue((node) -> new TreePassingStage<>(new Flattener(generator)).pass(new State(), node).right())
+                .mapValue((node) -> new TreePassingStage<>(new Modifier(generator)).pass(new State(), node).right())
+                .mapValue((node) -> new TreePassingStage<>(new Flattener0(generator)).pass(new State(), node).right())
                 .flatMapValue((parsed) -> writeAST(source.resolveSibling("Main.output.ast"), parsed))
                 .flatMapValue((parsed) -> CLang.createCRootRule().generate(parsed).mapErr(ApplicationError::new))
                 .mapValue((generated) -> writeGenerated(generated, source.resolveSibling("Main.c")))

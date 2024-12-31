@@ -50,10 +50,10 @@ public class CommonLang {
         return new TypeRule(GROUP_TYPE, new StripRule("before-children", children, GROUP_AFTER_CHILDREN));
     }
 
-    static SplitRule createBlockValueRule(Rule beforeBlock, Rule blockMember) {
+    static SplitRule createBlockValueRule(String memberName, Rule beforeBlock, Rule blockMember) {
         final var blockRule = createBlockTypeRule(blockMember);
         final var splitter = new LocatingSplitter("{", new FirstLocator());
-        final var stripped = new StripRule(new SuffixRule(new NodeRule(LAMBDA_VALUE, blockRule), "}"));
+        final var stripped = new StripRule(new SuffixRule(new NodeRule(memberName, blockRule), "}"));
         return new SplitRule(beforeBlock, splitter, stripped);
     }
 
@@ -184,11 +184,11 @@ public class CommonLang {
     static TypeRule createConditionedRule(String type, String prefix, Rule value, Rule statement) {
         final var condition = new NodeRule("condition", value);
         final var anIf = new PrefixRule(prefix, new StripRule(new PrefixRule("(", new SuffixRule(condition, ")"))));
-        return new TypeRule(type, createBlockValueRule(new StripRule(anIf), statement));
+        return new TypeRule(type, createBlockValueRule(LAMBDA_VALUE, new StripRule(anIf), statement));
     }
 
     static TypeRule createElseRule(Rule statement) {
-        final var withBlock = createBlockValueRule(new ExactRule("else "), statement);
+        final var withBlock = createBlockValueRule(LAMBDA_VALUE, new ExactRule("else "), statement);
         final var withoutBlock = new PrefixRule("else ", new NodeRule(LAMBDA_VALUE, statement));
         return new TypeRule("else", new OrRule(List.of(withBlock, withoutBlock)));
     }

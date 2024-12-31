@@ -38,7 +38,7 @@ public class JavaLang {
 
     private static TypeRule createClassRule() {
         final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
-        final var rightRule = CommonLang.createBlockValueRule(name, createClassMemberRule());
+        final var rightRule = CommonLang.createBlockValueRule(CommonLang.LAMBDA_VALUE, name, createClassMemberRule());
         return new TypeRule(CLASS_TYPE, new SplitRule(new StringListRule(" ", "modifiers"), new LocatingSplitter("class ", new FirstLocator()), rightRule));
     }
 
@@ -52,7 +52,7 @@ public class JavaLang {
     private static LazyRule createMethodRule(Rule typeRule) {
         final LazyRule method = new LazyRule();
         final var definition = CommonLang.createDefinitionRule(typeRule);
-        final var wrapped = CommonLang.createBlockValueRule(definition, createStatementRule(typeRule, method));
+        final var wrapped = CommonLang.createBlockValueRule(CommonLang.LAMBDA_VALUE, definition, createStatementRule(typeRule, method));
         method.set(new TypeRule(METHOD_TYPE, wrapped));
         return method;
     }

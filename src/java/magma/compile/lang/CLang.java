@@ -22,6 +22,10 @@ public class CLang {
     public static final String INCLUDE_TYPE = "include";
     public static final String STRUCT_TYPE = "struct";
     public static final String FUNCTION_TYPE = "function";
+    public static final String FUNCTION_TYPE_PROPERTY = "type";
+    public static final String FUNCTION_NAME = "name";
+    public static final String FUNCTION_PARAMS = "params";
+    public static final String FUNCTION_VALUE = "value";
 
     public static Rule createCRootRule() {
         return CommonLang.createGroupRule(createCRootMemberRule());
@@ -36,8 +40,8 @@ public class CLang {
     }
 
     private static Rule createStructRule() {
-        final var name = new StringRule("name");
-        final var wrapped = CommonLang.createBlockValueRule(name, createStructMemberRule(CommonLang.createTypeRule()));
+        final var name = new StringRule(FUNCTION_NAME);
+        final var wrapped = CommonLang.createBlockValueRule(CommonLang.LAMBDA_VALUE, name, createStructMemberRule(CommonLang.createTypeRule()));
         return new TypeRule(STRUCT_TYPE, new PrefixRule("struct ", wrapped));
     }
 
@@ -50,12 +54,12 @@ public class CLang {
 
     private static Rule createFunctionRule(Rule typeRule) {
         final LazyRule function = new LazyRule();
-        final var type = new NodeRule("type", typeRule);
-        final var name = new StringRule("name");
-        final var params = new NodeListRule(new ValueSlicer(), "params", new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), name));
+        final var type = new NodeRule(FUNCTION_TYPE_PROPERTY, typeRule);
+        final var name = new StringRule(FUNCTION_NAME);
+        final var params = new NodeListRule(new ValueSlicer(), FUNCTION_PARAMS, new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), name));
         final var rightRule = new SplitRule(name, new LocatingSplitter("(", new FirstLocator()), new SuffixRule(params, ")"));
         final var childRule = new SplitRule(type, new LocatingSplitter(" ", new FirstLocator()), rightRule);
-        function.set(new TypeRule(FUNCTION_TYPE, CommonLang.createBlockValueRule(childRule, createStatementRule(typeRule, function))));
+        function.set(new TypeRule(FUNCTION_TYPE, CommonLang.createBlockValueRule(FUNCTION_VALUE, childRule, createStatementRule(typeRule, function))));
         return function;
     }
 

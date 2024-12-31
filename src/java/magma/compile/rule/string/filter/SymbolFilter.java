@@ -15,9 +15,10 @@ public class SymbolFilter implements Filter {
 
         for (int i = 0; i < input.length(); i++) {
             var c = input.charAt(i);
-            if (!Character.isLetter(c)) {
-                return false;
+            if (Character.isLetter(c) || ((i != 0) && Character.isDigit(c))) {
+                continue;
             }
+            return false;
         }
 
         return true;

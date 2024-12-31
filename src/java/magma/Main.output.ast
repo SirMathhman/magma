@@ -34,6 +34,12 @@ group {
 		"namespace": ["magma", "compile", "pass", "Flattener"]
 	}, include {
 		"before-child": "\n", 
+		"namespace": ["magma", "compile", "pass", "Flattener0"]
+	}, include {
+		"before-child": "\n", 
+		"namespace": ["magma", "compile", "pass", "Generator"]
+	}, include {
+		"before-child": "\n", 
 		"namespace": ["magma", "compile", "pass", "Modifier"]
 	}, include {
 		"before-child": "\n", 
@@ -117,114 +123,162 @@ group {
 																}]
 															}
 														}, 
-														"arguments": [lambda {
-															"value": invocation-value {
-																"caller": data-access {
-																	"property": "new", 
-																	"object": symbol {
-																		"symbol-value": "JavaError"
-																	}
-																}, 
-																"arguments": [symbol {
-																	"symbol-value": "__lambda2__"
-																}]
+														"arguments": [function {
+															"name": "__function15__", 
+															"type": symbol {
+																"symbol-value": "auto"
 															}, 
-															"captured": [symbol {
-																"symbol-value": "JavaError"
-															}], 
-															"parameters": [symbol {
-																"symbol-value": "__lambda2__"
+															"value": block {
+																"value": group {
+																	"children": [return {
+																		"value": invocation-value {
+																			"caller": data-access {
+																				"property": "new", 
+																				"object": symbol {
+																					"symbol-value": "JavaError"
+																				}
+																			}, 
+																			"arguments": [symbol {
+																				"symbol-value": "__lambda2__"
+																			}]
+																		}
+																	}]
+																}
+															}, 
+															"params": [definition {
+																"name": "__lambda2__", 
+																"type": symbol {
+																	"symbol-value": "auto"
+																}
 															}]
 														}]
 													}
 												}, 
-												"arguments": [lambda {
-													"value": invocation-value {
-														"caller": data-access {
-															"property": "new", 
-															"object": symbol {
-																"symbol-value": "ApplicationError"
-															}
-														}, 
-														"arguments": [symbol {
-															"symbol-value": "__lambda1__"
-														}]
+												"arguments": [function {
+													"name": "__function14__", 
+													"type": symbol {
+														"symbol-value": "auto"
 													}, 
-													"captured": [symbol {
-														"symbol-value": "ApplicationError"
-													}], 
-													"parameters": [symbol {
-														"symbol-value": "__lambda1__"
+													"value": block {
+														"value": group {
+															"children": [return {
+																"value": invocation-value {
+																	"caller": data-access {
+																		"property": "new", 
+																		"object": symbol {
+																			"symbol-value": "ApplicationError"
+																		}
+																	}, 
+																	"arguments": [symbol {
+																		"symbol-value": "__lambda1__"
+																	}]
+																}
+															}]
+														}
+													}, 
+													"params": [definition {
+														"name": "__lambda1__", 
+														"type": symbol {
+															"symbol-value": "auto"
+														}
 													}]
 												}]
 											}
 										}, 
-										"arguments": [lambda {
-											"value": invocation-value {
-												"caller": symbol {
-													"symbol-value": "runWithInput"
-												}, 
-												"arguments": [symbol {
-													"symbol-value": "source"
-												}, symbol {
-													"symbol-value": "input"
-												}]
+										"arguments": [function {
+											"name": "__function12__", 
+											"type": symbol {
+												"symbol-value": "auto"
 											}, 
-											"captured": [symbol {
-												"symbol-value": "runWithInput"
-											}, symbol {
-												"symbol-value": "source"
-											}], 
-											"parameters": [symbol {
-												"symbol-value": "input"
+											"value": block {
+												"value": group {
+													"children": [return {
+														"value": invocation-value {
+															"caller": symbol {
+																"symbol-value": "runWithInput"
+															}, 
+															"arguments": [symbol {
+																"symbol-value": "source"
+															}, symbol {
+																"symbol-value": "input"
+															}]
+														}
+													}]
+												}
+											}, 
+											"params": [definition {
+												"name": "input", 
+												"type": symbol {
+													"symbol-value": "auto"
+												}
 											}]
-										}, lambda {
-											"value": invocation-value {
-												"caller": data-access {
-													"property": "of", 
-													"object": symbol {
-														"symbol-value": "Optional"
-													}
-												}, 
-												"arguments": [symbol {
-													"symbol-value": "__lambda0__"
-												}]
+										}, function {
+											"name": "__function13__", 
+											"type": symbol {
+												"symbol-value": "auto"
 											}, 
-											"captured": [symbol {
-												"symbol-value": "Optional"
-											}], 
-											"parameters": [symbol {
-												"symbol-value": "__lambda0__"
+											"value": block {
+												"value": group {
+													"children": [return {
+														"value": invocation-value {
+															"caller": data-access {
+																"property": "of", 
+																"object": symbol {
+																	"symbol-value": "Optional"
+																}
+															}, 
+															"arguments": [symbol {
+																"symbol-value": "__lambda0__"
+															}]
+														}
+													}]
+												}
+											}, 
+											"params": [definition {
+												"name": "__lambda0__", 
+												"type": symbol {
+													"symbol-value": "auto"
+												}
 											}]
 										}]
 									}
 								}, 
-								"arguments": [lambda {
-									"value": invocation-value {
-										"caller": data-access {
-											"property": "println", 
-											"object": data-access {
-												"property": "err", 
-												"object": symbol {
-													"symbol-value": "System"
-												}
-											}
-										}, 
-										"arguments": [invocation-value {
-											"caller": data-access {
-												"property": "display", 
-												"object": symbol {
-													"symbol-value": "error"
-												}
-											}, 
-											"arguments": []
-										}]
+								"arguments": [function {
+									"name": "__function11__", 
+									"type": symbol {
+										"symbol-value": "auto"
 									}, 
-									"captured": [symbol {
-										"symbol-value": "System"
-									}], 
-									"parameters": [symbol {
-										"symbol-value": "error"
+									"value": block {
+										"value": group {
+											"children": [return {
+												"value": invocation-value {
+													"caller": data-access {
+														"property": "println", 
+														"object": data-access {
+															"property": "err", 
+															"object": symbol {
+																"symbol-value": "System"
+															}
+														}
+													}, 
+													"arguments": [invocation-value {
+														"caller": data-access {
+															"property": "display", 
+															"object": symbol {
+																"symbol-value": "error"
+															}
+														}, 
+														"arguments": []
+													}]
+												}
+											}]
+										}
+									}, 
+									"params": [definition {
+										"name": "error", 
+										"type": symbol {
+											"symbol-value": "auto"
+										}
 									}]
 								}]
 							}]
@@ -251,7 +305,22 @@ group {
 					"value": block {
 						"value": group {
 							"after-children": "\n	", 
-							"children": [return {
+							"children": [initialization {
+								"before-child": "\n		", 
+								"definition": definition {
+									"name": "generator", 
+									"modifiers": ["final"], 
+									"type": symbol {
+										"symbol-value": "var"
+									}
+								}, 
+								"value": construction {
+									"caller": symbol {
+										"symbol-value": "Generator"
+									}, 
+									"arguments": []
+								}
+							}, return {
 								"before-child": "\n		", 
 								"value": invocation-value {
 									"caller": data-access {
@@ -273,307 +342,450 @@ group {
 																				"property": "mapValue", 
 																				"object": invocation-value {
 																					"caller": data-access {
-																						"property": "flatMapValue", 
+																						"property": "mapValue", 
 																						"object": invocation-value {
 																							"caller": data-access {
-																								"property": "mapErr", 
+																								"property": "flatMapValue", 
 																								"object": invocation-value {
 																									"caller": data-access {
-																										"property": "parse", 
+																										"property": "mapErr", 
 																										"object": invocation-value {
 																											"caller": data-access {
-																												"property": "createJavaRootRule", 
-																												"object": symbol {
-																													"symbol-value": "JavaLang"
+																												"property": "parse", 
+																												"object": invocation-value {
+																													"caller": data-access {
+																														"property": "createJavaRootRule", 
+																														"object": symbol {
+																															"symbol-value": "JavaLang"
+																														}
+																													}, 
+																													"arguments": []
 																												}
 																											}, 
-																											"arguments": []
+																											"arguments": [symbol {
+																												"symbol-value": "input"
+																											}]
 																										}
 																									}, 
-																									"arguments": [symbol {
-																										"symbol-value": "input"
+																									"arguments": [function {
+																										"name": "__function26__", 
+																										"type": symbol {
+																											"symbol-value": "auto"
+																										}, 
+																										"value": block {
+																											"value": group {
+																												"children": [return {
+																													"value": invocation-value {
+																														"caller": data-access {
+																															"property": "new", 
+																															"object": symbol {
+																																"symbol-value": "ApplicationError"
+																															}
+																														}, 
+																														"arguments": [symbol {
+																															"symbol-value": "__lambda5__"
+																														}]
+																													}
+																												}]
+																											}
+																										}, 
+																										"params": [definition {
+																											"name": "__lambda5__", 
+																											"type": symbol {
+																												"symbol-value": "auto"
+																											}
+																										}]
 																									}]
 																								}
 																							}, 
-																							"arguments": [lambda {
-																								"value": invocation-value {
-																									"caller": data-access {
-																										"property": "new", 
-																										"object": symbol {
-																											"symbol-value": "ApplicationError"
-																										}
-																									}, 
-																									"arguments": [symbol {
-																										"symbol-value": "__lambda5__"
-																									}]
+																							"arguments": [function {
+																								"name": "__function25__", 
+																								"type": symbol {
+																									"symbol-value": "auto"
 																								}, 
-																								"captured": [symbol {
-																									"symbol-value": "ApplicationError"
-																								}], 
-																								"parameters": [symbol {
-																									"symbol-value": "__lambda5__"
+																								"value": block {
+																									"value": group {
+																										"children": [return {
+																											"value": invocation-value {
+																												"caller": symbol {
+																													"symbol-value": "writeAST"
+																												}, 
+																												"arguments": [invocation-value {
+																													"caller": data-access {
+																														"property": "resolveSibling", 
+																														"object": symbol {
+																															"symbol-value": "source"
+																														}
+																													}, 
+																													"arguments": [string {
+																														"string-value": "Main.input.ast"
+																													}]
+																												}, symbol {
+																													"symbol-value": "parsed"
+																												}]
+																											}
+																										}]
+																									}
+																								}, 
+																								"params": [definition {
+																									"name": "parsed", 
+																									"type": symbol {
+																										"symbol-value": "auto"
+																									}
 																								}]
 																							}]
 																						}
 																					}, 
-																					"arguments": [lambda {
-																						"value": invocation-value {
-																							"caller": symbol {
-																								"symbol-value": "writeAST"
-																							}, 
-																							"arguments": [invocation-value {
-																								"caller": data-access {
-																									"property": "resolveSibling", 
-																									"object": symbol {
-																										"symbol-value": "source"
-																									}
-																								}, 
-																								"arguments": [string {
-																									"string-value": "Main.input.ast"
-																								}]
-																							}, symbol {
-																								"symbol-value": "parsed"
-																							}]
+																					"arguments": [function {
+																						"name": "__function24__", 
+																						"type": symbol {
+																							"symbol-value": "auto"
 																						}, 
-																						"captured": [symbol {
-																							"symbol-value": "writeAST"
-																						}, symbol {
-																							"symbol-value": "source"
-																						}], 
-																						"parameters": [symbol {
-																							"symbol-value": "parsed"
+																						"value": block {
+																							"value": group {
+																								"children": [return {
+																									"value": invocation-value {
+																										"caller": data-access {
+																											"property": "right", 
+																											"object": invocation-value {
+																												"caller": data-access {
+																													"property": "pass", 
+																													"object": construction {
+																														"caller": symbol {
+																															"symbol-value": "TreePassingStage"
+																														}, 
+																														"arguments": [construction {
+																															"caller": symbol {
+																																"symbol-value": "Flattener"
+																															}, 
+																															"arguments": [symbol {
+																																"symbol-value": "generator"
+																															}]
+																														}]
+																													}
+																												}, 
+																												"arguments": [construction {
+																													"caller": symbol {
+																														"symbol-value": "State"
+																													}, 
+																													"arguments": []
+																												}, symbol {
+																													"symbol-value": "node"
+																												}]
+																											}
+																										}, 
+																										"arguments": []
+																									}
+																								}]
+																							}
+																						}, 
+																						"params": [definition {
+																							"name": "node", 
+																							"type": symbol {
+																								"symbol-value": "auto"
+																							}
 																						}]
 																					}]
 																				}
 																			}, 
-																			"arguments": [lambda {
-																				"value": invocation-value {
-																					"caller": data-access {
-																						"property": "right", 
-																						"object": invocation-value {
-																							"caller": data-access {
-																								"property": "pass", 
-																								"object": construction {
-																									"caller": symbol {
-																										"symbol-value": "TreePassingStage"
-																									}, 
-																									"arguments": [construction {
-																										"caller": symbol {
-																											"symbol-value": "Flattener"
+																			"arguments": [function {
+																				"name": "__function23__", 
+																				"type": symbol {
+																					"symbol-value": "auto"
+																				}, 
+																				"value": block {
+																					"value": group {
+																						"children": [return {
+																							"value": invocation-value {
+																								"caller": data-access {
+																									"property": "right", 
+																									"object": invocation-value {
+																										"caller": data-access {
+																											"property": "pass", 
+																											"object": construction {
+																												"caller": symbol {
+																													"symbol-value": "TreePassingStage"
+																												}, 
+																												"arguments": [construction {
+																													"caller": symbol {
+																														"symbol-value": "Modifier"
+																													}, 
+																													"arguments": [symbol {
+																														"symbol-value": "generator"
+																													}]
+																												}]
+																											}
 																										}, 
-																										"arguments": []
-																									}]
-																								}
-																							}, 
-																							"arguments": [construction {
-																								"caller": symbol {
-																									"symbol-value": "State"
+																										"arguments": [construction {
+																											"caller": symbol {
+																												"symbol-value": "State"
+																											}, 
+																											"arguments": []
+																										}, symbol {
+																											"symbol-value": "node"
+																										}]
+																									}
 																								}, 
 																								"arguments": []
-																							}, symbol {
-																								"symbol-value": "node"
-																							}]
-																						}
-																					}, 
-																					"arguments": []
+																							}
+																						}]
+																					}
 																				}, 
-																				"captured": [symbol {
-																					"symbol-value": "TreePassingStage"
-																				}, symbol {
-																					"symbol-value": "State"
-																				}, symbol {
-																					"symbol-value": "Flattener"
-																				}], 
-																				"parameters": [symbol {
-																					"symbol-value": "node"
+																				"params": [definition {
+																					"name": "node", 
+																					"type": symbol {
+																						"symbol-value": "auto"
+																					}
 																				}]
 																			}]
 																		}
 																	}, 
-																	"arguments": [lambda {
-																		"value": invocation-value {
-																			"caller": data-access {
-																				"property": "right", 
-																				"object": invocation-value {
-																					"caller": data-access {
-																						"property": "pass", 
-																						"object": construction {
-																							"caller": symbol {
-																								"symbol-value": "TreePassingStage"
-																							}, 
-																							"arguments": [construction {
-																								"caller": symbol {
-																									"symbol-value": "Modifier"
+																	"arguments": [function {
+																		"name": "__function22__", 
+																		"type": symbol {
+																			"symbol-value": "auto"
+																		}, 
+																		"value": block {
+																			"value": group {
+																				"children": [return {
+																					"value": invocation-value {
+																						"caller": data-access {
+																							"property": "right", 
+																							"object": invocation-value {
+																								"caller": data-access {
+																									"property": "pass", 
+																									"object": construction {
+																										"caller": symbol {
+																											"symbol-value": "TreePassingStage"
+																										}, 
+																										"arguments": [construction {
+																											"caller": symbol {
+																												"symbol-value": "Flattener0"
+																											}, 
+																											"arguments": [symbol {
+																												"symbol-value": "generator"
+																											}]
+																										}]
+																									}
 																								}, 
-																								"arguments": []
-																							}]
-																						}
-																					}, 
-																					"arguments": [construction {
-																						"caller": symbol {
-																							"symbol-value": "State"
+																								"arguments": [construction {
+																									"caller": symbol {
+																										"symbol-value": "State"
+																									}, 
+																									"arguments": []
+																								}, symbol {
+																									"symbol-value": "node"
+																								}]
+																							}
 																						}, 
 																						"arguments": []
-																					}, symbol {
-																						"symbol-value": "node"
-																					}]
-																				}
-																			}, 
-																			"arguments": []
+																					}
+																				}]
+																			}
 																		}, 
-																		"captured": [symbol {
-																			"symbol-value": "TreePassingStage"
-																		}, symbol {
-																			"symbol-value": "State"
-																		}, symbol {
-																			"symbol-value": "Modifier"
-																		}], 
-																		"parameters": [symbol {
-																			"symbol-value": "node"
+																		"params": [definition {
+																			"name": "node", 
+																			"type": symbol {
+																				"symbol-value": "auto"
+																			}
 																		}]
 																	}]
 																}
 															}, 
-															"arguments": [lambda {
-																"value": invocation-value {
-																	"caller": symbol {
-																		"symbol-value": "writeAST"
-																	}, 
-																	"arguments": [invocation-value {
-																		"caller": data-access {
-																			"property": "resolveSibling", 
-																			"object": symbol {
-																				"symbol-value": "source"
-																			}
-																		}, 
-																		"arguments": [string {
-																			"string-value": "Main.output.ast"
-																		}]
-																	}, symbol {
-																		"symbol-value": "parsed"
-																	}]
+															"arguments": [function {
+																"name": "__function21__", 
+																"type": symbol {
+																	"symbol-value": "auto"
 																}, 
-																"captured": [symbol {
-																	"symbol-value": "writeAST"
-																}, symbol {
-																	"symbol-value": "source"
-																}], 
-																"parameters": [symbol {
-																	"symbol-value": "parsed"
+																"value": block {
+																	"value": group {
+																		"children": [return {
+																			"value": invocation-value {
+																				"caller": symbol {
+																					"symbol-value": "writeAST"
+																				}, 
+																				"arguments": [invocation-value {
+																					"caller": data-access {
+																						"property": "resolveSibling", 
+																						"object": symbol {
+																							"symbol-value": "source"
+																						}
+																					}, 
+																					"arguments": [string {
+																						"string-value": "Main.output.ast"
+																					}]
+																				}, symbol {
+																					"symbol-value": "parsed"
+																				}]
+																			}
+																		}]
+																	}
+																}, 
+																"params": [definition {
+																	"name": "parsed", 
+																	"type": symbol {
+																		"symbol-value": "auto"
+																	}
 																}]
 															}]
 														}
 													}, 
-													"arguments": [lambda {
-														"value": invocation-value {
-															"caller": data-access {
-																"property": "mapErr", 
-																"object": invocation-value {
-																	"caller": data-access {
-																		"property": "generate", 
-																		"object": invocation-value {
-																			"caller": data-access {
-																				"property": "createCRootRule", 
-																				"object": symbol {
-																					"symbol-value": "CLang"
+													"arguments": [function {
+														"name": "__function19__", 
+														"type": symbol {
+															"symbol-value": "auto"
+														}, 
+														"value": block {
+															"value": group {
+																"children": [return {
+																	"value": invocation-value {
+																		"caller": data-access {
+																			"property": "mapErr", 
+																			"object": invocation-value {
+																				"caller": data-access {
+																					"property": "generate", 
+																					"object": invocation-value {
+																						"caller": data-access {
+																							"property": "createCRootRule", 
+																							"object": symbol {
+																								"symbol-value": "CLang"
+																							}
+																						}, 
+																						"arguments": []
+																					}
+																				}, 
+																				"arguments": [symbol {
+																					"symbol-value": "parsed"
+																				}]
+																			}
+																		}, 
+																		"arguments": [function {
+																			"name": "__function20__", 
+																			"type": symbol {
+																				"symbol-value": "auto"
+																			}, 
+																			"value": block {
+																				"value": group {
+																					"children": [return {
+																						"value": invocation-value {
+																							"caller": data-access {
+																								"property": "new", 
+																								"object": symbol {
+																									"symbol-value": "ApplicationError"
+																								}
+																							}, 
+																							"arguments": [symbol {
+																								"symbol-value": "__lambda4__"
+																							}]
+																						}
+																					}]
 																				}
 																			}, 
-																			"arguments": []
-																		}
-																	}, 
-																	"arguments": [symbol {
-																		"symbol-value": "parsed"
-																	}]
-																}
-															}, 
-															"arguments": [lambda {
-																"value": invocation-value {
-																	"caller": data-access {
-																		"property": "new", 
-																		"object": symbol {
-																			"symbol-value": "ApplicationError"
-																		}
-																	}, 
-																	"arguments": [symbol {
-																		"symbol-value": "__lambda4__"
-																	}]
-																}, 
-																"captured": [symbol {
-																	"symbol-value": "ApplicationError"
-																}], 
-																"parameters": [symbol {
-																	"symbol-value": "__lambda4__"
+																			"params": [definition {
+																				"name": "__lambda4__", 
+																				"type": symbol {
+																					"symbol-value": "auto"
+																				}
+																			}]
+																		}]
+																	}
 																}]
-															}]
+															}
 														}, 
-														"captured": [symbol {
-															"symbol-value": "CLang"
-														}, symbol {
-															"symbol-value": "ApplicationError"
-														}, symbol {
-															"symbol-value": "__lambda4__"
-														}], 
-														"parameters": [symbol {
-															"symbol-value": "parsed"
+														"params": [definition {
+															"name": "parsed", 
+															"type": symbol {
+																"symbol-value": "auto"
+															}
 														}]
 													}]
 												}
 											}, 
-											"arguments": [lambda {
-												"value": invocation-value {
-													"caller": symbol {
-														"symbol-value": "writeGenerated"
-													}, 
-													"arguments": [symbol {
-														"symbol-value": "generated"
-													}, invocation-value {
-														"caller": data-access {
-															"property": "resolveSibling", 
-															"object": symbol {
-																"symbol-value": "source"
-															}
-														}, 
-														"arguments": [string {
-															"string-value": "Main.c"
-														}]
-													}]
+											"arguments": [function {
+												"name": "__function18__", 
+												"type": symbol {
+													"symbol-value": "auto"
 												}, 
-												"captured": [symbol {
-													"symbol-value": "writeGenerated"
-												}, symbol {
-													"symbol-value": "source"
-												}], 
-												"parameters": [symbol {
-													"symbol-value": "generated"
+												"value": block {
+													"value": group {
+														"children": [return {
+															"value": invocation-value {
+																"caller": symbol {
+																	"symbol-value": "writeGenerated"
+																}, 
+																"arguments": [symbol {
+																	"symbol-value": "generated"
+																}, invocation-value {
+																	"caller": data-access {
+																		"property": "resolveSibling", 
+																		"object": symbol {
+																			"symbol-value": "source"
+																		}
+																	}, 
+																	"arguments": [string {
+																		"string-value": "Main.c"
+																	}]
+																}]
+															}
+														}]
+													}
+												}, 
+												"params": [definition {
+													"name": "generated", 
+													"type": symbol {
+														"symbol-value": "auto"
+													}
 												}]
 											}]
 										}
 									}, 
-									"arguments": [lambda {
-										"value": symbol {
-											"symbol-value": "value"
+									"arguments": [function {
+										"name": "__function16__", 
+										"type": symbol {
+											"symbol-value": "auto"
 										}, 
-										"captured": [], 
-										"parameters": [symbol {
-											"symbol-value": "value"
+										"value": block {
+											"value": group {
+												"children": [return {
+													"value": symbol {
+														"symbol-value": "value"
+													}
+												}]
+											}
+										}, 
+										"params": [definition {
+											"name": "value", 
+											"type": symbol {
+												"symbol-value": "auto"
+											}
 										}]
-									}, lambda {
-										"value": invocation-value {
-											"caller": data-access {
-												"property": "of", 
-												"object": symbol {
-													"symbol-value": "Optional"
-												}
-											}, 
-											"arguments": [symbol {
-												"symbol-value": "__lambda3__"
-											}]
+									}, function {
+										"name": "__function17__", 
+										"type": symbol {
+											"symbol-value": "auto"
 										}, 
-										"captured": [symbol {
-											"symbol-value": "Optional"
-										}], 
-										"parameters": [symbol {
-											"symbol-value": "__lambda3__"
+										"value": block {
+											"value": group {
+												"children": [return {
+													"value": invocation-value {
+														"caller": data-access {
+															"property": "of", 
+															"object": symbol {
+																"symbol-value": "Optional"
+															}
+														}, 
+														"arguments": [symbol {
+															"symbol-value": "__lambda3__"
+														}]
+													}
+												}]
+											}
+										}, 
+										"params": [definition {
+											"name": "__lambda3__", 
+											"type": symbol {
+												"symbol-value": "auto"
+											}
 										}]
 									}]
 								}
@@ -640,44 +852,64 @@ group {
 																	}]
 																}
 															}, 
-															"arguments": [lambda {
-																"value": invocation-value {
-																	"caller": data-access {
-																		"property": "new", 
-																		"object": symbol {
-																			"symbol-value": "JavaError"
-																		}
-																	}, 
-																	"arguments": [symbol {
-																		"symbol-value": "__lambda8__"
-																	}]
+															"arguments": [function {
+																"name": "__function30__", 
+																"type": symbol {
+																	"symbol-value": "auto"
 																}, 
-																"captured": [symbol {
-																	"symbol-value": "JavaError"
-																}], 
-																"parameters": [symbol {
-																	"symbol-value": "__lambda8__"
+																"value": block {
+																	"value": group {
+																		"children": [return {
+																			"value": invocation-value {
+																				"caller": data-access {
+																					"property": "new", 
+																					"object": symbol {
+																						"symbol-value": "JavaError"
+																					}
+																				}, 
+																				"arguments": [symbol {
+																					"symbol-value": "__lambda8__"
+																				}]
+																			}
+																		}]
+																	}
+																}, 
+																"params": [definition {
+																	"name": "__lambda8__", 
+																	"type": symbol {
+																		"symbol-value": "auto"
+																	}
 																}]
 															}]
 														}
 													}, 
-													"arguments": [lambda {
-														"value": invocation-value {
-															"caller": data-access {
-																"property": "new", 
-																"object": symbol {
-																	"symbol-value": "ApplicationError"
-																}
-															}, 
-															"arguments": [symbol {
-																"symbol-value": "__lambda7__"
-															}]
+													"arguments": [function {
+														"name": "__function29__", 
+														"type": symbol {
+															"symbol-value": "auto"
 														}, 
-														"captured": [symbol {
-															"symbol-value": "ApplicationError"
-														}], 
-														"parameters": [symbol {
-															"symbol-value": "__lambda7__"
+														"value": block {
+															"value": group {
+																"children": [return {
+																	"value": invocation-value {
+																		"caller": data-access {
+																			"property": "new", 
+																			"object": symbol {
+																				"symbol-value": "ApplicationError"
+																			}
+																		}, 
+																		"arguments": [symbol {
+																			"symbol-value": "__lambda7__"
+																		}]
+																	}
+																}]
+															}
+														}, 
+														"params": [definition {
+															"name": "__lambda7__", 
+															"type": symbol {
+																"symbol-value": "auto"
+															}
 														}]
 													}]
 												}, 
@@ -690,42 +922,57 @@ group {
 													}]
 												}]
 											}, 
-											"arguments": [lambda {
-												"value": invocation-value {
-													"caller": data-access {
-														"property": "new", 
-														"object": symbol {
-															"symbol-value": "Err"
-														}
-													}, 
-													"arguments": [symbol {
-														"symbol-value": "__lambda6__"
-													}]
+											"arguments": [function {
+												"name": "__function28__", 
+												"type": symbol {
+													"symbol-value": "auto"
 												}, 
-												"captured": [symbol {
-													"symbol-value": "Err"
-												}], 
-												"parameters": [symbol {
-													"symbol-value": "__lambda6__"
+												"value": block {
+													"value": group {
+														"children": [return {
+															"value": invocation-value {
+																"caller": data-access {
+																	"property": "new", 
+																	"object": symbol {
+																		"symbol-value": "Err"
+																	}
+																}, 
+																"arguments": [symbol {
+																	"symbol-value": "__lambda6__"
+																}]
+															}
+														}]
+													}
+												}, 
+												"params": [definition {
+													"name": "__lambda6__", 
+													"type": symbol {
+														"symbol-value": "auto"
+													}
 												}]
 											}]
 										}
 									}, 
-									"arguments": [lambda {
-										"value": construction {
-											"caller": symbol {
-												"symbol-value": "Ok"
-											}, 
-											"arguments": [symbol {
-												"symbol-value": "node"
-											}]
+									"arguments": [function {
+										"name": "__function27__", 
+										"type": symbol {
+											"symbol-value": "auto"
 										}, 
-										"captured": [symbol {
-											"symbol-value": "node"
-										}, symbol {
-											"symbol-value": "Ok"
-										}], 
-										"parameters": []
+										"value": block {
+											"value": group {
+												"children": [return {
+													"value": construction {
+														"caller": symbol {
+															"symbol-value": "Ok"
+														}, 
+														"arguments": [symbol {
+															"symbol-value": "node"
+														}]
+													}
+												}]
+											}
+										}, 
+										"params": []
 									}]
 								}
 							}]
@@ -777,44 +1024,64 @@ group {
 													}]
 												}
 											}, 
-											"arguments": [lambda {
-												"value": invocation-value {
-													"caller": data-access {
-														"property": "new", 
-														"object": symbol {
-															"symbol-value": "JavaError"
-														}
-													}, 
-													"arguments": [symbol {
-														"symbol-value": "__lambda10__"
-													}]
+											"arguments": [function {
+												"name": "__function32__", 
+												"type": symbol {
+													"symbol-value": "auto"
 												}, 
-												"captured": [symbol {
-													"symbol-value": "JavaError"
-												}], 
-												"parameters": [symbol {
-													"symbol-value": "__lambda10__"
+												"value": block {
+													"value": group {
+														"children": [return {
+															"value": invocation-value {
+																"caller": data-access {
+																	"property": "new", 
+																	"object": symbol {
+																		"symbol-value": "JavaError"
+																	}
+																}, 
+																"arguments": [symbol {
+																	"symbol-value": "__lambda10__"
+																}]
+															}
+														}]
+													}
+												}, 
+												"params": [definition {
+													"name": "__lambda10__", 
+													"type": symbol {
+														"symbol-value": "auto"
+													}
 												}]
 											}]
 										}
 									}, 
-									"arguments": [lambda {
-										"value": invocation-value {
-											"caller": data-access {
-												"property": "new", 
-												"object": symbol {
-													"symbol-value": "ApplicationError"
-												}
-											}, 
-											"arguments": [symbol {
-												"symbol-value": "__lambda9__"
-											}]
+									"arguments": [function {
+										"name": "__function31__", 
+										"type": symbol {
+											"symbol-value": "auto"
 										}, 
-										"captured": [symbol {
-											"symbol-value": "ApplicationError"
-										}], 
-										"parameters": [symbol {
-											"symbol-value": "__lambda9__"
+										"value": block {
+											"value": group {
+												"children": [return {
+													"value": invocation-value {
+														"caller": data-access {
+															"property": "new", 
+															"object": symbol {
+																"symbol-value": "ApplicationError"
+															}
+														}, 
+														"arguments": [symbol {
+															"symbol-value": "__lambda9__"
+														}]
+													}
+												}]
+											}
+										}, 
+										"params": [definition {
+											"name": "__lambda9__", 
+											"type": symbol {
+												"symbol-value": "auto"
+											}
 										}]
 									}]
 								}
