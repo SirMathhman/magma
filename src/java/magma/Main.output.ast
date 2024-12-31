@@ -131,9 +131,6 @@ group {
 											}
 										}, 
 										"arguments": [lambda {
-											"param": symbol {
-												"symbol-value": "input"
-											}, 
 											"value": invocation-value {
 												"caller": symbol {
 													"symbol-value": "runWithInput"
@@ -143,7 +140,11 @@ group {
 												}, symbol {
 													"symbol-value": "input"
 												}]
-											}
+											}, 
+											"captured": [], 
+											"parameters": [symbol {
+												"symbol-value": "input"
+											}]
 										}, function-access {
 											"property": "of", 
 											"object": symbol {
@@ -153,9 +154,6 @@ group {
 									}
 								}, 
 								"arguments": [lambda {
-									"param": symbol {
-										"symbol-value": "error"
-									}, 
 									"value": invocation-value {
 										"caller": data-access {
 											"property": "println", 
@@ -175,7 +173,11 @@ group {
 											}, 
 											"arguments": []
 										}]
-									}
+									}, 
+									"captured": [], 
+									"parameters": [symbol {
+										"symbol-value": "error"
+									}]
 								}]
 							}]
 						}
@@ -251,9 +253,6 @@ group {
 																				}
 																			}, 
 																			"arguments": [lambda {
-																				"param": symbol {
-																					"symbol-value": "parsed"
-																				}, 
 																				"value": invocation-value {
 																					"caller": symbol {
 																						"symbol-value": "writeAST"
@@ -271,14 +270,15 @@ group {
 																					}, symbol {
 																						"symbol-value": "parsed"
 																					}]
-																				}
+																				}, 
+																				"captured": [], 
+																				"parameters": [symbol {
+																					"symbol-value": "parsed"
+																				}]
 																			}]
 																		}
 																	}, 
 																	"arguments": [lambda {
-																		"param": symbol {
-																			"symbol-value": "node"
-																		}, 
 																		"value": invocation-value {
 																			"caller": data-access {
 																				"property": "right", 
@@ -308,14 +308,15 @@ group {
 																				}
 																			}, 
 																			"arguments": []
-																		}
+																		}, 
+																		"captured": [], 
+																		"parameters": [symbol {
+																			"symbol-value": "node"
+																		}]
 																	}]
 																}
 															}, 
 															"arguments": [lambda {
-																"param": symbol {
-																	"symbol-value": "parsed"
-																}, 
 																"value": invocation-value {
 																	"caller": symbol {
 																		"symbol-value": "writeAST"
@@ -333,14 +334,15 @@ group {
 																	}, symbol {
 																		"symbol-value": "parsed"
 																	}]
-																}
+																}, 
+																"captured": [], 
+																"parameters": [symbol {
+																	"symbol-value": "parsed"
+																}]
 															}]
 														}
 													}, 
 													"arguments": [lambda {
-														"param": symbol {
-															"symbol-value": "parsed"
-														}, 
 														"value": invocation-value {
 															"caller": data-access {
 																"property": "mapErr", 
@@ -368,14 +370,15 @@ group {
 																	"symbol-value": "ApplicationError"
 																}
 															}]
-														}
+														}, 
+														"captured": [], 
+														"parameters": [symbol {
+															"symbol-value": "parsed"
+														}]
 													}]
 												}
 											}, 
 											"arguments": [lambda {
-												"param": symbol {
-													"symbol-value": "generated"
-												}, 
 												"value": invocation-value {
 													"caller": symbol {
 														"symbol-value": "writeGenerated"
@@ -393,17 +396,22 @@ group {
 															"string-value": "Main.c"
 														}]
 													}]
-												}
+												}, 
+												"captured": [], 
+												"parameters": [symbol {
+													"symbol-value": "generated"
+												}]
 											}]
 										}
 									}, 
 									"arguments": [lambda {
-										"param": symbol {
-											"symbol-value": "value"
-										}, 
 										"value": symbol {
 											"symbol-value": "value"
-										}
+										}, 
+										"captured": [], 
+										"parameters": [symbol {
+											"symbol-value": "value"
+										}]
 									}, function-access {
 										"property": "of", 
 										"object": symbol {
@@ -514,7 +522,9 @@ group {
 											"arguments": [symbol {
 												"symbol-value": "node"
 											}]
-										}
+										}, 
+										"captured": [], 
+										"parameters": []
 									}]
 								}
 							}]

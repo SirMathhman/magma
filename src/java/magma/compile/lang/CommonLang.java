@@ -31,6 +31,11 @@ public class CommonLang {
     public static final String GROUP_BEFORE_CHILD = "before-child";
     public static final String GROUP_CHILDREN = "children";
     public static final String GROUP_AFTER_CHILDREN = "after-children";
+    public static final String LAMBDA_TYPE = "lambda";
+    public static final String LAMBDA_PARAM = "param";
+    public static final String LAMBDA_CAPTURED = "captured";
+    public static final String LAMBDA_PARAMETERS = "parameters";
+    public static final String SYMBOL_VALUE = "symbol-value";
 
     static Rule createGroupRule(Rule childRule) {
         final var children = new NodeListRule(new StatementSlicer(), GROUP_CHILDREN, new StripRule(GROUP_BEFORE_CHILD, childRule, "after-child"));
@@ -60,7 +65,7 @@ public class CommonLang {
     }
 
     private static TypeRule createSymbolRule() {
-        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("symbol-value"))));
+        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(SYMBOL_VALUE))));
     }
 
     private static TypeRule createGenericRule(Rule type) {
@@ -114,8 +119,12 @@ public class CommonLang {
     }
 
     private static TypeRule createLambdaRule(Rule value) {
-        return new TypeRule("lambda", new SplitRule(new OrRule(List.of(
-                new NodeRule("param", createSymbolRule()),
+        final var captured = new NodeListRule(new ValueSlicer(), LAMBDA_CAPTURED, createSymbolRule());
+        final var parameters = new NodeListRule(new ValueSlicer(), LAMBDA_PARAMETERS, createSymbolRule());
+        final var parametersWrapped = new StripRule(new PrefixRule("(", new SuffixRule(parameters, ")")));
+        return new TypeRule(LAMBDA_TYPE, new SplitRule(new OrRule(List.of(
+                new PrefixRule("[", new SplitRule(captured, new LocatingSplitter("]", new FirstLocator()), parametersWrapped)),
+                parametersWrapped,
                 new StripRule(new ExactRule("()"))
         )), new LocatingSplitter("->", new FirstLocator()), new NodeRule("value", value)));
     }

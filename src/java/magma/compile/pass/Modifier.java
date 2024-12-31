@@ -4,6 +4,7 @@ import magma.api.Tuple;
 import magma.compile.Node;
 import magma.compile.State;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -14,6 +15,11 @@ import static magma.compile.lang.CommonLang.GROUP_AFTER_CHILDREN;
 import static magma.compile.lang.CommonLang.GROUP_BEFORE_CHILD;
 import static magma.compile.lang.CommonLang.GROUP_CHILDREN;
 import static magma.compile.lang.CommonLang.GROUP_TYPE;
+import static magma.compile.lang.CommonLang.LAMBDA_CAPTURED;
+import static magma.compile.lang.CommonLang.LAMBDA_PARAM;
+import static magma.compile.lang.CommonLang.LAMBDA_PARAMETERS;
+import static magma.compile.lang.CommonLang.LAMBDA_TYPE;
+import static magma.compile.lang.CommonLang.SYMBOL_VALUE;
 import static magma.compile.lang.JavaLang.CLASS_TYPE;
 import static magma.compile.lang.JavaLang.IMPORT_TYPE;
 import static magma.compile.lang.JavaLang.METHOD_TYPE;
@@ -39,6 +45,13 @@ public class Modifier implements Passer {
         return "\n" + "\t".repeat(Math.max(depth, 0));
     }
 
+    private static List<Node> attachIndents(State state, List<Node> children) {
+        return IntStream.range(0, children.size())
+                .mapToObj(index -> new Tuple<>(index, children.get(index)))
+                .map(tuple -> attachIndent(state, tuple))
+                .toList();
+    }
+
     @Override
     public Tuple<State, Node> afterPass(State state, Node node) {
         if (node.is(GROUP_TYPE)) {
@@ -51,14 +64,11 @@ public class Modifier implements Passer {
             return new Tuple<>(exited, mapped);
         }
 
-        return new Tuple<>(state, node);
-    }
+        if (node.is(LAMBDA_TYPE)) {
+            return new Tuple<>(state, node.withNodeList(LAMBDA_CAPTURED, Collections.emptyList()));
+        }
 
-    private static List<Node> attachIndents(State state, List<Node> children) {
-        return IntStream.range(0, children.size())
-                .mapToObj(index -> new Tuple<>(index, children.get(index)))
-                .map(tuple -> attachIndent(state, tuple))
-                .toList();
+        return new Tuple<>(state, node);
     }
 
     @Override
