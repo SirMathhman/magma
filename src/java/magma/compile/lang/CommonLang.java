@@ -32,11 +32,18 @@ public class CommonLang {
     public static final String GROUP_CHILDREN = "children";
     public static final String GROUP_AFTER_CHILDREN = "after-children";
     public static final String LAMBDA_TYPE = "lambda";
-    public static final String LAMBDA_PARAM = "param";
     public static final String LAMBDA_CAPTURED = "captured";
     public static final String LAMBDA_PARAMETERS = "parameters";
     public static final String SYMBOL_VALUE = "symbol-value";
     public static final String SYMBOL_TYPE = "symbol";
+    public static final String ACCESS_OBJECT = "object";
+    public static final String ACCESS_PROPERTY = "property";
+    public static final String FUNCTION_ACCESS = "function-access";
+    public static final String LAMBDA_VALUE = "value";
+    public static final String DATA_ACCESS = "data-access";
+    public static final String INVOCATION_VALUE = "invocation-value";
+    public static final String INVOCATION_CALLER = "caller";
+    public static final String INVOCATION_ARGUMENTS = "arguments";
 
     static Rule createGroupRule(Rule childRule) {
         final var children = new NodeListRule(new StatementSlicer(), GROUP_CHILDREN, new StripRule(GROUP_BEFORE_CHILD, childRule, "after-child"));
@@ -46,12 +53,12 @@ public class CommonLang {
     static SplitRule createBlockValueRule(Rule beforeBlock, Rule blockMember) {
         final var blockRule = createBlockTypeRule(blockMember);
         final var splitter = new LocatingSplitter("{", new FirstLocator());
-        final var stripped = new StripRule(new SuffixRule(new NodeRule("value", blockRule), "}"));
+        final var stripped = new StripRule(new SuffixRule(new NodeRule(LAMBDA_VALUE, blockRule), "}"));
         return new SplitRule(beforeBlock, splitter, stripped);
     }
 
     public static TypeRule createBlockTypeRule(Rule blockMember) {
-        final var value = new NodeRule("value", createGroupRule(blockMember));
+        final var value = new NodeRule(LAMBDA_VALUE, createGroupRule(blockMember));
         return new TypeRule("block", value);
     }
 
@@ -96,7 +103,7 @@ public class CommonLang {
 
     static TypeRule createInitializationRule(Rule valueRule, Rule typeRule) {
         final var definition = new NodeRule("definition", createDefinitionRule(typeRule));
-        final var value = new NodeRule("value", valueRule);
+        final var value = new NodeRule(LAMBDA_VALUE, valueRule);
         return new TypeRule("initialization", new SplitRule(definition, new LocatingSplitter("=", new FirstLocator()), new SuffixRule(value, ";")));
     }
 
@@ -107,12 +114,12 @@ public class CommonLang {
                 createSymbolRule(),
                 createStringRule(),
                 createNumberRule(),
-                createAccessRule("data-access", ".", value, typeRule),
-                createAccessRule("function-access", "::", value, typeRule),
+                createAccessRule(DATA_ACCESS, ".", value, typeRule),
+                createAccessRule(FUNCTION_ACCESS, "::", value, typeRule),
                 createOperatorRule("less-than", "<", value),
                 createOperatorRule("subtract", "-", value),
                 createLambdaRule(value),
-                createInvocationRule(value, "invocation-value"),
+                createInvocationRule(INVOCATION_VALUE, value),
                 createConstructionRule(value),
                 function
         )));
@@ -127,7 +134,7 @@ public class CommonLang {
                 new PrefixRule("[", new SplitRule(captured, new LocatingSplitter("]", new FirstLocator()), parametersWrapped)),
                 parametersWrapped,
                 new StripRule(new ExactRule("()"))
-        )), new LocatingSplitter("->", new FirstLocator()), new NodeRule("value", value)));
+        )), new LocatingSplitter("->", new FirstLocator()), new NodeRule(LAMBDA_VALUE, value)));
     }
 
     private static TypeRule createStringRule() {
@@ -139,8 +146,8 @@ public class CommonLang {
     }
 
     private static TypeRule createAccessRule(String type, String infix, Rule value, Rule typeRule) {
-        final var object = new NodeRule("object", value);
-        final var property = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("property")));
+        final var object = new NodeRule(ACCESS_OBJECT, value);
+        final var property = new StripRule(new FilterRule(new SymbolFilter(), new StringRule(ACCESS_PROPERTY)));
         final var maybeWithTypeArgument = new OrRule(List.of(
                 new PrefixRule("<", new SplitRule(new NodeListRule(new ValueSlicer(), "type-arguments", typeRule), new LocatingSplitter(">", new LastLocator()), property)),
                 property
@@ -153,15 +160,15 @@ public class CommonLang {
     }
 
     static TypeRule createInvocationStatementRule(Rule value) {
-        return createInvocationRule(value, "invocation-statement");
+        return createInvocationRule("invocation-statement", value);
     }
 
-    static TypeRule createInvocationRule(Rule value, String type) {
-        return createArgumentRule(type, new NodeRule("caller", value), value);
+    static TypeRule createInvocationRule(String type, Rule value) {
+        return createArgumentRule(type, new NodeRule(INVOCATION_CALLER, value), value);
     }
 
     static TypeRule createConstructionRule(Rule value) {
-        final var caller1 = new NodeRule("caller", value);
+        final var caller1 = new NodeRule(INVOCATION_CALLER, value);
         final var caller = new OrRule(List.of(
                 caller1,
                 new StripRule(new SuffixRule(caller1, "<>"))
@@ -170,7 +177,7 @@ public class CommonLang {
     }
 
     private static TypeRule createArgumentRule(String type, Rule caller, Rule value) {
-        final var arguments = new NodeListRule(new ValueSlicer(), "arguments", value);
+        final var arguments = new NodeListRule(new ValueSlicer(), INVOCATION_ARGUMENTS, value);
         return new TypeRule(type, new StripRule(new SuffixRule(new SplitRule(caller, new LocatingSplitter("(", new InvocationLocator()), arguments), ")")));
     }
 
@@ -182,7 +189,7 @@ public class CommonLang {
 
     static TypeRule createElseRule(Rule statement) {
         final var withBlock = createBlockValueRule(new ExactRule("else "), statement);
-        final var withoutBlock = new PrefixRule("else ", new NodeRule("value", statement));
+        final var withoutBlock = new PrefixRule("else ", new NodeRule(LAMBDA_VALUE, statement));
         return new TypeRule("else", new OrRule(List.of(withBlock, withoutBlock)));
     }
 
@@ -191,7 +198,7 @@ public class CommonLang {
     }
 
     static TypeRule createReturnRule(Rule value) {
-        final var value0 = new NodeRule("value", value);
+        final var value0 = new NodeRule(LAMBDA_VALUE, value);
         return new TypeRule("return", new PrefixRule("return ", new SuffixRule(value0, ";")));
     }
 
