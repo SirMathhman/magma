@@ -7,6 +7,9 @@ import magma.compile.State;
 import static magma.compile.lang.CLang.FUNCTION_TYPE;
 import static magma.compile.lang.CLang.INCLUDE_TYPE;
 import static magma.compile.lang.CLang.STRUCT_TYPE;
+import static magma.compile.lang.CommonLang.GROUP_BEFORE_CHILD;
+import static magma.compile.lang.CommonLang.GROUP_CHILDREN;
+import static magma.compile.lang.CommonLang.GROUP_TYPE;
 import static magma.compile.lang.JavaLang.CLASS_TYPE;
 import static magma.compile.lang.JavaLang.IMPORT_TYPE;
 import static magma.compile.lang.JavaLang.METHOD_TYPE;
@@ -32,6 +35,20 @@ public class Modifier implements Passer {
         if (node.is(CLASS_TYPE)) return node.retype(STRUCT_TYPE);
         if (node.is(METHOD_TYPE)) return node.retype(FUNCTION_TYPE);
         return node;
+    }
+
+    @Override
+    public Tuple<State, Node> afterPass(State state, Node node) {
+        if (node.is(GROUP_TYPE)) {
+            final var map = node.map(GROUP_CHILDREN, children -> {
+                return children.stream()
+                        .map(child -> child.withString(GROUP_BEFORE_CHILD, "\n"))
+                        .toList();
+            });
+            return new Tuple<>(state, map);
+        }
+
+        return new Tuple<>(state, node);
     }
 
     @Override

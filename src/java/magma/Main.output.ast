@@ -1,41 +1,58 @@
 group {
 	"children": [include {
+		"before-child": "\n", 
 		"namespace": ["magma", "api", "JavaFiles"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["magma", "api", "result", "Err"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["magma", "api", "result", "Ok"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["magma", "api", "result", "Result"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["magma", "compile", "Node"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["magma", "compile", "State"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["magma", "compile", "error", "ApplicationError"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["magma", "compile", "error", "JavaError"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["magma", "compile", "lang", "CLang"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["magma", "compile", "lang", "JavaLang"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["magma", "compile", "pass", "Modifier"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["magma", "compile", "pass", "TreePassingStage"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["java", "nio", "file", "Path"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["java", "nio", "file", "Paths"]
 	}, include {
+		"before-child": "\n", 
 		"namespace": ["java", "util", "Optional"]
 	}, struct {
 		"name": "Main", 
+		"before-child": "\n", 
 		"modifiers": ["public"], 
 		"value": block {
 			"value": group {
 				"children": [function {
 					"name": "main", 
+					"before-child": "\n", 
 					"modifiers": ["public", "static"], 
 					"type": symbol {
 						"symbol-value": "void"
@@ -43,6 +60,7 @@ group {
 					"value": block {
 						"value": group {
 							"children": [initialization {
+								"before-child": "\n", 
 								"definition": definition {
 									"name": "source", 
 									"modifiers": ["final"], 
@@ -70,6 +88,7 @@ group {
 									}]
 								}
 							}, invocation-statement {
+								"before-child": "\n", 
 								"caller": data-access {
 									"property": "ifPresent", 
 									"object": invocation-value {
@@ -169,6 +188,7 @@ group {
 					}]
 				}, function {
 					"name": "runWithInput", 
+					"before-child": "\n", 
 					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Optional", 
@@ -179,6 +199,7 @@ group {
 					"value": block {
 						"value": group {
 							"children": [return {
+								"before-child": "\n", 
 								"value": invocation-value {
 									"caller": data-access {
 										"property": "match", 
@@ -403,6 +424,7 @@ group {
 					}]
 				}, function {
 					"name": "writeAST", 
+					"before-child": "\n", 
 					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Result", 
@@ -415,6 +437,7 @@ group {
 					"value": block {
 						"value": group {
 							"children": [return {
+								"before-child": "\n", 
 								"value": invocation-value {
 									"caller": data-access {
 										"property": "orElseGet", 
@@ -506,6 +529,7 @@ group {
 					}]
 				}, function {
 					"name": "writeGenerated", 
+					"before-child": "\n", 
 					"modifiers": ["private", "static"], 
 					"type": generic {
 						"parent": "Optional", 
@@ -516,6 +540,7 @@ group {
 					"value": block {
 						"value": group {
 							"children": [return {
+								"before-child": "\n", 
 								"value": invocation-value {
 									"caller": data-access {
 										"property": "map", 
@@ -569,5 +594,6 @@ group {
 			}
 		}
 	}, whitespace {
+		"before-child": "\n"
 	}]
 }

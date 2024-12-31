@@ -27,9 +27,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class CommonLang {
+    public static final String GROUP_TYPE = "group";
+    public static final String GROUP_BEFORE_CHILD = "before-child";
+    public static final String GROUP_CHILDREN = "children";
+
     static Rule createGroupRule(Rule childRule) {
-        final var children = new NodeListRule(new StatementSlicer(), "children", new StripRule("before-child", childRule, "after-child"));
-        return new TypeRule("group", new StripRule("before-children", children, "after-children"));
+        final var children = new NodeListRule(new StatementSlicer(), GROUP_CHILDREN, new StripRule(GROUP_BEFORE_CHILD, childRule, "after-child"));
+        return new TypeRule(GROUP_TYPE, new StripRule("before-children", children, "after-children"));
     }
 
     static SplitRule createBlockValueRule(Rule beforeBlock, Rule blockMember) {
@@ -60,7 +64,7 @@ public class CommonLang {
 
     private static TypeRule createGenericRule(Rule type) {
         final var parent = new StringRule("parent");
-        final var children = new NodeListRule(new ValueSlicer(), "children", type);
+        final var children = new NodeListRule(new ValueSlicer(), GROUP_CHILDREN, type);
         return new TypeRule("generic", new SplitRule(parent, new LocatingSplitter("<", new FirstLocator()), new SuffixRule(children, ">")));
     }
 
