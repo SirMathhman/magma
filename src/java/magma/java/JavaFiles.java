@@ -1,4 +1,4 @@
-package magma.api;
+package magma.java;
 
 import magma.api.result.Err;
 import magma.api.result.Ok;

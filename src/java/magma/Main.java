@@ -1,6 +1,6 @@
 package magma;
 
-import magma.api.JavaFiles;
+import magma.java.JavaFiles;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
@@ -35,6 +35,7 @@ public class Main {
             final var sources = stream.filter(Files::isRegularFile)
                     .filter(file -> file.toString().endsWith(".java"))
                     .map(path -> new Source(root, path))
+                    .filter(source -> !source.startsWithNamespace(List.of("magma", "java")))
                     .toList();
 
             runWithSources(sources).ifPresent(e -> System.err.println(e.display()));
