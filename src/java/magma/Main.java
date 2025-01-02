@@ -16,18 +16,37 @@ import magma.compile.pass.Generator;
 import magma.compile.pass.Modifier;
 import magma.compile.pass.TreePassingStage;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) {
-        final Path source = Paths.get(".", "src", "java", "magma", "Main.java");
-        JavaFiles.readString(source)
-                .mapErr(JavaError::new)
-                .mapErr(ApplicationError::new)
-                .match((input) -> runWithInput(source, input), Optional::of)
-                .ifPresent((error) -> System.err.println(error.display()));
+        try (var stream = Files.walk(Paths.get(".", "src", "java"))) {
+            final var sources = stream.filter(Files::isRegularFile)
+                    .filter(file -> file.toString().endsWith(".java"))
+                    .toList();
+
+            runWithSources(sources).ifPresent(e -> System.err.println(e.display()));
+        } catch (IOException e) {
+            //noinspection CallToPrintStackTrace
+            e.printStackTrace();
+        }
+    }
+
+    private static Optional<ApplicationError> runWithSources(List<Path> sources) {
+        for (var source : sources) {
+            final var option = JavaFiles.readString(source)
+                    .mapErr(JavaError::new)
+                    .mapErr(ApplicationError::new)
+                    .match((input) -> runWithInput(source, input), Optional::of);
+
+            if (option.isPresent()) return option;
+        }
+        return Optional.empty();
     }
 
     private static Optional<ApplicationError> runWithInput(Path source, String input) {
