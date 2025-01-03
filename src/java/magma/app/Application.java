@@ -1,5 +1,7 @@
 package magma.app;
 
+import magma.app.compile.CompileException;
+import magma.app.compile.DividingState;
 import magma.app.io.source.SourceSet;
 import magma.app.io.target.TargetSet;
 import magma.app.io.unit.Unit;

@@ -1,15 +1,15 @@
-package magma.app;
+package magma.app.compile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public record DividingState(List<String> segments, StringBuilder buffer) {
-    DividingState append(char c) {
+    public DividingState append(char c) {
         buffer().append(c);
         return this;
     }
 
-    DividingState advance() {
+    public DividingState advance() {
         if (buffer.isEmpty()) {
             return this;
         }

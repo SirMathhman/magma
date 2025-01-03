@@ -1,7 +1,7 @@
 package magma;
 
 import magma.app.Application;
-import magma.app.CompileException;
+import magma.app.compile.CompileException;
 import magma.app.io.source.DirectorySourceSet;
 import magma.app.io.target.DirectoryTargetSet;
 
