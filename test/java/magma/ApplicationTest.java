@@ -1,5 +1,8 @@
 package magma;
 
+import magma.app.Application;
+import magma.app.io.target.DirectoryTargetSet;
+import magma.app.io.source.SingleSourceSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,21 +22,21 @@ public class ApplicationTest {
         return Paths.get(".", "Main." + extension);
     }
 
-    private static boolean doesTargetExist() {
-        return Files.exists(TARGET_PATH);
-    }
-
     @Test
     void empty() throws IOException {
-        new Application(new SingleSourceSet(SOURCE_PATH)).run();
-        assertFalse(doesTargetExist());
+        runImpl();
+        assertFalse(Files.exists(TARGET_PATH));
+    }
+
+    private static void runImpl() throws IOException {
+        new Application(new SingleSourceSet(SOURCE_PATH), new DirectoryTargetSet(Paths.get("."))).run();
     }
 
     @Test
     void temp() throws IOException {
         Files.createFile(SOURCE_PATH);
-        new Application(new SingleSourceSet(SOURCE_PATH)).run();
-        assertTrue(doesTargetExist());
+        runImpl();
+        assertTrue(Files.exists(TARGET_PATH));
     }
 
     @AfterEach
