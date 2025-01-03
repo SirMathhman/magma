@@ -14,7 +14,7 @@ public record DirectoryTargetSet(Path root) implements TargetSet {
         final var name = unit.computeName();
         final var parent = resolveParent(namespace);
         if (!Files.exists(parent)) Files.createDirectories(parent);
-        Files.createFile(parent.resolve(name + ".c"));
+        Files.writeString(parent.resolve(name + ".c"), output);
     }
 
     private Path resolveParent(List<String> namespace) {

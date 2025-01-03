@@ -15,6 +15,6 @@ public record DividingState(List<String> segments, StringBuilder buffer) {
         }
         final var copy = new ArrayList<>(segments);
         copy.add(buffer().toString());
-        return new DividingState(copy, buffer);
+        return new DividingState(copy, new StringBuilder());
     }
 }

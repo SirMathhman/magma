@@ -35,8 +35,9 @@ public final class Application {
         return appended;
     }
 
-    private static String compileRootMember(String root) throws CompileException {
-        throw new CompileException("Unknown root", root);
+    private static String compileRootMember(String rootSegment) throws CompileException {
+        if(rootSegment.startsWith("package ")) return rootSegment;
+        throw new CompileException("Unknown root segment", rootSegment);
     }
 
     private void runWithSource(Unit unit) throws IOException, CompileException {
