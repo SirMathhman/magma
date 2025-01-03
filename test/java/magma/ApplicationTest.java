@@ -24,9 +24,14 @@ public class ApplicationTest {
     }
 
     private static void run() throws IOException {
-        if (Files.exists(SOURCE_PATH)) {
-            Files.createFile(TARGET_PATH);
-        }
+        if (!Files.exists(SOURCE_PATH)) return;
+
+        final var fullName = SOURCE_PATH.getFileName().toString();
+        final var separator = fullName.indexOf('.');
+        if (separator == -1) return;
+
+        final var name = fullName.substring(0, separator);
+        Files.createFile(SOURCE_PATH.resolveSibling(name + ".c"));
     }
 
     @Test
