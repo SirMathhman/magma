@@ -17,7 +17,7 @@ public record PathUnit(Path root, Path child) implements Unit {
     public List<String> computeNamespace() {
         final var relativized = root.relativize(child);
         var segments = new ArrayList<String>();
-        for (Path path : relativized) {
+        for (Path path : relativized.getParent()) {
             segments.add(path.toString());
         }
         return segments;

@@ -12,7 +12,7 @@ public record SingleSourceSet(Path source) implements SourceSet {
     @Override
     public Set<Unit> collect() {
         if (Files.exists(source())) {
-            return Collections.singleton(new PathUnit(source));
+            return Collections.singleton(new PathUnit(source.getParent(), source));
         } else {
             return Collections.emptySet();
         }
