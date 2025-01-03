@@ -1,5 +1,7 @@
 package magma.app.io.unit;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,5 +23,10 @@ public record PathUnit(Path root, Path child) implements Unit {
             segments.add(path.toString());
         }
         return segments;
+    }
+
+    @Override
+    public String read() throws IOException {
+        return Files.readString(child);
     }
 }

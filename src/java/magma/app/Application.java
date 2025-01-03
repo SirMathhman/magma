@@ -15,11 +15,16 @@ public final class Application {
         this.targetSet = targetSet;
     }
 
-    private void runWithSource(Unit unit) throws IOException {
-        targetSet.write(unit);
+    private void runWithSource(Unit unit) throws IOException, CompileException {
+        final var input = unit.read();
+        targetSet.write(unit, compile(input));
     }
 
-    public void run() throws IOException {
+    private String compile(String root) throws CompileException {
+        throw new CompileException("Unknown root", root);
+    }
+
+    public void run() throws IOException, CompileException {
         final var sources = sourceSet.collect();
         for (var source : sources) {
             runWithSource(source);

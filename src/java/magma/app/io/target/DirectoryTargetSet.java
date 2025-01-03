@@ -9,7 +9,7 @@ import java.util.List;
 
 public record DirectoryTargetSet(Path root) implements TargetSet {
     @Override
-    public void write(Unit unit) throws IOException {
+    public void write(Unit unit, String output) throws IOException {
         final var namespace = unit.computeNamespace();
         final var name = unit.computeName();
         final var parent = resolveParent(namespace);

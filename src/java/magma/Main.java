@@ -1,6 +1,7 @@
 package magma;
 
 import magma.app.Application;
+import magma.app.CompileException;
 import magma.app.io.source.DirectorySourceSet;
 import magma.app.io.target.DirectoryTargetSet;
 
@@ -13,7 +14,7 @@ public class Main {
             final var sourceSet = new DirectorySourceSet("java", Paths.get(".", "src", "java"));
             final var targetSet = new DirectoryTargetSet(Paths.get(".", "src", "c"));
             new Application(sourceSet, targetSet).run();
-        } catch (IOException e) {
+        } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
