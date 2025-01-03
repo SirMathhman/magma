@@ -2,16 +2,16 @@ package magma;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 public record SingleSourceSet(Path source) implements SourceSet {
     @Override
-    public Set<Path> collect() {
-        var set = new HashSet<Path>();
+    public Set<Source> collect() {
         if (Files.exists(source())) {
-            set.add(source());
+            return Collections.singleton(new PathSource(source));
+        } else {
+            return Collections.emptySet();
         }
-        return set;
     }
 }

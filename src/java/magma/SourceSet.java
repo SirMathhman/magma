@@ -4,5 +4,5 @@ import java.nio.file.Path;
 import java.util.Set;
 
 public interface SourceSet {
-    Set<Path> collect();
+    Set<Source> collect();
 }
