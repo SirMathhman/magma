@@ -6,6 +6,7 @@ import magma.app.io.unit.Unit;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public final class Application {
     private final TargetSet targetSet;
@@ -14,6 +15,28 @@ public final class Application {
     public Application(SourceSet sourceSet, TargetSet targetSet) {
         this.sourceSet = sourceSet;
         this.targetSet = targetSet;
+    }
+
+    private static List<String> split(String root) {
+        var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        var state = new DividingState(segments, buffer);
+        for (int i = 0; i < root.length(); i++) {
+            var c = root.charAt(i);
+            state = splitAtChar(state, c);
+        }
+
+        return state.advance().segments();
+    }
+
+    private static DividingState splitAtChar(DividingState state, char c) {
+        final var appended = state.append(c);
+        if (c == ';') return appended.advance();
+        return appended;
+    }
+
+    private static String compileRootMember(String root) throws CompileException {
+        throw new CompileException("Unknown root", root);
     }
 
     private void runWithSource(Unit unit) throws IOException, CompileException {
@@ -30,29 +53,6 @@ public final class Application {
         }
 
         return output.toString();
-    }
-
-    private static ArrayList<String> split(String root) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
-            buffer.append(c);
-            if (c == ';') {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            }
-        }
-        advance(buffer, segments);
-        return segments;
-    }
-
-    private static String compileRootMember(String root) throws CompileException {
-        throw new CompileException("Unknown root", root);
-    }
-
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
     public void run() throws IOException, CompileException {
