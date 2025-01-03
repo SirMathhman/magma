@@ -8,9 +8,7 @@ import magma.app.io.unit.Unit;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public final class Application {
     private final TargetSet targetSet;
@@ -42,33 +40,12 @@ public final class Application {
     }
 
     private static String compileRootMember(String rootSegment) throws CompileException {
-        return compilePackage(rootSegment)
-                .or(() -> compileImport(rootSegment))
-                .or(() -> compileToStruct("interface", rootSegment))
-                .or(() -> compileToStruct("class", rootSegment))
-                .or(() -> compileToStruct("record", rootSegment))
+        return new PackageCompiler().compile(rootSegment)
+                .or(() -> new ImportCompiler().compile(rootSegment))
+                .or(() -> new StructCompiler("interface").compile(rootSegment))
+                .or(() -> new StructCompiler("class").compile(rootSegment))
+                .or(() -> new StructCompiler("record").compile(rootSegment))
                 .orElseThrow(() -> new CompileException("Unknown root segment", rootSegment));
-    }
-
-    private static Optional<String> compileToStruct(String infix, String rootSegment) {
-        if (rootSegment.contains(infix)) return Optional.of("struct Temp {};");
-        return Optional.empty();
-    }
-
-    private static Optional<String> compilePackage(String rootSegment) {
-        if (rootSegment.startsWith("package ")) return Optional.of("");
-        else return Optional.empty();
-    }
-
-    private static Optional<String> compileImport(String rootSegment) {
-        if (!rootSegment.startsWith("import ")) return Optional.empty();
-
-        final var right = rootSegment.substring("import ".length());
-        if (!right.endsWith(";")) return Optional.empty();
-
-        final var center = right.substring(0, right.length() - ";".length());
-        final var segments = Arrays.stream(center.split("\\.")).toList();
-        return Optional.of("#include \"" + String.join("/", segments) + ".h\"\n");
     }
 
     private void runWithSource(Unit unit) throws IOException, CompileException {
