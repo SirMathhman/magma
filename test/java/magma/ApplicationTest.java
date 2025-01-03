@@ -23,32 +23,16 @@ public class ApplicationTest {
         return Files.exists(TARGET_PATH);
     }
 
-    private static void run(SourceSet sourceSet) throws IOException {
-        final var sources = sourceSet.collect();
-        for (var source : sources) {
-            runWithSource(source);
-        }
-    }
-
-    private static void runWithSource(Path source) throws IOException {
-        final var fullName = source.getFileName().toString();
-        final var separator = fullName.indexOf('.');
-        if (separator == -1) return;
-
-        final var name = fullName.substring(0, separator);
-        Files.createFile(source.resolveSibling(name + ".c"));
-    }
-
     @Test
     void empty() throws IOException {
-        run(new SingleSourceSet(SOURCE_PATH));
+        new Application(new SingleSourceSet(SOURCE_PATH)).run();
         assertFalse(doesTargetExist());
     }
 
     @Test
     void temp() throws IOException {
         Files.createFile(SOURCE_PATH);
-        run(new SingleSourceSet(SOURCE_PATH));
+        new Application(new SingleSourceSet(SOURCE_PATH)).run();
         assertTrue(doesTargetExist());
     }
 
