@@ -8,6 +8,7 @@ import magma.app.io.unit.Unit;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public final class Application {
@@ -38,7 +39,15 @@ public final class Application {
     }
 
     private static String compileRootMember(String rootSegment) throws CompileException {
-        if(rootSegment.startsWith("package ")) return rootSegment;
+        if (rootSegment.startsWith("package ")) return rootSegment;
+        if (rootSegment.startsWith("import ")) {
+            final var right = rootSegment.substring("import ".length());
+            if(right.endsWith(";")) {
+                final var center = right.substring(0, right.length() - ";".length());
+                final var segments = Arrays.stream(center.split("\\.")).toList();
+                return "#include \"" + String.join("\\", segments) + ".h\"\n";
+            }
+        }
         throw new CompileException("Unknown root segment", rootSegment);
     }
 
@@ -52,7 +61,9 @@ public final class Application {
 
         var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootMember(segment));
+            final var stripped = segment.strip();
+            final var compiled = compileRootMember(stripped);
+            output.append(compiled);
         }
 
         return output.toString();
