@@ -5,6 +5,7 @@
 #include "java/util/ArrayList.h"
 #include "java/util/HashSet.h"
 #include "java/util/List.h"
+#include "java/util/Optional.h"
 #include "java/util/Set.h"
 #include "java/util/stream/Collectors.h"
 struct Temp {};
