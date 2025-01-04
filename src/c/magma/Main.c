@@ -4,4 +4,7 @@
 #include "magma/app/io/target/DirectoryTargetSet.h"
 #include "java/io/IOException.h"
 #include "java/nio/file/Paths.h"
-struct Temp {int value = 0;catch (Exception e){}int value = 0;};
+struct Temp {
+	int value = 0;catch (Exception e){}
+	int value = 0;
+};

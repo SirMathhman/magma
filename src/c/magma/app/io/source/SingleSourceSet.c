@@ -4,4 +4,7 @@
 #include "java/nio/file/Path.h"
 #include "java/util/Collections.h"
 #include "java/util/Set.h"
-struct Temp {if (1) {}else {}int value = 0;};
+struct Temp {
+	if (1) {}else {}
+	int value = 0;
+};

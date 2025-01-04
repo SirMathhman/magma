@@ -31,10 +31,10 @@ public record StructCompiler(String infix) implements Compiler {
         final var segments = Splitter.split(content);
         var builder = new StringBuilder();
         for (String segment : segments) {
-            builder.append(compileClassSegment(segment));
+            builder.append("\n\t").append(compileClassSegment(segment));
         }
 
-        return Optional.of("struct Temp {" + builder + "};");
+        return Optional.of("struct Temp {" + builder + "\n};");
     }
 
     private String compileClassSegment(String classSegment) throws CompileException {
