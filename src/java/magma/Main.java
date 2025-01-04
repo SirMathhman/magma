@@ -18,13 +18,13 @@ public class Main {
             for (Path source : sources) {
                 runWithSource(source, sourceDirectory);
             }
-        } catch (IOException e) {
+        } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
     }
 
-    private static void runWithSource(Path source, Path sourceDirectory) throws IOException {
+    private static void runWithSource(Path source, Path sourceDirectory) throws IOException, CompileException {
         final var relativized = sourceDirectory.relativize(source);
         final var name = relativized.getFileName().toString();
         final var index = name.indexOf('.');
@@ -36,6 +36,10 @@ public class Main {
         if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
 
         final var target = targetParent.resolve(nameWithoutExt + ".c");
-        Files.writeString(target, "");
+        Files.writeString(target, compile(Files.readString(source)));
+    }
+
+    private static String compile(String root) throws CompileException {
+        throw new CompileException("Unknown root", root);
     }
 }
