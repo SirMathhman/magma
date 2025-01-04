@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -89,14 +90,34 @@ public class Main {
     }
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
-        if (rootSegment.startsWith("package ")) return "";
-        if (rootSegment.startsWith("import ") && rootSegment.endsWith(";")) {
-            final var slice = rootSegment.substring("import ".length(), rootSegment.length() - 1);
-            final var args = slice.split("\\.");
-            final var joined = String.join("/", args);
-            return "#include \"" + joined + ".h\"\n";
-        }
-        if (rootSegment.contains("class ")) return "struct Temp {};";
+        final var maybePackage = compilePackage(rootSegment);
+        if (maybePackage.isPresent()) return maybePackage.get();
+
+        final var maybeImport = compileImport(rootSegment);
+        if (maybeImport.isPresent()) return maybeImport.get();
+
+        final var maybeClass = compileClass(rootSegment);
+        if (maybeClass.isPresent()) return maybeClass.get();
+
         throw new CompileException("Unknown root segment", rootSegment);
+    }
+
+    private static Optional<String> compileClass(String rootSegment) {
+        return rootSegment.contains("class ")
+                ? Optional.of("struct Temp {};")
+                : Optional.empty();
+    }
+
+    private static Optional<String> compilePackage(String rootSegment) {
+        return rootSegment.startsWith("package ") ? Optional.of("") : Optional.empty();
+    }
+
+    private static Optional<String> compileImport(String rootSegment) {
+        if (!rootSegment.startsWith("import ") || !rootSegment.endsWith(";")) return Optional.empty();
+
+        final var slice = rootSegment.substring("import ".length(), rootSegment.length() - 1);
+        final var args = slice.split("\\.");
+        final var joined = String.join("/", args);
+        return Optional.of("#include \"" + joined + ".h\"\n");
     }
 }
