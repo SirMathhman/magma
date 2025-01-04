@@ -45,7 +45,7 @@ public class Main {
 
         var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootSegment(segment));
+            output.append(compileRootSegment(segment.strip()));
         }
 
         return output.toString();
@@ -71,6 +71,13 @@ public class Main {
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
         if (rootSegment.startsWith("package ")) return "";
+        if (rootSegment.startsWith("import ") && rootSegment.endsWith(";")) {
+            final var slice = rootSegment.substring("import ".length(), rootSegment.length() - ";".length());
+            final var args = slice.split("\\.");
+            final var joined = String.join("/", args);
+            return "#include \"" + joined + ".h\"\n";
+        }
+        if (rootSegment.contains("class ")) return "struct Temp {};";
         throw new CompileException("Unknown root segment", rootSegment);
     }
 }
