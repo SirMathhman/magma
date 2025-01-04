@@ -80,14 +80,14 @@ public class Main {
 
     private static State splitAtChar(State state, char c) {
         final var appended = state.append(c);
-        if (c == ';') {
-            return appended.advance();
-        } else {
-            return appended;
-        }
+        if (c == ';' && state.isLevel()) return appended.advance();
+        if (c == '{') return appended.enter();
+        if (c == '}') return appended.exit();
+        return appended;
     }
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
+        if (rootSegment.startsWith("package ")) return "";
         throw new CompileException("Unknown root segment", rootSegment);
     }
 }
