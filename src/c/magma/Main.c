@@ -1,1 +1,10 @@
-import java.io.IOException;import java.nio.file.Files;import java.nio.file.Path;import java.nio.file.Paths;import java.util.ArrayList;import java.util.HashSet;import java.util.List;import java.util.Set;import java.util.stream.Collectors;struct Temp {};
+#include "java/io/IOException.h"
+#include "java/nio/file/Files.h"
+#include "java/nio/file/Path.h"
+#include "java/nio/file/Paths.h"
+#include "java/util/ArrayList.h"
+#include "java/util/HashSet.h"
+#include "java/util/List.h"
+#include "java/util/Set.h"
+#include "java/util/stream/Collectors.h"
+struct Temp {};

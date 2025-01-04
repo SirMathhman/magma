@@ -1,1 +1,2 @@
-import java.util.List;struct Temp {};
+#include "java/util/List.h"
+struct Temp {};
