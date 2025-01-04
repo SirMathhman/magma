@@ -32,4 +32,8 @@ public record DividingState(List<String> segments, StringBuilder buffer, int dep
     public DividingState exit() {
         return new DividingState(segments, buffer, depth - 1);
     }
+
+    public boolean isShallow() {
+        return depth == 1;
+    }
 }

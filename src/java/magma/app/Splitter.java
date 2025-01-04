@@ -35,8 +35,8 @@ public class Splitter {
                 final var next = queue.pop();
                 current = current.append(next);
 
-                if(next == '\"') {
-                     break;
+                if (next == '\"') {
+                    break;
                 }
             }
 
@@ -44,6 +44,7 @@ public class Splitter {
         }
 
         if (c == ';' && appended.isLevel()) return appended.advance();
+        if (c == '}' && appended.isShallow()) return appended.exit().advance();
         if (c == '{') return appended.enter();
         if (c == '}') return appended.exit();
         return appended;

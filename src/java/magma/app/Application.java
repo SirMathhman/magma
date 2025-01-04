@@ -47,8 +47,10 @@ public final class Application {
         var output = new StringBuilder();
         for (String segment : segments) {
             final var stripped = segment.strip();
-            final var compiled = compileRootMember(stripped);
-            output.append(compiled);
+            if (!stripped.isEmpty()) {
+                final var compiled = compileRootMember(stripped);
+                output.append(compiled);
+            }
         }
 
         return output.toString();

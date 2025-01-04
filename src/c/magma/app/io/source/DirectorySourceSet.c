@@ -5,4 +5,4 @@
 #include "java/nio/file/Path.h"
 #include "java/util/HashSet.h"
 #include "java/util/Set.h"
-struct Temp {};
+struct Temp {int value = 0;int value = 0;};
