@@ -62,7 +62,7 @@ public class Main {
         var output = new StringBuilder();
         for (String rootSegment : segments) {
             final var stripped = rootSegment.strip();
-            final var compiled = compileRootSegment(stripped);
+            final var compiled = Results.unwrap(compileRootSegment(stripped));
             output.append(compiled);
         }
 
@@ -88,7 +88,7 @@ public class Main {
         return appended;
     }
 
-    private static String compileRootSegment(String rootSegment) throws CompileException {
+    private static Result<String, CompileException> compileRootSegment(String rootSegment) {
         final var compilers = List.of(
                 new PackageCompiler(),
                 new ImportCompiler(),
@@ -98,10 +98,9 @@ public class Main {
 
         for (Compiler compiler : compilers) {
             final var maybe = compiler.compile(rootSegment);
-            if (maybe.isPresent()) return maybe.get();
+            if (maybe.isPresent()) return new Ok<>(maybe.get());
         }
 
-        throw new CompileException("Unknown root segment", rootSegment);
+        return new Err<>(new CompileException("Unknown root segment", rootSegment));
     }
-
 }
