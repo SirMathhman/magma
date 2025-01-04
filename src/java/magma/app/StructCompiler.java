@@ -9,6 +9,7 @@ public record StructCompiler(String infix) implements Compiler {
         if (statement.startsWith("if ")) return "if (1) {}";
         if (statement.contains("=")) return "int value = 0;";
         if (statement.startsWith("return ")) return "return 0;";
+        if (statement.contains("(") && statement.endsWith(");")) return "temp();";
 
         throw new CompileException("Unknown statement", statement);
     }
