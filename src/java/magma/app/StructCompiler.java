@@ -33,12 +33,16 @@ public record StructCompiler(String infix) implements Compiler {
     }
 
     private String compileClassSegment(String classSegment) throws CompileException {
-        final var method = compileMethod(classSegment);
-        if (method.isPresent()) {
-            return method.get();
-        }
+        try {
+            final var method = compileMethod(classSegment);
+            if (method.isPresent()) {
+                return method.get();
+            }
 
-        throw new CompileException("Unknown class segment", classSegment);
+            throw new CompileException("Unknown class segment", classSegment);
+        } catch (CompileException e) {
+            throw new CompileException("Invalid class segment", classSegment, e);
+        }
     }
 
     private Optional<String> compileMethod(String classSegment) throws CompileException {
