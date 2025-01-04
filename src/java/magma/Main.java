@@ -16,22 +16,26 @@ public class Main {
                     .collect(Collectors.toSet());
 
             for (Path source : sources) {
-                final var relativized = sourceDirectory.relativize(source);
-                final var name = relativized.getFileName().toString();
-                final var index = name.indexOf('.');
-                if(index == -1) throw new RuntimeException("Invalid file name: " + relativized);
-
-                final var nameWithoutExt = name.substring(0, index);
-
-                final var targetParent = Paths.get(".", "src", "c").resolve(relativized.getParent());
-                if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
-
-                final var target = targetParent.resolve(nameWithoutExt + ".c");
-                Files.writeString(target, "");
+                runWithSource(source, sourceDirectory);
             }
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
+    }
+
+    private static void runWithSource(Path source, Path sourceDirectory) throws IOException {
+        final var relativized = sourceDirectory.relativize(source);
+        final var name = relativized.getFileName().toString();
+        final var index = name.indexOf('.');
+        if(index == -1) throw new RuntimeException("Invalid file name: " + relativized);
+
+        final var nameWithoutExt = name.substring(0, index);
+
+        final var targetParent = Paths.get(".", "src", "c").resolve(relativized.getParent());
+        if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
+
+        final var target = targetParent.resolve(nameWithoutExt + ".c");
+        Files.writeString(target, "");
     }
 }
