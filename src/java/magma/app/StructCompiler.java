@@ -12,6 +12,7 @@ public record StructCompiler(String infix) implements Compiler {
         if (statement.contains("(") && statement.endsWith(");")) return "temp();";
         if (statement.startsWith("for ")) return "for (;;) {}";
         if (statement.startsWith("else ")) return "else {}";
+        if (statement.startsWith("catch ")) return "catch (Exception e){}";
 
         throw new CompileException("Unknown statement", statement);
     }
