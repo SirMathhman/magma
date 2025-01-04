@@ -5,11 +5,12 @@ import magma.app.compile.CompileException;
 import java.util.Optional;
 
 public record StructCompiler(String infix) implements Compiler {
-    private static String compileStatement(String classSegment) throws CompileException {
-        if (classSegment.startsWith("if ")) return "if (true) {}";
-        if (classSegment.contains("=")) return "int value = 0;";
+    private static String compileStatement(String statement) throws CompileException {
+        if (statement.startsWith("if ")) return "if (1) {}";
+        if (statement.contains("=")) return "int value = 0;";
+        if (statement.startsWith("return ")) return "return 0;";
 
-        throw new CompileException("Unknown class segment", classSegment);
+        throw new CompileException("Unknown statement", statement);
     }
 
     @Override
@@ -35,14 +36,19 @@ public record StructCompiler(String infix) implements Compiler {
     private String compileClassSegment(String classSegment) throws CompileException {
         try {
             final var method = compileMethod(classSegment);
-            if (method.isPresent()) {
-                return method.get();
-            }
+            if (method.isPresent()) return method.get();
+
+            final var definition = compileDefinition(classSegment);
+            if (definition.isPresent()) return definition.get();
 
             throw new CompileException("Unknown class segment", classSegment);
         } catch (CompileException e) {
             throw new CompileException("Invalid class segment", classSegment, e);
         }
+    }
+
+    private Optional<String> compileDefinition(String classSegment) {
+        return Optional.of("int value = 0;");
     }
 
     private Optional<String> compileMethod(String classSegment) throws CompileException {
@@ -56,7 +62,10 @@ public record StructCompiler(String infix) implements Compiler {
         final var segments = Splitter.split(content);
         var buffer = new StringBuilder();
         for (String segment : segments) {
-            buffer.append(compileStatement(segment.strip()));
+            final var stripped = segment.strip();
+            if (!stripped.isEmpty()) {
+                buffer.append(compileStatement(stripped));
+            }
         }
 
         return Optional.of(buffer.toString());
