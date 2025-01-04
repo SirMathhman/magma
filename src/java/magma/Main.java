@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,6 +57,37 @@ public class Main {
     }
 
     private static String compile(String root) throws CompileException {
-        throw new CompileException("Unknown root", root);
+        final var segments = split(root);
+
+        var output = new StringBuilder();
+        for (String rootSegment : segments) {
+            output = output.append(compileRootSegment(rootSegment));
+        }
+
+        return output.toString();
+    }
+
+    private static List<String> split(String root) {
+        final var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        var state = new State(segments, buffer);
+        for (int i = 0; i < root.length(); i++) {
+            var c = root.charAt(i);
+            state = splitAtChar(state, c);
+        }
+        return state.advance().getSegments();
+    }
+
+    private static State splitAtChar(State state, char c) {
+        final var appended = state.append(c);
+        if (c == ';') {
+            return appended.advance();
+        } else {
+            return appended;
+        }
+    }
+
+    private static String compileRootSegment(String rootSegment) throws CompileException {
+        throw new CompileException("Unknown root segment", rootSegment);
     }
 }
