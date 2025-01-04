@@ -92,7 +92,8 @@ public class Main {
         final var compilers = List.of(
                 new PackageCompiler(),
                 new ImportCompiler(),
-                new ClassCompiler()
+                new StructCompiler("class "),
+                new StructCompiler("interface ")
         );
 
         for (Compiler compiler : compilers) {
