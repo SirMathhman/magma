@@ -16,7 +16,11 @@ public class ApplicationTest {
     public static final Path TARGET_PATH = Paths.get(".", "Main.c");
 
     private static void run() throws IOException {
-        if (Files.exists(SOURCE_PATH)) Files.createFile(TARGET_PATH);
+        if (!Files.exists(SOURCE_PATH)) return;
+
+        final var name = SOURCE_PATH.getFileName().toString();
+        final var nameWithoutExt = name.substring(0, name.indexOf('.'));
+        Files.createFile(SOURCE_PATH.resolveSibling(nameWithoutExt + ".c"));
     }
 
     @AfterEach
