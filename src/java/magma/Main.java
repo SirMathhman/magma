@@ -50,7 +50,7 @@ public class Main {
         final var segments = split(root);
         var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootSegment(segment.strip()));
+            output.append(Results.unwrap(compileRootSegment(segment.strip())));
         }
 
         return output.toString();
@@ -74,10 +74,10 @@ public class Main {
         return appended;
     }
 
-    private static String compileRootSegment(String segment) throws CompileException {
-        if (segment.startsWith("package ")) return "";
-        if (segment.startsWith("import ")) return "#include \"temp.h\";\n";
-        if (segment.contains("class ")) return "struct Temp {};";
-        throw new CompileException("Unknown root segment", segment);
+    private static Result<String, CompileException> compileRootSegment(String segment) {
+        if (segment.startsWith("package ")) return new Ok<>("");
+        if (segment.startsWith("import ")) return new Ok<>("#include \"temp.h\";\n");
+        if (segment.contains("class ")) return new Ok<>("struct Temp {};");
+        return new Err<>(new CompileException("Unknown root segment", segment));
     }
 }
