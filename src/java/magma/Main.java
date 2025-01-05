@@ -102,28 +102,33 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileSegments(String root, Function<String, Result<String, CompileError>> mapper) {
-        final var segments = split(root);
-        Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
-        for (String segment : segments) {
-            final var stripped = segment.strip();
-            if (!stripped.isEmpty()) {
-                output = output
-                        .and(() -> mapper.apply(stripped))
-                        .mapValue(tuple -> tuple.left().append(tuple.right()));
+        return split(root).flatMapValue(segments -> {
+            Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
+            for (String segment : segments) {
+                final var stripped = segment.strip();
+                if (!stripped.isEmpty()) {
+                    output = output
+                            .and(() -> mapper.apply(stripped))
+                            .mapValue(tuple -> tuple.left().append(tuple.right()));
+                }
             }
-        }
 
-        return output.mapValue(StringBuilder::toString);
+            return output.mapValue(StringBuilder::toString);
+        });
     }
 
-    private static List<String> split(String root) {
+    private static Result<List<String>, CompileError> split(String root) {
         var state = new State();
         for (int i = 0; i < root.length(); i++) {
             var c = root.charAt(i);
             state = splitAtChar(state, c);
         }
 
-        return state.advance().segments;
+        if (state.isLevel()) {
+            return new Ok<>(state.advance().segments);
+        } else {
+            return new Err<>(new CompileError("Invalid depth '" + state.depth + "'", root));
+        }
     }
 
     private static State splitAtChar(State state, char c) {
