@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -46,6 +47,32 @@ public class Main {
     }
 
     private static String compileRoot(String root) throws CompileException {
-        throw new CompileException("Unknown root", root);
+        var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        for (int i = 0; i < root.length(); i++) {
+            var c = root.charAt(i);
+            buffer.append(c);
+            if (c == ';') {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            }
+        }
+        advance(buffer, segments);
+
+        var output = new StringBuilder();
+        for (String segment : segments) {
+            output.append(compileRootSegment(segment));
+        }
+
+        return output.toString();
+    }
+
+    private static String compileRootSegment(String segment) throws CompileException {
+        if (segment.startsWith("package ")) return "";
+        throw new CompileException("Unknown root segment", segment);
+    }
+
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 }
