@@ -1,3 +1,3 @@
 #include "temp.h";
 #include "temp.h";
-struct State  {};
+struct State  {int value;int value;int value;int value;};

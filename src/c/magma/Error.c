@@ -1,1 +1,1 @@
-struct Error  {};
+struct Error  {int value;int value;};

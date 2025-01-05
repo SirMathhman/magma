@@ -1,1 +1,1 @@
-struct CompileError {};
+struct CompileError {int value;int value;int value;};

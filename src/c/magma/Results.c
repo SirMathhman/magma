@@ -1,1 +1,1 @@
-struct Results  {};
+struct Results  {int value;};
