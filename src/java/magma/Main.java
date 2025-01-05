@@ -105,9 +105,12 @@ public class Main {
         final var segments = split(root);
         Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
-            output = output
-                    .and(() -> mapper.apply(segment.strip()))
-                    .mapValue(tuple -> tuple.left().append(tuple.right()));
+            final var stripped = segment.strip();
+            if (!stripped.isEmpty()) {
+                output = output
+                        .and(() -> mapper.apply(stripped))
+                        .mapValue(tuple -> tuple.left().append(tuple.right()));
+            }
         }
 
         return output.mapValue(StringBuilder::toString);
@@ -145,7 +148,7 @@ public class Main {
         final var keywordIndex = segment.indexOf(keyword);
         if (keywordIndex == -1) return Optional.empty();
 
-        final var contentStart = segment.indexOf('{');
+        final var contentStart = segment.indexOf('{', keywordIndex + keyword.length());
         if (contentStart == -1) return Optional.empty();
 
         final var contentEnd = segment.lastIndexOf('}');
@@ -174,6 +177,10 @@ public class Main {
                 final var name = slice.substring(space + 1);
                 return new Ok<>("\n\tint " + name + ";");
             }
+        }
+
+        if (structMember.contains("(")) {
+            return new Ok<>("\n\tvoid temp(){}");
         }
 
         return new Err<>(new CompileError("Unknown struct member", structMember));

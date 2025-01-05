@@ -1,5 +1,6 @@
 struct CompileError {
-	int value;
-	int value;
-	int value;
+	int message;
+	int context;
+	void temp(){}
+	void temp(){}
 };
