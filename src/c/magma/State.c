@@ -1,8 +1,15 @@
 #include "temp.h";
 #include "temp.h";
 struct State  {
-	int value;
-	int value;
-	int value;
-	int value;
+	int segments;
+	int buffer;
+	int depth;
+	void temp(){}
+	void temp(){}
+	void temp(){}
+	void temp(){}
+	void temp(){}
+	void temp(){}
+	void temp(){}
+	void temp(){}
 };

@@ -4,9 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Main {
@@ -117,22 +121,40 @@ public class Main {
         });
     }
 
-    private static Result<List<String>, CompileError> split(String root) {
+    private static Result<List<String>, CompileError> split(String input) {
         var state = new State();
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
-            state = splitAtChar(state, c);
+
+        var queue = IntStream.range(0, input.length())
+                .mapToObj(input::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        while (!queue.isEmpty()) {
+            final var c = queue.pop();
+            state = splitAtChar(state, c, queue);
         }
 
         if (state.isLevel()) {
             return new Ok<>(state.advance().segments);
         } else {
-            return new Err<>(new CompileError("Invalid depth '" + state.depth + "'", root));
+            return new Err<>(new CompileError("Invalid depth '" + state.depth + "'", input));
         }
     }
 
-    private static State splitAtChar(State state, char c) {
+    private static State splitAtChar(State state, char c, Deque<Character> queue) {
         final var appended = state.append(c);
+        if (c == '\'') {
+            final var maybeEscape = queue.pop();
+            final var withMaybeEscape = appended.append(maybeEscape);
+            State next;
+            if (maybeEscape == '\\') {
+                next = withMaybeEscape.append(queue.pop());
+            } else {
+                next = withMaybeEscape;
+            }
+
+            return next.append(queue.pop());
+        }
+
         if (c == ';' && appended.isLevel()) return appended.advance();
         if (c == '}' && appended.isShallow()) return appended.exit().advance();
         if (c == '{') return appended.enter();
