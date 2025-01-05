@@ -5,19 +5,27 @@ struct State  {
 	StringBuilder buffer;
 	int depth;
 	void State(void* __ref__){
+		struct State * this = (struct State *) __ref__;
 	}
 	void State(void* __ref__){
+		struct State * this = (struct State *) __ref__;
 	}
 	void advance(void* __ref__){
+		struct State * this = (struct State *) __ref__;
 	}
 	void append(void* __ref__){
+		struct State * this = (struct State *) __ref__;
 	}
 	void isLevel(void* __ref__){
+		struct State * this = (struct State *) __ref__;
 	}
 	void enter(void* __ref__){
+		struct State * this = (struct State *) __ref__;
 	}
 	void exit(void* __ref__){
+		struct State * this = (struct State *) __ref__;
 	}
 	void isShallow(void* __ref__){
+		struct State * this = (struct State *) __ref__;
 	}
 };

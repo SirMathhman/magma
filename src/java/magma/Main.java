@@ -226,15 +226,21 @@ public class Main {
         final var methodName = before.substring(i + 1);
         final String actualName;
         final String params;
+        final String body;
         if (methodName.equals(structName)) {
             actualName = "new";
             params = "";
+            body = "";
         } else {
             actualName = methodName;
             params = "void* __ref__";
+            final var s = "struct " + structName;
+            body = "\n\t\t" + s + "* this = (" + s + "*) __ref__;";
         }
 
-        return Optional.of(new Ok<>("\n\tvoid " + actualName + "(" + params + "){\n\t}"));
+        return Optional.of(new Ok<>("\n\tvoid " + actualName + "(" + params + "){" +
+                body +
+                "\n\t}"));
     }
 
     private static Optional<? extends Result<String, CompileError>> compileImport(String segment) {
