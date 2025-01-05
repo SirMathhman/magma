@@ -76,7 +76,7 @@ public class Main {
 
     private static String compileRootSegment(String segment) throws CompileException {
         if (segment.startsWith("package ")) return "";
-        if (segment.startsWith("import ")) return segment;
+        if (segment.startsWith("import ")) return "#include \"temp.h\";\n";
         if (segment.contains("class ")) return "struct Temp {};";
         throw new CompileException("Unknown root segment", segment);
     }
