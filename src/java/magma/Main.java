@@ -165,8 +165,17 @@ public class Main {
         return Optional.of(outputResult.mapValue(output -> "struct " + name + " {" + output + "\n};"));
     }
 
-    private static Result<String, CompileError> compileStructMember(String value) {
-        return new Ok<>("\n\tint value;");
+    private static Result<String, CompileError> compileStructMember(String structMember) {
+        if (structMember.endsWith(";")) {
+            final var slice = structMember.substring(0, structMember.length() - 1);
+            final var space = slice.lastIndexOf(' ');
+            if (space != -1) {
+                final var name = slice.substring(space + 1);
+                return new Ok<>("\n\tint " + name + ";");
+            }
+        }
+
+        return new Err<>(new CompileError("Unknown struct member", structMember));
     }
 
     private static Optional<? extends Result<String, CompileError>> compileImport(String segment) {
