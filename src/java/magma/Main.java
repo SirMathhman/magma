@@ -181,9 +181,6 @@ public class Main {
         final var contentEnd = segment.lastIndexOf('}');
         if (contentEnd == -1) return Optional.empty();
 
-        final var content = segment.substring(contentStart + 1, contentEnd);
-        final var outputResult = compileSegments(content, Main::compileStructMember);
-
         final var maybeImplements = segment.substring(keywordIndex + keyword.length(), contentStart);
         String name;
         final var implementsIndex = maybeImplements.indexOf("implements ");
@@ -193,28 +190,51 @@ public class Main {
             name = maybeImplements;
         }
 
+        final var content = segment.substring(contentStart + 1, contentEnd);
+        final var outputResult = compileSegments(content, structMember -> compileStructMember(structMember, name));
+
         return Optional.of(outputResult.mapValue(output -> "struct " + name + " {" + output + "\n};"));
     }
 
-    private static Result<String, CompileError> compileStructMember(String structMember) {
-        if (structMember.endsWith(";")) {
-            final var slice = structMember.substring(0, structMember.length() - 1);
-            final var space = slice.lastIndexOf(' ');
-            if (space != -1) {
-                final var before = slice.substring(0, space);
-                final var i = before.lastIndexOf(' ');
-                final var type = before.substring(i + 1);
+    private static Result<String, CompileError> compileStructMember(String structMember, String name) {
+        return compileDefinition(structMember)
+                .or(() -> compileMethod(name, structMember))
+                .orElseGet(() -> new Err<>(new CompileError("Unknown struct member", structMember)));
+    }
 
-                final var name = slice.substring(space + 1);
-                return new Ok<>("\n\t" + type + " " + name + ";");
-            }
+    private static Optional<Result<String, CompileError>> compileDefinition(String structMember) {
+        if (!structMember.endsWith(";")) return Optional.empty();
+
+        final var slice = structMember.substring(0, structMember.length() - 1);
+        final var space = slice.lastIndexOf(' ');
+        if (space == -1) return Optional.empty();
+
+        final var before = slice.substring(0, space);
+        final var i = before.lastIndexOf(' ');
+        final var type = before.substring(i + 1);
+
+        final var name = slice.substring(space + 1);
+        return Optional.of(new Ok<>("\n\t" + type + " " + name + ";"));
+    }
+
+    private static Optional<Result<String, CompileError>> compileMethod(String structName, String structMember) {
+        final var paramStart = structMember.indexOf("(");
+        if (paramStart == -1) return Optional.empty();
+
+        final var before = structMember.substring(0, paramStart);
+        final var i = before.lastIndexOf(' ');
+        final var methodName = before.substring(i + 1);
+        final String actualName;
+        final String params;
+        if (methodName.equals(structName)) {
+            actualName = "new";
+            params = "";
+        } else {
+            actualName = methodName;
+            params = "void* __ref__";
         }
 
-        if (structMember.contains("(")) {
-            return new Ok<>("\n\tvoid temp(){}");
-        }
-
-        return new Err<>(new CompileError("Unknown struct member", structMember));
+        return Optional.of(new Ok<>("\n\tvoid " + actualName + "(" + params + "){\n\t}"));
     }
 
     private static Optional<? extends Result<String, CompileError>> compileImport(String segment) {

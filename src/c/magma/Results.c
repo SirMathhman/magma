@@ -1,3 +1,4 @@
 struct Results  {
-	void temp(){}
+	void unwrap(void* __ref__){
+	}
 };

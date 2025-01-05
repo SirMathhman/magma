@@ -1,5 +1,6 @@
 #include "temp.h";
 #include "temp.h";
 struct JavaError(Exception e) {
-	void temp(){}
+	void display(void* __ref__){
+	}
 };

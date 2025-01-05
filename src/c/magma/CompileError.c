@@ -1,6 +1,8 @@
 struct CompileError {
 	String message;
 	String context;
-	void temp(){}
-	void temp(){}
+	void new(){
+	}
+	void display(void* __ref__){
+	}
 };
