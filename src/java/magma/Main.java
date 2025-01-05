@@ -16,19 +16,19 @@ public class Main {
                     .toList();
 
             runWithSources(sources, sourceDirectory);
-        } catch (IOException e) {
+        } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
     }
 
-    private static void runWithSources(List<Path> sources, Path sourceDirectory) throws IOException {
+    private static void runWithSources(List<Path> sources, Path sourceDirectory) throws IOException, CompileException {
         for (Path source : sources) {
             runWithSource(sourceDirectory, source);
         }
     }
 
-    private static void runWithSource(Path sourceDirectory, Path source) throws IOException {
+    private static void runWithSource(Path sourceDirectory, Path source) throws IOException, CompileException {
         final var relativized = sourceDirectory.relativize(source);
         final var parent = relativized.getParent();
         final var targetDirectory = Paths.get(".", "src", "c");
@@ -39,6 +39,13 @@ public class Main {
         final var separator = name.indexOf('.');
         final var nameWithoutExt = name.substring(0, separator);
 
+        final var input = Files.readString(source);
+        compileRoot(input);
+
         Files.createFile(targetParent.resolve(nameWithoutExt + ".c"));
+    }
+
+    private static String compileRoot(String root) throws CompileException {
+        throw new CompileException("Unknown root", root);
     }
 }
