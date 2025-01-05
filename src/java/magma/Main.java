@@ -129,7 +129,7 @@ public class Main {
     private static Result<String, CompileError> compileRootSegment(String segment) {
         if (segment.startsWith("package ")) return new Ok<>("");
         if (segment.startsWith("import ")) return new Ok<>("#include \"temp.h\";\n");
-        if (segment.contains("class ")) return new Ok<>("struct Temp {};");
+        if (segment.contains("class ") || segment.contains("record ") || segment.contains("interface ")) return new Ok<>("struct Temp {};");
         return new Err<>(new CompileError("Unknown root segment", segment));
     }
 }
