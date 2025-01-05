@@ -201,8 +201,12 @@ public class Main {
             final var slice = structMember.substring(0, structMember.length() - 1);
             final var space = slice.lastIndexOf(' ');
             if (space != -1) {
+                final var before = slice.substring(0, space);
+                final var i = before.lastIndexOf(' ');
+                final var type = before.substring(i + 1);
+
                 final var name = slice.substring(space + 1);
-                return new Ok<>("\n\tint " + name + ";");
+                return new Ok<>("\n\t" + type + " " + name + ";");
             }
         }
 

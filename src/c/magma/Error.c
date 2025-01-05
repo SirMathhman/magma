@@ -1,3 +1,3 @@
 struct Error  {
-	int display();
+	String display();
 };

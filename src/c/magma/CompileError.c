@@ -1,6 +1,6 @@
 struct CompileError {
-	int message;
-	int context;
+	String message;
+	String context;
 	void temp(){}
 	void temp(){}
 };

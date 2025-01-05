@@ -1,5 +1,5 @@
 struct ApplicationError {
-	int cause;
+	Error cause;
 	void temp(){}
 	void temp(){}
 };

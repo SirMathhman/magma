@@ -1,8 +1,8 @@
 #include "temp.h";
 #include "temp.h";
 struct State  {
-	int segments;
-	int buffer;
+	List<String> segments;
+	StringBuilder buffer;
 	int depth;
 	void temp(){}
 	void temp(){}
