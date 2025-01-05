@@ -127,9 +127,38 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRootSegment(String segment) {
-        if (segment.startsWith("package ")) return new Ok<>("");
-        if (segment.startsWith("import ")) return new Ok<>("#include \"temp.h\";\n");
-        if (segment.contains("class ") || segment.contains("record ") || segment.contains("interface ")) return new Ok<>("struct Temp {};");
-        return new Err<>(new CompileError("Unknown root segment", segment));
+        return compilePackage(segment)
+                .or(() -> compileImport(segment))
+                .or(() -> compileToStruct(segment, "class "))
+                .or(() -> compileToStruct(segment, "record "))
+                .or(() -> compileToStruct(segment, "interface "))
+                .orElseGet(() -> new Err<>(new CompileError("Unknown root segment", segment)));
+    }
+
+    private static Optional<? extends Result<String, CompileError>> compileToStruct(String segment, String keyword) {
+        final var keywordIndex = segment.indexOf(keyword);
+        if (keywordIndex == -1) return Optional.empty();
+
+        final var contentStart = segment.indexOf('{');
+        if (contentStart == -1) return Optional.empty();
+
+        final var maybeImplements = segment.substring(keywordIndex + keyword.length(), contentStart);
+        String name;
+        final var implementsIndex = maybeImplements.indexOf("implements ");
+        if (implementsIndex != -1) {
+            name = maybeImplements.substring(0, implementsIndex).strip();
+        } else {
+            name = maybeImplements;
+        }
+
+        return Optional.of(new Ok<>("struct " + name + " {};"));
+    }
+
+    private static Optional<? extends Result<String, CompileError>> compileImport(String segment) {
+        return segment.startsWith("import ") ? Optional.of(new Ok<>("#include \"temp.h\";\n")) : Optional.empty();
+    }
+
+    private static Optional<Result<String, CompileError>> compilePackage(String segment) {
+        return segment.startsWith("package ") ? Optional.of(new Ok<>("")) : Optional.empty();
     }
 }
