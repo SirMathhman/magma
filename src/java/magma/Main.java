@@ -162,11 +162,11 @@ public class Main {
             name = maybeImplements;
         }
 
-        return Optional.of(outputResult.mapValue(output -> "struct " + name + " {" + output + "};"));
+        return Optional.of(outputResult.mapValue(output -> "struct " + name + " {" + output + "\n};"));
     }
 
     private static Result<String, CompileError> compileStructMember(String value) {
-        return new Ok<>("int value;");
+        return new Ok<>("\n\tint value;");
     }
 
     private static Optional<? extends Result<String, CompileError>> compileImport(String segment) {

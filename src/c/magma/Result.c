@@ -1,4 +1,13 @@
 #include "temp.h";
 #include "temp.h";
 #include "temp.h";
-struct Result<T, X>  {int value;int value;int value;int value;int value;int value;int value;int value;};
+struct Result<T, X>  {
+	int value;
+	int value;
+	int value;
+	int value;
+	int value;
+	int value;
+	int value;
+	int value;
+};

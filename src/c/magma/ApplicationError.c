@@ -1,1 +1,4 @@
-struct ApplicationError {int value;int value;};
+struct ApplicationError {
+	int value;
+	int value;
+};
