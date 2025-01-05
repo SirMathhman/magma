@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class Main {
@@ -15,45 +16,81 @@ public class Main {
                     .filter(file -> file.toString().endsWith(".java"))
                     .toList();
 
-            runWithSources(sources, sourceDirectory);
-        } catch (IOException | CompileException e) {
+            runWithSources(sources, sourceDirectory).ifPresent(Throwable::printStackTrace);
+        } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
     }
 
-    private static void runWithSources(List<Path> sources, Path sourceDirectory) throws IOException, CompileException {
+    private static Optional<ApplicationException> runWithSources(List<Path> sources, Path sourceDirectory) {
         for (Path source : sources) {
-            runWithSource(sourceDirectory, source);
+            final var error = runWithSource(sourceDirectory, source);
+            if (error.isPresent()) return error;
         }
+        return Optional.empty();
     }
 
-    private static void runWithSource(Path sourceDirectory, Path source) throws IOException, CompileException {
+    private static Optional<ApplicationException> runWithSource(Path sourceDirectory, Path source) {
         final var relativized = sourceDirectory.relativize(source);
         final var parent = relativized.getParent();
         final var targetDirectory = Paths.get(".", "src", "c");
         final var targetParent = targetDirectory.resolve(parent);
-        if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
+        if (!Files.exists(targetParent)) {
+            final var directoryCreationError = createDirectoriesSafe(targetParent);
+            if (directoryCreationError.isPresent()) {
+                return directoryCreationError.map(ApplicationException::new);
+            }
+        }
 
         final var name = relativized.getFileName().toString();
         final var separator = name.indexOf('.');
         final var nameWithoutExt = name.substring(0, separator);
 
-        final var input = Files.readString(source);
-        final var output = compileRoot(input);
-
-        final var target = targetParent.resolve(nameWithoutExt + ".c");
-        Files.writeString(target, output);
+        return readSafe(source).mapErr(ApplicationException::new).mapValue(input -> {
+            return compileRoot(input).mapErr(ApplicationException::new).mapValue(output -> {
+                final var target = targetParent.resolve(nameWithoutExt + ".c");
+                return writeSafe(output, target).map(ApplicationException::new);
+            }).match(value -> value, Optional::of);
+        }).match(value -> value, err -> Optional.of(err));
     }
 
-    private static String compileRoot(String root) throws CompileException {
+    private static Optional<IOException> writeSafe(String output, Path target) {
+        try {
+            Files.writeString(target, output);
+            return Optional.empty();
+        } catch (IOException e) {
+            return Optional.of(e);
+        }
+    }
+
+    private static Result<String, IOException> readSafe(Path source) {
+        try {
+            return new Ok<>(Files.readString(source));
+        } catch (IOException e) {
+            return new Err<>(e);
+        }
+    }
+
+    private static Optional<IOException> createDirectoriesSafe(Path targetParent) {
+        try {
+            Files.createDirectories(targetParent);
+            return Optional.empty();
+        } catch (IOException e) {
+            return Optional.of(e);
+        }
+    }
+
+    private static Result<String, CompileException> compileRoot(String root) {
         final var segments = split(root);
-        var output = new StringBuilder();
+        Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
-            output.append(Results.unwrap(compileRootSegment(segment.strip())));
+            output = output
+                    .and(() -> compileRootSegment(segment.strip()))
+                    .mapValue(tuple -> tuple.left().append(tuple.right()));
         }
 
-        return output.toString();
+        return output.mapValue(StringBuilder::toString);
     }
 
     private static List<String> split(String root) {
