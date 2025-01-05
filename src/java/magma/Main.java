@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -41,38 +40,44 @@ public class Main {
         final var nameWithoutExt = name.substring(0, separator);
 
         final var input = Files.readString(source);
-        compileRoot(input);
+        final var output = compileRoot(input);
 
-        Files.createFile(targetParent.resolve(nameWithoutExt + ".c"));
+        final var target = targetParent.resolve(nameWithoutExt + ".c");
+        Files.writeString(target, output);
     }
 
     private static String compileRoot(String root) throws CompileException {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
-            buffer.append(c);
-            if (c == ';') {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            }
-        }
-        advance(buffer, segments);
-
+        final var segments = split(root);
         var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootSegment(segment));
+            output.append(compileRootSegment(segment.strip()));
         }
 
         return output.toString();
     }
 
-    private static String compileRootSegment(String segment) throws CompileException {
-        if (segment.startsWith("package ")) return "";
-        throw new CompileException("Unknown root segment", segment);
+    private static List<String> split(String root) {
+        var state = new State();
+        for (int i = 0; i < root.length(); i++) {
+            var c = root.charAt(i);
+            state = splitAtChar(state, c);
+        }
+
+        return state.advance().segments;
     }
 
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
+    private static State splitAtChar(State state, char c) {
+        final var appended = state.append(c);
+        if (c == ';' && appended.isLevel()) return appended.advance();
+        if (c == '{') return appended.enter();
+        if (c == '}') return appended.exit();
+        return appended;
+    }
+
+    private static String compileRootSegment(String segment) throws CompileException {
+        if (segment.startsWith("package ")) return "";
+        if (segment.startsWith("import ")) return segment;
+        if (segment.contains("class ")) return "struct Temp {};";
+        throw new CompileException("Unknown root segment", segment);
     }
 }
