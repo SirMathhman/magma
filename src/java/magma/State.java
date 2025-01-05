@@ -44,4 +44,8 @@ public class State {
         depth--;
         return this;
     }
+
+    public boolean isShallow() {
+        return depth == 1;
+    }
 }
