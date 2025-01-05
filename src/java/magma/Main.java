@@ -47,12 +47,22 @@ public class Main {
         final var separator = name.indexOf('.');
         final var nameWithoutExt = name.substring(0, separator);
 
-        return readSafe(source).mapErr(ApplicationException::new).mapValue(input -> {
-            return compileRoot(input).mapErr(ApplicationException::new).mapValue(output -> {
-                final var target = targetParent.resolve(nameWithoutExt + ".c");
-                return writeSafe(output, target).map(ApplicationException::new);
-            }).match(value -> value, Optional::of);
-        }).match(value -> value, err -> Optional.of(err));
+        return readSafe(source)
+                .mapErr(ApplicationException::new)
+                .mapValue(input -> compileInputToTarget(input, targetParent, nameWithoutExt))
+                .match(value -> value, Optional::of);
+    }
+
+    private static Optional<ApplicationException> compileInputToTarget(String input, Path targetParent, String nameWithoutExt) {
+        return compileRoot(input)
+                .mapErr(ApplicationException::new)
+                .mapValue(output -> writeOutputToTarget(targetParent, nameWithoutExt, output))
+                .match(value -> value, Optional::of);
+    }
+
+    private static Optional<ApplicationException> writeOutputToTarget(Path targetParent, String nameWithoutExt, String output) {
+        final var target = targetParent.resolve(nameWithoutExt + ".c");
+        return writeSafe(output, target).map(ApplicationException::new);
     }
 
     private static Optional<IOException> writeSafe(String output, Path target) {
