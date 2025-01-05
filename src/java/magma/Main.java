@@ -230,7 +230,7 @@ public class Main {
         if (methodName.equals(structName)) {
             actualName = "new";
             params = "";
-            body = "";
+            body = "\n\t\tstruct " + structName + " this;\n\t\treturn this;";
         } else {
             actualName = methodName;
             params = "void* __ref__";
