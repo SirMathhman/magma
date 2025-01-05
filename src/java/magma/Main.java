@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class Main {
@@ -97,11 +98,15 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRoot(String root) {
+        return compileSegments(root, Main::compileRootSegment);
+    }
+
+    private static Result<String, CompileError> compileSegments(String root, Function<String, Result<String, CompileError>> mapper) {
         final var segments = split(root);
         Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
             output = output
-                    .and(() -> compileRootSegment(segment.strip()))
+                    .and(() -> mapper.apply(segment.strip()))
                     .mapValue(tuple -> tuple.left().append(tuple.right()));
         }
 
@@ -142,6 +147,12 @@ public class Main {
         final var contentStart = segment.indexOf('{');
         if (contentStart == -1) return Optional.empty();
 
+        final var contentEnd = segment.lastIndexOf('}');
+        if (contentEnd == -1) return Optional.empty();
+
+        final var content = segment.substring(contentStart + 1, contentEnd);
+        final var outputResult = compileSegments(content, Main::compileStructMember);
+
         final var maybeImplements = segment.substring(keywordIndex + keyword.length(), contentStart);
         String name;
         final var implementsIndex = maybeImplements.indexOf("implements ");
@@ -151,7 +162,11 @@ public class Main {
             name = maybeImplements;
         }
 
-        return Optional.of(new Ok<>("struct " + name + " {};"));
+        return Optional.of(outputResult.mapValue(output -> "struct " + name + " {" + output + "};"));
+    }
+
+    private static Result<String, CompileError> compileStructMember(String value) {
+        return new Ok<>("int value;");
     }
 
     private static Optional<? extends Result<String, CompileError>> compileImport(String segment) {
