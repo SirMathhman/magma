@@ -16,14 +16,14 @@ public class Main {
                     .filter(file -> file.toString().endsWith(".java"))
                     .toList();
 
-            runWithSources(sources, sourceDirectory).ifPresent(Throwable::printStackTrace);
+            runWithSources(sources, sourceDirectory).ifPresent(applicationError -> System.err.println(applicationError.display()));
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
     }
 
-    private static Optional<ApplicationException> runWithSources(List<Path> sources, Path sourceDirectory) {
+    private static Optional<ApplicationError> runWithSources(List<Path> sources, Path sourceDirectory) {
         for (Path source : sources) {
             final var error = runWithSource(sourceDirectory, source);
             if (error.isPresent()) return error;
@@ -31,7 +31,7 @@ public class Main {
         return Optional.empty();
     }
 
-    private static Optional<ApplicationException> runWithSource(Path sourceDirectory, Path source) {
+    private static Optional<ApplicationError> runWithSource(Path sourceDirectory, Path source) {
         final var relativized = sourceDirectory.relativize(source);
         final var parent = relativized.getParent();
         final var targetDirectory = Paths.get(".", "src", "c");
@@ -39,7 +39,9 @@ public class Main {
         if (!Files.exists(targetParent)) {
             final var directoryCreationError = createDirectoriesSafe(targetParent);
             if (directoryCreationError.isPresent()) {
-                return directoryCreationError.map(ApplicationException::new);
+                return directoryCreationError
+                        .map(JavaError::new)
+                        .map(ApplicationError::new);
             }
         }
 
@@ -48,21 +50,24 @@ public class Main {
         final var nameWithoutExt = name.substring(0, separator);
 
         return readSafe(source)
-                .mapErr(ApplicationException::new)
+                .mapErr(JavaError::new)
+                .mapErr(ApplicationError::new)
                 .mapValue(input -> compileInputToTarget(input, targetParent, nameWithoutExt))
                 .match(value -> value, Optional::of);
     }
 
-    private static Optional<ApplicationException> compileInputToTarget(String input, Path targetParent, String nameWithoutExt) {
+    private static Optional<ApplicationError> compileInputToTarget(String input, Path targetParent, String nameWithoutExt) {
         return compileRoot(input)
-                .mapErr(ApplicationException::new)
+                .mapErr(ApplicationError::new)
                 .mapValue(output -> writeOutputToTarget(targetParent, nameWithoutExt, output))
                 .match(value -> value, Optional::of);
     }
 
-    private static Optional<ApplicationException> writeOutputToTarget(Path targetParent, String nameWithoutExt, String output) {
+    private static Optional<ApplicationError> writeOutputToTarget(Path targetParent, String nameWithoutExt, String output) {
         final var target = targetParent.resolve(nameWithoutExt + ".c");
-        return writeSafe(output, target).map(ApplicationException::new);
+        return writeSafe(output, target)
+                .map(JavaError::new)
+                .map(ApplicationError::new);
     }
 
     private static Optional<IOException> writeSafe(String output, Path target) {
@@ -91,9 +96,9 @@ public class Main {
         }
     }
 
-    private static Result<String, CompileException> compileRoot(String root) {
+    private static Result<String, CompileError> compileRoot(String root) {
         final var segments = split(root);
-        Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
+        Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
             output = output
                     .and(() -> compileRootSegment(segment.strip()))
@@ -121,10 +126,10 @@ public class Main {
         return appended;
     }
 
-    private static Result<String, CompileException> compileRootSegment(String segment) {
+    private static Result<String, CompileError> compileRootSegment(String segment) {
         if (segment.startsWith("package ")) return new Ok<>("");
         if (segment.startsWith("import ")) return new Ok<>("#include \"temp.h\";\n");
         if (segment.contains("class ")) return new Ok<>("struct Temp {};");
-        return new Err<>(new CompileException("Unknown root segment", segment));
+        return new Err<>(new CompileError("Unknown root segment", segment));
     }
 }
