@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -82,9 +83,24 @@ public class Main {
     }
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
-        if (rootSegment.startsWith("package ")) return "";
-        if (rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
-        if (rootSegment.contains("class ")) return "struct Temp {\n};";
-        throw new CompileException("Invalid root segment", rootSegment);
+        return compilePackage(rootSegment)
+                .or(() -> compileImport(rootSegment))
+                .or(() -> compileClass(rootSegment))
+                .orElseThrow(() -> new CompileException("Invalid root segment", rootSegment));
+    }
+
+    private static Optional<? extends String> compileClass(String rootSegment) {
+        if (rootSegment.contains("class ")) return Optional.of("struct Temp {\n};");
+        return Optional.empty();
+    }
+
+    private static Optional<? extends String> compileImport(String rootSegment) {
+        if (rootSegment.startsWith("import ")) return Optional.of("#include \"temp.h\"\n");
+        return Optional.empty();
+    }
+
+    private static Optional<String> compilePackage(String rootSegment) {
+        if (rootSegment.startsWith("package ")) return Optional.of("");
+        return Optional.empty();
     }
 }
