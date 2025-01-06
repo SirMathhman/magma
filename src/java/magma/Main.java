@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -222,15 +221,15 @@ public class Main {
         final var withParamEnd = afterParamStart.substring(0, contentStart).strip();
         if (!withParamEnd.endsWith(")")) return Optional.empty();
 
-        final var paramsArray = withParamEnd.substring(0, withParamEnd.length() - ")".length()).split(",");
-        final var paramsList = Arrays.stream(paramsArray)
-                .map(String::strip)
-                .filter(value -> !value.isEmpty())
-                .toList();
+        final var paramsList = splitByValues(withParamEnd.substring(0, withParamEnd.length() - ")".length()))
+                .flatMapValue(Main::compileParams);
 
-        final var params = new ArrayList<String>();
-        params.add("void* __ref__");
-        params.addAll(paramsList);
+        final var listCompileExceptionResult = paramsList.mapValue(list -> {
+            final var list1 = new ArrayList<String>();
+            list1.add("void* __ref__");
+            list1.addAll(list);
+            return list1;
+        });
 
         final var afterContentStart = afterParamStart.substring(contentStart + 1).strip();
         if (!afterContentStart.endsWith("}")) return Optional.empty();
@@ -238,14 +237,39 @@ public class Main {
 
         final var structType = "struct " + structName;
         return Optional.of(splitAndCompile(Main::splitByBraces, StringBuilder::append, Main::compileStatement, content).flatMapValue(output -> {
-            return compileType(type).mapValue(outputType -> {
-                return "\n\t\t" + outputType + " " + methodName + "(" +
-                        String.join(", ", params) +
-                        "){\n\t\t\t" + structType + " this = *(" + structType + "*) __ref__;" +
-                        output +
-                        "\n\t\t}";
+            return compileType(type).flatMapValue(outputType -> {
+                return listCompileExceptionResult.mapValue(params -> {
+                    return "\n\t\t" + outputType + " " + methodName + "(" +
+                            String.join(", ", params) +
+                            "){\n\t\t\t" + structType + " this = *(" + structType + "*) __ref__;" +
+                            output +
+                            "\n\t\t}";
+                });
             });
         }));
+    }
+
+    private static Result<List<String>, CompileException> compileParams(List<String> paramsArray) {
+        Result<List<String>, CompileException> paramsList = new Ok<>(new ArrayList<>());
+        for (String s : paramsArray) {
+            String param = s.strip();
+            if (!param.isEmpty()) {
+                final var i = param.lastIndexOf(' ');
+                if (i == -1) {
+                    return new Err<>(new CompileException("Invalid parameter", param));
+                }
+
+                final var paramType = param.substring(0, i);
+                final var paramName = param.substring(i + 1);
+
+                paramsList = paramsList.and(() -> compileType(paramType)).mapValue(tuple -> {
+                    tuple.left().add(tuple.right() + " " + paramName);
+                    return tuple.left();
+                });
+            }
+        }
+
+        return paramsList;
     }
 
     private static Result<String, CompileException> compileType(String type) {
@@ -279,11 +303,9 @@ public class Main {
         }, Main::compileType, params);
 
         return Optional.of(split.mapValue(inner -> {
-            if (name.equals("Tuple")) {
-                return "[" + inner + "]";
-            } else {
-                return name + "<" + inner + ">";
-            }
+            if (name.equals("Tuple")) return "[" + inner + "]";
+            if (name.equals("Supplier")) return "() => " + inner;
+            return name + "<" + inner + ">";
         }));
     }
 
