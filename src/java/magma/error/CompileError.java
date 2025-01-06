@@ -25,11 +25,11 @@ public class CompileError implements Error {
 
     @Override
     public String display() {
-        final var joined = children.stream()
+        final var joined = this.children.stream()
                 .map(CompileError::display)
                 .map(value -> "\n" + value)
                 .collect(Collectors.joining());
 
-        return message + ": " + context + joined;
+        return this.message + ": " + this.context + joined;
     }
 }
