@@ -67,7 +67,7 @@ public class Main {
     private static String compileRootSegments(List<String> segments) throws CompileException {
         var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootSegment(segment.strip()));
+            output.append(Results.unwrap(compileRootSegment(segment.strip())));
         }
 
         return output.toString();
@@ -91,11 +91,7 @@ public class Main {
         return appended;
     }
 
-    private static String compileRootSegment(String rootSegment) throws CompileException {
-        return Results.unwrap(getString(rootSegment));
-    }
-
-    private static Result<String, CompileException> getString(String rootSegment) {
+    private static Result<String, CompileException> compileRootSegment(String rootSegment) {
         final var compilers = List.<Supplier<Optional<String>>>of(
                 () -> compileNamespaced(rootSegment, "package ", ""),
                 () -> compileNamespaced(rootSegment, "import ", "#include \"temp.h\"\n"),
