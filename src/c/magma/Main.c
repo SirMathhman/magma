@@ -1,25 +1,25 @@
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
+#include "jv/JavaFiles.h";
+#include "magma/error/ApplicationError.h";
+#include "magma/error/CompileError.h";
+#include "magma/error/JavaError.h";
+#include "magma/result/Err.h";
+#include "magma/result/Ok.h";
+#include "magma/result/Result.h";
+#include "java/io/IOException.h";
+#include "java/nio/file/Files.h";
+#include "java/nio/file/Path.h";
+#include "java/nio/file/Paths.h";
+#include "java/util/ArrayList.h";
+#include "java/util/Arrays.h";
+#include "java/util/Deque.h";
+#include "java/util/LinkedList.h";
+#include "java/util/List.h";
+#include "java/util/Optional.h";
+#include "java/util/Set.h";
+#include "java/util/function/Function.h";
+#include "java/util/function/Supplier.h";
+#include "java/util/stream/Collectors.h";
+#include "java/util/stream/IntStream.h";
 struct Main  {
 	"src", "java");
 	"src", "c");
@@ -453,9 +453,13 @@ struct Main  {
 	}
 	void compileImport(void* __ref__, String segment){
 		struct Main  this = *(struct Main *) __ref__;
+		caller();
+		caller();
+		caller();
+		caller();
 		return {
-			void __caller__ = segment.startsWith("import ") ? Optional.of(new Ok<>(new Node("#include \"temp.h\";\n"))) : Optional.empty;
-			__caller__(__caller__)
+			void __caller__ = Optional.of;
+			__caller__(__caller__, temp())
 		};
 	}
 	void compilePackage(void* __ref__, String segment){

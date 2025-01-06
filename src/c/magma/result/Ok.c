@@ -1,7 +1,7 @@
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
+#include "magma/Tuple.h";
+#include "java/util/Optional.h";
+#include "java/util/function/Function.h";
+#include "java/util/function/Supplier.h";
 struct Ok<T, X>(T value) {
 	void findValue(void* __ref__){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;

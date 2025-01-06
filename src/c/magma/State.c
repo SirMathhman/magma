@@ -1,5 +1,5 @@
-#include "temp.h";
-#include "temp.h";
+#include "java/util/ArrayList.h";
+#include "java/util/List.h";
 struct State  {
 	List<String> segments;
 	StringBuilder buffer;

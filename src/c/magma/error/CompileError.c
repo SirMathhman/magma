@@ -1,6 +1,6 @@
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
+#include "java/util/Collections.h";
+#include "java/util/List.h";
+#include "java/util/stream/Collectors.h";
 struct CompileError {
 	String message;
 	String context;

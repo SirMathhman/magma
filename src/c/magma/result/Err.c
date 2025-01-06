@@ -1,7 +1,7 @@
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
+#include "magma/Tuple.h";
+#include "java/util/Optional.h";
+#include "java/util/function/Function.h";
+#include "java/util/function/Supplier.h";
 struct Err<T, X>(X error) {
 	void findValue(void* __ref__){
 		struct Err<T, X>(X error) this = *(struct Err<T, X>(X error)*) __ref__;

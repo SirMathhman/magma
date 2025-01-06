@@ -1,7 +1,7 @@
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
-#include "temp.h";
+#include "magma/Tuple.h";
+#include "java/util/Optional.h";
+#include "java/util/function/Function.h";
+#include "java/util/function/Supplier.h";
 struct Result<T, X>  {
 	Optional<T> findValue();
 	Optional<X> findError();

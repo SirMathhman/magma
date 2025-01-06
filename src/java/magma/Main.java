@@ -466,7 +466,16 @@ public class Main {
     }
 
     private static Optional<Result<Node, CompileError>> compileImport(String segment) {
-        return segment.startsWith("import ") ? Optional.of(new Ok<>(new Node("#include \"temp.h\";\n"))) : Optional.empty();
+        if (!segment.startsWith("import ")) return Optional.empty();
+        final var substring = segment.substring("import ".length());
+
+        if(!substring.endsWith(";")) return Optional.empty();
+        final var joined = String.join("/", substring.substring(0, substring.length() - ";".length())
+                .split("\\."));
+
+        return Optional.of(new Ok<>(new Node("#include \"" +
+                joined +
+                ".h\";\n")));
     }
 
     private static Optional<Result<Node, CompileError>> compilePackage(String segment) {
