@@ -18,6 +18,7 @@
 #include "temp.h";
 #include "temp.h";
 #include "temp.h";
+#include "temp.h";
 struct Main  {
 	"src", "java");
 	"src", "c");
@@ -58,7 +59,7 @@ struct Main  {
 	}
 	void computeNamespace(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		final var namespace = new ArrayList<String>();
+		final var namespace = temp();
 		for(;;) {}
 		return value;
 	}
@@ -68,7 +69,7 @@ struct Main  {
 	}
 	void writeOutputToTarget(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		final var target = targetParent.resolve(nameWithoutExt + ".c");
+		final var target = targetParent.resolve(a + b.c");
 		return value;
 	}
 	void compileRoot(void* __ref__){
@@ -78,26 +79,15 @@ struct Main  {
 	void compileSegments(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		return split(root).flatMapValue(segments -> {
-            Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
-            for (String segment : segments) {
-                final var stripped = segment.strip();
-                if (!stripped.isEmpty()) {
-                    output = output
-                            .and(() -> mapper.apply(stripped))
-                            .mapValue(tuple -> tuple.left().append(tuple.right()));
-                }
-            }
-
-            return output.mapValue(StringBuilder::toString);
-        });
+            Result<StringBuilder, CompileError> output = temp();
 	}
 	void split(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		var state = new State();
+		var state = temp();
 		var queue = IntStream.range(0, input.length())
                 .mapToObj(input::charAt)
-                .collect(Collectors.toCollection(LinkedList::new));
-		while(1) {}
+                .collect(Collectors.toCollection(obj::property));
+		while (1) {}
 		if (1) {}
 		else {}
 	}
@@ -106,10 +96,10 @@ struct Main  {
 		final var appended = state.append(c);
 		if (1) {}
 		if (1) {}
-		if (c = = ';' && appended.isLevel()) return appended.advance();
-		if (c = = '}' && appended.isShallow()) return appended.exit().advance();
-		if (c = = '{' || c == '(') return appended.enter();
-		if (c = = '}' || c == ')') return appended.exit();
+		if (c = a && b.isLevel()) return appended.advance();
+		if (c = a && b.isShallow()) return appended.exit().advance();
+		caller();
+		caller();
 		return value;
 	}
 	void compileRootSegment(void* __ref__){
@@ -119,18 +109,18 @@ struct Main  {
 	void compileToStruct(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		final var keywordIndex = segment.indexOf(keyword);
-		if (keywordIndex = = -1) return Optional.empty();
-		final var contentStart = segment.indexOf('{', keywordIndex + keyword.length());
-		if (contentStart = = -1) return Optional.empty();
+		caller();
+		final var contentStart = segment.indexOf(a + b.length());
+		caller();
 		final var contentEnd = segment.lastIndexOf('}');
-		if (contentEnd = = -1) return Optional.empty();
-		final var maybeImplements = segment.substring(keywordIndex + keyword.length(), contentStart);
-		int value
-		final var implementsIndex = maybeImplements.indexOf("implements ");
+		caller();
+		final var maybeImplements = segment.substring(a + b.length(), contentStart);
+	String name;
+		caller();
 		if (1) {}
 		else {}
-		final var content = segment.substring(contentStart + 1, contentEnd);
-		final var outputResult = compileSegments(content, structMember -> compileStructMember(structMember, name));
+		final var content = segment.substring(a + b);
+		caller();
 		return value;
 	}
 	void compileStructMember(void* __ref__){
@@ -140,71 +130,132 @@ struct Main  {
 	void compileDefinition(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		caller();
-		final var slice = structMember.substring(0, structMember.length() - 1);
+		caller();
 		final var space = slice.lastIndexOf(' ');
-		if (space = = -1) return Optional.empty();
-		final var before = slice.substring(0, space);
+		caller();
+		caller();
 		final var i = before.lastIndexOf(' ');
-		final var type = before.substring(i + 1);
-		final var name = slice.substring(space + 1);
+		final var type = before.substring(a + b);
+		final var name = slice.substring(a + b);
 		return value;
 	}
 	void compileMethod(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		final var paramStart = structMember.indexOf("(");
-		if (paramStart = = -1) return Optional.empty();
-		final var before = structMember.substring(0, paramStart);
+		caller();
+		caller();
+		caller();
 		final var i = before.lastIndexOf(' ');
-		final var methodName = before.substring(i + 1);
+		final var methodName = before.substring(a + b);
 		final var contentStart = structMember.indexOf('{');
-		if (contentStart = = -1) return Optional.empty();
+		caller();
 		final var contentEnd = structMember.lastIndexOf('}');
-		if (contentEnd = = -1) return Optional.empty();
-		var content = structMember.substring(contentStart + 1, contentEnd);
+		caller();
+		var content = structMember.substring(a + b);
 		return Optional.of(compileSegments(content, Main::compileStatement).mapValue(output -> {
             final String actualName;
             final String params;
             final String body;
             if (methodName.equals(structName)) {
-                actualName = "new";
-                params = "";
-                body = "\n\t\tstruct " + structName + " this;" +
-                        output +
-                        "\n\t\treturn this;";
-            } else {
-                actualName = methodName;
-                params = "void* __ref__";
-                final var s = "struct " + structName;
-                body = "\n\t\t" + s + "* this = (" + s + "*) __ref__;" + output;
-            }
-
-            return "\n\tvoid " + actualName + "(" + params + "){" +
-                    body +
-                    "\n\t}";
-        }));
+                actualName = a + b;
 	}
 	void compileStatement(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		final var x = compileAssignment(statement);
 		caller();
+		var errors = temp();
+		for(;;) {}
+		return value;
+	}
+	void compileFor(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
 		caller();
+		return value;
+	}
+	void compileElse(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
 		caller();
+		return value;
+	}
+	void compileConditional(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
 		caller();
+		return value;
+	}
+	void compileInvocationStatement(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
 		caller();
+		return value;
+	}
+	void compileReturn(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
 		caller();
-		caller();
+		return value;
+	}
+	void compileWhile(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
 		caller();
 		return value;
 	}
 	void compileAssignment(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		caller();
-		final var slice = statement.substring(0, statement.length() - ";".length());
-		final var separator = slice.indexOf("=");
-		if (separator = = -1) return Optional.empty();
+		caller();
+		caller();
+		caller();
 		final var destination = slice.substring(0, separator).strip();
 		final var source = slice.substring(separator + 1).strip();
-		return Optional.of(new Ok<>("\n\t\t" + destination + " = " + source + ";"));
+		return Optional.of(compileValue(source).mapValue(value -> "\n\t\t" + destination + " = a + b;
+	}
+	void compileValue(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
+		return value;
+	}
+	void compileFunctionAccess(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
+		return value;
+	}
+	void compileOperator(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
+		return value;
+	}
+	void compileConstruction(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
+		return value;
+	}
+	void compileChar(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
+		caller();
+		return value;
+	}
+	void compileDataAccess(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
+		final var separator = value.indexOf('.');
+		caller();
+		caller();
+		final var property = value.substring(a + b);
+		return value;
+	}
+	void compileInvocation(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
+		caller();
+		caller();
+		final var argumentsStart = findArgumentsStart(slice);
+		caller();
+		caller();
+		final var compiled = compileValue(caller);
+		final var substring = slice.substring(argumentsStart.get() + 1);
+		final var result = compileValue(substring);
+		return value;
+	}
+	void findArgumentsStart(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
+	= 0;
+		for(;;) {}
+		return value;
+	}
+	void compileSymbol(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
+		for(;;) {}
+		return value;
 	}
 	void compileImport(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -198,7 +199,7 @@ public class Main {
                 .orElseGet(() -> new Err<>(new CompileError("Unknown root segment", segment)));
     }
 
-    private static Optional<? extends Result<String, CompileError>> compileToStruct(String segment, String keyword) {
+    private static Optional<Result<String, CompileError>> compileToStruct(String segment, String keyword) {
         final var keywordIndex = segment.indexOf(keyword);
         if (keywordIndex == -1) return Optional.empty();
 
@@ -283,39 +284,54 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileStatement(String statement) {
-        return compileAssignment(statement)
-                .or(() -> compileReturn(statement))
-                .or(() -> compileInvocationStatement(statement))
-                .or(() -> compileConditional("if ", statement))
-                .or(() -> compileConditional("while ", statement))
-                .or(() -> compileElse(statement))
-                .or(() -> compileDefinition(statement))
-                .or(() -> compileFor(statement))
-                .map(result -> result.mapErr(err -> new CompileError("Invalid statement", statement, err)))
-                .orElseGet(() -> new Err<>(new CompileError("Unknown statement", statement)));
+        List<Supplier<Optional<Result<String, CompileError>>>> list = List.of(
+                () -> compileAssignment(statement),
+                () -> compileReturn(statement),
+                () -> compileInvocationStatement(statement),
+                () -> compileConditional("if ", statement),
+                () -> compileConditional("while ", statement),
+                () -> compileElse(statement),
+                () -> compileDefinition(statement),
+                () -> compileFor(statement)
+        );
+
+        var errors = new ArrayList<CompileError>();
+        for (Supplier<Optional<Result<String, CompileError>>> supplier : list) {
+            final var optional = supplier.get();
+            if (optional.isPresent()) {
+                final var result = optional.get();
+                if (result.isOk()) {
+                    return result;
+                } else {
+                    errors.add(result.findError().orElseThrow());
+                }
+            }
+        }
+
+        return new Err<>(new CompileError("Invalid statement", statement, errors));
     }
 
-    private static Optional<? extends Result<String, CompileError>> compileFor(String statement) {
+    private static Optional<Result<String, CompileError>> compileFor(String statement) {
         if (statement.startsWith("for ")) return Optional.of(new Ok<>("\n\t\tfor(;;) {}"));
         return Optional.empty();
     }
 
-    private static Optional<? extends Result<String, CompileError>> compileElse(String statement) {
+    private static Optional<Result<String, CompileError>> compileElse(String statement) {
         if (statement.startsWith("else ")) return Optional.of(new Ok<>("\n\t\telse {}"));
         return Optional.empty();
     }
 
-    private static Optional<? extends Result<String, CompileError>> compileConditional(String prefix, String statement) {
+    private static Optional<Result<String, CompileError>> compileConditional(String prefix, String statement) {
         if (statement.startsWith(prefix)) return Optional.of(new Ok<>("\n\t\t" + prefix + "(1) {}"));
         return Optional.empty();
     }
 
-    private static Optional<? extends Result<String, CompileError>> compileInvocationStatement(String statement) {
+    private static Optional<Result<String, CompileError>> compileInvocationStatement(String statement) {
         if (statement.contains("(") && statement.endsWith(");")) return Optional.of(new Ok<>("\n\t\tcaller();"));
         return Optional.empty();
     }
 
-    private static Optional<? extends Result<String, CompileError>> compileReturn(String statement) {
+    private static Optional<Result<String, CompileError>> compileReturn(String statement) {
         if (statement.startsWith("return ")) return Optional.of(new Ok<>("\n\t\treturn value;"));
         return Optional.empty();
     }
@@ -349,19 +365,19 @@ public class Main {
                 .orElseGet(() -> new Err<>(new CompileError("Unknown value", value)));
     }
 
-    private static Optional<? extends Result<String, CompileError>> compileFunctionAccess(String value) {
+    private static Optional<Result<String, CompileError>> compileFunctionAccess(String value) {
         return value.contains("::") ? Optional.of(new Ok<>("obj::property")) : Optional.empty();
     }
 
-    private static Optional<? extends Result<String, CompileError>> compileOperator(String value, String operator) {
+    private static Optional<Result<String, CompileError>> compileOperator(String value, String operator) {
         return value.contains(operator) ? Optional.of(new Ok<>("a " + operator + " b")) : Optional.empty();
     }
 
-    private static Optional<? extends Result<String, CompileError>> compileConstruction(String value) {
+    private static Optional<Result<String, CompileError>> compileConstruction(String value) {
         return value.startsWith("new ") ? Optional.of(new Ok<>("temp()")) : Optional.empty();
     }
 
-    private static Optional<? extends Result<String, CompileError>> compileChar(String value) {
+    private static Optional<Result<String, CompileError>> compileChar(String value) {
         if (value.startsWith("'") && value.endsWith("'")) return Optional.of(new Ok<>(value));
         return Optional.empty();
     }
@@ -414,7 +430,7 @@ public class Main {
         return Optional.of(new Ok<>(value));
     }
 
-    private static Optional<? extends Result<String, CompileError>> compileImport(String segment) {
+    private static Optional<Result<String, CompileError>> compileImport(String segment) {
         return segment.startsWith("import ") ? Optional.of(new Ok<>("#include \"temp.h\";\n")) : Optional.empty();
     }
 

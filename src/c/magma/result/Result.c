@@ -10,4 +10,5 @@ struct Result<T, X>  {
 	X>> mapper);
 	R> onErr);
 	R> mapper);
+	boolean isOk();
 };
