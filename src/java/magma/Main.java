@@ -90,19 +90,57 @@ public class Main {
     private static Result<String, CompileException> compileRootSegment(String rootSegment) {
         return compilePackage(rootSegment)
                 .or(() -> compileImport(rootSegment))
-                .or(() -> compileToStruct("class ", rootSegment, '{'))
-                .or(() -> compileToStruct("record ", rootSegment, '('))
-                .or(() -> compileToStruct("interface ", rootSegment, '{'))
+                .or(() -> compileToStruct("class ", rootSegment))
+                .or(() -> compileRecord(rootSegment))
+                .or(() -> compileToStruct("interface ", rootSegment))
                 .<Result<String, CompileException>>map(Ok::new)
                 .orElseGet(() -> new Err<>(new CompileException("Invalid root segment", rootSegment)));
     }
 
-    private static Optional<? extends String> compileToStruct(String infix, String rootSegment, char nameEndChar) {
+    private static Optional<String> compileRecord(String rootSegment) {
+        final var index = rootSegment.indexOf("record ");
+        if (index == -1) return Optional.empty();
+
+        final var afterKeyword = rootSegment.substring(index + "record ".length());
+        final var paramStart = afterKeyword.indexOf('(');
+        if (paramStart == -1) return Optional.empty();
+
+        final var name = afterKeyword.substring(0, paramStart).strip();
+        final var afterParamStart = afterKeyword.substring(paramStart + 1);
+
+        final var paramEnd = afterParamStart.indexOf(')');
+        if (paramEnd == -1) return Optional.empty();
+
+        final var params = afterParamStart.substring(0, paramEnd);
+        final var state = splitByValues(params);
+        final var parameters = state.advance().segments;
+
+        final var joinedParameters = parameters.stream()
+                .map(value -> "\n\t" + value)
+                .collect(Collectors.joining());
+
+        return Optional.of("struct " + name + " {" + joinedParameters + "\n};");
+    }
+
+    private static State splitByValues(String params) {
+        var state = new State();
+        for (int i = 0; i < params.length(); i++) {
+            final var c = params.charAt(i);
+            if (c == ';') {
+                state = state.advance();
+            } else {
+                state = state.append(c);
+            }
+        }
+        return state;
+    }
+
+    private static Optional<? extends String> compileToStruct(String infix, String rootSegment) {
         final var index = rootSegment.indexOf(infix);
         if (index == -1) return Optional.empty();
 
         final var after = rootSegment.substring(index + infix.length());
-        final var nameEnd = after.indexOf(nameEndChar);
+        final var nameEnd = after.indexOf('{');
         if (nameEnd == -1) return Optional.empty();
 
         final var name = after.substring(0, nameEnd).strip();
