@@ -83,7 +83,7 @@ public class Main {
     }
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
+        if (rootSegment.startsWith("package ")) return "";
         throw new CompileException("Invalid root segment", rootSegment);
     }
-
 }
