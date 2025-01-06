@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -189,7 +191,8 @@ public class Main {
     }
 
     private static Result<String, CompileException> compileStructSegment(String name, String structSegment) {
-        return compileMethod(structSegment, name).orElseGet(() -> new Err<>(new CompileException("Unknown struct segment", structSegment)));
+        return compileMethod(structSegment, name)
+                .orElseGet(() -> new Err<>(new CompileException("Unknown struct segment", structSegment)));
     }
 
     private static Optional<Result<String, CompileException>> compileMethod(String structSegment, String structName) {
@@ -201,7 +204,7 @@ public class Main {
 
         final var substring = beforeParams.substring(0, nameSeparator);
         final var maybeTypeStart = getI(substring);
-        if(maybeTypeStart.isEmpty()) return Optional.empty();
+        if (maybeTypeStart.isEmpty()) return Optional.empty();
 
         final var type = substring.substring(maybeTypeStart.get() + 1);
 
@@ -211,14 +214,28 @@ public class Main {
         final var contentStart = afterParamStart.indexOf('{');
         if (contentStart == -1) return Optional.empty();
 
+        final var withParamEnd = afterParamStart.substring(0, contentStart).strip();
+        if (!withParamEnd.endsWith(")")) return Optional.empty();
+
+        final var paramsArray = withParamEnd.substring(0, withParamEnd.length() - ")".length()).split(",");
+        final var paramsList = Arrays.stream(paramsArray)
+                .map(String::strip)
+                .filter(value -> !value.isEmpty())
+                .toList();
+
+        final var params = new ArrayList<String>();
+        params.add("void* __ref__");
+        params.addAll(paramsList);
+
         final var afterContentStart = afterParamStart.substring(contentStart + 1).strip();
         if (!afterContentStart.endsWith("}")) return Optional.empty();
         final var content = afterContentStart.substring(0, afterContentStart.length() - 1);
 
         final var structType = "struct " + structName;
         return Optional.of(splitAndCompile(content, Main::compileStatement).mapValue(output -> {
-            final var s = type;
-            return "\n\t\t" + s + " " + methodName + "(void* __ref__){\n\t\t\t" + structType + " this = *(" + structType + ") __ref__;" +
+            return "\n\t\t" + type + " " + methodName + "(" +
+                    String.join(", ", params) +
+                    "){\n\t\t\t" + structType + " this = *(" + structType + ") __ref__;" +
                     output +
                     "\n\t\t}";
         }));
