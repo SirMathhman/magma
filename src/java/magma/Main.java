@@ -283,21 +283,44 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileStatement(String statement) {
-        return getStringCompileErrorResult(statement)
+        return compileAssignment(statement)
+                .or(() -> compileReturn(statement))
+                .or(() -> compileInvocationStatement(statement))
+                .or(() -> compileConditional("if ", statement))
+                .or(() -> compileConditional("while ", statement))
+                .or(() -> compileElse(statement))
+                .or(() -> compileDefinition(statement))
+                .or(() -> compileFor(statement))
                 .map(result -> result.mapErr(err -> new CompileError("Invalid statement", statement, err)))
                 .orElseGet(() -> new Err<>(new CompileError("Unknown statement", statement)));
     }
 
-    private static Optional<Result<String, CompileError>> getStringCompileErrorResult(String statement) {
-        final var x = compileAssignment(statement);
-        if (x.isPresent()) return x;
-
-        if (statement.startsWith("return ")) return Optional.of(new Ok<>("\n\t\treturn value;"));
-        if (statement.contains("(") && statement.endsWith(");")) return Optional.of(new Ok<>("\n\t\tcaller();"));
-        if (statement.startsWith("if ")) return Optional.of(new Ok<>("\n\t\tif (1) {}"));
-        if (statement.startsWith("else ")) return Optional.of(new Ok<>("\n\t\telse {}"));
-        if (statement.endsWith(";")) return Optional.of(new Ok<>("\n\t\tint value"));
+    private static Optional<? extends Result<String, CompileError>> compileFor(String statement) {
         if (statement.startsWith("for ")) return Optional.of(new Ok<>("\n\t\tfor(;;) {}"));
+        return Optional.empty();
+    }
+
+    private static Optional<? extends Result<String, CompileError>> compileElse(String statement) {
+        if (statement.startsWith("else ")) return Optional.of(new Ok<>("\n\t\telse {}"));
+        return Optional.empty();
+    }
+
+    private static Optional<? extends Result<String, CompileError>> compileConditional(String prefix, String statement) {
+        if (statement.startsWith(prefix)) return Optional.of(new Ok<>("\n\t\t" + prefix + "(1) {}"));
+        return Optional.empty();
+    }
+
+    private static Optional<? extends Result<String, CompileError>> compileInvocationStatement(String statement) {
+        if (statement.contains("(") && statement.endsWith(");")) return Optional.of(new Ok<>("\n\t\tcaller();"));
+        return Optional.empty();
+    }
+
+    private static Optional<? extends Result<String, CompileError>> compileReturn(String statement) {
+        if (statement.startsWith("return ")) return Optional.of(new Ok<>("\n\t\treturn value;"));
+        return Optional.empty();
+    }
+
+    private static Optional<Result<String, CompileError>> compileWhile(String statement) {
         if (statement.startsWith("while ")) return Optional.of(new Ok<>("\n\t\twhile(1) {}"));
         return Optional.empty();
     }
