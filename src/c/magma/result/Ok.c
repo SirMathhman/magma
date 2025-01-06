@@ -5,17 +5,11 @@
 struct Ok<T, X>(T value) {
 	void findValue(void* __ref__){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
-		return {
-			void __caller__ = Optional.of;
-			__caller__.(this.value)
-		};
+		return Node[value=Node[value=Node[value=Optional].of](Node[value=Node[value=this].value])];
 	}
 	void findError(void* __ref__){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
-		return {
-			void __caller__ = Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=Optional].empty](Node[value=])];
 	}
 	void and(void* __ref__, Supplier<Result<R, X>> otherSupplier){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
@@ -23,28 +17,22 @@ struct Ok<T, X>(T value) {
 	}
 	void mapValue(void* __ref__, Function<T, R> mapper){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
-		return temp();
+		return Node[value=temp()];
 	}
 	void flatMapValue(void* __ref__, Function<T, Result<R, X>> mapper){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
-		return {
-			void __caller__ = mapper.apply;
-			__caller__.(this.value)
-		};
+		return Node[value=Node[value=Node[value=mapper].apply](Node[value=Node[value=this].value])];
 	}
 	void match(void* __ref__, Function<T, R> onOk, Function<X, R> onErr){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
-		return {
-			void __caller__ = onOk.apply;
-			__caller__.(this.value)
-		};
+		return Node[value=Node[value=Node[value=onOk].apply](Node[value=Node[value=this].value])];
 	}
 	void isOk(void* __ref__){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
-		return true;
+		return Node[value=true];
 	}
 	void mapErr(void* __ref__, Function<X, R> mapper){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
-		return temp();
+		return Node[value=temp()];
 	}
 };

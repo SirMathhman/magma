@@ -29,71 +29,47 @@ struct Main  {
 	}
 	void collect(void* __ref__){
 		struct Main  this = *(struct Main *) __ref__;
-		return {
-			void __caller__ = JavaFiles.walkSafe(SOURCE_DIRECTORY).mapValue;
-			__caller__.(obj::property)
-		};
+		return Node[value=Node[value=Node[value=JavaFiles].walkSafe(SOURCE_DIRECTORY).mapValue](Node[value=obj::property])];
 	}
 	void filterPaths(void* __ref__, Set<Path> paths){
 		struct Main  this = *(struct Main *) __ref__;
-		return {
-			void __caller__ = paths.stream()
+		return Node[value=Node[value=Node[value=paths].stream()
                 .filter(Files::isRegularFile)
                 .filter(file -> file.toString().endsWith(".java"))
-                .collect;
-			__caller__.({
-			void __caller__ = Collectors.toSet;
-			__caller__.()
-		})
-		};
+                .collect](Node[value=Node[value=Node[value=Collectors].toSet](Node[value=])])];
 	}
 	void runWithSources(void* __ref__, Set<Path> sourceSet){
 		struct Main  this = *(struct Main *) __ref__;
 		for(;;) {}
-		return {
-			void __caller__ = Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=Optional].empty](Node[value=])];
 	}
 	void runWithSource(void* __ref__, Path source, List<String> namespace, String name){
 		struct Main  this = *(struct Main *) __ref__;
-		final var targetParent = {
-			void __caller__ = resolveTargetParent;
-			__caller__.(namespace)
-		};
+		final var targetParent = Node[value=Node[value=resolveTargetParent](Node[value=namespace])];
 		if (1) {}
-		return {
-			void __caller__ = JavaFiles.readSafe(source)
+		return Node[value=Node[value=Node[value=JavaFiles].readSafe(source)
                 .mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
                 .mapValue(input -> compileInputToTarget(input, targetParent, name))
-                .match;
-			__caller__.(obj::property)
-		};
+                .match](Node[value=obj::property])];
 	}
 	void resolveTargetParent(void* __ref__, List<String> namespace){
 		struct Main  this = *(struct Main *) __ref__;
-		var targetParent = TARGET_DIRECTORY;
+		var targetParent = Node[value=TARGET_DIRECTORY];
 		for(;;) {}
-		return targetParent;
+		return Node[value=targetParent];
 	}
 	void computeName(void* __ref__, Path relativized){
 		struct Main  this = *(struct Main *) __ref__;
-		final var name = {
-			void __caller__ = relativized.getFileName().toString;
-			__caller__.()
-		};
-		final var separator = {
-			void __caller__ = name.indexOf;
-			__caller__.('.')
-		};
+		final var name = Node[value=Node[value=Node[value=relativized].getFileName().toString](Node[value=])];
+		final var separator = Node[value=Node[value=Node[value=name].indexOf](Node[value=Node[value='].'])];
 		caller();
 	}
 	void computeNamespace(void* __ref__, Path parent){
 		struct Main  this = *(struct Main *) __ref__;
-		final var namespace = temp();
+		final var namespace = Node[value=temp()];
 		for(;;) {}
-		return namespace;
+		return Node[value=namespace];
 	}
 	void compileInputToTarget(void* __ref__, String input, Path targetParent, String nameWithoutExt){
 		struct Main  this = *(struct Main *) __ref__;
@@ -101,64 +77,40 @@ struct Main  {
 	}
 	void writeOutputToTarget(void* __ref__, Path targetParent, String nameWithoutExt, String output){
 		struct Main  this = *(struct Main *) __ref__;
-		final var target = {
-			void __caller__ = targetParent.resolve;
-			__caller__.(a + b.c")
-		};
-		return {
-			void __caller__ = JavaFiles.writeSafe(output, target)
+		final var target = Node[value=Node[value=Node[value=targetParent].resolve](Node[value=Node[value=a + b].c"])];
+		return Node[value=Node[value=Node[value=JavaFiles].writeSafe(output, target)
                 .map(JavaError::new)
-                .map;
-			__caller__.(obj::property)
-		};
+                .map](Node[value=obj::property])];
 	}
 	void compileRoot(void* __ref__, String root){
 		struct Main  this = *(struct Main *) __ref__;
-		return {
-			void __caller__ = compileSegments;
-			__caller__.(obj::property)
-		};
+		return Node[value=Node[value=compileSegments](Node[value=obj::property])];
 	}
-	void compileSegments(void* __ref__, String root, Function<String, Result<String, CompileError>> mapper){
+	void compileSegments(void* __ref__, String root, Function<String, Result<Node, CompileError>> mapper){
 		struct Main  this = *(struct Main *) __ref__;
 		return split(root).flatMapValue(segments -> {
-            Result<StringBuilder, CompileError> output = temp();
+            Result<StringBuilder, CompileError> output = Node[value=temp()];
 	}
 	void split(void* __ref__, String input){
 		struct Main  this = *(struct Main *) __ref__;
-		var state = temp();
-		var queue = {
-			void __caller__ = IntStream.range(0, input.length())
+		var state = Node[value=temp()];
+		var queue = Node[value=Node[value=Node[value=IntStream].range(0, input.length())
                 .mapToObj(input::charAt)
-                .collect;
-			__caller__.({
-			void __caller__ = Collectors.toCollection;
-			__caller__.(obj::property)
-		})
-		};
+                .collect](Node[value=Node[value=Node[value=Collectors].toCollection](Node[value=obj::property])])];
 		while (1) {}
 		if (1) {}
 		else {}
 	}
 	void splitAtChar(void* __ref__, State state, char c, Deque<Character> queue){
 		struct Main  this = *(struct Main *) __ref__;
-		final var appended = {
-			void __caller__ = state.append;
-			__caller__.(c)
-		};
+		final var appended = Node[value=Node[value=Node[value=state].append](Node[value=c])];
 		if (1) {}
 		if (1) {}
-		if (c = {
-			void __caller__ = a && b.isLevel()) return appended.advance;
-			__caller__.()
-		};
-		if (c = {
-			void __caller__ = a && b.isShallow()) return appended.exit().advance;
-			__caller__.()
-		};
+		if (c = Node[value=Node[value=Node[value=a && b].isLevel()) return appended.advance](Node[value=])];
+		if (c = Node[value=Node[value=Node[value=a && b].isShallow()) return appended.exit().advance](Node[value=])];
 		caller();
 		caller();
-		return appended;
+		return Node[value=appended];
 	}
 	void compileRootSegment(void* __ref__, String segment){
 		struct Main  this = *(struct Main *) __ref__;
@@ -166,44 +118,20 @@ struct Main  {
 	}
 	void compileToStruct(void* __ref__, String segment, String keyword){
 		struct Main  this = *(struct Main *) __ref__;
-		final var keywordIndex = {
-			void __caller__ = segment.indexOf;
-			__caller__.(keyword)
-		};
+		final var keywordIndex = Node[value=Node[value=Node[value=segment].indexOf](Node[value=keyword])];
 		caller();
-		final var contentStart = {
-			void __caller__ = segment.indexOf;
-			__caller__.({
-			void __caller__ = a + b.length;
-			__caller__.()
-		})
-		};
+		final var contentStart = Node[value=Node[value=Node[value=segment].indexOf](Node[value=Node[value=Node[value=a + b].length](Node[value=])])];
 		caller();
-		final var contentEnd = {
-			void __caller__ = segment.lastIndexOf;
-			__caller__.('}')
-		};
+		final var contentEnd = Node[value=Node[value=Node[value=segment].lastIndexOf](Node[value='}'])];
 		caller();
-		final var maybeImplements = {
-			void __caller__ = segment.substring;
-			__caller__.(a + b.length(), contentStart)
-		};
+		final var maybeImplements = Node[value=Node[value=Node[value=segment].substring](Node[value=Node[value=a + b].length(), contentStart])];
 	String name;
 		caller();
 		if (1) {}
 		else {}
-		final var content = {
-			void __caller__ = segment.substring;
-			__caller__.(a + b)
-		};
+		final var content = Node[value=Node[value=Node[value=segment].substring](Node[value=a + b])];
 		caller();
-		return {
-			void __caller__ = Optional.of;
-			__caller__.({
-			void __caller__ = outputResult.mapValue;
-			__caller__.(a + b)
-		})
-		};
+		return Node[value=Node[value=Node[value=Optional].of](Node[value=Node[value=Node[value=outputResult].mapValue(output -> "struct " + name + " {" + output + "\n};").mapValue](Node[value=obj::property])])];
 	}
 	void compileStructMember(void* __ref__, String structMember, String name){
 		struct Main  this = *(struct Main *) __ref__;
@@ -213,71 +141,38 @@ struct Main  {
 		struct Main  this = *(struct Main *) __ref__;
 		caller();
 		caller();
-		final var space = {
-			void __caller__ = slice.lastIndexOf;
-			__caller__.(' ')
-		};
+		final var space = Node[value=Node[value=Node[value=slice].lastIndexOf](Node[value=' '])];
 		caller();
 		caller();
-		final var i = {
-			void __caller__ = before.lastIndexOf;
-			__caller__.(' ')
-		};
-		final var type = {
-			void __caller__ = before.substring;
-			__caller__.(a + b)
-		};
-		final var name = {
-			void __caller__ = slice.substring;
-			__caller__.(a + b)
-		};
-		return {
-			void __caller__ = Optional.of;
-			__caller__.(temp())
-		};
+		final var i = Node[value=Node[value=Node[value=before].lastIndexOf](Node[value=' '])];
+		final var type = Node[value=Node[value=Node[value=before].substring](Node[value=a + b])];
+		final var name = Node[value=Node[value=Node[value=slice].substring](Node[value=a + b])];
+		return Node[value=Node[value=Node[value=Optional].of](Node[value=temp()])];
 	}
 	void compileMethod(void* __ref__, String structName, String structMember){
 		struct Main  this = *(struct Main *) __ref__;
 		caller();
 		caller();
-		final var paramEnd = structMember.indexOf(')');
+		final var paramEnd = Node[value=Node[value=structMember].indexOf(')')];
 		caller();
-		var params = {
-			void __caller__ = Arrays.stream(structMember.substring(paramStart + 1, paramEnd).split(","))
+		var params = Node[value=Node[value=Node[value=Arrays].stream(structMember.substring(paramStart + 1, paramEnd).split(","))
                 .map(String::strip)
                 .filter(value -> !value.isEmpty())
-                .toList;
-			__caller__.()
-		};
+                .toList](Node[value=])];
 		caller();
-		final var i = {
-			void __caller__ = before.lastIndexOf;
-			__caller__.(' ')
-		};
-		final var methodName = {
-			void __caller__ = before.substring;
-			__caller__.(a + b)
-		};
-		final var contentStart = {
-			void __caller__ = structMember.indexOf;
-			__caller__.('{')
-		};
+		final var i = Node[value=Node[value=Node[value=before].lastIndexOf](Node[value=' '])];
+		final var methodName = Node[value=Node[value=Node[value=before].substring](Node[value=a + b])];
+		final var contentStart = Node[value=Node[value=Node[value=structMember].indexOf](Node[value='{'])];
 		caller();
-		final var contentEnd = {
-			void __caller__ = structMember.lastIndexOf;
-			__caller__.('}')
-		};
+		final var contentEnd = Node[value=Node[value=Node[value=structMember].lastIndexOf](Node[value='}'])];
 		caller();
-		var content = {
-			void __caller__ = structMember.substring;
-			__caller__.(a + b)
-		};
+		var content = Node[value=Node[value=Node[value=structMember].substring](Node[value=a + b])];
 		return Optional.of(compileSegments(content, Main::compileStatement).mapValue(output -> {
             final String actualName;
             final List<String> outputParams;
             final String body;
             if (methodName.equals(structName)) {
-                actualName = a + b.add("void* __ref__");
+                actualName = Node[value=Node[value=a + b].add("void* __ref__");
                 copy.addAll(params);
 
                 outputParams = copy;
@@ -288,56 +183,38 @@ struct Main  {
             return "\n\tvoid " + actualName + "(" + String.join(", ", outputParams) + "){" +
                     body +
                     "\n\t}";
-        }));
+        }).mapValue(Node::new))];
 	}
 	void compileStatement(void* __ref__, String statement){
 		struct Main  this = *(struct Main *) __ref__;
-		List<Supplier<Optional<Result<String, CompileError>>>> list = {
-			void __caller__ = List.of;
-			__caller__.(a + b)
-		};
-		var errors = temp();
+		List<Supplier<Optional<Result<Node, CompileError>>>> list = Node[value=Node[value=Node[value=List].of](Node[value=a + b])];
+		var errors = Node[value=temp()];
 		for(;;) {}
-		return temp();
+		return Node[value=temp()];
 	}
 	void compilePostfix(void* __ref__, String statement, String operator){
 		struct Main  this = *(struct Main *) __ref__;
-		return {
-			void __caller__ = statement.endsWith(operator + ";") ? Optional.of(new Ok<>(statement)) : Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=statement].endsWith(operator + ";") ? Optional.of(new Ok<>(new Node(statement))) : Optional.empty](Node[value=])];
 	}
 	void compileFor(void* __ref__, String statement){
 		struct Main  this = *(struct Main *) __ref__;
 		caller();
-		return {
-			void __caller__ = Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=Optional].empty](Node[value=])];
 	}
 	void compileElse(void* __ref__, String statement){
 		struct Main  this = *(struct Main *) __ref__;
 		caller();
-		return {
-			void __caller__ = Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=Optional].empty](Node[value=])];
 	}
 	void compileConditional(void* __ref__, String prefix, String statement){
 		struct Main  this = *(struct Main *) __ref__;
 		caller();
-		return {
-			void __caller__ = Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=Optional].empty](Node[value=])];
 	}
 	void compileInvocationStatement(void* __ref__, String statement){
 		struct Main  this = *(struct Main *) __ref__;
 		caller();
-		return {
-			void __caller__ = Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=Optional].empty](Node[value=])];
 	}
 	void compileReturn(void* __ref__, String statement){
 		struct Main  this = *(struct Main *) __ref__;
@@ -347,21 +224,21 @@ struct Main  {
 		caller();
 		caller();
 	}
+	void compileWhile(void* __ref__, String statement){
+		struct Main  this = *(struct Main *) __ref__;
+		caller();
+		return Node[value=Node[value=Node[value=Optional].empty](Node[value=])];
+	}
 	void compileAssignment(void* __ref__, String statement){
 		struct Main  this = *(struct Main *) __ref__;
 		caller();
 		caller();
 		caller();
 		caller();
-		final var destination = {
-			void __caller__ = slice.substring(0, separator).strip;
-			__caller__.()
-		};
-		final var source = {
-			void __caller__ = slice.substring(separator + 1).strip;
-			__caller__.()
-		};
-		return Optional.of(compileValue(source).mapValue(value -> "\n\t\t" + destination + " = a + b;
+		final var destination = Node[value=Node[value=Node[value=slice].substring(0, separator).strip](Node[value=])];
+		final var source = Node[value=Node[value=Node[value=slice].substring(separator + 1).strip](Node[value=])];
+		return Optional.of(compileValue(source)
+                .mapValue(value -> "\n\t\t" + destination + " = Node[value=Node[value=a + b].mapValue(Node::new))];
 	}
 	void compileValue(void* __ref__, String value){
 		struct Main  this = *(struct Main *) __ref__;
@@ -369,111 +246,58 @@ struct Main  {
 	}
 	void compileFunctionAccess(void* __ref__, String value){
 		struct Main  this = *(struct Main *) __ref__;
-		return {
-			void __caller__ = value.contains("::") ? Optional.of(new Ok<>("obj::property")) : Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=value].contains("::") ? Optional.of(new Ok<>(new Node("obj::property"))) : Optional.empty](Node[value=])];
 	}
 	void compileOperator(void* __ref__, String value, String operator){
 		struct Main  this = *(struct Main *) __ref__;
-		return {
-			void __caller__ = value.contains(operator) ? Optional.of(new Ok<>("a " + operator + " b")) : Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=value].contains(operator) ? Optional.of(new Ok<>(new Node("a " + operator + " b"))) : Optional.empty](Node[value=])];
 	}
 	void compileConstruction(void* __ref__, String value){
 		struct Main  this = *(struct Main *) __ref__;
-		return {
-			void __caller__ = value.startsWith("new ") ? Optional.of(new Ok<>("temp()")) : Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=value].startsWith("new ") ? Optional.of(new Ok<>(new Node("temp()"))) : Optional.empty](Node[value=])];
 	}
 	void compileChar(void* __ref__, String value){
 		struct Main  this = *(struct Main *) __ref__;
 		caller();
-		return {
-			void __caller__ = Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=Optional].empty](Node[value=])];
 	}
 	void compileDataAccess(void* __ref__, String value){
 		struct Main  this = *(struct Main *) __ref__;
-		final var separator = {
-			void __caller__ = value.indexOf;
-			__caller__.('.')
-		};
+		final var separator = Node[value=Node[value=Node[value=value].indexOf](Node[value=Node[value='].'])];
 		caller();
 		caller();
-		final var property = {
-			void __caller__ = value.substring;
-			__caller__.(a + b)
-		};
-		return {
-			void __caller__ = Optional.of;
-			__caller__.({
-			void __caller__ = {
-			void __caller__ = compileValue;
-			__caller__.(object)
-		}.mapValue;
-			__caller__.(a + b." + property)
-		})
-		};
+		final var property = Node[value=Node[value=Node[value=value].substring](Node[value=a + b])];
+		caller();
 	}
 	void compileInvocation(void* __ref__, String value){
 		struct Main  this = *(struct Main *) __ref__;
 		caller();
 		caller();
-		final var argumentsStart = {
-			void __caller__ = findArgumentsStart;
-			__caller__.(slice)
-		};
+		final var argumentsStart = Node[value=Node[value=findArgumentsStart](Node[value=slice])];
 		caller();
 		caller();
-		final var compiled = {
-			void __caller__ = compileValue;
-			__caller__.(caller)
-		};
-		final var substring = {
-			void __caller__ = slice.substring;
-			__caller__.(argumentsStart.get() + 1)
-		};
-		final var result = {
-			void __caller__ = compileValue;
-			__caller__.(substring)
-		};
-		return Optional.of(compiled.and(() -> result).mapValue(tuple -> {
-            return "{\n\t\t\tvoid __caller__ = a + b.left() + ";\n\t\t\t__caller__.(" + tuple.right() + ")\n\t\t}";
-        }));
+		final var compiled = Node[value=Node[value=compileValue](Node[value=caller])];
+		final var substring = Node[value=Node[value=Node[value=slice].substring](Node[value=Node[value=argumentsStart].get() + 1])];
+		final var result = Node[value=Node[value=compileValue](Node[value=substring])];
+		caller();
 	}
 	void findArgumentsStart(void* __ref__, String slice){
 		struct Main  this = *(struct Main *) __ref__;
 	= 0;
 		for(;;) {}
-		return {
-			void __caller__ = Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=Optional].empty](Node[value=])];
 	}
 	void compileSymbol(void* __ref__, String value){
 		struct Main  this = *(struct Main *) __ref__;
 		for(;;) {}
-		return {
-			void __caller__ = Optional.of;
-			__caller__.(temp())
-		};
+		return Node[value=Node[value=Node[value=Optional].of](Node[value=temp()])];
 	}
 	void compileImport(void* __ref__, String segment){
 		struct Main  this = *(struct Main *) __ref__;
-		return {
-			void __caller__ = segment.startsWith("import ") ? Optional.of(new Ok<>("#include \"temp.h\";\n")) : Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=segment].startsWith("import ") ? Optional.of(new Ok<>(new Node("#include \"temp.h\";\n"))) : Optional.empty](Node[value=])];
 	}
 	void compilePackage(void* __ref__, String segment){
 		struct Main  this = *(struct Main *) __ref__;
-		return {
-			void __caller__ = segment.startsWith("package ") ? Optional.of(new Ok<>("")) : Optional.empty;
-			__caller__.()
-		};
+		return Node[value=Node[value=Node[value=segment].startsWith("package ") ? Optional.of(new Ok<>(new Node(""))) : Optional.empty](Node[value=])];
 	}
 };

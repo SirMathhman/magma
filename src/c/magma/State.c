@@ -6,9 +6,9 @@ struct State  {
 	int depth;
 	void State(void* __ref__, List<String> segments, StringBuilder buffer, int depth){
 		struct State  this = *(struct State *) __ref__;
-		this.segments = segments;
-		this.buffer = buffer;
-		this.depth = depth;
+		this.segments = Node[value=segments];
+		this.buffer = Node[value=buffer];
+		this.depth = Node[value=depth];
 	}
 	void State(void* __ref__){
 		struct State  this = *(struct State *) __ref__;
@@ -17,12 +17,12 @@ struct State  {
 	void advance(void* __ref__){
 		struct State  this = *(struct State *) __ref__;
 		if (1) {}
-		return this;
+		return Node[value=this];
 	}
 	void append(void* __ref__, char c){
 		struct State  this = *(struct State *) __ref__;
 		caller();
-		return this;
+		return Node[value=this];
 	}
 	void isLevel(void* __ref__){
 		struct State  this = *(struct State *) __ref__;
@@ -30,11 +30,11 @@ struct State  {
 	}
 	void enter(void* __ref__){
 		struct State  this = *(struct State *) __ref__;depth++;
-		return this;
+		return Node[value=this];
 	}
 	void exit(void* __ref__){
 		struct State  this = *(struct State *) __ref__;depth--;
-		return this;
+		return Node[value=this];
 	}
 	void isShallow(void* __ref__){
 		struct State  this = *(struct State *) __ref__;
