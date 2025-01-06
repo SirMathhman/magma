@@ -25,7 +25,7 @@ public class Main {
 
         var output = new StringBuilder();
         for (String segment : segments) {
-            output = output.append(compileRootMember(segment.strip()));
+            output = output.append(Results.unwrap(compileRootMember(segment.strip())));
         }
 
         return output.toString();
@@ -49,10 +49,12 @@ public class Main {
         return appended;
     }
 
-    private static String compileRootMember(String rootSegment) throws CompileException {
-        if (rootSegment.startsWith("package ")) return "";
-        if (rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
-        return compileClass(rootSegment).orElseThrow(() -> new CompileException("Invalid root segment", rootSegment));
+    private static Result<String, CompileException> compileRootMember(String rootSegment) {
+        if (rootSegment.startsWith("package ")) return new Ok<>("");
+        if (rootSegment.startsWith("import ")) return new Ok<>("#include \"temp.h\"\n");
+        return compileClass(rootSegment)
+                .<Result<String, CompileException>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileException("Invalid root segment", rootSegment)));
     }
 
     private static Optional<String> compileClass(String rootSegment) {
