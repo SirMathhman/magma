@@ -62,11 +62,14 @@ public class Main {
 
         final var name = relative.getFileName().toString();
         final var nameWithoutExt = name.substring(0, name.indexOf('.'));
-        final var target = targetParent.resolve(nameWithoutExt + ".c");
 
         final var input = Files.readString(source);
         final var output = compileRoot(input, namespace);
-        Files.writeString(target, output);
+        final var extensions = List.of(".c", ".h");
+        for (String extension : extensions) {
+            final var target = targetParent.resolve(nameWithoutExt + extension);
+            Files.writeString(target, output);
+        }
     }
 
     private static String compileRoot(String root, List<String> namespace) throws CompileException {
