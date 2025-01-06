@@ -27,29 +27,33 @@ public class Main {
     }
 
     private static Result<String, CompileException> splitAndCompile(String root, Function<String, Result<String, CompileException>> compiler) {
-        final var segments = split(root);
+        return split(root).flatMapValue(segments -> {
+            Result<StringBuilder, CompileException> outputResult = new Ok<>(new StringBuilder());
+            for (String segment : segments) {
+                final var stripped = segment.strip();
+                if (stripped.isEmpty()) continue;
 
-        Result<StringBuilder, CompileException> outputResult = new Ok<>(new StringBuilder());
-        for (String segment : segments) {
-            final var stripped = segment.strip();
-            if (stripped.isEmpty()) continue;
+                outputResult = outputResult
+                        .and(() -> compiler.apply(stripped))
+                        .mapValue(tuple -> tuple.left().append(tuple.right()));
+            }
 
-            outputResult = outputResult
-                    .and(() -> compiler.apply(stripped))
-                    .mapValue(tuple -> tuple.left().append(tuple.right()));
-        }
-
-        return outputResult.mapValue(StringBuilder::toString);
+            return outputResult.mapValue(StringBuilder::toString);
+        });
     }
 
-    private static List<String> split(String root) {
+    private static Result<List<String>, CompileException> split(String input) {
         var state = new State();
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
+        for (int i = 0; i < input.length(); i++) {
+            var c = input.charAt(i);
             state = splitAtChar(state, c);
         }
 
-        return state.advance().segments();
+        if (state.isLevel()) {
+            return new Ok<>(state.advance().segments());
+        } else {
+            return new Err<>(new CompileException("Invalid depth '" + state.depth() + "'", input));
+        }
     }
 
     private static State splitAtChar(State state, char c) {
