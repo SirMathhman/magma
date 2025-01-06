@@ -9,11 +9,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
@@ -79,9 +82,14 @@ public class Main {
 
     private static Result<List<String>, CompileException> split(String root) {
         var state = new State();
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
-            state = splitAtChar(state, c);
+
+        final var queue = IntStream.range(0, root.length())
+                .mapToObj(root::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        while (!queue.isEmpty()) {
+            final var c = queue.pop();
+            state = splitAtChar(state, c, queue);
         }
 
         if (state.isLevel()) {
@@ -91,8 +99,34 @@ public class Main {
         }
     }
 
-    private static State splitAtChar(State state, char c) {
+    private static State splitAtChar(State state, char c, Deque<Character> queue) {
         final var appended = state.append(c);
+        if (c == '\'') {
+            final var maybeEscape = queue.pop();
+            final var withMaybeEscape = state.append(maybeEscape);
+            State withNext;
+            if (maybeEscape == '\\') {
+                withNext = withMaybeEscape.append(queue.pop());
+            } else {
+                withNext = withMaybeEscape;
+            }
+
+            return withNext.append(queue.pop());
+        }
+
+        if (c == '"') {
+            var current = state;
+            while (!queue.isEmpty()) {
+                final var next = queue.pop();
+                current = current.append(next);
+                if (next == '\"') break;
+                if (next == '\\') {
+                    current = current.append(queue.pop());
+                }
+            }
+            return current;
+        }
+
         if (c == ';' && appended.isLevel()) return appended.advance();
         if (c == '}' && appended.isShallow()) return appended.exit().advance();
         if (c == '{') return appended.enter();
@@ -132,12 +166,6 @@ public class Main {
         if (contentStart == -1) return Optional.empty();
 
         final var implementsType = afterParams.substring(0, contentStart).strip();
-        final String impl;
-        if (implementsType.startsWith("implements ")) {
-            impl = "\n\timpl " + implementsType.substring("implements ".length()) + " {\n\t}";
-        } else {
-            impl = "";
-        }
 
         final var afterContent = afterParams.substring(contentStart + 1);
         if (!afterContent.endsWith("}")) return Optional.empty();
@@ -147,12 +175,21 @@ public class Main {
                     .map(value -> "\n\t" + value + ";")
                     .collect(Collectors.joining());
 
-            return "struct " + name + " {" + joinedParameters + impl + output + "\n};";
+            final String impl;
+            if (implementsType.startsWith("implements ")) {
+                impl = "\n\timpl " + implementsType.substring("implements ".length()) + " {" +
+                        output +
+                        "\n\t}";
+            } else {
+                impl = output;
+            }
+
+            return "struct " + name + " {" + joinedParameters + impl + "\n};";
         }));
     }
 
     private static Result<String, CompileException> compileStructSegment(String structSegment) {
-        return new Ok<>("void temp(){}");
+        return new Ok<>("\n\t\tvoid temp(){}");
     }
 
     private static State splitByValues(String params) {
