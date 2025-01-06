@@ -60,13 +60,13 @@ public class Main {
 
         final var target = targetParent.resolve(name + ".c");
         final var input = Files.readString(source);
-        final var output = Results.unwrap(splitAndCompile(input, Main::compileRootSegment));
+        final var output = Results.unwrap(splitAndCompile(Main::splitByBraces, input, Main::compileRootSegment));
 
         Files.writeString(target, output);
     }
 
-    private static Result<String, CompileException> splitAndCompile(String root, Function<String, Result<String, CompileException>> mapper) {
-        return split(root).flatMapValue(segments -> compileSegments(segments, mapper));
+    private static Result<String, CompileException> splitAndCompile(Function<String, Result<List<String>, CompileException>> splitter, String input, Function<String, Result<String, CompileException>> mapper) {
+        return splitter.apply(input).flatMapValue(segments -> compileSegments(segments, mapper));
     }
 
     private static Result<String, CompileException> compileSegments(List<String> segments, Function<String, Result<String, CompileException>> mapper) {
@@ -82,7 +82,7 @@ public class Main {
         return output.mapValue(StringBuilder::toString);
     }
 
-    private static Result<List<String>, CompileException> split(String root) {
+    private static Result<List<String>, CompileException> splitByBraces(String root) {
         var state = new State();
 
         final var queue = IntStream.range(0, root.length())
@@ -160,8 +160,7 @@ public class Main {
         if (paramEnd == -1) return Optional.empty();
 
         final var params = afterParamStart.substring(0, paramEnd);
-        final var state = splitByValues(params);
-        final var parameters = state.advance().segments;
+        final var parameters = splitByValues(params);
 
         final var afterParams = afterParamStart.substring(paramEnd + 1);
         final var contentStart = afterParams.indexOf('{');
@@ -172,21 +171,23 @@ public class Main {
         final var afterContent = afterParams.substring(contentStart + 1);
         if (!afterContent.endsWith("}")) return Optional.empty();
         final var content = afterContent.substring(0, afterContent.length() - "}".length());
-        return Optional.of(splitAndCompile(content, structSegment -> compileStructSegment(name, structSegment)).mapValue(output -> {
-            final var joinedParameters = parameters.stream()
-                    .map(value -> "\n\t" + value + ";")
-                    .collect(Collectors.joining());
+        return Optional.of(splitAndCompile(Main::splitByBraces, content, structSegment -> compileStructSegment(name, structSegment)).flatMapValue(output -> {
+            return parameters.mapValue(inner -> {
+                final var joinedParameters = inner.stream()
+                        .map(value -> "\n\t" + value + ";")
+                        .collect(Collectors.joining());
 
-            final String impl;
-            if (implementsType.startsWith("implements ")) {
-                impl = "\n\timpl " + implementsType.substring("implements ".length()) + " {" +
-                        output +
-                        "\n\t}";
-            } else {
-                impl = output;
-            }
+                final String impl;
+                if (implementsType.startsWith("implements ")) {
+                    impl = "\n\timpl " + implementsType.substring("implements ".length()) + " {" +
+                            output +
+                            "\n\t}";
+                } else {
+                    impl = output;
+                }
 
-            return "struct " + name + " {" + joinedParameters + impl + "\n};";
+                return "struct " + name + " {" + joinedParameters + impl + "\n};";
+            });
         }));
     }
 
@@ -232,13 +233,45 @@ public class Main {
         final var content = afterContentStart.substring(0, afterContentStart.length() - 1);
 
         final var structType = "struct " + structName;
-        return Optional.of(splitAndCompile(content, Main::compileStatement).mapValue(output -> {
-            return "\n\t\t" + type + " " + methodName + "(" +
-                    String.join(", ", params) +
-                    "){\n\t\t\t" + structType + " this = *(" + structType + "*) __ref__;" +
-                    output +
-                    "\n\t\t}";
+        return Optional.of(splitAndCompile(Main::splitByBraces, content, Main::compileStatement).flatMapValue(output -> {
+            return compileType(type).mapValue(outputType -> {
+                return "\n\t\t" + outputType + " " + methodName + "(" +
+                        String.join(", ", params) +
+                        "){\n\t\t\t" + structType + " this = *(" + structType + "*) __ref__;" +
+                        output +
+                        "\n\t\t}";
+            });
         }));
+    }
+
+    private static Result<String, CompileException> compileType(String type) {
+        return compileGeneric(type)
+                .or(() -> compileSymbol(type))
+                .map(result -> result.mapErr(err -> new CompileException("Invalid type", type, err)))
+                .orElseGet(() -> new Err<>(new CompileException("Invalid type", type)));
+    }
+
+    private static Optional<? extends Result<String, CompileException>> compileSymbol(String type) {
+        for (int i = 0; i < type.length(); i++) {
+            var c = type.charAt(i);
+            if (Character.isLetter(c)) continue;
+            return Optional.empty();
+        }
+
+        return Optional.of(new Ok<>(type));
+    }
+
+    private static Optional<Result<String, CompileException>> compileGeneric(String type) {
+        final var paramStart = type.indexOf('<');
+        if (paramStart == -1) return Optional.empty();
+
+        final var name = type.substring(0, paramStart);
+        final var withEnd = type.substring(paramStart + 1);
+        if (!withEnd.endsWith(">")) return Optional.empty();
+        final var params = withEnd.substring(0, withEnd.length() - 1);
+        final var split = splitAndCompile(Main::splitByValues, params, Main::compileType);
+
+        return Optional.of(split.mapValue(inner -> name + "<" + inner + ">"));
     }
 
     private static Optional<Integer> getI(String slice) {
@@ -282,17 +315,21 @@ public class Main {
         return Optional.empty();
     }
 
-    private static State splitByValues(String params) {
+    private static Result<List<String>, CompileException> splitByValues(String params) {
         var state = new State();
         for (int i = 0; i < params.length(); i++) {
             final var c = params.charAt(i);
-            if (c == ';') {
-                state = state.advance();
-            } else {
-                state = state.append(c);
-            }
+            state = splitAtCharForValues(c, state);
         }
-        return state;
+        return new Ok<>(state.advance().segments);
+    }
+
+    private static State splitAtCharForValues(char c, State state) {
+        if (c == ',' && state.isLevel()) return state.advance();
+        final var appended = state.append(c);
+        if (c == '<') return appended.enter();
+        if (c == '>') return appended.exit();
+        return appended;
     }
 
     private static Optional<Result<String, CompileException>> compileToStruct(String infix, String rootSegment) {

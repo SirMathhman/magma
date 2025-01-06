@@ -12,15 +12,19 @@ struct Err<T, X> {
 			struct Err<T, X> this = *(struct Err<T, X>*) __ref__;
 			return temp();
 		}
-		Result<Tuple<T, R>, X> and(void* __ref__, Supplier<Result<R, X>> other){
+		Result<Tuple<TR>X> and(void* __ref__, Supplier<Result<R, X>> other){
 			struct Err<T, X> this = *(struct Err<T, X>*) __ref__;
 			return temp();
 		}
-		Result<R, X> mapValue(void* __ref__, Function<T, R> mapper){
+		Result<RX> mapValue(void* __ref__, Function<T, R> mapper){
 			struct Err<T, X> this = *(struct Err<T, X>*) __ref__;
 			return temp();
 		}
-		Result<R, X> flatMapValue(void* __ref__, Function<T, Result<R, X>> mapper){
+		Result<RX> flatMapValue(void* __ref__, Function<T, Result<R, X>> mapper){
+			struct Err<T, X> this = *(struct Err<T, X>*) __ref__;
+			return temp();
+		}
+		Result<TR> mapErr(void* __ref__, Function<X, R> mapper){
 			struct Err<T, X> this = *(struct Err<T, X>*) __ref__;
 			return temp();
 		}

@@ -1,3 +1,4 @@
 struct Tuple<A, B> {
-	A left, B right;
+	A left;
+	 B right;
 };
