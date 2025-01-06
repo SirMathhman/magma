@@ -56,13 +56,20 @@ public class Main {
     }
 
     private static Optional<String> compileClass(String rootSegment) {
-        final var classIndex = rootSegment.indexOf("class ");
-        if (classIndex == -1) return Optional.empty();
-        final var afterKeyword = rootSegment.substring(classIndex + "class".length());
-        final var contentStart = afterKeyword.indexOf('{');
-        if (contentStart == -1) return Optional.empty();
-        final var name = afterKeyword.substring(0, contentStart).strip();
+        return split(rootSegment, "class").flatMap(withoutClass -> {
+            return split(withoutClass.right(), "{").map(withoutContentStart -> {
+                final var name = withoutContentStart.left().strip();
+                return "struct " + name + " {};";
+            });
+        });
+    }
 
-        return Optional.of("struct " + name + " {};");
+    private static Optional<Tuple<String, String>> split(String input, String slice) {
+        final var index = input.indexOf(slice);
+        if (index == -1) return Optional.empty();
+
+        final var left = input.substring(0, index);
+        final var right = input.substring(index + slice.length());
+        return Optional.of(new Tuple<>(left, right));
     }
 }
