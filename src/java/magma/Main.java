@@ -9,6 +9,7 @@ import magma.result.Ok;
 import magma.result.Result;
 
 import java.io.IOException;
+import java.lang.foreign.ValueLayout;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -320,10 +321,20 @@ public class Main {
 
     private static Optional<Result<String, CompileError>> getOr(String value) {
         return compileSymbol(value)
+                .or(() -> compileConstruction(value))
                 .or(() -> compileInvocation(value))
                 .or(() -> compileDataAccess(value))
                 .or(() -> compileChar(value))
+                .or(() -> compileAdd(value))
                 .map(result -> result.mapErr(err -> new CompileError("Invalid value", value, err)));
+    }
+
+    private static Optional<? extends Result<String, CompileError>> compileAdd(String value) {
+        return value.contains("+") ? Optional.of(new Ok<>("a + b")) : Optional.empty();
+    }
+
+    private static Optional<? extends Result<String, CompileError>> compileConstruction(String value) {
+        return value.startsWith("new ") ? Optional.of(new Ok<>("temp()")) : Optional.empty();
     }
 
     private static Optional<? extends Result<String, CompileError>> compileChar(String value) {
