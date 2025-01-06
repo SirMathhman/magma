@@ -9,6 +9,6 @@ public class ApplicationError implements Error {
 
     @Override
     public String display() {
-        return cause.display();
+        return this.cause.display();
     }
 }
