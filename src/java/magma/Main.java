@@ -292,7 +292,8 @@ public class Main {
                 () -> compileConditional("while ", statement),
                 () -> compileElse(statement),
                 () -> compileDefinition(statement),
-                () -> compileFor(statement)
+                () -> compileFor(statement),
+                () -> compilePostfix(statement)
         );
 
         var errors = new ArrayList<CompileError>();
@@ -309,6 +310,10 @@ public class Main {
         }
 
         return new Err<>(new CompileError("Invalid statement", statement, errors));
+    }
+
+    private static Optional<Result<String, CompileError>> compilePostfix(String statement) {
+        return statement.endsWith("++;") ? Optional.of(new Ok<>(statement)) : Optional.empty();
     }
 
     private static Optional<Result<String, CompileError>> compileFor(String statement) {
