@@ -5,11 +5,17 @@
 struct Err<T, X>(X error) {
 	void findValue(void* __ref__){
 		struct Err<T, X>(X error) this = *(struct Err<T, X>(X error)*) __ref__;
-		return Optional.empty();
+		return {
+			void __caller__ = Optional.empty;
+			__caller__(__caller__)
+		};
 	}
 	void findError(void* __ref__){
 		struct Err<T, X>(X error) this = *(struct Err<T, X>(X error)*) __ref__;
-		return Optional.of(this.error);
+		return {
+			void __caller__ = Optional.of;
+			__caller__(__caller__, this.error)
+		};
 	}
 	void and(void* __ref__, Supplier<Result<R, X>> otherSupplier){
 		struct Err<T, X>(X error) this = *(struct Err<T, X>(X error)*) __ref__;
@@ -25,7 +31,10 @@ struct Err<T, X>(X error) {
 	}
 	void match(void* __ref__, Function<T, R> onOk, Function<X, R> onErr){
 		struct Err<T, X>(X error) this = *(struct Err<T, X>(X error)*) __ref__;
-		return onErr.apply(this.error);
+		return {
+			void __caller__ = onErr.apply;
+			__caller__(__caller__, this.error)
+		};
 	}
 	void mapErr(void* __ref__, Function<X, R> mapper){
 		struct Err<T, X>(X error) this = *(struct Err<T, X>(X error)*) __ref__;

@@ -5,6 +5,9 @@ struct JavaError(Exception e) {
 		struct JavaError(Exception e) this = *(struct JavaError(Exception e)*) __ref__;
 		var writer = temp();
 		caller();
-		return writer.toString();
+		return {
+			void __caller__ = writer.toString;
+			__caller__(__caller__)
+		};
 	}
 };

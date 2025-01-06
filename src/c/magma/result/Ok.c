@@ -5,11 +5,17 @@
 struct Ok<T, X>(T value) {
 	void findValue(void* __ref__){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
-		return Optional.of(this.value);
+		return {
+			void __caller__ = Optional.of;
+			__caller__(__caller__, this.value)
+		};
 	}
 	void findError(void* __ref__){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
-		return Optional.empty();
+		return {
+			void __caller__ = Optional.empty;
+			__caller__(__caller__)
+		};
 	}
 	void and(void* __ref__, Supplier<Result<R, X>> otherSupplier){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
@@ -21,11 +27,17 @@ struct Ok<T, X>(T value) {
 	}
 	void flatMapValue(void* __ref__, Function<T, Result<R, X>> mapper){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
-		return mapper.apply(this.value);
+		return {
+			void __caller__ = mapper.apply;
+			__caller__(__caller__, this.value)
+		};
 	}
 	void match(void* __ref__, Function<T, R> onOk, Function<X, R> onErr){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;
-		return onOk.apply(this.value);
+		return {
+			void __caller__ = onOk.apply;
+			__caller__(__caller__, this.value)
+		};
 	}
 	void isOk(void* __ref__){
 		struct Ok<T, X>(T value) this = *(struct Ok<T, X>(T value)*) __ref__;

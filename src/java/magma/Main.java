@@ -346,7 +346,8 @@ public class Main {
     }
 
     private static Optional<Result<Node, CompileError>> compileInvocationStatement(String statement) {
-        if (statement.contains("(") && statement.endsWith(");")) return Optional.of(new Ok<>(new Node("\n\t\tcaller();")));
+        if (statement.contains("(") && statement.endsWith(");"))
+            return Optional.of(new Ok<>(new Node("\n\t\tcaller();")));
         return Optional.empty();
     }
 
@@ -411,7 +412,7 @@ public class Main {
         final var property = value.substring(separator + 1);
         return Optional.of(compileValue(object)
                 .mapValue(obj -> obj.value() + "." + property)
-                .mapValue(Node::new));
+                .mapValue(value1 -> new Node("data-access", value1)));
     }
 
     private static Optional<Result<Node, CompileError>> compileInvocation(String value) {
@@ -428,7 +429,18 @@ public class Main {
         final var result = compileValue(substring);
 
         return Optional.of(compiled.and(() -> result).mapValue(tuple -> {
-            return new Node(tuple.left().value() + "(" + tuple.right().value()+ ")");
+            final var leftNode = tuple.left();
+            final var leftValue = leftNode.value();
+            final var rightValue = tuple.right().value();
+
+            final String content;
+            if (leftNode.is("data-access")) {
+                final var arguments = rightValue.isEmpty() ? "__caller__" : "__caller__, " + rightValue;
+                content = "{\n\t\t\tvoid __caller__ = " + leftValue + ";\n\t\t\t__caller__(" + arguments + ")\n\t\t}";
+            } else {
+                content = leftValue + "(" + rightValue + ")";
+            }
+            return new Node(content);
         }));
     }
 
