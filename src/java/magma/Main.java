@@ -48,16 +48,8 @@ public class Main {
     private static void compileSource(Path source) throws IOException, CompileException {
         final var relative = Main.SOURCE_DIRECTORY.relativize(source);
         final var parent = relative.getParent();
-        final var namespace = new ArrayList<String>();
-        for (int i = 0; i < parent.getNameCount(); i++) {
-            namespace.add(parent.getName(i).toString());
-        }
-
-        var targetParent = TARGET_DIRECTORY;
-        for (String s : namespace) {
-            targetParent = targetParent.resolve(s);
-        }
-
+        final var namespace = computeNamespace(parent);
+        final var targetParent = resolveTargetParent(namespace);
         if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
 
         final var name = relative.getFileName().toString();
@@ -65,11 +57,31 @@ public class Main {
 
         final var input = Files.readString(source);
         final var output = compileRoot(input, namespace);
+        write(targetParent, nameWithoutExt, output);
+    }
+
+    private static void write(Path directory, String name, String output) throws IOException {
         final var extensions = List.of(".c", ".h");
         for (String extension : extensions) {
-            final var target = targetParent.resolve(nameWithoutExt + extension);
+            final var target = directory.resolve(name + extension);
             Files.writeString(target, output);
         }
+    }
+
+    private static Path resolveTargetParent(List<String> namespace) {
+        var targetParent = TARGET_DIRECTORY;
+        for (String s : namespace) {
+            targetParent = targetParent.resolve(s);
+        }
+        return targetParent;
+    }
+
+    private static List<String> computeNamespace(Path parent) {
+        final var namespace = new ArrayList<String>();
+        for (int i = 0; i < parent.getNameCount(); i++) {
+            namespace.add(parent.getName(i).toString());
+        }
+        return namespace;
     }
 
     private static String compileRoot(String root, List<String> namespace) throws CompileException {
