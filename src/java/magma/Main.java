@@ -235,7 +235,7 @@ public class Main {
         return Optional.of(splitAndCompile(content, Main::compileStatement).mapValue(output -> {
             return "\n\t\t" + type + " " + methodName + "(" +
                     String.join(", ", params) +
-                    "){\n\t\t\t" + structType + " this = *(" + structType + ") __ref__;" +
+                    "){\n\t\t\t" + structType + " this = *(" + structType + "*) __ref__;" +
                     output +
                     "\n\t\t}";
         }));
