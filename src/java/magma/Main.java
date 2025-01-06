@@ -1,5 +1,10 @@
 package magma;
 
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
+import magma.result.Results;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -86,9 +91,15 @@ public class Main {
     }
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
+        return Results.unwrap(getString(rootSegment));
+    }
+
+    private static Result<String, CompileException> getString(String rootSegment) {
         return compileNamespaced(rootSegment, "package ", "")
                 .or(() -> compileNamespaced(rootSegment, "import ", "#include \"temp.h\"\n"))
-                .or(() -> compileClass(rootSegment)).orElseThrow(() -> new CompileException("Invalid root segment", rootSegment));
+                .or(() -> compileClass(rootSegment))
+                .<Result<String, CompileException>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileException("Invalid root segment", rootSegment)));
     }
 
     private static Optional<String> compileClass(String rootSegment) {
