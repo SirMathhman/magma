@@ -283,18 +283,23 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileStatement(String statement) {
+        return getStringCompileErrorResult(statement)
+                .map(result -> result.mapErr(err -> new CompileError("Invalid statement", statement, err)))
+                .orElseGet(() -> new Err<>(new CompileError("Unknown statement", statement)));
+    }
+
+    private static Optional<Result<String, CompileError>> getStringCompileErrorResult(String statement) {
         final var x = compileAssignment(statement);
-        if (x.isPresent()) return x.get();
+        if (x.isPresent()) return x;
 
-        if (statement.startsWith("return ")) return new Ok<>("\n\t\treturn value;");
-        if (statement.contains("(") && statement.endsWith(");")) return new Ok<>("\n\t\tcaller();");
-        if (statement.startsWith("if ")) return new Ok<>("\n\t\tif (1) {}");
-        if (statement.startsWith("else ")) return new Ok<>("\n\t\telse {}");
-        if (statement.endsWith(";")) return new Ok<>("\n\t\tint value");
-        if (statement.startsWith("for ")) return new Ok<>("\n\t\tfor(;;) {}");
-        if (statement.startsWith("while ")) return new Ok<>("\n\t\twhile(1) {}");
-
-        return new Err<>(new CompileError("Unknown statement", statement));
+        if (statement.startsWith("return ")) return Optional.of(new Ok<>("\n\t\treturn value;"));
+        if (statement.contains("(") && statement.endsWith(");")) return Optional.of(new Ok<>("\n\t\tcaller();"));
+        if (statement.startsWith("if ")) return Optional.of(new Ok<>("\n\t\tif (1) {}"));
+        if (statement.startsWith("else ")) return Optional.of(new Ok<>("\n\t\telse {}"));
+        if (statement.endsWith(";")) return Optional.of(new Ok<>("\n\t\tint value"));
+        if (statement.startsWith("for ")) return Optional.of(new Ok<>("\n\t\tfor(;;) {}"));
+        if (statement.startsWith("while ")) return Optional.of(new Ok<>("\n\t\twhile(1) {}"));
+        return Optional.empty();
     }
 
     private static Optional<Result<String, CompileError>> compileAssignment(String statement) {
@@ -305,9 +310,7 @@ public class Main {
         if (separator == -1) return Optional.empty();
         final var destination = slice.substring(0, separator).strip();
         final var source = slice.substring(separator + 1).strip();
-        return Optional.of(compileValue(source).mapValue(value -> {
-            return "\n\t\t" + destination + " = " + value + ";";
-        }));
+        return Optional.of(compileValue(source).mapValue(value -> "\n\t\t" + destination + " = " + value + ";"));
     }
 
     private static Result<String, CompileError> compileValue(String value) {
