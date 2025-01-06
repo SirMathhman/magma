@@ -57,9 +57,16 @@ public class Main {
 
     private static Optional<String> compileClass(String rootSegment) {
         return split(rootSegment, "class").flatMap(withoutClass -> {
-            return split(withoutClass.right(), "{").map(withoutContentStart -> {
+            return split(withoutClass.right(), "{").flatMap(withoutContentStart -> {
                 final var name = withoutContentStart.left().strip();
-                return "struct " + name + " {};";
+                final var withEnd = withoutContentStart.right();
+                if (withEnd.endsWith("}")) {
+                    final var content = withEnd.substring(0, "}".length());
+                    //TODO
+                    return Optional.of("struct " + name + " {};");
+                } else {
+                    return Optional.empty();
+                }
             });
         });
     }
