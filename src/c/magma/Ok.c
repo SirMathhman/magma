@@ -3,24 +3,31 @@
 #include "temp.h";
 struct Ok<T, X>(T value) {
 	void findValue(void* __ref__){
-		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;Err[error=magma.CompileError@45fe3ee3]
+		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
+		return value;
 	}
 	void findError(void* __ref__){
-		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;Err[error=magma.CompileError@4cdf35a9]
+		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
+		return value;
 	}
 	void and(void* __ref__){
-		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;Err[error=magma.CompileError@4c98385c]
+		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
+		return value;
 	}
 	void mapValue(void* __ref__){
-		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;Err[error=magma.CompileError@5fcfe4b2]
+		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
+		return value;
 	}
 	void flatMapValue(void* __ref__){
-		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;Err[error=magma.CompileError@6bf2d08e]
+		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
+		return value;
 	}
 	void match(void* __ref__){
-		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;Err[error=magma.CompileError@5eb5c224]
+		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
+		return value;
 	}
 	void mapErr(void* __ref__){
-		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;Err[error=magma.CompileError@53e25b76]
+		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
+		return value;
 	}
 };

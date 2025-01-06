@@ -1,21 +1,24 @@
 package magma;
 
+import java.JavaFiles;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Main {
 
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
+    public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 
     public static void main(String[] args) {
         collect()
@@ -26,31 +29,33 @@ public class Main {
                 .ifPresent(applicationError -> System.err.println(applicationError.display()));
     }
 
-    private static Result<List<Path>, IOException> collect() {
-        try (Stream<Path> stream = Files.walk(SOURCE_DIRECTORY)) {
-            final var sources = stream.filter(Files::isRegularFile)
-                    .filter(file -> file.toString().endsWith(".java"))
-                    .toList();
-
-            return new Ok<>(sources);
-        } catch (IOException e) {
-            return new Err<>(e);
-        }
+    private static Result<Set<Path>, IOException> collect() {
+        return JavaFiles.walkSafe(SOURCE_DIRECTORY).mapValue(Main::filterPaths);
     }
 
-    private static Optional<ApplicationError> runWithSources(List<Path> sources) {
-        for (Path source : sources) {
-            final var error = runWithSource(source);
+    private static Set<Path> filterPaths(Set<Path> paths) {
+        return paths.stream()
+                .filter(Files::isRegularFile)
+                .filter(file -> file.toString().endsWith(".java"))
+                .collect(Collectors.toSet());
+    }
+
+    private static Optional<ApplicationError> runWithSources(Set<Path> sourceSet) {
+        for (var source : sourceSet) {
+            final var relativized = Main.SOURCE_DIRECTORY.relativize(source);
+            final var namespace = computeNamespace(relativized.getParent());
+            if (!namespace.isEmpty() && namespace.getFirst().equals("java")) continue;
+
+            final var name = computeName(relativized);
+            final var error = runWithSource(source, namespace, name);
             if (error.isPresent()) return error;
         }
         return Optional.empty();
     }
 
-    private static Optional<ApplicationError> runWithSource(Path source) {
-        final var relativized = Main.SOURCE_DIRECTORY.relativize(source);
-        final var parent = relativized.getParent();
-        final var targetDirectory = Paths.get(".", "src", "c");
-        final var targetParent = targetDirectory.resolve(parent);
+    private static Optional<ApplicationError> runWithSource(Path source, List<String> namespace, String name) {
+        final var targetParent = resolveTargetParent(namespace);
+
         if (!Files.exists(targetParent)) {
             final var directoryCreationError = createDirectoriesSafe(targetParent);
             if (directoryCreationError.isPresent()) {
@@ -60,15 +65,33 @@ public class Main {
             }
         }
 
-        final var name = relativized.getFileName().toString();
-        final var separator = name.indexOf('.');
-        final var nameWithoutExt = name.substring(0, separator);
-
         return readSafe(source)
                 .mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
-                .mapValue(input -> compileInputToTarget(input, targetParent, nameWithoutExt))
+                .mapValue(input -> compileInputToTarget(input, targetParent, name))
                 .match(value -> value, Optional::of);
+    }
+
+    private static Path resolveTargetParent(List<String> namespace) {
+        var targetParent = TARGET_DIRECTORY;
+        for (String segment : namespace) {
+            targetParent = targetParent.resolve(segment);
+        }
+        return targetParent;
+    }
+
+    private static String computeName(Path relativized) {
+        final var name = relativized.getFileName().toString();
+        final var separator = name.indexOf('.');
+        return name.substring(0, separator);
+    }
+
+    private static ArrayList<String> computeNamespace(Path parent) {
+        final var namespace = new ArrayList<String>();
+        for (int i = 0; i < parent.getNameCount(); i++) {
+            namespace.add(parent.getName(i).toString());
+        }
+        return namespace;
     }
 
     private static Optional<ApplicationError> compileInputToTarget(String input, Path targetParent, String nameWithoutExt) {
