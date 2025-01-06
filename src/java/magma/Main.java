@@ -3,10 +3,14 @@ package magma;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main {
     public static void main(String[] args) {
@@ -44,9 +48,14 @@ public class Main {
 
     private static Result<List<String>, CompileException> split(String input) {
         var state = new State();
-        for (int i = 0; i < input.length(); i++) {
-            var c = input.charAt(i);
-            state = splitAtChar(state, c);
+
+        final var queue = IntStream.range(0, input.length())
+                .mapToObj(index -> input.charAt(index))
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        while (!queue.isEmpty()) {
+            final var c = queue.pop();
+            state = splitAtChar(state, c, queue);
         }
 
         if (state.isLevel()) {
@@ -56,8 +65,21 @@ public class Main {
         }
     }
 
-    private static State splitAtChar(State state, char c) {
+    private static State splitAtChar(State state, char c, Deque<Character> queue) {
         final var appended = state.append(c);
+        if (c == '\'') {
+            final var maybeEscape = queue.pop();
+            final var next = state.append(maybeEscape);
+            final State next1;
+            if (maybeEscape == '\\') {
+                next1 = state.append(queue.pop());
+            } else {
+                next1 = next;
+            }
+
+            return next1.append(queue.pop());
+        }
+
         if (c == ';' && appended.isLevel()) return appended.advance();
         if (c == '}' && appended.isShallow()) return appended.exit().advance();
         if (c == '{') return appended.enter();
