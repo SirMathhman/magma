@@ -286,6 +286,10 @@ public class Main {
         if (statement.contains("=")) return new Ok<>("\n\t\tdestination = source;");
         if (statement.startsWith("return ")) return new Ok<>("\n\t\treturn value;");
         if (statement.contains("(") && statement.endsWith(");")) return new Ok<>("\n\t\tcaller();");
+        if (statement.startsWith("if ")) return new Ok<>("\n\t\tif (1) {}");
+        if (statement.startsWith("else ")) return new Ok<>("\n\t\telse {}");
+        if (statement.endsWith(";")) return new Ok<>("int value");
+
         return new Err<>(new CompileError("Unknown statement", statement));
     }
 
