@@ -273,7 +273,10 @@ public class Main {
         final var withEnd = type.substring(paramStart + 1);
         if (!withEnd.endsWith(">")) return Optional.empty();
         final var params = withEnd.substring(0, withEnd.length() - 1);
-        final var split = splitAndCompile(Main::splitByValues, (stringBuilder, str) -> stringBuilder.append(", ").append(str), Main::compileType, params);
+        final var split = splitAndCompile(Main::splitByValues, (buffer, str) -> {
+            if (buffer.isEmpty()) return buffer.append(str);
+            return buffer.append(", ").append(str);
+        }, Main::compileType, params);
 
         return Optional.of(split.mapValue(inner -> name + "<" + inner + ">"));
     }
