@@ -64,7 +64,7 @@ public class Main {
         final var targetParent = resolveTargetParent(namespace);
 
         if (!Files.exists(targetParent)) {
-            final var directoryCreationError = createDirectoriesSafe(targetParent);
+            final var directoryCreationError = JavaFiles.createDirectoriesSafe(targetParent);
             if (directoryCreationError.isPresent()) {
                 return directoryCreationError
                         .map(JavaError::new)
@@ -72,7 +72,7 @@ public class Main {
             }
         }
 
-        return readSafe(source)
+        return JavaFiles.readSafe(source)
                 .mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
                 .mapValue(input -> compileInputToTarget(input, targetParent, name))
@@ -110,35 +110,9 @@ public class Main {
 
     private static Optional<ApplicationError> writeOutputToTarget(Path targetParent, String nameWithoutExt, String output) {
         final var target = targetParent.resolve(nameWithoutExt + ".c");
-        return writeSafe(output, target)
+        return JavaFiles.writeSafe(output, target)
                 .map(JavaError::new)
                 .map(ApplicationError::new);
-    }
-
-    private static Optional<IOException> writeSafe(String output, Path target) {
-        try {
-            Files.writeString(target, output);
-            return Optional.empty();
-        } catch (IOException e) {
-            return Optional.of(e);
-        }
-    }
-
-    private static Result<String, IOException> readSafe(Path source) {
-        try {
-            return new Ok<>(Files.readString(source));
-        } catch (IOException e) {
-            return new Err<>(e);
-        }
-    }
-
-    private static Optional<IOException> createDirectoriesSafe(Path targetParent) {
-        try {
-            Files.createDirectories(targetParent);
-            return Optional.empty();
-        } catch (IOException e) {
-            return Optional.of(e);
-        }
     }
 
     private static Result<String, CompileError> compileRoot(String root) {
@@ -195,10 +169,23 @@ public class Main {
             return next.append(queue.pop());
         }
 
+        if (c == '\"') {
+            var current = appended;
+            while (!queue.isEmpty()) {
+                final var next = queue.pop();
+                current = current.append(next);
+
+                if (next == '\"') {
+                    break;
+                }
+            }
+            return current;
+        }
+
         if (c == ';' && appended.isLevel()) return appended.advance();
         if (c == '}' && appended.isShallow()) return appended.exit().advance();
-        if (c == '{') return appended.enter();
-        if (c == '}') return appended.exit();
+        if (c == '{' || c == '(') return appended.enter();
+        if (c == '}' || c == ')') return appended.exit();
         return appended;
     }
 
