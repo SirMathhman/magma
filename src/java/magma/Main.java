@@ -90,16 +90,23 @@ public class Main {
     private static Result<String, CompileException> compileRootSegment(String rootSegment) {
         return compilePackage(rootSegment)
                 .or(() -> compileImport(rootSegment))
-                .or(() -> compileToStruct("class ", rootSegment))
-                .or(() -> compileToStruct("record ", rootSegment))
-                .or(() -> compileToStruct("interface ", rootSegment))
+                .or(() -> compileToStruct("class ", rootSegment, '{'))
+                .or(() -> compileToStruct("record ", rootSegment, '('))
+                .or(() -> compileToStruct("interface ", rootSegment, '{'))
                 .<Result<String, CompileException>>map(Ok::new)
                 .orElseGet(() -> new Err<>(new CompileException("Invalid root segment", rootSegment)));
     }
 
-    private static Optional<? extends String> compileToStruct(String infix, String rootSegment) {
-        if (rootSegment.contains(infix)) return Optional.of("struct Temp {\n};");
-        return Optional.empty();
+    private static Optional<? extends String> compileToStruct(String infix, String rootSegment, char nameEndChar) {
+        final var index = rootSegment.indexOf(infix);
+        if (index == -1) return Optional.empty();
+
+        final var after = rootSegment.substring(index + infix.length());
+        final var nameEnd = after.indexOf(nameEndChar);
+        if (nameEnd == -1) return Optional.empty();
+
+        final var name = after.substring(0, nameEnd).strip();
+        return Optional.of("struct " + name + " {\n};");
     }
 
     private static Optional<? extends String> compileImport(String rootSegment) {
