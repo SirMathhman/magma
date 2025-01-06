@@ -66,14 +66,7 @@ public class Main {
     }
 
     private static Result<String, CompileException> splitAndCompile(Function<String, Result<List<String>, CompileException>> splitter, BiFunction<StringBuilder, String, StringBuilder> folder, Function<String, Result<String, CompileException>> mapper, String input) {
-        return splitter.apply(input).flatMapValue(segments -> compileSegments(segments, mapper, folder));
-    }
-
-    private static Result<String, CompileException> compileSegments(
-            List<String> segments,
-            Function<String, Result<String, CompileException>> mapper, BiFunction<StringBuilder, String, StringBuilder> folder
-    ) {
-        return compileToList(segments, mapper).mapValue(Main::foldIntoBuilder);
+        return splitter.apply(input).flatMapValue(segments -> compileToList(segments, mapper).mapValue(Main::foldIntoBuilder));
     }
 
     private static String foldIntoBuilder(List<String> inner) {
