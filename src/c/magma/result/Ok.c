@@ -27,6 +27,10 @@ struct Ok<T, X>(T value) {
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
 		return value;
 	}
+	void isOk(void* __ref__){
+		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
+		return value;
+	}
 	void mapErr(void* __ref__){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
 		return value;

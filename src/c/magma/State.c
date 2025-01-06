@@ -26,20 +26,18 @@ struct State  {
 	}
 	void isLevel(void* __ref__){
 		struct State * this = (struct State *) __ref__;
-		return depth = = 0;
+		return value;
 	}
 	void enter(void* __ref__){
-		struct State * this = (struct State *) __ref__;
-		int value
+		struct State * this = (struct State *) __ref__;depth++;
 		return value;
 	}
 	void exit(void* __ref__){
-		struct State * this = (struct State *) __ref__;
-		int value
+		struct State * this = (struct State *) __ref__;depth--;
 		return value;
 	}
 	void isShallow(void* __ref__){
 		struct State * this = (struct State *) __ref__;
-		return depth = = 1;
+		return value;
 	}
 };

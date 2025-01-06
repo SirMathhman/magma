@@ -31,4 +31,8 @@ struct Err<T, X>(X error) {
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
 		return value;
 	}
+	void isOk(void* __ref__){
+		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
+		return value;
+	}
 };

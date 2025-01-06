@@ -160,9 +160,13 @@ struct Main  {
 	}
 	void compileStatement(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		caller();
+		List<Supplier<Optional<Result<String, CompileError>>>> list = List.of(a + b);
 		var errors = temp();
 		for(;;) {}
+		return value;
+	}
+	void compilePostfix(void* __ref__){
+		struct Main * this = (struct Main *) __ref__;
 		return value;
 	}
 	void compileFor(void* __ref__){
