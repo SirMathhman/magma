@@ -115,11 +115,23 @@ public class Main {
         final var state = splitByValues(params);
         final var parameters = state.advance().segments;
 
+        final var afterParams = afterParamStart.substring(paramEnd + 1);
+        final var contentStart = afterParams.indexOf('{');
+        if (contentStart == -1) return Optional.empty();
+
+        final var implementsType = afterParams.substring(0, contentStart).strip();
+        final String impl;
+        if (implementsType.startsWith("implements ")) {
+            impl = "\n\timpl " + implementsType.substring("implements ".length()) + " {\n\t}";
+        } else {
+            impl = "";
+        }
+
         final var joinedParameters = parameters.stream()
-                .map(value -> "\n\t" + value)
+                .map(value -> "\n\t" + value + ";")
                 .collect(Collectors.joining());
 
-        return Optional.of("struct " + name + " {" + joinedParameters + "\n};");
+        return Optional.of("struct " + name + " {" + joinedParameters + impl + "\n};");
     }
 
     private static State splitByValues(String params) {
