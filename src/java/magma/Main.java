@@ -222,7 +222,23 @@ public class Main {
     }
 
     private static Optional<Result<String, CompileException>> compileReturn(String statement) {
-        if (statement.startsWith("return ")) return Optional.of(new Ok<>("\n\t\t\treturn value;"));
+        if (!statement.startsWith("return ")) return Optional.empty();
+
+        final var withEnd = statement.substring("return ".length());
+        if (!withEnd.endsWith(";")) return Optional.empty();
+
+        final var value = withEnd.substring(0, withEnd.length() - 1);
+        return Optional.of(compileValue(value).mapValue(output -> {
+            return "\n\t\t\treturn " + output + ";";
+        }));
+    }
+
+    private static Result<String, CompileException> compileValue(String value) {
+        return compileInvocation(value).orElseGet(() -> new Err<>(new CompileException("Unknown value", value)));
+    }
+
+    private static Optional<Result<String, CompileException>> compileInvocation(String value) {
+        if (value.contains("(") && value.endsWith(")")) return Optional.of(new Ok<>("temp()"));
         return Optional.empty();
     }
 

@@ -6,23 +6,23 @@ struct Err<T, X> {
 	impl Result<T, X> {
 		void findValue(void* __ref__){
 			struct Err<T, X> this = *(struct Err<T, X>) __ref__;
-			return value;
+			return temp();
 		}
 		void findError(void* __ref__){
 			struct Err<T, X> this = *(struct Err<T, X>) __ref__;
-			return value;
+			return temp();
 		}
 		void and(void* __ref__){
 			struct Err<T, X> this = *(struct Err<T, X>) __ref__;
-			return value;
+			return temp();
 		}
 		void mapValue(void* __ref__){
 			struct Err<T, X> this = *(struct Err<T, X>) __ref__;
-			return value;
+			return temp();
 		}
 		void flatMapValue(void* __ref__){
 			struct Err<T, X> this = *(struct Err<T, X>) __ref__;
-			return value;
+			return temp();
 		}
 	}
 };
