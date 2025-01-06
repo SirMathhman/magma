@@ -1,4 +1,4 @@
-package magma;
+package magma.error;
 
 public class ApplicationError implements Error {
     private final Error cause;

@@ -1,4 +1,6 @@
-package magma;
+package magma.result;
+
+import magma.Tuple;
 
 import java.util.Optional;
 import java.util.function.Function;

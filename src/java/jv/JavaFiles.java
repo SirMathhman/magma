@@ -1,8 +1,8 @@
-package java;
+package jv;
 
-import magma.Err;
-import magma.Ok;
-import magma.Result;
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
 
 import java.io.IOException;
 import java.nio.file.Files;

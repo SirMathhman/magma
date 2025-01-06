@@ -1,6 +1,13 @@
 package magma;
 
-import java.JavaFiles;
+import jv.JavaFiles;
+import magma.error.ApplicationError;
+import magma.error.CompileError;
+import magma.error.JavaError;
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,7 +51,7 @@ public class Main {
         for (var source : sourceSet) {
             final var relativized = Main.SOURCE_DIRECTORY.relativize(source);
             final var namespace = computeNamespace(relativized.getParent());
-            if (!namespace.isEmpty() && namespace.getFirst().equals("java")) continue;
+            if (!namespace.isEmpty() && namespace.getFirst().equals("jv")) continue;
 
             final var name = computeName(relativized);
             final var error = runWithSource(source, namespace, name);
