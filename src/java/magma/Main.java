@@ -338,7 +338,7 @@ public class Main {
         if (!value.endsWith(")")) return Optional.empty();
         final var slice = value.substring(0, value.length() - 1);
 
-        final var i = slice.indexOf('(');
+        final var i = slice.lastIndexOf('(');
         if (i == -1) return Optional.empty();
 
         final var caller = slice.substring(0, i);
