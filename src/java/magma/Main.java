@@ -9,7 +9,6 @@ import magma.result.Ok;
 import magma.result.Result;
 
 import java.io.IOException;
-import java.lang.foreign.ValueLayout;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -355,18 +354,29 @@ public class Main {
         if (!value.endsWith(")")) return Optional.empty();
         final var slice = value.substring(0, value.length() - 1);
 
-        final var i = slice.lastIndexOf('(');
-        if (i == -1) return Optional.empty();
+        final var argumentsStart = findArgumentsStart(slice);
+        if (argumentsStart.isEmpty()) return Optional.empty();
 
-        final var caller = slice.substring(0, i);
+        final var caller = slice.substring(0, argumentsStart.get());
         final var compiled = compileValue(caller);
 
-        final var substring = slice.substring(i + 1);
+        final var substring = slice.substring(argumentsStart.get() + 1);
         final var result = compileValue(substring);
 
         return Optional.of(compiled.and(() -> result).mapValue(tuple -> {
             return tuple.left() + "(" + tuple.right() + ")";
         }));
+    }
+
+    private static Optional<Integer> findArgumentsStart(String slice) {
+        var depth = 0;
+        for (int i = slice.length() - 1; i >= 0; i--) {
+            var c = slice.charAt(i);
+            if (c == '(' && depth == 0) return Optional.of(i);
+            if (c == ')') depth++;
+            if (c == '(') depth--;
+        }
+        return Optional.empty();
     }
 
     private static Optional<Result<String, CompileError>> compileSymbol(String value) {
