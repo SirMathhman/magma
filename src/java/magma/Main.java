@@ -357,12 +357,7 @@ public class Main {
         if (!substring.endsWith(";")) return Optional.empty();
 
         final var substring1 = substring.substring(0, substring.length() - ";".length());
-        return Optional.of(compileValue(substring1).mapValue(value -> "\n\t\treturn " + value + ";").mapValue(Node::new));
-    }
-
-    private static Optional<Result<Node, CompileError>> compileWhile(String statement) {
-        if (statement.startsWith("while ")) return Optional.of(new Ok<>(new Node("\n\t\twhile(1) {}")));
-        return Optional.empty();
+        return Optional.of(compileValue(substring1).mapValue(value -> "\n\t\treturn " + value.value() + ";").mapValue(Node::new));
     }
 
     private static Optional<Result<Node, CompileError>> compileAssignment(String statement) {
@@ -374,7 +369,7 @@ public class Main {
         final var destination = slice.substring(0, separator).strip();
         final var source = slice.substring(separator + 1).strip();
         return Optional.of(compileValue(source)
-                .mapValue(value -> "\n\t\t" + destination + " = " + value + ";")
+                .mapValue(value -> "\n\t\t" + destination + " = " + value.value() + ";")
                 .mapValue(Node::new));
     }
 
@@ -415,7 +410,7 @@ public class Main {
         final var object = value.substring(0, separator);
         final var property = value.substring(separator + 1);
         return Optional.of(compileValue(object)
-                .mapValue(obj -> obj + "." + property)
+                .mapValue(obj -> obj.value() + "." + property)
                 .mapValue(Node::new));
     }
 
@@ -433,7 +428,7 @@ public class Main {
         final var result = compileValue(substring);
 
         return Optional.of(compiled.and(() -> result).mapValue(tuple -> {
-            return new Node(tuple.left() + "(" + tuple.right() + ")");
+            return new Node(tuple.left().value() + "(" + tuple.right().value()+ ")");
         }));
     }
 
