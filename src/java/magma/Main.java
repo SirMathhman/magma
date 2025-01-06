@@ -75,11 +75,14 @@ public class Main {
 
     private static State splitAtChar(State state, char c) {
         final var appended = state.append(c);
-        if (c == ';') return appended.advance();
+        if (c == ';' && appended.isLevel()) return appended.advance();
+        if (c == '{') return appended.enter();
+        if (c == '}') return appended.exit();
         return appended;
     }
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
+        if (rootSegment.startsWith("package ")) return "";
         throw new CompileException("Invalid root segment", rootSegment);
     }
 }
