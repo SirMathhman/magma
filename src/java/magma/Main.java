@@ -200,7 +200,7 @@ public class Main {
         final var nameSeparator = beforeParams.lastIndexOf(' ');
         final var name = beforeParams.substring(nameSeparator + 1).strip();
 
-        return Optional.of(new Ok<>("\n\t\tvoid " + name + "(){}"));
+        return Optional.of(new Ok<>("\n\t\tvoid " + name + "(void* __ref__){\n\t\t}"));
     }
 
     private static State splitByValues(String params) {
