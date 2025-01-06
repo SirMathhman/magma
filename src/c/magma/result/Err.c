@@ -12,7 +12,7 @@ struct Err<T, X> {
 			struct Err<T, X> this = *(struct Err<T, X>*) __ref__;
 			return temp();
 		}
-		Result<[T, R], X> and(void* __ref__, () => Result<R, X> other){
+		Result<[T, R], X> and(void* __ref__, [Closure, (Closure) => Result<R, X>] other){
 			struct Err<T, X> this = *(struct Err<T, X>*) __ref__;
 			return temp();
 		}

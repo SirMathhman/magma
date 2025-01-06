@@ -304,7 +304,7 @@ public class Main {
 
         return Optional.of(split.mapValue(inner -> {
             if (name.equals("Tuple")) return "[" + inner + "]";
-            if (name.equals("Supplier")) return "() => " + inner;
+            if (name.equals("Supplier")) return "[Closure, (Closure) => " + inner + "]";
             return name + "<" + inner + ">";
         }));
     }
