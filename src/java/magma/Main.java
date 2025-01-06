@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class Main {
@@ -67,7 +68,7 @@ public class Main {
     }
 
     private static Optional<Result<String, CompileException>> compileClass(String rootSegment) {
-        return split(rootSegment, "class").flatMap(withoutClass -> split(withoutClass.right(), "{").flatMap(withoutContentStart -> {
+        return split(rootSegment, "class", Main::locateFirst).flatMap(withoutClass -> split(withoutClass.right(), "{", Main::locateFirst).flatMap(withoutContentStart -> {
             final var name = withoutContentStart.left().strip();
             final var withEnd = withoutContentStart.right();
             if (withEnd.endsWith("}")) {
@@ -80,15 +81,33 @@ public class Main {
     }
 
     private static Result<String, CompileException> compileClassStatement(String classMember) {
-        return new Err<>(new CompileException("Invalid class member", classMember));
+        return compileMethod(classMember).orElseGet(() -> new Err<>(new CompileException("Invalid class member", classMember)));
     }
 
-    private static Optional<Tuple<String, String>> split(String input, String slice) {
-        final var index = input.indexOf(slice);
-        if (index == -1) return Optional.empty();
+    private static Optional<Result<String, CompileException>> compileMethod(String classMember) {
+        return split(classMember, "(", Main::locateFirst).flatMap(withoutParamStart -> {
+            return split(withoutParamStart.left(), " ", Main::locateLast).map(withoutNameSeparator -> {
+                final var name = withoutNameSeparator.right();
+                return "void " + name + "(){}";
+            });
+        }).map(Ok::new);
+    }
 
-        final var left = input.substring(0, index);
-        final var right = input.substring(index + slice.length());
-        return Optional.of(new Tuple<>(left, right));
+    private static Optional<Integer> locateLast(String input, String slice) {
+        final var index = input.indexOf(slice);
+        return index == -1 ? Optional.empty() : Optional.of(index);
+    }
+
+    private static Optional<Tuple<String, String>> split(String input, String slice, BiFunction<String, String, Optional<Integer>> locator) {
+        return locator.apply(input, slice).map(index -> {
+            final var left = input.substring(0, index);
+            final var right = input.substring(index + slice.length());
+            return new Tuple<>(left, right);
+        });
+    }
+
+    private static Optional<Integer> locateFirst(String input, String slice) {
+        final var index = input.indexOf(slice);
+        return index == -1 ? Optional.empty() : Optional.of(index);
     }
 }
