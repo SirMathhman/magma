@@ -3,8 +3,8 @@ struct CompileError {
 	String context;
 	void new(){
 		struct CompileError this;
-		destination = source;
-		destination = source;
+		this.message = message;
+		this.context = context;
 		return this;
 	}
 	void display(void* __ref__){

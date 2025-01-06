@@ -1,9 +1,9 @@
 struct Results  {
 	void unwrap(void* __ref__){
 		struct Results * this = (struct Results *) __ref__;
-		destination = source;
+		final var maybeValue = result.findValue();
 		caller();
-		destination = source;
+		final var maybeError = result.findError();
 		caller();
 		caller();
 	}

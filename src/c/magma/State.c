@@ -6,9 +6,9 @@ struct State  {
 	int depth;
 	void State(void* __ref__){
 		struct State * this = (struct State *) __ref__;
-		destination = source;
-		destination = source;
-		destination = source;
+		this.segments = segments;
+		this.buffer = buffer;
+		this.depth = depth;
 	}
 	void State(void* __ref__){
 		struct State * this = (struct State *) __ref__;
@@ -16,7 +16,7 @@ struct State  {
 	}
 	void advance(void* __ref__){
 		struct State * this = (struct State *) __ref__;
-		destination = source;
+		if (1) {}
 		return value;
 	}
 	void append(void* __ref__){
@@ -26,18 +26,20 @@ struct State  {
 	}
 	void isLevel(void* __ref__){
 		struct State * this = (struct State *) __ref__;
-		destination = source;
+		return depth = = 0;
 	}
 	void enter(void* __ref__){
-		struct State * this = (struct State *) __ref__;int value
+		struct State * this = (struct State *) __ref__;
+		int value
 		return value;
 	}
 	void exit(void* __ref__){
-		struct State * this = (struct State *) __ref__;int value
+		struct State * this = (struct State *) __ref__;
+		int value
 		return value;
 	}
 	void isShallow(void* __ref__){
 		struct State * this = (struct State *) __ref__;
-		destination = source;
+		return depth = = 1;
 	}
 };

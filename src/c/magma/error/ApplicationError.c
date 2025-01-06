@@ -2,7 +2,7 @@ struct ApplicationError {
 	Error cause;
 	void new(){
 		struct ApplicationError this;
-		destination = source;
+		this.cause = cause;
 		return this;
 	}
 	void display(void* __ref__){
