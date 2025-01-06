@@ -17,27 +17,27 @@ struct State  {
 	void advance(void* __ref__){
 		struct State * this = (struct State *) __ref__;
 		if (1) {}
-		return value;
+		return this;
 	}
 	void append(void* __ref__){
 		struct State * this = (struct State *) __ref__;
 		caller();
-		return value;
+		return this;
 	}
 	void isLevel(void* __ref__){
 		struct State * this = (struct State *) __ref__;
-		return value;
+	== 0;
 	}
 	void enter(void* __ref__){
 		struct State * this = (struct State *) __ref__;depth++;
-		return value;
+		return this;
 	}
 	void exit(void* __ref__){
 		struct State * this = (struct State *) __ref__;depth--;
-		return value;
+		return this;
 	}
 	void isShallow(void* __ref__){
 		struct State * this = (struct State *) __ref__;
-		return value;
+	== 1;
 	}
 };

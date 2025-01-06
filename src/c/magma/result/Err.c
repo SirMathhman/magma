@@ -5,34 +5,34 @@
 struct Err<T, X>(X error) {
 	void findValue(void* __ref__){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
-		return value;
+		return Optional.empty();
 	}
 	void findError(void* __ref__){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
-		return value;
+		return Optional.of(this.error);
 	}
 	void and(void* __ref__){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
-		return value;
+		return temp();
 	}
 	void mapValue(void* __ref__){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
-		return value;
+		return temp();
 	}
 	void flatMapValue(void* __ref__){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
-		return value;
+		return temp();
 	}
 	void match(void* __ref__){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
-		return value;
+		return onErr.apply(this.error);
 	}
 	void mapErr(void* __ref__){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
-		return value;
+		return temp();
 	}
 	void isOk(void* __ref__){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
-		return value;
+		return false;
 	}
 };

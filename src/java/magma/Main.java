@@ -338,8 +338,13 @@ public class Main {
     }
 
     private static Optional<Result<String, CompileError>> compileReturn(String statement) {
-        if (statement.startsWith("return ")) return Optional.of(new Ok<>("\n\t\treturn value;"));
-        return Optional.empty();
+        if (!statement.startsWith("return ")) return Optional.empty();
+
+        final var substring = statement.substring("return ".length());
+        if (!substring.endsWith(";")) return Optional.empty();
+
+        final var substring1 = substring.substring(0, substring.length() - ";".length());
+        return Optional.of(compileValue(substring1).mapValue(value -> "\n\t\treturn " + value + ";"));
     }
 
     private static Optional<Result<String, CompileError>> compileWhile(String statement) {

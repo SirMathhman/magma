@@ -5,34 +5,34 @@
 struct Ok<T, X>(T value) {
 	void findValue(void* __ref__){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
-		return value;
+		return Optional.of(this.value);
 	}
 	void findError(void* __ref__){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
-		return value;
+		return Optional.empty();
 	}
 	void and(void* __ref__){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
-		return value;
+		caller();
 	}
 	void mapValue(void* __ref__){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
-		return value;
+		return temp();
 	}
 	void flatMapValue(void* __ref__){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
-		return value;
+		return mapper.apply(this.value);
 	}
 	void match(void* __ref__){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
-		return value;
+		return onOk.apply(this.value);
 	}
 	void isOk(void* __ref__){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
-		return value;
+		return true;
 	}
 	void mapErr(void* __ref__){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
-		return value;
+		return temp();
 	}
 };

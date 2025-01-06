@@ -7,6 +7,6 @@ struct ApplicationError {
 	}
 	void display(void* __ref__){
 		struct ApplicationError* this = (struct ApplicationError*) __ref__;
-		return value;
+		return this.cause.display();
 	}
 };

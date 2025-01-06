@@ -28,53 +28,62 @@ struct Main  {
 	}
 	void collect(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		return JavaFiles.walkSafe(SOURCE_DIRECTORY).mapValue(obj::property);
 	}
 	void filterPaths(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		return paths.stream()
+                .filter(Files::isRegularFile)
+                .filter(file -> file.toString().endsWith(".java"))
+                .collect(Collectors.toSet());
 	}
 	void runWithSources(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		for(;;) {}
-		return value;
+		return Optional.empty();
 	}
 	void runWithSource(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		final var targetParent = resolveTargetParent(namespace);
 		if (1) {}
-		return value;
+		return JavaFiles.readSafe(source)
+                .mapErr(JavaError::new)
+                .mapErr(ApplicationError::new)
+                .mapValue(input -> compileInputToTarget(input, targetParent, name))
+                .match(obj::property);
 	}
 	void resolveTargetParent(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		var targetParent = TARGET_DIRECTORY;
 		for(;;) {}
-		return value;
+		return targetParent;
 	}
 	void computeName(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		final var name = relativized.getFileName().toString();
 		final var separator = name.indexOf('.');
-		return value;
+		caller();
 	}
 	void computeNamespace(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		final var namespace = temp();
 		for(;;) {}
-		return value;
+		return namespace;
 	}
 	void compileInputToTarget(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		caller();
 	}
 	void writeOutputToTarget(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		final var target = targetParent.resolve(a + b.c");
-		return value;
+		return JavaFiles.writeSafe(output, target)
+                .map(JavaError::new)
+                .map(obj::property);
 	}
 	void compileRoot(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		return compileSegments(obj::property);
 	}
 	void compileSegments(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
@@ -100,11 +109,11 @@ struct Main  {
 		if (c = a && b.isShallow()) return appended.exit().advance();
 		caller();
 		caller();
-		return value;
+		return appended;
 	}
 	void compileRootSegment(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		caller();
 	}
 	void compileToStruct(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
@@ -121,11 +130,11 @@ struct Main  {
 		else {}
 		final var content = segment.substring(a + b);
 		caller();
-		return value;
+		return Optional.of(outputResult.mapValue(a + b));
 	}
 	void compileStructMember(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		caller();
 	}
 	void compileDefinition(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
@@ -137,7 +146,7 @@ struct Main  {
 		final var i = before.lastIndexOf(' ');
 		final var type = before.substring(a + b);
 		final var name = slice.substring(a + b);
-		return value;
+		return Optional.of(temp());
 	}
 	void compileMethod(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
@@ -163,41 +172,44 @@ struct Main  {
 		List<Supplier<Optional<Result<String, CompileError>>>> list = List.of(a + b);
 		var errors = temp();
 		for(;;) {}
-		return value;
+		return temp();
 	}
 	void compilePostfix(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		return statement.endsWith(operator + ";") ? Optional.of(new Ok<>(statement)) : Optional.empty();
 	}
 	void compileFor(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		caller();
-		return value;
+		return Optional.empty();
 	}
 	void compileElse(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		caller();
-		return value;
+		return Optional.empty();
 	}
 	void compileConditional(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		caller();
-		return value;
+		return Optional.empty();
 	}
 	void compileInvocationStatement(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		caller();
-		return value;
+		return Optional.empty();
 	}
 	void compileReturn(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		caller();
-		return value;
+		caller();
+		caller();
+		caller();
+		caller();
 	}
 	void compileWhile(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		caller();
-		return value;
+		return Optional.empty();
 	}
 	void compileAssignment(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
@@ -211,24 +223,24 @@ struct Main  {
 	}
 	void compileValue(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		caller();
 	}
 	void compileFunctionAccess(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		return value.contains("::") ? Optional.of(new Ok<>("obj::property")) : Optional.empty();
 	}
 	void compileOperator(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		return value.contains(operator) ? Optional.of(new Ok<>("a " + operator + " b")) : Optional.empty();
 	}
 	void compileConstruction(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		return value.startsWith("new ") ? Optional.of(new Ok<>("temp()")) : Optional.empty();
 	}
 	void compileChar(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		caller();
-		return value;
+		return Optional.empty();
 	}
 	void compileDataAccess(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
@@ -236,7 +248,7 @@ struct Main  {
 		caller();
 		caller();
 		final var property = value.substring(a + b);
-		return value;
+		return Optional.of(compileValue(object).mapValue(a + b." + property));
 	}
 	void compileInvocation(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
@@ -248,25 +260,25 @@ struct Main  {
 		final var compiled = compileValue(caller);
 		final var substring = slice.substring(argumentsStart.get() + 1);
 		final var result = compileValue(substring);
-		return value;
+		caller();
 	}
 	void findArgumentsStart(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 	= 0;
 		for(;;) {}
-		return value;
+		return Optional.empty();
 	}
 	void compileSymbol(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
 		for(;;) {}
-		return value;
+		return Optional.of(temp());
 	}
 	void compileImport(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		return segment.startsWith("import ") ? Optional.of(new Ok<>("#include \"temp.h\";\n")) : Optional.empty();
 	}
 	void compilePackage(void* __ref__){
 		struct Main * this = (struct Main *) __ref__;
-		return value;
+		return segment.startsWith("package ") ? Optional.of(new Ok<>("")) : Optional.empty();
 	}
 };

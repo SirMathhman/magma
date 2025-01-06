@@ -28,6 +28,6 @@ struct CompileError {
                 .map(CompileError::display)
                 .map(value -> "\n" + value)
                 .collect(Collectors.joining());
-		return value;
+		return a + b;
 	}
 };
