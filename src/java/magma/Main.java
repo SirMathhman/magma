@@ -198,6 +198,13 @@ public class Main {
 
         final var beforeParams = structSegment.substring(0, paramStart);
         final var nameSeparator = beforeParams.lastIndexOf(' ');
+
+        final var substring = beforeParams.substring(0, nameSeparator);
+        final var maybeTypeStart = getI(substring);
+        if(maybeTypeStart.isEmpty()) return Optional.empty();
+
+        final var type = substring.substring(maybeTypeStart.get() + 1);
+
         final var methodName = beforeParams.substring(nameSeparator + 1).strip();
 
         final var afterParamStart = structSegment.substring(paramStart + 1);
@@ -210,10 +217,26 @@ public class Main {
 
         final var structType = "struct " + structName;
         return Optional.of(splitAndCompile(content, Main::compileStatement).mapValue(output -> {
-            return "\n\t\tvoid " + methodName + "(void* __ref__){\n\t\t\t" + structType + " this = *(" + structType + ") __ref__;" +
+            final var s = type;
+            return "\n\t\t" + s + " " + methodName + "(void* __ref__){\n\t\t\t" + structType + " this = *(" + structType + ") __ref__;" +
                     output +
                     "\n\t\t}";
         }));
+    }
+
+    private static Optional<Integer> getI(String slice) {
+        var depth = 0;
+        for (int i = slice.length() - 1; i >= 0; i--) {
+            var c = slice.charAt(i);
+            if (c == ' ' && depth == 0) {
+                return Optional.of(i);
+            } else {
+                if (c == '>') depth++;
+                if (c == '<') depth--;
+            }
+        }
+
+        return Optional.empty();
     }
 
     private static Result<String, CompileException> compileStatement(String statement) {
