@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -12,18 +13,26 @@ public class Main {
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 
     public static void main(String[] args) {
-        try (var stream = Files.walk(SOURCE_DIRECTORY)) {
-            final var sources = stream
-                    .filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .collect(Collectors.toSet());
-
-            for (Path source : sources) {
-                runWithSource(source);
-            }
+        try {
+            run();
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
+        }
+    }
+
+    private static void run() throws IOException {
+        final var sources = collect();
+        for (Path source : sources) {
+            runWithSource(source);
+        }
+    }
+
+    private static Set<Path> collect() throws IOException {
+        try (var stream = Files.walk(SOURCE_DIRECTORY)) {
+            return stream.filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".java"))
+                    .collect(Collectors.toSet());
         }
     }
 
