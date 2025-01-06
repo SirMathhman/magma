@@ -15,13 +15,13 @@ public class Main {
     public static void main(String[] args) {
         try {
             run();
-        } catch (IOException e) {
+        } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
     }
 
-    private static void run() throws IOException {
+    private static void run() throws IOException, CompileException {
         final var sources = collect();
         for (Path source : sources) {
             runWithSource(source);
@@ -36,7 +36,7 @@ public class Main {
         }
     }
 
-    private static void runWithSource(Path source) throws IOException {
+    private static void runWithSource(Path source) throws IOException, CompileException {
         final var relativized = SOURCE_DIRECTORY.relativize(source);
         final var relativeParent = relativized.getParent();
         final var relativeName = relativized.getFileName().toString();
@@ -47,6 +47,13 @@ public class Main {
         if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
 
         final var target = targetParent.resolve(name + ".c");
-        Files.createFile(target);
+        final var input = Files.readString(source);
+        final var output = compileRoot(input);
+
+        Files.writeString(target, output);
+    }
+
+    private static String compileRoot(String input) throws CompileException {
+        throw new CompileException("Invalid root", input);
     }
 }
