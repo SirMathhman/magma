@@ -224,23 +224,42 @@ public class Main {
         final var before = structMember.substring(0, paramStart);
         final var i = before.lastIndexOf(' ');
         final var methodName = before.substring(i + 1);
-        final String actualName;
-        final String params;
-        final String body;
-        if (methodName.equals(structName)) {
-            actualName = "new";
-            params = "";
-            body = "\n\t\tstruct " + structName + " this;\n\t\treturn this;";
-        } else {
-            actualName = methodName;
-            params = "void* __ref__";
-            final var s = "struct " + structName;
-            body = "\n\t\t" + s + "* this = (" + s + "*) __ref__;";
-        }
 
-        return Optional.of(new Ok<>("\n\tvoid " + actualName + "(" + params + "){" +
-                body +
-                "\n\t}"));
+        final var contentStart = structMember.indexOf('{');
+        if (contentStart == -1) return Optional.empty();
+
+        final var contentEnd = structMember.lastIndexOf('}');
+        if (contentEnd == -1) return Optional.empty();
+
+        var content = structMember.substring(contentStart + 1, contentEnd);
+        return Optional.of(compileSegments(content, Main::compileStatement).mapValue(output -> {
+            final String actualName;
+            final String params;
+            final String body;
+            if (methodName.equals(structName)) {
+                actualName = "new";
+                params = "";
+                body = "\n\t\tstruct " + structName + " this;" +
+                        output +
+                        "\n\t\treturn this;";
+            } else {
+                actualName = methodName;
+                params = "void* __ref__";
+                final var s = "struct " + structName;
+                body = "\n\t\t" + s + "* this = (" + s + "*) __ref__;" + output;
+            }
+
+            return "\n\tvoid " + actualName + "(" + params + "){" +
+                    body +
+                    "\n\t}";
+        }));
+    }
+
+    private static Result<String, CompileError> compileStatement(String statement) {
+        if (statement.contains("=")) return new Ok<>("\n\t\tdestination = source;");
+        if (statement.startsWith("return ")) return new Ok<>("\n\t\treturn value;");
+        if (statement.contains("(") && statement.endsWith(");")) return new Ok<>("\n\t\tcaller();");
+        return new Err<>(new CompileError("Unknown statement", statement));
     }
 
     private static Optional<? extends Result<String, CompileError>> compileImport(String segment) {
