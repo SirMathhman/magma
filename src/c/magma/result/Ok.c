@@ -4,10 +4,10 @@
 struct Ok<T, X> {
 	T value;
 	impl Result<T, X> {
-		void temp(){}
-		void temp(){}
-		void temp(){}
-		void temp(){}
-		void temp(){}
+		void findValue(){}
+		void findError(){}
+		void and(){}
+		void mapValue(){}
+		void flatMapValue(){}
 	}
 };

@@ -189,7 +189,18 @@ public class Main {
     }
 
     private static Result<String, CompileException> compileStructSegment(String structSegment) {
-        return new Ok<>("\n\t\tvoid temp(){}");
+        return compileMethod(structSegment).orElseGet(() -> new Err<>(new CompileException("Unknown struct segment", structSegment)));
+    }
+
+    private static Optional<Result<String, CompileException>> compileMethod(String structSegment) {
+        final var paramStart = structSegment.indexOf('(');
+        if(paramStart == -1) return Optional.empty();
+
+        final var beforeParams = structSegment.substring(0, paramStart);
+        final var nameSeparator = beforeParams.lastIndexOf(' ');
+        final var name = beforeParams.substring(nameSeparator + 1).strip();
+
+        return Optional.of(new Ok<>("\n\t\tvoid " + name + "(){}"));
     }
 
     private static State splitByValues(String params) {
