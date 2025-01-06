@@ -60,7 +60,7 @@ public class Main {
     private static String compileRootSegments(List<String> segments) throws CompileException {
         var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootSegment(segment));
+            output.append(compileRootSegment(segment.strip()));
         }
 
         return output.toString();
@@ -86,6 +86,8 @@ public class Main {
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
         if (rootSegment.startsWith("package ")) return "";
+        if (rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
+        if (rootSegment.contains("class ")) return "struct Temp {};";
         throw new CompileException("Invalid root segment", rootSegment);
     }
 }
