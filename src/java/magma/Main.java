@@ -129,11 +129,26 @@ public class Main {
 
     private static Optional<Result<String, CompileException>> compileMethod(String classMember) {
         return split(classMember, "(", Main::locateFirst).flatMap(withoutParamStart -> {
-            return split(withoutParamStart.left(), " ", Main::locateLast).map(withoutNameSeparator -> {
-                final var name = withoutNameSeparator.right();
-                return "\n\tvoid " + name + "(){}";
+            return split(withoutParamStart.left(), " ", Main::locateLast).flatMap(withoutNameSeparator -> {
+                final var beforeName = withoutNameSeparator.left();
+                return split(beforeName, " ", Main::locateTypeSeparator).map(tuple -> {
+                    final var type = tuple.right();
+                    final var name = withoutNameSeparator.right();
+                    return "\n\t" + type + " " + name + "(){}";
+                });
             });
         }).map(Ok::new);
+    }
+
+    private static Optional<Integer> locateTypeSeparator(String input, String slice) {
+        var depth = 0;
+        for (int i = input.length() - 1; i >= 0; i--) {
+            var c = input.charAt(i);
+            if (c == ' ' && depth == 0) return Optional.of(i);
+            if (c == '>') depth++;
+            if (c == '<') depth--;
+        }
+        return Optional.empty();
     }
 
     private static Optional<Integer> locateLast(String input, String slice) {
