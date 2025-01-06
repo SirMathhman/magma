@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -47,7 +48,16 @@ public class Main {
     private static void compileSource(Path source) throws IOException, CompileException {
         final var relative = Main.SOURCE_DIRECTORY.relativize(source);
         final var parent = relative.getParent();
-        final var targetParent = TARGET_DIRECTORY.resolve(parent);
+        final var namespace = new ArrayList<String>();
+        for (int i = 0; i < parent.getNameCount(); i++) {
+            namespace.add(parent.getName(i).toString());
+        }
+
+        var targetParent = TARGET_DIRECTORY;
+        for (String s : namespace) {
+            targetParent = targetParent.resolve(s);
+        }
+
         if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
 
         final var name = relative.getFileName().toString();
@@ -55,19 +65,18 @@ public class Main {
         final var target = targetParent.resolve(nameWithoutExt + ".c");
 
         final var input = Files.readString(source);
-        final var output = compileRoot(input);
-
+        final var output = compileRoot(input, namespace);
         Files.writeString(target, output);
     }
 
-    private static String compileRoot(String root) throws CompileException {
-        return compileRootSegments(split(root));
+    private static String compileRoot(String root, List<String> namespace) throws CompileException {
+        return compileRootSegments(split(root), namespace);
     }
 
-    private static String compileRootSegments(List<String> segments) throws CompileException {
+    private static String compileRootSegments(List<String> segments, List<String> namespace) throws CompileException {
         var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(Results.unwrap(compileRootSegment(segment.strip())));
+            output.append(Results.unwrap(compileRootSegment(segment.strip(), namespace)));
         }
 
         return output.toString();
@@ -91,10 +100,10 @@ public class Main {
         return appended;
     }
 
-    private static Result<String, CompileException> compileRootSegment(String rootSegment) {
+    private static Result<String, CompileException> compileRootSegment(String rootSegment, List<String> namespace) {
         final var compilers = List.<Supplier<Optional<String>>>of(
-                () -> compileNamespaced(rootSegment, "package ", ""),
-                () -> compileNamespaced(rootSegment, "import ", "#include \"temp.h\"\n"),
+                () -> compilePackage(rootSegment),
+                () -> compileImport(rootSegment, namespace),
                 () -> compileClass(rootSegment, "class "),
                 () -> compileClass(rootSegment, "record "),
                 () -> compileClass(rootSegment, "interface ")
@@ -108,13 +117,26 @@ public class Main {
                 .orElseGet(() -> new Err<>(new CompileException("Invalid root segment", rootSegment)));
     }
 
+    private static Optional<String> compileImport(String rootSegment, List<String> namespace) {
+        if (!rootSegment.startsWith("import ")) return Optional.empty();
+        final var substring = rootSegment.substring("import ".length());
+
+        if (!substring.endsWith(";")) return Optional.empty();
+        final var importNamespaceArray = substring.substring(0, substring.length() - 1).split("\\.");
+        final var importNamespace = List.of(importNamespaceArray);
+
+        final var rootPath = "../".repeat(namespace.size());
+        final var headerPath = rootPath + String.join("/", importNamespace);
+        return Optional.of("#include \"" + headerPath + ".h\"\n");
+    }
+
+    private static Optional<String> compilePackage(String rootSegment) {
+        if (!rootSegment.startsWith("package ")) return Optional.empty();
+        return Optional.of("");
+    }
+
     private static Optional<String> compileClass(String rootSegment, String infix) {
         if (!rootSegment.contains(infix)) return Optional.empty();
         return Optional.of("struct Temp {};");
-    }
-
-    private static Optional<String> compileNamespaced(String rootSegment, String prefix, String value) {
-        if (!rootSegment.startsWith(prefix)) return Optional.empty();
-        return Optional.of(value);
     }
 }
