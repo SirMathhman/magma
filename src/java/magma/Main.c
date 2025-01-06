@@ -9,4 +9,4 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
-struct Main {void static void main(){}void static Result<String, CompileException> compile(){}void static Result<String, CompileException> splitAndCompile(){}void static Result<List<String>, CompileException> split(){}void static State splitAtChar(){}void static Result<String, CompileException> compileRootMember(){}void static Optional<Result<String, CompileException>> compileClass(){}void static Result<String, CompileException> compileClassStatement(){}void static Optional<Result<String, CompileException>> compileMethod(){}void static Optional<Integer> locateLast(){}void static Optional<Tuple<String, String>> split(){}void static Optional<Integer> locateFirst(){}};
+struct Main {void main(){}void compile(){}void splitAndCompile(){}void split(){}void splitAtChar(){}void compileRootMember(){}void compileClass(){}void compileClassStatement(){}void compileMethod(){}void locateLast(){}void split(){}void locateFirst(){}};
