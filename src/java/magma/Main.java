@@ -287,7 +287,7 @@ public class Main {
 
                 outputParams = copy;
                 final var s = "struct " + structName;
-                body = "\n\t\t" + s + "* this = (" + s + "*) __ref__;" + output;
+                body = "\n\t\t" + s + " this = *(" + s + "*) __ref__;" + output;
             }
 
             return "\n\tvoid " + actualName + "(" + String.join(", ", outputParams) + "){" +

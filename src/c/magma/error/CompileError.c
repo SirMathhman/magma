@@ -23,7 +23,7 @@ struct CompileError {
 		return this;
 	}
 	void display(void* __ref__){
-		struct CompileError* this = (struct CompileError*) __ref__;
+		struct CompileError this = *(struct CompileError*) __ref__;
 		final var joined = children.stream()
                 .map(CompileError::display)
                 .map(value -> "\n" + value)
