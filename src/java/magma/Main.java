@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -60,22 +61,25 @@ public class Main {
 
         final var target = targetParent.resolve(name + ".c");
         final var input = Files.readString(source);
-        final var output = Results.unwrap(splitAndCompile(Main::splitByBraces, input, Main::compileRootSegment));
+        final var output = Results.unwrap(splitAndCompile(Main::splitByBraces, StringBuilder::append, Main::compileRootSegment, input));
 
         Files.writeString(target, output);
     }
 
-    private static Result<String, CompileException> splitAndCompile(Function<String, Result<List<String>, CompileException>> splitter, String input, Function<String, Result<String, CompileException>> mapper) {
-        return splitter.apply(input).flatMapValue(segments -> compileSegments(segments, mapper));
+    private static Result<String, CompileException> splitAndCompile(Function<String, Result<List<String>, CompileException>> splitter, BiFunction<StringBuilder, String, StringBuilder> folder, Function<String, Result<String, CompileException>> mapper, String input) {
+        return splitter.apply(input).flatMapValue(segments -> compileSegments(segments, mapper, folder));
     }
 
-    private static Result<String, CompileException> compileSegments(List<String> segments, Function<String, Result<String, CompileException>> mapper) {
+    private static Result<String, CompileException> compileSegments(
+            List<String> segments,
+            Function<String, Result<String, CompileException>> mapper, BiFunction<StringBuilder, String, StringBuilder> folder
+    ) {
         Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
             final var stripped = segment.strip();
             if (!stripped.isEmpty()) {
                 output = output.and(() -> mapper.apply(stripped))
-                        .mapValue(tuple -> tuple.left().append(tuple.right()));
+                        .mapValue(tuple -> folder.apply(tuple.left(), tuple.right()));
             }
         }
 
@@ -171,7 +175,7 @@ public class Main {
         final var afterContent = afterParams.substring(contentStart + 1);
         if (!afterContent.endsWith("}")) return Optional.empty();
         final var content = afterContent.substring(0, afterContent.length() - "}".length());
-        return Optional.of(splitAndCompile(Main::splitByBraces, content, structSegment -> compileStructSegment(name, structSegment)).flatMapValue(output -> {
+        return Optional.of(splitAndCompile(Main::splitByBraces, StringBuilder::append, structSegment -> compileStructSegment(name, structSegment), content).flatMapValue(output -> {
             return parameters.mapValue(inner -> {
                 final var joinedParameters = inner.stream()
                         .map(value -> "\n\t" + value + ";")
@@ -233,7 +237,7 @@ public class Main {
         final var content = afterContentStart.substring(0, afterContentStart.length() - 1);
 
         final var structType = "struct " + structName;
-        return Optional.of(splitAndCompile(Main::splitByBraces, content, Main::compileStatement).flatMapValue(output -> {
+        return Optional.of(splitAndCompile(Main::splitByBraces, StringBuilder::append, Main::compileStatement, content).flatMapValue(output -> {
             return compileType(type).mapValue(outputType -> {
                 return "\n\t\t" + outputType + " " + methodName + "(" +
                         String.join(", ", params) +
@@ -269,7 +273,7 @@ public class Main {
         final var withEnd = type.substring(paramStart + 1);
         if (!withEnd.endsWith(">")) return Optional.empty();
         final var params = withEnd.substring(0, withEnd.length() - 1);
-        final var split = splitAndCompile(Main::splitByValues, params, Main::compileType);
+        final var split = splitAndCompile(Main::splitByValues, (stringBuilder, str) -> stringBuilder.append(", ").append(str), Main::compileType, params);
 
         return Optional.of(split.mapValue(inner -> name + "<" + inner + ">"));
     }
