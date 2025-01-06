@@ -119,9 +119,9 @@ public class Main {
         final var compilers = List.<Supplier<Optional<String>>>of(
                 () -> compilePackage(rootSegment),
                 () -> compileImport(rootSegment, namespace),
-                () -> compileClass(rootSegment, "class "),
-                () -> compileClass(rootSegment, "record "),
-                () -> compileClass(rootSegment, "interface ")
+                () -> compileToStruct(rootSegment, "class "),
+                () -> compileToStruct(rootSegment, "record "),
+                () -> compileToStruct(rootSegment, "interface ")
         );
 
         return compilers.stream()
@@ -150,8 +150,15 @@ public class Main {
         return Optional.of("");
     }
 
-    private static Optional<String> compileClass(String rootSegment, String infix) {
-        if (!rootSegment.contains(infix)) return Optional.empty();
-        return Optional.of("struct Temp {};");
+    private static Optional<String> compileToStruct(String rootSegment, String infix) {
+        final var infixIndex = rootSegment.indexOf(infix);
+        if (infixIndex == -1) return Optional.empty();
+
+        final var afterInfix = rootSegment.substring(infixIndex + infix.length());
+        final var contentStart = afterInfix.indexOf('{');
+        if (contentStart == -1) return Optional.empty();
+
+        final var name = afterInfix.substring(0, contentStart).strip();
+        return Optional.of("struct " + name + " {};");
     }
 }

@@ -1,2 +1,2 @@
 #include "../../java/util/Optional.h"
-struct Temp {};
+struct Results {};

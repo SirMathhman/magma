@@ -1,1 +1,1 @@
-struct Temp {};
+struct CompileException extends Exception {};

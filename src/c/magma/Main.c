@@ -13,4 +13,4 @@
 #include "../java/util/function/Supplier.h"
 #include "../java/util/stream/Collectors.h"
 #include "../java/util/stream/Stream.h"
-struct Temp {};
+struct Main {};
