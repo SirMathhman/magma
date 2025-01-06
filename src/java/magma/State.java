@@ -40,4 +40,8 @@ public class State {
     public State exit() {
         return new State(this.segments, this.buffer, this.depth - 1);
     }
+
+    public boolean isShallow() {
+        return this.depth == 1;
+    }
 }
