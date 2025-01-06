@@ -3,7 +3,6 @@ package magma;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -51,7 +50,7 @@ public class Main {
     }
 
     private static String compileRootMember(String rootSegment) throws CompileException {
+        if (rootSegment.startsWith("package ")) return "";
         throw new CompileException("Invalid root segment", rootSegment);
     }
-
 }
