@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,6 +54,36 @@ public class Main {
     }
 
     private static String compileRoot(String root) throws CompileException {
-        throw new CompileException("Invalid root", root);
+        return compileRootSegments(split(root));
     }
+
+    private static String compileRootSegments(List<String> segments) throws CompileException {
+        var output = new StringBuilder();
+        for (String segment : segments) {
+            output.append(compileRootSegment(segment));
+        }
+
+        return output.toString();
+    }
+
+    private static List<String> split(String root) {
+        var state = new State();
+        for (int i = 0; i < root.length(); i++) {
+            var c = root.charAt(i);
+            state = splitAtChar(state, c);
+        }
+
+        return state.advance().segments;
+    }
+
+    private static State splitAtChar(State state, char c) {
+        final var appended = state.append(c);
+        if (c == ';') return appended.advance();
+        return appended;
+    }
+
+    private static String compileRootSegment(String rootSegment) throws CompileException {
+        throw new CompileException("Invalid root segment", rootSegment);
+    }
+
 }
