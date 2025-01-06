@@ -11,23 +11,23 @@ struct Err<T, X>(X error) {
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
 		return Optional.of(this.error);
 	}
-	void and(void* __ref__){
+	void and(void* __ref__, Supplier<Result<R, X>> otherSupplier){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
 		return temp();
 	}
-	void mapValue(void* __ref__){
+	void mapValue(void* __ref__, Function<T, R> mapper){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
 		return temp();
 	}
-	void flatMapValue(void* __ref__){
+	void flatMapValue(void* __ref__, Function<T, Result<R, X>> mapper){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
 		return temp();
 	}
-	void match(void* __ref__){
+	void match(void* __ref__, Function<T, R> onOk, Function<X, R> onErr){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
 		return onErr.apply(this.error);
 	}
-	void mapErr(void* __ref__){
+	void mapErr(void* __ref__, Function<X, R> mapper){
 		struct Err<T, X>(X error)* this = (struct Err<T, X>(X error)*) __ref__;
 		return temp();
 	}

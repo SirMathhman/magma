@@ -11,19 +11,19 @@ struct Ok<T, X>(T value) {
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
 		return Optional.empty();
 	}
-	void and(void* __ref__){
+	void and(void* __ref__, Supplier<Result<R, X>> otherSupplier){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
 		caller();
 	}
-	void mapValue(void* __ref__){
+	void mapValue(void* __ref__, Function<T, R> mapper){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
 		return temp();
 	}
-	void flatMapValue(void* __ref__){
+	void flatMapValue(void* __ref__, Function<T, Result<R, X>> mapper){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
 		return mapper.apply(this.value);
 	}
-	void match(void* __ref__){
+	void match(void* __ref__, Function<T, R> onOk, Function<X, R> onErr){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
 		return onOk.apply(this.value);
 	}
@@ -31,7 +31,7 @@ struct Ok<T, X>(T value) {
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
 		return true;
 	}
-	void mapErr(void* __ref__){
+	void mapErr(void* __ref__, Function<X, R> mapper){
 		struct Ok<T, X>(T value)* this = (struct Ok<T, X>(T value)*) __ref__;
 		return temp();
 	}

@@ -4,7 +4,7 @@ struct State  {
 	List<String> segments;
 	StringBuilder buffer;
 	int depth;
-	void State(void* __ref__){
+	void State(void* __ref__, List<String> segments, StringBuilder buffer, int depth){
 		struct State * this = (struct State *) __ref__;
 		this.segments = segments;
 		this.buffer = buffer;
@@ -19,7 +19,7 @@ struct State  {
 		if (1) {}
 		return this;
 	}
-	void append(void* __ref__){
+	void append(void* __ref__, char c){
 		struct State * this = (struct State *) __ref__;
 		caller();
 		return this;

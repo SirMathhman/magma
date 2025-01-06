@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -249,6 +250,14 @@ public class Main {
         final var paramStart = structMember.indexOf("(");
         if (paramStart == -1) return Optional.empty();
 
+        final var paramEnd = structMember.indexOf(')');
+        if (paramEnd == -1) return Optional.empty();
+
+        var params = Arrays.stream(structMember.substring(paramStart + 1, paramEnd).split(","))
+                .map(String::strip)
+                .filter(value -> !value.isEmpty())
+                .toList();
+
         final var before = structMember.substring(0, paramStart);
         final var i = before.lastIndexOf(' ');
         final var methodName = before.substring(i + 1);
@@ -262,22 +271,26 @@ public class Main {
         var content = structMember.substring(contentStart + 1, contentEnd);
         return Optional.of(compileSegments(content, Main::compileStatement).mapValue(output -> {
             final String actualName;
-            final String params;
+            final List<String> outputParams;
             final String body;
             if (methodName.equals(structName)) {
                 actualName = "new";
-                params = "";
+                outputParams = params;
                 body = "\n\t\tstruct " + structName + " this;" +
                         output +
                         "\n\t\treturn this;";
             } else {
                 actualName = methodName;
-                params = "void* __ref__";
+                final var copy = new ArrayList<String>();
+                copy.add("void* __ref__");
+                copy.addAll(params);
+
+                outputParams = copy;
                 final var s = "struct " + structName;
                 body = "\n\t\t" + s + "* this = (" + s + "*) __ref__;" + output;
             }
 
-            return "\n\tvoid " + actualName + "(" + params + "){" +
+            return "\n\tvoid " + actualName + "(" + String.join(", ", outputParams) + "){" +
                     body +
                     "\n\t}";
         }));

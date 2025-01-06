@@ -1,6 +1,6 @@
 struct ApplicationError {
 	Error cause;
-	void new(){
+	void new(Error cause){
 		struct ApplicationError this;
 		this.cause = cause;
 		return this;

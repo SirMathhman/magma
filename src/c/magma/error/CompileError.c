@@ -5,19 +5,19 @@ struct CompileError {
 	String message;
 	String context;
 	List<CompileError> children;
-	void new(){
+	void new(String message, String context){
 		struct CompileError this;
 		caller();
 		return this;
 	}
-	void new(){
+	void new(String message, String context, List<CompileError> children){
 		struct CompileError this;
 		this.message = message;
 		this.context = context;
 		this.children = children;
 		return this;
 	}
-	void new(){
+	void new(String message, String context, CompileError... errors){
 		struct CompileError this;
 		caller();
 		return this;
