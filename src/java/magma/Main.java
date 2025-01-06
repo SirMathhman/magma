@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -54,19 +55,23 @@ public class Main {
 
         final var target = targetParent.resolve(name + ".c");
         final var input = Files.readString(source);
-        final var output = compileRoot(input);
+        final var output = Results.unwrap(compileSegments(input, Main::compileRootSegment));
 
         Files.writeString(target, output);
     }
 
-    private static String compileRoot(String root) throws CompileException {
+    private static Result<String, CompileException> compileSegments(String root, Function<String, Result<String, CompileException>> mapper) {
         final var segments = split(root);
-        var output = new StringBuilder();
+        Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
-            output.append(Results.unwrap(compileRootSegment(segment.strip())));
+            final var stripped = segment.strip();
+            if (!stripped.isEmpty()) {
+                output = output.and(() -> mapper.apply(stripped))
+                        .mapValue(tuple -> tuple.left().append(tuple.right()));
+            }
         }
 
-        return output.toString();
+        return output.mapValue(StringBuilder::toString);
     }
 
     private static List<String> split(String root) {
@@ -93,11 +98,10 @@ public class Main {
                 .or(() -> compileToStruct("class ", rootSegment))
                 .or(() -> compileRecord(rootSegment))
                 .or(() -> compileToStruct("interface ", rootSegment))
-                .<Result<String, CompileException>>map(Ok::new)
                 .orElseGet(() -> new Err<>(new CompileException("Invalid root segment", rootSegment)));
     }
 
-    private static Optional<String> compileRecord(String rootSegment) {
+    private static Optional<Result<String, CompileException>> compileRecord(String rootSegment) {
         final var index = rootSegment.indexOf("record ");
         if (index == -1) return Optional.empty();
 
@@ -127,11 +131,20 @@ public class Main {
             impl = "";
         }
 
-        final var joinedParameters = parameters.stream()
-                .map(value -> "\n\t" + value + ";")
-                .collect(Collectors.joining());
+        final var afterContent = afterParams.substring(contentStart + 1);
+        if (!afterContent.endsWith("}")) return Optional.empty();
+        final var content = afterContent.substring(0, afterContent.length() - "}".length());
+        return Optional.of(compileSegments(content, Main::compileStructSegment).mapValue(output -> {
+            final var joinedParameters = parameters.stream()
+                    .map(value -> "\n\t" + value + ";")
+                    .collect(Collectors.joining());
 
-        return Optional.of("struct " + name + " {" + joinedParameters + impl + "\n};");
+            return "struct " + name + " {" + joinedParameters + impl + output + "\n};";
+        }));
+    }
+
+    private static Result<String, CompileException> compileStructSegment(String structSegment) {
+        return new Err<>(new CompileException("Invalid struct segment", structSegment));
     }
 
     private static State splitByValues(String params) {
@@ -147,7 +160,7 @@ public class Main {
         return state;
     }
 
-    private static Optional<? extends String> compileToStruct(String infix, String rootSegment) {
+    private static Optional<Result<String, CompileException>> compileToStruct(String infix, String rootSegment) {
         final var index = rootSegment.indexOf(infix);
         if (index == -1) return Optional.empty();
 
@@ -156,16 +169,16 @@ public class Main {
         if (nameEnd == -1) return Optional.empty();
 
         final var name = after.substring(0, nameEnd).strip();
-        return Optional.of("struct " + name + " {\n};");
+        return Optional.of(new Ok<>("struct " + name + " {\n};"));
     }
 
-    private static Optional<? extends String> compileImport(String rootSegment) {
-        if (rootSegment.startsWith("import ")) return Optional.of("#include \"temp.h\"\n");
+    private static Optional<Result<String, CompileException>> compileImport(String rootSegment) {
+        if (rootSegment.startsWith("import ")) return Optional.of(new Ok<>("#include \"temp.h\"\n"));
         return Optional.empty();
     }
 
-    private static Optional<String> compilePackage(String rootSegment) {
-        if (rootSegment.startsWith("package ")) return Optional.of("");
+    private static Optional<Result<String, CompileException>> compilePackage(String rootSegment) {
+        if (rootSegment.startsWith("package ")) return Optional.of(new Ok<>(""));
         return Optional.empty();
     }
 }
