@@ -314,10 +314,15 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileValue(String value) {
+        return getOr(value)
+                .orElseGet(() -> new Err<>(new CompileError("Unknown value", value)));
+    }
+
+    private static Optional<Result<String, CompileError>> getOr(String value) {
         return compileSymbol(value)
                 .or(() -> compileInvocation(value))
                 .or(() -> compileDataAccess(value))
-                .orElseGet(() -> new Err<>(new CompileError("Unknown value", value)));
+                .map(result -> result.mapErr(err -> new CompileError("Invalid value", value, err)));
     }
 
     private static Optional<Result<String, CompileError>> compileDataAccess(String value) {
