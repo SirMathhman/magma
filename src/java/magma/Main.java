@@ -58,7 +58,7 @@ public class Main {
         final var segments = split(root);
         var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootSegment(segment.strip()));
+            output.append(Results.unwrap(compileRootSegment(segment.strip())));
         }
 
         return output.toString();
@@ -82,11 +82,12 @@ public class Main {
         return appended;
     }
 
-    private static String compileRootSegment(String rootSegment) throws CompileException {
+    private static Result<String, CompileException> compileRootSegment(String rootSegment) {
         return compilePackage(rootSegment)
                 .or(() -> compileImport(rootSegment))
                 .or(() -> compileClass(rootSegment))
-                .orElseThrow(() -> new CompileException("Invalid root segment", rootSegment));
+                .<Result<String, CompileException>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileException("Invalid root segment", rootSegment)));
     }
 
     private static Optional<? extends String> compileClass(String rootSegment) {
