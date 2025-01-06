@@ -121,7 +121,7 @@ public class Main {
         return compileSegments(root, Main::compileRootSegment);
     }
 
-    private static Result<String, CompileError> compileSegments(String root, Function<String, Result<String, CompileError>> mapper) {
+    private static Result<String, CompileError> compileSegments(String root, Function<String, Result<Node, CompileError>> mapper) {
         return split(root).flatMapValue(segments -> {
             Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
             for (String segment : segments) {
@@ -129,7 +129,7 @@ public class Main {
                 if (!stripped.isEmpty()) {
                     output = output
                             .and(() -> mapper.apply(stripped))
-                            .mapValue(tuple -> tuple.left().append(tuple.right()));
+                            .mapValue(tuple -> tuple.left().append(tuple.right().value()));
                 }
             }
 
@@ -191,7 +191,7 @@ public class Main {
         return appended;
     }
 
-    private static Result<String, CompileError> compileRootSegment(String segment) {
+    private static Result<Node, CompileError> compileRootSegment(String segment) {
         return compilePackage(segment)
                 .or(() -> compileImport(segment))
                 .or(() -> compileToStruct(segment, "class "))
@@ -200,7 +200,7 @@ public class Main {
                 .orElseGet(() -> new Err<>(new CompileError("Unknown root segment", segment)));
     }
 
-    private static Optional<Result<String, CompileError>> compileToStruct(String segment, String keyword) {
+    private static Optional<Result<Node, CompileError>> compileToStruct(String segment, String keyword) {
         final var keywordIndex = segment.indexOf(keyword);
         if (keywordIndex == -1) return Optional.empty();
 
@@ -222,16 +222,16 @@ public class Main {
         final var content = segment.substring(contentStart + 1, contentEnd);
         final var outputResult = compileSegments(content, structMember -> compileStructMember(structMember, name));
 
-        return Optional.of(outputResult.mapValue(output -> "struct " + name + " {" + output + "\n};"));
+        return Optional.of(outputResult.mapValue(output -> "struct " + name + " {" + output + "\n};").mapValue(Node::new));
     }
 
-    private static Result<String, CompileError> compileStructMember(String structMember, String name) {
+    private static Result<Node, CompileError> compileStructMember(String structMember, String name) {
         return compileDefinition(structMember)
                 .or(() -> compileMethod(name, structMember))
                 .orElseGet(() -> new Err<>(new CompileError("Unknown struct member", structMember)));
     }
 
-    private static Optional<Result<String, CompileError>> compileDefinition(String structMember) {
+    private static Optional<Result<Node, CompileError>> compileDefinition(String structMember) {
         if (!structMember.endsWith(";")) return Optional.empty();
 
         final var slice = structMember.substring(0, structMember.length() - 1);
@@ -243,10 +243,10 @@ public class Main {
         final var type = before.substring(i + 1);
 
         final var name = slice.substring(space + 1);
-        return Optional.of(new Ok<>("\n\t" + type + " " + name + ";"));
+        return Optional.of(new Ok<>(new Node("\n\t" + type + " " + name + ";")));
     }
 
-    private static Optional<Result<String, CompileError>> compileMethod(String structName, String structMember) {
+    private static Optional<Result<Node, CompileError>> compileMethod(String structName, String structMember) {
         final var paramStart = structMember.indexOf("(");
         if (paramStart == -1) return Optional.empty();
 
@@ -293,11 +293,11 @@ public class Main {
             return "\n\tvoid " + actualName + "(" + String.join(", ", outputParams) + "){" +
                     body +
                     "\n\t}";
-        }));
+        }).mapValue(Node::new));
     }
 
-    private static Result<String, CompileError> compileStatement(String statement) {
-        List<Supplier<Optional<Result<String, CompileError>>>> list = List.of(
+    private static Result<Node, CompileError> compileStatement(String statement) {
+        List<Supplier<Optional<Result<Node, CompileError>>>> list = List.of(
                 () -> compileAssignment(statement),
                 () -> compileReturn(statement),
                 () -> compileInvocationStatement(statement),
@@ -311,7 +311,7 @@ public class Main {
         );
 
         var errors = new ArrayList<CompileError>();
-        for (Supplier<Optional<Result<String, CompileError>>> supplier : list) {
+        for (Supplier<Optional<Result<Node, CompileError>>> supplier : list) {
             final var optional = supplier.get();
             if (optional.isPresent()) {
                 final var result = optional.get();
@@ -326,46 +326,46 @@ public class Main {
         return new Err<>(new CompileError("Invalid statement", statement, errors));
     }
 
-    private static Optional<Result<String, CompileError>> compilePostfix(String statement, String operator) {
-        return statement.endsWith(operator + ";") ? Optional.of(new Ok<>(statement)) : Optional.empty();
+    private static Optional<Result<Node, CompileError>> compilePostfix(String statement, String operator) {
+        return statement.endsWith(operator + ";") ? Optional.of(new Ok<>(new Node(statement))) : Optional.empty();
     }
 
-    private static Optional<Result<String, CompileError>> compileFor(String statement) {
-        if (statement.startsWith("for ")) return Optional.of(new Ok<>("\n\t\tfor(;;) {}"));
+    private static Optional<Result<Node, CompileError>> compileFor(String statement) {
+        if (statement.startsWith("for ")) return Optional.of(new Ok<>(new Node("\n\t\tfor(;;) {}")));
         return Optional.empty();
     }
 
-    private static Optional<Result<String, CompileError>> compileElse(String statement) {
-        if (statement.startsWith("else ")) return Optional.of(new Ok<>("\n\t\telse {}"));
+    private static Optional<Result<Node, CompileError>> compileElse(String statement) {
+        if (statement.startsWith("else ")) return Optional.of(new Ok<>(new Node("\n\t\telse {}")));
         return Optional.empty();
     }
 
-    private static Optional<Result<String, CompileError>> compileConditional(String prefix, String statement) {
-        if (statement.startsWith(prefix)) return Optional.of(new Ok<>("\n\t\t" + prefix + "(1) {}"));
+    private static Optional<Result<Node, CompileError>> compileConditional(String prefix, String statement) {
+        if (statement.startsWith(prefix)) return Optional.of(new Ok<>(new Node("\n\t\t" + prefix + "(1) {}")));
         return Optional.empty();
     }
 
-    private static Optional<Result<String, CompileError>> compileInvocationStatement(String statement) {
-        if (statement.contains("(") && statement.endsWith(");")) return Optional.of(new Ok<>("\n\t\tcaller();"));
+    private static Optional<Result<Node, CompileError>> compileInvocationStatement(String statement) {
+        if (statement.contains("(") && statement.endsWith(");")) return Optional.of(new Ok<>(new Node("\n\t\tcaller();")));
         return Optional.empty();
     }
 
-    private static Optional<Result<String, CompileError>> compileReturn(String statement) {
+    private static Optional<Result<Node, CompileError>> compileReturn(String statement) {
         if (!statement.startsWith("return ")) return Optional.empty();
 
         final var substring = statement.substring("return ".length());
         if (!substring.endsWith(";")) return Optional.empty();
 
         final var substring1 = substring.substring(0, substring.length() - ";".length());
-        return Optional.of(compileValue(substring1).mapValue(value -> "\n\t\treturn " + value + ";"));
+        return Optional.of(compileValue(substring1).mapValue(value -> "\n\t\treturn " + value + ";").mapValue(Node::new));
     }
 
-    private static Optional<Result<String, CompileError>> compileWhile(String statement) {
-        if (statement.startsWith("while ")) return Optional.of(new Ok<>("\n\t\twhile(1) {}"));
+    private static Optional<Result<Node, CompileError>> compileWhile(String statement) {
+        if (statement.startsWith("while ")) return Optional.of(new Ok<>(new Node("\n\t\twhile(1) {}")));
         return Optional.empty();
     }
 
-    private static Optional<Result<String, CompileError>> compileAssignment(String statement) {
+    private static Optional<Result<Node, CompileError>> compileAssignment(String statement) {
         if (!statement.endsWith(";")) return Optional.empty();
         final var slice = statement.substring(0, statement.length() - ";".length());
         final var separator = slice.indexOf("=");
@@ -373,10 +373,12 @@ public class Main {
         if (separator == -1) return Optional.empty();
         final var destination = slice.substring(0, separator).strip();
         final var source = slice.substring(separator + 1).strip();
-        return Optional.of(compileValue(source).mapValue(value -> "\n\t\t" + destination + " = " + value + ";"));
+        return Optional.of(compileValue(source)
+                .mapValue(value -> "\n\t\t" + destination + " = " + value + ";")
+                .mapValue(Node::new));
     }
 
-    private static Result<String, CompileError> compileValue(String value) {
+    private static Result<Node, CompileError> compileValue(String value) {
         return compileSymbol(value)
                 .or(() -> compileConstruction(value))
                 .or(() -> compileInvocation(value))
@@ -389,33 +391,35 @@ public class Main {
                 .orElseGet(() -> new Err<>(new CompileError("Unknown value", value)));
     }
 
-    private static Optional<Result<String, CompileError>> compileFunctionAccess(String value) {
-        return value.contains("::") ? Optional.of(new Ok<>("obj::property")) : Optional.empty();
+    private static Optional<Result<Node, CompileError>> compileFunctionAccess(String value) {
+        return value.contains("::") ? Optional.of(new Ok<>(new Node("obj::property"))) : Optional.empty();
     }
 
-    private static Optional<Result<String, CompileError>> compileOperator(String value, String operator) {
-        return value.contains(operator) ? Optional.of(new Ok<>("a " + operator + " b")) : Optional.empty();
+    private static Optional<Result<Node, CompileError>> compileOperator(String value, String operator) {
+        return value.contains(operator) ? Optional.of(new Ok<>(new Node("a " + operator + " b"))) : Optional.empty();
     }
 
-    private static Optional<Result<String, CompileError>> compileConstruction(String value) {
-        return value.startsWith("new ") ? Optional.of(new Ok<>("temp()")) : Optional.empty();
+    private static Optional<Result<Node, CompileError>> compileConstruction(String value) {
+        return value.startsWith("new ") ? Optional.of(new Ok<>(new Node("temp()"))) : Optional.empty();
     }
 
-    private static Optional<Result<String, CompileError>> compileChar(String value) {
-        if (value.startsWith("'") && value.endsWith("'")) return Optional.of(new Ok<>(value));
+    private static Optional<Result<Node, CompileError>> compileChar(String value) {
+        if (value.startsWith("'") && value.endsWith("'")) return Optional.of(new Ok<>(new Node(value)));
         return Optional.empty();
     }
 
-    private static Optional<Result<String, CompileError>> compileDataAccess(String value) {
+    private static Optional<Result<Node, CompileError>> compileDataAccess(String value) {
         final var separator = value.indexOf('.');
         if (separator == -1) return Optional.empty();
 
         final var object = value.substring(0, separator);
         final var property = value.substring(separator + 1);
-        return Optional.of(compileValue(object).mapValue(obj -> obj + "." + property));
+        return Optional.of(compileValue(object)
+                .mapValue(obj -> obj + "." + property)
+                .mapValue(Node::new));
     }
 
-    private static Optional<Result<String, CompileError>> compileInvocation(String value) {
+    private static Optional<Result<Node, CompileError>> compileInvocation(String value) {
         if (!value.endsWith(")")) return Optional.empty();
         final var slice = value.substring(0, value.length() - 1);
 
@@ -429,7 +433,7 @@ public class Main {
         final var result = compileValue(substring);
 
         return Optional.of(compiled.and(() -> result).mapValue(tuple -> {
-            return tuple.left() + "(" + tuple.right() + ")";
+            return new Node(tuple.left() + "(" + tuple.right() + ")");
         }));
     }
 
@@ -444,21 +448,21 @@ public class Main {
         return Optional.empty();
     }
 
-    private static Optional<Result<String, CompileError>> compileSymbol(String value) {
+    private static Optional<Result<Node, CompileError>> compileSymbol(String value) {
         for (int i = 0; i < value.length(); i++) {
             var c = value.charAt(i);
             if (Character.isLetter(c) || c == '_') continue;
             return Optional.empty();
         }
 
-        return Optional.of(new Ok<>(value));
+        return Optional.of(new Ok<>(new Node(value)));
     }
 
-    private static Optional<Result<String, CompileError>> compileImport(String segment) {
-        return segment.startsWith("import ") ? Optional.of(new Ok<>("#include \"temp.h\";\n")) : Optional.empty();
+    private static Optional<Result<Node, CompileError>> compileImport(String segment) {
+        return segment.startsWith("import ") ? Optional.of(new Ok<>(new Node("#include \"temp.h\";\n"))) : Optional.empty();
     }
 
-    private static Optional<Result<String, CompileError>> compilePackage(String segment) {
-        return segment.startsWith("package ") ? Optional.of(new Ok<>("")) : Optional.empty();
+    private static Optional<Result<Node, CompileError>> compilePackage(String segment) {
+        return segment.startsWith("package ") ? Optional.of(new Ok<>(new Node(""))) : Optional.empty();
     }
 }

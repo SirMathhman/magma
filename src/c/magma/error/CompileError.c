@@ -24,10 +24,16 @@ struct CompileError {
 	}
 	void display(void* __ref__){
 		struct CompileError this = *(struct CompileError*) __ref__;
-		final var joined = this.children.stream()
+		final var joined = {
+			void __caller__ = this.children.stream()
                 .map(CompileError::display)
                 .map(value -> "\n" + value)
-                .collect(Collectors.joining());
+                .collect;
+			__caller__.({
+			void __caller__ = Collectors.joining;
+			__caller__.()
+		})
+		};
 		return this.message + ": " + this.context + joined;
 	}
 };
