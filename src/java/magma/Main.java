@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -63,23 +63,20 @@ public class Main {
         return output.toString();
     }
 
-    private static ArrayList<String> split(String root) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
+    private static List<String> split(String root) {
+        var state = new State();
         for (int i = 0; i < root.length(); i++) {
             var c = root.charAt(i);
-            buffer.append(c);
-            if (c == ';') {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            }
+            state = splitAtChar(state, c);
         }
-        advance(buffer, segments);
-        return segments;
+
+        return state.advance().segments;
     }
 
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
+    private static State splitAtChar(State state, char c) {
+        final var appended = state.append(c);
+        if (c == ';') return appended.advance();
+        return appended;
     }
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
