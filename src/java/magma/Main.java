@@ -322,7 +322,13 @@ public class Main {
         return compileSymbol(value)
                 .or(() -> compileInvocation(value))
                 .or(() -> compileDataAccess(value))
+                .or(() -> compileChar(value))
                 .map(result -> result.mapErr(err -> new CompileError("Invalid value", value, err)));
+    }
+
+    private static Optional<? extends Result<String, CompileError>> compileChar(String value) {
+        if (value.startsWith("'") && value.endsWith("'")) return Optional.of(new Ok<>(value));
+        return Optional.empty();
     }
 
     private static Optional<Result<String, CompileError>> compileDataAccess(String value) {
