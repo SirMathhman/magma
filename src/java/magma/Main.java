@@ -97,13 +97,15 @@ public class Main {
     private static Result<String, CompileException> getString(String rootSegment) {
         return compileNamespaced(rootSegment, "package ", "")
                 .or(() -> compileNamespaced(rootSegment, "import ", "#include \"temp.h\"\n"))
-                .or(() -> compileClass(rootSegment))
+                .or(() -> compileClass(rootSegment, "class "))
+                .or(() -> compileClass(rootSegment, "record "))
+                .or(() -> compileClass(rootSegment, "interface "))
                 .<Result<String, CompileException>>map(Ok::new)
                 .orElseGet(() -> new Err<>(new CompileException("Invalid root segment", rootSegment)));
     }
 
-    private static Optional<String> compileClass(String rootSegment) {
-        if (!rootSegment.contains("class ")) return Optional.empty();
+    private static Optional<String> compileClass(String rootSegment, String infix) {
+        if (!rootSegment.contains(infix)) return Optional.empty();
         return Optional.of("struct Temp {};");
     }
 
