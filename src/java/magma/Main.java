@@ -313,7 +313,17 @@ public class Main {
     private static Result<String, CompileError> compileValue(String value) {
         return compileSymbol(value)
                 .or(() -> compileInvocation(value))
+                .or(() -> compileDataAccess(value))
                 .orElseGet(() -> new Err<>(new CompileError("Unknown value", value)));
+    }
+
+    private static Optional<Result<String, CompileError>> compileDataAccess(String value) {
+        final var separator = value.indexOf('.');
+        if (separator == -1) return Optional.empty();
+
+        final var object = value.substring(0, separator);
+        final var property = value.substring(separator + 1);
+        return Optional.of(compileValue(object).mapValue(obj -> obj + "." + property));
     }
 
     private static Optional<Result<String, CompileError>> compileInvocation(String value) {
@@ -337,9 +347,8 @@ public class Main {
     private static Optional<Result<String, CompileError>> compileSymbol(String value) {
         for (int i = 0; i < value.length(); i++) {
             var c = value.charAt(i);
-            if (!Character.isLetter(c) || c == '_') {
-                return Optional.empty();
-            }
+            if (Character.isLetter(c) || c == '_') continue;
+            return Optional.empty();
         }
 
         return Optional.of(new Ok<>(value));
