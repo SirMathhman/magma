@@ -6,7 +6,7 @@ import java.util.List;
 public class State {
     public final List<String> segments;
     private final StringBuilder buffer;
-    private final int depth;
+    public final int depth;
 
     public State(List<String> segments, StringBuilder buffer, int depth) {
         this.segments = segments;

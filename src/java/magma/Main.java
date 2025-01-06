@@ -55,13 +55,16 @@ public class Main {
 
         final var target = targetParent.resolve(name + ".c");
         final var input = Files.readString(source);
-        final var output = Results.unwrap(compileSegments(input, Main::compileRootSegment));
+        final var output = Results.unwrap(splitAndCompile(input, Main::compileRootSegment));
 
         Files.writeString(target, output);
     }
 
-    private static Result<String, CompileException> compileSegments(String root, Function<String, Result<String, CompileException>> mapper) {
-        final var segments = split(root);
+    private static Result<String, CompileException> splitAndCompile(String root, Function<String, Result<String, CompileException>> mapper) {
+        return split(root).flatMapValue(segments -> compileSegments(segments, mapper));
+    }
+
+    private static Result<String, CompileException> compileSegments(List<String> segments, Function<String, Result<String, CompileException>> mapper) {
         Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
             final var stripped = segment.strip();
@@ -74,14 +77,18 @@ public class Main {
         return output.mapValue(StringBuilder::toString);
     }
 
-    private static List<String> split(String root) {
+    private static Result<List<String>, CompileException> split(String root) {
         var state = new State();
         for (int i = 0; i < root.length(); i++) {
             var c = root.charAt(i);
             state = splitAtChar(state, c);
         }
 
-        return state.advance().segments;
+        if (state.isLevel()) {
+            return new Ok<>(state.advance().segments);
+        } else {
+            return new Err<>(new CompileException("Invalid depth '" + state.depth + "'", root));
+        }
     }
 
     private static State splitAtChar(State state, char c) {
@@ -135,7 +142,7 @@ public class Main {
         final var afterContent = afterParams.substring(contentStart + 1);
         if (!afterContent.endsWith("}")) return Optional.empty();
         final var content = afterContent.substring(0, afterContent.length() - "}".length());
-        return Optional.of(compileSegments(content, Main::compileStructSegment).mapValue(output -> {
+        return Optional.of(splitAndCompile(content, Main::compileStructSegment).mapValue(output -> {
             final var joinedParameters = parameters.stream()
                     .map(value -> "\n\t" + value + ";")
                     .collect(Collectors.joining());
@@ -145,7 +152,7 @@ public class Main {
     }
 
     private static Result<String, CompileException> compileStructSegment(String structSegment) {
-        return new Err<>(new CompileException("Invalid struct segment", structSegment));
+        return new Ok<>("void temp(){}");
     }
 
     private static State splitByValues(String params) {
