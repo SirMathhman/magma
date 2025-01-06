@@ -278,7 +278,13 @@ public class Main {
             return buffer.append(", ").append(str);
         }, Main::compileType, params);
 
-        return Optional.of(split.mapValue(inner -> name + "<" + inner + ">"));
+        return Optional.of(split.mapValue(inner -> {
+            if (name.equals("Tuple")) {
+                return "[" + inner + "]";
+            } else {
+                return name + "<" + inner + ">";
+            }
+        }));
     }
 
     private static Optional<Integer> getI(String slice) {
