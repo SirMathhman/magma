@@ -305,7 +305,13 @@ public class Main {
         if (separator == -1) return Optional.empty();
         final var destination = slice.substring(0, separator).strip();
         final var source = slice.substring(separator + 1).strip();
-        return Optional.of(new Ok<>("\n\t\t" + destination + " = " + source + ";"));
+        return Optional.of(compileValue(source).mapValue(value -> {
+            return "\n\t\t" + destination + " = " + value + ";";
+        }));
+    }
+
+    private static Result<String, CompileError> compileValue(String value) {
+        return new Err<>(new CompileError("Unknown value", value));
     }
 
     private static Optional<? extends Result<String, CompileError>> compileImport(String segment) {
