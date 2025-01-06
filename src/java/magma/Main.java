@@ -73,16 +73,29 @@ public class Main {
             List<String> segments,
             Function<String, Result<String, CompileException>> mapper, BiFunction<StringBuilder, String, StringBuilder> folder
     ) {
-        Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
+        return compileToList(segments, mapper).mapValue(Main::foldIntoBuilder);
+    }
+
+    private static String foldIntoBuilder(List<String> inner) {
+        final var builder = new StringBuilder();
+        for (String s : inner) {
+            builder.append(s);
+        }
+        return builder.toString();
+    }
+
+    private static Result<List<String>, CompileException> compileToList(List<String> segments, Function<String, Result<String, CompileException>> mapper) {
+        Result<List<String>, CompileException> compiled = new Ok<>(new ArrayList<>());
         for (String segment : segments) {
             final var stripped = segment.strip();
             if (!stripped.isEmpty()) {
-                output = output.and(() -> mapper.apply(stripped))
-                        .mapValue(tuple -> folder.apply(tuple.left(), tuple.right()));
+                compiled = compiled.and(() -> mapper.apply(stripped)).mapValue(tuple -> {
+                    tuple.left().add(tuple.right());
+                    return tuple.left();
+                });
             }
         }
-
-        return output.mapValue(StringBuilder::toString);
+        return compiled;
     }
 
     private static Result<List<String>, CompileException> splitByBraces(String root) {
