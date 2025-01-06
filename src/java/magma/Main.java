@@ -1,5 +1,10 @@
 package magma;
 
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
+import magma.result.Results;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -85,13 +90,15 @@ public class Main {
     private static Result<String, CompileException> compileRootSegment(String rootSegment) {
         return compilePackage(rootSegment)
                 .or(() -> compileImport(rootSegment))
-                .or(() -> compileClass(rootSegment))
+                .or(() -> compileToStruct("class ", rootSegment))
+                .or(() -> compileToStruct("record ", rootSegment))
+                .or(() -> compileToStruct("interface ", rootSegment))
                 .<Result<String, CompileException>>map(Ok::new)
                 .orElseGet(() -> new Err<>(new CompileException("Invalid root segment", rootSegment)));
     }
 
-    private static Optional<? extends String> compileClass(String rootSegment) {
-        if (rootSegment.contains("class ")) return Optional.of("struct Temp {\n};");
+    private static Optional<? extends String> compileToStruct(String infix, String rootSegment) {
+        if (rootSegment.contains(infix)) return Optional.of("struct Temp {\n};");
         return Optional.empty();
     }
 
