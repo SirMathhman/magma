@@ -311,7 +311,38 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileValue(String value) {
-        return new Err<>(new CompileError("Unknown value", value));
+        return compileSymbol(value)
+                .or(() -> compileInvocation(value))
+                .orElseGet(() -> new Err<>(new CompileError("Unknown value", value)));
+    }
+
+    private static Optional<Result<String, CompileError>> compileInvocation(String value) {
+        if (!value.endsWith(")")) return Optional.empty();
+        final var slice = value.substring(0, value.length() - 1);
+
+        final var i = slice.indexOf('(');
+        if (i == -1) return Optional.empty();
+
+        final var caller = slice.substring(0, i);
+        final var compiled = compileValue(caller);
+
+        final var substring = slice.substring(i + 1);
+        final var result = compileValue(substring);
+
+        return Optional.of(compiled.and(() -> result).mapValue(tuple -> {
+            return tuple.left() + "(" + tuple.right() + ")";
+        }));
+    }
+
+    private static Optional<Result<String, CompileError>> compileSymbol(String value) {
+        for (int i = 0; i < value.length(); i++) {
+            var c = value.charAt(i);
+            if (!Character.isLetter(c) || c == '_') {
+                return Optional.empty();
+            }
+        }
+
+        return Optional.of(new Ok<>(value));
     }
 
     private static Optional<? extends Result<String, CompileError>> compileImport(String segment) {
