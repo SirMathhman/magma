@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
-
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 
@@ -17,7 +16,7 @@ public class Main {
         try {
             final var sources = collectSources();
             runWithSources(sources);
-        } catch (IOException e) {
+        } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
@@ -31,13 +30,13 @@ public class Main {
         }
     }
 
-    private static void runWithSources(Set<Path> sources) throws IOException {
+    private static void runWithSources(Set<Path> sources) throws IOException, CompileException {
         for (Path source : sources) {
             compileSource(source);
         }
     }
 
-    private static void compileSource(Path source) throws IOException {
+    private static void compileSource(Path source) throws IOException, CompileException {
         final var relative = Main.SOURCE_DIRECTORY.relativize(source);
         final var parent = relative.getParent();
         final var targetParent = TARGET_DIRECTORY.resolve(parent);
@@ -46,6 +45,14 @@ public class Main {
         final var name = relative.getFileName().toString();
         final var nameWithoutExt = name.substring(0, name.indexOf('.'));
         final var target = targetParent.resolve(nameWithoutExt + ".c");
-        Files.createFile(target);
+
+        final var input = Files.readString(source);
+        final var output = compileRoot(input);
+
+        Files.writeString(target, output);
+    }
+
+    private static String compileRoot(String root) throws CompileException {
+        throw new CompileException("Invalid root", root);
     }
 }
