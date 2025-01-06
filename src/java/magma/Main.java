@@ -50,7 +50,7 @@ public class Main {
         var state = new State();
 
         final var queue = IntStream.range(0, input.length())
-                .mapToObj(index -> input.charAt(index))
+                .mapToObj(input::charAt)
                 .collect(Collectors.toCollection(LinkedList::new));
 
         while (!queue.isEmpty()) {
@@ -85,10 +85,10 @@ public class Main {
             while (!queue.isEmpty()) {
                 final var next = queue.pop();
                 current = current.append(next);
-                if(next == '"') {
+                if (next == '"') {
                     break;
                 }
-                if(next == '\\') {
+                if (next == '\\') {
                     current = current.append(queue.pop());
                 }
             }
@@ -115,7 +115,8 @@ public class Main {
             final var withEnd = withoutContentStart.right();
             if (withEnd.endsWith("}")) {
                 final var inputContent = withEnd.substring(0, withEnd.length() - "}".length());
-                return Optional.of(splitAndCompile(inputContent, Main::compileClassStatement).mapValue(outputContent -> "struct " + name + " {" + outputContent + "};"));
+                return Optional.of(splitAndCompile(inputContent, Main::compileClassStatement)
+                        .mapValue(outputContent -> "struct " + name + " {" + outputContent + "\n};"));
             } else {
                 return Optional.empty();
             }
@@ -130,7 +131,7 @@ public class Main {
         return split(classMember, "(", Main::locateFirst).flatMap(withoutParamStart -> {
             return split(withoutParamStart.left(), " ", Main::locateLast).map(withoutNameSeparator -> {
                 final var name = withoutNameSeparator.right();
-                return "void " + name + "(){}";
+                return "\n\tvoid " + name + "(){}";
             });
         }).map(Ok::new);
     }
