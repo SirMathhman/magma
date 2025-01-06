@@ -14,30 +14,40 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Main {
+
+    public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
+
     public static void main(String[] args) {
-        final var sourceDirectory = Paths.get(".", "src", "java");
-        try (Stream<Path> stream = Files.walk(sourceDirectory)) {
+        collect()
+                .mapErr(JavaError::new)
+                .mapErr(ApplicationError::new)
+                .mapValue(Main::runWithSources)
+                .match(value -> value, Optional::of)
+                .ifPresent(applicationError -> System.err.println(applicationError.display()));
+    }
+
+    private static Result<List<Path>, IOException> collect() {
+        try (Stream<Path> stream = Files.walk(SOURCE_DIRECTORY)) {
             final var sources = stream.filter(Files::isRegularFile)
                     .filter(file -> file.toString().endsWith(".java"))
                     .toList();
 
-            runWithSources(sources, sourceDirectory).ifPresent(applicationError -> System.err.println(applicationError.display()));
+            return new Ok<>(sources);
         } catch (IOException e) {
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
+            return new Err<>(e);
         }
     }
 
-    private static Optional<ApplicationError> runWithSources(List<Path> sources, Path sourceDirectory) {
+    private static Optional<ApplicationError> runWithSources(List<Path> sources) {
         for (Path source : sources) {
-            final var error = runWithSource(sourceDirectory, source);
+            final var error = runWithSource(source);
             if (error.isPresent()) return error;
         }
         return Optional.empty();
     }
 
-    private static Optional<ApplicationError> runWithSource(Path sourceDirectory, Path source) {
-        final var relativized = sourceDirectory.relativize(source);
+    private static Optional<ApplicationError> runWithSource(Path source) {
+        final var relativized = Main.SOURCE_DIRECTORY.relativize(source);
         final var parent = relativized.getParent();
         final var targetDirectory = Paths.get(".", "src", "c");
         final var targetParent = targetDirectory.resolve(parent);
