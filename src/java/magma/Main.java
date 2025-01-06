@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -95,11 +96,18 @@ public class Main {
     }
 
     private static Result<String, CompileException> getString(String rootSegment) {
-        return compileNamespaced(rootSegment, "package ", "")
-                .or(() -> compileNamespaced(rootSegment, "import ", "#include \"temp.h\"\n"))
-                .or(() -> compileClass(rootSegment, "class "))
-                .or(() -> compileClass(rootSegment, "record "))
-                .or(() -> compileClass(rootSegment, "interface "))
+        final var compilers = List.<Supplier<Optional<String>>>of(
+                () -> compileNamespaced(rootSegment, "package ", ""),
+                () -> compileNamespaced(rootSegment, "import ", "#include \"temp.h\"\n"),
+                () -> compileClass(rootSegment, "class "),
+                () -> compileClass(rootSegment, "record "),
+                () -> compileClass(rootSegment, "interface ")
+        );
+
+        return compilers.stream()
+                .map(Supplier::get)
+                .flatMap(Optional::stream)
+                .findFirst()
                 .<Result<String, CompileException>>map(Ok::new)
                 .orElseGet(() -> new Err<>(new CompileException("Invalid root segment", rootSegment)));
     }
