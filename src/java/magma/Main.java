@@ -170,7 +170,7 @@ public class Main {
         final var afterContent = afterParams.substring(contentStart + 1);
         if (!afterContent.endsWith("}")) return Optional.empty();
         final var content = afterContent.substring(0, afterContent.length() - "}".length());
-        return Optional.of(splitAndCompile(content, Main::compileStructSegment).mapValue(output -> {
+        return Optional.of(splitAndCompile(content, structSegment -> compileStructSegment(name, structSegment)).mapValue(output -> {
             final var joinedParameters = parameters.stream()
                     .map(value -> "\n\t" + value + ";")
                     .collect(Collectors.joining());
@@ -188,19 +188,20 @@ public class Main {
         }));
     }
 
-    private static Result<String, CompileException> compileStructSegment(String structSegment) {
-        return compileMethod(structSegment).orElseGet(() -> new Err<>(new CompileException("Unknown struct segment", structSegment)));
+    private static Result<String, CompileException> compileStructSegment(String name, String structSegment) {
+        return compileMethod(structSegment, name).orElseGet(() -> new Err<>(new CompileException("Unknown struct segment", structSegment)));
     }
 
-    private static Optional<Result<String, CompileException>> compileMethod(String structSegment) {
+    private static Optional<Result<String, CompileException>> compileMethod(String structSegment, String structName) {
         final var paramStart = structSegment.indexOf('(');
-        if(paramStart == -1) return Optional.empty();
+        if (paramStart == -1) return Optional.empty();
 
         final var beforeParams = structSegment.substring(0, paramStart);
         final var nameSeparator = beforeParams.lastIndexOf(' ');
-        final var name = beforeParams.substring(nameSeparator + 1).strip();
+        final var methodName = beforeParams.substring(nameSeparator + 1).strip();
 
-        return Optional.of(new Ok<>("\n\t\tvoid " + name + "(void* __ref__){\n\t\t}"));
+        final var structType = "struct " + structName;
+        return Optional.of(new Ok<>("\n\t\tvoid " + methodName + "(void* __ref__){\n\t\t\t" + structType + " this = *(" + structType + ") __ref__;\n\t\t}"));
     }
 
     private static State splitByValues(String params) {
