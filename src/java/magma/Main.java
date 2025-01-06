@@ -136,7 +136,7 @@ public class Main {
     }
 
     private static Optional<Integer> locateLast(String input, String slice) {
-        final var index = input.indexOf(slice);
+        final var index = input.lastIndexOf(slice);
         return index == -1 ? Optional.empty() : Optional.of(index);
     }
 
