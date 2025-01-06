@@ -314,22 +314,24 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileValue(String value) {
-        return getOr(value)
-                .orElseGet(() -> new Err<>(new CompileError("Unknown value", value)));
-    }
-
-    private static Optional<Result<String, CompileError>> getOr(String value) {
         return compileSymbol(value)
                 .or(() -> compileConstruction(value))
                 .or(() -> compileInvocation(value))
                 .or(() -> compileDataAccess(value))
                 .or(() -> compileChar(value))
-                .or(() -> compileAdd(value))
-                .map(result -> result.mapErr(err -> new CompileError("Invalid value", value, err)));
+                .or(() -> compileOperator(value, "+"))
+                .or(() -> compileOperator(value, "&&"))
+                .or(() -> compileFunctionAccess(value))
+                .map(result -> result.mapErr(err -> new CompileError("Invalid value", value, err)))
+                .orElseGet(() -> new Err<>(new CompileError("Unknown value", value)));
     }
 
-    private static Optional<? extends Result<String, CompileError>> compileAdd(String value) {
-        return value.contains("+") ? Optional.of(new Ok<>("a + b")) : Optional.empty();
+    private static Optional<? extends Result<String, CompileError>> compileFunctionAccess(String value) {
+        return value.contains("::") ? Optional.of(new Ok<>("obj::property")) : Optional.empty();
+    }
+
+    private static Optional<? extends Result<String, CompileError>> compileOperator(String value, String operator) {
+        return value.contains(operator) ? Optional.of(new Ok<>("a " + operator + " b")) : Optional.empty();
     }
 
     private static Optional<? extends Result<String, CompileError>> compileConstruction(String value) {
