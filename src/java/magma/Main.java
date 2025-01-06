@@ -200,8 +200,30 @@ public class Main {
         final var nameSeparator = beforeParams.lastIndexOf(' ');
         final var methodName = beforeParams.substring(nameSeparator + 1).strip();
 
+        final var afterParamStart = structSegment.substring(paramStart + 1);
+        final var contentStart = afterParamStart.indexOf('{');
+        if (contentStart == -1) return Optional.empty();
+
+        final var afterContentStart = afterParamStart.substring(contentStart + 1).strip();
+        if (!afterContentStart.endsWith("}")) return Optional.empty();
+        final var content = afterContentStart.substring(0, afterContentStart.length() - 1);
+
         final var structType = "struct " + structName;
-        return Optional.of(new Ok<>("\n\t\tvoid " + methodName + "(void* __ref__){\n\t\t\t" + structType + " this = *(" + structType + ") __ref__;\n\t\t}"));
+        return Optional.of(splitAndCompile(content, Main::compileStatement).mapValue(output -> {
+            return "\n\t\tvoid " + methodName + "(void* __ref__){\n\t\t\t" + structType + " this = *(" + structType + ") __ref__;" +
+                    output +
+                    "\n\t\t}";
+        }));
+    }
+
+    private static Result<String, CompileException> compileStatement(String statement) {
+        return compileReturn(statement)
+                .orElseGet(() -> new Err<>(new CompileException("Unknown statement", statement)));
+    }
+
+    private static Optional<Result<String, CompileException>> compileReturn(String statement) {
+        if (statement.startsWith("return ")) return Optional.of(new Ok<>("\n\t\t\treturn value;"));
+        return Optional.empty();
     }
 
     private static State splitByValues(String params) {
