@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) {
@@ -51,7 +52,17 @@ public class Main {
     private static String compileRootMember(String rootSegment) throws CompileException {
         if (rootSegment.startsWith("package ")) return "";
         if (rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
-        if (rootSegment.contains("class ")) return "struct Temp {};";
-        throw new CompileException("Invalid root segment", rootSegment);
+        return compileClass(rootSegment).orElseThrow(() -> new CompileException("Invalid root segment", rootSegment));
+    }
+
+    private static Optional<String> compileClass(String rootSegment) {
+        final var classIndex = rootSegment.indexOf("class ");
+        if (classIndex == -1) return Optional.empty();
+        final var afterKeyword = rootSegment.substring(classIndex + "class".length());
+        final var contentStart = afterKeyword.indexOf('{');
+        if (contentStart == -1) return Optional.empty();
+        final var name = afterKeyword.substring(0, contentStart).strip();
+
+        return Optional.of("struct " + name + " {};");
     }
 }
