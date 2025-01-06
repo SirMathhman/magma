@@ -151,14 +151,20 @@ public class Main {
     }
 
     private static Optional<String> compileToStruct(String rootSegment, String infix) {
-        final var infixIndex = rootSegment.indexOf(infix);
-        if (infixIndex == -1) return Optional.empty();
+        return split(rootSegment, infix).flatMap(tuple0 -> {
+            return split(tuple0.right(), "{").map(tuple1 -> {
+                var name = tuple1.left().strip();
+                return "struct " + name + " {\n};";
+            });
+        });
+    }
 
-        final var afterInfix = rootSegment.substring(infixIndex + infix.length());
-        final var contentStart = afterInfix.indexOf('{');
-        if (contentStart == -1) return Optional.empty();
+    private static Optional<Tuple<String, String>> split(String input, String infix) {
+        final var index = input.indexOf(infix);
+        if (index == -1) return Optional.empty();
 
-        final var name = afterInfix.substring(0, contentStart).strip();
-        return Optional.of("struct " + name + " {};");
+        final var before = input.substring(0, index);
+        final var after = input.substring(index + infix.length());
+        return Optional.of(new Tuple<>(before, after));
     }
 }

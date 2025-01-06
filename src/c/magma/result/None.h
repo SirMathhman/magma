@@ -1,4 +1,5 @@
 #include "../../magma/option/Option.h"
 #include "../../java/util/function/Function.h"
 #include "../../java/util/function/Supplier.h"
-struct None<T> implements Option<T> {};
+struct None<T> implements Option<T> {
+};

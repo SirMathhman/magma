@@ -1,1 +1,2 @@
-struct CompileException extends Exception {};
+struct CompileException extends Exception {
+};

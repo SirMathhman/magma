@@ -1,3 +1,4 @@
 #include "../java/util/ArrayList.h"
 #include "../java/util/List.h"
-struct State {};
+struct State {
+};
