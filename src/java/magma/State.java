@@ -6,18 +6,20 @@ import java.util.List;
 public class State {
     public final List<String> segments;
     private final StringBuilder buffer;
+    private final int depth;
 
-    public State(StringBuilder buffer, List<String> segments) {
+    public State(List<String> segments, StringBuilder buffer, int depth) {
         this.buffer = buffer;
         this.segments = segments;
+        this.depth = depth;
     }
 
     public State() {
-        this(new StringBuilder(), new ArrayList<>());
+        this(new ArrayList<>(), new StringBuilder(), 0);
     }
 
     State append(char c) {
-        return new State(this.buffer.append(c), this.segments);
+        return new State(this.segments, this.buffer.append(c), this.depth);
     }
 
     State advance() {
@@ -25,6 +27,18 @@ public class State {
 
         final var segments = new ArrayList<>(this.segments);
         segments.add(this.buffer.toString());
-        return new State(new StringBuilder(), segments);
+        return new State(segments, new StringBuilder(), this.depth);
+    }
+
+    public boolean isLevel() {
+        return this.depth == 0;
+    }
+
+    public State enter() {
+        return new State(this.segments, this.buffer, this.depth + 1);
+    }
+
+    public State exit() {
+        return new State(this.segments, this.buffer, this.depth - 1);
     }
 }
