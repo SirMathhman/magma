@@ -3,6 +3,7 @@ package magma;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class Main {
     }
 
     private static Result<String, CompileException> splitAndCompile(String root, Function<String, Result<String, CompileException>> compiler) {
-        return split(root).flatMapValue(segments -> {
+        return splitByBraces(root).flatMapValue(segments -> {
             Result<StringBuilder, CompileException> outputResult = new Ok<>(new StringBuilder());
             for (String segment : segments) {
                 final var stripped = segment.strip();
@@ -46,7 +47,7 @@ public class Main {
         });
     }
 
-    private static Result<List<String>, CompileException> split(String input) {
+    private static Result<List<String>, CompileException> splitByBraces(String input) {
         var state = new State();
 
         final var queue = IntStream.range(0, input.length())
@@ -134,18 +135,65 @@ public class Main {
 
             return split(withParams, "{").flatMap(tuple -> {
                 final var withParamEnd = tuple.left().strip();
-                return truncateRight(withParamEnd, ")").flatMap(params -> {
+                return truncateRight(withParamEnd, ")").flatMap(paramString -> {
+                    final var outputParamsResult = splitByValues(paramString).flatMapValue(Main::compileParams);
+
                     return split(beforeParams, " ", Main::locateLast).flatMap(withoutNameSeparator -> {
                         final var beforeName = withoutNameSeparator.left();
                         return split(beforeName, " ", Main::locateTypeSeparator).map(tuple0 -> {
                             final var type = tuple0.right();
                             final var name = withoutNameSeparator.right();
-                            return "\n\t" + type + " " + name + "(" + params + "){}";
+
+                            return outputParamsResult.mapValue(outputParams -> {
+                                return "\n\t" + type + " " + name + "(" + String.join(", ", outputParams) + "){}";
+                            });
                         });
                     });
                 });
             });
-        }).map(Ok::new);
+        });
+    }
+
+    private static Result<List<String>, CompileException> compileParams(List<String> params) {
+        Result<List<String>, CompileException> outputParams = new Ok<>(new ArrayList<>());
+        for (String param : params) {
+            outputParams = outputParams.and(() -> compileParam(param)).mapValue(tuple -> {
+                tuple.left().add(tuple.right());
+                return tuple.left();
+            });
+        }
+        return outputParams;
+    }
+
+    private static Result<String, CompileException> compileParam(String param) {
+        final var result = split(param, " ", Main::locateLast).map(withoutSeparator -> {
+            final var type = withoutSeparator.left();
+            final var name = withoutSeparator.right();
+            return compileType(type).mapValue(compiledType -> compiledType + " " + name);
+        }).orElse(new Ok<>(param));
+        return result;
+    }
+
+    private static Result<String, CompileException> compileType(String type) {
+        return new Err<>(new CompileException("Invalid type", type));
+    }
+
+    private static Result<List<String>, CompileException> splitByValues(String input) {
+        var state = new State();
+        for (int i = 0; i < input.length(); i++) {
+            final var c = input.charAt(i);
+            if (c == ',') {
+                state = state.advance();
+            } else {
+                state = state.append(c);
+            }
+        }
+
+        if (state.isLevel()) {
+            return new Ok<>(state.segments());
+        } else {
+            return new Err<>(new CompileException("Invalid depth '" + state.depth() + "'", input));
+        }
     }
 
     private static Optional<Tuple<String, String>> split(String withParams, String s) {
