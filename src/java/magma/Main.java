@@ -113,14 +113,14 @@ public class Main {
         return split(rootSegment, "class", Main::locateFirst).flatMap(withoutClass -> split(withoutClass.right(), "{", Main::locateFirst).flatMap(withoutContentStart -> {
             final var name = withoutContentStart.left().strip();
             final var withEnd = withoutContentStart.right();
-            if (withEnd.endsWith("}")) {
-                final var inputContent = withEnd.substring(0, withEnd.length() - "}".length());
-                return Optional.of(splitAndCompile(inputContent, Main::compileClassStatement)
-                        .mapValue(outputContent -> "struct " + name + " {" + outputContent + "\n};"));
-            } else {
-                return Optional.empty();
-            }
+            return truncateRight(withEnd, "}")
+                    .map(inputContent -> splitAndCompile(inputContent, Main::compileClassStatement)
+                            .mapValue(outputContent -> "struct " + name + " {" + outputContent + "\n};"));
         }));
+    }
+
+    private static Optional<String> truncateRight(String input, String slice) {
+        return input.endsWith(slice) ? Optional.of(input.substring(0, input.length() - slice.length())) : Optional.empty();
     }
 
     private static Result<String, CompileException> compileClassStatement(String classMember) {
@@ -129,15 +129,27 @@ public class Main {
 
     private static Optional<Result<String, CompileException>> compileMethod(String classMember) {
         return split(classMember, "(", Main::locateFirst).flatMap(withoutParamStart -> {
-            return split(withoutParamStart.left(), " ", Main::locateLast).flatMap(withoutNameSeparator -> {
-                final var beforeName = withoutNameSeparator.left();
-                return split(beforeName, " ", Main::locateTypeSeparator).map(tuple -> {
-                    final var type = tuple.right();
-                    final var name = withoutNameSeparator.right();
-                    return "\n\t" + type + " " + name + "(){}";
+            final var beforeParams = withoutParamStart.left();
+            final var withParams = withoutParamStart.right();
+
+            return split(withParams, "{").flatMap(tuple -> {
+                final var withParamEnd = tuple.left().strip();
+                return truncateRight(withParamEnd, ")").flatMap(params -> {
+                    return split(beforeParams, " ", Main::locateLast).flatMap(withoutNameSeparator -> {
+                        final var beforeName = withoutNameSeparator.left();
+                        return split(beforeName, " ", Main::locateTypeSeparator).map(tuple0 -> {
+                            final var type = tuple0.right();
+                            final var name = withoutNameSeparator.right();
+                            return "\n\t" + type + " " + name + "(" + params + "){}";
+                        });
+                    });
                 });
             });
         }).map(Ok::new);
+    }
+
+    private static Optional<Tuple<String, String>> split(String withParams, String s) {
+        return split(withParams, s, Main::locateFirst);
     }
 
     private static Optional<Integer> locateTypeSeparator(String input, String slice) {
