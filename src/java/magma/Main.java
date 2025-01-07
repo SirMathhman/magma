@@ -175,7 +175,17 @@ public class Main {
     }
 
     private static Result<String, CompileException> compileType(String type) {
-        return new Err<>(new CompileException("Invalid type", type));
+        return compileSymbol(type).orElseGet(() -> new Err<>(new CompileException("Invalid type", type)));
+    }
+
+    private static Optional<Result<String, CompileException>> compileSymbol(String type) {
+        for (int i = 0; i < type.length(); i++) {
+            final var c = type.charAt(i);
+            if (Character.isLetter(c)) continue;
+            return Optional.empty();
+        }
+
+        return Optional.of(new Ok<>(type));
     }
 
     private static Result<List<String>, CompileException> splitByValues(String input) {
