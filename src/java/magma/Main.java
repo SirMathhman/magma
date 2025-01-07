@@ -170,7 +170,7 @@ public class Main {
             final var type = withoutSeparator.left();
             final var name = withoutSeparator.right();
             return compileType(type).mapValue(compiledType -> compiledType + " " + name);
-        }).orElse(new Ok<>(param));
+        }).orElseGet(() -> new Err<>(new CompileException("Malformed parameter", param)));
     }
 
     private static Result<String, CompileException> compileType(String type) {
