@@ -174,7 +174,9 @@ public class Main {
     }
 
     private static Result<String, CompileException> compileType(String type) {
-        return compileSymbol(type).orElseGet(() -> new Err<>(new CompileException("Invalid type", type)));
+        return compileSymbol(type)
+
+                .orElseGet(() -> new Err<>(new CompileException("Invalid type", type)));
     }
 
     private static Optional<Result<String, CompileException>> compileSymbol(String type) {
@@ -200,7 +202,7 @@ public class Main {
         }
 
         if (state.isLevel()) {
-            return new Ok<>(state.segments());
+            return new Ok<>(state.advance().segments());
         } else {
             return new Err<>(new CompileException("Invalid depth '" + state.depth() + "'", input));
         }
