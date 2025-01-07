@@ -3,7 +3,6 @@ package magma;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -34,25 +33,22 @@ public class Main {
     }
 
     private static List<String> split(String root) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
+        var state = new State();
         for (int i = 0; i < root.length(); i++) {
             var c = root.charAt(i);
-            buffer.append(c);
-            if (c == ';') {
-                advance(segments, buffer);
-                buffer = new StringBuilder();
-            }
+            state = splitAtChar(state, c);
         }
-        advance(segments, buffer);
-        return segments;
+
+        return state.advance().segments();
+    }
+
+    private static State splitAtChar(State state, char c) {
+        final var appended = state.append(c);
+        if (c == ';') return appended.advance();
+        return appended;
     }
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
         throw new CompileException("Invalid root segment", rootSegment);
-    }
-
-    private static void advance(List<String> segments, StringBuilder buffer) {
-        segments.add(buffer.toString());
     }
 }
