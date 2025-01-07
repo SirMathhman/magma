@@ -3,13 +3,15 @@ package magma;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
         try {
             final var source = Paths.get(".", "src", "java", "magma", "Main.java");
             final var input = Files.readString(source);
-            final var output = compile(input);
+            final var output = splitAndCompile(input);
             Files.writeString(source.resolveSibling("Main.c"), output);
         } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
@@ -17,7 +19,40 @@ public class Main {
         }
     }
 
-    private static String compile(String root) throws CompileException {
-        throw new CompileException("Invalid root", root);
+    private static String splitAndCompile(String root) throws CompileException {
+        final var segments = split(root);
+        return compileSegments(segments);
+    }
+
+    private static String compileSegments(List<String> segments) throws CompileException {
+        var output = new StringBuilder();
+        for (String segment : segments) {
+            output.append(compileRootSegment(segment));
+        }
+
+        return output.toString();
+    }
+
+    private static List<String> split(String root) {
+        var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        for (int i = 0; i < root.length(); i++) {
+            var c = root.charAt(i);
+            buffer.append(c);
+            if (c == ';') {
+                advance(segments, buffer);
+                buffer = new StringBuilder();
+            }
+        }
+        advance(segments, buffer);
+        return segments;
+    }
+
+    private static String compileRootSegment(String rootSegment) throws CompileException {
+        throw new CompileException("Invalid root segment", rootSegment);
+    }
+
+    private static void advance(List<String> segments, StringBuilder buffer) {
+        segments.add(buffer.toString());
     }
 }
