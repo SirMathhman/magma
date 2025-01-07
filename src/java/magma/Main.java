@@ -166,12 +166,11 @@ public class Main {
     }
 
     private static Result<String, CompileException> compileParam(String param) {
-        final var result = split(param, " ", Main::locateLast).map(withoutSeparator -> {
+        return split(param, " ", Main::locateLast).map(withoutSeparator -> {
             final var type = withoutSeparator.left();
             final var name = withoutSeparator.right();
             return compileType(type).mapValue(compiledType -> compiledType + " " + name);
         }).orElse(new Ok<>(param));
-        return result;
     }
 
     private static Result<String, CompileException> compileType(String type) {
@@ -179,13 +178,14 @@ public class Main {
     }
 
     private static Optional<Result<String, CompileException>> compileSymbol(String type) {
-        for (int i = 0; i < type.length(); i++) {
-            final var c = type.charAt(i);
+        final var stripped = type.strip();
+        for (int i = 0; i < stripped.length(); i++) {
+            final var c = stripped.charAt(i);
             if (Character.isLetter(c)) continue;
             return Optional.empty();
         }
 
-        return Optional.of(new Ok<>(type));
+        return Optional.of(new Ok<>(stripped));
     }
 
     private static Result<List<String>, CompileException> splitByValues(String input) {
