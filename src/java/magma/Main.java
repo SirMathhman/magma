@@ -13,20 +13,20 @@ public class Main {
             final var source = Paths.get(".", "src", "java", "magma", "Main.java");
             final var input = Files.readString(source);
             final var target = source.resolveSibling("Main.c");
-            Files.writeString(target, compile(input));
+            Files.writeString(target, Results.unwrap(compile(input)));
         } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
     }
 
-    private static String compile(String root) throws CompileException {
+    private static Result<String, CompileException> compile(String root) throws CompileException {
         final var segments = splitStatements(root);
-        var output = new StringBuilder();
+        Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
-            output.append(compileRootSegment(segment.strip()));
+            output = output.and(() -> compileRootSegment(segment.strip())).mapValue(tuple -> tuple.left().append(tuple.right()));
         }
-        return output.toString();
+        return output.mapValue(StringBuilder::toString);
     }
 
     private static List<String> splitStatements(String root) {
@@ -47,16 +47,16 @@ public class Main {
         return segments;
     }
 
-    private static String compileRootSegment(String rootSegment) throws CompileException {
-        if (rootSegment.startsWith("package ")) return "";
-        if (rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
+    private static Result<String, CompileException> compileRootSegment(String rootSegment) {
+        if (rootSegment.startsWith("package ")) return new Ok<>("");
+        if (rootSegment.startsWith("import ")) return new Ok<>("#include \"temp.h\"\n");
 
-        return splitAtSlice(rootSegment, "class ").flatMap(withoutClass -> splitAtSlice(withoutClass.right(), "{").flatMap(withoutContentStart -> {
+        return splitAtSlice(rootSegment, "class ").<Result<String, CompileException>>flatMap(withoutClass -> splitAtSlice(withoutClass.right(), "{").flatMap(withoutContentStart -> {
             final var name = withoutContentStart.left().strip();
             final var withEnd = withoutContentStart.right();
             if (!withEnd.endsWith("}")) return Optional.empty();
-            return Optional.of("struct " + name + " {\n}");
-        })).orElseThrow(() -> new CompileException("Unknown root segment", rootSegment));
+            return Optional.of(new Ok<>("struct " + name + " {\n}"));
+        })).orElseGet(() -> new Err<>(new CompileException("Unknown root segment", rootSegment)));
     }
 
     private static Optional<Tuple<String, String>> splitAtSlice(String input, String slice) {
