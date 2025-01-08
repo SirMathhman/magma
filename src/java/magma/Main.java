@@ -15,7 +15,7 @@ public class Main {
 
             // Read from source file and write to target file
             final String input = Files.readString(source);
-            Files.writeString(target, input);
+            Files.writeString(target, compileRoot(input));
 
             // Compile the program
             final int compileExitCode = execute(List.of(
@@ -33,9 +33,13 @@ public class Main {
             if (runExitCode != 0) {
                 System.err.println("Program execution failed with exit code: " + runExitCode);
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException | CompileException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static String compileRoot(String root) throws CompileException {
+        throw new CompileException("Invalid root", root);
     }
 
     private static int execute(List<String> command) throws InterruptedException, IOException {
