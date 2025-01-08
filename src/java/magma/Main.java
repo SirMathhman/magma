@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,19 +14,21 @@ public class Main {
             final var source = Paths.get(".", "src", "java", "magma", "Main.java");
             final var input = Files.readString(source);
             final var target = source.resolveSibling("Main.c");
-            Files.writeString(target, Results.unwrap(compile(input)));
+            final var output = splitAndCompile(input, Main::compileRootSegment);
+            Files.writeString(target, Results.unwrap(output));
         } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
     }
 
-    private static Result<String, CompileException> compile(String root) throws CompileException {
+    private static Result<String, CompileException> splitAndCompile(String root, Function<String, Result<String, CompileException>> compiler) {
         final var segments = splitStatements(root);
         Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
-            output = output.and(() -> compileRootSegment(segment.strip())).mapValue(tuple -> tuple.left().append(tuple.right()));
+            output = output.and(() -> compiler.apply(segment.strip())).mapValue(tuple -> tuple.left().append(tuple.right()));
         }
+
         return output.mapValue(StringBuilder::toString);
     }
 
@@ -51,12 +54,17 @@ public class Main {
         if (rootSegment.startsWith("package ")) return new Ok<>("");
         if (rootSegment.startsWith("import ")) return new Ok<>("#include \"temp.h\"\n");
 
-        return splitAtSlice(rootSegment, "class ").<Result<String, CompileException>>flatMap(withoutClass -> splitAtSlice(withoutClass.right(), "{").flatMap(withoutContentStart -> {
+        return splitAtSlice(rootSegment, "class ").flatMap(withoutClass -> splitAtSlice(withoutClass.right(), "{").flatMap(withoutContentStart -> {
             final var name = withoutContentStart.left().strip();
             final var withEnd = withoutContentStart.right();
             if (!withEnd.endsWith("}")) return Optional.empty();
-            return Optional.of(new Ok<>("struct " + name + " {\n}"));
+            final var content = withEnd.substring(0, withEnd.length() - "}".length());
+            return Optional.of(splitAndCompile(content, Main::compileStructSegment).mapValue(compiled -> "struct " + name + " {" + compiled + "\n}"));
         })).orElseGet(() -> new Err<>(new CompileException("Unknown root segment", rootSegment)));
+    }
+
+    private static Result<String, CompileException> compileStructSegment(String structSegment) {
+        return new Err<>(new CompileException("Invalid struct segment", structSegment));
     }
 
     private static Optional<Tuple<String, String>> splitAtSlice(String input, String slice) {
