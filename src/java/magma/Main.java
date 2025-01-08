@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class Main {
@@ -28,7 +29,7 @@ public class Main {
         return output.toString();
     }
 
-    private static ArrayList<String> splitStatements(String root) {
+    private static List<String> splitStatements(String root) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -50,9 +51,11 @@ public class Main {
         if (rootSegment.startsWith("package ")) return "";
         if (rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
 
-        return splitAtSlice(rootSegment, "class ").flatMap(withoutClass -> splitAtSlice(withoutClass.right(), "{").map(withoutContentStart -> {
+        return splitAtSlice(rootSegment, "class ").flatMap(withoutClass -> splitAtSlice(withoutClass.right(), "{").flatMap(withoutContentStart -> {
             final var name = withoutContentStart.left().strip();
-            return "struct " + name + " {\n}";
+            final var withEnd = withoutContentStart.right();
+            if (!withEnd.endsWith("}")) return Optional.empty();
+            return Optional.of("struct " + name + " {\n}");
         })).orElseThrow(() -> new CompileException("Unknown root segment", rootSegment));
     }
 
