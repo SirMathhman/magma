@@ -64,11 +64,14 @@ public class Main {
             final var withEnd = withoutContentStart.right();
             if (!withEnd.endsWith("}")) return Optional.empty();
             final var content = withEnd.substring(0, withEnd.length() - "}".length());
-            return Optional.of(splitAndCompile(content, Main::compileStructSegment).mapValue(compiled -> "struct " + name + " {" + compiled + "\n}"));
+            return Optional.of(splitAndCompile(content, Main::compileStructSegment)
+                    .mapValue(compiled -> "struct " + name + " {" + compiled + "\n}"));
+
         })).orElseGet(() -> new Err<>(new CompileException("Unknown root segment", rootSegment)));
     }
 
     private static Result<String, CompileException> compileStructSegment(String structSegment) {
+        if (structSegment.contains("(")) return new Ok<>("\n\tvoid temp(){\n\t}");
         return new Err<>(new CompileException("Invalid struct segment", structSegment));
     }
 
