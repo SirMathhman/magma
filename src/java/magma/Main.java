@@ -43,6 +43,11 @@ public class Main {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
             }
+            if (c == '}' && depth == 1) {
+                depth--;
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            }
             if (c == '{') depth++;
             if (c == '}') depth--;
         }
