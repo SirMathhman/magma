@@ -25,18 +25,14 @@ public class Main {
             ));
 
             // Check if the compilation was successful
-            if (compileExitCode == 0) {
-                System.out.println("Compilation successful!");
-            } else {
+            if (compileExitCode != 0) {
                 System.err.println("Compilation failed with exit code: " + compileExitCode);
                 return;
             }
 
             // Run the compiled executable using cmd.exe
             final int runExitCode = execute(List.of("cmd.exe", "/c", "magma"));
-            if (runExitCode == 0) {
-                System.out.println("Program executed successfully!");
-            } else {
+            if (runExitCode != 0) {
                 System.err.println("Program execution failed with exit code: " + runExitCode);
             }
         } catch (IOException | InterruptedException e) {
