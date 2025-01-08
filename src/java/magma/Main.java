@@ -13,8 +13,6 @@ public class Main {
             final Path source = Paths.get(".", "working", "main.mgs");
             final Path target = Paths.get(".", "working", "main.c");
 
-            System.out.println("Working directory: " + Paths.get(".", "working").toAbsolutePath());
-
             // Read from source file and write to target file
             final String input = Files.readString(source);
             Files.writeString(target, input);
