@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
+#define ERROR_BUFFER_SIZE 1024 // Large buffer size
 
 int main() {
     // Define the file path
@@ -10,7 +14,25 @@ int main() {
 
     // Open the file securely using fopen_s
     if (fopen_s(&file, filePath, "r") != 0) {
-        perror("Error opening file");
+        // Dynamically allocate a large buffer for the error message
+        char *errorBuffer = (char *)malloc(ERROR_BUFFER_SIZE);
+        if (errorBuffer == NULL) {
+            fputs("Critical error: Failed to allocate memory for error message\n", stderr);
+            return EXIT_FAILURE;
+        }
+
+        // Build the error message
+        strcpy(errorBuffer, "Error opening file '");
+        strcat(errorBuffer, filePath);
+        strcat(errorBuffer, "': ");
+        strcat(errorBuffer, strerror(errno));
+        strcat(errorBuffer, "\n");
+
+        // Write the error message to stderr
+        fputs(errorBuffer, stderr);
+
+        // Free the buffer and exit
+        free(errorBuffer);
         return EXIT_FAILURE;
     }
 
@@ -22,7 +44,24 @@ int main() {
     // Allocate a buffer to store the file content
     char *buffer = (char *)malloc(fileSize + 1); // +1 for the null terminator
     if (buffer == NULL) {
-        perror("Error allocating memory");
+        // Dynamically allocate a large buffer for the error message
+        char *errorBuffer = (char *)malloc(ERROR_BUFFER_SIZE);
+        if (errorBuffer == NULL) {
+            fputs("Critical error: Failed to allocate memory for error message\n", stderr);
+            fclose(file);
+            return EXIT_FAILURE;
+        }
+
+        // Build the error message
+        strcpy(errorBuffer, "Error allocating memory: ");
+        strcat(errorBuffer, strerror(errno));
+        strcat(errorBuffer, "\n");
+
+        // Write the error message to stderr
+        fputs(errorBuffer, stderr);
+
+        // Free the buffer and close the file
+        free(errorBuffer);
         fclose(file);
         return EXIT_FAILURE;
     }
@@ -32,7 +71,7 @@ int main() {
     buffer[bytesRead] = '\0'; // Null-terminate the buffer
 
     // Print the buffer content to the console
-    printf("%s", buffer);
+    fputs(buffer, stdout);
 
     // Free the buffer and close the file
     free(buffer);
