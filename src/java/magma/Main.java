@@ -48,7 +48,15 @@ public class Main {
     private static String compileRootSegment(String rootSegment) throws CompileException {
         if (rootSegment.startsWith("package ")) return "";
         if (rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
-        if (rootSegment.contains("class ")) return "struct Temp {\n}";
+        final var classIndex = rootSegment.indexOf("class ");
+        if (classIndex != -1) {
+            final var afterKeyword = rootSegment.substring(classIndex + "class ".length());
+            final var contentStart = afterKeyword.indexOf("{");
+            if (contentStart != -1) {
+                final var name = afterKeyword.substring(0, contentStart).strip();
+                return "struct " + name + " {\n}";
+            }
+        }
         throw new CompileException("Unknown root segment", rootSegment);
     }
 
