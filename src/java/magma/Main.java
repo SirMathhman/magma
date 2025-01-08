@@ -23,7 +23,10 @@ public class Main {
     }
 
     private static Result<String, CompileException> splitAndCompile(String root, Function<String, Result<String, CompileException>> compiler) {
-        final var segments = splitStatements(root);
+        return splitStatements(root).flatMapValue(segments -> compileAndJoin(compiler, segments));
+    }
+
+    private static Result<String, CompileException> compileAndJoin(Function<String, Result<String, CompileException>> compiler, List<String> segments) {
         Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
             output = output.and(() -> compiler.apply(segment.strip())).mapValue(tuple -> tuple.left().append(tuple.right()));
@@ -32,12 +35,12 @@ public class Main {
         return output.mapValue(StringBuilder::toString);
     }
 
-    private static List<String> splitStatements(String root) {
+    private static Result<List<String>, CompileException> splitStatements(String input) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
+        for (int i = 0; i < input.length(); i++) {
+            var c = input.charAt(i);
             buffer.append(c);
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
@@ -52,7 +55,11 @@ public class Main {
             if (c == '}') depth--;
         }
         advance(buffer, segments);
-        return segments;
+        if (depth == 0) {
+            return new Ok<>(segments);
+        } else {
+            return new Err<>(new CompileException("Invalid depth '" + depth + "'", input));
+        }
     }
 
     private static Result<String, CompileException> compileRootSegment(String rootSegment) {

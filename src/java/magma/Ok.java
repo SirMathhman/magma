@@ -24,4 +24,9 @@ public record Ok<T, X>(T value) implements Result<T, X> {
     public Optional<X> findError() {
         return Optional.empty();
     }
+
+    @Override
+    public <R> Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper) {
+        return mapper.apply(this.value);
+    }
 }

@@ -24,4 +24,9 @@ public record Err<T, X>(X error) implements Result<T, X> {
     public Optional<X> findError() {
         return Optional.of(this.error);
     }
+
+    @Override
+    public <R> Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper) {
+        return new Err<>(this.error);
+    }
 }

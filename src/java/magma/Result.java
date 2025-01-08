@@ -12,4 +12,6 @@ public interface Result<T, X> {
     Optional<T> findValue();
 
     Optional<X> findError();
+
+    <R> Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper);
 }
