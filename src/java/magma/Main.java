@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) {
@@ -19,7 +20,7 @@ public class Main {
     }
 
     private static String compile(String root) throws CompileException {
-        final var segments = split(root);
+        final var segments = splitStatements(root);
         var output = new StringBuilder();
         for (String segment : segments) {
             output.append(compileRootSegment(segment.strip()));
@@ -27,7 +28,7 @@ public class Main {
         return output.toString();
     }
 
-    private static ArrayList<String> split(String root) {
+    private static ArrayList<String> splitStatements(String root) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -48,16 +49,20 @@ public class Main {
     private static String compileRootSegment(String rootSegment) throws CompileException {
         if (rootSegment.startsWith("package ")) return "";
         if (rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
-        final var classIndex = rootSegment.indexOf("class ");
-        if (classIndex != -1) {
-            final var afterKeyword = rootSegment.substring(classIndex + "class ".length());
-            final var contentStart = afterKeyword.indexOf("{");
-            if (contentStart != -1) {
-                final var name = afterKeyword.substring(0, contentStart).strip();
-                return "struct " + name + " {\n}";
-            }
-        }
-        throw new CompileException("Unknown root segment", rootSegment);
+
+        return splitAtSlice(rootSegment, "class ").flatMap(withoutClass -> splitAtSlice(withoutClass.right(), "{").map(withoutContentStart -> {
+            final var name = withoutContentStart.left().strip();
+            return "struct " + name + " {\n}";
+        })).orElseThrow(() -> new CompileException("Unknown root segment", rootSegment));
+    }
+
+    private static Optional<Tuple<String, String>> splitAtSlice(String input, String slice) {
+        final var index = input.indexOf(slice);
+        if (index == -1) return Optional.empty();
+
+        final var left = input.substring(0, index);
+        final var right = input.substring(index + slice.length());
+        return Optional.of(new Tuple<>(left, right));
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
