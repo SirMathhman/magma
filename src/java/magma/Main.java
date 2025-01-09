@@ -61,44 +61,47 @@ public class Main {
         if (state.queue().isEmpty()) return Optional.empty();
 
         final var c = state.queue().pop();
-        state.buffer().append(c);
+        state.append(c);
 
-        if (c == '\'') {
-            final var maybeEscaped = state.queue().pop();
-            state.buffer().append(maybeEscaped);
-            if (maybeEscaped == '\\') {
-                state.buffer().append(state.queue().pop());
-            }
+        final var value = splitAtSingleQuote(state, c)
+                .or(() -> splitAtDoubleQuote(state, c))
+                .orElseGet(() -> splitAtOtherChar(state, c));
 
-            state.buffer().append(state.queue().pop());
-            return Optional.of(state);
+        return Optional.of(value);
+    }
+
+    private static Optional<State> splitAtSingleQuote(State state, Character c) {
+        if (c != '\'') return Optional.empty();
+
+        final var maybeEscaped = state.append().orElseThrow();
+        if (maybeEscaped == '\\') {
+            state.append();
         }
 
-        if (c == '"') {
-            while (!state.queue().isEmpty()) {
-                final var popped = state.queue().pop();
-                state.buffer().append(popped);
-
-                if (popped == '\\') state.buffer().append(state.queue().pop());
-                if (popped == '"') break;
-            }
-            return Optional.of(state);
-        }
-
-        if (c == ';' && state.depth() == 0) {
-            state.advance();
-            state.setBuffer(new StringBuilder());
-        }
-
-        if (c == '}' && state.depth() == 1) {
-            state.setDepth(state.depth() - 1);
-            state.advance();
-            state.setBuffer(new StringBuilder());
-        }
-
-        if (c == '{') state.setDepth(state.depth() + 1);
-        if (c == '}') state.setDepth(state.depth() - 1);
+        state.append();
         return Optional.of(state);
+    }
+
+    private static Optional<State> splitAtDoubleQuote(State state, Character c) {
+        if (c != '"') return Optional.empty();
+
+        while (!state.queue().isEmpty()) {
+            final var popped = state.queue().pop();
+            state.append(popped);
+
+            if (popped == '\\') state.append();
+            if (popped == '"') break;
+        }
+
+        return Optional.of(state);
+    }
+
+    private static State splitAtOtherChar(State state, Character c) {
+        if (c == ';' && state.depth() == 0) return state.advance();
+        if (c == '}' && state.depth() == 1) return state.exit().advance();
+        if (c == '{') return state.enter();
+        if (c == '}') return state.exit();
+        return state;
     }
 
     private static Result<String, CompileException> compileRootSegment(String rootSegment) {

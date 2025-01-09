@@ -3,6 +3,7 @@ package magma;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Optional;
 
 public class State {
     private final Deque<Character> queue;
@@ -21,8 +22,33 @@ public class State {
         this(queue, new ArrayList<>(), new StringBuilder(), 0);
     }
 
-    void advance() {
+    State exit() {
+        setDepth(depth() - 1);
+        return this;
+    }
+
+    State enter() {
+        setDepth(depth() + 1);
+        return this;
+    }
+
+    Optional<Character> append() {
+        if (this.queue.isEmpty()) {
+            return Optional.empty();
+        }
+        final var popped = queue().pop();
+        append(popped);
+        return Optional.of(popped);
+    }
+
+    void append(Character c) {
+        buffer().append(c);
+    }
+
+    State advance() {
         if (!buffer().isEmpty()) segments().add(buffer().toString());
+        this.buffer = new StringBuilder();
+        return this;
     }
 
     public Deque<Character> queue() {
