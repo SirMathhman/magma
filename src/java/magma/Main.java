@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main {
     public static void main(String[] args) {
@@ -39,18 +42,35 @@ public class Main {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
-        for (int i = 0; i < input.length(); i++) {
-            var c = input.charAt(i);
+        var queue = IntStream.range(0, input.length())
+                .mapToObj(index -> input.charAt(index))
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        while (!queue.isEmpty()) {
+            final var c = queue.pop();
             buffer.append(c);
+
+            if (c == '\'') {
+                final var maybeEscaped = queue.pop();
+                buffer.append(maybeEscaped);
+                if (maybeEscaped == '\\') {
+                    buffer.append(queue.pop());
+                }
+
+                buffer.append(queue.pop());
+            }
+
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
             }
+
             if (c == '}' && depth == 1) {
                 depth--;
                 advance(buffer, segments);
                 buffer = new StringBuilder();
             }
+
             if (c == '{') depth++;
             if (c == '}') depth--;
         }
