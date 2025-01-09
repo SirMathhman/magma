@@ -58,6 +58,18 @@ public class Main {
                 }
 
                 buffer.append(queue.pop());
+                continue;
+            }
+
+            if (c == '"') {
+                while (!queue.isEmpty()) {
+                    final var popped = queue.pop();
+                    buffer.append(popped);
+
+                    if (popped == '\\') buffer.append(queue.pop());
+                    if (popped == '"') break;
+                }
+                continue;
             }
 
             if (c == ';' && depth == 0) {
