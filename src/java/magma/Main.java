@@ -3,7 +3,6 @@ package magma;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -39,59 +38,67 @@ public class Main {
     }
 
     private static Result<List<String>, CompileException> splitStatements(String input) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
         var queue = IntStream.range(0, input.length())
-                .mapToObj(index -> input.charAt(index))
+                .mapToObj(input::charAt)
                 .collect(Collectors.toCollection(LinkedList::new));
 
-        while (!queue.isEmpty()) {
-            final var c = queue.pop();
-            buffer.append(c);
-
-            if (c == '\'') {
-                final var maybeEscaped = queue.pop();
-                buffer.append(maybeEscaped);
-                if (maybeEscaped == '\\') {
-                    buffer.append(queue.pop());
-                }
-
-                buffer.append(queue.pop());
-                continue;
-            }
-
-            if (c == '"') {
-                while (!queue.isEmpty()) {
-                    final var popped = queue.pop();
-                    buffer.append(popped);
-
-                    if (popped == '\\') buffer.append(queue.pop());
-                    if (popped == '"') break;
-                }
-                continue;
-            }
-
-            if (c == ';' && depth == 0) {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            }
-
-            if (c == '}' && depth == 1) {
-                depth--;
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            }
-
-            if (c == '{') depth++;
-            if (c == '}') depth--;
+        var state = new State(queue);
+        while (true) {
+            final var optional = splitAtChar(state);
+            if (optional.isEmpty()) break;
+            state = optional.get();
         }
-        advance(buffer, segments);
-        if (depth == 0) {
-            return new Ok<>(segments);
+
+        state.advance();
+        if (state.depth() == 0) {
+            return new Ok<>(state.segments());
         } else {
-            return new Err<>(new CompileException("Invalid depth '" + depth + "'", input));
+            return new Err<>(new CompileException("Invalid depth '" + state.depth() + "'", input));
         }
+    }
+
+    private static Optional<State> splitAtChar(State state) {
+        if (state.queue().isEmpty()) return Optional.empty();
+
+        final var c = state.queue().pop();
+        state.buffer().append(c);
+
+        if (c == '\'') {
+            final var maybeEscaped = state.queue().pop();
+            state.buffer().append(maybeEscaped);
+            if (maybeEscaped == '\\') {
+                state.buffer().append(state.queue().pop());
+            }
+
+            state.buffer().append(state.queue().pop());
+            return Optional.of(state);
+        }
+
+        if (c == '"') {
+            while (!state.queue().isEmpty()) {
+                final var popped = state.queue().pop();
+                state.buffer().append(popped);
+
+                if (popped == '\\') state.buffer().append(state.queue().pop());
+                if (popped == '"') break;
+            }
+            return Optional.of(state);
+        }
+
+        if (c == ';' && state.depth() == 0) {
+            state.advance();
+            state.setBuffer(new StringBuilder());
+        }
+
+        if (c == '}' && state.depth() == 1) {
+            state.setDepth(state.depth() - 1);
+            state.advance();
+            state.setBuffer(new StringBuilder());
+        }
+
+        if (c == '{') state.setDepth(state.depth() + 1);
+        if (c == '}') state.setDepth(state.depth() - 1);
+        return Optional.of(state);
     }
 
     private static Result<String, CompileException> compileRootSegment(String rootSegment) {
@@ -123,7 +130,4 @@ public class Main {
         return Optional.of(new Tuple<>(left, right));
     }
 
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
-    }
 }
