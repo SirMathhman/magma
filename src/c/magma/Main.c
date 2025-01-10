@@ -1,3 +1,4 @@
+import magma.java.JavaPaths;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,9 +19,10 @@ struct Main {public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "
 	Optional<IOException> compileSources(Set<Path> sources){int temp = 0;
 		temp();
 	}
-	Optional<IOException> compileSource(Path source){int temp = 0;int temp = 0;int temp = 0;if (!Files.exists(targetParent)) {
-            return JavaPaths.createDirectoriesSafe(targetParent);
-        }int temp = 0;int temp = 0;int temp = 0;
+	Optional<IOException> compileSource(Path source){int temp = 0;int temp = 0;int temp = 0;int temp = 0;
+		temp();i++) {
+            namespace.add(parent.getName(i).toString());
+        }int temp = 0;int temp = 0;int temp = 0;int temp = 0;int temp = 0;int temp = 0;int temp = 0;
 		temp();
 	}
 	IOException> collect(){int temp = 0;catch (IOException e) {

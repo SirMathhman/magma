@@ -1,5 +1,7 @@
 package magma;
 
+import magma.java.JavaPaths;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,9 +37,26 @@ public class Main {
     private static Optional<IOException> compileSource(Path source) {
         final var relative = SOURCE_DIRECTORY.relativize(source);
         final var parent = relative.getParent();
-        final var targetParent = TARGET_DIRECTORY.resolve(parent);
+
+        var namespace = new ArrayList<String>();
+        for (int i = 0; i < parent.getNameCount(); i++) {
+            namespace.add(parent.getName(i).toString());
+        }
+
+        if (namespace.size() >= 2) {
+            if (namespace.subList(0, 2).equals(List.of("magma", "java"))) return Optional.empty();
+        }
+
+        var targetParent = TARGET_DIRECTORY;
+        for (var namespaceSegment : namespace) {
+            targetParent = targetParent.resolve(namespaceSegment);
+        }
+
         if (!Files.exists(targetParent)) {
-            return JavaPaths.createDirectoriesSafe(targetParent);
+            final var directoriesError = JavaPaths.createDirectoriesSafe(targetParent);
+            if (directoriesError.isPresent()) {
+                return directoriesError;
+            }
         }
 
         final var name = relative.getFileName().toString();
