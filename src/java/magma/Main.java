@@ -254,7 +254,7 @@ public class Main {
             final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip()), substring1);
 
             final var newCaller = compileValue(caller.strip());
-            return Optional.of("\n\t\t" + newCaller + "(" + compiled + ")");
+            return Optional.of(newCaller + "(" + compiled + ")");
         }
         return Optional.empty();
     }

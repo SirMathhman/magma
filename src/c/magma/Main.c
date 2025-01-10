@@ -15,7 +15,6 @@ struct Main {
 	public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
 	public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 	void main(Slice<String> args){
-		
 		JavaPaths.collect()
                 .match(Main::compileSources, Optional::of)
                 .ifPresent(Throwable.printStackTrace);
@@ -45,8 +44,7 @@ t		}
 		return JavaPaths.readSafe(source).match(input -> JavaPaths.writeSafe(target, compile(input)), Optional::of);
 	}
 	String compile(String root){
-		return 
-		splitAndCompile(Mai).splitByStatements, Main.compileRootMember, root);
+		return splitAndCompile(Mai).splitByStatements, Main.compileRootMember, root);
 	}
 	String splitAndCompile(Function<String, List<String>> splitter, Function<String, String> compiler, String input){
 		int final var segments  = splitter.apply(input);
@@ -64,7 +62,6 @@ t		}
                 .collect(Collectors.toCollection(LinkedList::new));
 		while(1){
 t		}
-		
 		advance(segmentsbuffer);
 		return segments;
 	}
@@ -84,11 +81,9 @@ t		}
 		}
 		if(temp){
 		}
-		return 
-		invalidate("root segment"rootSegment);
+		return invalidate("root segment"rootSegment);
 	}
 	String invalidate(String type, String rootSegment){
-		
 		System.err.println("Unknown " + type + ": " + rootSegment);
 		return rootSegment;
 	}
@@ -98,8 +93,7 @@ t		}
 		int final var paramStart  = classSegment.indexOf('(');
 		if(temp){
 		}
-		return 
-		invalidate("class segment"classSegment);
+		return invalidate("class segment"classSegment);
 	}
 	String compileStatement(String statement){
 		if(temp){
@@ -115,8 +109,7 @@ t		}
 		}
 		if(temp){
 		}
-		return 
-		invalidate("statement"statement);
+		return invalidate("statement"statement);
 	}
 	Optional<String> compileInvocation(String statement){
 		int final var substring  = statement.substring(0, statement.length() - ")".length());
@@ -147,8 +140,7 @@ t		}
 		int final var stripped  = input.strip();
 		if(temp){
 		}
-		return 
-		compileInvocation(input).orElseGet(() -> invalidate("value", input));
+		return compileInvocation(input).orElseGet(() -> invalidate("value", input));
 	}
 	boolean isNumber(String value){
 		int final var value1  = value.startsWith("-")
@@ -186,7 +178,6 @@ t		}
 		int var depth  = 0;
 		for(;;){
 t		}
-		
 		advance(inputParamsListbuffer);
 		return inputParamsList;
 	}
