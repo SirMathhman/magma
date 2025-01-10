@@ -11,7 +11,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-struct Main {public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java")public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c")
+struct Main {
+	public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
+	public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 	void main(Slice<String> args){
 		temp();
 	}

@@ -165,7 +165,7 @@ public class Main {
     private static String compileClassSegment(String classSegment) {
         if (classSegment.endsWith(";")) {
             final var substring = classSegment.substring(0, classSegment.length() - 1);
-            return compileDefinition(substring);
+            return "\n\t" + compileDefinition(substring) + ";";
         }
 
         final var paramStart = classSegment.indexOf('(');
