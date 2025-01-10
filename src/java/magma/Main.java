@@ -239,6 +239,7 @@ public class Main {
     }
 
     private static Optional<String> compileInvocation(String statement) {
+        if (!statement.endsWith(")")) return Optional.empty();
         final var substring = statement.substring(0, statement.length() - ")".length());
         return findArgStart(substring).map(index -> {
             final var caller = substring.substring(0, index);
@@ -270,8 +271,10 @@ public class Main {
 
         if (input.startsWith("new ")) {
             final var substring = input.substring("new ".length());
-            compileInvocation(substring);
-            return "temp()";
+            final var optional = compileInvocation(substring);
+            if (optional.isPresent()) {
+                return optional.get();
+            }
         }
 
         final var index = input.lastIndexOf('.');

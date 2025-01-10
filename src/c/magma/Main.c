@@ -28,9 +28,9 @@ struct Main {
 	Optional<IOException> compileSource(Path source){
 		auto relative = SOURCE_DIRECTORY.relativize(source);
 		auto parent = relative.getParent();
-		auto namespace = temp();
+		auto namespace = ArrayList<String>();
 		for(;;){
-t		}
+t		}m
 		if(temp){
 		}
 		auto targetParent = TARGET_DIRECTORY;
@@ -44,18 +44,18 @@ t		}
 		return JavaPaths.readSafe(source).match(input -> JavaPaths.writeSafe(target, compile(input)), Optional::of);
 	}
 	String compile(String root){
-		return splitAndCompile(Mai).splitByStatements, Main.compileRootMember, root);
+		return splitAndCompile(Main.splitByStatements, Main.compileRootMember, root);
 	}
 	String splitAndCompile(Function<StringList<String>> splitter, Function<StringString> compiler, String input){
 		auto segments = splitter.apply(input);
-		auto output = temp();
+		auto output = StringBuilder();
 		for(;;){
 t		}
 		return output.toString();
 	}
 	List<String> splitByStatements(String root){
-		auto segments = temp();
-		auto buffer = temp();
+		auto segments = ArrayList<String>();
+		auto buffer = StringBuilder();
 		auto depth = 0;
 		auto queue = IntStream.range(0, root.length())
                 .mapToObj(root::charAt)
@@ -112,13 +112,22 @@ t		}
 		return invalidate("statement"statement);
 	}
 	Optional<String> compileInvocation(String statement){
+		if(temp){
+		}
 		auto substring = statement.substring(0, statement.length() - ")".length());
-		auto index = -1;
+		return findArgStart(substring).map(index -> {
+            final var caller = substring.substring(0, index);
+            final var substring1 = substring.substring(index + 1);
+            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip()), substring1);
+
+            final var newCaller = compileValue(caller.strip());
+            return newCaller + "(" + compiled + ")";
+        });
+	}
+	Optional<Integer> findArgStart(String substring){
 		auto depth = 0;
 		for(;;){
 t		}
-		if(temp){
-		}
 		return Optional.empty();
 	}
 	String compileValue(String input){
@@ -155,8 +164,8 @@ t		}
 		auto index2 = input.indexOf(operator);
 		if(temp){
 		}
-		auto compiled = compileValue(inpu).substring(0, index2));
-		auto compiled1 = compileValue(inpu).substring(index2 + operator.length()));
+		auto compiled = compileValue(input.substring(0, index2));
+		auto compiled1 = compileValue(input.substring(index2 + operator.length()));
 		return Optional.of(compiled + " " + operator + " " + compiled1);
 	}
 	boolean isNumber(String value){
@@ -206,8 +215,8 @@ t		}
 		return invalidate("type"input);
 	}
 	ArrayList<String> splitByValues(String inputParams){
-		auto inputParamsList = temp();
-		auto buffer = temp();
+		auto inputParamsList = ArrayList<String>();
+		auto buffer = StringBuilder();
 		auto depth = 0;
 		for(;;){
 t		}
