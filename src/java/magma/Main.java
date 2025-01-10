@@ -222,11 +222,23 @@ public class Main {
 
         if (statement.startsWith("if")) {
             final var substring = statement.substring("if".length());
-            final var index = substring.indexOf('{');
+            var index = -1;
+            var depth = 0;
+            for (int i = 0; i < substring.length(); i++) {
+                final var c = substring.charAt(i);
+                if (c == ')' && depth == 1) {
+                    index = i;
+                    break;
+                } else {
+                    if (c == '(') depth++;
+                    if (c == ')') depth--;
+                }
+            }
+
             if (index != -1) {
                 final var substring1 = substring.substring(0, index).strip();
-                if (substring1.startsWith("(") && substring1.endsWith(")")) {
-                    final var condition = substring1.substring(1, substring1.length() - 1);
+                if (substring1.startsWith("(")) {
+                    final var condition = substring1.substring(1);
                     final var value = compileValue(condition);
                     return "\n\t\tif(" + value + "){\n\t\t}";
                 }
@@ -283,7 +295,7 @@ public class Main {
         if (isSymbol(input.strip())) return input.strip();
         if (isNumber(input.strip())) return input.strip();
 
-        if(input.startsWith("!")) return "!" + compileValue(input);
+        if (input.startsWith("!")) return "!" + compileValue(input.substring(1));
 
         if (input.startsWith("new ")) {
             final var substring = input.substring("new ".length());
@@ -292,6 +304,12 @@ public class Main {
                 return optional.get();
             }
         }
+
+        final var stripped = input.strip();
+        if (stripped.startsWith("\"") && stripped.endsWith("\"")) return stripped;
+
+        final var optional1 = compileInvocation(input);
+        if (optional1.isPresent()) return optional1.get();
 
         final var index = input.lastIndexOf('.');
         if (index != -1) {
@@ -307,17 +325,14 @@ public class Main {
             return compileValue(substring) + "." + substring1;
         }
 
-        final var stripped = input.strip();
-        if (stripped.startsWith("\"") && stripped.endsWith("\"")) return stripped;
-
-        final var optional1 = compileInvocation(input);
-        if (optional1.isPresent()) return optional1.get();
-
         final var compiled = compileOperator(input, "+");
         if (compiled.isPresent()) return compiled.get();
 
         final var optional = compileOperator(input, "==");
         if (optional.isPresent()) return optional.get();
+
+        final var optional2 = compileOperator(input, "!=");
+        if (optional2.isPresent()) return optional2.get();
 
         final var index3 = stripped.indexOf('?');
         if (index3 != -1) {
