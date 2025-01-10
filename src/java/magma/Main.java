@@ -20,7 +20,8 @@ public class Main {
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 
     public static void main(String[] args) {
-        JavaPaths.collect().match(Main::compileSources, Optional::of)
+        JavaPaths.collect()
+                .match(Main::compileSources, Optional::of)
                 .ifPresent(Throwable::printStackTrace);
     }
 
@@ -204,7 +205,17 @@ public class Main {
         if (statement.startsWith("return ")) return "\n\t\treturn temp;";
         if (statement.startsWith("if")) return "\n\t\tif(temp){\n\t\t}";
 
-        if (statement.contains("=")) return "\n\t\tint temp = 0;";
+        final var index1 = statement.indexOf("=");
+        if (index1 != -1) {
+            final var substring = statement.substring(0, index1);
+            final var substring1 = statement.substring(index1 + 1);
+            if (substring1.endsWith(";")) {
+                final var compiled = compileDefinition(substring);
+                final var compiled1 = compileValue(substring1.substring(0, substring1.length() - ";".length()));
+                return "\n\t\tint " + compiled + " = " + compiled1 + ";";
+            }
+        }
+
         if (statement.endsWith(");")) {
             final var substring = statement.substring(0, statement.length() - ");".length());
             var index = -1;
@@ -259,7 +270,7 @@ public class Main {
             return compiled + " + " + compiled1;
         }
 
-        if(value.startsWith("\"") && value.endsWith("\"")) return value;
+        if (value.startsWith("\"") && value.endsWith("\"")) return value;
 
         return invalidate("value", value);
     }
