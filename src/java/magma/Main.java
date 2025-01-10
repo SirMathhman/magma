@@ -203,7 +203,15 @@ public class Main {
         if (statement.startsWith("for")) return "\n\t\tfor(;;){\nt\t\t}";
         if (statement.startsWith("while")) return "\n\t\twhile(1){\nt\t\t}";
 
-        if (statement.startsWith("return ")) return "\n\t\treturn temp;";
+        if (statement.startsWith("return ")) {
+            final var substring = statement.substring("return ".length());
+            if (substring.endsWith(";")) {
+                final var substring1 = substring.substring(0, substring.length() - ";".length());
+                final var compiled = compileValue(substring1);
+                return "\n\t\treturn " + compiled + ";";
+            }
+        }
+
         if (statement.startsWith("if")) return "\n\t\tif(temp){\n\t\t}";
 
         final var index1 = statement.indexOf("=");
@@ -217,32 +225,38 @@ public class Main {
             }
         }
 
-        if (statement.endsWith(");")) {
-            final var substring = statement.substring(0, statement.length() - ");".length());
-            var index = -1;
-            var depth = 0;
-            for (int i = substring.length() - 1; i >= 0; i--) {
-                final var c = substring.charAt(i);
-                if (c == '(' && depth == 0) {
-                    index = i;
-                    break;
-                } else {
-                    if (c == ')') depth++;
-                    if (c == '(') depth--;
-                }
-            }
-
-            if (index != -1) {
-                final var caller = substring.substring(0, index);
-                final var substring1 = substring.substring(index + 1);
-                final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip()), substring1);
-
-                final var newCaller = compileValue(caller.strip());
-                return "\n\t\t" + newCaller + "(" + compiled + ");";
-            }
+        if (statement.endsWith(";")) {
+            final var newCaller = compileInvocation(statement.substring(0, statement.length() - ";".length()));
+            if (newCaller.isPresent()) return "\n\t\t" + newCaller.get() + ";";
         }
 
         return invalidate("statement", statement);
+    }
+
+    private static Optional<String> compileInvocation(String statement) {
+        final var substring = statement.substring(0, statement.length() - ")".length());
+        var index = -1;
+        var depth = 0;
+        for (int i = substring.length() - 1; i >= 0; i--) {
+            final var c = substring.charAt(i);
+            if (c == '(' && depth == 0) {
+                index = i;
+                break;
+            } else {
+                if (c == ')') depth++;
+                if (c == '(') depth--;
+            }
+        }
+
+        if (index != -1) {
+            final var caller = substring.substring(0, index);
+            final var substring1 = substring.substring(index + 1);
+            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip()), substring1);
+
+            final var newCaller = compileValue(caller.strip());
+            return Optional.of("\n\t\t" + newCaller + "(" + compiled + ")");
+        }
+        return Optional.empty();
     }
 
     private static String compileValue(String input) {
@@ -277,12 +291,17 @@ public class Main {
         final var stripped = input.strip();
         if (stripped.startsWith("\"") && stripped.endsWith("\"")) return stripped;
 
-        return invalidate("value", input);
+        return compileInvocation(input).orElseGet(() -> invalidate("value", input));
+
     }
 
     private static boolean isNumber(String value) {
-        for (int i = 0; i < value.length(); i++) {
-            final var c = value.charAt(i);
+        final var value1 = value.startsWith("-")
+                ? value.substring(1)
+                : value;
+
+        for (int i = 0; i < value1.length(); i++) {
+            final var c = value1.charAt(i);
             if (!Character.isDigit(c)) return false;
         }
         return true;
