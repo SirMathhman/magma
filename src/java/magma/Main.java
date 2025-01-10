@@ -26,12 +26,10 @@ public class Main {
     }
 
     private static Optional<IOException> compileSources(Set<Path> sources) {
-        for (Path source : sources) {
-            final var maybeError = compileSource(source);
-            if (maybeError.isPresent()) return maybeError;
-        }
-
-        return Optional.empty();
+        return sources.stream()
+                .map(Main::compileSource)
+                .flatMap(Optional::stream)
+                .findFirst();
     }
 
     private static Optional<IOException> compileSource(Path source) {
