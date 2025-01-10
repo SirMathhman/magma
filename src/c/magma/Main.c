@@ -1,9 +1,10 @@
-package magma;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,7 +37,42 @@ public class Main {
     }
 
     private static String compile(String root) {
-        System.err.println("Unknown root: " + root);
-        return root;
+        final var segments = split(root);
+        final var output = new StringBuilder();
+        for (String segment : segments) {
+            output.append(compileRootMember(segment));
+        }
+        return output.toString();
+    }
+
+    private static ArrayList<String> split(String root) {
+        var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        var depth = 0;
+        for (int i = 0; i < root.length(); i++) {
+            var c = root.charAt(i);
+            buffer.append(c);
+            if (c == ';' && depth == 0) {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            } else {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
+            }
+        }
+        advance(buffer, segments);
+        return segments;
+    }
+
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
+    }
+
+    private static String compileRootMember(String rootSegment) {
+        if(rootSegment.startsWith("package ")) return "";
+        if(rootSegment.startsWith("import ")) return rootSegment;
+
+        System.err.println("Unknown root segment: " + rootSegment);
+        return rootSegment;
     }
 }

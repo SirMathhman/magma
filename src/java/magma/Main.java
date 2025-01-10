@@ -48,12 +48,16 @@ public class Main {
     private static ArrayList<String> split(String root) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
+        var depth = 0;
         for (int i = 0; i < root.length(); i++) {
             var c = root.charAt(i);
             buffer.append(c);
-            if (c == ';') {
+            if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
             }
         }
         advance(buffer, segments);
@@ -64,8 +68,11 @@ public class Main {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static String compileRootMember(String root) {
-        System.err.println("Unknown root: " + root);
-        return root;
+    private static String compileRootMember(String rootSegment) {
+        if(rootSegment.startsWith("package ")) return "";
+        if(rootSegment.startsWith("import ")) return rootSegment;
+
+        System.err.println("Unknown root segment: " + rootSegment);
+        return rootSegment;
     }
 }
