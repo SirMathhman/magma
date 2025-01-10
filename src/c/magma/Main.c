@@ -28,9 +28,7 @@ struct Main {
 	Optional<IOException> compileSource(Path source){
 		auto relative = SOURCE_DIRECTORY.relativize(source);
 		auto parent = relative.getParent();
-		auto namespace = ArrayList<String>();
-		for(;;){
-t		}m
+		auto namespace = convertPathToList(parent);
 		if(temp){
 		}
 		auto targetParent = TARGET_DIRECTORY;
@@ -42,6 +40,12 @@ t		}
 		auto nameWithoutExt = name.substring(0, name.indexOf('.'));
 		auto target = targetParent.resolve(nameWithoutExt + ".c");
 		return JavaPaths.readSafe(source).match(input -> JavaPaths.writeSafe(target, compile(input)), Optional::of);
+	}
+	List<String> convertPathToList(Path parent){
+		return IntStream.range(0, parent.getNameCount())
+                .mapToObj(parent::getName)
+                .map(Path::toString)
+                .toList();
 	}
 	String compile(String root){
 		return splitAndCompile(Main.splitByStatements, Main.compileRootMember, root);

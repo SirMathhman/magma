@@ -35,11 +35,7 @@ public class Main {
     private static Optional<IOException> compileSource(Path source) {
         final var relative = SOURCE_DIRECTORY.relativize(source);
         final var parent = relative.getParent();
-
-        var namespace = new ArrayList<String>();
-        for (int i = 0; i < parent.getNameCount(); i++) {
-            namespace.add(parent.getName(i).toString());
-        }
+        final var namespace = convertPathToList(parent);
 
         if (namespace.size() >= 2) {
             if (namespace.subList(0, 2).equals(List.of("magma", "java"))) return Optional.empty();
@@ -61,6 +57,13 @@ public class Main {
         final var nameWithoutExt = name.substring(0, name.indexOf('.'));
         final var target = targetParent.resolve(nameWithoutExt + ".c");
         return JavaPaths.readSafe(source).match(input -> JavaPaths.writeSafe(target, compile(input)), Optional::of);
+    }
+
+    private static List<String> convertPathToList(Path parent) {
+        return IntStream.range(0, parent.getNameCount())
+                .mapToObj(parent::getName)
+                .map(Path::toString)
+                .toList();
     }
 
     private static String compile(String root) {
