@@ -6,14 +6,23 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-struct Main {
-	void main(Slice<String> args){int temp = 0;int temp = 0;catch (IOException e) {
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
+struct Main {public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
+	void main(Slice<String> args){collect().match(Main::compileSources, Optional::of)
+                .ifPresent(Throwable::printStackTrace);
+	}
+	Optional<IOException> compileSources(Set<Path> sources){int temp = 0;return Optional.empty();
+	}
+	Optional<IOException> compileSource(Path source){int temp = 0;catch (IOException e) {
+            return Optional.of(e);
+        }
+	}
+	IOException> collect(){int temp = 0;catch (IOException e) {
+            return new Err<>(e);
         }
 	}
 	String compile(String root){return splitAndCompile(root, Main::compileRootMember);
