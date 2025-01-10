@@ -46,7 +46,7 @@ t		}
 	String compile(String root){
 		return splitAndCompile(Mai).splitByStatements, Main.compileRootMember, root);
 	}
-	String splitAndCompile(Function<String, List<String>> splitter, Function<String, String> compiler, String input){
+	String splitAndCompile(Function<StringList<String>> splitter, Function<StringString> compiler, String input){
 		int final var segments  = splitter.apply(input);
 		int final var output  = temp();
 		for(;;){
@@ -167,10 +167,18 @@ t		}
 		}
 		int final var inputParamType  = input.substring(0, separator);
 		int final var paramName  = input.substring(separator + 1);
-		int final var outputParamType  = inputParamType.endsWith("[]")
-                ? "Slice<" + inputParamType.substring(0, inputParamType.length() - 2) + ">"
-                : inputParamType;
+		int final var outputParamType  = compileType(inputParamType);
 		return outputParamType + " " + paramName;
+	}
+	String compileType(String input){
+		if(temp){
+		}
+		int final var genStart  = input.indexOf("<");
+		if(temp){
+		}
+		if(temp){
+		}
+		return invalidate("type"input);
 	}
 	ArrayList<String> splitByValues(String inputParams){
 		int final var inputParamsList  = temp();

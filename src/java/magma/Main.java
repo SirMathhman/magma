@@ -341,12 +341,25 @@ public class Main {
 
         final var inputParamType = input.substring(0, separator);
         final var paramName = input.substring(separator + 1);
-
-        final var outputParamType = inputParamType.endsWith("[]")
-                ? "Slice<" + inputParamType.substring(0, inputParamType.length() - 2) + ">"
-                : inputParamType;
-
+        final var outputParamType = compileType(inputParamType);
         return outputParamType + " " + paramName;
+    }
+
+    private static String compileType(String input) {
+        if (input.endsWith("[]")) return "Slice<" + input.substring(0, input.length() - 2) + ">";
+        final var genStart = input.indexOf("<");
+        if (genStart != -1) {
+            final var caller = input.substring(0, genStart);
+            final var substring = input.substring(genStart + 1);
+            if (substring.endsWith(">")) {
+                final var substring1 = substring.substring(0, substring.length() - ">".length());
+                final var s = splitAndCompile(Main::splitByValues, Main::compileType, substring1);
+                return caller + "<" + s + ">";
+            }
+        }
+
+        if (isSymbol(input)) return input;
+        return invalidate("type", input);
     }
 
     private static ArrayList<String> splitByValues(String inputParams) {
