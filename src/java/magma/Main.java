@@ -8,37 +8,47 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Main {
+    public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
+    public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
+
     public static void main(String[] args) {
-        final var sourceDirectory = Paths.get(".", "src", "java");
-        try (Stream<Path> stream = Files.walk(sourceDirectory)) {
-            final var sources = stream
-                    .filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .collect(Collectors.toSet());
-
+        try {
+            final var sources = collect();
             for (Path source : sources) {
-                final var relative = sourceDirectory.relativize(source);
-                final var parent = relative.getParent();
-                final var targetDirectory = Paths.get(".", "src", "c");
-                final var targetParent = targetDirectory.resolve(parent);
-                if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
-
-                final var name = relative.getFileName().toString();
-                final var nameWithoutExt = name.substring(0, name.indexOf('.'));
-                final var target = targetParent.resolve(nameWithoutExt + ".c");
-                final var input = Files.readString(source);
-                Files.writeString(target, compile(input));
+                compileSource(source);
             }
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
+    }
+
+    private static Set<Path> collect() throws IOException {
+        try (Stream<Path> stream = Files.walk(SOURCE_DIRECTORY)) {
+            return stream.filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".java"))
+                    .collect(Collectors.toSet());
+        }
+    }
+
+    private static void compileSource(Path source) throws IOException {
+        final var relative = SOURCE_DIRECTORY.relativize(source);
+        final var parent = relative.getParent();
+        final var targetParent = TARGET_DIRECTORY.resolve(parent);
+        if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
+
+        final var name = relative.getFileName().toString();
+        final var nameWithoutExt = name.substring(0, name.indexOf('.'));
+        final var target = targetParent.resolve(nameWithoutExt + ".c");
+        final var input = Files.readString(source);
+        Files.writeString(target, compile(input));
     }
 
     private static String compile(String root) {
