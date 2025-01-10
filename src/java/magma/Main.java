@@ -70,7 +70,16 @@ public class Main {
 
     private static String compileRootMember(String rootSegment) {
         if(rootSegment.startsWith("package ")) return "";
-        if(rootSegment.startsWith("import ")) return rootSegment;
+        if(rootSegment.startsWith("import ")) return rootSegment + "\n";
+
+        final var index = rootSegment.indexOf("class");
+        final var index1 = rootSegment.indexOf("{");
+
+        if(index != -1 && index1 != -1) {
+            final var name = rootSegment.substring(index + "class".length(), index1).strip();
+            final var content = rootSegment.substring(index1 + 1, rootSegment.length() - 1);
+            return "struct " + name + " {" + content + "}";
+        }
 
         System.err.println("Unknown root segment: " + rootSegment);
         return rootSegment;

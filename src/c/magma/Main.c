@@ -1,5 +1,3 @@
-
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,8 +5,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-public class Main {
+struct Main {
     public static void main(String[] args) {
         final var sourceDirectory = Paths.get(".", "src", "java");
         try (Stream<Path> stream = Files.walk(sourceDirectory)) {
@@ -40,7 +37,7 @@ public class Main {
         final var segments = split(root);
         final var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootMember(segment));
+            output.append(compileRootMember(segment.strip()));
         }
         return output.toString();
     }
@@ -70,7 +67,16 @@ public class Main {
 
     private static String compileRootMember(String rootSegment) {
         if(rootSegment.startsWith("package ")) return "";
-        if(rootSegment.startsWith("import ")) return rootSegment;
+        if(rootSegment.startsWith("import ")) return rootSegment + "\n";
+
+        final var index = rootSegment.indexOf("class");
+        final var index1 = rootSegment.indexOf("{");
+
+        if(index != -1 && index1 != -1) {
+            final var name = rootSegment.substring(index + "class".length(), index1).strip();
+            final var content = rootSegment.substring(index1 + 1, rootSegment.length() - 1);
+            return "struct " + name + " {" + content + "}";
+        }
 
         System.err.println("Unknown root segment: " + rootSegment);
         return rootSegment;
