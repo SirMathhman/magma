@@ -61,7 +61,7 @@ public class Main {
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
-            } else if(c == '}' && depth == 1) {
+            } else if (c == '}' && depth == 1) {
                 depth--;
                 advance(buffer, segments);
                 buffer = new StringBuilder();
@@ -79,14 +79,14 @@ public class Main {
     }
 
     private static String compileRootMember(String rootSegment) {
-        if(rootSegment.startsWith("package ")) return "";
-        if(rootSegment.startsWith("import ")) return rootSegment + "\n";
+        if (rootSegment.startsWith("package ")) return "";
+        if (rootSegment.startsWith("import ")) return rootSegment + "\n";
 
         final var classIndex = rootSegment.indexOf("class");
-        if(classIndex != -1 ) {
+        if (classIndex != -1) {
             final var withoutKeyword = rootSegment.substring(classIndex + "class".length());
             final var contentStartIndex = withoutKeyword.indexOf("{");
-            if (contentStartIndex  != -1) {
+            if (contentStartIndex != -1) {
                 final var name = withoutKeyword.substring(0, contentStartIndex).strip();
                 final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
                 final var compiled = splitAndCompile(content, Main::compileClassSegment);
@@ -104,12 +104,17 @@ public class Main {
 
     private static String compileClassSegment(String classSegment) {
         final var paramStart = classSegment.indexOf('(');
-        if(paramStart != -1) {
+        if (paramStart != -1) {
             final var substring = classSegment.substring(0, paramStart);
             final var index = substring.lastIndexOf(' ');
-            if(index != -1) {
-                final var name = substring.substring(index + 1);
-                return "\n\tvoid " + name + "(){\n\t}";
+            if (index != -1) {
+                final var substring1 = substring.substring(0, index);
+                final var index1 = substring1.lastIndexOf(' ');
+                if (index1 != -1) {
+                    final var type = substring1.substring(index1 + 1);
+                    final var name = substring.substring(index + 1);
+                    return "\n\t" + type + " " + name + "(){\n\t}";
+                }
             }
         }
         return invalidate("class segment", classSegment);
