@@ -82,14 +82,16 @@ public class Main {
         if(rootSegment.startsWith("package ")) return "";
         if(rootSegment.startsWith("import ")) return rootSegment + "\n";
 
-        final var index = rootSegment.indexOf("class");
-        final var index1 = rootSegment.indexOf("{");
-
-        if(index != -1 && index1 != -1) {
-            final var name = rootSegment.substring(index + "class".length(), index1).strip();
-            final var content = rootSegment.substring(index1 + 1, rootSegment.length() - 1);
-            final var compiled = splitAndCompile(content, Main::compileClassSegment);
-            return "struct " + name + " {" + compiled + "}";
+        final var classIndex = rootSegment.indexOf("class");
+        if(classIndex != -1 ) {
+            final var withoutKeyword = rootSegment.substring(classIndex + "class".length());
+            final var contentStartIndex = withoutKeyword.indexOf("{");
+            if (contentStartIndex  != -1) {
+                final var name = withoutKeyword.substring(0, contentStartIndex).strip();
+                final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
+                final var compiled = splitAndCompile(content, Main::compileClassSegment);
+                return "struct " + name + " {" + compiled + "\n}";
+            }
         }
 
         return invalidate("root segment", rootSegment);
@@ -101,6 +103,15 @@ public class Main {
     }
 
     private static String compileClassSegment(String classSegment) {
+        final var paramStart = classSegment.indexOf('(');
+        if(paramStart != -1) {
+            final var substring = classSegment.substring(0, paramStart);
+            final var index = substring.lastIndexOf(' ');
+            if(index != -1) {
+                final var name = substring.substring(index + 1);
+                return "\n\tvoid " + name + "(){\n\t}";
+            }
+        }
         return invalidate("class segment", classSegment);
     }
 }

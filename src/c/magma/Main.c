@@ -7,91 +7,36 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-struct Main {public static void main(String[] args) {
-        final var sourceDirectory = Paths.get(".", "src", "java");
-        try (Stream<Path> stream = Files.walk(sourceDirectory)) {
-            final var sources = stream
-                    .filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .collect(Collectors.toSet());
-
-            for (Path source : sources) {
-                final var relative = sourceDirectory.relativize(source);
-                final var parent = relative.getParent();
-                final var targetDirectory = Paths.get(".", "src", "c");
-                final var targetParent = targetDirectory.resolve(parent);
-                if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
-
-                final var name = relative.getFileName().toString();
-                final var nameWithoutExt = name.substring(0, name.indexOf('.'));
-                final var target = targetParent.resolve(nameWithoutExt + ".c");
-                final var input = Files.readString(source);
-                Files.writeString(target, compile(input));
-            }
-        } catch (IOException e) {
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
-        }
-    }
-
-    private static String compile(String root) {
-        return splitAndCompile(root, Main::compileRootMember);
-    }
-
-    private static String splitAndCompile(String root, Function<String, String> compiler) {
-        final var segments = split(root);
-        final var output = new StringBuilder();
-        for (String segment : segments) {
-            output.append(compiler.apply(segment.strip()));
-        }
-        return output.toString();
-    }
-
-    private static List<String> split(String root) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
-            buffer.append(c);
-            if (c == ';' && depth == 0) {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            } else {
-                if (c == '{') depth++;
-                if (c == '}') depth--;
-            }
-        }
-        advance(buffer, segments);
-        return segments;
-    }
-
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+struct Main {
+	void main(){
+	}
+	void compile(){
+	}
+	void splitAndCompile(){
+	}
+	void split(){
+	}advance(buffer, segments);return segments;
+}private static void advance(StringBuilder buffer, ArrayList<String> segments) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
-    }
-
-    private static String compileRootMember(String rootSegment) {
-        if(rootSegment.startsWith("package ")) return "";
-        if(rootSegment.startsWith("import ")) return rootSegment + "\n";
-
-        final var index = rootSegment.indexOf("class");
-        final var index1 = rootSegment.indexOf("{");
-
-        if(index != -1 && index1 != -1) {
-            final var name = rootSegment.substring(index + "class".length(), index1).strip();
-            final var content = rootSegment.substring(index1 + 1, rootSegment.length() - 1);
-            final var compiled = splitAndCompile(content, Main::compileClassSegment);
-            return "struct " + name + " {" + compiled + "}";
+    }struct Index = rootSegment.indexOf("class");
+        if(classIndex != -1 ) {
+	void rootSegment.substring(){
+	}
+	void withoutKeyword.indexOf(){
+	}
+	void invalidate(){
+	}
+	void invalidate(){
+	}return rootSegment;
+	void compileClassSegment(){
+	}if(paramStart != -1) {
+            final var substring = classSegment.substring(0, paramStart);
+            final var index = substring.lastIndexOf(' ');
+            if(index != -1) {
+                final var name = substring.substring(index + 1);
+                return "\n\tvoid " + name + "(){\n\t}";
+            }
         }
-
-        return invalidate("root segment", rootSegment);
-    }
-
-    private static String invalidate(String type, String rootSegment) {
-        System.err.println("Unknown " + type + ": " + rootSegment);
-        return rootSegment;
-    }
-
-    private static String compileClassSegment(String classSegment) {
-        return invalidate("class segment", classSegment);
-    }}
+	void invalidate(){
+	}}
+}
