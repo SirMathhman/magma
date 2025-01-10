@@ -333,15 +333,21 @@ public class Main {
     }
 
     private static String compileDefinition(String input) {
-        final var separator = input.lastIndexOf(' ');
+        final var stripped = input.strip();
+        final var separator = stripped.lastIndexOf(' ');
         if (separator == -1) {
-            System.err.println("Invalid param: " + input);
-            return input;
+            System.err.println("Invalid param: " + stripped);
+            return stripped;
         }
 
-        final var inputParamType = input.substring(0, separator);
-        final var paramName = input.substring(separator + 1);
-        final var outputParamType = compileType(inputParamType);
+        final var inputParamType = stripped.substring(0, separator);
+        final var paramName = stripped.substring(separator + 1);
+        final var index = inputParamType.lastIndexOf(' ');
+        final var inputParamType1 = index == -1
+                ? inputParamType
+                : inputParamType.substring(index + 1);
+
+        final var outputParamType = compileType(inputParamType1);
         return outputParamType + " " + paramName;
     }
 
