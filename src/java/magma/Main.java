@@ -189,8 +189,10 @@ public class Main {
     }
 
     private static String compileStatement(String statement) {
-        if (statement.contains("=")) return "int temp = 0;";
+        if (statement.contains("=")) return "\n\t\tint temp = 0;";
         if (statement.endsWith(");")) return "\n\t\ttemp();";
+        if (statement.startsWith("return ")) return "\n\t\treturn temp;";
+        if (statement.startsWith("if")) return "\n\t\tif(temp){\n\t\t}";
 
         return invalidate("statement", statement);
     }
