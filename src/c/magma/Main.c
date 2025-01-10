@@ -35,7 +35,8 @@ public class Main {
         }
     }
 
-    private static String compile(String input) {
-        return input;
+    private static String compile(String root) {
+        System.err.println("Unknown root: " + root);
+        return root;
     }
 }
