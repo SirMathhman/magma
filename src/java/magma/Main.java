@@ -14,14 +14,13 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 
     public static void main(String[] args) {
-        collect().match(Main::compileSources, Optional::of)
+        JavaPaths.collect().match(Main::compileSources, Optional::of)
                 .ifPresent(Throwable::printStackTrace);
     }
 
@@ -63,16 +62,6 @@ public class Main {
         final var nameWithoutExt = name.substring(0, name.indexOf('.'));
         final var target = targetParent.resolve(nameWithoutExt + ".c");
         return JavaPaths.readSafe(source).match(input -> JavaPaths.writeSafe(target, compile(input)), Optional::of);
-    }
-
-    private static Result<Set<Path>, IOException> collect() {
-        try (Stream<Path> stream = Files.walk(SOURCE_DIRECTORY)) {
-            return new Ok<>(stream.filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .collect(Collectors.toSet()));
-        } catch (IOException e) {
-            return new Err<>(e);
-        }
     }
 
     private static String compile(String root) {
@@ -117,8 +106,8 @@ public class Main {
                 advance(segments, buffer);
                 buffer = new StringBuilder();
             } else {
-                if (c == '{') depth++;
-                if (c == '}') depth--;
+                if (c == '{' || c == '(') depth++;
+                if (c == '}' || c == ')') depth--;
             }
         }
         advance(segments, buffer);
@@ -145,9 +134,8 @@ public class Main {
             }
         }
 
-        if (rootSegment.contains("record")) {
-            return "struct Temp {\n}";
-        }
+        if (rootSegment.contains("record")) return "struct Temp {\n}";
+        if (rootSegment.contains("interface ")) return "struct Temp {\n}";
 
         return invalidate("root segment", rootSegment);
     }
