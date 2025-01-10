@@ -220,7 +220,18 @@ public class Main {
             }
         }
 
-        if (statement.startsWith("if")) return "\n\t\tif(temp){\n\t\t}";
+        if (statement.startsWith("if")) {
+            final var substring = statement.substring("if".length());
+            final var index = substring.indexOf('{');
+            if (index != -1) {
+                final var substring1 = substring.substring(0, index).strip();
+                if (substring1.startsWith("(") && substring1.endsWith(")")) {
+                    final var condition = substring1.substring(1, substring1.length() - 1);
+                    final var value = compileValue(condition);
+                    return "\n\t\tif(" + value + "){\n\t\t}";
+                }
+            }
+        }
 
         final var index1 = statement.indexOf("=");
         if (index1 != -1) {
@@ -271,6 +282,8 @@ public class Main {
     private static String compileValue(String input) {
         if (isSymbol(input.strip())) return input.strip();
         if (isNumber(input.strip())) return input.strip();
+
+        if(input.startsWith("!")) return "!" + compileValue(input);
 
         if (input.startsWith("new ")) {
             final var substring = input.substring("new ".length());

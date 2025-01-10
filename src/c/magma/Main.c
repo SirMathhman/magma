@@ -29,12 +29,12 @@ struct Main {
 		auto relative = SOURCE_DIRECTORY.relativize(source);
 		auto parent = relative.getParent();
 		auto namespace = convertPathToList(parent);
-		if(temp){
+		if(namespace.size() >= 2){
 		}
 		auto targetParent = TARGET_DIRECTORY;
 		for(;;){
 t		}
-		if(temp){
+		if(!Files.exists(targetParent)){
 		}
 		auto name = relative.getFileName().toString();
 		auto nameWithoutExt = name.substring(0, name.indexOf('.'));
@@ -70,21 +70,12 @@ t		}
 		return segments;
 	}
 	void advance(List<String> segments, StringBuilder buffer){
-		if(temp){
-		}
+		if (!buffer.isEmpty()) segments.add(buffer.toString());
 	}
-	String compileRootMember(String rootSegment){
-		if(temp){
-		}
-		if(temp){
-		}
+	String compileRootMember(String rootSegment){if (rootSegment.startsWith("package ")) return "";if (rootSegment.startsWith("import ")) return rootSegment + "\n";
 		auto classIndex = rootSegment.indexOf("class");
-		if(temp){
-		}
-		if(temp){
-		}
-		if(temp){
-		}
+		if(classIndex != -1){
+		}if (rootSegment.contains("record")) return "struct Temp {\n}";if (rootSegment.contains("interface ")) return "struct Temp {\n}";
 		return invalidate("root segment"rootSegment);
 	}
 	String invalidate(String type, String rootSegment){
@@ -92,32 +83,31 @@ t		}
 		return rootSegment;
 	}
 	String compileClassSegment(String classSegment){
-		if(temp){
+		if(classSegment.endsWith(";")){
 		}
 		auto paramStart = classSegment.indexOf('(');
-		if(temp){
+		if(paramStart != -1){
 		}
 		return invalidate("class segment"classSegment);
 	}
 	String compileStatement(String statement){
-		if(temp){
+		if(statement.startsWith("for")) return "\n\t\tfor(;;){
 		}
-		if(temp){
+		if(statement.startsWith("while")) return "\n\t\twhile(1){
 		}
-		if(temp){
+		if(statement.startsWith("return ")){
 		}
-		if(temp){
+		if(statement.startsWith("if")){
 		}
 		auto index1 = statement.indexOf("=");
-		if(temp){
+		if(index1 != -1){
 		}
-		if(temp){
+		if(statement.endsWith(";")){
 		}
 		return invalidate("statement"statement);
 	}
 	Optional<String> compileInvocation(String statement){
-		if(temp){
-		}
+		if (!statement.endsWith(")")) return Optional.empty();
 		auto substring = statement.substring(0, statement.length() - ")".length());
 		return findArgStart(substring).map(index -> {
             final var caller = substring.substring(0, index);
@@ -135,39 +125,31 @@ t		}
 		return Optional.empty();
 	}
 	String compileValue(String input){
-		if(temp){
-		}
-		if(temp){
-		}
-		if(temp){
+		if (isSymbol(input.strip())) return input.strip();
+		if (isNumber(input.strip())) return input.strip();
+		if(input.startsWith("new ")){
 		}
 		auto index = input.lastIndexOf('.');
-		if(temp){
+		if(index != -1){
 		}
 		auto index1 = input.lastIndexOf("::");
-		if(temp){
+		if(index1 != -1){
 		}
-		auto stripped = input.strip();
-		if(temp){
-		}
+		auto stripped = input.strip();if (stripped.startsWith("\"") && stripped.endsWith("\"")) return stripped;
 		auto optional1 = compileInvocation(input);
-		if(temp){
-		}
+		if (optional1.isPresent()) return optional1.get();
 		auto compiled = compileOperator(input"+");
-		if(temp){
-		}
+		if (compiled.isPresent()) return compiled.get();
 		auto optional = compileOperator(input"==");
-		if(temp){
-		}
+		if (optional.isPresent()) return optional.get();
 		auto index3 = stripped.indexOf('?');
-		if(temp){
+		if(index3 != -1){
 		}
 		return invalidate("value"input);
 	}
 	Optional<String> compileOperator(String input, String operator){
 		auto index2 = input.indexOf(operator);
-		if(temp){
-		}
+		if (index2 = = -1) return Optional.empty();
 		auto compiled = compileValue(input.substring(0, index2));
 		auto compiled1 = compileValue(input.substring(index2 + operator.length()));
 		return Optional.of(compiled + " " + operator + " " + compiled1);
@@ -194,7 +176,7 @@ t		}
 	String compileDefinition(String input){
 		auto stripped = input.strip();
 		auto separator = stripped.lastIndexOf(' ');
-		if(temp){
+		if(separator == -1){
 		}
 		auto inputParamType = stripped.substring(0, separator);
 		auto paramName = stripped.substring(separator + 1);
@@ -206,16 +188,10 @@ t		}
 		auto outputParamType = compileType(inputParamType1);
 		return outputParamType + " " + paramName;
 	}
-	String compileType(String input){
-		if(temp){
-		}
-		if(temp){
-		}
+	String compileType(String input){if (input.equals("var")) return "auto";if (input.endsWith("[]")) return "Slice<" + input.substring(0, input.length() - 2) + ">";
 		auto genStart = input.indexOf("<");
-		if(temp){
-		}
-		if(temp){
-		}
+		if(genStart != -1){
+		}if (isSymbol(input)) return input;
 		return invalidate("type"input);
 	}
 	ArrayList<String> splitByValues(String inputParams){
