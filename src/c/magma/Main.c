@@ -18,9 +18,10 @@ struct Main {public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "
 	Optional<IOException> compileSources(Set<Path> sources){int temp = 0;
 		temp();
 	}
-	Optional<IOException> compileSource(Path source){int temp = 0;catch (IOException e) {
-            return Optional.of(e);
-        }
+	Optional<IOException> compileSource(Path source){int temp = 0;int temp = 0;int temp = 0;if (!Files.exists(targetParent)) {
+            return JavaPaths.createDirectoriesSafe(targetParent);
+        }int temp = 0;int temp = 0;int temp = 0;
+		temp();
 	}
 	IOException> collect(){int temp = 0;catch (IOException e) {
             return new Err<>(e);
@@ -41,6 +42,6 @@ struct Main {public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "
 	String compileRootMember(String rootSegment){if (rootSegment.startsWith("package ")) return "";if (rootSegment.startsWith("import ")) return rootSegment + "\n";int temp = 0;int temp = 0;private static String invalidate(String type, String rootSegment) {
         System.err.println("Unknown " + type + ": " + rootSegment);
         return rootSegment;
-    }int temp = 0;int temp = 0;int temp = 0;int temp = 0;int temp = 0;int temp = 0;
+    }int temp = 0;int temp = 0;int temp = 0;int temp = 0;int temp = 0;
 	}
 }

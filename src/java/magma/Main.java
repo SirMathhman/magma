@@ -33,21 +33,17 @@ public class Main {
     }
 
     private static Optional<IOException> compileSource(Path source) {
-        try {
-            final var relative = SOURCE_DIRECTORY.relativize(source);
-            final var parent = relative.getParent();
-            final var targetParent = TARGET_DIRECTORY.resolve(parent);
-            if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
-
-            final var name = relative.getFileName().toString();
-            final var nameWithoutExt = name.substring(0, name.indexOf('.'));
-            final var target = targetParent.resolve(nameWithoutExt + ".c");
-            final var input = Files.readString(source);
-            Files.writeString(target, compile(input));
-            return Optional.empty();
-        } catch (IOException e) {
-            return Optional.of(e);
+        final var relative = SOURCE_DIRECTORY.relativize(source);
+        final var parent = relative.getParent();
+        final var targetParent = TARGET_DIRECTORY.resolve(parent);
+        if (!Files.exists(targetParent)) {
+            return JavaPaths.createDirectoriesSafe(targetParent);
         }
+
+        final var name = relative.getFileName().toString();
+        final var nameWithoutExt = name.substring(0, name.indexOf('.'));
+        final var target = targetParent.resolve(nameWithoutExt + ".c");
+        return JavaPaths.readSafe(source).match(input -> JavaPaths.writeSafe(target, compile(input)), Optional::of);
     }
 
     private static Result<Set<Path>, IOException> collect() {
