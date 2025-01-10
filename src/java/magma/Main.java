@@ -240,26 +240,26 @@ public class Main {
 
     private static Optional<String> compileInvocation(String statement) {
         final var substring = statement.substring(0, statement.length() - ")".length());
-        var index = -1;
-        var depth = 0;
-        for (int i = substring.length() - 1; i >= 0; i--) {
-            final var c = substring.charAt(i);
-            if (c == '(' && depth == 0) {
-                index = i;
-                break;
-            } else {
-                if (c == ')') depth++;
-                if (c == '(') depth--;
-            }
-        }
-
-        if (index != -1) {
+        return findArgStart(substring).map(index -> {
             final var caller = substring.substring(0, index);
             final var substring1 = substring.substring(index + 1);
             final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip()), substring1);
 
             final var newCaller = compileValue(caller.strip());
-            return Optional.of(newCaller + "(" + compiled + ")");
+            return newCaller + "(" + compiled + ")";
+        });
+    }
+
+    private static Optional<Integer> findArgStart(String substring) {
+        var depth = 0;
+        for (int i = substring.length() - 1; i >= 0; i--) {
+            final var c = substring.charAt(i);
+            if (c == '(' && depth == 0) {
+                return Optional.of(i);
+            } else {
+                if (c == ')') depth++;
+                if (c == '(') depth--;
+            }
         }
         return Optional.empty();
     }
@@ -269,6 +269,8 @@ public class Main {
         if (isNumber(input.strip())) return input.strip();
 
         if (input.startsWith("new ")) {
+            final var substring = input.substring("new ".length());
+            compileInvocation(substring);
             return "temp()";
         }
 
