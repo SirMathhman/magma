@@ -66,7 +66,7 @@ public class Main {
             var c = queue.pop();
             buffer.append(c);
 
-            if(c == '\'') {
+            if (c == '\'') {
                 buffer.append(queue.pop());
                 buffer.append(queue.pop());
                 continue;
@@ -119,15 +119,22 @@ public class Main {
     private static String compileClassSegment(String classSegment) {
         final var paramStart = classSegment.indexOf('(');
         if (paramStart != -1) {
-            final var substring = classSegment.substring(0, paramStart);
-            final var index = substring.lastIndexOf(' ');
-            if (index != -1) {
-                final var substring1 = substring.substring(0, index);
-                final var index1 = substring1.lastIndexOf(' ');
-                if (index1 != -1) {
-                    final var type = substring1.substring(index1 + 1);
-                    final var name = substring.substring(index + 1);
-                    return "\n\t" + type + " " + name + "(){\n\t}";
+            final var beforeParamStart = classSegment.substring(0, paramStart);
+            final var afterParamStart = classSegment.substring(paramStart + 1);
+
+            final var paramEnd = afterParamStart.indexOf(')');
+            if (paramEnd != -1) {
+                final var nameSeparator = beforeParamStart.lastIndexOf(' ');
+                if (nameSeparator != -1) {
+                    final var beforeName = beforeParamStart.substring(0, nameSeparator);
+                    final var typeSeparator = beforeName.lastIndexOf(' ');
+                    if (typeSeparator != -1) {
+                        final var type = beforeName.substring(typeSeparator + 1);
+                        final var name = beforeParamStart.substring(nameSeparator + 1);
+                        final var params = afterParamStart.substring(0, paramEnd);
+
+                        return "\n\t" + type + " " + name + "(" + params + "){\n\t}";
+                    }
                 }
             }
         }

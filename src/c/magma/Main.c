@@ -10,16 +10,16 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 struct Main {
-	void main(){
+	void main(String[] args){
 	}
-	String compile(){
+	String compile(String root){
 	}
-	String splitAndCompile(){
+	String splitAndCompile(String root, Function<String, String> compiler){
 	}
-	List<String> split(){
+	List<String> split(String root){
 	}
-	void advance(){
+	void advance(StringBuilder buffer, ArrayList<String> segments){
 	}
-	String compileRootMember(){
+	String compileRootMember(String rootSegment){
 	}
 }
