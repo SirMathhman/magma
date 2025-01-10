@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,15 +39,19 @@ public class Main {
     }
 
     private static String compile(String root) {
+        return splitAndCompile(root, Main::compileRootMember);
+    }
+
+    private static String splitAndCompile(String root, Function<String, String> compiler) {
         final var segments = split(root);
         final var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootMember(segment.strip()));
+            output.append(compiler.apply(segment.strip()));
         }
         return output.toString();
     }
 
-    private static ArrayList<String> split(String root) {
+    private static List<String> split(String root) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -53,6 +59,10 @@ public class Main {
             var c = root.charAt(i);
             buffer.append(c);
             if (c == ';' && depth == 0) {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            } else if(c == '}' && depth == 1) {
+                depth--;
                 advance(buffer, segments);
                 buffer = new StringBuilder();
             } else {
@@ -78,10 +88,19 @@ public class Main {
         if(index != -1 && index1 != -1) {
             final var name = rootSegment.substring(index + "class".length(), index1).strip();
             final var content = rootSegment.substring(index1 + 1, rootSegment.length() - 1);
-            return "struct " + name + " {" + content + "}";
+            final var compiled = splitAndCompile(content, Main::compileClassSegment);
+            return "struct " + name + " {" + compiled + "}";
         }
 
-        System.err.println("Unknown root segment: " + rootSegment);
+        return invalidate("root segment", rootSegment);
+    }
+
+    private static String invalidate(String type, String rootSegment) {
+        System.err.println("Unknown " + type + ": " + rootSegment);
         return rootSegment;
+    }
+
+    private static String compileClassSegment(String classSegment) {
+        return invalidate("class segment", classSegment);
     }
 }
