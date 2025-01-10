@@ -201,12 +201,45 @@ public class Main {
     }
 
     private static String compileStatement(String statement) {
-        if (statement.contains("=")) return "\n\t\tint temp = 0;";
-        if (statement.endsWith(");")) return "\n\t\ttemp();";
         if (statement.startsWith("return ")) return "\n\t\treturn temp;";
         if (statement.startsWith("if")) return "\n\t\tif(temp){\n\t\t}";
 
+        if (statement.contains("=")) return "\n\t\tint temp = 0;";
+        if (statement.endsWith(");")) {
+            final var substring = statement.substring(0, statement.length() - ");".length());
+            final var index = substring.indexOf('(');
+            if (index != -1) {
+                final var caller = substring.substring(0, index);
+                final var newCaller = compileValue(caller);
+                return "\n\t\t" + newCaller + "();";
+            }
+        }
+
         return invalidate("statement", statement);
+    }
+
+    private static String compileValue(String value) {
+        if (isSymbol(value)) {
+            return value;
+        }
+
+        final var index = value.lastIndexOf('.');
+        if (index != -1) {
+            final var substring = value.substring(0, index);
+            final var substring1 = value.substring(index + 1);
+            return compileValue(substring) + "." + substring1;
+        }
+
+        return invalidate("value", value);
+    }
+
+    private static boolean isSymbol(String value) {
+        for (int i = 0; i < value.length(); i++) {
+            final var c = value.charAt(i);
+            if (!Character.isLetter(c)) return false;
+        }
+
+        return true;
     }
 
     private static String compileParams(ArrayList<String> inputParamsList) {

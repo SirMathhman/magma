@@ -15,34 +15,36 @@ struct Main {
 	public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
 	public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 	void main(Slice<String> args){
-		temp();
+		JavaPaths.collect();
 	}
 	Optional<IOException> compileSources(Set<Path> sources){
 		int temp = 0;
-		temp();
+		return temp;
 	}
 	Optional<IOException> compileSource(Path source){
 		int temp = 0;
 		int temp = 0;
 		int temp = 0;
 		int temp = 0;
+		if(temp){
+		}
+		int temp = 0;
+		int temp = 0;
+		if(temp){
+		}
 		int temp = 0;
 		int temp = 0;
 		int temp = 0;
-		int temp = 0;
-		int temp = 0;
-		int temp = 0;
-		int temp = 0;
-		temp();
+		return temp;
 	}
 	String compile(String root){
-		temp();
+		return temp;
 	}
 	String splitAndCompile(String root, String root Function<String, String> compiler){
 		int temp = 0;
 		int temp = 0;
 		int temp = 0;
-		temp();
+		return temp;
 	}
 	List<String> splitByStatements(String root){
 		int temp = 0;
@@ -50,11 +52,12 @@ struct Main {
 		int temp = 0;
 		int temp = 0;
 		int temp = 0;
-		temp();
+		advance();
 		return temp;
 	}
 	void advance(List<String> segments, List<String> segments StringBuilder buffer){
-		temp();
+		if(temp){
+		}
 	}
 	String compileRootMember(String rootSegment){
 		if(temp){
@@ -62,41 +65,58 @@ struct Main {
 		if(temp){
 		}
 		int temp = 0;
-		int temp = 0;
 		if(temp){
 		}
 		if(temp){
 		}
-		temp();
+		if(temp){
+		}
+		return temp;
 	}
 	String invalidate(String type, String type String rootSegment){
-		temp();
+		System.err.println();
 		return temp;
 	}
 	String compileClassSegment(String classSegment){
+		if(temp){
+		}
 		int temp = 0;
-		int temp = 0;
-		int temp = 0;
-		temp();
+		if(temp){
+		}
+		return temp;
 	}
 	String compileStatement(String statement){
+		if(temp){
+		}
+		if(temp){
+		}
+		if(temp){
+		}
+		if(temp){
+		}
+		return temp;
+	}
+	String compileValue(String value){
+		if(temp){
+		}
 		int temp = 0;
 		if(temp){
 		}
-		if(temp){
-		}
-		if(temp){
-		}
-		temp();
+		return temp;
+	}
+	boolean isSymbol(String value){
+		int temp = 0;
+		return temp;
 	}
 	String compileParams(ArrayList<String> inputParamsList){
 		int temp = 0;
 		int temp = 0;
-		temp();
+		return temp;
 	}
 	String compileDefinition(String input){
 		int temp = 0;
-		int temp = 0;
+		if(temp){
+		}
 		int temp = 0;
 		int temp = 0;
 		int temp = 0;
@@ -107,7 +127,7 @@ struct Main {
 		int temp = 0;
 		int temp = 0;
 		int temp = 0;
-		temp();
+		advance();
 		return temp;
 	}
 }
