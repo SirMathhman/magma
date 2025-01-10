@@ -134,39 +134,46 @@ public class Main {
                         final var name = beforeParamStart.substring(nameSeparator + 1);
                         final var inputParams = afterParamStart.substring(0, paramEnd);
                         final var inputParamsList = splitByValues(inputParams);
-
-                        Optional<StringBuilder> maybeOutputParams = Optional.empty();
-                        for (String inputParam : inputParamsList) {
-                            final var stripped = inputParam.strip();
-                            if (stripped.isEmpty()) continue;
-
-                            final var separator = stripped.lastIndexOf(' ');
-                            if (separator != -1) {
-                                final var inputParamType = stripped.substring(0, separator);
-                                final var paramName = stripped.substring(separator + 1);
-
-                                final var outputParamType = inputParamType.endsWith("[]")
-                                        ? "Slice<" + inputParamType.substring(0, inputParamType.length() - 2) + ">"
-                                        : inputParamType;
-
-                                final var outputParam = outputParamType + " " + paramName;
-                                if (maybeOutputParams.isEmpty()) {
-                                    maybeOutputParams = Optional.of(new StringBuilder(outputParam));
-                                } else {
-                                    maybeOutputParams = Optional.of(maybeOutputParams.get().append(", ").append(outputParam));
-                                }
-                            } else {
-                                System.err.println("Invalid param: " + stripped);
-                            }
-                        }
-
-                        final var outputParams = maybeOutputParams.map(StringBuilder::toString).orElse("");
+                        final var outputParams = compileParams(inputParamsList);
                         return "\n\t" + type + " " + name + "(" + outputParams + "){\n\t}";
                     }
                 }
             }
         }
         return invalidate("class segment", classSegment);
+    }
+
+    private static String compileParams(ArrayList<String> inputParamsList) {
+        Optional<StringBuilder> maybeOutputParams = Optional.empty();
+        for (String inputParam : inputParamsList) {
+            final var stripped = inputParam.strip();
+            if (stripped.isEmpty()) continue;
+
+            maybeOutputParams = compileParameter(maybeOutputParams, stripped);
+        }
+
+        return maybeOutputParams.map(StringBuilder::toString).orElse("");
+    }
+
+    private static Optional<StringBuilder> compileParameter(Optional<StringBuilder> maybeOutputParams, String stripped) {
+        final var separator = stripped.lastIndexOf(' ');
+        if (separator == -1) {
+            System.err.println("Invalid param: " + stripped);
+            return maybeOutputParams;
+        }
+
+        final var inputParamType = stripped.substring(0, separator);
+        final var paramName = stripped.substring(separator + 1);
+
+        final var outputParamType = inputParamType.endsWith("[]")
+                ? "Slice<" + inputParamType.substring(0, inputParamType.length() - 2) + ">"
+                : inputParamType;
+
+        final var outputParam = outputParamType + " " + paramName;
+
+        return maybeOutputParams
+                .map(stringBuilder -> stringBuilder.append(", ").append(outputParam))
+                .or(() -> Optional.of(new StringBuilder(outputParam)));
     }
 
     private static ArrayList<String> splitByValues(String inputParams) {
