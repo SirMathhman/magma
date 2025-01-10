@@ -40,7 +40,7 @@ public class Main {
         final var segments = split(root);
         final var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootMember(segment));
+            output.append(compileRootMember(segment.strip()));
         }
         return output.toString();
     }
