@@ -27,8 +27,24 @@ struct Main {public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "
 	String splitAndCompile(String root, String root Function<String, String> compiler){int temp = 0;int temp = 0;int temp = 0;
 		temp();
 	}
-	List<String> splitByStatements(String root){int temp = 0;int temp = 0;int temp = 0;int temp = 0;int temp = 0;private static void advance(List<String> segments, StringBuilder buffer) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
-    }int temp = 0;int temp = 0;int temp = 0;int temp = 0;
+	List<String> splitByStatements(String root){int temp = 0;int temp = 0;int temp = 0;int temp = 0;int temp = 0;
+		temp();return segments;
+	}
+	void advance(List<String> segments, List<String> segments StringBuilder buffer){
+		temp();
+	}
+	String compileRootMember(String rootSegment){if (rootSegment.startsWith("package ")) return "";if (rootSegment.startsWith("import ")) return rootSegment + "\n";int temp = 0;int temp = 0;private static String invalidate(String type, String rootSegment) {
+        System.err.println("Unknown " + type + ": " + rootSegment);
+        return rootSegment;
+    }int temp = 0;int temp = 0;";
+		temp();
+	}
+	String compileParams(ArrayList<String> inputParamsList){int temp = 0;int temp = 0;
+		temp();
+	}
+	String compileDefinition(String input){int temp = 0;int temp = 0;int temp = 0;int temp = 0;int temp = 0;return outputParamType + " " + paramName;
+	}
+	ArrayList<String> splitByValues(String inputParams){int temp = 0;int temp = 0;int temp = 0;int temp = 0;
+		temp();return inputParamsList;
 	}
 }

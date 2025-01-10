@@ -93,7 +93,12 @@ public class Main {
             buffer.append(c);
 
             if (c == '\'') {
-                buffer.append(queue.pop());
+                final var popped = queue.pop();
+                buffer.append(popped);
+                if (popped == '\\') {
+                    buffer.append(queue.pop());
+                }
+
                 buffer.append(queue.pop());
                 continue;
             }
