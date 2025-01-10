@@ -193,17 +193,13 @@ public class Main {
             final var stripped = inputParam.strip();
             if (stripped.isEmpty()) continue;
 
-            maybeOutputParams = compileParameter(maybeOutputParams, stripped);
+            final var outputParam = compileDefinition(stripped);
+            maybeOutputParams = maybeOutputParams
+                    .map(stringBuilder -> stringBuilder.append(", ").append(outputParam))
+                    .or(() -> Optional.of(new StringBuilder(outputParam)));
         }
 
         return maybeOutputParams.map(StringBuilder::toString).orElse("");
-    }
-
-    private static Optional<StringBuilder> compileParameter(Optional<StringBuilder> maybeOutputParams, String input) {
-        final var outputParam = compileDefinition(input);
-        return maybeOutputParams
-                .map(stringBuilder -> stringBuilder.append(", ").append(outputParam))
-                .or(() -> Optional.of(new StringBuilder(outputParam)));
     }
 
     private static String compileDefinition(String input) {
