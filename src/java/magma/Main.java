@@ -19,36 +19,45 @@ public class Main {
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 
     public static void main(String[] args) {
+        collect().match(Main::compileSources, Optional::of)
+                .ifPresent(Throwable::printStackTrace);
+    }
+
+    private static Optional<IOException> compileSources(Set<Path> sources) {
+        for (Path source : sources) {
+            final var maybeError = compileSource(source);
+            if (maybeError.isPresent()) return maybeError;
+        }
+
+        return Optional.empty();
+    }
+
+    private static Optional<IOException> compileSource(Path source) {
         try {
-            final var sources = collect();
-            for (Path source : sources) {
-                compileSource(source);
-            }
+            final var relative = SOURCE_DIRECTORY.relativize(source);
+            final var parent = relative.getParent();
+            final var targetParent = TARGET_DIRECTORY.resolve(parent);
+            if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
+
+            final var name = relative.getFileName().toString();
+            final var nameWithoutExt = name.substring(0, name.indexOf('.'));
+            final var target = targetParent.resolve(nameWithoutExt + ".c");
+            final var input = Files.readString(source);
+            Files.writeString(target, compile(input));
+            return Optional.empty();
         } catch (IOException e) {
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
+            return Optional.of(e);
         }
     }
 
-    private static Set<Path> collect() throws IOException {
+    private static Result<Set<Path>, IOException> collect() {
         try (Stream<Path> stream = Files.walk(SOURCE_DIRECTORY)) {
-            return stream.filter(Files::isRegularFile)
+            return new Ok<>(stream.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".java"))
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toSet()));
+        } catch (IOException e) {
+            return new Err<>(e);
         }
-    }
-
-    private static void compileSource(Path source) throws IOException {
-        final var relative = SOURCE_DIRECTORY.relativize(source);
-        final var parent = relative.getParent();
-        final var targetParent = TARGET_DIRECTORY.resolve(parent);
-        if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
-
-        final var name = relative.getFileName().toString();
-        final var nameWithoutExt = name.substring(0, name.indexOf('.'));
-        final var target = targetParent.resolve(nameWithoutExt + ".c");
-        final var input = Files.readString(source);
-        Files.writeString(target, compile(input));
     }
 
     private static String compile(String root) {
