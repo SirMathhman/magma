@@ -103,6 +103,18 @@ public class Main {
                 continue;
             }
 
+            if (c == '"') {
+                while (!queue.isEmpty()) {
+                    final var next = queue.pop();
+                    buffer.append(next);
+
+                    if (next == '"') break;
+                    if (next == '\\') {
+                        buffer.append(queue.pop());
+                    }
+                }
+            }
+
             if (c == ';' && depth == 0) {
                 advance(segments, buffer);
                 buffer = new StringBuilder();

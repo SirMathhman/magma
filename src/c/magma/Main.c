@@ -60,16 +60,31 @@ struct Main {public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "
 		if(temp){
 		}
 		int temp = 0;
-		int temp = 0;private static String invalidate(String type, String rootSegment) {
-        System.err.println("Unknown " + type + ": " + rootSegment);
-        return rootSegment;
-    }
 		int temp = 0;
-		int temp = 0;";
 		if(temp){
-		}";
+		}
 		if(temp){
-		}";
+		}
+		temp();
+	}
+	String invalidate(String type, String type String rootSegment){
+		temp();
+		return temp;
+	}
+	String compileClassSegment(String classSegment){
+		int temp = 0;
+		int temp = 0;
+		int temp = 0;
+		temp();
+	}
+	String compileStatement(String statement){
+		int temp = 0;
+		if(temp){
+		}
+		if(temp){
+		}
+		if(temp){
+		}
 		temp();
 	}
 	String compileParams(ArrayList<String> inputParamsList){
