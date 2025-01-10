@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -131,9 +132,20 @@ public class Main {
                     if (typeSeparator != -1) {
                         final var type = beforeName.substring(typeSeparator + 1);
                         final var name = beforeParamStart.substring(nameSeparator + 1);
-                        final var params = afterParamStart.substring(0, paramEnd);
+                        final var inputParams = afterParamStart.substring(0, paramEnd);
+                        final var inputParamsArray = inputParams.split(",");
+                        Optional<StringBuilder> maybeOutputParams = Optional.empty();
+                        for (String inputParam : inputParamsArray) {
+                            final var stripped = inputParam.strip();
+                            if (maybeOutputParams.isEmpty()) {
+                                maybeOutputParams = Optional.of(new StringBuilder(stripped));
+                            } else {
+                                maybeOutputParams.get().append(", ").append(stripped);
+                            }
+                        }
 
-                        return "\n\t" + type + " " + name + "(" + params + "){\n\t}";
+                        final var outputParams = maybeOutputParams.map(StringBuilder::toString).orElse("");
+                        return "\n\t" + type + " " + name + "(" + outputParams + "){\n\t}";
                     }
                 }
             }
