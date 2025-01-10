@@ -46,7 +46,7 @@ public class Main {
     }
 
     private static String splitAndCompile(String root, Function<String, String> compiler) {
-        final var segments = split(root);
+        final var segments = splitByStatements(root);
         final var output = new StringBuilder();
         for (String segment : segments) {
             output.append(compiler.apply(segment.strip()));
@@ -54,7 +54,7 @@ public class Main {
         return output.toString();
     }
 
-    private static List<String> split(String root) {
+    private static List<String> splitByStatements(String root) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -74,22 +74,22 @@ public class Main {
             }
 
             if (c == ';' && depth == 0) {
-                advance(buffer, segments);
+                advance(segments, buffer);
                 buffer = new StringBuilder();
             } else if (c == '}' && depth == 1) {
                 depth--;
-                advance(buffer, segments);
+                advance(segments, buffer);
                 buffer = new StringBuilder();
             } else {
                 if (c == '{') depth++;
                 if (c == '}') depth--;
             }
         }
-        advance(buffer, segments);
+        advance(segments, buffer);
         return segments;
     }
 
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+    private static void advance(List<String> segments, StringBuilder buffer) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
@@ -133,14 +133,30 @@ public class Main {
                         final var type = beforeName.substring(typeSeparator + 1);
                         final var name = beforeParamStart.substring(nameSeparator + 1);
                         final var inputParams = afterParamStart.substring(0, paramEnd);
-                        final var inputParamsArray = inputParams.split(",");
+                        final var inputParamsList = splitByValues(inputParams);
+
                         Optional<StringBuilder> maybeOutputParams = Optional.empty();
-                        for (String inputParam : inputParamsArray) {
+                        for (String inputParam : inputParamsList) {
                             final var stripped = inputParam.strip();
-                            if (maybeOutputParams.isEmpty()) {
-                                maybeOutputParams = Optional.of(new StringBuilder(stripped));
+                            if (stripped.isEmpty()) continue;
+
+                            final var separator = stripped.lastIndexOf(' ');
+                            if (separator != -1) {
+                                final var inputParamType = stripped.substring(0, separator);
+                                final var paramName = stripped.substring(separator + 1);
+
+                                final var outputParamType = inputParamType.endsWith("[]")
+                                        ? "Slice<" + inputParamType.substring(0, inputParamType.length() - 2) + ">"
+                                        : inputParamType;
+
+                                final var outputParam = outputParamType + " " + paramName;
+                                if (maybeOutputParams.isEmpty()) {
+                                    maybeOutputParams = Optional.of(new StringBuilder(outputParam));
+                                } else {
+                                    maybeOutputParams = Optional.of(maybeOutputParams.get().append(", ").append(outputParam));
+                                }
                             } else {
-                                maybeOutputParams.get().append(", ").append(stripped);
+                                System.err.println("Invalid param: " + stripped);
                             }
                         }
 
@@ -151,5 +167,23 @@ public class Main {
             }
         }
         return invalidate("class segment", classSegment);
+    }
+
+    private static ArrayList<String> splitByValues(String inputParams) {
+        final var inputParamsList = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        var depth = 0;
+        for (int i = 0; i < inputParams.length(); i++) {
+            var c = inputParams.charAt(i);
+            if (c == ',' && depth == 0) {
+                advance(inputParamsList, buffer);
+            } else {
+                buffer.append(c);
+                if (c == '<') depth++;
+                if (c == '>') depth--;
+            }
+        }
+        advance(inputParamsList, buffer);
+        return inputParamsList;
     }
 }

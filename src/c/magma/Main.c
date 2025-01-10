@@ -11,15 +11,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 struct Main {
-	void main(String[] args){
+	void main(Slice<String> args){
 	}
 	String compile(String root){
 	}
-	String splitAndCompile(String root, Function<String, String> compiler){
+	String splitAndCompile(String root, String root Function<String, String> compiler){
 	}
-	List<String> split(String root){
+	List<String> splitByStatements(String root){
 	}
-	void advance(StringBuilder buffer, ArrayList<String> segments){
+	void advance(List<String> segments, List<String> segments StringBuilder buffer){
 	}
 	String compileRootMember(String rootSegment){
 	}
