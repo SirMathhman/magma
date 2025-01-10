@@ -15,7 +15,8 @@ struct Main {
 	public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
 	public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 	void main(Slice<String> args){
-		JavaPaths.collect();
+		JavaPaths.collect().match(Main::compileSources, Optional::of)
+                .ifPresent(Throwable.printStackTrace);
 	}
 	Optional<IOException> compileSources(Set<Path> sources){
 		int temp = 0;
@@ -40,7 +41,7 @@ struct Main {
 	String compile(String root){
 		return temp;
 	}
-	String splitAndCompile(String root, String root Function<String, String> compiler){
+	String splitAndCompile(Function<String, List<String>> splitter, Function<String, String> compiler, String input){
 		int temp = 0;
 		int temp = 0;
 		int temp = 0;
@@ -52,10 +53,10 @@ struct Main {
 		int temp = 0;
 		int temp = 0;
 		int temp = 0;
-		advance();
+		advance(segmentsbuffer);
 		return temp;
 	}
-	void advance(List<String> segments, List<String> segments StringBuilder buffer){
+	void advance(List<String> segments, StringBuilder buffer){
 		if(temp){
 		}
 	}
@@ -73,8 +74,8 @@ struct Main {
 		}
 		return temp;
 	}
-	String invalidate(String type, String type String rootSegment){
-		System.err.println();
+	String invalidate(String type, String rootSegment){
+		System.err.println("Unknown " + type + ": " + rootSegment);
 		return temp;
 	}
 	String compileClassSegment(String classSegment){
@@ -102,6 +103,14 @@ struct Main {
 		int temp = 0;
 		if(temp){
 		}
+		int temp = 0;
+		if(temp){
+		}
+		int temp = 0;
+		if(temp){
+		}
+		if(temp){
+		}
 		return temp;
 	}
 	boolean isSymbol(String value){
@@ -127,7 +136,7 @@ struct Main {
 		int temp = 0;
 		int temp = 0;
 		int temp = 0;
-		advance();
+		advance(inputParamsListbuffer);
 		return temp;
 	}
 }

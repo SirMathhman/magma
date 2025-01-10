@@ -65,11 +65,11 @@ public class Main {
     }
 
     private static String compile(String root) {
-        return splitAndCompile(root, Main::compileRootMember);
+        return splitAndCompile(Main::splitByStatements, Main::compileRootMember, root);
     }
 
-    private static String splitAndCompile(String root, Function<String, String> compiler) {
-        final var segments = splitByStatements(root);
+    private static String splitAndCompile(Function<String, List<String>> splitter, Function<String, String> compiler, String input) {
+        final var segments = splitter.apply(input);
         final var output = new StringBuilder();
         for (String segment : segments) {
             final var stripped = segment.strip();
@@ -146,7 +146,7 @@ public class Main {
             if (contentStartIndex != -1) {
                 final var name = withoutKeyword.substring(0, contentStartIndex).strip();
                 final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
-                final var compiled = splitAndCompile(content, Main::compileClassSegment);
+                final var compiled = splitAndCompile(Main::splitByStatements, Main::compileClassSegment, content);
                 return "struct " + name + " {" + compiled + "\n}";
             }
         }
@@ -186,7 +186,7 @@ public class Main {
                         final var afterParams = afterParamStart.substring(paramEnd + 1).strip();
                         if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
                             final var inputContent = afterParams.substring(1, afterParams.length() - 1);
-                            final var outputContent = splitAndCompile(inputContent, Main::compileStatement);
+                            final var outputContent = splitAndCompile(Main::splitByStatements, Main::compileStatement, inputContent);
 
                             final var inputParamsList = splitByValues(inputParams);
                             final var outputParams = compileParams(inputParamsList);
@@ -207,11 +207,26 @@ public class Main {
         if (statement.contains("=")) return "\n\t\tint temp = 0;";
         if (statement.endsWith(");")) {
             final var substring = statement.substring(0, statement.length() - ");".length());
-            final var index = substring.indexOf('(');
+            var index = -1;
+            var depth = 0;
+            for (int i = substring.length() - 1; i >= 0; i--) {
+                final var c = substring.charAt(i);
+                if (c == '(' && depth == 0) {
+                    index = i;
+                    break;
+                } else {
+                    if (c == ')') depth++;
+                    if (c == '(') depth--;
+                }
+            }
+
             if (index != -1) {
                 final var caller = substring.substring(0, index);
+                final var substring1 = substring.substring(index + 1);
+                final var compiled = splitAndCompile(Main::splitByValues, Main::compileValue, substring1);
+
                 final var newCaller = compileValue(caller);
-                return "\n\t\t" + newCaller + "();";
+                return "\n\t\t" + newCaller + "(" + compiled + ");";
             }
         }
 
@@ -229,6 +244,22 @@ public class Main {
             final var substring1 = value.substring(index + 1);
             return compileValue(substring) + "." + substring1;
         }
+
+        final var index1 = value.lastIndexOf("::");
+        if (index1 != -1) {
+            final var substring = value.substring(0, index1);
+            final var substring1 = value.substring(index1 + "::".length());
+            return compileValue(substring) + "." + substring1;
+        }
+
+        final var index2 = value.indexOf('+');
+        if (index2 != -1) {
+            final var compiled = compileValue(value.substring(0, index2).strip());
+            final var compiled1 = compileValue(value.substring(index2 + 1).strip());
+            return compiled + " + " + compiled1;
+        }
+
+        if(value.startsWith("\"") && value.endsWith("\"")) return value;
 
         return invalidate("value", value);
     }
@@ -282,6 +313,7 @@ public class Main {
             var c = inputParams.charAt(i);
             if (c == ',' && depth == 0) {
                 advance(inputParamsList, buffer);
+                buffer = new StringBuilder();
             } else {
                 buffer.append(c);
                 if (c == '<') depth++;
