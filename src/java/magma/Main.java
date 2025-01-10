@@ -202,6 +202,9 @@ public class Main {
     }
 
     private static String compileStatement(String statement) {
+        if (statement.startsWith("for")) return "\n\t\tfor(;;){\nt\t\t}";
+        if (statement.startsWith("while")) return "\n\t\twhile(1){\nt\t\t}";
+
         if (statement.startsWith("return ")) return "\n\t\treturn temp;";
         if (statement.startsWith("if")) return "\n\t\tif(temp){\n\t\t}";
 
@@ -211,7 +214,7 @@ public class Main {
             final var substring1 = statement.substring(index1 + 1);
             if (substring1.endsWith(";")) {
                 final var compiled = compileDefinition(substring);
-                final var compiled1 = compileValue(substring1.substring(0, substring1.length() - ";".length()));
+                final var compiled1 = compileValue(substring1.substring(0, substring1.length() - ";".length()).strip());
                 return "\n\t\tint " + compiled + " = " + compiled1 + ";";
             }
         }
@@ -234,9 +237,9 @@ public class Main {
             if (index != -1) {
                 final var caller = substring.substring(0, index);
                 final var substring1 = substring.substring(index + 1);
-                final var compiled = splitAndCompile(Main::splitByValues, Main::compileValue, substring1);
+                final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip()), substring1);
 
-                final var newCaller = compileValue(caller);
+                final var newCaller = compileValue(caller.strip());
                 return "\n\t\t" + newCaller + "(" + compiled + ");";
             }
         }
@@ -244,41 +247,54 @@ public class Main {
         return invalidate("statement", statement);
     }
 
-    private static String compileValue(String value) {
-        if (isSymbol(value)) {
-            return value;
+    private static String compileValue(String input) {
+        if (isSymbol(input.strip())) return input.strip();
+        if (isNumber(input.strip())) return input.strip();
+
+        if (input.startsWith("new ")) {
+            return "temp()";
         }
 
-        final var index = value.lastIndexOf('.');
+        final var index = input.lastIndexOf('.');
         if (index != -1) {
-            final var substring = value.substring(0, index);
-            final var substring1 = value.substring(index + 1);
+            final var substring = input.substring(0, index);
+            final var substring1 = input.substring(index + 1);
             return compileValue(substring) + "." + substring1;
         }
 
-        final var index1 = value.lastIndexOf("::");
+        final var index1 = input.lastIndexOf("::");
         if (index1 != -1) {
-            final var substring = value.substring(0, index1);
-            final var substring1 = value.substring(index1 + "::".length());
+            final var substring = input.substring(0, index1);
+            final var substring1 = input.substring(index1 + "::".length());
             return compileValue(substring) + "." + substring1;
         }
 
-        final var index2 = value.indexOf('+');
+        final var index2 = input.indexOf('+');
         if (index2 != -1) {
-            final var compiled = compileValue(value.substring(0, index2).strip());
-            final var compiled1 = compileValue(value.substring(index2 + 1).strip());
+            final var compiled = compileValue(input.substring(0, index2));
+            final var compiled1 = compileValue(input.substring(index2 + 1));
             return compiled + " + " + compiled1;
         }
 
-        if (value.startsWith("\"") && value.endsWith("\"")) return value;
+        final var stripped = input.strip();
+        if (stripped.startsWith("\"") && stripped.endsWith("\"")) return stripped;
 
-        return invalidate("value", value);
+        return invalidate("value", input);
+    }
+
+    private static boolean isNumber(String value) {
+        for (int i = 0; i < value.length(); i++) {
+            final var c = value.charAt(i);
+            if (!Character.isDigit(c)) return false;
+        }
+        return true;
     }
 
     private static boolean isSymbol(String value) {
         for (int i = 0; i < value.length(); i++) {
             final var c = value.charAt(i);
-            if (!Character.isLetter(c)) return false;
+            if (Character.isLetter(c) || c == '_') continue;
+            return false;
         }
 
         return true;
