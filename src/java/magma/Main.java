@@ -133,14 +133,29 @@ public class Main {
                         final var type = beforeName.substring(typeSeparator + 1);
                         final var name = beforeParamStart.substring(nameSeparator + 1);
                         final var inputParams = afterParamStart.substring(0, paramEnd);
-                        final var inputParamsList = splitByValues(inputParams);
-                        final var outputParams = compileParams(inputParamsList);
-                        return "\n\t" + type + " " + name + "(" + outputParams + "){\n\t}";
+                        final var afterParams = afterParamStart.substring(paramEnd + 1).strip();
+                        if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
+                            final var inputContent = afterParams.substring(1, afterParams.length() - 1);
+                            final var outputContent = splitAndCompile(inputContent, Main::compileStatement);
+
+                            final var inputParamsList = splitByValues(inputParams);
+                            final var outputParams = compileParams(inputParamsList);
+
+                            return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";
+                        }
                     }
                 }
             }
         }
         return invalidate("class segment", classSegment);
+    }
+
+    private static String compileStatement(String statement) {
+        if (statement.contains("=")) {
+            return "int temp = 0;";
+        }
+
+        return invalidate("statement", statement);
     }
 
     private static String compileParams(ArrayList<String> inputParamsList) {
