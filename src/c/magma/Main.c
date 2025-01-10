@@ -12,8 +12,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 struct Main {
-	"src", "java");
-	"src", "c");
+	Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
+	Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 	void main(Slice<String> args){
 		JavaPaths.collect()
                 .match(Main::compileSources, Optional::of)
@@ -26,38 +26,38 @@ struct Main {
                 .findFirst();
 	}
 	Optional<IOException> compileSource(Path source){
-		int var relative = SOURCE_DIRECTORY.relativize(source);
-		int var parent = relative.getParent();
-		int var namespace = temp();
+		auto relative = SOURCE_DIRECTORY.relativize(source);
+		auto parent = relative.getParent();
+		auto namespace = temp();
 		for(;;){
 t		}
 		if(temp){
 		}
-		int var targetParent = TARGET_DIRECTORY;
+		auto targetParent = TARGET_DIRECTORY;
 		for(;;){
 t		}
 		if(temp){
 		}
-		int var name = relative.getFileName().toString();
-		int var nameWithoutExt = name.substring(0, name.indexOf('.'));
-		int var target = targetParent.resolve(nameWithoutExt + ".c");
+		auto name = relative.getFileName().toString();
+		auto nameWithoutExt = name.substring(0, name.indexOf('.'));
+		auto target = targetParent.resolve(nameWithoutExt + ".c");
 		return JavaPaths.readSafe(source).match(input -> JavaPaths.writeSafe(target, compile(input)), Optional::of);
 	}
 	String compile(String root){
 		return splitAndCompile(Mai).splitByStatements, Main.compileRootMember, root);
 	}
-	String splitAndCompile(List<String>> splitter, String> compiler, String input){
-		int var segments = splitter.apply(input);
-		int var output = temp();
+	String splitAndCompile(Function<StringList<String>> splitter, Function<StringString> compiler, String input){
+		auto segments = splitter.apply(input);
+		auto output = temp();
 		for(;;){
 t		}
 		return output.toString();
 	}
 	List<String> splitByStatements(String root){
-		int var segments = temp();
-		int var buffer = temp();
-		int var depth = 0;
-		int var queue = IntStream.range(0, root.length())
+		auto segments = temp();
+		auto buffer = temp();
+		auto depth = 0;
+		auto queue = IntStream.range(0, root.length())
                 .mapToObj(root::charAt)
                 .collect(Collectors.toCollection(LinkedList::new));
 		while(1){
@@ -74,7 +74,7 @@ t		}
 		}
 		if(temp){
 		}
-		int var classIndex = rootSegment.indexOf("class");
+		auto classIndex = rootSegment.indexOf("class");
 		if(temp){
 		}
 		if(temp){
@@ -90,7 +90,7 @@ t		}
 	String compileClassSegment(String classSegment){
 		if(temp){
 		}
-		int var paramStart = classSegment.indexOf('(');
+		auto paramStart = classSegment.indexOf('(');
 		if(temp){
 		}
 		return invalidate("class segment"classSegment);
@@ -104,7 +104,7 @@ t		}
 		}
 		if(temp){
 		}
-		int var index1 = statement.indexOf("=");
+		auto index1 = statement.indexOf("=");
 		if(temp){
 		}
 		if(temp){
@@ -112,9 +112,9 @@ t		}
 		return invalidate("statement"statement);
 	}
 	Optional<String> compileInvocation(String statement){
-		int var substring = statement.substring(0, statement.length() - ")".length());
-		int var index = -1;
-		int var depth = 0;
+		auto substring = statement.substring(0, statement.length() - ")".length());
+		auto index = -1;
+		auto depth = 0;
 		for(;;){
 t		}
 		if(temp){
@@ -128,22 +128,39 @@ t		}
 		}
 		if(temp){
 		}
-		int var index = input.lastIndexOf('.');
+		auto index = input.lastIndexOf('.');
 		if(temp){
 		}
-		int var index1 = input.lastIndexOf("::");
+		auto index1 = input.lastIndexOf("::");
 		if(temp){
 		}
-		int var index2 = input.indexOf('+');
+		auto stripped = input.strip();
 		if(temp){
 		}
-		int var stripped = input.strip();
+		auto optional1 = compileInvocation(input);
 		if(temp){
 		}
-		return compileInvocation(input).orElseGet(() -> invalidate("value", input));
+		auto compiled = compileOperator(input"+");
+		if(temp){
+		}
+		auto optional = compileOperator(input"==");
+		if(temp){
+		}
+		auto index3 = stripped.indexOf('?');
+		if(temp){
+		}
+		return invalidate("value"input);
+	}
+	Optional<String> compileOperator(String input, String operator){
+		auto index2 = input.indexOf(operator);
+		if(temp){
+		}
+		auto compiled = compileValue(inpu).substring(0, index2));
+		auto compiled1 = compileValue(inpu).substring(index2 + operator.length()));
+		return Optional.of(compiled + " " + operator + " " + compiled1);
 	}
 	boolean isNumber(String value){
-		int var value1 = value.startsWith("-")
+		auto value1 = value.startsWith("-")
                 ? value.substring(1)
                 : value;
 		for(;;){
@@ -156,27 +173,32 @@ t		}
 		return true;
 	}
 	String compileParams(ArrayList<String> inputParamsList){
-		int Optional<StringBuilder> maybeOutputParams = Optional.empty();
+		Optional<StringBuilder> maybeOutputParams = Optional.empty();
 		for(;;){
 t		}
 		return maybeOutputParams.map(StringBuilder::toString).orElse("");
 	}
 	String compileDefinition(String input){
-		int var stripped = input.strip();
-		int var separator = stripped.lastIndexOf(' ');
+		auto stripped = input.strip();
+		auto separator = stripped.lastIndexOf(' ');
 		if(temp){
 		}
-		int var inputParamType = stripped.substring(0, separator);
-		int var paramName = stripped.substring(separator + 1);
-		int var index = inputParamType.lastIndexOf(' ');
-		int var inputParamType1 = index == -1 ? inputParamType : inputParamType.substring(index + 1);
-		int var outputParamType = compileType(inputParamType1);
+		auto inputParamType = stripped.substring(0, separator);
+		auto paramName = stripped.substring(separator + 1);
+		auto index = -1;
+		auto depth = 0;
+		for(;;){
+t		}
+		auto inputParamType1 = index == -1 ? inputParamType : inputParamType.substring(index + 1);
+		auto outputParamType = compileType(inputParamType1);
 		return outputParamType + " " + paramName;
 	}
 	String compileType(String input){
 		if(temp){
 		}
-		int var genStart = input.indexOf("<");
+		if(temp){
+		}
+		auto genStart = input.indexOf("<");
 		if(temp){
 		}
 		if(temp){
@@ -184,9 +206,9 @@ t		}
 		return invalidate("type"input);
 	}
 	ArrayList<String> splitByValues(String inputParams){
-		int var inputParamsList = temp();
-		int var buffer = temp();
-		int var depth = 0;
+		auto inputParamsList = temp();
+		auto buffer = temp();
+		auto depth = 0;
 		for(;;){
 t		}
 		advance(inputParamsListbuffer);

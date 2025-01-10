@@ -164,7 +164,12 @@ public class Main {
     private static String compileClassSegment(String classSegment) {
         if (classSegment.endsWith(";")) {
             final var substring = classSegment.substring(0, classSegment.length() - 1);
-            return "\n\t" + compileDefinition(substring) + ";";
+            final var index = substring.indexOf('=');
+            if (index != -1) {
+                final var definition = substring.substring(0, index);
+                final var compiled = compileValue(substring.substring(index + 1));
+                return "\n\t" + compileDefinition(definition) + " = " + compiled + ";";
+            }
         }
 
         final var paramStart = classSegment.indexOf('(');
@@ -221,7 +226,7 @@ public class Main {
             if (substring1.endsWith(";")) {
                 final var compiled = compileDefinition(substring);
                 final var compiled1 = compileValue(substring1.substring(0, substring1.length() - ";".length()).strip());
-                return "\n\t\tint " + compiled + " = " + compiled1 + ";";
+                return "\n\t\t" + compiled + " = " + compiled1 + ";";
             }
         }
 
@@ -281,18 +286,40 @@ public class Main {
             return compileValue(substring) + "." + substring1;
         }
 
-        final var index2 = input.indexOf('+');
-        if (index2 != -1) {
-            final var compiled = compileValue(input.substring(0, index2));
-            final var compiled1 = compileValue(input.substring(index2 + 1));
-            return compiled + " + " + compiled1;
-        }
-
         final var stripped = input.strip();
         if (stripped.startsWith("\"") && stripped.endsWith("\"")) return stripped;
 
-        return compileInvocation(input).orElseGet(() -> invalidate("value", input));
+        final var optional1 = compileInvocation(input);
+        if (optional1.isPresent()) return optional1.get();
 
+        final var compiled = compileOperator(input, "+");
+        if (compiled.isPresent()) return compiled.get();
+
+        final var optional = compileOperator(input, "==");
+        if (optional.isPresent()) return optional.get();
+
+        final var index3 = stripped.indexOf('?');
+        if (index3 != -1) {
+            final var condition = stripped.substring(0, index3);
+            final var substring = stripped.substring(index3 + 1);
+            final var maybe = substring.indexOf(':');
+            if (maybe != -1) {
+                final var substring1 = substring.substring(0, maybe);
+                final var substring2 = substring.substring(maybe + 1);
+                return compileValue(condition) + " ? " + compileValue(substring1) + " : " + compileValue(substring2);
+            }
+        }
+
+        return invalidate("value", input);
+    }
+
+    private static Optional<String> compileOperator(String input, String operator) {
+        final var index2 = input.indexOf(operator);
+        if (index2 == -1) return Optional.empty();
+
+        final var compiled = compileValue(input.substring(0, index2));
+        final var compiled1 = compileValue(input.substring(index2 + operator.length()));
+        return Optional.of(compiled + " " + operator + " " + compiled1);
     }
 
     private static boolean isNumber(String value) {
@@ -310,7 +337,7 @@ public class Main {
     private static boolean isSymbol(String value) {
         for (int i = 0; i < value.length(); i++) {
             final var c = value.charAt(i);
-            if (Character.isLetter(c) || c == '_') continue;
+            if (Character.isLetter(c) || c == '_' || (i != 0 && Character.isDigit(c))) continue;
             return false;
         }
 
@@ -342,7 +369,19 @@ public class Main {
 
         final var inputParamType = stripped.substring(0, separator);
         final var paramName = stripped.substring(separator + 1);
-        final var index = inputParamType.lastIndexOf(' ');
+
+        var index = -1;
+        var depth = 0;
+        for (int i = 0; i < inputParamType.length(); i++) {
+            var c = inputParamType.charAt(i);
+            if (c == ' ' && depth == 0) {
+                index = i;
+            } else {
+                if (c == '>') depth++;
+                if (c == '<') depth--;
+            }
+        }
+
         final var inputParamType1 = index == -1
                 ? inputParamType
                 : inputParamType.substring(index + 1);
@@ -352,6 +391,8 @@ public class Main {
     }
 
     private static String compileType(String input) {
+        if (input.equals("var")) return "auto";
+
         if (input.endsWith("[]")) return "Slice<" + input.substring(0, input.length() - 2) + ">";
         final var genStart = input.indexOf("<");
         if (genStart != -1) {
