@@ -26,11 +26,16 @@ public class Main {
                 final var name = relative.getFileName().toString();
                 final var nameWithoutExt = name.substring(0, name.indexOf('.'));
                 final var target = targetParent.resolve(nameWithoutExt + ".c");
-                Files.writeString(target, "");
+                final var input = Files.readString(source);
+                Files.writeString(target, compile(input));
             }
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
+    }
+
+    private static String compile(String input) {
+        return input;
     }
 }
