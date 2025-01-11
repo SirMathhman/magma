@@ -289,8 +289,7 @@ public class Main {
         if (content.startsWith("{") && content.endsWith("}")) {
             outputContent = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::mergeStatements, content);
         } else {
-            final var output = compileValue(content);
-            outputContent = "return " + output + ";";
+            outputContent = compileStatement(content);
         }
 
         return Optional.of("\n\t\tif(" + value + "){" + outputContent + "}");
