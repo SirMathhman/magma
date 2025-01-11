@@ -365,7 +365,7 @@ public class Main {
             final var substring1 = substring.substring(index + 1);
             final var compiled = splitAndCompile(Main::splitByValues,
                     value -> compileValue(value.strip(), depth),
-                    (buffer, element) -> buffer.append(", ").append(element), substring1);
+                    Main::mergeValues, substring1);
 
             final var newCaller = compileValue(caller.strip(), depth);
             return newCaller + "(" + compiled + ")";
@@ -517,10 +517,14 @@ public class Main {
             final var compiled1 = compileType(caller.strip());
 
             final var substring1 = substring2.substring(index + 1);
-            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip(), depth), Main::mergeStatements, substring1);
+            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip(), depth), Main::mergeValues, substring1);
 
             return compiled1 + "(" + compiled + ")";
         });
+    }
+
+    private static StringBuilder mergeValues(StringBuilder inner, String stripped) {
+        return inner.append(", ").append(stripped);
     }
 
     private static Optional<String> compileOperator(int depth, String input, String operator) {
@@ -564,7 +568,7 @@ public class Main {
                     .orElseGet(() -> invalidate("definition", stripped));
 
             maybeOutputParams = maybeOutputParams
-                    .map(stringBuilder -> stringBuilder.append(", ").append(outputParam))
+                    .map(stringBuilder -> mergeValues(stringBuilder, outputParam))
                     .or(() -> Optional.of(new StringBuilder(outputParam)));
         }
 

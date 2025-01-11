@@ -284,7 +284,7 @@ struct Main {
 	}
 	Optional<Integer> findConditionParamEnd(String input){
 		auto queue = IntStream.range(0, input.length()).mapToObj(auto _lambda7_(auto index){
-			return Tuple<>(indexinput.charAt(index));
+			return Tuple<>(index, input.charAt(index));
 		}).collect(Collectors.toCollection(LinkedList.new));
 		auto depth = 0;
 		while (!queue.isEmpty()) {
@@ -323,14 +323,12 @@ struct Main {
 			return Optional.empty();
 		}
 		auto substring = stripped.substring(0, stripped.length() - ")".length());
-		return findArgStart(substring).map(auto _lambda10_(auto index){
+		return findArgStart(substring).map(auto _lambda9_(auto index){
 		auto caller = substring.substring(0, index);
 		auto substring1 = substring.substring(index + 1);
 		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda8_(auto value){
 			return compileValue(value.strip(), depth);
-		}, auto _lambda9_(auto buffer, auto element){
-			return buffer.append(", ").append(element);
-		}, substring1);
+		}, Main.mergeValues, substring1);
 		auto newCaller = compileValue(caller.strip(), depth);
 		return newCaller + "(" + compiled + ")";
 		});
@@ -342,35 +340,35 @@ struct Main {
 		return Optional.empty();
 	}
 	String compileValue(String input, int depth){
-		return compileSymbol(input).or(auto _lambda25_(){
+		return compileSymbol(input).or(auto _lambda24_(){
 			return compileNumber(input);
-		}).or(auto _lambda24_(){
-			return compileString(input);
 		}).or(auto _lambda23_(){
-			return compileChar(input);
+			return compileString(input);
 		}).or(auto _lambda22_(){
-			return compileNot(depth, input);
+			return compileChar(input);
 		}).or(auto _lambda21_(){
-			return compileConstruction(depth, input);
+			return compileNot(depth, input);
 		}).or(auto _lambda20_(){
-			return compileLambda(depth, input);
+			return compileConstruction(depth, input);
 		}).or(auto _lambda19_(){
-			return compileInvocation(depth, input);
+			return compileLambda(depth, input);
 		}).or(auto _lambda18_(){
-			return compileAccess(depth, input, ".");
+			return compileInvocation(depth, input);
 		}).or(auto _lambda17_(){
-			return compileAccess(depth, input, "::");
+			return compileAccess(depth, input, ".");
 		}).or(auto _lambda16_(){
-			return compileOperator(depth, input, "+");
+			return compileAccess(depth, input, "::");
 		}).or(auto _lambda15_(){
-			return compileOperator(depth, input, "==");
+			return compileOperator(depth, input, "+");
 		}).or(auto _lambda14_(){
-			return compileOperator(depth, input, "!=");
+			return compileOperator(depth, input, "==");
 		}).or(auto _lambda13_(){
-			return compileOperator(depth, input, "&&");
+			return compileOperator(depth, input, "!=");
 		}).or(auto _lambda12_(){
+			return compileOperator(depth, input, "&&");
+		}).or(auto _lambda11_(){
 			return compileTernary(depth, input);
-		}).orElseGet(auto _lambda11_(){
+		}).orElseGet(auto _lambda10_(){
 			return invalidate("value", input);
 		});
 	}
@@ -449,13 +447,13 @@ struct Main {
 		}String compiled
 		if (afterArrow.startsWith("{") && afterArrow.endsWith("}")) {
 			auto substring1 = afterArrow.substring(1, afterArrow.length() - 1);
-			compiled = splitAndCompile(Main.splitByStatements, auto _lambda26_(auto statement){
+			compiled = splitAndCompile(Main.splitByStatements, auto _lambda25_(auto statement){
 			return compileStatement(statement, 2);
 		}, Main.mergeStatements, substring1);
 		}
 		else {
 		}
-		auto joinedNames = maybeNames.get().stream().map(auto _lambda27_(auto name){
+		auto joinedNames = maybeNames.get().stream().map(auto _lambda26_(auto name){
 			return "auto " + name;
 		}).collect(Collectors.joining(", "));
 		return Optional.of("auto " + getLambda__() + "(" + joinedNames + "){" + compiled + "\n\t\t}");
@@ -475,7 +473,7 @@ struct Main {
 			return Optional.empty();
 		}
 		auto args = nameSlice.substring(1, nameSlice.length() - 1).split(", ");
-		return Optional.of(Arrays.stream(args).map(String.strip).filter(auto _lambda28_(auto value){
+		return Optional.of(Arrays.stream(args).map(String.strip).filter(auto _lambda27_(auto value){
 			return !value.isEmpty();
 		}).toList());
 	}
@@ -488,15 +486,18 @@ struct Main {
 			return Optional.empty();
 		}
 		auto substring2 = substring.substring(0, substring.length() - ")".length());
-		return findArgStart(substring2).map(auto _lambda30_(auto index){
+		return findArgStart(substring2).map(auto _lambda29_(auto index){
 		auto caller = substring2.substring(0, index);
 		auto compiled1 = compileType(caller.strip());
 		auto substring1 = substring2.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda29_(auto value){
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda28_(auto value){
 			return compileValue(value.strip(), depth);
-		}, Main.mergeStatements, substring1);
+		}, Main.mergeValues, substring1);
 		return compiled1 + "(" + compiled + ")";
 		});
+	}
+	StringBuilder mergeValues(StringBuilder inner, String stripped){
+		return inner.append(", ").append(stripped);
 	}
 	Optional<String> compileOperator(int depth, String input, String operator){
 		auto index2 = input.indexOf(operator);
@@ -559,7 +560,7 @@ struct Main {
 				return caller + "<" + s + ">";
 			}
 		}
-		return compileSymbol(input).orElseGet(auto _lambda31_(){
+		return compileSymbol(input).orElseGet(auto _lambda30_(){
 			return invalidate("type", input);
 		});
 	}
