@@ -82,21 +82,27 @@ public class Main {
             BiFunction<StringBuilder, String, StringBuilder> merger,
             String input
     ) {
-        final var segments = splitter.apply(input);
-        var output = Optional.<StringBuilder>empty();
-        for (String segment : segments) {
-            final var stripped = segment.strip();
-            if (stripped.isEmpty()) continue;
+        return splitter.apply(input)
+                .stream()
+                .map(String::strip)
+                .filter(value -> !value.isEmpty())
+                .reduce(Optional.<StringBuilder>empty(), (output, stripped) -> compileAndMerge(compiler, merger, output, stripped), (_, next) -> next)
+                .map(StringBuilder::toString)
+                .orElse("");
+    }
 
-            final var compiled = compiler.apply(stripped);
-            if (output.isEmpty()) {
-                output = Optional.of(new StringBuilder(compiled));
-            } else {
-                output = output.map(inner -> merger.apply(inner, compiled));
-            }
+    private static Optional<StringBuilder> compileAndMerge(
+            Function<String, String> compiler,
+            BiFunction<StringBuilder, String, StringBuilder> merger,
+            Optional<StringBuilder> output,
+            String stripped
+    ) {
+        final var compiled = compiler.apply(stripped);
+        if (output.isEmpty()) {
+            return Optional.of(new StringBuilder(compiled));
+        } else {
+            return output.map(inner -> merger.apply(inner, compiled));
         }
-
-        return output.map(StringBuilder::toString).orElse("");
     }
 
     private static StringBuilder mergeStatements(StringBuilder inner, String stripped) {
