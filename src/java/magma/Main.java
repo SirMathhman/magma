@@ -73,7 +73,7 @@ public class Main {
     }
 
     private static String compile(String root) {
-        return splitAndCompile(Main::splitByStatements, Main::compileRootMember, Main::mergeStatements, root);
+        return splitAndCompile(Main::splitByStatements, rootSegment -> compileRootMember(rootSegment, 1), Main::mergeStatements, root);
     }
 
     private static String splitAndCompile(
@@ -165,7 +165,7 @@ public class Main {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static String compileRootMember(String rootSegment) {
+    private static String compileRootMember(String rootSegment, int depth) {
         if (rootSegment.startsWith("package ")) return "";
         if (rootSegment.startsWith("import ")) return rootSegment + "\n";
 
@@ -176,7 +176,7 @@ public class Main {
             if (contentStartIndex != -1) {
                 final var name = withoutKeyword.substring(0, contentStartIndex).strip();
                 final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
-                final var compiled = splitAndCompile(Main::splitByStatements, Main::compileClassSegment, Main::mergeStatements, content);
+                final var compiled = splitAndCompile(Main::splitByStatements, classSegment -> compileClassSegment(classSegment, depth + 1), Main::mergeStatements, content);
                 return "struct " + name + " {" + compiled + "\n}";
             }
         }
@@ -192,13 +192,13 @@ public class Main {
         return rootSegment;
     }
 
-    private static String compileClassSegment(String classSegment) {
+    private static String compileClassSegment(String classSegment, int depth) {
         if (classSegment.endsWith(";")) {
             final var substring = classSegment.substring(0, classSegment.length() - 1);
             final var index = substring.indexOf('=');
             if (index != -1) {
                 final var definition = substring.substring(0, index);
-                final var compiled = compileValue(substring.substring(index + 1), 2);
+                final var compiled = compileValue(depth, substring.substring(index + 1));
                 return "\n\t" + compileDefinition(definition).orElseGet(() -> invalidate("definition", definition)) + " = " + compiled + ";";
             }
         }
@@ -221,7 +221,7 @@ public class Main {
                         final var afterParams = afterParamStart.substring(paramEnd + 1).strip();
                         if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
                             final var inputContent = afterParams.substring(1, afterParams.length() - 1);
-                            final var outputContent = splitAndCompile(Main::splitByStatements, statement -> compileStatement(statement, 2), Main::mergeStatements, inputContent);
+                            final var outputContent = splitAndCompile(Main::splitByStatements, statement -> compileStatement(statement, depth), Main::mergeStatements, inputContent);
 
                             final var inputParamsList = splitByValues(inputParams);
                             final var outputParams = compileParams(inputParamsList);
@@ -258,15 +258,15 @@ public class Main {
             final var substring = statement.substring("return ".length());
             if (substring.endsWith(";")) {
                 final var substring1 = substring.substring(0, substring.length() - ";".length());
-                final var compiled = compileValue(substring1, 2);
+                final var compiled = compileValue(depth, substring1);
                 return generateReturn(compiled, depth);
             }
         }
 
-        final var optional1 = compileConditional(statement, depth, "while");
+        final var optional1 = compileConditional(depth, "while", statement);
         if (optional1.isPresent()) return optional1.get();
 
-        final var value = compileConditional(statement, depth, "if");
+        final var value = compileConditional(depth, "if", statement);
         if (value.isPresent()) return value.get();
 
         final var index1 = statement.indexOf("=");
@@ -277,13 +277,13 @@ public class Main {
                 final var compiled = compileDefinition(substring)
                         .or(() -> compileSymbol(substring))
                         .orElseGet(() -> invalidate("definition", substring));
-                final var compiled1 = compileValue(substring1.substring(0, substring1.length() - ";".length()).strip(), 2);
+                final var compiled1 = compileValue(depth, substring1.substring(0, substring1.length() - ";".length()).strip());
                 return generateStatement(depth, compiled + " = " + compiled1);
             }
         }
 
         if (statement.endsWith(";")) {
-            final var newCaller = compileInvocation(2, statement.substring(0, statement.length() - ";".length()));
+            final var newCaller = compileInvocation(depth, statement.substring(0, statement.length() - ";".length()));
             if (newCaller.isPresent()) return generateStatement(depth, newCaller.get());
         }
 
@@ -303,7 +303,7 @@ public class Main {
         if (!statement.endsWith(joined)) return Optional.empty();
 
         final var substring = statement.substring(0, statement.length() - (joined).length());
-        return Optional.of(generateStatement(depth, compileValue(substring, depth) + suffix));
+        return Optional.of(generateStatement(depth, compileValue(depth, substring) + suffix));
     }
 
     private static String generateStatement(int depth, String content) {
@@ -314,7 +314,7 @@ public class Main {
         return "\n" + "\t".repeat(depth) + "return " + compiled + ";";
     }
 
-    private static Optional<String> compileConditional(String statement, int depth, String prefix) {
+    private static Optional<String> compileConditional(int depth, String prefix, String statement) {
         if (!statement.startsWith(prefix)) return Optional.empty();
         final var withoutKeyword = statement.substring(prefix.length());
 
@@ -328,7 +328,7 @@ public class Main {
         if (!conditionWithEnd.startsWith("(")) return Optional.empty();
 
         final var condition = conditionWithEnd.substring(1);
-        final var value = compileValue(condition, 2);
+        final var value = compileValue(depth, condition);
         final String outputContent;
         if (content.startsWith("{") && content.endsWith("}")) {
             final var substring = content.substring(1, content.length() - 1);
@@ -388,10 +388,10 @@ public class Main {
             final var caller = substring.substring(0, index);
             final var substring1 = substring.substring(index + 1);
             final var compiled = splitAndCompile(Main::splitByValues,
-                    value -> compileValue(value.strip(), depth),
+                    value -> compileValue(depth, value.strip()),
                     Main::mergeValues, substring1);
 
-            final var newCaller = compileValue(caller.strip(), depth);
+            final var newCaller = compileValue(depth, caller.strip());
             return newCaller + "(" + compiled + ")";
         });
     }
@@ -410,7 +410,7 @@ public class Main {
         return Optional.empty();
     }
 
-    private static String compileValue(String input, int depth) {
+    private static String compileValue(int depth, String input) {
         return compileSymbol(input)
                 .or(() -> compileNumber(input))
                 .or(() -> compileString(input))
@@ -436,7 +436,7 @@ public class Main {
     }
 
     private static Optional<String> compileNot(int depth, String input) {
-        if (input.startsWith("!")) return Optional.of("!" + compileValue(input.substring(1), depth));
+        if (input.startsWith("!")) return Optional.of("!" + compileValue(depth, input.substring(1)));
         return Optional.empty();
     }
 
@@ -458,7 +458,7 @@ public class Main {
 
         final var substring = input.substring(0, index);
         final var substring1 = input.substring(index + slice.length());
-        final var s = compileValue(substring, depth);
+        final var s = compileValue(depth, substring);
         return Optional.of(generateDataAccess(s, substring1));
     }
 
@@ -475,9 +475,9 @@ public class Main {
         final var maybe = substring.indexOf(':');
         if (maybe == -1) return Optional.empty();
 
-        final var substring1 = substring.substring(0, maybe);
-        final var substring2 = substring.substring(maybe + 1);
-        return Optional.of(compileValue(condition, depth) + " ? " + compileValue(substring1, depth) + " : " + compileValue(substring2, depth));
+        final var ifTrue = substring.substring(0, maybe);
+        final var ifFalse = substring.substring(maybe + 1);
+        return Optional.of(compileValue(depth, condition) + " ? " + compileValue(depth, ifTrue) + " : " + compileValue(depth, ifFalse));
     }
 
     private static Optional<String> compileSymbol(String input) {
@@ -498,19 +498,19 @@ public class Main {
         final String compiled;
         if (afterArrow.startsWith("{") && afterArrow.endsWith("}")) {
             final var substring1 = afterArrow.substring(1, afterArrow.length() - 1);
-            compiled = splitAndCompile(Main::splitByStatements, statement -> compileStatement(statement, 2), Main::mergeStatements, substring1);
+            compiled = splitAndCompile(Main::splitByStatements, statement -> compileStatement(statement, depth), Main::mergeStatements, substring1);
         } else {
-            compiled = generateReturn(compileValue(afterArrow, 2), depth + 1);
+            compiled = generateReturn(compileValue(depth, afterArrow), depth + 1);
         }
 
         final var joinedNames = maybeNames.get().stream()
                 .map(name -> "auto " + name)
                 .collect(Collectors.joining(", "));
 
-        return Optional.of("auto " + getLambda__() + "(" + joinedNames + "){" + compiled + "\n\t\t}");
+        return Optional.of("auto " + createUniqueName() + "(" + joinedNames + "){" + compiled + "\n" + "\t".repeat(depth) + "}");
     }
 
-    private static String getLambda__() {
+    private static String createUniqueName() {
         final var lambda = "_lambda" + counter + "_";
         counter++;
         return lambda;
@@ -534,14 +534,14 @@ public class Main {
         final var substring = input.substring("new ".length());
 
         if (!substring.endsWith(")")) return Optional.empty();
-        final var substring2 = substring.substring(0, substring.length() - ")".length());
+        final var withoutEnd = substring.substring(0, substring.length() - ")".length());
 
-        return findArgStart(substring2).map(index -> {
-            final var caller = substring2.substring(0, index);
+        return findArgStart(withoutEnd).map(index -> {
+            final var caller = withoutEnd.substring(0, index);
             final var compiled1 = compileType(caller.strip());
 
-            final var substring1 = substring2.substring(index + 1);
-            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip(), depth), Main::mergeValues, substring1);
+            final var substring1 = withoutEnd.substring(index + 1);
+            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(depth, value.strip()), Main::mergeValues, substring1);
 
             return compiled1 + "(" + compiled + ")";
         });
@@ -555,8 +555,8 @@ public class Main {
         final var index2 = input.indexOf(operator);
         if (index2 == -1) return Optional.empty();
 
-        final var compiled = compileValue(input.substring(0, index2), depth);
-        final var compiled1 = compileValue(input.substring(index2 + operator.length()), depth);
+        final var compiled = compileValue(depth, input.substring(0, index2));
+        final var compiled1 = compileValue(depth, input.substring(index2 + operator.length()));
         return Optional.of(compiled + " " + operator + " " + compiled1);
     }
 
@@ -630,7 +630,7 @@ public class Main {
     private static String compileType(String input) {
         if (input.equals("var")) return "auto";
 
-        if (input.endsWith("[]")) return "Slice<" + input.substring(0, input.length() - 2) + ">";
+        if (input.endsWith("[]")) return "Slice<" + input.substring(0, input.length() - "[]".length()) + ">";
 
         return compileGenericType(input)
                 .or(() -> compileSymbol(input))

@@ -59,14 +59,16 @@ struct Main {
 		return IntStream.range(0, parent.getNameCount()).mapToObj(parent.getName).map(Path.toString).toList();
 	}
 	String compile(String root){
-		return splitAndCompile(Main.splitByStatements, Main.compileRootMember, Main.mergeStatements, root);
+		return splitAndCompile(Main.splitByStatements, auto _lambda3_(auto rootSegment){
+			return compileRootMember(rootSegment, 1);
+		}, Main.mergeStatements, root);
 	}
 	String splitAndCompile(Function<String, List<String>> splitter, Function<String, String> compiler, BiFunction<StringBuilder, String, StringBuilder> merger, String input){
-		return splitter.apply(input).stream().map(String.strip).filter(auto _lambda5_(auto value){
+		return splitter.apply(input).stream().map(String.strip).filter(auto _lambda6_(auto value){
 			return !value.isEmpty();
-		}).reduce(Optional.<StringBuilder>empty(), auto _lambda3_(auto output, auto stripped){
+		}).reduce(Optional.<StringBuilder>empty(), auto _lambda4_(auto output, auto stripped){
 			return compileAndMerge(compiler, merger, output, stripped);
-		}, auto _lambda4_(auto _, auto next){
+		}, auto _lambda5_(auto _, auto next){
 			return next;
 		}).map(StringBuilder.toString).orElse("");
 	}
@@ -76,9 +78,9 @@ struct Main {
 			return Optional.of(StringBuilder(compiled));
 		}
 		else {
-			return output.map(auto _lambda6_(auto inner){
-			return merger.apply(inner, compiled);
-		});
+			return output.map(auto _lambda7_(auto inner){
+				return merger.apply(inner, compiled);
+			});
 		}
 	}
 	StringBuilder mergeStatements(StringBuilder inner, String stripped){
@@ -141,7 +143,7 @@ struct Main {
 			segments.add(buffer.toString());
 		}
 	}
-	String compileRootMember(String rootSegment){
+	String compileRootMember(String rootSegment, int depth){
 		if (rootSegment.startsWith("package ")) {
 			return "";
 		}
@@ -155,7 +157,9 @@ struct Main {
 			if (contentStartIndex != -1) {
 				auto name = withoutKeyword.substring(0, contentStartIndex).strip();
 				auto content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
-				auto compiled = splitAndCompile(Main.splitByStatements, Main.compileClassSegment, Main.mergeStatements, content);
+				auto compiled = splitAndCompile(Main.splitByStatements, auto _lambda8_(auto classSegment){
+					return compileClassSegment(classSegment, depth + 1);
+				}, Main.mergeStatements, content);
 				return "struct " + name + " {" + compiled + "\n}";
 			}
 		}
@@ -171,13 +175,13 @@ struct Main {
 		System.err.println("Unknown " + type + ": " + rootSegment);
 		return rootSegment;
 	}
-	String compileClassSegment(String classSegment){
+	String compileClassSegment(String classSegment, int depth){
 		if (classSegment.endsWith(";")) {
 			auto substring = classSegment.substring(0, classSegment.length() - 1);
 			auto index = substring.indexOf('=');
 			if (index != -1) {
 				auto definition = substring.substring(0, index);
-				auto compiled = compileValue(substring.substring(index + 1), 2);
+				auto compiled = compileValue(depth, substring.substring(index + 1));
 				return "\n\t" + compileDefinition(definition).orElseGet(() -> invalidate("definition", definition)) + " = " + compiled + ";";
 			}
 		}
@@ -198,9 +202,9 @@ struct Main {
 						auto afterParams = afterParamStart.substring(paramEnd + 1).strip();
 						if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
 							auto inputContent = afterParams.substring(1, afterParams.length() - 1);
-							auto outputContent = splitAndCompile(Main.splitByStatements, auto _lambda7_(auto statement){
-			return compileStatement(statement, 2);
-		}, Main.mergeStatements, inputContent);
+							auto outputContent = splitAndCompile(Main.splitByStatements, auto _lambda9_(auto statement){
+								return compileStatement(statement, depth);
+							}, Main.mergeStatements, inputContent);
 							auto inputParamsList = splitByValues(inputParams);
 							auto outputParams = compileParams(inputParamsList);
 							return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";
@@ -225,9 +229,9 @@ struct Main {
 			auto substring = statement.substring("else".length()).strip();String output
 			if (substring.startsWith("{") && substring.endsWith("}")) {
 				auto substring1 = substring.substring(1, substring.length() - 1);
-				output = splitAndCompile(Main.splitByStatements, auto _lambda8_(auto statement0){
-			return compileStatement(statement0, depth + 1);
-		}, Main.mergeStatements, substring1);
+				output = splitAndCompile(Main.splitByStatements, auto _lambda10_(auto statement0){
+					return compileStatement(statement0, depth + 1);
+				}, Main.mergeStatements, substring1);
 			}
 			else {
 				output = compileStatement(substring, depth + 1);
@@ -239,15 +243,15 @@ struct Main {
 			auto substring = statement.substring("return ".length());
 			if (substring.endsWith(";")) {
 				auto substring1 = substring.substring(0, substring.length() - ";".length());
-				auto compiled = compileValue(substring1, 2);
+				auto compiled = compileValue(depth, substring1);
 				return generateReturn(compiled, depth);
 			}
 		}
-		auto optional1 = compileConditional(statement, depth, "while");
+		auto optional1 = compileConditional(depth, "while", statement);
 		if (optional1.isPresent()) {
 			return optional1.get();
 		}
-		auto value = compileConditional(statement, depth, "if");
+		auto value = compileConditional(depth, "if", statement);
 		if (value.isPresent()) {
 			return value.get();
 		}
@@ -256,17 +260,17 @@ struct Main {
 			auto substring = statement.substring(0, index1);
 			auto substring1 = statement.substring(index1 + 1);
 			if (substring1.endsWith(";")) {
-				auto compiled = compileDefinition(substring).or(auto _lambda10_(){
-			return compileSymbol(substring);
-		}).orElseGet(auto _lambda9_(){
-			return invalidate("definition", substring);
-		});
-				auto compiled1 = compileValue(substring1.substring(0, substring1.length() - ";".length()).strip(), 2);
+				auto compiled = compileDefinition(substring).or(auto _lambda12_(){
+					return compileSymbol(substring);
+				}).orElseGet(auto _lambda11_(){
+					return invalidate("definition", substring);
+				});
+				auto compiled1 = compileValue(depth, substring1.substring(0, substring1.length() - ";".length()).strip());
 				return generateStatement(depth, compiled + " = " + compiled1);
 			}
 		}
 		if (statement.endsWith(";")) {
-			auto newCaller = compileInvocation(2, statement.substring(0, statement.length() - ";".length()));
+			auto newCaller = compileInvocation(depth, statement.substring(0, statement.length() - ";".length()));
 			if (newCaller.isPresent()) {
 				return generateStatement(depth, newCaller.get());
 			}
@@ -277,9 +281,9 @@ struct Main {
 				return optional.get();
 			}
 		}
-		return compilePostfix(statement, "--", depth).or(auto _lambda12_(){
+		return compilePostfix(statement, "--", depth).or(auto _lambda14_(){
 			return compilePostfix(statement, "++", depth);
-		}).orElseGet(auto _lambda11_(){
+		}).orElseGet(auto _lambda13_(){
 			return invalidate("statement", statement);
 		});
 	}
@@ -289,7 +293,7 @@ struct Main {
 			return Optional.empty();
 		}
 		auto substring = statement.substring(0, statement.length() -(joined).length());
-		return Optional.of(generateStatement(depth, compileValue(substring, depth) + suffix));
+		return Optional.of(generateStatement(depth, compileValue(depth, substring) + suffix));
 	}
 	String generateStatement(int depth, String content){
 		return "\n" + "\t".repeat(depth) + content + ";";
@@ -297,7 +301,7 @@ struct Main {
 	String generateReturn(String compiled, int depth){
 		return "\n" + "\t".repeat(depth) + "return " + compiled + ";";
 	}
-	Optional<String> compileConditional(String statement, int depth, String prefix){
+	Optional<String> compileConditional(int depth, String prefix, String statement){
 		if (!statement.startsWith(prefix)) {
 			return Optional.empty();
 		}
@@ -313,12 +317,12 @@ struct Main {
 			return Optional.empty();
 		}
 		auto condition = conditionWithEnd.substring(1);
-		auto value = compileValue(condition, 2);String outputContent
+		auto value = compileValue(depth, condition);String outputContent
 		if (content.startsWith("{") && content.endsWith("}")) {
 			auto substring = content.substring(1, content.length() - 1);
-			outputContent = splitAndCompile(Main.splitByStatements, auto _lambda13_(auto statement1){
-			return compileStatement(statement1, depth + 1);
-		}, Main.mergeStatements, substring);
+			outputContent = splitAndCompile(Main.splitByStatements, auto _lambda15_(auto statement1){
+				return compileStatement(statement1, depth + 1);
+			}, Main.mergeStatements, substring);
 		}
 		else {
 			outputContent = compileStatement(content, depth + 1);
@@ -327,7 +331,7 @@ struct Main {
 		return Optional.of(indent + prefix + " (" + value + ") {" + outputContent + indent + "}");
 	}
 	Optional<Integer> findConditionParamEnd(String input){
-		auto queue = IntStream.range(0, input.length()).mapToObj(auto _lambda14_(auto index){
+		auto queue = IntStream.range(0, input.length()).mapToObj(auto _lambda16_(auto index){
 			return Tuple<>(index, input.charAt(index));
 		}).collect(Collectors.toCollection(LinkedList.new));
 		auto depth = 0;
@@ -373,13 +377,13 @@ struct Main {
 			return Optional.empty();
 		}
 		auto substring = stripped.substring(0, stripped.length() - ")".length());
-		return findArgStart(substring).map(auto _lambda16_(auto index){
+		return findArgStart(substring).map(auto _lambda18_(auto index){
 		auto caller = substring.substring(0, index);
 		auto substring1 = substring.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda15_(auto value){
-			return compileValue(value.strip(), depth);
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda17_(auto value){
+			return compileValue(depth, value.strip());
 		}, Main.mergeValues, substring1);
-		auto newCaller = compileValue(caller.strip(), depth);
+		auto newCaller = compileValue(depth, caller.strip());
 		return newCaller + "(" + compiled + ")";
 		});
 	}
@@ -389,36 +393,36 @@ struct Main {
 		}
 		return Optional.empty();
 	}
-	String compileValue(String input, int depth){
-		return compileSymbol(input).or(auto _lambda31_(){
+	String compileValue(int depth, String input){
+		return compileSymbol(input).or(auto _lambda33_(){
 			return compileNumber(input);
-		}).or(auto _lambda30_(){
+		}).or(auto _lambda32_(){
 			return compileString(input);
-		}).or(auto _lambda29_(){
+		}).or(auto _lambda31_(){
 			return compileChar(input);
-		}).or(auto _lambda28_(){
+		}).or(auto _lambda30_(){
 			return compileNot(depth, input);
-		}).or(auto _lambda27_(){
+		}).or(auto _lambda29_(){
 			return compileConstruction(depth, input);
-		}).or(auto _lambda26_(){
+		}).or(auto _lambda28_(){
 			return compileLambda(depth, input);
-		}).or(auto _lambda25_(){
+		}).or(auto _lambda27_(){
 			return compileInvocation(depth, input);
-		}).or(auto _lambda24_(){
+		}).or(auto _lambda26_(){
 			return compileAccess(depth, input, ".");
-		}).or(auto _lambda23_(){
+		}).or(auto _lambda25_(){
 			return compileAccess(depth, input, "::");
-		}).or(auto _lambda22_(){
+		}).or(auto _lambda24_(){
 			return compileOperator(depth, input, "+");
-		}).or(auto _lambda21_(){
+		}).or(auto _lambda23_(){
 			return compileOperator(depth, input, "==");
-		}).or(auto _lambda20_(){
+		}).or(auto _lambda22_(){
 			return compileOperator(depth, input, "!=");
-		}).or(auto _lambda19_(){
+		}).or(auto _lambda21_(){
 			return compileOperator(depth, input, "&&");
-		}).or(auto _lambda18_(){
+		}).or(auto _lambda20_(){
 			return compileTernary(depth, input);
-		}).orElseGet(auto _lambda17_(){
+		}).orElseGet(auto _lambda19_(){
 			return invalidate("value", input);
 		});
 	}
@@ -431,7 +435,7 @@ struct Main {
 	}
 	Optional<String> compileNot(int depth, String input){
 		if (input.startsWith("!")) {
-			return Optional.of("!" + compileValue(input.substring(1), depth));
+			return Optional.of("!" + compileValue(depth, input.substring(1)));
 		}
 		return Optional.empty();
 	}
@@ -456,7 +460,7 @@ struct Main {
 		}
 		auto substring = input.substring(0, index);
 		auto substring1 = input.substring(index + slice.length());
-		auto s = compileValue(substring, depth);
+		auto s = compileValue(depth, substring);
 		return Optional.of(generateDataAccess(s, substring1));
 	}
 	String generateDataAccess(String s, String substring1){
@@ -473,9 +477,9 @@ struct Main {
 		if (maybe == -1) {
 			return Optional.empty();
 		}
-		auto substring1 = substring.substring(0, maybe);
-		auto substring2 = substring.substring(maybe + 1);
-		return Optional.of(compileValue(condition, depth) + " ? " + compileValue(substring1, depth) + " : " + compileValue(substring2, depth));
+		auto ifTrue = substring.substring(0, maybe);
+		auto ifFalse = substring.substring(maybe + 1);
+		return Optional.of(compileValue(depth, condition) + " ? " + compileValue(depth, ifTrue) + " : " + compileValue(depth, ifFalse));
 	}
 	Optional<String> compileSymbol(String input){
 		auto stripped = input.strip();
@@ -497,19 +501,19 @@ struct Main {
 		}String compiled
 		if (afterArrow.startsWith("{") && afterArrow.endsWith("}")) {
 			auto substring1 = afterArrow.substring(1, afterArrow.length() - 1);
-			compiled = splitAndCompile(Main.splitByStatements, auto _lambda32_(auto statement){
-			return compileStatement(statement, 2);
-		}, Main.mergeStatements, substring1);
+			compiled = splitAndCompile(Main.splitByStatements, auto _lambda34_(auto statement){
+				return compileStatement(statement, depth);
+			}, Main.mergeStatements, substring1);
 		}
 		else {
-			compiled = generateReturn(compileValue(afterArrow, 2), depth + 1);
+			compiled = generateReturn(compileValue(depth, afterArrow), depth + 1);
 		}
-		auto joinedNames = maybeNames.get().stream().map(auto _lambda33_(auto name){
+		auto joinedNames = maybeNames.get().stream().map(auto _lambda35_(auto name){
 			return "auto " + name;
 		}).collect(Collectors.joining(", "));
-		return Optional.of("auto " + getLambda__() + "(" + joinedNames + "){" + compiled + "\n\t\t}");
+		return Optional.of("auto " + createUniqueName() + "(" + joinedNames + "){" + compiled + "\n" + "\t".repeat(depth) + "}");
 	}
-	String getLambda__(){
+	String createUniqueName(){
 		auto lambda = "_lambda" + counter + "_";
 		counter++;
 		return lambda;
@@ -525,7 +529,7 @@ struct Main {
 			return Optional.empty();
 		}
 		auto args = nameSlice.substring(1, nameSlice.length() - 1).split(", ");
-		return Optional.of(Arrays.stream(args).map(String.strip).filter(auto _lambda34_(auto value){
+		return Optional.of(Arrays.stream(args).map(String.strip).filter(auto _lambda36_(auto value){
 			return !value.isEmpty();
 		}).toList());
 	}
@@ -537,13 +541,13 @@ struct Main {
 		if (!substring.endsWith(")")) {
 			return Optional.empty();
 		}
-		auto substring2 = substring.substring(0, substring.length() - ")".length());
-		return findArgStart(substring2).map(auto _lambda36_(auto index){
-		auto caller = substring2.substring(0, index);
+		auto withoutEnd = substring.substring(0, substring.length() - ")".length());
+		return findArgStart(withoutEnd).map(auto _lambda38_(auto index){
+		auto caller = withoutEnd.substring(0, index);
 		auto compiled1 = compileType(caller.strip());
-		auto substring1 = substring2.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda35_(auto value){
-			return compileValue(value.strip(), depth);
+		auto substring1 = withoutEnd.substring(index + 1);
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda37_(auto value){
+			return compileValue(depth, value.strip());
 		}, Main.mergeValues, substring1);
 		return compiled1 + "(" + compiled + ")";
 		});
@@ -556,8 +560,8 @@ struct Main {
 		if (index2 == -1) {
 			return Optional.empty();
 		}
-		auto compiled = compileValue(input.substring(0, index2), depth);
-		auto compiled1 = compileValue(input.substring(index2 + operator.length()), depth);
+		auto compiled = compileValue(depth, input.substring(0, index2));
+		auto compiled1 = compileValue(depth, input.substring(index2 + operator.length()));
 		return Optional.of(compiled + " " + operator + " " + compiled1);
 	}
 	boolean isNumber(String value){
@@ -600,11 +604,11 @@ struct Main {
 			return "auto";
 		}
 		if (input.endsWith("[]")) {
-			return "Slice<" + input.substring(0, input.length() - 2) + ">";
+			return "Slice<" + input.substring(0, input.length() - "[]".length()) + ">";
 		}
-		return compileGenericType(input).or(auto _lambda38_(){
+		return compileGenericType(input).or(auto _lambda40_(){
 			return compileSymbol(input);
-		}).orElseGet(auto _lambda37_(){
+		}).orElseGet(auto _lambda39_(){
 			return invalidate("type", input);
 		});
 	}
