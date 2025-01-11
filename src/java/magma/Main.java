@@ -45,10 +45,7 @@ public class Main {
             if (namespace.subList(0, 2).equals(List.of("magma", "java"))) return Optional.empty();
         }
 
-        var targetParent = TARGET_DIRECTORY;
-        for (var namespaceSegment : namespace) {
-            targetParent = targetParent.resolve(namespaceSegment);
-        }
+        final var targetParent = namespace.stream().reduce(TARGET_DIRECTORY, Path::resolve, (_, next) -> next);
 
         if (!Files.exists(targetParent)) {
             final var directoriesError = JavaPaths.createDirectoriesSafe(targetParent);
