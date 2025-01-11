@@ -205,8 +205,11 @@ struct Main {
 							auto outputContent = splitAndCompile(Main.splitByStatements, auto _lambda9_(auto statement){
 								return compileStatement(statement, depth);
 							}, Main.mergeStatements, inputContent);
-							auto inputParamsList = splitByValues(inputParams);
-							auto outputParams = compileParams(inputParamsList);
+							auto outputParams = splitAndCompile(Main.splitByValues, auto _lambda11_(auto value){
+								return compileDefinition(value).orElseGet(auto _lambda10_(){
+								return invalidate("definition", value);
+							});
+							}, Main.mergeValues, inputParams);
 							return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";
 						}
 					}
@@ -222,14 +225,11 @@ struct Main {
 		if (statement.strip().equals("break;")) {
 			return generateStatement(depth, "break");
 		}
-		if (statement.startsWith("for")) {
-			return "\n\t\tfor (;;) {\n\t\t}";
-		}
 		if (statement.startsWith("else")) {
 			auto substring = statement.substring("else".length()).strip();String output
 			if (substring.startsWith("{") && substring.endsWith("}")) {
 				auto substring1 = substring.substring(1, substring.length() - 1);
-				output = splitAndCompile(Main.splitByStatements, auto _lambda10_(auto statement0){
+				output = splitAndCompile(Main.splitByStatements, auto _lambda12_(auto statement0){
 					return compileStatement(statement0, depth + 1);
 				}, Main.mergeStatements, substring1);
 			}
@@ -260,9 +260,9 @@ struct Main {
 			auto substring = statement.substring(0, index1);
 			auto substring1 = statement.substring(index1 + 1);
 			if (substring1.endsWith(";")) {
-				auto compiled = compileDefinition(substring).or(auto _lambda12_(){
+				auto compiled = compileDefinition(substring).or(auto _lambda14_(){
 					return compileSymbol(substring);
-				}).orElseGet(auto _lambda11_(){
+				}).orElseGet(auto _lambda13_(){
 					return invalidate("definition", substring);
 				});
 				auto compiled1 = compileValue(depth, substring1.substring(0, substring1.length() - ";".length()).strip());
@@ -281,9 +281,9 @@ struct Main {
 				return optional.get();
 			}
 		}
-		return compilePostfix(statement, "--", depth).or(auto _lambda14_(){
+		return compilePostfix(statement, "--", depth).or(auto _lambda16_(){
 			return compilePostfix(statement, "++", depth);
-		}).orElseGet(auto _lambda13_(){
+		}).orElseGet(auto _lambda15_(){
 			return invalidate("statement", statement);
 		});
 	}
@@ -320,7 +320,7 @@ struct Main {
 		auto value = compileValue(depth, condition);String outputContent
 		if (content.startsWith("{") && content.endsWith("}")) {
 			auto substring = content.substring(1, content.length() - 1);
-			outputContent = splitAndCompile(Main.splitByStatements, auto _lambda15_(auto statement1){
+			outputContent = splitAndCompile(Main.splitByStatements, auto _lambda17_(auto statement1){
 				return compileStatement(statement1, depth + 1);
 			}, Main.mergeStatements, substring);
 		}
@@ -331,7 +331,7 @@ struct Main {
 		return Optional.of(indent + prefix + " (" + value + ") {" + outputContent + indent + "}");
 	}
 	Optional<Integer> findConditionParamEnd(String input){
-		auto queue = IntStream.range(0, input.length()).mapToObj(auto _lambda16_(auto index){
+		auto queue = IntStream.range(0, input.length()).mapToObj(auto _lambda18_(auto index){
 			return Tuple<>(index, input.charAt(index));
 		}).collect(Collectors.toCollection(LinkedList.new));
 		auto depth = 0;
@@ -377,52 +377,74 @@ struct Main {
 			return Optional.empty();
 		}
 		auto substring = stripped.substring(0, stripped.length() - ")".length());
-		return findArgStart(substring).map(auto _lambda18_(auto index){
+		return findArgStart(substring).map(auto _lambda20_(auto index){
 		auto caller = substring.substring(0, index);
 		auto substring1 = substring.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda17_(auto value){
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda19_(auto value){
 			return compileValue(depth, value.strip());
 		}, Main.mergeValues, substring1);
 		auto newCaller = compileValue(depth, caller.strip());
 		return newCaller + "(" + compiled + ")";
 		});
 	}
-	Optional<Integer> findArgStart(String substring){
-		auto depth = 0;
-		for (;;) {
+	Optional<Integer> findArgStart(String input){
+		return IntStream.range(0, input.length()).map(auto _lambda23_(auto index){
+			return input.length() - 1 - index;
+		}).mapToObj(auto _lambda22_(auto index){
+			return Tuple<>(index, input.charAt(index));
+		}).reduce(Tuple<>(Optional.empty(), 0), Main.findArgStateFold, auto _lambda21_(auto _, auto next){
+			return next;
+		}).left();
+	}
+	Integer> findArgStateFold(Tuple<Optional<Integer>, Integer> previous, Tuple<Integer, Character> tuple){
+		auto previousOptional = previous.left();
+		if (previousOptional.isPresent()) {
+			return previous;
 		}
-		return Optional.empty();
+		auto depth = previous.right();
+		auto i = tuple.left();
+		auto c = tuple.right();
+		if (c == '(' && depth == 0) {
+			return Tuple<>(Optional.of(i), depth);
+		}
+		if (c == ')') {
+			return Tuple<>(Optional.empty(), depth + 1);
+		}
+		if (c == '(') {
+			return Tuple<>(Optional.empty(), depth - 1);
+		}
+		return Tuple<>(Optional.empty(), depth);
 	}
 	String compileValue(int depth, String input){
-		return compileSymbol(input).or(auto _lambda33_(){
+		return compileSymbol(input).or(auto _lambda38_(){
 			return compileNumber(input);
-		}).or(auto _lambda32_(){
+		}).or(auto _lambda37_(){
 			return compileString(input);
-		}).or(auto _lambda31_(){
+		}).or(auto _lambda36_(){
 			return compileChar(input);
-		}).or(auto _lambda30_(){
+		}).or(auto _lambda35_(){
 			return compileNot(depth, input);
-		}).or(auto _lambda29_(){
+		}).or(auto _lambda34_(){
 			return compileConstruction(depth, input);
-		}).or(auto _lambda28_(){
+		}).or(auto _lambda33_(){
 			return compileLambda(depth, input);
-		}).or(auto _lambda27_(){
+		}).or(auto _lambda32_(){
 			return compileInvocation(depth, input);
-		}).or(auto _lambda26_(){
+		}).or(auto _lambda31_(){
 			return compileAccess(depth, input, ".");
-		}).or(auto _lambda25_(){
+		}).or(auto _lambda30_(){
 			return compileAccess(depth, input, "::");
-		}).or(auto _lambda24_(){
+		}).or(auto _lambda29_(){
 			return compileOperator(depth, input, "+");
-		}).or(auto _lambda23_(){
+		}).or(auto _lambda28_(){
 			return compileOperator(depth, input, "==");
-		}).or(auto _lambda22_(){
+		}).or(auto _lambda27_(){
 			return compileOperator(depth, input, "!=");
-		}).or(auto _lambda21_(){
+		}).or(auto _lambda26_(){
 			return compileOperator(depth, input, "&&");
-		}).or(auto _lambda20_(){
+		}).or(auto _lambda25_(){
 			return compileTernary(depth, input);
-		}).orElseGet(auto _lambda19_(){
+		}).orElseGet(auto _lambda24_(){
 			return invalidate("value", input);
 		});
 	}
@@ -501,14 +523,14 @@ struct Main {
 		}String compiled
 		if (afterArrow.startsWith("{") && afterArrow.endsWith("}")) {
 			auto substring1 = afterArrow.substring(1, afterArrow.length() - 1);
-			compiled = splitAndCompile(Main.splitByStatements, auto _lambda34_(auto statement){
+			compiled = splitAndCompile(Main.splitByStatements, auto _lambda39_(auto statement){
 				return compileStatement(statement, depth);
 			}, Main.mergeStatements, substring1);
 		}
 		else {
 			compiled = generateReturn(compileValue(depth, afterArrow), depth + 1);
 		}
-		auto joinedNames = maybeNames.get().stream().map(auto _lambda35_(auto name){
+		auto joinedNames = maybeNames.get().stream().map(auto _lambda40_(auto name){
 			return "auto " + name;
 		}).collect(Collectors.joining(", "));
 		return Optional.of("auto " + createUniqueName() + "(" + joinedNames + "){" + compiled + "\n" + "\t".repeat(depth) + "}");
@@ -529,7 +551,7 @@ struct Main {
 			return Optional.empty();
 		}
 		auto args = nameSlice.substring(1, nameSlice.length() - 1).split(", ");
-		return Optional.of(Arrays.stream(args).map(String.strip).filter(auto _lambda36_(auto value){
+		return Optional.of(Arrays.stream(args).map(String.strip).filter(auto _lambda41_(auto value){
 			return !value.isEmpty();
 		}).toList());
 	}
@@ -542,11 +564,11 @@ struct Main {
 			return Optional.empty();
 		}
 		auto withoutEnd = substring.substring(0, substring.length() - ")".length());
-		return findArgStart(withoutEnd).map(auto _lambda38_(auto index){
+		return findArgStart(withoutEnd).map(auto _lambda43_(auto index){
 		auto caller = withoutEnd.substring(0, index);
 		auto compiled1 = compileType(caller.strip());
 		auto substring1 = withoutEnd.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda37_(auto value){
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda42_(auto value){
 			return compileValue(depth, value.strip());
 		}, Main.mergeValues, substring1);
 		return compiled1 + "(" + compiled + ")";
@@ -568,20 +590,17 @@ struct Main {
 		auto value1 = value.startsWith("-")
                 ? value.substring(1)
                 : value;
-		for (;;) {
-		}
-		return true;
+		return IntStream.range(0, value1.length()).mapToObj(value1.charAt).allMatch(Character.isDigit);
 	}
 	boolean isSymbol(String value){
-		for (;;) {
-		}
-		return true;
+		return IntStream.range(0, value.length()).mapToObj(auto _lambda44_(auto index){
+			return Tuple<>(index, value.charAt(index));
+		}).allMatch(Main.isSymbolChar);
 	}
-	String compileParams(ArrayList<String> inputParamsList){
-		Optional<StringBuilder> maybeOutputParams = Optional.empty();
-		for (;;) {
-		}
-		return maybeOutputParams.map(StringBuilder.toString).orElse("");
+	boolean isSymbolChar(Tuple<Integer, Character> tuple){
+		auto i = tuple.left();
+		auto c = tuple.right();
+		return Character.isLetter(c) || c == '_' ||(i != 0 && Character.isDigit(c));
 	}
 	Optional<String> compileDefinition(String input){
 		auto stripped = input.strip();
@@ -592,9 +611,15 @@ struct Main {
 		auto inputParamType = stripped.substring(0, separator);
 		auto paramName = stripped.substring(separator + 1);
 		auto index = -1;
-		auto depth = 0;
-		for (;;) {
-		}
+		auto depth = 0;for (int i = 0; i < inputParamType.length(); i++) {
+            var c = inputParamType.charAt(i);
+            if (c == ' ' && depth == 0) {
+                index = i;
+            } else {
+                if (c == '>') depth++;
+                if (c == '<') depth--;
+            }
+        }
 		auto inputParamType1 = index == -1 ? inputParamType : inputParamType.substring(index + 1);
 		auto outputParamType = compileType(inputParamType1);
 		return Optional.of(outputParamType + " " + paramName);
@@ -606,9 +631,9 @@ struct Main {
 		if (input.endsWith("[]")) {
 			return "Slice<" + input.substring(0, input.length() - "[]".length()) + ">";
 		}
-		return compileGenericType(input).or(auto _lambda40_(){
+		return compileGenericType(input).or(auto _lambda46_(){
 			return compileSymbol(input);
-		}).orElseGet(auto _lambda39_(){
+		}).orElseGet(auto _lambda45_(){
 			return invalidate("type", input);
 		});
 	}

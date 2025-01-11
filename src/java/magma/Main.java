@@ -222,10 +222,7 @@ public class Main {
                         if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
                             final var inputContent = afterParams.substring(1, afterParams.length() - 1);
                             final var outputContent = splitAndCompile(Main::splitByStatements, statement -> compileStatement(statement, depth), Main::mergeStatements, inputContent);
-
-                            final var inputParamsList = splitByValues(inputParams);
-                            final var outputParams = compileParams(inputParamsList);
-
+                            final var outputParams = splitAndCompile(Main::splitByValues, value -> compileDefinition(value).orElseGet(() -> invalidate("definition", value)), Main::mergeValues, inputParams);
                             return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";
                         }
                     }
@@ -239,7 +236,6 @@ public class Main {
         if (statement.strip().equals("continue;")) return generateStatement(depth, "continue");
         if (statement.strip().equals("break;")) return generateStatement(depth, "break");
 
-        if (statement.startsWith("for")) return "\n\t\tfor (;;) {\n\t\t}";
         if (statement.startsWith("else")) {
             final var substring = statement.substring("else".length()).strip();
             final String output;
@@ -396,18 +392,26 @@ public class Main {
         });
     }
 
-    private static Optional<Integer> findArgStart(String substring) {
-        var depth = 0;
-        for (int i = substring.length() - 1; i >= 0; i--) {
-            final var c = substring.charAt(i);
-            if (c == '(' && depth == 0) {
-                return Optional.of(i);
-            } else {
-                if (c == ')') depth++;
-                if (c == '(') depth--;
-            }
-        }
-        return Optional.empty();
+    private static Optional<Integer> findArgStart(String input) {
+        return IntStream.range(0, input.length())
+                .map(index -> input.length() - 1 - index)
+                .mapToObj(index -> new Tuple<>(index, input.charAt(index)))
+                .reduce(new Tuple<>(Optional.empty(), 0), Main::findArgStateFold, (_, next) -> next)
+                .left();
+    }
+
+    private static Tuple<Optional<Integer>, Integer> findArgStateFold(Tuple<Optional<Integer>, Integer> previous, Tuple<Integer, Character> tuple) {
+        final var previousOptional = previous.left();
+        if (previousOptional.isPresent()) return previous;
+
+        final var depth = previous.right();
+        final var i = tuple.left();
+        final var c = tuple.right();
+
+        if (c == '(' && depth == 0) return new Tuple<>(Optional.of(i), depth);
+        if (c == ')') return new Tuple<>(Optional.empty(), depth + 1);
+        if (c == '(') return new Tuple<>(Optional.empty(), depth - 1);
+        return new Tuple<>(Optional.empty(), depth);
     }
 
     private static String compileValue(int depth, String input) {
@@ -565,38 +569,21 @@ public class Main {
                 ? value.substring(1)
                 : value;
 
-        for (int i = 0; i < value1.length(); i++) {
-            final var c = value1.charAt(i);
-            if (!Character.isDigit(c)) return false;
-        }
-        return true;
+        return IntStream.range(0, value1.length())
+                .mapToObj(value1::charAt)
+                .allMatch(Character::isDigit);
     }
 
     private static boolean isSymbol(String value) {
-        for (int i = 0; i < value.length(); i++) {
-            final var c = value.charAt(i);
-            if (Character.isLetter(c) || c == '_' || (i != 0 && Character.isDigit(c))) continue;
-            return false;
-        }
-
-        return true;
+        return IntStream.range(0, value.length())
+                .mapToObj(index -> new Tuple<>(index, value.charAt(index)))
+                .allMatch(Main::isSymbolChar);
     }
 
-    private static String compileParams(ArrayList<String> inputParamsList) {
-        Optional<StringBuilder> maybeOutputParams = Optional.empty();
-        for (String inputParam : inputParamsList) {
-            final var stripped = inputParam.strip();
-            if (stripped.isEmpty()) continue;
-
-            final var outputParam = compileDefinition(stripped)
-                    .orElseGet(() -> invalidate("definition", stripped));
-
-            maybeOutputParams = maybeOutputParams
-                    .map(stringBuilder -> mergeValues(stringBuilder, outputParam))
-                    .or(() -> Optional.of(new StringBuilder(outputParam)));
-        }
-
-        return maybeOutputParams.map(StringBuilder::toString).orElse("");
+    private static boolean isSymbolChar(Tuple<Integer, Character> tuple) {
+        final var i = tuple.left();
+        final var c = tuple.right();
+        return Character.isLetter(c) || c == '_' || (i != 0 && Character.isDigit(c));
     }
 
     private static Optional<String> compileDefinition(String input) {
