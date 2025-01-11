@@ -73,7 +73,7 @@ public class Main {
     }
 
     private static String compile(String root) {
-        return splitAndCompile(Main::splitByStatements, Main::compileRootMember, Main::merge, root);
+        return splitAndCompile(Main::splitByStatements, Main::compileRootMember, Main::mergeStatements, root);
     }
 
     private static String splitAndCompile(
@@ -99,7 +99,7 @@ public class Main {
         return output.map(StringBuilder::toString).orElse("");
     }
 
-    private static StringBuilder merge(StringBuilder inner, String stripped) {
+    private static StringBuilder mergeStatements(StringBuilder inner, String stripped) {
         return inner.append(stripped);
     }
 
@@ -170,7 +170,7 @@ public class Main {
             if (contentStartIndex != -1) {
                 final var name = withoutKeyword.substring(0, contentStartIndex).strip();
                 final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
-                final var compiled = splitAndCompile(Main::splitByStatements, Main::compileClassSegment, Main::merge, content);
+                final var compiled = splitAndCompile(Main::splitByStatements, Main::compileClassSegment, Main::mergeStatements, content);
                 return "struct " + name + " {" + compiled + "\n}";
             }
         }
@@ -215,7 +215,7 @@ public class Main {
                         final var afterParams = afterParamStart.substring(paramEnd + 1).strip();
                         if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
                             final var inputContent = afterParams.substring(1, afterParams.length() - 1);
-                            final var outputContent = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::merge, inputContent);
+                            final var outputContent = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::mergeStatements, inputContent);
 
                             final var inputParamsList = splitByValues(inputParams);
                             final var outputParams = compileParams(inputParamsList);
@@ -274,17 +274,26 @@ public class Main {
         if (!statement.startsWith("if")) return Optional.empty();
         final var withoutKeyword = statement.substring("if".length());
 
-        final var paramEnd = findConditionParamEnd(withoutKeyword);
-        if (paramEnd.isEmpty()) return Optional.empty();
+        final var maybeParamEnd = findConditionParamEnd(withoutKeyword);
+        if (maybeParamEnd.isEmpty()) return Optional.empty();
 
-        final var conditionWithEnd = withoutKeyword.substring(0, paramEnd.get()).strip();
+        final var paramEnd = maybeParamEnd.get();
+        final var conditionWithEnd = withoutKeyword.substring(0, paramEnd).strip();
+        final var content = withoutKeyword.substring(paramEnd + 1).strip();
+
         if (!conditionWithEnd.startsWith("(")) return Optional.empty();
 
         final var condition = conditionWithEnd.substring(1);
         final var value = compileValue(condition);
+        final String outputContent;
+        if (content.startsWith("{") && content.endsWith("}")) {
+            outputContent = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::mergeStatements, content);
+        } else {
+            final var output = compileValue(content);
+            outputContent = "return " + output + ";";
+        }
 
-
-        return Optional.of("\n\t\tif(" + value + "){\n\t\t}");
+        return Optional.of("\n\t\tif(" + value + "){" + outputContent + "}");
     }
 
     private static Optional<Integer> findConditionParamEnd(String substring) {
@@ -400,7 +409,7 @@ public class Main {
         final String compiled;
         if (afterArrow.startsWith("{") && afterArrow.endsWith("}")) {
             final var substring1 = afterArrow.substring(1, afterArrow.length() - 1);
-            compiled = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::merge, substring1);
+            compiled = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::mergeStatements, substring1);
         } else {
             compiled = "\n\t\t\treturn " + compileValue(afterArrow) + ";";
         }
@@ -443,7 +452,7 @@ public class Main {
             final var compiled1 = compileType(caller.strip());
 
             final var substring1 = substring2.substring(index + 1);
-            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip()), Main::merge, substring1);
+            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip()), Main::mergeStatements, substring1);
 
             return compiled1 + "(" + compiled + ")";
         });
@@ -535,7 +544,7 @@ public class Main {
             final var substring = input.substring(genStart + 1);
             if (substring.endsWith(">")) {
                 final var substring1 = substring.substring(0, substring.length() - ">".length());
-                final var s = splitAndCompile(Main::splitByValues, Main::compileType, Main::merge, substring1);
+                final var s = splitAndCompile(Main::splitByValues, Main::compileType, Main::mergeStatements, substring1);
                 return caller + "<" + s + ">";
             }
         }
