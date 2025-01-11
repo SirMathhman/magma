@@ -33,4 +33,7 @@ struct None<T> implements Option<T> {public None() {
 	T orElse(T other){
 		return other;
 	}
+	Option<R> flatMap(Function<T, Option<R>> mapper){
+		return None<>();
+	}
 }

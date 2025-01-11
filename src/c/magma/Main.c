@@ -282,17 +282,19 @@ struct Main {
 				return generateStatement(depth, newCaller.unwrap());
 			}
 		}
-		if (statement.endsWith(";")) {
-			auto Option = compileDefinition(statement.substring(0, statement.length() - 1));
-			if (Option.isPresent()) {
-				return Option.unwrap();
-			}
-		}
-		return compilePostfix(statement, "--", depth).or(auto _lambda16_(){
+		return compileDefinitionStatement(statement).or(auto _lambda17_(){
+			return compilePostfix(statement, "--", depth);
+		}).or(auto _lambda16_(){
 			return compilePostfix(statement, "++", depth);
 		}).orElseGet(auto _lambda15_(){
 			return invalidate("statement", statement);
 		});
+	}
+	Option<String> compileDefinitionStatement(String statement){
+		if (!statement.endsWith(";")) {
+			return None<>();
+		}
+		return compileDefinition(statement.substring(0, statement.length() - 1));
 	}
 	Option<String> compilePostfix(String statement, String suffix, int depth){
 		auto joined = suffix + ";";
@@ -313,29 +315,25 @@ struct Main {
 			return None<>();
 		}
 		auto withoutKeyword = statement.substring(prefix.length());
-		auto maybeParamEnd = findConditionParamEnd(withoutKeyword);
-		if (maybeParamEnd.isEmpty()) {
-			return None<>();
-		}
-		auto paramEnd = maybeParamEnd.unwrap();
-		auto conditionWithEnd = withoutKeyword.substring(0, paramEnd).strip();
-		auto content = withoutKeyword.substring(paramEnd + 1).strip();
-		if (!conditionWithEnd.startsWith("(")) {
-			return None<>();
-		}
-		auto condition = conditionWithEnd.substring(1);
-		auto value = compileValue(depth, condition);String outputContent
-		if (content.startsWith("{") && content.endsWith("}")) {
-			auto substring = content.substring(1, content.length() - 1);
-			outputContent = splitAndCompile(Main.splitByStatements, auto _lambda17_(auto statement1){
-				return compileStatement(statement1, depth + 1);
-			}, Main.mergeStatements, substring);
-		}
-		else {
-			outputContent = compileStatement(content, depth + 1);
-		}
-		auto indent = "\n" + "\t".repeat(depth);
-		return Some<>(indent + prefix + " (" + value + ") {" + outputContent + indent + "}");
+		return findConditionParamEnd(withoutKeyword).flatMap(paramEnd -> {
+            final var conditionWithEnd = withoutKeyword.substring(0, paramEnd).strip();
+            final var content = withoutKeyword.substring(paramEnd + 1).strip();
+
+            if(!conditionWithEnd.startsWith("(")) return new None<>();
+
+            final var condition = conditionWithEnd.substring(1);
+            final var value = compileValue(depth, condition);
+            final String outputContent;
+            if (content.startsWith("{") && content.endsWith("}")) {
+                final var substring = content.substring(1, content.length() - 1);
+                outputContent = splitAndCompile(Main::splitByStatements, statement1 -> compileStatement(statement1, depth + 1), Main::mergeStatements, substring);
+            } else {
+                outputContent = compileStatement(content, depth + 1);
+            }
+
+            final var indent = "\n" + "\t".repeat(depth);
+            return new Some<>(indent + prefix + " (" + value + ") {" + outputContent + indent + "}");
+        });
 	}
 	Option<Integer> findConditionParamEnd(String input){
 		auto queue = IntStream.range(0, input.length()).mapToObj(auto _lambda18_(auto index){
@@ -556,10 +554,12 @@ struct Main {
 		else {
 			compiled = generateReturn(compileValue(depth, afterArrow), depth + 1);
 		}
-		auto joinedNames = maybeNames.unwrap().stream().map(auto _lambda41_(auto name){
+		return maybeNames.map(auto _lambda42_(auto names){
+		auto joinedNames = names.stream().map(auto _lambda41_(auto name){
 			return "auto " + name;
 		}).collect(Collectors.joining(", "));
-		return Some<>("auto " + createUniqueName() + "(" + joinedNames + "){" + compiled + "\n" + "\t".repeat(depth) + "}");
+		return "auto " + createUniqueName() + "(" + joinedNames + "){" + compiled + "\n" + "\t".repeat(depth) + "}";
+		});
 	}
 	String createUniqueName(){
 		auto lambda = "_lambda" + counter + "_";
@@ -577,7 +577,7 @@ struct Main {
 			return None<>();
 		}
 		auto args = nameSlice.substring(1, nameSlice.length() - 1).split(", ");
-		return Some<>(Arrays.stream(args).map(String.strip).filter(auto _lambda42_(auto value){
+		return Some<>(Arrays.stream(args).map(String.strip).filter(auto _lambda43_(auto value){
 			return !value.isEmpty();
 		}).toList());
 	}
@@ -590,11 +590,11 @@ struct Main {
 			return None<>();
 		}
 		auto withoutEnd = substring.substring(0, substring.length() - ")".length());
-		return findMatchingChar(withoutEnd, Main.streamReverseIndices, '(', ')', '(').map(auto _lambda44_(auto index){
+		return findMatchingChar(withoutEnd, Main.streamReverseIndices, '(', ')', '(').map(auto _lambda45_(auto index){
 		auto caller = withoutEnd.substring(0, index);
 		auto compiled1 = compileType(caller.strip());
 		auto substring1 = withoutEnd.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda43_(auto value){
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda44_(auto value){
 			return compileValue(depth, value.strip());
 		}, Main.mergeValues, substring1);
 		return compiled1 + "(" + compiled + ")";
@@ -619,7 +619,7 @@ struct Main {
 		return IntStream.range(0, value1.length()).mapToObj(value1.charAt).allMatch(Character.isDigit);
 	}
 	boolean isSymbol(String value){
-		return IntStream.range(0, value.length()).mapToObj(auto _lambda45_(auto index){
+		return IntStream.range(0, value.length()).mapToObj(auto _lambda46_(auto index){
 			return Tuple<>(index, value.charAt(index));
 		}).allMatch(Main.isSymbolChar);
 	}
@@ -636,7 +636,7 @@ struct Main {
 		}
 		auto inputParamType = stripped.substring(0, separator);
 		auto paramName = stripped.substring(separator + 1);
-		auto inputParamType1 = findMatchingChar(inputParamType, Main.streamReverseIndices, ' ', '>', '<').map(auto _lambda46_(auto index){
+		auto inputParamType1 = findMatchingChar(inputParamType, Main.streamReverseIndices, ' ', '>', '<').map(auto _lambda47_(auto index){
 			return inputParamType.substring(index + 1);
 		}).orElse(inputParamType);
 		auto outputParamType = compileType(inputParamType1);
@@ -649,9 +649,9 @@ struct Main {
 		if (input.endsWith("[]")) {
 			return "Slice<" + input.substring(0, input.length() - "[]".length()) + ">";
 		}
-		return compileGenericType(input).or(auto _lambda48_(){
+		return compileGenericType(input).or(auto _lambda49_(){
 			return compileSymbol(input);
-		}).orElseGet(auto _lambda47_(){
+		}).orElseGet(auto _lambda48_(){
 			return invalidate("type", input);
 		});
 	}
