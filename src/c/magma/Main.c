@@ -42,7 +42,7 @@ struct Main {
 		auto name = relative.getFileName().toString();
 		auto nameWithoutExt = name.substring(0, name.indexOf('.'));
 		auto target = targetParent.resolve(nameWithoutExt + ".c");
-		return JavaPaths.readSafe(source).match(auto __lambda__(auto [input]){return JavaPaths.writeSafe(target, compile(input));}, Optional.of);
+		return JavaPaths.readSafe(source).match(auto __lambda__(auto input){return JavaPaths.writeSafe(target, compile(input));}, Optional.of);
 	}
 	List<String> convertPathToList(Path parent){
 		return IntStream.range(0, parent.getNameCount())
@@ -129,10 +129,10 @@ struct Main {
 		if(!statement.endsWith(")"){
 		}
 		auto substring = statement.substring(0, statement.length() - ")".length());
-		return findArgStart(substring).map(auto __lambda__(auto [index]){
+		return findArgStart(substring).map(auto __lambda__(auto index){
 		auto caller = substring.substring(0, index);
 		auto substring1 = substring.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto __lambda__(auto [value]){return compileValue(value.strip());}, auto __lambda__(auto [inner, stripped]){return inner.append(", ").append(stripped);}, substring1);
+		auto compiled = splitAndCompile(Main.splitByValues, auto __lambda__(auto value){return compileValue(value.strip());}, auto __lambda__(auto inner, auto stripped){return inner.append(", ").append(stripped);}, substring1);
 		auto newCaller = compileValue(caller.strip());
 		return newCaller + "(" + compiled + ")";});
 	}
@@ -196,7 +196,7 @@ struct Main {
 		}
 		else {
 		}
-		auto joinedNames = maybeNames.stream()
+		auto joinedNames = maybeNames.get().stream()
                 .map(name -> "auto " + name)
                 .collect(Collectors.joining(", "));
 		return Optional.of("auto __lambda__(" + joinedNames + "){" + compiled + "}");
@@ -221,11 +221,11 @@ struct Main {
 		if(!substring.endsWith(")"){
 		}
 		auto substring2 = substring.substring(0, substring.length() - ")".length());
-		return findArgStart(substring2).map(auto __lambda__(auto [index]){
+		return findArgStart(substring2).map(auto __lambda__(auto index){
 		auto caller = substring2.substring(0, index);
 		auto compiled1 = compileType(caller.strip());
 		auto substring1 = substring2.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto __lambda__(auto [value]){return compileValue(value.strip());}, Main.merge, substring1);
+		auto compiled = splitAndCompile(Main.splitByValues, auto __lambda__(auto value){return compileValue(value.strip());}, Main.merge, substring1);
 		return compiled1 + "(" + compiled + ")";});
 	}
 	Optional<String> compileOperator(String input, String operator){

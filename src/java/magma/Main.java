@@ -391,7 +391,7 @@ public class Main {
             compiled = "return " + compileValue(afterArrow) + ";";
         }
 
-        final var joinedNames = maybeNames.stream()
+        final var joinedNames = maybeNames.get().stream()
                 .map(name -> "auto " + name)
                 .collect(Collectors.joining(", "));
 
