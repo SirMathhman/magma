@@ -230,8 +230,8 @@ public class Main {
     }
 
     private static String compileStatement(String statement, int depth) {
-        if (statement.strip().equals("continue;")) return "continue;";
-        if (statement.strip().equals("break;")) return "break;";
+        if (statement.strip().equals("continue;")) return generateStatement(depth, "continue");
+        if (statement.strip().equals("break;")) return generateStatement(depth, "break");
 
         if (statement.startsWith("for")) return "\n\t\tfor (;;) {\n\t\t}";
         if (statement.startsWith("else")) return "\n\t\telse {\n\t\t}";
@@ -260,13 +260,13 @@ public class Main {
                         .or(() -> compileSymbol(substring))
                         .orElseGet(() -> invalidate("definition", substring));
                 final var compiled1 = compileValue(substring1.substring(0, substring1.length() - ";".length()).strip());
-                return "\n\t\t" + compiled + " = " + compiled1 + ";";
+                return generateStatement(depth, compiled + " = " + compiled1);
             }
         }
 
         if (statement.endsWith(";")) {
             final var newCaller = compileInvocation(statement.substring(0, statement.length() - ";".length()));
-            if (newCaller.isPresent()) return "\n\t\t" + newCaller.get() + ";";
+            if (newCaller.isPresent()) return generateStatement(depth, newCaller.get());
         }
 
         if (statement.endsWith(";")) {
@@ -280,6 +280,10 @@ public class Main {
         }
 
         return invalidate("statement", statement);
+    }
+
+    private static String generateStatement(int depth, String content) {
+        return "\n" + "\t".repeat(depth) + content + ";";
     }
 
     private static String generateReturn(String compiled, int depth) {
@@ -309,7 +313,8 @@ public class Main {
             outputContent = compileStatement(content, depth + 1);
         }
 
-        return Optional.of("\n\t\t" + prefix + " (" + value + ") {" + outputContent + "\n\t\t}");
+        final var indent = "\n" + "\t".repeat(depth);
+        return Optional.of(indent + prefix + " (" + value + ") {" + outputContent + indent + "}");
     }
 
     private static Optional<Integer> findConditionParamEnd(String input) {
@@ -323,9 +328,9 @@ public class Main {
             final var i = popped.left();
             final var c = popped.right();
 
-            if(c == '\'') {
+            if (c == '\'') {
                 final var popped1 = queue.pop().right();
-                if(popped1 == '\\') {
+                if (popped1 == '\\') {
                     queue.pop();
                 }
 
