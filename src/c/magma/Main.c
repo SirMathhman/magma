@@ -174,7 +174,7 @@ struct Main {
             if (substring.endsWith(";")) {
                 final var substring1 = substring.substring(0, substring.length() - ";".length());
                 final var compiled = compileValue(substring1);
-                return "\n\t\treturn " + compiled + ";";
+                return generateReturn(compiled, 2);
             }
         }}
 		auto value = compileIf(statement);
@@ -199,6 +199,9 @@ struct Main {
             if (optional.isPresent()) return optional.get();
         }}
 		return invalidate("statement", statement);
+	}
+	String generateReturn(String compiled, int depth){
+		return "\n" + "\t".repeat(depth) + "return " + compiled + ";";
 	}
 	Optional<String> compileIf(String statement){
 		if(!statement.startsWith("if")){
@@ -264,7 +267,7 @@ struct Main {
 		return stripped;}
 		if(stripped.startsWith("'") && stripped.endsWith("'")){
 		return stripped;}
-		auto nameSlice = compileLambda(input);
+		auto nameSlice = compileLambda(input, 2);
 		if(nameSlice.isPresent()){
 		return nameSlice.get();}
 		auto optional1 = compileInvocation(input);
@@ -304,7 +307,7 @@ struct Main {
         }}
 		return invalidate("value", input);
 	}
-	Optional<String> compileLambda(String input){
+	Optional<String> compileLambda(String input, int depth){
 		auto arrowIndex = input.indexOf("->");
 		if(arrowIndex == -1){
 		return Optional.empty();}

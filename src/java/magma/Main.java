@@ -239,7 +239,7 @@ public class Main {
             if (substring.endsWith(";")) {
                 final var substring1 = substring.substring(0, substring.length() - ";".length());
                 final var compiled = compileValue(substring1);
-                return "\n\t\treturn " + compiled + ";";
+                return generateReturn(compiled, 2);
             }
         }
 
@@ -268,6 +268,10 @@ public class Main {
         }
 
         return invalidate("statement", statement);
+    }
+
+    private static String generateReturn(String compiled, int depth) {
+        return "\n" + "\t".repeat(depth) + "return " + compiled + ";";
     }
 
     private static Optional<String> compileIf(String statement) {
@@ -352,7 +356,7 @@ public class Main {
 
         if (stripped.startsWith("'") && stripped.endsWith("'")) return stripped;
 
-        final var nameSlice = compileLambda(input);
+        final var nameSlice = compileLambda(input, 2);
         if (nameSlice.isPresent()) return nameSlice.get();
 
         final var optional1 = compileInvocation(input);
@@ -396,7 +400,7 @@ public class Main {
         return invalidate("value", input);
     }
 
-    private static Optional<String> compileLambda(String input) {
+    private static Optional<String> compileLambda(String input, int depth) {
         final var arrowIndex = input.indexOf("->");
         if (arrowIndex == -1) return Optional.empty();
         final var beforeArrow = input.substring(0, arrowIndex).strip();
@@ -410,7 +414,7 @@ public class Main {
             final var substring1 = afterArrow.substring(1, afterArrow.length() - 1);
             compiled = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::mergeStatements, substring1);
         } else {
-            compiled = "\n\t\t\treturn " + compileValue(afterArrow) + ";";
+            compiled = generateReturn(compileValue(afterArrow), depth + 1);
         }
 
         final var joinedNames = maybeNames.get().stream()
