@@ -607,18 +607,23 @@ public class Main {
         if (input.equals("var")) return "auto";
 
         if (input.endsWith("[]")) return "Slice<" + input.substring(0, input.length() - 2) + ">";
-        final var genStart = input.indexOf("<");
-        if (genStart != -1) {
-            final var caller = input.substring(0, genStart);
-            final var substring = input.substring(genStart + 1);
-            if (substring.endsWith(">")) {
-                final var substring1 = substring.substring(0, substring.length() - ">".length());
-                final var s = splitAndCompile(Main::splitByValues, Main::compileType, Main::mergeStatements, substring1);
-                return caller + "<" + s + ">";
-            }
-        }
 
-        return compileSymbol(input).orElseGet(() -> invalidate("type", input));
+        return compileGenericType(input)
+                .or(() -> compileSymbol(input))
+                .orElseGet(() -> invalidate("type", input));
+    }
+
+    private static Optional<String> compileGenericType(String input) {
+        final var genStart = input.indexOf("<");
+        if (genStart == -1) return Optional.empty();
+
+        final var caller = input.substring(0, genStart);
+        final var withEnd = input.substring(genStart + 1);
+        if (!withEnd.endsWith(">")) return Optional.empty();
+
+        final var inputArgs = withEnd.substring(0, withEnd.length() - ">".length());
+        final var outputArgs = splitAndCompile(Main::splitByValues, Main::compileType, Main::mergeValues, inputArgs);
+        return Optional.of(caller + "<" + outputArgs + ">");
     }
 
     private static ArrayList<String> splitByValues(String inputParams) {

@@ -61,7 +61,7 @@ struct Main {
 	String compile(String root){
 		return splitAndCompile(Main.splitByStatements, Main.compileRootMember, Main.mergeStatements, root);
 	}
-	String splitAndCompile(Function<StringList<String>> splitter, Function<StringString> compiler, BiFunction<StringBuilderStringStringBuilder> merger, String input){
+	String splitAndCompile(Function<String, List<String>> splitter, Function<String, String> compiler, BiFunction<StringBuilder, String, StringBuilder> merger, String input){
 		auto segments = splitter.apply(input);
 		auto output = Optional.<StringBuilder>empty();
 		for (;;) {
@@ -550,19 +550,25 @@ struct Main {
 		if (input.endsWith("[]")) {
 			return "Slice<" + input.substring(0, input.length() - 2) + ">";
 		}
-		auto genStart = input.indexOf("<");
-		if (genStart != -1) {
-			auto caller = input.substring(0, genStart);
-			auto substring = input.substring(genStart + 1);
-			if (substring.endsWith(">")) {
-				auto substring1 = substring.substring(0, substring.length() - ">".length());
-				auto s = splitAndCompile(Main.splitByValues, Main.compileType, Main.mergeStatements, substring1);
-				return caller + "<" + s + ">";
-			}
-		}
-		return compileSymbol(input).orElseGet(auto _lambda30_(){
+		return compileGenericType(input).or(auto _lambda31_(){
+			return compileSymbol(input);
+		}).orElseGet(auto _lambda30_(){
 			return invalidate("type", input);
 		});
+	}
+	Optional<String> compileGenericType(String input){
+		auto genStart = input.indexOf("<");
+		if (genStart == -1) {
+			return Optional.empty();
+		}
+		auto caller = input.substring(0, genStart);
+		auto withEnd = input.substring(genStart + 1);
+		if (!withEnd.endsWith(">")) {
+			return Optional.empty();
+		}
+		auto inputArgs = withEnd.substring(0, withEnd.length() - ">".length());
+		auto outputArgs = splitAndCompile(Main.splitByValues, Main.compileType, Main.mergeValues, inputArgs);
+		return Optional.of(caller + "<" + outputArgs + ">");
 	}
 	ArrayList<String> splitByValues(String inputParams){
 		auto inputParamsList = ArrayList<String>();
