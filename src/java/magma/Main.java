@@ -308,7 +308,22 @@ public class Main {
         final var stripped = input.strip();
         if (stripped.startsWith("\"") && stripped.endsWith("\"")) return stripped;
 
-        if(stripped.startsWith("'") && stripped.endsWith("'")) return stripped;
+        if (stripped.startsWith("'") && stripped.endsWith("'")) return stripped;
+
+        final var index2 = input.indexOf("->");
+        if (index2 != -1) {
+            final var name = input.substring(0, index2).strip();
+            final var substring = input.substring(index2 + "->".length()).strip();
+
+            final String compiled;
+            if (substring.startsWith("{") && substring.endsWith("}")) {
+                final var substring1 = substring.substring(1, substring.length() - 1);
+                compiled = splitAndCompile(Main::splitByStatements, Main::compileStatement, substring1);
+            } else {
+                compiled = "return " + compileValue(substring) + ";";
+            }
+            return "auto __lambda__(auto " + name + "){" + compiled + "}";
+        }
 
         final var optional1 = compileInvocation(input);
         if (optional1.isPresent()) return optional1.get();
@@ -451,15 +466,25 @@ public class Main {
         final var inputParamsList = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
-        for (int i = 0; i < inputParams.length(); i++) {
-            var c = inputParams.charAt(i);
+
+        final var queue = IntStream.range(0, inputParams.length())
+                .mapToObj(inputParams::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        while (!queue.isEmpty()) {
+            final var c = queue.pop();
             if (c == ',' && depth == 0) {
                 advance(inputParamsList, buffer);
                 buffer = new StringBuilder();
             } else {
                 buffer.append(c);
-                if (c == '<') depth++;
-                if (c == '>') depth--;
+                if (c == '-') {
+                    if (!queue.isEmpty() && queue.peek() == '>') {
+                        buffer.append(queue.pop());
+                    }
+                }
+                if (c == '<' || c == '(') depth++;
+                if (c == '>' || c == ')') depth--;
             }
         }
         advance(inputParamsList, buffer);

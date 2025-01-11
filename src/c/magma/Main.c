@@ -39,7 +39,7 @@ t		}
 		auto name = relative.getFileName().toString();
 		auto nameWithoutExt = name.substring(0name.indexOf('.'));
 		auto target = targetParent.resolve(nameWithoutExt + ".c");
-		return JavaPaths.readSafe(source).match(input -> JavaPaths.writeSafe(target, compile(input)), Optional::of);
+		return auto __lambda__(auto JavaPaths.readSafe(source).match(input){return JavaPaths.writeSafe(target, compile(input)), Optional::of);};
 	}
 	List<String> convertPathToList(Path parent){
 		return IntStream.range(0, parent.getNameCount())
@@ -119,14 +119,14 @@ t		}
 		if(!statement.endsWith(")"){
 		}
 		auto substring = statement.substring(0, statement.length() - ")".length());
-		return findArgStart(substring).map(index -> {
+		return auto __lambda__(auto findArgStart(substring).map(index){return auto __lambda__(auto {
             final var caller = substring.substring(0, index);
             final var substring1 = substring.substring(index + 1);
-            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip()), substring1);
+            final var compiled = splitAndCompile(Main::splitByValues, value){return compileValue(value.strip()), substring1);
 
             final var newCaller = compileValue(caller.strip());
             return newCaller + "(" + compiled + ")";
-        });
+        });};};
 	}
 	Optional<Integer> findArgStart(String substring){
 		auto depth = 0;
@@ -147,6 +147,9 @@ t		}
 		if(stripped.startsWith("\"") && stripped.endsWith("\"")){
 		}
 		if(stripped.startsWith("'") && stripped.endsWith("'")){
+		}
+		auto index2 = auto __lambda__(auto input.indexOf("){return ");};
+		if(index2 != -1){
 		}
 		auto optional1 = compileInvocation(input);
 		if(optional1.isPresent()){
@@ -229,7 +232,10 @@ t		}
 		auto inputParamsList = ArrayList<String>();
 		auto buffer = StringBuilder();
 		auto depth = 0;
-		for(;;){
+		auto queue = IntStream.range(0, inputParams.length())
+                .mapToObj(inputParams::charAt)
+                .collect(Collectors.toCollection(LinkedList.new));
+		while(1){
 t		}
 		advance(inputParamsListbuffer);
 		return inputParamsList;
