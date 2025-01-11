@@ -2,9 +2,12 @@ package magma;
 
 import magma.java.JavaPaths;
 import magma.java.JavaSet;
-import magma.java.JavaOptionals;
+import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
+import magma.stream.HeadedStream;
+import magma.stream.LengthHead;
+import magma.stream.Stream;
 import magma.stream.Streams;
 
 import java.io.IOException;
@@ -17,12 +20,10 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
@@ -38,33 +39,33 @@ public class Main {
 
     private static Option<IOException> compileSources(JavaSet<Path> sources) {
         return sources.stream()
-                .map(source -> JavaOptionals.to(compileSource(source)))
+                .map(Main::compileSource)
                 .flatMap(Streams::from)
                 .next();
     }
 
-    private static Optional<IOException> compileSource(Path source) {
+    private static Option<IOException> compileSource(Path source) {
         final var relative = SOURCE_DIRECTORY.relativize(source);
         final var parent = relative.getParent();
         final var namespace = computeNamespace(parent);
         final var name = computeName(relative);
 
-        if (namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))) return Optional.empty();
+        if (namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))) return new None<>();
 
         final var targetParent = namespace.stream().reduce(TARGET_DIRECTORY, Path::resolve, (_, next) -> next);
         final var target = targetParent.resolve(name + ".c");
         return ensureDirectory(targetParent).or(() -> compileFromSourceToTarget(source, target));
     }
 
-    private static Optional<IOException> ensureDirectory(Path targetParent) {
-        if (Files.exists(targetParent)) return Optional.empty();
+    private static Option<IOException> ensureDirectory(Path targetParent) {
+        if (Files.exists(targetParent)) return new None<>();
         return JavaPaths.createDirectoriesSafe(targetParent);
     }
 
-    private static Optional<IOException> compileFromSourceToTarget(Path source, Path target) {
+    private static Option<IOException> compileFromSourceToTarget(Path source, Path target) {
         return JavaPaths.readSafe(source)
                 .mapValue(Main::compile)
-                .match(output -> JavaPaths.writeSafe(target, output), Optional::of);
+                .match(output -> JavaPaths.writeSafe(target, output), Some::new);
     }
 
     private static String computeName(Path relative) {
@@ -93,20 +94,20 @@ public class Main {
                 .stream()
                 .map(String::strip)
                 .filter(value -> !value.isEmpty())
-                .reduce(Optional.<StringBuilder>empty(), (output, stripped) -> compileAndMerge(compiler, merger, output, stripped), (_, next) -> next)
+                .<Option<StringBuilder>>reduce(new None<>(), (output, stripped) -> compileAndMerge(compiler, merger, output, stripped), (_, next) -> next)
                 .map(StringBuilder::toString)
                 .orElse("");
     }
 
-    private static Optional<StringBuilder> compileAndMerge(
+    private static Option<StringBuilder> compileAndMerge(
             Function<String, String> compiler,
             BiFunction<StringBuilder, String, StringBuilder> merger,
-            Optional<StringBuilder> output,
+            Option<StringBuilder> output,
             String stripped
     ) {
         final var compiled = compiler.apply(stripped);
         if (output.isEmpty()) {
-            return Optional.of(new StringBuilder(compiled));
+            return new Some<>(new StringBuilder(compiled));
         } else {
             return output.map(inner -> merger.apply(inner, compiled));
         }
@@ -266,11 +267,11 @@ public class Main {
             }
         }
 
-        final var optional1 = compileConditional(depth, "while", statement);
-        if (optional1.isPresent()) return optional1.get();
+        final var Option1 = compileConditional(depth, "while", statement);
+        if (Option1.isPresent()) return Option1.unwrap();
 
         final var value = compileConditional(depth, "if", statement);
-        if (value.isPresent()) return value.get();
+        if (value.isPresent()) return value.unwrap();
 
         final var index1 = statement.indexOf("=");
         if (index1 != -1) {
@@ -287,12 +288,12 @@ public class Main {
 
         if (statement.endsWith(";")) {
             final var newCaller = compileInvocation(depth, statement.substring(0, statement.length() - ";".length()));
-            if (newCaller.isPresent()) return generateStatement(depth, newCaller.get());
+            if (newCaller.isPresent()) return generateStatement(depth, newCaller.unwrap());
         }
 
         if (statement.endsWith(";")) {
-            final var optional = compileDefinition(statement.substring(0, statement.length() - 1));
-            if (optional.isPresent()) return optional.get();
+            final var Option = compileDefinition(statement.substring(0, statement.length() - 1));
+            if (Option.isPresent()) return Option.unwrap();
         }
 
         return compilePostfix(statement, "--", depth)
@@ -301,12 +302,12 @@ public class Main {
 
     }
 
-    private static Optional<String> compilePostfix(String statement, String suffix, int depth) {
+    private static Option<String> compilePostfix(String statement, String suffix, int depth) {
         final var joined = suffix + ";";
-        if (!statement.endsWith(joined)) return Optional.empty();
+        if (!statement.endsWith(joined)) return new None<>();
 
         final var substring = statement.substring(0, statement.length() - (joined).length());
-        return Optional.of(generateStatement(depth, compileValue(depth, substring) + suffix));
+        return new Some<>(generateStatement(depth, compileValue(depth, substring) + suffix));
     }
 
     private static String generateStatement(int depth, String content) {
@@ -317,18 +318,18 @@ public class Main {
         return "\n" + "\t".repeat(depth) + "return " + compiled + ";";
     }
 
-    private static Optional<String> compileConditional(int depth, String prefix, String statement) {
-        if (!statement.startsWith(prefix)) return Optional.empty();
+    private static Option<String> compileConditional(int depth, String prefix, String statement) {
+        if (!statement.startsWith(prefix)) return new None<>();
         final var withoutKeyword = statement.substring(prefix.length());
 
         final var maybeParamEnd = findConditionParamEnd(withoutKeyword);
-        if (maybeParamEnd.isEmpty()) return Optional.empty();
+        if (maybeParamEnd.isEmpty()) return new None<>();
 
-        final var paramEnd = maybeParamEnd.get();
+        final var paramEnd = maybeParamEnd.unwrap();
         final var conditionWithEnd = withoutKeyword.substring(0, paramEnd).strip();
         final var content = withoutKeyword.substring(paramEnd + 1).strip();
 
-        if (!conditionWithEnd.startsWith("(")) return Optional.empty();
+        if (!conditionWithEnd.startsWith("(")) return new None<>();
 
         final var condition = conditionWithEnd.substring(1);
         final var value = compileValue(depth, condition);
@@ -341,10 +342,10 @@ public class Main {
         }
 
         final var indent = "\n" + "\t".repeat(depth);
-        return Optional.of(indent + prefix + " (" + value + ") {" + outputContent + indent + "}");
+        return new Some<>(indent + prefix + " (" + value + ") {" + outputContent + indent + "}");
     }
 
-    private static Optional<Integer> findConditionParamEnd(String input) {
+    private static Option<Integer> findConditionParamEnd(String input) {
         final var queue = IntStream.range(0, input.length())
                 .mapToObj(index -> new Tuple<>(index, input.charAt(index)))
                 .collect(Collectors.toCollection(LinkedList::new));
@@ -373,19 +374,19 @@ public class Main {
             }
 
             if (c == ')' && depth == 1) {
-                return Optional.of(i);
+                return new Some<>(i);
             } else {
                 if (c == '(') depth++;
                 if (c == ')') depth--;
             }
         }
 
-        return Optional.empty();
+        return new None<>();
     }
 
-    private static Optional<String> compileInvocation(int depth, String statement) {
+    private static Option<String> compileInvocation(int depth, String statement) {
         final var stripped = statement.strip();
-        if (!stripped.endsWith(")")) return Optional.empty();
+        if (!stripped.endsWith(")")) return new None<>();
         final var substring = stripped.substring(0, stripped.length() - ")".length());
         return findMatchingChar(substring, Main::streamReverseIndices, '(', ')', '(').map(index -> {
             final var caller = substring.substring(0, index);
@@ -399,7 +400,7 @@ public class Main {
         });
     }
 
-    private static Optional<Integer> findMatchingChar(
+    private static Option<Integer> findMatchingChar(
             String input,
             Function<String, Stream<Integer>> streamer,
             char search,
@@ -408,9 +409,12 @@ public class Main {
     ) {
         final var queue = streamer.apply(input)
                 .map(index -> new Tuple<>(index, input.charAt(index)))
-                .collect(Collectors.toCollection(LinkedList::new));
+                .foldLeft(new LinkedList<Tuple<Integer, Character>>(), (tuples, tuple) -> {
+                    tuples.add(tuple);
+                    return tuples;
+                });
 
-        var current = new Tuple<Optional<Integer>, Integer>(Optional.empty(), 0);
+        var current = new Tuple<Option<Integer>, Integer>(new None<>(), 0);
         while (!queue.isEmpty()) {
             final var tuple = queue.pop();
             current = findArgStateFold(current, tuple, search, enter, exit, queue);
@@ -420,18 +424,18 @@ public class Main {
     }
 
     private static Stream<Integer> streamReverseIndices(String input) {
-        return IntStream.range(0, input.length()).mapToObj(index -> input.length() - 1 - index);
+        return new HeadedStream<>(new LengthHead(input.length())).map(index -> input.length() - 1 - index);
     }
 
-    private static Tuple<Optional<Integer>, Integer> findArgStateFold(
-            Tuple<Optional<Integer>, Integer> previous,
+    private static Tuple<Option<Integer>, Integer> findArgStateFold(
+            Tuple<Option<Integer>, Integer> previous,
             Tuple<Integer, Character> tuple,
             char search,
             char enter,
             char exit,
             Deque<Tuple<Integer, Character>> queue) {
-        final var previousOptional = previous.left();
-        if (previousOptional.isPresent()) return previous;
+        final var previousOption = previous.left();
+        if (previousOption.isPresent()) return previous;
 
         final var depth = previous.right();
         final var i = tuple.left();
@@ -445,10 +449,10 @@ public class Main {
             queue.pop();
         }
 
-        if (c == search && depth == 0) return new Tuple<>(Optional.of(i), depth);
-        if (c == enter) return new Tuple<>(Optional.empty(), depth + 1);
-        if (c == exit) return new Tuple<>(Optional.empty(), depth - 1);
-        return new Tuple<>(Optional.empty(), depth);
+        if (c == search && depth == 0) return new Tuple<>(new Some<>(i), depth);
+        if (c == enter) return new Tuple<>(new None<>(), depth + 1);
+        if (c == exit) return new Tuple<>(new None<>(), depth - 1);
+        return new Tuple<>(new None<>(), depth);
     }
 
     private static String compileValue(int depth, String input) {
@@ -471,71 +475,71 @@ public class Main {
                 .orElseGet(() -> invalidate("value", input));
     }
 
-    private static Optional<String> compileNumber(String input) {
+    private static Option<String> compileNumber(String input) {
         final var stripped = input.strip();
-        if (isNumber(stripped)) return Optional.of(stripped);
-        return Optional.empty();
+        if (isNumber(stripped)) return new Some<>(stripped);
+        return new None<>();
     }
 
-    private static Optional<String> compileNot(int depth, String input) {
-        if (input.startsWith("!")) return Optional.of("!" + compileValue(depth, input.substring(1)));
-        return Optional.empty();
+    private static Option<String> compileNot(int depth, String input) {
+        if (input.startsWith("!")) return new Some<>("!" + compileValue(depth, input.substring(1)));
+        return new None<>();
     }
 
-    private static Optional<String> compileString(String input) {
+    private static Option<String> compileString(String input) {
         final var stripped = input.strip();
-        if (stripped.startsWith("\"") && stripped.endsWith("\"")) return Optional.of(stripped);
-        return Optional.empty();
+        if (stripped.startsWith("\"") && stripped.endsWith("\"")) return new Some<>(stripped);
+        return new None<>();
     }
 
-    private static Optional<String> compileChar(String input) {
+    private static Option<String> compileChar(String input) {
         final var stripped = input.strip();
-        if (stripped.startsWith("'") && stripped.endsWith("'")) return Optional.of(stripped);
-        return Optional.empty();
+        if (stripped.startsWith("'") && stripped.endsWith("'")) return new Some<>(stripped);
+        return new None<>();
     }
 
-    private static Optional<String> compileAccess(int depth, String input, String slice) {
+    private static Option<String> compileAccess(int depth, String input, String slice) {
         final var index = input.lastIndexOf(slice);
-        if (index == -1) return Optional.empty();
+        if (index == -1) return new None<>();
 
         final var substring = input.substring(0, index);
         final var substring1 = input.substring(index + slice.length());
         final var s = compileValue(depth, substring);
-        return Optional.of(generateDataAccess(s, substring1));
+        return new Some<>(generateDataAccess(s, substring1));
     }
 
     private static String generateDataAccess(String s, String substring1) {
         return s + "." + substring1;
     }
 
-    private static Optional<String> compileTernary(int depth, String stripped) {
+    private static Option<String> compileTernary(int depth, String stripped) {
         final var index3 = stripped.indexOf('?');
-        if (index3 == -1) return Optional.empty();
+        if (index3 == -1) return new None<>();
 
         final var condition = stripped.substring(0, index3);
         final var substring = stripped.substring(index3 + 1);
         final var maybe = substring.indexOf(':');
-        if (maybe == -1) return Optional.empty();
+        if (maybe == -1) return new None<>();
 
         final var ifTrue = substring.substring(0, maybe);
         final var ifFalse = substring.substring(maybe + 1);
-        return Optional.of(compileValue(depth, condition) + " ? " + compileValue(depth, ifTrue) + " : " + compileValue(depth, ifFalse));
+        return new Some<>(compileValue(depth, condition) + " ? " + compileValue(depth, ifTrue) + " : " + compileValue(depth, ifFalse));
     }
 
-    private static Optional<String> compileSymbol(String input) {
+    private static Option<String> compileSymbol(String input) {
         final var stripped = input.strip();
-        if (isSymbol(stripped)) return Optional.of(stripped);
-        return Optional.empty();
+        if (isSymbol(stripped)) return new Some<>(stripped);
+        return new None<>();
     }
 
-    private static Optional<String> compileLambda(int depth, String input) {
+    private static Option<String> compileLambda(int depth, String input) {
         final var arrowIndex = input.indexOf("->");
-        if (arrowIndex == -1) return Optional.empty();
+        if (arrowIndex == -1) return new None<>();
         final var beforeArrow = input.substring(0, arrowIndex).strip();
         final var afterArrow = input.substring(arrowIndex + "->".length()).strip();
 
         final var maybeNames = findLambdaNames(beforeArrow);
-        if (maybeNames.isEmpty()) return Optional.empty();
+        if (maybeNames.isEmpty()) return new None<>();
 
         final String compiled;
         if (afterArrow.startsWith("{") && afterArrow.endsWith("}")) {
@@ -545,11 +549,11 @@ public class Main {
             compiled = generateReturn(compileValue(depth, afterArrow), depth + 1);
         }
 
-        final var joinedNames = maybeNames.get().stream()
+        final var joinedNames = maybeNames.unwrap().stream()
                 .map(name -> "auto " + name)
                 .collect(Collectors.joining(", "));
 
-        return Optional.of("auto " + createUniqueName() + "(" + joinedNames + "){" + compiled + "\n" + "\t".repeat(depth) + "}");
+        return new Some<>("auto " + createUniqueName() + "(" + joinedNames + "){" + compiled + "\n" + "\t".repeat(depth) + "}");
     }
 
     private static String createUniqueName() {
@@ -558,24 +562,24 @@ public class Main {
         return lambda;
     }
 
-    private static Optional<List<String>> findLambdaNames(String nameSlice) {
-        if (nameSlice.isEmpty()) return Optional.of(Collections.emptyList());
-        if (isSymbol(nameSlice)) return Optional.of(List.of(nameSlice));
+    private static Option<List<String>> findLambdaNames(String nameSlice) {
+        if (nameSlice.isEmpty()) return new Some<>(Collections.emptyList());
+        if (isSymbol(nameSlice)) return new Some<>(List.of(nameSlice));
 
-        if (!nameSlice.startsWith("(") || !nameSlice.endsWith(")")) return Optional.empty();
+        if (!nameSlice.startsWith("(") || !nameSlice.endsWith(")")) return new None<>();
 
         final var args = nameSlice.substring(1, nameSlice.length() - 1).split(",");
-        return Optional.of(Arrays.stream(args)
+        return new Some<>(Arrays.stream(args)
                 .map(String::strip)
                 .filter(value -> !value.isEmpty())
                 .toList());
     }
 
-    private static Optional<String> compileConstruction(int depth, String input) {
-        if (!input.startsWith("new ")) return Optional.empty();
+    private static Option<String> compileConstruction(int depth, String input) {
+        if (!input.startsWith("new ")) return new None<>();
         final var substring = input.substring("new ".length());
 
-        if (!substring.endsWith(")")) return Optional.empty();
+        if (!substring.endsWith(")")) return new None<>();
         final var withoutEnd = substring.substring(0, substring.length() - ")".length());
 
         return findMatchingChar(withoutEnd, Main::streamReverseIndices, '(', ')', '(').map(index -> {
@@ -593,13 +597,13 @@ public class Main {
         return inner.append(", ").append(stripped);
     }
 
-    private static Optional<String> compileOperator(int depth, String input, String operator) {
+    private static Option<String> compileOperator(int depth, String input, String operator) {
         final var index2 = input.indexOf(operator);
-        if (index2 == -1) return Optional.empty();
+        if (index2 == -1) return new None<>();
 
         final var compiled = compileValue(depth, input.substring(0, index2));
         final var compiled1 = compileValue(depth, input.substring(index2 + operator.length()));
-        return Optional.of(compiled + " " + operator + " " + compiled1);
+        return new Some<>(compiled + " " + operator + " " + compiled1);
     }
 
     private static boolean isNumber(String value) {
@@ -624,10 +628,10 @@ public class Main {
         return Character.isLetter(c) || c == '_' || (i != 0 && Character.isDigit(c));
     }
 
-    private static Optional<String> compileDefinition(String input) {
+    private static Option<String> compileDefinition(String input) {
         final var stripped = input.strip();
         final var separator = stripped.lastIndexOf(' ');
-        if (separator == -1) return Optional.empty();
+        if (separator == -1) return new None<>();
 
         final var inputParamType = stripped.substring(0, separator);
         final var paramName = stripped.substring(separator + 1);
@@ -637,7 +641,7 @@ public class Main {
                 .orElse(inputParamType);
 
         final var outputParamType = compileType(inputParamType1);
-        return Optional.of(outputParamType + " " + paramName);
+        return new Some<>(outputParamType + " " + paramName);
     }
 
     private static String compileType(String input) {
@@ -650,17 +654,17 @@ public class Main {
                 .orElseGet(() -> invalidate("type", input));
     }
 
-    private static Optional<String> compileGenericType(String input) {
+    private static Option<String> compileGenericType(String input) {
         final var genStart = input.indexOf("<");
-        if (genStart == -1) return Optional.empty();
+        if (genStart == -1) return new None<>();
 
         final var caller = input.substring(0, genStart);
         final var withEnd = input.substring(genStart + 1);
-        if (!withEnd.endsWith(">")) return Optional.empty();
+        if (!withEnd.endsWith(">")) return new None<>();
 
         final var inputArgs = withEnd.substring(0, withEnd.length() - ">".length());
         final var outputArgs = splitAndCompile(Main::splitByValues, Main::compileType, Main::mergeValues, inputArgs);
-        return Optional.of(caller + "<" + outputArgs + ">");
+        return new Some<>(caller + "<" + outputArgs + ">");
     }
 
     private static List<String> splitByValues(String inputParams) {

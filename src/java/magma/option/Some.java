@@ -36,4 +36,24 @@ public record Some<T>(T value) implements Option<T> {
     public Option<T> or(Supplier<Option<T>> other) {
         return this;
     }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public boolean isPresent() {
+        return true;
+    }
+
+    @Override
+    public T unwrap() {
+        return value;
+    }
+
+    @Override
+    public T orElse(T other) {
+        return value;
+    }
 }

@@ -18,4 +18,12 @@ public interface Option<T> {
     Tuple<Boolean, T> toTuple(T other);
 
     Option<T> or(Supplier<Option<T>> other);
+
+    boolean isEmpty();
+
+    boolean isPresent();
+
+    T unwrap();
+
+    T orElse(T other);
 }

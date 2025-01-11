@@ -38,4 +38,24 @@ public class None<T> implements Option<T> {
     public Option<T> or(Supplier<Option<T>> other) {
         return other.get();
     }
+
+    @Override
+    public boolean isEmpty() {
+        return true;
+    }
+
+    @Override
+    public boolean isPresent() {
+        return false;
+    }
+
+    @Override
+    public T unwrap() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public T orElse(T other) {
+        return other;
+    }
 }

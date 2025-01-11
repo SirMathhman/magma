@@ -1,34 +1,36 @@
 package magma.java;
 
-import magma.result.Err;
 import magma.Main;
+import magma.option.None;
+import magma.option.Option;
+import magma.option.Some;
+import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class JavaPaths {
-    public static Optional<IOException> createDirectoriesSafe(Path targetParent) {
+    public static Option<IOException> createDirectoriesSafe(Path targetParent) {
         try {
             Files.createDirectories(targetParent);
-            return Optional.empty();
+            return new None<>();
         } catch (IOException e) {
-            return Optional.of(e);
+            return new Some<>(e);
         }
     }
 
-    public static Optional<IOException> writeSafe(Path target, String output) {
+    public static Option<IOException> writeSafe(Path target, String output) {
         try {
             Files.writeString(target, output);
-            return Optional.empty();
+            return new None<>();
         } catch (IOException e) {
-            return Optional.of(e);
+            return new Some<>(e);
         }
     }
 
