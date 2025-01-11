@@ -29,8 +29,9 @@ struct Main {
 		auto parent = relative.getParent();
 		auto namespace = computeNamespace(parent);
 		auto name = computeName(relative);
-		if(namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))){
-		return Optional.empty();}
+		if (namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))) {
+			return Optional.empty();
+		}
 		auto targetParent = namespace.stream().reduce(TARGET_DIRECTORY, Path.resolve, auto _lambda0_(auto _, auto next){
 			return next;
 		});
@@ -40,8 +41,9 @@ struct Main {
 		});
 	}
 	Optional<IOException> ensureDirectory(Path targetParent){
-		if(Files.exists(targetParent)){
-		return Optional.empty();}
+		if (Files.exists(targetParent)) {
+			return Optional.empty();
+		}
 		return JavaPaths.createDirectoriesSafe(targetParent);
 	}
 	Optional<IOException> compileFromSourceToTarget(Path source, Path target){
@@ -74,33 +76,69 @@ struct Main {
 		auto buffer = StringBuilder();
 		auto depth = 0;
 		auto queue = IntStream.range(0, root.length()).mapToObj(root.charAt).collect(Collectors.toCollection(LinkedList.new));
-		while (1) {
+		while (!queue.isEmpty()) {
+		auto c = queue.pop();
+		buffer.append(c);
+		if (c == '\'') {
+		auto popped = queue.pop();
+		buffer.append(popped);
+		if (popped == '\\') {
+		buffer.append(queue.pop());
+		}
+		buffer.append(queue.pop());continue;
+		}
+		if (c == '"') {
+		while (!queue.isEmpty()) {
+		auto next = queue.pop();
+		buffer.append(next);
+		if (next == '"') {break;
+		}
+		if (next == '\\') {
+		buffer.append(queue.pop());
+		}
+		}
+		}
+		if (c == ';' && depth == 0) {
+		advance(segments, buffer);
+		buffer = StringBuilder();
+		}
+		else {
+		}
+		else {
+		}
 		}
 		advance(segments, buffer);
 		return segments;
 	}
 	void advance(List<String> segments, StringBuilder buffer){
-		if(!buffer.isEmpty()){
-		segments.add(buffer.toString());}
+		if (!buffer.isEmpty()) {
+		segments.add(buffer.toString());
+		}
 	}
 	String compileRootMember(String rootSegment){
-		if(rootSegment.startsWith("package ")){
-		return "";}
-		if(rootSegment.startsWith("import ")){
-		return rootSegment + "\n";}
+		if (rootSegment.startsWith("package ")) {
+			return "";
+		}
+		if (rootSegment.startsWith("import ")) {
+			return rootSegment + "\n";
+		}
 		auto classIndex = rootSegment.indexOf("class");
-		if(classIndex != -1){
+		if (classIndex != -1) {
 		auto withoutKeyword = rootSegment.substring(classIndex + "class".length());
 		auto contentStartIndex = withoutKeyword.indexOf("{");
-		if(contentStartIndex != -1){
+		if (contentStartIndex != -1) {
 		auto name = withoutKeyword.substring(0, contentStartIndex).strip();
 		auto content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
 		auto compiled = splitAndCompile(Main.splitByStatements, Main.compileClassSegment, Main.mergeStatements, content);
-		return "struct " + name + " {" + compiled + "\n}";}}
-		if(rootSegment.contains("record")){
-		return "struct Temp {\n}";}
-		if(rootSegment.contains("interface ")){
-		return "struct Temp {\n}";}
+				return "struct " + name + " {" + compiled + "\n}";
+		}
+		}
+		if (rootSegment.contains("record")) {
+			return "struct Temp {\n}";
+		}
+		if (rootSegment.contains("interface ")) {
+			return "struct Temp {\n}";
+		}
 		return invalidate("root segment", rootSegment);
 	}
 	String invalidate(String type, String rootSegment){
@@ -108,121 +146,182 @@ struct Main {
 		return rootSegment;
 	}
 	String compileClassSegment(String classSegment){
-		if(classSegment.endsWith(";")){
+		if (classSegment.endsWith(";")) {
 		auto substring = classSegment.substring(0, classSegment.length() - 1);
 		auto index = substring.indexOf('=');
-		if(index != -1){
+		if (index != -1) {
 		auto definition = substring.substring(0, index);
 		auto compiled = compileValue(substring.substring(index + 1));
-		return "\n\t" + compileDefinition(definition).orElseGet(() -> invalidate("definition", definition)) + " = " + compiled + ";";}}
+				return "\n\t" + compileDefinition(definition).orElseGet(() -> invalidate("definition", definition)) + " = " + compiled + ";";
+		}
+		}
 		auto paramStart = classSegment.indexOf('(');
-		if(paramStart != -1){
+		if (paramStart != -1) {
 		auto beforeParamStart = classSegment.substring(0, paramStart);
 		auto afterParamStart = classSegment.substring(paramStart + 1);
 		auto paramEnd = afterParamStart.indexOf(')');
-		if(paramEnd != -1){
+		if (paramEnd != -1) {
 		auto nameSeparator = beforeParamStart.lastIndexOf(' ');
-		if(nameSeparator != -1){
+		if (nameSeparator != -1) {
 		auto beforeName = beforeParamStart.substring(0, nameSeparator);
 		auto typeSeparator = beforeName.lastIndexOf(' ');
-		if(typeSeparator != -1){
+		if (typeSeparator != -1) {
 		auto type = beforeName.substring(typeSeparator + 1);
 		auto name = beforeParamStart.substring(nameSeparator + 1);
 		auto inputParams = afterParamStart.substring(0, paramEnd);
 		auto afterParams = afterParamStart.substring(paramEnd + 1).strip();
-		if(afterParams.startsWith("{") && afterParams.endsWith("}")){
+		if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
 		auto inputContent = afterParams.substring(1, afterParams.length() - 1);
-		auto outputContent = splitAndCompile(Main.splitByStatements, Main.compileStatement, Main.mergeStatements, inputContent);
+		auto outputContent = splitAndCompile(Main.splitByStatements, auto _lambda3_(auto statement){
+			return compileStatement(statement, 2);
+		}, Main.mergeStatements, inputContent);
 		auto inputParamsList = splitByValues(inputParams);
 		auto outputParams = compileParams(inputParamsList);
-		return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";}}}}}
+							return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";
+		}
+		}
+		}
+		}
+		}
 		return invalidate("class segment", classSegment);
 	}
-	String compileStatement(String statement){
-		if(statement.startsWith("for")){
-		return "\n\t\tfor (;;) {\n\t\t}";}
-		if(statement.startsWith("while")){
-		return "\n\t\twhile (1) {\n\t\t}";}
-		if(statement.startsWith("else")){
-		return "\n\t\telse {\n\t\t}";}
-		if(statement.startsWith("return ")){
+	String compileStatement(String statement, int depth){
+		if (statement.strip().equals("continue;")) {
+			return "continue;";
+		}
+		if (statement.strip().equals("break;")) {
+			return "break;";
+		}
+		if (statement.startsWith("for")) {
+			return "\n\t\tfor (;;) {\n\t\t}";
+		}
+		if (statement.startsWith("else")) {
+			return "\n\t\telse {\n\t\t}";
+		}
+		if (statement.startsWith("return ")) {
 		auto substring = statement.substring("return ".length());
-		if(substring.endsWith(";")){
+		if (substring.endsWith(";")) {
 		auto substring1 = substring.substring(0, substring.length() - ";".length());
 		auto compiled = compileValue(substring1);
-		return generateReturn(compiled, 2);}}
-		auto value = compileIf(statement);
-		if(value.isPresent()){
-		return value.get();}
+				return generateReturn(compiled, depth);
+		}
+		}
+		auto optional1 = compileConditional(statement, depth, "while");
+		if (optional1.isPresent()) {
+			return optional1.get();
+		}
+		auto value = compileConditional(statement, depth, "if");
+		if (value.isPresent()) {
+			return value.get();
+		}
 		auto index1 = statement.indexOf("=");
-		if(index1 != -1){
+		if (index1 != -1) {
 		auto substring = statement.substring(0, index1);
 		auto substring1 = statement.substring(index1 + 1);
-		if(substring1.endsWith(";")){
-		auto compiled = compileDefinition(substring).or(auto _lambda4_(){
+		if (substring1.endsWith(";")) {
+		auto compiled = compileDefinition(substring).or(auto _lambda5_(){
 			return compileSymbol(substring);
-		}).orElseGet(auto _lambda3_(){
+		}).orElseGet(auto _lambda4_(){
 			return invalidate("definition", substring);
 		});
 		auto compiled1 = compileValue(substring1.substring(0, substring1.length() - ";".length()).strip());
-		return "\n\t\t" + compiled + " = " + compiled1 + ";";}}
-		if(statement.endsWith(";")){
+				return "\n\t\t" + compiled + " = " + compiled1 + ";";
+		}
+		}
+		if (statement.endsWith(";")) {
 		auto newCaller = compileInvocation(statement.substring(0, statement.length() - ";".length()));
-		if(newCaller.isPresent()){
-		return "\n\t\t" + newCaller.get() + ";";}}
-		if(statement.endsWith(";")){
+		if (newCaller.isPresent()) {
+				return "\n\t\t" + newCaller.get() + ";";
+		}
+		}
+		if (statement.endsWith(";")) {
 		auto optional = compileDefinition(statement.substring(0, statement.length() - 1));
-		if(optional.isPresent()){
-		return optional.get();}}
-		if(statement.endsWith("++;")){
+		if (optional.isPresent()) {
+				return optional.get();
+		}
+		}
+		if (statement.endsWith("++;")) {
 		auto substring = statement.substring(0, statement.length() - "++;".length());
-		return compileValue(substring) + "++;";}
+			return compileValue(substring) + "++;";
+		}
 		return invalidate("statement", statement);
 	}
 	String generateReturn(String compiled, int depth){
 		return "\n" + "\t".repeat(depth) + "return " + compiled + ";";
 	}
-	Optional<String> compileIf(String statement){
-		if(!statement.startsWith("if")){
-		return Optional.empty();}
-		auto withoutKeyword = statement.substring("if".length());
+	Optional<String> compileConditional(String statement, int depth, String prefix){
+		if (!statement.startsWith(prefix)) {
+			return Optional.empty();
+		}
+		auto withoutKeyword = statement.substring(prefix.length());
 		auto maybeParamEnd = findConditionParamEnd(withoutKeyword);
-		if(maybeParamEnd.isEmpty()){
-		return Optional.empty();}
+		if (maybeParamEnd.isEmpty()) {
+			return Optional.empty();
+		}
 		auto paramEnd = maybeParamEnd.get();
 		auto conditionWithEnd = withoutKeyword.substring(0, paramEnd).strip();
 		auto content = withoutKeyword.substring(paramEnd + 1).strip();
-		if(!conditionWithEnd.startsWith("(")){
-		return Optional.empty();}
+		if (!conditionWithEnd.startsWith("(")) {
+			return Optional.empty();
+		}
 		auto condition = conditionWithEnd.substring(1);
 		auto value = compileValue(condition);String outputContent
-		if(content.startsWith("{") && content.endsWith("}")){
+		if (content.startsWith("{") && content.endsWith("}")) {
 		auto substring = content.substring(1, content.length() - 1);
-		outputContent = splitAndCompile(Main.splitByStatements, Main.compileStatement, Main.mergeStatements, substring);}
+		outputContent = splitAndCompile(Main.splitByStatements, auto _lambda6_(auto statement1){
+			return compileStatement(statement1, depth + 1);
+		}, Main.mergeStatements, substring);
+		}
 		else {
 		}
-		return Optional.of("\n\t\tif(" + value + "){" + outputContent + "}");
+		return Optional.of("\n\t\t" + prefix + " (" + value + ") {" + outputContent + "\n\t\t}");
 	}
 	Optional<Integer> findConditionParamEnd(String input){
-		auto queue = IntStream.range(0, input.length()).mapToObj(auto _lambda5_(auto index){
+		auto queue = IntStream.range(0, input.length()).mapToObj(auto _lambda7_(auto index){
 			return Tuple<>(indexinput.charAt(index));
 		}).collect(Collectors.toCollection(LinkedList.new));
 		auto depth = 0;
-		while (1) {
+		while (!queue.isEmpty()) {
+		auto popped = queue.pop();
+		auto i = popped.left();
+		auto c = popped.right();
+		if (c == '\'') {
+		auto popped1 = queue.pop().right();
+		if (popped1 == '\\') {
+		queue.pop();
+		}
+		queue.pop();
+		}
+		if (c == '"') {
+		while (!queue.isEmpty()) {
+		auto next = queue.pop().right();
+		if (next == '"') {break;
+		}
+		if (next == '\\') {
+		queue.pop();
+		}
+		}
+		}
+		if (c == ')' && depth == 1) {
+				return Optional.of(i);
+		}
+		else {
+		}
 		}
 		return Optional.empty();
 	}
 	Optional<String> compileInvocation(String statement){
 		auto stripped = statement.strip();
-		if(!stripped.endsWith(")")){
-		return Optional.empty();}
+		if (!stripped.endsWith(")")) {
+			return Optional.empty();
+		}
 		auto substring = stripped.substring(0, stripped.length() - ")".length());
-		return findArgStart(substring).map(auto _lambda8_(auto index){
+		return findArgStart(substring).map(auto _lambda10_(auto index){
 		auto caller = substring.substring(0, index);
 		auto substring1 = substring.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda6_(auto value){
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda8_(auto value){
 			return compileValue(value.strip());
-		}, auto _lambda7_(auto buffer, auto element){
+		}, auto _lambda9_(auto buffer, auto element){
 			return buffer.append(", ").append(element);
 		}, substring1);
 		auto newCaller = compileValue(caller.strip());
@@ -237,77 +336,102 @@ struct Main {
 	}
 	String compileValue(String input){
 		auto optional4 = compileSymbol(input);
-		if(optional4.isPresent()){
-		return optional4.get();}
-		if(isNumber(input.strip())){
-		return input.strip();}
-		if(input.startsWith("!")){
-		return "!" + compileValue(input.substring(1));}
+		if (optional4.isPresent()) {
+			return optional4.get();
+		}
+		if (isNumber(input.strip())) {
+			return input.strip();
+		}
+		if (input.startsWith("!")) {
+			return "!" + compileValue(input.substring(1));
+		}
 		auto optional3 = compileConstruction(input);
-		if(optional3.isPresent()){
-		return optional3.get();}
+		if (optional3.isPresent()) {
+			return optional3.get();
+		}
 		auto stripped = input.strip();
-		if(stripped.startsWith("\"") && stripped.endsWith("\"")){
-		return stripped;}
-		if(stripped.startsWith("'") && stripped.endsWith("'")){
-		return stripped;}
+		if (stripped.startsWith("\"") && stripped.endsWith("\"")) {
+			return stripped;
+		}
+		if (stripped.startsWith("'") && stripped.endsWith("'")) {
+			return stripped;
+		}
 		auto nameSlice = compileLambda(input, 2);
-		if(nameSlice.isPresent()){
-		return nameSlice.get();}
+		if (nameSlice.isPresent()) {
+			return nameSlice.get();
+		}
 		auto optional1 = compileInvocation(input);
-		if(optional1.isPresent()){
-		return optional1.get();}
+		if (optional1.isPresent()) {
+			return optional1.get();
+		}
 		auto index = input.lastIndexOf('.');
-		if(index != -1){
+		if (index != -1) {
 		auto substring = input.substring(0, index);
 		auto substring1 = input.substring(index + 1);
-		return compileValue(substring) + "." + substring1;}
+			return compileValue(substring) + "." + substring1;
+		}
 		auto index1 = input.lastIndexOf("::");
-		if(index1 != -1){
+		if (index1 != -1) {
 		auto substring = input.substring(0, index1);
 		auto substring1 = input.substring(index1 + ".".length());
-		return compileValue(substring) + "." + substring1;}
+			return compileValue(substring) + "." + substring1;
+		}
 		auto compiled = compileOperator(input, "+");
-		if(compiled.isPresent()){
-		return compiled.get();}
+		if (compiled.isPresent()) {
+			return compiled.get();
+		}
 		auto optional = compileOperator(input, "==");
-		if(optional.isPresent()){
-		return optional.get();}
+		if (optional.isPresent()) {
+			return optional.get();
+		}
 		auto optional2 = compileOperator(input, "!=");
-		if(optional2.isPresent()){
-		return optional2.get();}
+		if (optional2.isPresent()) {
+			return optional2.get();
+		}
+		auto optional5 = compileOperator(input, "&&");
+		if (optional5.isPresent()) {
+			return optional5.get();
+		}
 		auto index3 = stripped.indexOf('?');
-		if(index3 != -1){
+		if (index3 != -1) {
 		auto condition = stripped.substring(0, index3);
 		auto substring = stripped.substring(index3 + 1);
 		auto maybe = substring.indexOf(':');
-		if(maybe != -1){
+		if (maybe != -1) {
 		auto substring1 = substring.substring(0, maybe);
 		auto substring2 = substring.substring(maybe + 1);
-		return compileValue(condition) + " ? " + compileValue(substring1) + " : " + compileValue(substring2);}}
+				return compileValue(condition) + " ? " + compileValue(substring1) + " : " + compileValue(substring2);
+		}
+		}
 		return invalidate("value", input);
 	}
 	Optional<String> compileSymbol(String input){
 		auto stripped = input.strip();
-		if(isSymbol(stripped)){
-		return Optional.of(stripped);}
+		if (isSymbol(stripped)) {
+			return Optional.of(stripped);
+		}
 		return Optional.empty();
 	}
 	Optional<String> compileLambda(String input, int depth){
 		auto arrowIndex = input.indexOf("->");
-		if(arrowIndex == -1){
-		return Optional.empty();}
+		if (arrowIndex == -1) {
+			return Optional.empty();
+		}
 		auto beforeArrow = input.substring(0, arrowIndex).strip();
 		auto afterArrow = input.substring(arrowIndex + "->".length()).strip();
 		auto maybeNames = findLambdaNames(beforeArrow);
-		if(maybeNames.isEmpty()){
-		return Optional.empty();}String compiled
-		if(afterArrow.startsWith("{") && afterArrow.endsWith("}")){
+		if (maybeNames.isEmpty()) {
+			return Optional.empty();
+		}String compiled
+		if (afterArrow.startsWith("{") && afterArrow.endsWith("}")) {
 		auto substring1 = afterArrow.substring(1, afterArrow.length() - 1);
-		compiled = splitAndCompile(Main.splitByStatements, Main.compileStatement, Main.mergeStatements, substring1);}
+		compiled = splitAndCompile(Main.splitByStatements, auto _lambda11_(auto statement){
+			return compileStatement(statement, 2);
+		}, Main.mergeStatements, substring1);
+		}
 		else {
 		}
-		auto joinedNames = maybeNames.get().stream().map(auto _lambda9_(auto name){
+		auto joinedNames = maybeNames.get().stream().map(auto _lambda12_(auto name){
 			return "auto " + name;
 		}).collect(Collectors.joining(", "));
 		return Optional.of("auto " + getLambda__() + "(" + joinedNames + "){" + compiled + "\n\t\t}");
@@ -317,29 +441,34 @@ struct Main {
 		return lambda;
 	}
 	Optional<List<String>> findLambdaNames(String nameSlice){
-		if(nameSlice.isEmpty()){
-		return Optional.of(Collections.emptyList());}
-		if(isSymbol(nameSlice)){
-		return Optional.of(List.of(nameSlice));}
-		if(!nameSlice.startsWith("(") || !nameSlice.endsWith(")")){
-		return Optional.empty();}
+		if (nameSlice.isEmpty()) {
+			return Optional.of(Collections.emptyList());
+		}
+		if (isSymbol(nameSlice)) {
+			return Optional.of(List.of(nameSlice));
+		}
+		if (!nameSlice.startsWith("(") || !nameSlice.endsWith(")")) {
+			return Optional.empty();
+		}
 		auto args = nameSlice.substring(1, nameSlice.length() - 1).split(", ");
-		return Optional.of(Arrays.stream(args).map(String.strip).filter(auto _lambda10_(auto value){
+		return Optional.of(Arrays.stream(args).map(String.strip).filter(auto _lambda13_(auto value){
 			return !value.isEmpty();
 		}).toList());
 	}
 	Optional<String> compileConstruction(String input){
-		if(!input.startsWith("new ")){
-		return Optional.empty();}
+		if (!input.startsWith("new ")) {
+			return Optional.empty();
+		}
 		auto substring = input.substring("new ".length());
-		if(!substring.endsWith(")")){
-		return Optional.empty();}
+		if (!substring.endsWith(")")) {
+			return Optional.empty();
+		}
 		auto substring2 = substring.substring(0, substring.length() - ")".length());
-		return findArgStart(substring2).map(auto _lambda12_(auto index){
+		return findArgStart(substring2).map(auto _lambda15_(auto index){
 		auto caller = substring2.substring(0, index);
 		auto compiled1 = compileType(caller.strip());
 		auto substring1 = substring2.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda11_(auto value){
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda14_(auto value){
 			return compileValue(value.strip());
 		}, Main.mergeStatements, substring1);
 		return compiled1 + "(" + compiled + ")";
@@ -347,8 +476,9 @@ struct Main {
 	}
 	Optional<String> compileOperator(String input, String operator){
 		auto index2 = input.indexOf(operator);
-		if(index2 == -1){
-		return Optional.empty();}
+		if (index2 == -1) {
+			return Optional.empty();
+		}
 		auto compiled = compileValue(input.substring(0, index2));
 		auto compiled1 = compileValue(input.substring(index2 + operator.length()));
 		return Optional.of(compiled + " " + operator + " " + compiled1);
@@ -375,8 +505,9 @@ struct Main {
 	Optional<String> compileDefinition(String input){
 		auto stripped = input.strip();
 		auto separator = stripped.lastIndexOf(' ');
-		if(separator == -1){
-		return Optional.empty();}
+		if (separator == -1) {
+			return Optional.empty();
+		}
 		auto inputParamType = stripped.substring(0, separator);
 		auto paramName = stripped.substring(separator + 1);
 		auto index = -1;
@@ -388,19 +519,23 @@ struct Main {
 		return Optional.of(outputParamType + " " + paramName);
 	}
 	String compileType(String input){
-		if(input.equals("var")){
-		return "auto";}
-		if(input.endsWith("[]")){
-		return "Slice<" + input.substring(0, input.length() - 2) + ">";}
+		if (input.equals("var")) {
+			return "auto";
+		}
+		if (input.endsWith("[]")) {
+			return "Slice<" + input.substring(0, input.length() - 2) + ">";
+		}
 		auto genStart = input.indexOf("<");
-		if(genStart != -1){
+		if (genStart != -1) {
 		auto caller = input.substring(0, genStart);
 		auto substring = input.substring(genStart + 1);
-		if(substring.endsWith(">")){
+		if (substring.endsWith(">")) {
 		auto substring1 = substring.substring(0, substring.length() - ">".length());
 		auto s = splitAndCompile(Main.splitByValues, Main.compileType, Main.mergeStatements, substring1);
-		return caller + "<" + s + ">";}}
-		return compileSymbol(input).orElseGet(auto _lambda13_(){
+				return caller + "<" + s + ">";
+		}
+		}
+		return compileSymbol(input).orElseGet(auto _lambda16_(){
 			return invalidate("type", input);
 		});
 	}
@@ -409,7 +544,14 @@ struct Main {
 		auto buffer = StringBuilder();
 		auto depth = 0;
 		auto queue = IntStream.range(0, inputParams.length()).mapToObj(inputParams.charAt).collect(Collectors.toCollection(LinkedList.new));
-		while (1) {
+		while (!queue.isEmpty()) {
+		auto c = queue.pop();
+		if (c == ',' && depth == 0) {
+		advance(inputParamsList, buffer);
+		buffer = StringBuilder();
+		}
+		else {
+		}
 		}
 		advance(inputParamsList, buffer);
 		return inputParamsList;

@@ -215,7 +215,7 @@ public class Main {
                         final var afterParams = afterParamStart.substring(paramEnd + 1).strip();
                         if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
                             final var inputContent = afterParams.substring(1, afterParams.length() - 1);
-                            final var outputContent = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::mergeStatements, inputContent);
+                            final var outputContent = splitAndCompile(Main::splitByStatements, statement -> compileStatement(statement, 2), Main::mergeStatements, inputContent);
 
                             final var inputParamsList = splitByValues(inputParams);
                             final var outputParams = compileParams(inputParamsList);
@@ -229,9 +229,11 @@ public class Main {
         return invalidate("class segment", classSegment);
     }
 
-    private static String compileStatement(String statement) {
+    private static String compileStatement(String statement, int depth) {
+        if (statement.strip().equals("continue;")) return "continue;";
+        if (statement.strip().equals("break;")) return "break;";
+
         if (statement.startsWith("for")) return "\n\t\tfor (;;) {\n\t\t}";
-        if (statement.startsWith("while")) return "\n\t\twhile (1) {\n\t\t}";
         if (statement.startsWith("else")) return "\n\t\telse {\n\t\t}";
 
         if (statement.startsWith("return ")) {
@@ -239,11 +241,14 @@ public class Main {
             if (substring.endsWith(";")) {
                 final var substring1 = substring.substring(0, substring.length() - ";".length());
                 final var compiled = compileValue(substring1);
-                return generateReturn(compiled, 2);
+                return generateReturn(compiled, depth);
             }
         }
 
-        final var value = compileIf(statement);
+        final var optional1 = compileConditional(statement, depth, "while");
+        if (optional1.isPresent()) return optional1.get();
+
+        final var value = compileConditional(statement, depth, "if");
         if (value.isPresent()) return value.get();
 
         final var index1 = statement.indexOf("=");
@@ -269,7 +274,7 @@ public class Main {
             if (optional.isPresent()) return optional.get();
         }
 
-        if(statement.endsWith("++;")) {
+        if (statement.endsWith("++;")) {
             final var substring = statement.substring(0, statement.length() - "++;".length());
             return compileValue(substring) + "++;";
         }
@@ -281,9 +286,9 @@ public class Main {
         return "\n" + "\t".repeat(depth) + "return " + compiled + ";";
     }
 
-    private static Optional<String> compileIf(String statement) {
-        if (!statement.startsWith("if")) return Optional.empty();
-        final var withoutKeyword = statement.substring("if".length());
+    private static Optional<String> compileConditional(String statement, int depth, String prefix) {
+        if (!statement.startsWith(prefix)) return Optional.empty();
+        final var withoutKeyword = statement.substring(prefix.length());
 
         final var maybeParamEnd = findConditionParamEnd(withoutKeyword);
         if (maybeParamEnd.isEmpty()) return Optional.empty();
@@ -299,12 +304,12 @@ public class Main {
         final String outputContent;
         if (content.startsWith("{") && content.endsWith("}")) {
             final var substring = content.substring(1, content.length() - 1);
-            outputContent = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::mergeStatements, substring);
+            outputContent = splitAndCompile(Main::splitByStatements, statement1 -> compileStatement(statement1, depth + 1), Main::mergeStatements, substring);
         } else {
-            outputContent = compileStatement(content);
+            outputContent = compileStatement(content, depth + 1);
         }
 
-        return Optional.of("\n\t\tif(" + value + "){" + outputContent + "}");
+        return Optional.of("\n\t\t" + prefix + " (" + value + ") {" + outputContent + "\n\t\t}");
     }
 
     private static Optional<Integer> findConditionParamEnd(String input) {
@@ -317,6 +322,16 @@ public class Main {
             final var popped = queue.pop();
             final var i = popped.left();
             final var c = popped.right();
+
+            if(c == '\'') {
+                final var popped1 = queue.pop().right();
+                if(popped1 == '\\') {
+                    queue.pop();
+                }
+
+                queue.pop();
+            }
+
             if (c == '"') {
                 while (!queue.isEmpty()) {
                     final var next = queue.pop().right();
@@ -411,6 +426,9 @@ public class Main {
         final var optional2 = compileOperator(input, "!=");
         if (optional2.isPresent()) return optional2.get();
 
+        final var optional5 = compileOperator(input, "&&");
+        if (optional5.isPresent()) return optional5.get();
+
         final var index3 = stripped.indexOf('?');
         if (index3 != -1) {
             final var condition = stripped.substring(0, index3);
@@ -444,7 +462,7 @@ public class Main {
         final String compiled;
         if (afterArrow.startsWith("{") && afterArrow.endsWith("}")) {
             final var substring1 = afterArrow.substring(1, afterArrow.length() - 1);
-            compiled = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::mergeStatements, substring1);
+            compiled = splitAndCompile(Main::splitByStatements, statement -> compileStatement(statement, 2), Main::mergeStatements, substring1);
         } else {
             compiled = generateReturn(compileValue(afterArrow), depth + 1);
         }
