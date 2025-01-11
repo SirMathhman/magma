@@ -308,6 +308,8 @@ public class Main {
         final var stripped = input.strip();
         if (stripped.startsWith("\"") && stripped.endsWith("\"")) return stripped;
 
+        if(stripped.startsWith("'") && stripped.endsWith("'")) return stripped;
+
         final var optional1 = compileInvocation(input);
         if (optional1.isPresent()) return optional1.get();
 

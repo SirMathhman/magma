@@ -146,6 +146,8 @@ t		}
 		auto stripped = input.strip();
 		if(stripped.startsWith("\"") && stripped.endsWith("\"")){
 		}
+		if(stripped.startsWith("'") && stripped.endsWith("'")){
+		}
 		auto optional1 = compileInvocation(input);
 		if(optional1.isPresent()){
 		}
