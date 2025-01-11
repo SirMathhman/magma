@@ -35,15 +35,15 @@ struct Main {
 		auto namespace = convertPathToList(parent);
 		if(namespace.size() >= 2){
 		}
-		auto targetParent = TARGET_DIRECTORY;
-		for (;;) {
-		}
+		auto targetParent = namespace.stream().reduce(TARGET_DIRECTORY, Path.resolve, auto _lambda0_(auto _, auto next){
+			return next;
+		});
 		if(!Files.exists(targetParent)){
 		}
 		auto name = relative.getFileName().toString();
 		auto nameWithoutExt = name.substring(0, name.indexOf('.'));
 		auto target = targetParent.resolve(nameWithoutExt + ".c");
-		return JavaPaths.readSafe(source).match(auto _lambda0_(auto input){
+		return JavaPaths.readSafe(source).match(auto _lambda1_(auto input){
 			return JavaPaths.writeSafe(target, compile(input));
 		}, Optional.of);
 	}
@@ -132,12 +132,12 @@ struct Main {
 		if(!statement.endsWith(")"){
 		}
 		auto substring = statement.substring(0, statement.length() - ")".length());
-		return findArgStart(substring).map(auto _lambda3_(auto index){
+		return findArgStart(substring).map(auto _lambda4_(auto index){
 		auto caller = substring.substring(0, index);
 		auto substring1 = substring.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda1_(auto value){
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda2_(auto value){
 			return compileValue(value.strip());
-		}, auto _lambda2_(auto inner, auto stripped){
+		}, auto _lambda3_(auto inner, auto stripped){
 			return inner.append(", ").append(stripped);
 		}, substring1);
 		auto newCaller = compileValue(caller.strip());
@@ -233,11 +233,11 @@ struct Main {
 		if(!substring.endsWith(")"){
 		}
 		auto substring2 = substring.substring(0, substring.length() - ")".length());
-		return findArgStart(substring2).map(auto _lambda5_(auto index){
+		return findArgStart(substring2).map(auto _lambda6_(auto index){
 		auto caller = substring2.substring(0, index);
 		auto compiled1 = compileType(caller.strip());
 		auto substring1 = substring2.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda4_(auto value){
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda5_(auto value){
 			return compileValue(value.strip());
 		}, Main.merge, substring1);
 		return compiled1 + "(" + compiled + ")";
