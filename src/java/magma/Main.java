@@ -2,6 +2,10 @@ package magma;
 
 import magma.java.JavaPaths;
 import magma.java.JavaSet;
+import magma.java.JavaOptionals;
+import magma.option.Option;
+import magma.option.Some;
+import magma.stream.Streams;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,11 +38,9 @@ public class Main {
 
     private static Option<IOException> compileSources(JavaSet<Path> sources) {
         return sources.stream()
-                .map(Main::compileSource)
-                .flatMap(Optional::stream)
-                .findFirst()
-                .<Option<IOException>>map(Some::new)
-                .orElseGet(None::new);
+                .map(source -> JavaOptionals.to(compileSource(source)))
+                .flatMap(Streams::from)
+                .next();
     }
 
     private static Optional<IOException> compileSource(Path source) {

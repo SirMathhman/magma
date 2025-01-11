@@ -1,10 +1,13 @@
 package magma.java;
 
+import magma.stream.HeadedStream;
+import magma.stream.Stream;
+
+import java.util.ArrayList;
 import java.util.Set;
-import java.util.stream.Stream;
 
 public record JavaSet<T>(Set<T> sources) {
     public Stream<T> stream() {
-        return sources().stream();
+        return new HeadedStream<>(new JavaListHead<>(new ArrayList<>(sources)));
     }
 }
