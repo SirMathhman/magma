@@ -19,15 +19,10 @@ struct Main {
 	Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 	int counter = 0;
 	void main(Slice<String> args){
-		JavaPaths.collect()
-                .match(Main::compileSources, Optional::of)
-                .ifPresent(Throwable.printStackTrace);
+		JavaPaths.collect().match(Main.compileSources, Optional.of).ifPresent(Throwable.printStackTrace);
 	}
 	Optional<IOException> compileSources(Set<Path> sources){
-		return sources.stream()
-                .map(Main::compileSource)
-                .flatMap(Optional::stream)
-                .findFirst();
+		return sources.stream().map(Main.compileSource).flatMap(Optional.stream).findFirst();
 	}
 	Optional<IOException> compileSource(Path source){
 		auto relative = SOURCE_DIRECTORY.relativize(source);
@@ -50,9 +45,7 @@ struct Main {
 		return JavaPaths.createDirectoriesSafe(targetParent);
 	}
 	Optional<IOException> compileFromSourceToTarget(Path source, Path target){
-		return JavaPaths.readSafe(source)
-                .mapValue(Main::compile)
-                .match(auto _lambda2_(auto output){
+		return JavaPaths.readSafe(source).mapValue(Main.compile).match(auto _lambda2_(auto output){
 			return JavaPaths.writeSafe(target, output);
 		}, Optional.of);
 	}
@@ -61,10 +54,7 @@ struct Main {
 		return name.substring(0, name.indexOf('.'));
 	}
 	List<String> computeNamespace(Path parent){
-		return IntStream.range(0, parent.getNameCount())
-                .mapToObj(parent::getName)
-                .map(Path::toString)
-                .toList();
+		return IntStream.range(0, parent.getNameCount()).mapToObj(parent.getName).map(Path.toString).toList();
 	}
 	String compile(String root){
 		return splitAndCompile(Main.splitByStatements, Main.compileRootMember, Main.mergeStatements, root);
@@ -83,9 +73,7 @@ struct Main {
 		auto segments = ArrayList<String>();
 		auto buffer = StringBuilder();
 		auto depth = 0;
-		auto queue = IntStream.range(0, root.length())
-                .mapToObj(root::charAt)
-                .collect(Collectors.toCollection(LinkedList.new));
+		auto queue = IntStream.range(0, root.length()).mapToObj(root.charAt).collect(Collectors.toCollection(LinkedList.new));
 		while (1) {
 		}
 		advance(segments, buffer);
@@ -101,16 +89,14 @@ struct Main {
 		if(rootSegment.startsWith("import ")){
 		return rootSegment + "\n";}
 		auto classIndex = rootSegment.indexOf("class");
-		if(classIndex != -1){{
-            final var withoutKeyword = rootSegment.substring(classIndex + "class".length());
-            final var contentStartIndex = withoutKeyword.indexOf("{");
-            if (contentStartIndex != -1) {
-                final var name = withoutKeyword.substring(0, contentStartIndex).strip();
-                final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
-                final var compiled = splitAndCompile(Main::splitByStatements, Main::compileClassSegment, Main::mergeStatements, content);
-                return "struct " + name + " {" + compiled + "\n}";
-            }
-        }}
+		if(classIndex != -1){
+		auto withoutKeyword = rootSegment.substring(classIndex + "class".length());
+		auto contentStartIndex = withoutKeyword.indexOf("{");
+		if(contentStartIndex != -1){
+		auto name = withoutKeyword.substring(0, contentStartIndex).strip();
+		auto content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
+		auto compiled = splitAndCompile(Main.splitByStatements, Main.compileClassSegment, Main.mergeStatements, content);
+		return "struct " + name + " {" + compiled + "\n}";}}
 		if(rootSegment.contains("record")){
 		return "struct Temp {\n}";}
 		if(rootSegment.contains("interface ")){
@@ -122,44 +108,34 @@ struct Main {
 		return rootSegment;
 	}
 	String compileClassSegment(String classSegment){
-		if(classSegment.endsWith(";")){{
-            final var substring = classSegment.substring(0, classSegment.length() - 1);
-            final var index = substring.indexOf('=');
-            if (index != -1) {
-                final var definition = substring.substring(0, index);
-                final var compiled = compileValue(substring.substring(index + 1));
-                return "\n\t" + compileDefinition(definition).orElseGet(() -> invalidate("definition", definition)) + " = " + compiled + ";";
-            }
-        }}
+		if(classSegment.endsWith(";")){
+		auto substring = classSegment.substring(0, classSegment.length() - 1);
+		auto index = substring.indexOf('=');
+		if(index != -1){
+		auto definition = substring.substring(0, index);
+		auto compiled = compileValue(substring.substring(index + 1));
+		return "\n\t" + compileDefinition(definition).orElseGet(() -> invalidate("definition", definition)) + " = " + compiled + ";";}}
 		auto paramStart = classSegment.indexOf('(');
-		if(paramStart != -1){{
-            final var beforeParamStart = classSegment.substring(0, paramStart);
-            final var afterParamStart = classSegment.substring(paramStart + 1);
-
-            final var paramEnd = afterParamStart.indexOf(')');
-            if (paramEnd != -1) {
-                final var nameSeparator = beforeParamStart.lastIndexOf(' ');
-                if (nameSeparator != -1) {
-                    final var beforeName = beforeParamStart.substring(0, nameSeparator);
-                    final var typeSeparator = beforeName.lastIndexOf(' ');
-                    if (typeSeparator != -1) {
-                        final var type = beforeName.substring(typeSeparator + 1);
-                        final var name = beforeParamStart.substring(nameSeparator + 1);
-                        final var inputParams = afterParamStart.substring(0, paramEnd);
-                        final var afterParams = afterParamStart.substring(paramEnd + 1).strip();
-                        if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
-                            final var inputContent = afterParams.substring(1, afterParams.length() - 1);
-                            final var outputContent = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::mergeStatements, inputContent);
-
-                            final var inputParamsList = splitByValues(inputParams);
-                            final var outputParams = compileParams(inputParamsList);
-
-                            return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";
-                        }
-                    }
-                }
-            }
-        }}
+		if(paramStart != -1){
+		auto beforeParamStart = classSegment.substring(0, paramStart);
+		auto afterParamStart = classSegment.substring(paramStart + 1);
+		auto paramEnd = afterParamStart.indexOf(')');
+		if(paramEnd != -1){
+		auto nameSeparator = beforeParamStart.lastIndexOf(' ');
+		if(nameSeparator != -1){
+		auto beforeName = beforeParamStart.substring(0, nameSeparator);
+		auto typeSeparator = beforeName.lastIndexOf(' ');
+		if(typeSeparator != -1){
+		auto type = beforeName.substring(typeSeparator + 1);
+		auto name = beforeParamStart.substring(nameSeparator + 1);
+		auto inputParams = afterParamStart.substring(0, paramEnd);
+		auto afterParams = afterParamStart.substring(paramEnd + 1).strip();
+		if(afterParams.startsWith("{") && afterParams.endsWith("}")){
+		auto inputContent = afterParams.substring(1, afterParams.length() - 1);
+		auto outputContent = splitAndCompile(Main.splitByStatements, Main.compileStatement, Main.mergeStatements, inputContent);
+		auto inputParamsList = splitByValues(inputParams);
+		auto outputParams = compileParams(inputParamsList);
+		return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";}}}}}
 		return invalidate("class segment", classSegment);
 	}
 	String compileStatement(String statement){
@@ -169,35 +145,38 @@ struct Main {
 		return "\n\t\twhile (1) {\n\t\t}";}
 		if(statement.startsWith("else")){
 		return "\n\t\telse {\n\t\t}";}
-		if(statement.startsWith("return ")){{
-            final var substring = statement.substring("return ".length());
-            if (substring.endsWith(";")) {
-                final var substring1 = substring.substring(0, substring.length() - ";".length());
-                final var compiled = compileValue(substring1);
-                return generateReturn(compiled, 2);
-            }
-        }}
+		if(statement.startsWith("return ")){
+		auto substring = statement.substring("return ".length());
+		if(substring.endsWith(";")){
+		auto substring1 = substring.substring(0, substring.length() - ";".length());
+		auto compiled = compileValue(substring1);
+		return generateReturn(compiled, 2);}}
 		auto value = compileIf(statement);
 		if(value.isPresent()){
 		return value.get();}
 		auto index1 = statement.indexOf("=");
-		if(index1 != -1){{
-            final var substring = statement.substring(0, index1);
-            final var substring1 = statement.substring(index1 + 1);
-            if (substring1.endsWith(";")) {
-                final var compiled = compileDefinition(substring).orElseGet(() -> invalidate("definition", substring));
-                final var compiled1 = compileValue(substring1.substring(0, substring1.length() - ";".length()).strip());
-                return "\n\t\t" + compiled + " = " + compiled1 + ";";
-            }
-        }}
-		if(statement.endsWith(";")){{
-            final var newCaller = compileInvocation(statement.substring(0, statement.length() - ";".length()));
-            if (newCaller.isPresent()) return "\n\t\t" + newCaller.get() + ";";
-        }}
-		if(statement.endsWith(";")){{
-            final var optional = compileDefinition(statement.substring(0, statement.length() - 1));
-            if (optional.isPresent()) return optional.get();
-        }}
+		if(index1 != -1){
+		auto substring = statement.substring(0, index1);
+		auto substring1 = statement.substring(index1 + 1);
+		if(substring1.endsWith(";")){
+		auto compiled = compileDefinition(substring).or(auto _lambda4_(){
+			return compileSymbol(substring);
+		}).orElseGet(auto _lambda3_(){
+			return invalidate("definition", substring);
+		});
+		auto compiled1 = compileValue(substring1.substring(0, substring1.length() - ";".length()).strip());
+		return "\n\t\t" + compiled + " = " + compiled1 + ";";}}
+		if(statement.endsWith(";")){
+		auto newCaller = compileInvocation(statement.substring(0, statement.length() - ";".length()));
+		if(newCaller.isPresent()){
+		return "\n\t\t" + newCaller.get() + ";";}}
+		if(statement.endsWith(";")){
+		auto optional = compileDefinition(statement.substring(0, statement.length() - 1));
+		if(optional.isPresent()){
+		return optional.get();}}
+		if(statement.endsWith("++;")){
+		auto substring = statement.substring(0, statement.length() - "++;".length());
+		return compileValue(substring) + "++;";}
 		return invalidate("statement", statement);
 	}
 	String generateReturn(String compiled, int depth){
@@ -213,34 +192,38 @@ struct Main {
 		auto paramEnd = maybeParamEnd.get();
 		auto conditionWithEnd = withoutKeyword.substring(0, paramEnd).strip();
 		auto content = withoutKeyword.substring(paramEnd + 1).strip();
-		if (!conditionWithEnd.startsWith("(")) return Optional.empty();
+		if(!conditionWithEnd.startsWith("(")){
+		return Optional.empty();}
 		auto condition = conditionWithEnd.substring(1);
 		auto value = compileValue(condition);String outputContent
-		if(content.startsWith("{") && content.endsWith("}")){{
-            outputContent = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::mergeStatements, content);
-        }}
+		if(content.startsWith("{") && content.endsWith("}")){
+		auto substring = content.substring(1, content.length() - 1);
+		outputContent = splitAndCompile(Main.splitByStatements, Main.compileStatement, Main.mergeStatements, substring);}
 		else {
 		}
 		return Optional.of("\n\t\tif(" + value + "){" + outputContent + "}");
 	}
-	Optional<Integer> findConditionParamEnd(String substring){
-		auto index = Optional.<Integer>empty();
+	Optional<Integer> findConditionParamEnd(String input){
+		auto queue = IntStream.range(0, input.length()).mapToObj(auto _lambda5_(auto index){
+			return Tuple<>(indexinput.charAt(index));
+		}).collect(Collectors.toCollection(LinkedList.new));
 		auto depth = 0;
-		for (;;) {
+		while (1) {
 		}
-		return index;
+		return Optional.empty();
 	}
 	Optional<String> compileInvocation(String statement){
-		if(!statement.endsWith(")"){
-		) return Optional.empty();}
-		auto substring = statement.substring(0, statement.length() - ")".length());
-		return findArgStart(substring).map(auto _lambda5_(auto index){
+		auto stripped = statement.strip();
+		if(!stripped.endsWith(")")){
+		return Optional.empty();}
+		auto substring = stripped.substring(0, stripped.length() - ")".length());
+		return findArgStart(substring).map(auto _lambda8_(auto index){
 		auto caller = substring.substring(0, index);
 		auto substring1 = substring.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda3_(auto value){
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda6_(auto value){
 			return compileValue(value.strip());
-		}, auto _lambda4_(auto inner, auto stripped){
-			return inner.append(", ").append(stripped);
+		}, auto _lambda7_(auto buffer, auto element){
+			return buffer.append(", ").append(element);
 		}, substring1);
 		auto newCaller = compileValue(caller.strip());
 		return newCaller + "(" + compiled + ")";
@@ -253,8 +236,9 @@ struct Main {
 		return Optional.empty();
 	}
 	String compileValue(String input){
-		if(isSymbol(input.strip())){
-		return input.strip();}
+		auto optional4 = compileSymbol(input);
+		if(optional4.isPresent()){
+		return optional4.get();}
 		if(isNumber(input.strip())){
 		return input.strip();}
 		if(input.startsWith("!")){
@@ -274,17 +258,15 @@ struct Main {
 		if(optional1.isPresent()){
 		return optional1.get();}
 		auto index = input.lastIndexOf('.');
-		if(index != -1){{
-            final var substring = input.substring(0, index);
-            final var substring1 = input.substring(index + 1);
-            return compileValue(substring) + "." + substring1;
-        }}
+		if(index != -1){
+		auto substring = input.substring(0, index);
+		auto substring1 = input.substring(index + 1);
+		return compileValue(substring) + "." + substring1;}
 		auto index1 = input.lastIndexOf("::");
-		if(index1 != -1){{
-            final var substring = input.substring(0, index1);
-            final var substring1 = input.substring(index1 + "::".length());
-            return compileValue(substring) + "." + substring1;
-        }}
+		if(index1 != -1){
+		auto substring = input.substring(0, index1);
+		auto substring1 = input.substring(index1 + ".".length());
+		return compileValue(substring) + "." + substring1;}
 		auto compiled = compileOperator(input, "+");
 		if(compiled.isPresent()){
 		return compiled.get();}
@@ -295,17 +277,21 @@ struct Main {
 		if(optional2.isPresent()){
 		return optional2.get();}
 		auto index3 = stripped.indexOf('?');
-		if(index3 != -1){{
-            final var condition = stripped.substring(0, index3);
-            final var substring = stripped.substring(index3 + 1);
-            final var maybe = substring.indexOf(':');
-            if (maybe != -1) {
-                final var substring1 = substring.substring(0, maybe);
-                final var substring2 = substring.substring(maybe + 1);
-                return compileValue(condition) + " ? " + compileValue(substring1) + " : " + compileValue(substring2);
-            }
-        }}
+		if(index3 != -1){
+		auto condition = stripped.substring(0, index3);
+		auto substring = stripped.substring(index3 + 1);
+		auto maybe = substring.indexOf(':');
+		if(maybe != -1){
+		auto substring1 = substring.substring(0, maybe);
+		auto substring2 = substring.substring(maybe + 1);
+		return compileValue(condition) + " ? " + compileValue(substring1) + " : " + compileValue(substring2);}}
 		return invalidate("value", input);
+	}
+	Optional<String> compileSymbol(String input){
+		auto stripped = input.strip();
+		if(isSymbol(stripped)){
+		return Optional.of(stripped);}
+		return Optional.empty();
 	}
 	Optional<String> compileLambda(String input, int depth){
 		auto arrowIndex = input.indexOf("->");
@@ -316,15 +302,14 @@ struct Main {
 		auto maybeNames = findLambdaNames(beforeArrow);
 		if(maybeNames.isEmpty()){
 		return Optional.empty();}String compiled
-		if(afterArrow.startsWith("{") && afterArrow.endsWith("}")){{
-            final var substring1 = afterArrow.substring(1, afterArrow.length() - 1);
-            compiled = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::mergeStatements, substring1);
-        }}
+		if(afterArrow.startsWith("{") && afterArrow.endsWith("}")){
+		auto substring1 = afterArrow.substring(1, afterArrow.length() - 1);
+		compiled = splitAndCompile(Main.splitByStatements, Main.compileStatement, Main.mergeStatements, substring1);}
 		else {
 		}
-		auto joinedNames = maybeNames.get().stream()
-                .map(name -> "auto " + name)
-                .collect(Collectors.joining(", "));
+		auto joinedNames = maybeNames.get().stream().map(auto _lambda9_(auto name){
+			return "auto " + name;
+		}).collect(Collectors.joining(", "));
 		return Optional.of("auto " + getLambda__() + "(" + joinedNames + "){" + compiled + "\n\t\t}");
 	}
 	String getLambda__(){
@@ -339,23 +324,22 @@ struct Main {
 		if(!nameSlice.startsWith("(") || !nameSlice.endsWith(")")){
 		return Optional.empty();}
 		auto args = nameSlice.substring(1, nameSlice.length() - 1).split(", ");
-		return Optional.of(Arrays.stream(args)
-                .map(String::strip)
-                .filter(value -> !value.isEmpty())
-                .toList());
+		return Optional.of(Arrays.stream(args).map(String.strip).filter(auto _lambda10_(auto value){
+			return !value.isEmpty();
+		}).toList());
 	}
 	Optional<String> compileConstruction(String input){
 		if(!input.startsWith("new ")){
 		return Optional.empty();}
 		auto substring = input.substring("new ".length());
-		if(!substring.endsWith(")"){
-		) return Optional.empty();}
+		if(!substring.endsWith(")")){
+		return Optional.empty();}
 		auto substring2 = substring.substring(0, substring.length() - ")".length());
-		return findArgStart(substring2).map(auto _lambda7_(auto index){
+		return findArgStart(substring2).map(auto _lambda12_(auto index){
 		auto caller = substring2.substring(0, index);
 		auto compiled1 = compileType(caller.strip());
 		auto substring1 = substring2.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda6_(auto value){
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda11_(auto value){
 			return compileValue(value.strip());
 		}, Main.mergeStatements, substring1);
 		return compiled1 + "(" + compiled + ")";
@@ -409,26 +393,22 @@ struct Main {
 		if(input.endsWith("[]")){
 		return "Slice<" + input.substring(0, input.length() - 2) + ">";}
 		auto genStart = input.indexOf("<");
-		if(genStart != -1){{
-            final var caller = input.substring(0, genStart);
-            final var substring = input.substring(genStart + 1);
-            if (substring.endsWith(">")) {
-                final var substring1 = substring.substring(0, substring.length() - ">".length());
-                final var s = splitAndCompile(Main::splitByValues, Main::compileType, Main::mergeStatements, substring1);
-                return caller + "<" + s + ">";
-            }
-        }}
-		if(isSymbol(input)){
-		return input;}
-		return invalidate("type", input);
+		if(genStart != -1){
+		auto caller = input.substring(0, genStart);
+		auto substring = input.substring(genStart + 1);
+		if(substring.endsWith(">")){
+		auto substring1 = substring.substring(0, substring.length() - ">".length());
+		auto s = splitAndCompile(Main.splitByValues, Main.compileType, Main.mergeStatements, substring1);
+		return caller + "<" + s + ">";}}
+		return compileSymbol(input).orElseGet(auto _lambda13_(){
+			return invalidate("type", input);
+		});
 	}
 	ArrayList<String> splitByValues(String inputParams){
 		auto inputParamsList = ArrayList<String>();
 		auto buffer = StringBuilder();
 		auto depth = 0;
-		auto queue = IntStream.range(0, inputParams.length())
-                .mapToObj(inputParams::charAt)
-                .collect(Collectors.toCollection(LinkedList.new));
+		auto queue = IntStream.range(0, inputParams.length()).mapToObj(inputParams.charAt).collect(Collectors.toCollection(LinkedList.new));
 		while (1) {
 		}
 		advance(inputParamsList, buffer);
