@@ -32,22 +32,35 @@ struct Main {
 	Optional<IOException> compileSource(Path source){
 		auto relative = SOURCE_DIRECTORY.relativize(source);
 		auto parent = relative.getParent();
-		auto namespace = convertPathToList(parent);
-		if(namespace.size() >= 2){
+		auto namespace = computeNamespace(parent);
+		auto name = computeName(relative);
+		if(namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))){
 		}
 		auto targetParent = namespace.stream().reduce(TARGET_DIRECTORY, Path.resolve, auto _lambda0_(auto _, auto next){
 			return next;
 		});
-		if(!Files.exists(targetParent)){
+		auto target = targetParent.resolve(name + ".c");
+		return ensureDirectory(targetParent).or(auto _lambda1_(){
+			return compileFromSourceToTarget(source, target);
+		});
+	}
+	Optional<IOException> ensureDirectory(Path targetParent){
+		if(Files.exists(targetParent)){
 		}
-		auto name = relative.getFileName().toString();
-		auto nameWithoutExt = name.substring(0, name.indexOf('.'));
-		auto target = targetParent.resolve(nameWithoutExt + ".c");
-		return JavaPaths.readSafe(source).match(auto _lambda1_(auto input){
-			return JavaPaths.writeSafe(target, compile(input));
+		return JavaPaths.createDirectoriesSafe(targetParent);
+	}
+	Optional<IOException> compileFromSourceToTarget(Path source, Path target){
+		return JavaPaths.readSafe(source)
+                .mapValue(Main::compile)
+                .match(auto _lambda2_(auto output){
+			return JavaPaths.writeSafe(target, output);
 		}, Optional.of);
 	}
-	List<String> convertPathToList(Path parent){
+	String computeName(Path relative){
+		auto name = relative.getFileName().toString();
+		return name.substring(0, name.indexOf('.'));
+	}
+	List<String> computeNamespace(Path parent){
 		return IntStream.range(0, parent.getNameCount())
                 .mapToObj(parent::getName)
                 .map(Path::toString)
@@ -132,12 +145,12 @@ struct Main {
 		if(!statement.endsWith(")"){
 		}
 		auto substring = statement.substring(0, statement.length() - ")".length());
-		return findArgStart(substring).map(auto _lambda4_(auto index){
+		return findArgStart(substring).map(auto _lambda5_(auto index){
 		auto caller = substring.substring(0, index);
 		auto substring1 = substring.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda2_(auto value){
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda3_(auto value){
 			return compileValue(value.strip());
-		}, auto _lambda3_(auto inner, auto stripped){
+		}, auto _lambda4_(auto inner, auto stripped){
 			return inner.append(", ").append(stripped);
 		}, substring1);
 		auto newCaller = compileValue(caller.strip());
@@ -233,11 +246,11 @@ struct Main {
 		if(!substring.endsWith(")"){
 		}
 		auto substring2 = substring.substring(0, substring.length() - ")".length());
-		return findArgStart(substring2).map(auto _lambda6_(auto index){
+		return findArgStart(substring2).map(auto _lambda7_(auto index){
 		auto caller = substring2.substring(0, index);
 		auto compiled1 = compileType(caller.strip());
 		auto substring1 = substring2.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda5_(auto value){
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda6_(auto value){
 			return compileValue(value.strip());
 		}, Main.merge, substring1);
 		return compiled1 + "(" + compiled + ")";

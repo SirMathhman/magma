@@ -39,28 +39,33 @@ public class Main {
     private static Optional<IOException> compileSource(Path source) {
         final var relative = SOURCE_DIRECTORY.relativize(source);
         final var parent = relative.getParent();
-        final var namespace = convertPathToList(parent);
+        final var namespace = computeNamespace(parent);
+        final var name = computeName(relative);
 
-        if (namespace.size() >= 2) {
-            if (namespace.subList(0, 2).equals(List.of("magma", "java"))) return Optional.empty();
-        }
+        if (namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))) return Optional.empty();
 
         final var targetParent = namespace.stream().reduce(TARGET_DIRECTORY, Path::resolve, (_, next) -> next);
-
-        if (!Files.exists(targetParent)) {
-            final var directoriesError = JavaPaths.createDirectoriesSafe(targetParent);
-            if (directoriesError.isPresent()) {
-                return directoriesError;
-            }
-        }
-
-        final var name = relative.getFileName().toString();
-        final var nameWithoutExt = name.substring(0, name.indexOf('.'));
-        final var target = targetParent.resolve(nameWithoutExt + ".c");
-        return JavaPaths.readSafe(source).match(input -> JavaPaths.writeSafe(target, compile(input)), Optional::of);
+        final var target = targetParent.resolve(name + ".c");
+        return ensureDirectory(targetParent).or(() -> compileFromSourceToTarget(source, target));
     }
 
-    private static List<String> convertPathToList(Path parent) {
+    private static Optional<IOException> ensureDirectory(Path targetParent) {
+        if (Files.exists(targetParent)) return Optional.empty();
+        return JavaPaths.createDirectoriesSafe(targetParent);
+    }
+
+    private static Optional<IOException> compileFromSourceToTarget(Path source, Path target) {
+        return JavaPaths.readSafe(source)
+                .mapValue(Main::compile)
+                .match(output -> JavaPaths.writeSafe(target, output), Optional::of);
+    }
+
+    private static String computeName(Path relative) {
+        final var name = relative.getFileName().toString();
+        return name.substring(0, name.indexOf('.'));
+    }
+
+    private static List<String> computeNamespace(Path parent) {
         return IntStream.range(0, parent.getNameCount())
                 .mapToObj(parent::getName)
                 .map(Path::toString)
