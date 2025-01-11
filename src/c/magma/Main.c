@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 struct Main {
 	Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
 	Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
@@ -151,10 +153,10 @@ struct Main {
 			return rootSegment + "\n";
 		}
 		auto classIndex = rootSegment.indexOf("class");
-		if (classIndex != -1) {
+		if (classIndex !=  - 1) {
 			auto withoutKeyword = rootSegment.substring(classIndex + "class".length());
 			auto contentStartIndex = withoutKeyword.indexOf("{");
-			if (contentStartIndex != -1) {
+			if (contentStartIndex !=  - 1) {
 				auto name = withoutKeyword.substring(0, contentStartIndex).strip();
 				auto content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
 				auto compiled = splitAndCompile(Main.splitByStatements, auto _lambda8_(auto classSegment){
@@ -179,23 +181,23 @@ struct Main {
 		if (classSegment.endsWith(";")) {
 			auto substring = classSegment.substring(0, classSegment.length() - 1);
 			auto index = substring.indexOf('=');
-			if (index != -1) {
+			if (index !=  - 1) {
 				auto definition = substring.substring(0, index);
 				auto compiled = compileValue(depth, substring.substring(index + 1));
 				return "\n\t" + compileDefinition(definition).orElseGet(() -> invalidate("definition", definition)) + " = " + compiled + ";";
 			}
 		}
 		auto paramStart = classSegment.indexOf('(');
-		if (paramStart != -1) {
+		if (paramStart !=  - 1) {
 			auto beforeParamStart = classSegment.substring(0, paramStart);
 			auto afterParamStart = classSegment.substring(paramStart + 1);
 			auto paramEnd = afterParamStart.indexOf(')');
-			if (paramEnd != -1) {
+			if (paramEnd !=  - 1) {
 				auto nameSeparator = beforeParamStart.lastIndexOf(' ');
-				if (nameSeparator != -1) {
+				if (nameSeparator !=  - 1) {
 					auto beforeName = beforeParamStart.substring(0, nameSeparator);
 					auto typeSeparator = beforeName.lastIndexOf(' ');
-					if (typeSeparator != -1) {
+					if (typeSeparator !=  - 1) {
 						auto type = beforeName.substring(typeSeparator + 1);
 						auto name = beforeParamStart.substring(nameSeparator + 1);
 						auto inputParams = afterParamStart.substring(0, paramEnd);
@@ -256,7 +258,7 @@ struct Main {
 			return value.get();
 		}
 		auto index1 = statement.indexOf("=");
-		if (index1 != -1) {
+		if (index1 !=  - 1) {
 			auto substring = statement.substring(0, index1);
 			auto substring1 = statement.substring(index1 + 1);
 			if (substring1.endsWith(";")) {
@@ -377,7 +379,7 @@ struct Main {
 			return Optional.empty();
 		}
 		auto substring = stripped.substring(0, stripped.length() - ")".length());
-		return findArgStart(substring).map(auto _lambda20_(auto index){
+		return findMatchingChar(substring, Main.streamReverseIndices, '(', ')', '(').map(auto _lambda20_(auto index){
 		auto caller = substring.substring(0, index);
 		auto substring1 = substring.substring(index + 1);
 		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda19_(auto value){
@@ -387,16 +389,23 @@ struct Main {
 		return newCaller + "(" + compiled + ")";
 		});
 	}
-	Optional<Integer> findArgStart(String input){
-		return IntStream.range(0, input.length()).map(auto _lambda23_(auto index){
-			return input.length() - 1 - index;
-		}).mapToObj(auto _lambda22_(auto index){
+	Optional<Integer> findMatchingChar(String input, Function<String, Stream<Integer>> streamer, char search, char enter, char exit){
+		auto queue = streamer.apply(input).map(auto _lambda21_(auto index){
 			return Tuple<>(index, input.charAt(index));
-		}).reduce(Tuple<>(Optional.empty(), 0), Main.findArgStateFold, auto _lambda21_(auto _, auto next){
-			return next;
-		}).left();
+		}).collect(Collectors.toCollection(LinkedList.new));
+		auto current = Tuple<Optional<Integer>, Integer>(Optional.empty(), 0);
+		while (!queue.isEmpty()) {
+			auto tuple = queue.pop();
+			current = findArgStateFold(current, tuple, search, enter, exit, queue);
+		}
+		return current.left();
 	}
-	Integer> findArgStateFold(Tuple<Optional<Integer>, Integer> previous, Tuple<Integer, Character> tuple){
+	Stream<Integer> streamReverseIndices(String input){
+		return IntStream.range(0, input.length()).mapToObj(auto _lambda22_(auto index){
+			return input.length() - 1 - index;
+		});
+	}
+	Integer> findArgStateFold(Tuple<Optional<Integer>, Integer> previous, Tuple<Integer, Character> tuple, char search, char enter, char exit, Deque<Tuple<Integer, Character>> queue){
 		auto previousOptional = previous.left();
 		if (previousOptional.isPresent()) {
 			return previous;
@@ -404,13 +413,20 @@ struct Main {
 		auto depth = previous.right();
 		auto i = tuple.left();
 		auto c = tuple.right();
-		if (c == '(' && depth == 0) {
+		if (c == '\'') {
+			auto popped = queue.pop();
+			if (popped.right() == '\\') {
+				queue.pop();
+			}
+			queue.pop();
+		}
+		if (c == search && depth == 0) {
 			return Tuple<>(Optional.of(i), depth);
 		}
-		if (c == ')') {
+		if (c == enter) {
 			return Tuple<>(Optional.empty(), depth + 1);
 		}
-		if (c == '(') {
+		if (c == exit) {
 			return Tuple<>(Optional.empty(), depth - 1);
 		}
 		return Tuple<>(Optional.empty(), depth);
@@ -437,14 +453,16 @@ struct Main {
 		}).or(auto _lambda29_(){
 			return compileOperator(depth, input, "+");
 		}).or(auto _lambda28_(){
-			return compileOperator(depth, input, "==");
+			return compileOperator(depth, input, "-");
 		}).or(auto _lambda27_(){
-			return compileOperator(depth, input, "!=");
+			return compileOperator(depth, input, "==");
 		}).or(auto _lambda26_(){
-			return compileOperator(depth, input, "&&");
+			return compileOperator(depth, input, "!=");
 		}).or(auto _lambda25_(){
+			return compileOperator(depth, input, "&&");
+		}).or(auto _lambda24_(){
 			return compileTernary(depth, input);
-		}).orElseGet(auto _lambda24_(){
+		}).orElseGet(auto _lambda23_(){
 			return invalidate("value", input);
 		});
 	}
@@ -477,7 +495,7 @@ struct Main {
 	}
 	Optional<String> compileAccess(int depth, String input, String slice){
 		auto index = input.lastIndexOf(slice);
-		if (index == -1) {
+		if (index ==  - 1) {
 			return Optional.empty();
 		}
 		auto substring = input.substring(0, index);
@@ -490,13 +508,13 @@ struct Main {
 	}
 	Optional<String> compileTernary(int depth, String stripped){
 		auto index3 = stripped.indexOf('?');
-		if (index3 == -1) {
+		if (index3 ==  - 1) {
 			return Optional.empty();
 		}
 		auto condition = stripped.substring(0, index3);
 		auto substring = stripped.substring(index3 + 1);
 		auto maybe = substring.indexOf(':');
-		if (maybe == -1) {
+		if (maybe ==  - 1) {
 			return Optional.empty();
 		}
 		auto ifTrue = substring.substring(0, maybe);
@@ -512,7 +530,7 @@ struct Main {
 	}
 	Optional<String> compileLambda(int depth, String input){
 		auto arrowIndex = input.indexOf("->");
-		if (arrowIndex == -1) {
+		if (arrowIndex ==  - 1) {
 			return Optional.empty();
 		}
 		auto beforeArrow = input.substring(0, arrowIndex).strip();
@@ -564,7 +582,7 @@ struct Main {
 			return Optional.empty();
 		}
 		auto withoutEnd = substring.substring(0, substring.length() - ")".length());
-		return findArgStart(withoutEnd).map(auto _lambda43_(auto index){
+		return findMatchingChar(withoutEnd, Main.streamReverseIndices, '(', ')', '(').map(auto _lambda43_(auto index){
 		auto caller = withoutEnd.substring(0, index);
 		auto compiled1 = compileType(caller.strip());
 		auto substring1 = withoutEnd.substring(index + 1);
@@ -579,7 +597,7 @@ struct Main {
 	}
 	Optional<String> compileOperator(int depth, String input, String operator){
 		auto index2 = input.indexOf(operator);
-		if (index2 == -1) {
+		if (index2 ==  - 1) {
 			return Optional.empty();
 		}
 		auto compiled = compileValue(depth, input.substring(0, index2));
@@ -605,22 +623,14 @@ struct Main {
 	Optional<String> compileDefinition(String input){
 		auto stripped = input.strip();
 		auto separator = stripped.lastIndexOf(' ');
-		if (separator == -1) {
+		if (separator ==  - 1) {
 			return Optional.empty();
 		}
 		auto inputParamType = stripped.substring(0, separator);
 		auto paramName = stripped.substring(separator + 1);
-		auto index = -1;
-		auto depth = 0;for (int i = 0; i < inputParamType.length(); i++) {
-            var c = inputParamType.charAt(i);
-            if (c == ' ' && depth == 0) {
-                index = i;
-            } else {
-                if (c == '>') depth++;
-                if (c == '<') depth--;
-            }
-        }
-		auto inputParamType1 = index == -1 ? inputParamType : inputParamType.substring(index + 1);
+		auto inputParamType1 = findMatchingChar(inputParamType, Main.streamReverseIndices, ' ', '>', '<').map(auto _lambda45_(auto index){
+			return inputParamType.substring(index + 1);
+		}).orElse(inputParamType);
 		auto outputParamType = compileType(inputParamType1);
 		return Optional.of(outputParamType + " " + paramName);
 	}
@@ -631,15 +641,15 @@ struct Main {
 		if (input.endsWith("[]")) {
 			return "Slice<" + input.substring(0, input.length() - "[]".length()) + ">";
 		}
-		return compileGenericType(input).or(auto _lambda46_(){
+		return compileGenericType(input).or(auto _lambda47_(){
 			return compileSymbol(input);
-		}).orElseGet(auto _lambda45_(){
+		}).orElseGet(auto _lambda46_(){
 			return invalidate("type", input);
 		});
 	}
 	Optional<String> compileGenericType(String input){
 		auto genStart = input.indexOf("<");
-		if (genStart == -1) {
+		if (genStart ==  - 1) {
 			return Optional.empty();
 		}
 		auto caller = input.substring(0, genStart);
@@ -664,7 +674,7 @@ struct Main {
 			}
 			else {
 				buffer.append(c);
-				if (c == '-') {
+				if (c == ' - ') {
 					if (!queue.isEmpty() && queue.peek() == '>') {
 						buffer.append(queue.pop());
 					}

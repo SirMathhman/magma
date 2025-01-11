@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
@@ -380,7 +382,7 @@ public class Main {
         final var stripped = statement.strip();
         if (!stripped.endsWith(")")) return Optional.empty();
         final var substring = stripped.substring(0, stripped.length() - ")".length());
-        return findArgStart(substring).map(index -> {
+        return findMatchingChar(substring, Main::streamReverseIndices, '(', ')', '(').map(index -> {
             final var caller = substring.substring(0, index);
             final var substring1 = substring.substring(index + 1);
             final var compiled = splitAndCompile(Main::splitByValues,
@@ -392,15 +394,37 @@ public class Main {
         });
     }
 
-    private static Optional<Integer> findArgStart(String input) {
-        return IntStream.range(0, input.length())
-                .map(index -> input.length() - 1 - index)
-                .mapToObj(index -> new Tuple<>(index, input.charAt(index)))
-                .reduce(new Tuple<>(Optional.empty(), 0), Main::findArgStateFold, (_, next) -> next)
-                .left();
+    private static Optional<Integer> findMatchingChar(
+            String input,
+            Function<String, Stream<Integer>> streamer,
+            char search,
+            char enter,
+            char exit
+    ) {
+        final var queue = streamer.apply(input)
+                .map(index -> new Tuple<>(index, input.charAt(index)))
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        var current = new Tuple<Optional<Integer>, Integer>(Optional.empty(), 0);
+        while (!queue.isEmpty()) {
+            final var tuple = queue.pop();
+            current = findArgStateFold(current, tuple, search, enter, exit, queue);
+        }
+
+        return current.left();
     }
 
-    private static Tuple<Optional<Integer>, Integer> findArgStateFold(Tuple<Optional<Integer>, Integer> previous, Tuple<Integer, Character> tuple) {
+    private static Stream<Integer> streamReverseIndices(String input) {
+        return IntStream.range(0, input.length()).mapToObj(index -> input.length() - 1 - index);
+    }
+
+    private static Tuple<Optional<Integer>, Integer> findArgStateFold(
+            Tuple<Optional<Integer>, Integer> previous,
+            Tuple<Integer, Character> tuple,
+            char search,
+            char enter,
+            char exit,
+            Deque<Tuple<Integer, Character>> queue) {
         final var previousOptional = previous.left();
         if (previousOptional.isPresent()) return previous;
 
@@ -408,9 +432,17 @@ public class Main {
         final var i = tuple.left();
         final var c = tuple.right();
 
-        if (c == '(' && depth == 0) return new Tuple<>(Optional.of(i), depth);
-        if (c == ')') return new Tuple<>(Optional.empty(), depth + 1);
-        if (c == '(') return new Tuple<>(Optional.empty(), depth - 1);
+        if (c == '\'') {
+            final var popped = queue.pop();
+            if (popped.right() == '\\') {
+                queue.pop();
+            }
+            queue.pop();
+        }
+
+        if (c == search && depth == 0) return new Tuple<>(Optional.of(i), depth);
+        if (c == enter) return new Tuple<>(Optional.empty(), depth + 1);
+        if (c == exit) return new Tuple<>(Optional.empty(), depth - 1);
         return new Tuple<>(Optional.empty(), depth);
     }
 
@@ -541,7 +573,7 @@ public class Main {
         if (!substring.endsWith(")")) return Optional.empty();
         final var withoutEnd = substring.substring(0, substring.length() - ")".length());
 
-        return findArgStart(withoutEnd).map(index -> {
+        return findMatchingChar(withoutEnd, Main::streamReverseIndices, '(', ')', '(').map(index -> {
             final var caller = withoutEnd.substring(0, index);
             final var compiled1 = compileType(caller.strip());
 
@@ -595,21 +627,9 @@ public class Main {
         final var inputParamType = stripped.substring(0, separator);
         final var paramName = stripped.substring(separator + 1);
 
-        var index = -1;
-        var depth = 0;
-        for (int i = 0; i < inputParamType.length(); i++) {
-            var c = inputParamType.charAt(i);
-            if (c == ' ' && depth == 0) {
-                index = i;
-            } else {
-                if (c == '>') depth++;
-                if (c == '<') depth--;
-            }
-        }
-
-        final var inputParamType1 = index == -1
-                ? inputParamType
-                : inputParamType.substring(index + 1);
+        final var inputParamType1 = findMatchingChar(inputParamType, Main::streamReverseIndices, ' ', '>', '<')
+                .map(index -> inputParamType.substring(index + 1))
+                .orElse(inputParamType);
 
         final var outputParamType = compileType(inputParamType1);
         return Optional.of(outputParamType + " " + paramName);
