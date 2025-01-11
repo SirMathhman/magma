@@ -7,10 +7,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -67,18 +70,34 @@ public class Main {
     }
 
     private static String compile(String root) {
-        return splitAndCompile(Main::splitByStatements, Main::compileRootMember, root);
+        return splitAndCompile(Main::splitByStatements, Main::compileRootMember, Main::merge, root);
     }
 
-    private static String splitAndCompile(Function<String, List<String>> splitter, Function<String, String> compiler, String input) {
+    private static String splitAndCompile(
+            Function<String, List<String>> splitter,
+            Function<String, String> compiler,
+            BiFunction<StringBuilder, String, StringBuilder> merger,
+            String input
+    ) {
         final var segments = splitter.apply(input);
-        final var output = new StringBuilder();
+        var output = Optional.<StringBuilder>empty();
         for (String segment : segments) {
             final var stripped = segment.strip();
             if (stripped.isEmpty()) continue;
-            output.append(compiler.apply(stripped));
+
+            final var compiled = compiler.apply(stripped);
+            if (output.isEmpty()) {
+                output = Optional.of(new StringBuilder(compiled));
+            } else {
+                output = output.map(inner -> merger.apply(inner, stripped));
+            }
         }
-        return output.toString();
+
+        return output.map(StringBuilder::toString).orElse("");
+    }
+
+    private static StringBuilder merge(StringBuilder inner, String stripped) {
+        return inner.append(stripped);
     }
 
     private static List<String> splitByStatements(String root) {
@@ -148,7 +167,7 @@ public class Main {
             if (contentStartIndex != -1) {
                 final var name = withoutKeyword.substring(0, contentStartIndex).strip();
                 final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
-                final var compiled = splitAndCompile(Main::splitByStatements, Main::compileClassSegment, content);
+                final var compiled = splitAndCompile(Main::splitByStatements, Main::compileClassSegment, Main::merge, content);
                 return "struct " + name + " {" + compiled + "\n}";
             }
         }
@@ -171,7 +190,7 @@ public class Main {
             if (index != -1) {
                 final var definition = substring.substring(0, index);
                 final var compiled = compileValue(substring.substring(index + 1));
-                return "\n\t" + compileDefinition(definition) + " = " + compiled + ";";
+                return "\n\t" + compileDefinition(definition).orElseGet(() -> invalidate("definition", definition)) + " = " + compiled + ";";
             }
         }
 
@@ -193,7 +212,7 @@ public class Main {
                         final var afterParams = afterParamStart.substring(paramEnd + 1).strip();
                         if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
                             final var inputContent = afterParams.substring(1, afterParams.length() - 1);
-                            final var outputContent = splitAndCompile(Main::splitByStatements, Main::compileStatement, inputContent);
+                            final var outputContent = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::merge, inputContent);
 
                             final var inputParamsList = splitByValues(inputParams);
                             final var outputParams = compileParams(inputParamsList);
@@ -208,8 +227,9 @@ public class Main {
     }
 
     private static String compileStatement(String statement) {
-        if (statement.startsWith("for")) return "\n\t\tfor(;;){\nt\t\t}";
-        if (statement.startsWith("while")) return "\n\t\twhile(1){\nt\t\t}";
+        if (statement.startsWith("for")) return "\n\t\tfor (;;) {\n\t\t}";
+        if (statement.startsWith("while")) return "\n\t\twhile (1) {\n\t\t}";
+        if (statement.startsWith("else")) return "\n\t\telse {\n\t\t}";
 
         if (statement.startsWith("return ")) {
             final var substring = statement.substring("return ".length());
@@ -250,10 +270,15 @@ public class Main {
             final var substring = statement.substring(0, index1);
             final var substring1 = statement.substring(index1 + 1);
             if (substring1.endsWith(";")) {
-                final var compiled = compileDefinition(substring);
+                final var compiled = compileDefinition(substring).orElseGet(() -> invalidate("definition", substring));
                 final var compiled1 = compileValue(substring1.substring(0, substring1.length() - ";".length()).strip());
                 return "\n\t\t" + compiled + " = " + compiled1 + ";";
             }
+        }
+
+        if (statement.endsWith(";")) {
+            final var optional = compileDefinition(statement.substring(0, statement.length() - 1));
+            if (optional.isPresent()) return optional.get();
         }
 
         if (statement.endsWith(";")) {
@@ -270,7 +295,7 @@ public class Main {
         return findArgStart(substring).map(index -> {
             final var caller = substring.substring(0, index);
             final var substring1 = substring.substring(index + 1);
-            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip()), substring1);
+            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip()), (inner, stripped) -> inner.append(", ").append(stripped), substring1);
 
             final var newCaller = compileValue(caller.strip());
             return newCaller + "(" + compiled + ")";
@@ -297,36 +322,16 @@ public class Main {
 
         if (input.startsWith("!")) return "!" + compileValue(input.substring(1));
 
-        if (input.startsWith("new ")) {
-            final var substring = input.substring("new ".length());
-            final var optional = compileInvocation(substring);
-            if (optional.isPresent()) {
-                return optional.get();
-            }
-        }
+        final var optional3 = compileConstruction(input);
+        if (optional3.isPresent()) return optional3.get();
 
         final var stripped = input.strip();
         if (stripped.startsWith("\"") && stripped.endsWith("\"")) return stripped;
 
         if (stripped.startsWith("'") && stripped.endsWith("'")) return stripped;
 
-        final var index2 = input.indexOf("->");
-        if (index2 != -1) {
-            final var name = input.substring(0, index2).strip();
-            if (isSymbol(name)) {
-                final var substring = input.substring(index2 + "->".length()).strip();
-
-                final String compiled;
-                if (substring.startsWith("{") && substring.endsWith("}")) {
-                    final var substring1 = substring.substring(1, substring.length() - 1);
-                    compiled = splitAndCompile(Main::splitByStatements, Main::compileStatement, substring1);
-                } else {
-                    compiled = "return " + compileValue(substring) + ";";
-                }
-
-                return "auto __lambda__(auto " + name + "){" + compiled + "}";
-            }
-        }
+        final var nameSlice = compileLambda(input);
+        if (nameSlice.isPresent()) return nameSlice.get();
 
         final var optional1 = compileInvocation(input);
         if (optional1.isPresent()) return optional1.get();
@@ -369,6 +374,61 @@ public class Main {
         return invalidate("value", input);
     }
 
+    private static Optional<String> compileLambda(String input) {
+        final var arrowIndex = input.indexOf("->");
+        if (arrowIndex == -1) return Optional.empty();
+        final var beforeArrow = input.substring(0, arrowIndex).strip();
+        final var afterArrow = input.substring(arrowIndex + "->".length()).strip();
+
+        final var maybeNames = findLambdaNames(beforeArrow);
+        if (maybeNames.isEmpty()) return Optional.empty();
+
+        final String compiled;
+        if (afterArrow.startsWith("{") && afterArrow.endsWith("}")) {
+            final var substring1 = afterArrow.substring(1, afterArrow.length() - 1);
+            compiled = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::merge, substring1);
+        } else {
+            compiled = "return " + compileValue(afterArrow) + ";";
+        }
+
+        final var joinedNames = maybeNames.stream()
+                .map(name -> "auto " + name)
+                .collect(Collectors.joining(", "));
+
+        return Optional.of("auto __lambda__(" + joinedNames + "){" + compiled + "}");
+    }
+
+    private static Optional<List<String>> findLambdaNames(String nameSlice) {
+        if (nameSlice.isEmpty()) return Optional.of(Collections.emptyList());
+        if (isSymbol(nameSlice)) return Optional.of(List.of(nameSlice));
+
+        if (!nameSlice.startsWith("(") || !nameSlice.endsWith(")")) return Optional.empty();
+
+        final var args = nameSlice.substring(1, nameSlice.length() - 1).split(",");
+        return Optional.of(Arrays.stream(args)
+                .map(String::strip)
+                .filter(value -> !value.isEmpty())
+                .toList());
+    }
+
+    private static Optional<String> compileConstruction(String input) {
+        if (!input.startsWith("new ")) return Optional.empty();
+        final var substring = input.substring("new ".length());
+
+        if (!substring.endsWith(")")) return Optional.empty();
+        final var substring2 = substring.substring(0, substring.length() - ")".length());
+
+        return findArgStart(substring2).map(index -> {
+            final var caller = substring2.substring(0, index);
+            final var compiled1 = compileType(caller.strip());
+
+            final var substring1 = substring2.substring(index + 1);
+            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(value.strip()), Main::merge, substring1);
+
+            return compiled1 + "(" + compiled + ")";
+        });
+    }
+
     private static Optional<String> compileOperator(String input, String operator) {
         final var index2 = input.indexOf(operator);
         if (index2 == -1) return Optional.empty();
@@ -406,7 +466,9 @@ public class Main {
             final var stripped = inputParam.strip();
             if (stripped.isEmpty()) continue;
 
-            final var outputParam = compileDefinition(stripped);
+            final var outputParam = compileDefinition(stripped)
+                    .orElseGet(() -> invalidate("definition", stripped));
+
             maybeOutputParams = maybeOutputParams
                     .map(stringBuilder -> stringBuilder.append(", ").append(outputParam))
                     .or(() -> Optional.of(new StringBuilder(outputParam)));
@@ -415,13 +477,10 @@ public class Main {
         return maybeOutputParams.map(StringBuilder::toString).orElse("");
     }
 
-    private static String compileDefinition(String input) {
+    private static Optional<String> compileDefinition(String input) {
         final var stripped = input.strip();
         final var separator = stripped.lastIndexOf(' ');
-        if (separator == -1) {
-            System.err.println("Invalid param: " + stripped);
-            return stripped;
-        }
+        if (separator == -1) return Optional.empty();
 
         final var inputParamType = stripped.substring(0, separator);
         final var paramName = stripped.substring(separator + 1);
@@ -443,7 +502,7 @@ public class Main {
                 : inputParamType.substring(index + 1);
 
         final var outputParamType = compileType(inputParamType1);
-        return outputParamType + " " + paramName;
+        return Optional.of(outputParamType + " " + paramName);
     }
 
     private static String compileType(String input) {
@@ -456,7 +515,7 @@ public class Main {
             final var substring = input.substring(genStart + 1);
             if (substring.endsWith(">")) {
                 final var substring1 = substring.substring(0, substring.length() - ">".length());
-                final var s = splitAndCompile(Main::splitByValues, Main::compileType, substring1);
+                final var s = splitAndCompile(Main::splitByValues, Main::compileType, Main::merge, substring1);
                 return caller + "<" + s + ">";
             }
         }
