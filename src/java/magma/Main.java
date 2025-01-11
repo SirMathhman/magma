@@ -277,13 +277,13 @@ public class Main {
         }
 
         if (statement.endsWith(";")) {
-            final var optional = compileDefinition(statement.substring(0, statement.length() - 1));
-            if (optional.isPresent()) return optional.get();
+            final var newCaller = compileInvocation(statement.substring(0, statement.length() - ";".length()));
+            if (newCaller.isPresent()) return "\n\t\t" + newCaller.get() + ";";
         }
 
         if (statement.endsWith(";")) {
-            final var newCaller = compileInvocation(statement.substring(0, statement.length() - ";".length()));
-            if (newCaller.isPresent()) return "\n\t\t" + newCaller.get() + ";";
+            final var optional = compileDefinition(statement.substring(0, statement.length() - 1));
+            if (optional.isPresent()) return optional.get();
         }
 
         return invalidate("statement", statement);
