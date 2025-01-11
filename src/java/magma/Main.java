@@ -426,6 +426,7 @@ public class Main {
                 .or(() -> compileAccess(depth, input, "."))
                 .or(() -> compileAccess(depth, input, "::"))
                 .or(() -> compileOperator(depth, input, "+"))
+                .or(() -> compileOperator(depth, input, "-"))
                 .or(() -> compileOperator(depth, input, "=="))
                 .or(() -> compileOperator(depth, input, "!="))
                 .or(() -> compileOperator(depth, input, "&&"))
