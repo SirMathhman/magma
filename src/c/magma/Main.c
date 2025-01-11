@@ -17,6 +17,7 @@ import java.util.stream.IntStream;
 struct Main {
 	Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
 	Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
+	int counter = 0;
 	void main(Slice<String> args){
 		JavaPaths.collect()
                 .match(Main::compileSources, Optional::of)
@@ -42,7 +43,9 @@ struct Main {
 		auto name = relative.getFileName().toString();
 		auto nameWithoutExt = name.substring(0, name.indexOf('.'));
 		auto target = targetParent.resolve(nameWithoutExt + ".c");
-		return JavaPaths.readSafe(source).match(auto __lambda__(auto input){return JavaPaths.writeSafe(target, compile(input));}, Optional.of);
+		return JavaPaths.readSafe(source).match(auto _lambda0_(auto input){
+			return JavaPaths.writeSafe(target, compile(input));
+		}, Optional.of);
 	}
 	List<String> convertPathToList(Path parent){
 		return IntStream.range(0, parent.getNameCount())
@@ -129,12 +132,17 @@ struct Main {
 		if(!statement.endsWith(")"){
 		}
 		auto substring = statement.substring(0, statement.length() - ")".length());
-		return findArgStart(substring).map(auto __lambda__(auto index){
+		return findArgStart(substring).map(auto _lambda3_(auto index){
 		auto caller = substring.substring(0, index);
 		auto substring1 = substring.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto __lambda__(auto value){return compileValue(value.strip());}, auto __lambda__(auto inner, auto stripped){return inner.append(", ").append(stripped);}, substring1);
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda1_(auto value){
+			return compileValue(value.strip());
+		}, auto _lambda2_(auto inner, auto stripped){
+			return inner.append(", ").append(stripped);
+		}, substring1);
 		auto newCaller = compileValue(caller.strip());
-		return newCaller + "(" + compiled + ")";});
+		return newCaller + "(" + compiled + ")";
+		});
 	}
 	Optional<Integer> findArgStart(String substring){
 		auto depth = 0;
@@ -199,7 +207,11 @@ struct Main {
 		auto joinedNames = maybeNames.get().stream()
                 .map(name -> "auto " + name)
                 .collect(Collectors.joining(", "));
-		return Optional.of("auto __lambda__(" + joinedNames + "){" + compiled + "}");
+		return Optional.of("auto " + getLambda__() + "(" + joinedNames + "){" + compiled + "\n\t\t}");
+	}
+	String getLambda__(){
+		auto lambda = "_lambda" + counter + "_";counter++;
+		return lambda;
 	}
 	Optional<List<String>> findLambdaNames(String nameSlice){
 		if(nameSlice.isEmpty()){
@@ -221,12 +233,15 @@ struct Main {
 		if(!substring.endsWith(")"){
 		}
 		auto substring2 = substring.substring(0, substring.length() - ")".length());
-		return findArgStart(substring2).map(auto __lambda__(auto index){
+		return findArgStart(substring2).map(auto _lambda5_(auto index){
 		auto caller = substring2.substring(0, index);
 		auto compiled1 = compileType(caller.strip());
 		auto substring1 = substring2.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto __lambda__(auto value){return compileValue(value.strip());}, Main.merge, substring1);
-		return compiled1 + "(" + compiled + ")";});
+		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda4_(auto value){
+			return compileValue(value.strip());
+		}, Main.merge, substring1);
+		return compiled1 + "(" + compiled + ")";
+		});
 	}
 	Optional<String> compileOperator(String input, String operator){
 		auto index2 = input.indexOf(operator);

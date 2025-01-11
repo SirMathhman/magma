@@ -21,6 +21,7 @@ import java.util.stream.IntStream;
 public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
+    private static int counter = 0;
 
     public static void main(String[] args) {
         JavaPaths.collect()
@@ -388,14 +389,20 @@ public class Main {
             final var substring1 = afterArrow.substring(1, afterArrow.length() - 1);
             compiled = splitAndCompile(Main::splitByStatements, Main::compileStatement, Main::merge, substring1);
         } else {
-            compiled = "return " + compileValue(afterArrow) + ";";
+            compiled = "\n\t\t\treturn " + compileValue(afterArrow) + ";";
         }
 
         final var joinedNames = maybeNames.get().stream()
                 .map(name -> "auto " + name)
                 .collect(Collectors.joining(", "));
 
-        return Optional.of("auto __lambda__(" + joinedNames + "){" + compiled + "}");
+        return Optional.of("auto " + getLambda__() + "(" + joinedNames + "){" + compiled + "\n\t\t}");
+    }
+
+    private static String getLambda__() {
+        final var lambda = "_lambda" + counter + "_";
+        counter++;
+        return lambda;
     }
 
     private static Optional<List<String>> findLambdaNames(String nameSlice) {
