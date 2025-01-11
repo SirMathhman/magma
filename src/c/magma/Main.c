@@ -661,7 +661,7 @@ struct Main {
 		auto outputArgs = splitAndCompile(Main.splitByValues, Main.compileType, Main.mergeValues, inputArgs);
 		return Optional.of(caller + "<" + outputArgs + ">");
 	}
-	ArrayList<String> splitByValues(String inputParams){
+	List<String> splitByValues(String inputParams){
 		auto inputParamsList = ArrayList<String>();
 		auto buffer = StringBuilder();
 		auto depth = 0;

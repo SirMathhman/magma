@@ -1,6 +1,7 @@
 package magma;
 
 import magma.java.JavaPaths;
+import magma.java.JavaSet;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,7 +14,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -27,15 +27,18 @@ public class Main {
 
     public static void main(String[] args) {
         JavaPaths.collect()
-                .match(Main::compileSources, Optional::of)
+                .mapValue(JavaSet::new)
+                .match(Main::compileSources, Some::new)
                 .ifPresent(Throwable::printStackTrace);
     }
 
-    private static Optional<IOException> compileSources(Set<Path> sources) {
+    private static Option<IOException> compileSources(JavaSet<Path> sources) {
         return sources.stream()
                 .map(Main::compileSource)
                 .flatMap(Optional::stream)
-                .findFirst();
+                .findFirst()
+                .<Option<IOException>>map(Some::new)
+                .orElseGet(None::new);
     }
 
     private static Optional<IOException> compileSource(Path source) {
@@ -658,7 +661,7 @@ public class Main {
         return Optional.of(caller + "<" + outputArgs + ">");
     }
 
-    private static ArrayList<String> splitByValues(String inputParams) {
+    private static List<String> splitByValues(String inputParams) {
         final var inputParamsList = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
