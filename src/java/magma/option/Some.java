@@ -49,11 +49,16 @@ public record Some<T>(T value) implements Option<T> {
 
     @Override
     public T unwrap() {
-        return value;
+        return this.value;
     }
 
     @Override
     public T orElse(T other) {
-        return value;
+        return this.value;
+    }
+
+    @Override
+    public <R> Option<R> flatMap(Function<T, Option<R>> mapper) {
+        return mapper.apply(this.value);
     }
 }
