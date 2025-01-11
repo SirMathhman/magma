@@ -291,15 +291,16 @@ public class Main {
             if (newCaller.isPresent()) return generateStatement(depth, newCaller.unwrap());
         }
 
-        if (statement.endsWith(";")) {
-            final var Option = compileDefinition(statement.substring(0, statement.length() - 1));
-            if (Option.isPresent()) return Option.unwrap();
-        }
-
-        return compilePostfix(statement, "--", depth)
+        return compileDefinitionStatement(statement)
+                .or(() -> compilePostfix(statement, "--", depth))
                 .or(() -> compilePostfix(statement, "++", depth))
                 .orElseGet(() -> invalidate("statement", statement));
 
+    }
+
+    private static Option<String> compileDefinitionStatement(String statement) {
+        if (!statement.endsWith(";")) return new None<>();
+        return compileDefinition(statement.substring(0, statement.length() - 1));
     }
 
     private static Option<String> compilePostfix(String statement, String suffix, int depth) {

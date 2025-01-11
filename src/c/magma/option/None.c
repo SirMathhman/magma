@@ -21,4 +21,16 @@ struct None<T> implements Option<T> {public None() {
 	Option<T> or(Supplier<Option<T>> other){
 		return other.get();
 	}
+	boolean isEmpty(){
+		return true;
+	}
+	boolean isPresent(){
+		return false;
+	}
+	T unwrap(){
+		throw new UnsupportedOperationException();
+	}
+	T orElse(T other){
+		return other;
+	}
 }

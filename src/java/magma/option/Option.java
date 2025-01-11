@@ -23,6 +23,7 @@ public interface Option<T> {
 
     boolean isPresent();
 
+    @Deprecated
     T unwrap();
 
     T orElse(T other);
