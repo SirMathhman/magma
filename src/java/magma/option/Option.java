@@ -27,4 +27,6 @@ public interface Option<T> {
     T unwrap();
 
     T orElse(T other);
+
+    <R> Option<R> flatMap(Function<T, Option<R>> mapper);
 }

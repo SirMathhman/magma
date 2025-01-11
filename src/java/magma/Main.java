@@ -323,27 +323,25 @@ public class Main {
         if (!statement.startsWith(prefix)) return new None<>();
         final var withoutKeyword = statement.substring(prefix.length());
 
-        final var maybeParamEnd = findConditionParamEnd(withoutKeyword);
-        if (maybeParamEnd.isEmpty()) return new None<>();
+        return findConditionParamEnd(withoutKeyword).flatMap(paramEnd -> {
+            final var conditionWithEnd = withoutKeyword.substring(0, paramEnd).strip();
+            final var content = withoutKeyword.substring(paramEnd + 1).strip();
 
-        final var paramEnd = maybeParamEnd.unwrap();
-        final var conditionWithEnd = withoutKeyword.substring(0, paramEnd).strip();
-        final var content = withoutKeyword.substring(paramEnd + 1).strip();
+            if (!conditionWithEnd.startsWith("(")) return new None<>();
 
-        if (!conditionWithEnd.startsWith("(")) return new None<>();
+            final var condition = conditionWithEnd.substring(1);
+            final var value = compileValue(depth, condition);
+            final String outputContent;
+            if (content.startsWith("{") && content.endsWith("}")) {
+                final var substring = content.substring(1, content.length() - 1);
+                outputContent = splitAndCompile(Main::splitByStatements, statement1 -> compileStatement(statement1, depth + 1), Main::mergeStatements, substring);
+            } else {
+                outputContent = compileStatement(content, depth + 1);
+            }
 
-        final var condition = conditionWithEnd.substring(1);
-        final var value = compileValue(depth, condition);
-        final String outputContent;
-        if (content.startsWith("{") && content.endsWith("}")) {
-            final var substring = content.substring(1, content.length() - 1);
-            outputContent = splitAndCompile(Main::splitByStatements, statement1 -> compileStatement(statement1, depth + 1), Main::mergeStatements, substring);
-        } else {
-            outputContent = compileStatement(content, depth + 1);
-        }
-
-        final var indent = "\n" + "\t".repeat(depth);
-        return new Some<>(indent + prefix + " (" + value + ") {" + outputContent + indent + "}");
+            final var indent = "\n" + "\t".repeat(depth);
+            return new Some<>(indent + prefix + " (" + value + ") {" + outputContent + indent + "}");
+        });
     }
 
     private static Option<Integer> findConditionParamEnd(String input) {
@@ -550,11 +548,13 @@ public class Main {
             compiled = generateReturn(compileValue(depth, afterArrow), depth + 1);
         }
 
-        final var joinedNames = maybeNames.unwrap().stream()
-                .map(name -> "auto " + name)
-                .collect(Collectors.joining(", "));
+        return maybeNames.map(names -> {
+            final var joinedNames = names.stream()
+                    .map(name -> "auto " + name)
+                    .collect(Collectors.joining(", "));
 
-        return new Some<>("auto " + createUniqueName() + "(" + joinedNames + "){" + compiled + "\n" + "\t".repeat(depth) + "}");
+            return "auto " + createUniqueName() + "(" + joinedNames + "){" + compiled + "\n" + "\t".repeat(depth) + "}";
+        });
     }
 
     private static String createUniqueName() {
