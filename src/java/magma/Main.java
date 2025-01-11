@@ -240,7 +240,19 @@ public class Main {
         if (statement.strip().equals("break;")) return generateStatement(depth, "break");
 
         if (statement.startsWith("for")) return "\n\t\tfor (;;) {\n\t\t}";
-        if (statement.startsWith("else")) return "\n\t\telse {\n\t\t}";
+        if (statement.startsWith("else")) {
+            final var substring = statement.substring("else".length()).strip();
+            final String output;
+            if (substring.startsWith("{") && substring.endsWith("}")) {
+                final var substring1 = substring.substring(1, substring.length() - 1);
+                output = splitAndCompile(Main::splitByStatements, statement0 -> compileStatement(statement0, depth + 1), Main::mergeStatements, substring1);
+            } else {
+                output = compileStatement(substring, depth + 1);
+            }
+
+            final var indent = "\n" + "\t".repeat(depth);
+            return indent + "else {" + output + indent + "}";
+        }
 
         if (statement.startsWith("return ")) {
             final var substring = statement.substring("return ".length());
@@ -280,12 +292,18 @@ public class Main {
             if (optional.isPresent()) return optional.get();
         }
 
-        if (statement.endsWith("++;")) {
-            final var substring = statement.substring(0, statement.length() - "++;".length());
-            return compileValue(substring, 2) + "++;";
-        }
+        return compilePostfix(statement, "--", depth)
+                .or(() -> compilePostfix(statement, "++", depth))
+                .orElseGet(() -> invalidate("statement", statement));
 
-        return invalidate("statement", statement);
+    }
+
+    private static Optional<String> compilePostfix(String statement, String suffix, int depth) {
+        final var joined = suffix + ";";
+        if (!statement.endsWith(joined)) return Optional.empty();
+
+        final var substring = statement.substring(0, statement.length() - (joined).length());
+        return Optional.of(generateStatement(depth, compileValue(substring, depth) + suffix));
     }
 
     private static String generateStatement(int depth, String content) {
