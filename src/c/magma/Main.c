@@ -39,7 +39,7 @@ t		}
 		auto name = relative.getFileName().toString();
 		auto nameWithoutExt = name.substring(0name.indexOf('.'));
 		auto target = targetParent.resolve(nameWithoutExt + ".c");
-		return auto __lambda__(auto JavaPaths.readSafe(source).match(input){return JavaPaths.writeSafe(target, compile(input)), Optional::of);};
+		return JavaPaths.readSafe(source).match(auto __lambda__(auto input){return JavaPaths.writeSafe(targetcompile(input));}Optional.of);
 	}
 	List<String> convertPathToList(Path parent){
 		return IntStream.range(0, parent.getNameCount())
@@ -119,14 +119,12 @@ t		}
 		if(!statement.endsWith(")"){
 		}
 		auto substring = statement.substring(0, statement.length() - ")".length());
-		return auto __lambda__(auto findArgStart(substring).map(index){return auto __lambda__(auto {
-            final var caller = substring.substring(0, index);
-            final var substring1 = substring.substring(index + 1);
-            final var compiled = splitAndCompile(Main::splitByValues, value){return compileValue(value.strip()), substring1);
-
-            final var newCaller = compileValue(caller.strip());
-            return newCaller + "(" + compiled + ")";
-        });};};
+		return findArgStart(substring).map(auto __lambda__(auto index){
+		auto caller = substring.substring(0index);
+		auto substring1 = substring.substring(index + 1);
+		auto compiled = splitAndCompile(Main.splitByValuesauto __lambda__(auto value){return compileValue(value.strip());}substring1);
+		auto newCaller = compileValue(caller.strip());
+		return newCaller + "(" + compiled + ")";});
 	}
 	Optional<Integer> findArgStart(String substring){
 		auto depth = 0;
@@ -148,7 +146,7 @@ t		}
 		}
 		if(stripped.startsWith("'") && stripped.endsWith("'")){
 		}
-		auto index2 = auto __lambda__(auto input.indexOf("){return ");};
+		auto index2 = input.indexOf("->");
 		if(index2 != -1){
 		}
 		auto optional1 = compileInvocation(input);

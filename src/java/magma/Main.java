@@ -313,16 +313,19 @@ public class Main {
         final var index2 = input.indexOf("->");
         if (index2 != -1) {
             final var name = input.substring(0, index2).strip();
-            final var substring = input.substring(index2 + "->".length()).strip();
+            if (isSymbol(name)) {
+                final var substring = input.substring(index2 + "->".length()).strip();
 
-            final String compiled;
-            if (substring.startsWith("{") && substring.endsWith("}")) {
-                final var substring1 = substring.substring(1, substring.length() - 1);
-                compiled = splitAndCompile(Main::splitByStatements, Main::compileStatement, substring1);
-            } else {
-                compiled = "return " + compileValue(substring) + ";";
+                final String compiled;
+                if (substring.startsWith("{") && substring.endsWith("}")) {
+                    final var substring1 = substring.substring(1, substring.length() - 1);
+                    compiled = splitAndCompile(Main::splitByStatements, Main::compileStatement, substring1);
+                } else {
+                    compiled = "return " + compileValue(substring) + ";";
+                }
+
+                return "auto __lambda__(auto " + name + "){" + compiled + "}";
             }
-            return "auto __lambda__(auto " + name + "){" + compiled + "}";
         }
 
         final var optional1 = compileInvocation(input);
