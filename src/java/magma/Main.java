@@ -243,30 +243,8 @@ public class Main {
             }
         }
 
-        if (statement.startsWith("if")) {
-            final var substring = statement.substring("if".length());
-            var index = -1;
-            var depth = 0;
-            for (int i = 0; i < substring.length(); i++) {
-                final var c = substring.charAt(i);
-                if (c == ')' && depth == 1) {
-                    index = i;
-                    break;
-                } else {
-                    if (c == '(') depth++;
-                    if (c == ')') depth--;
-                }
-            }
-
-            if (index != -1) {
-                final var substring1 = substring.substring(0, index).strip();
-                if (substring1.startsWith("(")) {
-                    final var condition = substring1.substring(1);
-                    final var value = compileValue(condition);
-                    return "\n\t\tif(" + value + "){\n\t\t}";
-                }
-            }
-        }
+        final var value = compileIf(statement);
+        if (value.isPresent()) return value.get();
 
         final var index1 = statement.indexOf("=");
         if (index1 != -1) {
@@ -290,6 +268,39 @@ public class Main {
         }
 
         return invalidate("statement", statement);
+    }
+
+    private static Optional<String> compileIf(String statement) {
+        if (!statement.startsWith("if")) return Optional.empty();
+        final var withoutKeyword = statement.substring("if".length());
+
+        final var paramEnd = findConditionParamEnd(withoutKeyword);
+        if (paramEnd.isEmpty()) return Optional.empty();
+
+        final var conditionWithEnd = withoutKeyword.substring(0, paramEnd.get()).strip();
+        if (!conditionWithEnd.startsWith("(")) return Optional.empty();
+
+        final var condition = conditionWithEnd.substring(1);
+        final var value = compileValue(condition);
+
+
+        return Optional.of("\n\t\tif(" + value + "){\n\t\t}");
+    }
+
+    private static Optional<Integer> findConditionParamEnd(String substring) {
+        var index = Optional.<Integer>empty();
+        var depth = 0;
+        for (int i = 0; i < substring.length(); i++) {
+            final var c = substring.charAt(i);
+            if (c == ')' && depth == 1) {
+                index = Optional.of(i);
+                break;
+            } else {
+                if (c == '(') depth++;
+                if (c == ')') depth--;
+            }
+        }
+        return index;
     }
 
     private static Optional<String> compileInvocation(String statement) {
