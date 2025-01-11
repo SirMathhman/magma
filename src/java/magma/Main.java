@@ -89,7 +89,7 @@ public class Main {
             if (output.isEmpty()) {
                 output = Optional.of(new StringBuilder(compiled));
             } else {
-                output = output.map(inner -> merger.apply(inner, stripped));
+                output = output.map(inner -> merger.apply(inner, compiled));
             }
         }
 
