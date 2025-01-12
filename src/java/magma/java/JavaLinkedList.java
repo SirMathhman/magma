@@ -48,4 +48,10 @@ public class JavaLinkedList<T> implements Deque<T> {
     public Option<T> peek() {
         return isEmpty() ? new None<>() : new Some<>(this.list.peek());
     }
+
+    @Override
+    public Deque<T> add(T next) {
+        this.list.add(next);
+        return this;
+    }
 }

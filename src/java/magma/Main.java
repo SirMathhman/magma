@@ -7,12 +7,15 @@ import magma.io.Path;
 import magma.collect.Deque;
 import magma.java.JavaLinkedList;
 import magma.java.JavaList;
-import magma.java.JavaOptionals;
 import magma.java.JavaPaths;
 import magma.java.JavaSet;
+import magma.java.Strings;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
+import magma.split.Splitter;
+import magma.split.StatementSplitter;
+import magma.split.ValueSplitter;
 import magma.stream.ArrayHead;
 import magma.stream.Collectors;
 import magma.stream.HeadedStream;
@@ -20,7 +23,6 @@ import magma.stream.LengthHead;
 import magma.stream.Stream;
 import magma.stream.Streams;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class Main {
@@ -80,98 +82,30 @@ public class Main {
     }
 
     private static String compile(String root) {
-        return splitAndCompile(Main::splitByStatements, Main::compileRootMember, Main::mergeStatements, root);
+        return splitAndCompile(new StatementSplitter(), Main::compileRootMember, root);
     }
 
     private static String splitAndCompile(
-            Function<String, List<String>> splitter,
+            Splitter splitter,
             Function<String, String> compiler,
-            BiFunction<StringBuilder, String, StringBuilder> merger,
             String input
     ) {
-        return splitter.apply(input)
+        return splitter.split(input)
                 .stream()
                 .map(String::strip)
                 .filter(value -> !value.isEmpty())
-                .<Option<StringBuilder>>foldLeft(new None<>(), (output, stripped) -> compileAndMerge(compiler, merger, output, stripped))
+                .<Option<StringBuilder>>foldLeft(new None<>(), (output, stripped) -> compileAndMerge(splitter, compiler, output, stripped))
                 .map(StringBuilder::toString)
                 .orElse("");
     }
 
-    private static Option<StringBuilder> compileAndMerge(
-            Function<String, String> compiler,
-            BiFunction<StringBuilder, String, StringBuilder> merger,
-            Option<StringBuilder> output,
-            String stripped
-    ) {
+    private static Option<StringBuilder> compileAndMerge(Splitter splitter, Function<String, String> compiler, Option<StringBuilder> output, String stripped) {
         final var compiled = compiler.apply(stripped);
         if (output.isEmpty()) {
             return new Some<>(new StringBuilder(compiled));
         } else {
-            return output.map(inner -> merger.apply(inner, compiled));
+            return output.map(inner -> splitter.merge(inner, compiled));
         }
-    }
-
-    private static StringBuilder mergeStatements(StringBuilder inner, String stripped) {
-        return inner.append(stripped);
-    }
-
-    private static List<String> splitByStatements(String root) {
-        var segments = new JavaList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
-
-        final var queue = streamChars(root).collect(JavaLinkedList.collector());
-
-        while (!queue.isEmpty()) {
-            var c = popOrPanic(queue);
-            buffer.append(c);
-
-            if (c == '\'') {
-                final var popped = popOrPanic(queue);
-                buffer.append(popped);
-                if (popped == '\\') {
-                    buffer.append(popOrPanic(queue));
-                }
-
-                buffer.append(popOrPanic(queue));
-                continue;
-            }
-
-            if (c == '"') {
-                while (!queue.isEmpty()) {
-                    final var next = popOrPanic(queue);
-                    buffer.append(next);
-
-                    if (next == '"') break;
-                    if (next == '\\') {
-                        buffer.append(popOrPanic(queue));
-                    }
-                }
-            }
-
-            if (c == ';' && depth == 0) {
-                advance(segments, buffer);
-                buffer = new StringBuilder();
-            } else if (c == '}' && depth == 1) {
-                depth--;
-                advance(segments, buffer);
-                buffer = new StringBuilder();
-            } else {
-                if (c == '{' || c == '(') depth++;
-                if (c == '}' || c == ')') depth--;
-            }
-        }
-        advance(segments, buffer);
-        return segments;
-    }
-
-    private static <T> T popOrPanic(Deque<T> queue) {
-        return JavaOptionals.from(queue.pop()).map(Tuple::left).orElseThrow();
-    }
-
-    private static void advance(JavaList<String> segments, StringBuilder buffer) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
     private static String compileRootMember(String rootSegment) {
@@ -185,7 +119,7 @@ public class Main {
             if (contentStartIndex != -1) {
                 final var name = withoutKeyword.substring(0, contentStartIndex).strip();
                 final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
-                final var compiled = splitAndCompile(Main::splitByStatements, Main::compileClassSegment, Main::mergeStatements, content);
+                final var compiled = splitAndCompile(new StatementSplitter(), Main::compileClassSegment, content);
                 return "struct " + name + " {" + compiled + "\n}";
             }
         }
@@ -230,8 +164,8 @@ public class Main {
                         final var afterParams = afterParamStart.substring(paramEnd + 1).strip();
                         if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
                             final var inputContent = afterParams.substring(1, afterParams.length() - 1);
-                            final var outputContent = splitAndCompile(Main::splitByStatements, statement -> compileStatement(statement, 2), Main::mergeStatements, inputContent);
-                            final var outputParams = splitAndCompile(Main::splitByValues, value -> compileDefinition(value).orElseGet(() -> invalidate("definition", value)), Main::mergeValues, inputParams);
+                            final var outputContent = splitAndCompile(new StatementSplitter(), statement -> compileStatement(statement, 2), inputContent);
+                            final var outputParams = splitAndCompile(new ValueSplitter(), value -> compileDefinition(value).orElseGet(() -> invalidate("definition", value)), inputParams);
                             return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";
                         }
                     }
@@ -250,7 +184,7 @@ public class Main {
             final String output;
             if (substring.startsWith("{") && substring.endsWith("}")) {
                 final var substring1 = substring.substring(1, substring.length() - 1);
-                output = splitAndCompile(Main::splitByStatements, statement0 -> compileStatement(statement0, depth + 1), Main::mergeStatements, substring1);
+                output = splitAndCompile(new StatementSplitter(), statement0 -> compileStatement(statement0, depth + 1), substring1);
             } else {
                 output = compileStatement(substring, depth + 1);
             }
@@ -335,7 +269,7 @@ public class Main {
             final String outputContent;
             if (content.startsWith("{") && content.endsWith("}")) {
                 final var substring = content.substring(1, content.length() - 1);
-                outputContent = splitAndCompile(Main::splitByStatements, statement1 -> compileStatement(statement1, depth + 1), Main::mergeStatements, substring);
+                outputContent = splitAndCompile(new StatementSplitter(), statement1 -> compileStatement(statement1, depth + 1), substring);
             } else {
                 outputContent = compileStatement(content, depth + 1);
             }
@@ -350,24 +284,24 @@ public class Main {
 
         var depth = 0;
         while (!queue.isEmpty()) {
-            final var popped = popOrPanic(queue);
+            final var popped = queue.popOrPanic();
             final var i = popped.left();
             final var c = popped.right();
 
             if (c == '\'') {
-                final var popped1 = popOrPanic(queue).right();
+                final var popped1 = queue.popOrPanic().right();
                 if (popped1 == '\\') {
-                    popOrPanic(queue);
+                    queue.popOrPanic();
                 }
 
-                popOrPanic(queue);
+                queue.popOrPanic();
             }
 
             if (c == '"') {
                 while (!queue.isEmpty()) {
-                    final var next = popOrPanic(queue).right();
+                    final var next = queue.popOrPanic().right();
                     if (next == '"') break;
-                    if (next == '\\') popOrPanic(queue);
+                    if (next == '\\') queue.popOrPanic();
                 }
             }
 
@@ -389,9 +323,9 @@ public class Main {
         return findMatchingChar(substring, Main::streamReverseIndices, '(', ')', '(').map(index -> {
             final var caller = substring.substring(0, index);
             final var substring1 = substring.substring(index + 1);
-            final var compiled = splitAndCompile(Main::splitByValues,
-                    value -> compileValue(depth, value.strip()),
-                    Main::mergeValues, substring1);
+            final var compiled = splitAndCompile(
+                    new ValueSplitter(), value -> compileValue(depth, value.strip()),
+                    substring1);
 
             final var newCaller = compileValue(depth, caller.strip());
             return newCaller + "(" + compiled + ")";
@@ -411,7 +345,7 @@ public class Main {
 
         var current = new Tuple<Option<Integer>, Integer>(new None<>(), 0);
         while (!queue.isEmpty()) {
-            final var tuple = popOrPanic(queue);
+            final var tuple = queue.popOrPanic();
             current = findArgStateFold(current, tuple, search, enter, exit, queue);
         }
 
@@ -437,11 +371,11 @@ public class Main {
         final var c = tuple.right();
 
         if (c == '\'') {
-            final var popped = popOrPanic(queue);
+            final var popped = queue.popOrPanic();
             if (popped.right() == '\\') {
-                popOrPanic(queue);
+                queue.popOrPanic();
             }
-            popOrPanic(queue);
+            queue.popOrPanic();
         }
 
         if (c == search && depth == 0) return new Tuple<>(new Some<>(i), depth);
@@ -539,7 +473,7 @@ public class Main {
         final String compiled;
         if (afterArrow.startsWith("{") && afterArrow.endsWith("}")) {
             final var substring1 = afterArrow.substring(1, afterArrow.length() - 1);
-            compiled = splitAndCompile(Main::splitByStatements, statement -> compileStatement(statement, depth), Main::mergeStatements, substring1);
+            compiled = splitAndCompile(new StatementSplitter(), statement -> compileStatement(statement, depth), substring1);
         } else {
             compiled = generateReturn(compileValue(depth, afterArrow), depth + 1);
         }
@@ -584,14 +518,10 @@ public class Main {
             final var compiled1 = compileType(caller.strip());
 
             final var substring1 = withoutEnd.substring(index + 1);
-            final var compiled = splitAndCompile(Main::splitByValues, value -> compileValue(depth, value.strip()), Main::mergeValues, substring1);
+            final var compiled = splitAndCompile(new ValueSplitter(), value -> compileValue(depth, value.strip()), substring1);
 
             return compiled1 + "(" + compiled + ")";
         });
-    }
-
-    private static StringBuilder mergeValues(StringBuilder inner, String stripped) {
-        return inner.append(", ").append(stripped);
     }
 
     private static Option<String> compileOperator(int depth, String input, String operator) {
@@ -608,13 +538,8 @@ public class Main {
                 ? value.substring(1)
                 : value;
 
-        return streamChars(value1)
+        return Strings.streamChars(value1)
                 .collect(Collectors.allMatch(Character::isDigit));
-    }
-
-    private static Stream<Character> streamChars(String value1) {
-        return new HeadedStream<>(new LengthHead(value1.length()))
-                .map(value1::charAt);
     }
 
     private static boolean isSymbol(String value) {
@@ -666,35 +591,8 @@ public class Main {
         if (!withEnd.endsWith(">")) return new None<>();
 
         final var inputArgs = withEnd.substring(0, withEnd.length() - ">".length());
-        final var outputArgs = splitAndCompile(Main::splitByValues, Main::compileType, Main::mergeValues, inputArgs);
+        final var outputArgs = splitAndCompile(new ValueSplitter(), Main::compileType, inputArgs);
         return new Some<>(caller + "<" + outputArgs + ">");
-    }
-
-    private static List<String> splitByValues(String inputParams) {
-        final var inputParamsJavaList = new JavaList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
-
-        final var queue = streamChars(inputParams).collect(JavaLinkedList.collector());
-
-        while (!queue.isEmpty()) {
-            final var c = popOrPanic(queue);
-            if (c == ',' && depth == 0) {
-                advance(inputParamsJavaList, buffer);
-                buffer = new StringBuilder();
-            } else {
-                buffer.append(c);
-                if (c == '-') {
-                    if (!queue.isEmpty() && queue.peek().filter(value -> value == '>').isPresent()) {
-                        buffer.append(popOrPanic(queue));
-                    }
-                }
-                if (c == '<' || c == '(') depth++;
-                if (c == '>' || c == ')') depth--;
-            }
-        }
-        advance(inputParamsJavaList, buffer);
-        return inputParamsJavaList;
     }
 
     private static Set<Path> filterPaths(Set<Path> paths) {
@@ -703,4 +601,5 @@ public class Main {
                 .filter(path -> path.toString().endsWith(".java"))
                 .collect(JavaSet.collector());
     }
+
 }

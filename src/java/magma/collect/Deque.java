@@ -1,13 +1,16 @@
 package magma.collect;
 
 import magma.Tuple;
+import magma.java.JavaOptionals;
 import magma.option.Option;
 
 public interface Deque<T> {
-    default Deque<T> add(T next) {
-        this.list.add(next);
-        return this;
+    @Deprecated
+    default T popOrPanic() {
+        return JavaOptionals.from(pop()).map(Tuple::left).orElseThrow();
     }
+
+    Deque<T> add(T next);
 
     boolean isEmpty();
 
