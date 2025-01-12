@@ -2,8 +2,8 @@ import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
 import java.util.function.Predicate;
-struct Collectors {public static Collector<String, Option<String>> joining(String infix) {
-        return new Collector<>() {
+struct Collectors {
+	Option<String>> joining(String infix){return new Collector<>() {
             @Override
             public Option<String> createInitial() {
                 return new None<>();
@@ -15,8 +15,8 @@ struct Collectors {public static Collector<String, Option<String>> joining(Strin
                 return current.map(inner -> inner + infix + next);
             }
         };
-    }public static <T> Collector<T, Boolean> allMatch(Predicate<T> predicate) {
-        return new Collector<>() {
+	}
+	Boolean> allMatch(Predicate<T> predicate){return new Collector<>() {
             @Override
             public Boolean createInitial() {
                 return true;
@@ -27,5 +27,5 @@ struct Collectors {public static Collector<String, Option<String>> joining(Strin
                 return current && predicate.test(next);
             }
         };
-    }
+	}
 }

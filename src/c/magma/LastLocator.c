@@ -1,13 +1,15 @@
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
-struct LastLocator(String infix) implements Locator {@Override
-    public Option<Integer> locate(String input) {
-        final var index = input.lastIndexOf(infix());
-        if (index == -1) return new None<>();
-        return new Some<>(index);
-    }@Override
-    public int sliceLength() {
-        return this.infix.length();
-    }
+struct LastLocator(String infix) implements Locator {
+	Option<Integer> locate(String input){
+		auto index = input.lastIndexOf(infix());
+		if (index ==  - 1) {
+			return None<>();
+		}
+		return Some<>(index);
+	}
+	int sliceLength(){
+		return this.infix.length();
+	}
 }
