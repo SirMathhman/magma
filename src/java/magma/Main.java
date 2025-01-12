@@ -7,7 +7,6 @@ import magma.java.JavaSet;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
-import magma.result.Result;
 import magma.stream.HeadedStream;
 import magma.stream.LengthHead;
 import magma.stream.Stream;
@@ -32,7 +31,8 @@ public class Main {
     private static int counter = 0;
 
     public static void main(String[] args) {
-        collectSources()
+        SOURCE_DIRECTORY.walk()
+                .mapValue(Main::filterPaths)
                 .match(Main::compileSources, Some::new)
                 .ifPresent(Throwable::printStackTrace);
     }
@@ -698,12 +698,10 @@ public class Main {
         return inputParamsList;
     }
 
-    public static Result<JavaSet<Path>, IOException> collectSources() {
-        return SOURCE_DIRECTORY.walk().mapValue(paths -> {
-            return paths.stream()
-                    .filter(Path::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .collect(JavaSet.collector());
-        });
+    private static JavaSet<Path> filterPaths(JavaSet<Path> paths) {
+        return paths.stream()
+                .filter(path1 -> path1.isRegularFile())
+                .filter(path -> path.toString().endsWith(".java"))
+                .collect(JavaSet.collector());
     }
 }

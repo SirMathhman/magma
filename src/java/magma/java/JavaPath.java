@@ -23,6 +23,11 @@ public record JavaPath(Path path) implements magma.io.Path {
     }
 
     @Override
+    public String toString() {
+        return this.path.toString();
+    }
+
+    @Override
     public Result<String, IOException> readString() {
         try {
             return new Ok<>(Files.readString(unwrap()));
