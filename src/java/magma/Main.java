@@ -13,6 +13,9 @@ import magma.java.Strings;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
 import magma.split.Splitter;
 import magma.split.StatementSplitter;
 import magma.split.ValueSplitter;
@@ -114,7 +117,7 @@ public class Main {
         return compileToStruct("class", rootSegment)
                 .or(() -> compileToStruct("interface", rootSegment))
                 .or(() -> compileToStruct("record", rootSegment))
-                .orElseGet(() -> invalidate("root segment", rootSegment));
+                .orElseGet(() -> invalidate(new CompileError("Unknown " + "root segment", rootSegment)));
     }
 
     private static Option<String> compileToStruct(String keyword, String rootSegment) {
@@ -131,9 +134,9 @@ public class Main {
         return new Some<>("struct " + name + " {" + compiled + "\n}");
     }
 
-    private static String invalidate(String type, String rootSegment) {
-        System.err.println("Unknown " + type + ": " + rootSegment);
-        return rootSegment;
+    private static String invalidate(CompileError error) {
+        System.err.println(error.display());
+        return error.context();
     }
 
     private static String compileClassSegment(String classSegment) {
@@ -143,33 +146,40 @@ public class Main {
             if (index != -1) {
                 final var definition = substring.substring(0, index);
                 final var compiled = compileValue(2, substring.substring(index + 1));
-                return "\n\t" + compileDefinition(definition).orElseGet(() -> invalidate("definition", definition)) + " = " + compiled + ";";
+                return "\n\t" + compileDefinition(definition).orElseGet(() -> invalidate(new CompileError("Unknown " + "definition", definition))) + " = " + compiled + ";";
             }
         }
 
-        return compileMethod(classSegment)
-                .orElseGet(() -> invalidate("class segment", classSegment));
+        return compileMethod(classSegment).match(value -> {
+            return value;
+        }, err -> {
+            return invalidate(new CompileError("class segment", classSegment, err));
+        });
     }
 
-    private static Option<String> compileMethod(String classSegment) {
-        return split(classSegment, new FirstLocator("(")).flatMap(tuple -> {
+    private static Result<String, CompileError> compileMethod(String classSegment) {
+        Locator locator3 = new FirstLocator("(");
+        return split(classSegment, locator3).flatMapValue(tuple -> {
             final var beforeParamStart = tuple.left();
             final var afterParamStart = tuple.right();
 
-            return split(beforeParamStart, new LastLocator(" ")).flatMap(tuple2 -> {
+            Locator locator2 = new LastLocator(" ");
+            return split(beforeParamStart, locator2).flatMapValue(tuple2 -> {
                 final var beforeName = tuple2.left();
                 final var name = tuple2.right();
 
-                return split(beforeName, new LastLocator(" ")).flatMap(tuple1 -> {
+                Locator locator1 = new LastLocator(" ");
+                return split(beforeName, locator1).flatMapValue(tuple1 -> {
                     final var type = compileType(tuple1.right());
-                    return split(afterParamStart, new FirstLocator(")")).flatMap(tuple0 -> {
+                    Locator locator = new FirstLocator(")");
+                    return split(afterParamStart, locator).flatMapValue(tuple0 -> {
                         final var inputParams = tuple0.left();
                         final var outputParams = splitAndCompile(inputParams, new ValueSplitter(), value -> compileDefinition(value)
-                                .orElseGet(() -> invalidate("definition", value)));
+                                .orElseGet(() -> invalidate(new CompileError("Unknown " + "definition", value))));
 
-                        final var afterParams = tuple0.right();
-                        return truncateLeft(afterParams, "{").flatMap(withEnd -> {
-                            return truncateRight(withEnd, "}").map(content -> {
+                        final var afterParams = tuple0.right().strip();
+                        return truncateLeft(afterParams, "{").flatMapValue(withEnd -> {
+                            return truncateRight(withEnd, "}").mapValue(content -> {
                                 final var outputContent = splitAndCompile(content, new StatementSplitter(), statement -> compileStatement(statement, 2));
                                 return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";
                             });
@@ -180,8 +190,9 @@ public class Main {
         });
     }
 
-    private static Option<String> truncateLeft(String input, String slice) {
-        return input.startsWith(slice) ? new Some<>(input.substring(slice.length())) : new None<>();
+    private static Result<String, CompileError> truncateLeft(String input, String prefix) {
+        if (input.startsWith(prefix)) return new Ok<>(input.substring(prefix.length()));
+        return new Err<>(new CompileError("Prefix '" + prefix + "' not present", input));
     }
 
     private static String compileStatement(String statement, int depth) {
@@ -228,16 +239,17 @@ public class Main {
         return compileDefinitionStatement(statement)
                 .or(() -> compilePostfix(statement, "--", depth))
                 .or(() -> compilePostfix(statement, "++", depth))
-                .orElseGet(() -> invalidate("statement", statement));
+                .orElseGet(() -> invalidate(new CompileError("Unknown " + "statement", statement)));
 
     }
 
     private static Option<String> compileInitialization(String statement, int depth) {
-        return split(statement, new FirstLocator("=")).flatMap(tuple -> {
+        Locator locator = new FirstLocator("=");
+        return split(statement, locator).findValue().flatMap(tuple -> {
             final var beforeEquals = tuple.left();
             final var afterEquals = tuple.right();
 
-            return truncateRight(afterEquals, ";")
+            return truncateRight(afterEquals, ";").findValue()
                     .map(String::strip)
                     .flatMap(stripped -> compileDefinition(beforeEquals).map(definition -> {
                         final var compiled1 = compileValue(depth, stripped);
@@ -414,7 +426,7 @@ public class Main {
                 .or(() -> compileOperator(depth, input, "!="))
                 .or(() -> compileOperator(depth, input, "&&"))
                 .or(() -> compileTernary(depth, input))
-                .orElseGet(() -> invalidate("value", input));
+                .orElseGet(() -> invalidate(new CompileError("Unknown " + "value", input)));
     }
 
     private static Option<String> compileNumber(String input) {
@@ -591,7 +603,7 @@ public class Main {
                 .or(() -> compileArray(input))
                 .or(() -> compileGenericType(input))
                 .or(() -> compileSymbol(input))
-                .orElseGet(() -> invalidate("type", input));
+                .orElseGet(() -> invalidate(new CompileError("Unknown " + "type", input)));
     }
 
     private static Option<String> compileVar(String input) {
@@ -599,14 +611,14 @@ public class Main {
     }
 
     private static Option<String> compileArray(String input) {
-        return truncateRight(input, "[]").map(inner -> generateGeneric("Slice", compileType(inner)));
+        return truncateRight(input, "[]").findValue().map(inner -> generateGeneric("Slice", compileType(inner)));
     }
 
     private static Option<String> compileGenericType(String input) {
-        return split(input, new FirstLocator("<")).flatMap(tuple -> {
+        return split(input, new FirstLocator("<")).findValue().flatMap(tuple -> {
             final var caller = tuple.left();
             final var withEnd = tuple.right();
-            return truncateRight(withEnd, ">").map(inputArgs -> {
+            return truncateRight(withEnd, ">").findValue().map(inputArgs -> {
                 final var outputArgs = splitAndCompile(inputArgs, new ValueSplitter(), Main::compileType);
                 return generateGeneric(caller, outputArgs);
             });
@@ -617,16 +629,21 @@ public class Main {
         return caller + "<" + outputArgs + ">";
     }
 
-    private static Option<Tuple<String, String>> split(String input, Locator locator) {
-        return locator.locate(input).map(index -> {
+    private static Result<Tuple<String, String>, CompileError> split(String input, Locator locator) {
+        return locator.locate(input).match(index -> {
             final var left = input.substring(0, index);
             final var right = input.substring(index + locator.sliceLength());
-            return new Tuple<>(left, right);
+            return new Ok<>(new Tuple<>(left, right));
+        }, () -> {
+            final var format = "Infix '%s' not present";
+            final var message = format.formatted(locator.infix());
+            return new Err<>(new CompileError(message, input));
         });
     }
 
-    private static Option<String> truncateRight(String input, String suffix) {
-        return input.endsWith(suffix) ? new Some<>(input.substring(0, input.length() - suffix.length())) : new None<String>();
+    private static Result<String, CompileError> truncateRight(String input, String suffix) {
+        if (input.endsWith(suffix)) return new Ok<>(input.substring(0, input.length() - suffix.length()));
+        return new Err<>(new CompileError("Suffix '" + suffix + "' not present", input));
     }
 
     private static Set<Path> filterPaths(Set<Path> paths) {

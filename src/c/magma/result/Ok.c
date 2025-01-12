@@ -1,9 +1,17 @@
+import magma.option.Option;
+import magma.option.Some;
 import java.util.function.Function;
-struct Ok<T, X>(T value) implements Result<T, X> {@Override
-    public <R> R match(Function<T, R> valueMapper, Function<X, R> errorMapper) {
-        return valueMapper.apply(this.value);
-    }@Override
-    public <R> Result<R, X> mapValue(Function<T, R> mapper) {
-        return new Ok<>(mapper.apply(this.value));
-    }
+struct Ok<T, X>(T value) implements Result<T, X> {
+	R match(Function<T, R> valueMapper, Function<X, R> errorMapper){
+		return valueMapper.apply(this.value);
+	}
+	X> mapValue(Function<T, R> mapper){
+		return Ok<>(mapper.apply(this.value));
+	}
+	Option<T> findValue(){
+		return Some<>(this.value);
+	}
+	X> flatMapValue(Function<T, Result<R, X>> mapper){
+		return mapper.apply(this.value);
+	}
 }
