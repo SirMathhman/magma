@@ -16,12 +16,13 @@ import magma.stream.Streams;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 public record JavaPath(Path path) implements magma.io.Path {
     @Override
     public Result<JavaSet<magma.io.Path>, Error> walk() {
-        try (var stream = Files.walk(unwrap())) {
+        try (var stream = Files.walk(this.path)) {
             return new Ok<>(new JavaSet<>(stream.map(JavaPath::new).collect(Collectors.toSet())));
         } catch (IOException e) {
             return new Err<>(new IOError(new JavaError(e)));
@@ -36,7 +37,7 @@ public record JavaPath(Path path) implements magma.io.Path {
     @Override
     public Result<String, Error> readString() {
         try {
-            return new Ok<>(Files.readString(unwrap()));
+            return new Ok<>(Files.readString(this.path));
         } catch (IOException e) {
             return new Err<>(new IOError(new JavaError(e)));
         }
@@ -45,7 +46,7 @@ public record JavaPath(Path path) implements magma.io.Path {
     @Override
     public Option<Error> writeString(String output) {
         try {
-            Files.writeString(unwrap(), output);
+            Files.writeString(this.path, output);
             return new None<>();
         } catch (IOException e) {
             return new Some<>(new IOError(new JavaError(e)));
@@ -55,7 +56,7 @@ public record JavaPath(Path path) implements magma.io.Path {
     @Override
     public Option<Error> createDirectories() {
         try {
-            Files.createDirectories(unwrap());
+            Files.createDirectories(this.path);
             return new None<>();
         } catch (IOException e) {
             return new Some<>(new IOError(new JavaError(e)));
@@ -64,7 +65,11 @@ public record JavaPath(Path path) implements magma.io.Path {
 
     @Override
     public magma.io.Path relativize(magma.io.Path child) {
-        return new JavaPath(this.path.relativize(child.unwrap()));
+        final var asNativePath = child.streamNames()
+                .map(Object::toString)
+                .foldLeftWithInit(Paths::get, Path::resolve);
+
+        return new JavaPath(this.path.relativize(asNativePath));
     }
 
     @Override
@@ -82,11 +87,6 @@ public record JavaPath(Path path) implements magma.io.Path {
         return index < this.path.getNameCount()
                 ? new Some<>(new JavaPath(this.path.getName(index)))
                 : new None<>();
-    }
-
-    @Override
-    public Path unwrap() {
-        return this.path;
     }
 
     @Override

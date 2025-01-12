@@ -24,8 +24,6 @@ public interface Path {
 
     Path resolve(String segment);
 
-    java.nio.file.Path unwrap();
-
     boolean isRegularFile();
 
     Path findFileName();
