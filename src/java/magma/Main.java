@@ -1,19 +1,19 @@
 package magma;
 
+import magma.io.Path;
+import magma.java.JavaList;
 import magma.java.JavaPaths;
 import magma.java.JavaSet;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
+import magma.result.Result;
 import magma.stream.HeadedStream;
 import magma.stream.LengthHead;
 import magma.stream.Stream;
 import magma.stream.Streams;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Main {
-    public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
-    public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
+    public static final Path SOURCE_DIRECTORY = JavaPaths.get(".", "src", "java");
+    public static final Path TARGET_DIRECTORY = JavaPaths.get(".", "src", "c");
+
     private static int counter = 0;
 
     public static void main(String[] args) {
-        JavaPaths.collect()
-                .mapValue(JavaSet::new)
+        collectSources()
                 .match(Main::compileSources, Some::new)
                 .ifPresent(Throwable::printStackTrace);
     }
@@ -40,32 +40,32 @@ public class Main {
     private static Option<IOException> compileSources(JavaSet<Path> sources) {
         return sources.stream()
                 .map(Main::compileSource)
-                .flatMap(Streams::from)
+                .flatMap(Streams::fromOption)
                 .next();
     }
 
     private static Option<IOException> compileSource(Path source) {
         final var relative = SOURCE_DIRECTORY.relativize(source);
-        final var parent = relative.getParent();
+        final var parent = relative.getParent().orElse(JavaPaths.get("."));
         final var namespace = computeNamespace(parent);
         final var name = computeName(relative);
 
         if (namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))) return new None<>();
 
-        final var targetParent = namespace.stream().reduce(TARGET_DIRECTORY, Path::resolve, (_, next) -> next);
+        final var targetParent = namespace.stream().foldLeft(TARGET_DIRECTORY, Path::resolve);
         final var target = targetParent.resolve(name + ".c");
         return ensureDirectory(targetParent).or(() -> compileFromSourceToTarget(source, target));
     }
 
     private static Option<IOException> ensureDirectory(Path targetParent) {
-        if (Files.exists(targetParent)) return new None<>();
-        return JavaPaths.createDirectoriesSafe(targetParent);
+        if (targetParent.exists()) return new None<>();
+        return targetParent.createDirectories();
     }
 
     private static Option<IOException> compileFromSourceToTarget(Path source, Path target) {
-        return JavaPaths.readSafe(source)
+        return source.readString()
                 .mapValue(Main::compile)
-                .match(output -> JavaPaths.writeSafe(target, output), Some::new);
+                .match(target::writeString, Some::new);
     }
 
     private static String computeName(Path relative) {
@@ -73,11 +73,12 @@ public class Main {
         return name.substring(0, name.indexOf('.'));
     }
 
-    private static List<String> computeNamespace(Path parent) {
-        return IntStream.range(0, parent.getNameCount())
-                .mapToObj(parent::getName)
+    private static JavaList<String> computeNamespace(Path parent) {
+        return new HeadedStream<>(new LengthHead(parent.getNameCount()))
+                .map(parent::getName)
+                .flatMap(Streams::fromOption)
                 .map(Path::toString)
-                .toList();
+                .collect(JavaList.collector());
     }
 
     private static String compile(String root) {
@@ -695,5 +696,14 @@ public class Main {
         }
         advance(inputParamsList, buffer);
         return inputParamsList;
+    }
+
+    public static Result<JavaSet<Path>, IOException> collectSources() {
+        return SOURCE_DIRECTORY.walk().mapValue(paths -> {
+            return paths.stream()
+                    .filter(Path::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".java"))
+                    .collect(JavaSet.collector());
+        });
     }
 }

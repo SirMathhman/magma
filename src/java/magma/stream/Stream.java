@@ -4,6 +4,7 @@ import magma.option.Option;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public interface Stream<T> {
     <R> Stream<R> map(Function<T, R> mapper);
@@ -15,4 +16,8 @@ public interface Stream<T> {
     Option<T> next();
 
     Stream<T> concat(Stream<T> other);
+
+    Stream<T> filter(Predicate<T> predicate);
+
+    <C> C collect(Collector<T, C> collector);
 }

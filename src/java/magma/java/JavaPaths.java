@@ -1,54 +1,9 @@
 package magma.java;
 
-import magma.Main;
-import magma.option.None;
-import magma.option.Option;
-import magma.option.Some;
-import magma.result.Err;
-import magma.result.Ok;
-import magma.result.Result;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.nio.file.Paths;
 
 public class JavaPaths {
-    public static Option<IOException> createDirectoriesSafe(Path targetParent) {
-        try {
-            Files.createDirectories(targetParent);
-            return new None<>();
-        } catch (IOException e) {
-            return new Some<>(e);
-        }
-    }
-
-    public static Option<IOException> writeSafe(Path target, String output) {
-        try {
-            Files.writeString(target, output);
-            return new None<>();
-        } catch (IOException e) {
-            return new Some<>(e);
-        }
-    }
-
-    public static Result<String, IOException> readSafe(Path source) {
-        try {
-            return new Ok<>(Files.readString(source));
-        } catch (IOException e) {
-            return new Err<>(e);
-        }
-    }
-
-    public static Result<Set<Path>, IOException> collect() {
-        try (Stream<Path> stream = Files.walk(Main.SOURCE_DIRECTORY)) {
-            return new Ok<>(stream.filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .collect(Collectors.toSet()));
-        } catch (IOException e) {
-            return new Err<>(e);
-        }
+    public static magma.io.Path get(String first, String... more) {
+        return new JavaPath(Paths.get(first, more));
     }
 }

@@ -4,6 +4,7 @@ import magma.option.Option;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     @Override
@@ -41,5 +42,17 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     @Override
     public Stream<T> concat(Stream<T> other) {
         return new HeadedStream<>(() -> this.head.next().or(other::next));
+    }
+
+    @Override
+    public Stream<T> filter(Predicate<T> predicate) {
+        return flatMap(value -> new HeadedStream<>(predicate.test(value)
+                ? new SingleHead<>(value)
+                : new EmptyHead<>()));
+    }
+
+    @Override
+    public <C> C collect(Collector<T, C> collector) {
+        return foldLeft(collector.createInitial(), collector::fold);
     }
 }
