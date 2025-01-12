@@ -1,3 +1,3 @@
 import magma.option.Option;
-struct Temp {
+struct Head<T> {Option<T> next();
 }

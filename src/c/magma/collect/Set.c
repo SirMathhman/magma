@@ -1,3 +1,3 @@
 import magma.stream.Stream;
-struct Temp {
+struct Set<T> {Set<T> add(T next);Stream<T> stream();
 }

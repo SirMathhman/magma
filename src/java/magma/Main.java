@@ -112,22 +112,24 @@ public class Main {
         if (rootSegment.startsWith("package ")) return "";
         if (rootSegment.startsWith("import ")) return rootSegment + "\n";
 
-        final var classIndex = rootSegment.indexOf("class");
-        if (classIndex != -1) {
-            final var withoutKeyword = rootSegment.substring(classIndex + "class".length());
-            final var contentStartIndex = withoutKeyword.indexOf("{");
-            if (contentStartIndex != -1) {
-                final var name = withoutKeyword.substring(0, contentStartIndex).strip();
-                final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
-                final var compiled = splitAndCompile(new StatementSplitter(), Main::compileClassSegment, content);
-                return "struct " + name + " {" + compiled + "\n}";
-            }
-        }
+        return compileToStruct("class", rootSegment)
+                .or(() -> compileToStruct("interface", rootSegment))
+                .or(() -> compileToStruct("record", rootSegment))
+                .orElseGet(() -> invalidate("root segment", rootSegment));
+    }
 
-        if (rootSegment.contains("record")) return "struct Temp {\n}";
-        if (rootSegment.contains("interface ")) return "struct Temp {\n}";
+    private static Option<String> compileToStruct(String keyword, String rootSegment) {
+        final var classIndex = rootSegment.indexOf(keyword);
+        if (classIndex == -1) return new None<>();
 
-        return invalidate("root segment", rootSegment);
+        final var withoutKeyword = rootSegment.substring(classIndex + keyword.length());
+        final var contentStartIndex = withoutKeyword.indexOf("{");
+        if (contentStartIndex == -1) return new None<>();
+
+        final var name = withoutKeyword.substring(0, contentStartIndex).strip();
+        final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
+        final var compiled = splitAndCompile(new StatementSplitter(), Main::compileClassSegment, content);
+        return new Some<>("struct " + name + " {" + compiled + "\n}");
     }
 
     private static String invalidate(String type, String rootSegment) {
