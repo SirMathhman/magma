@@ -1,7 +1,9 @@
 package magma;
 
 import magma.io.Path;
+import magma.java.JavaLinkedList;
 import magma.java.JavaList;
+import magma.java.JavaOptionals;
 import magma.java.JavaPaths;
 import magma.java.JavaSet;
 import magma.option.None;
@@ -15,11 +17,8 @@ import magma.stream.Stream;
 import magma.stream.Streams;
 
 import java.io.IOException;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 public class Main {
     public static final Path SOURCE_DIRECTORY = JavaPaths.get(".", "src", "java");
@@ -121,33 +120,31 @@ public class Main {
         var buffer = new StringBuilder();
         var depth = 0;
 
-        final var queue = IntStream.range(0, root.length())
-                .mapToObj(root::charAt)
-                .collect(java.util.stream.Collectors.toCollection(LinkedList::new));
+        final var queue = streamChars(root).collect(JavaLinkedList.collector());
 
         while (!queue.isEmpty()) {
-            var c = queue.pop();
+            var c = popOrPanic(queue);
             buffer.append(c);
 
             if (c == '\'') {
-                final var popped = queue.pop();
+                final var popped = popOrPanic(queue);
                 buffer.append(popped);
                 if (popped == '\\') {
-                    buffer.append(queue.pop());
+                    buffer.append(popOrPanic(queue));
                 }
 
-                buffer.append(queue.pop());
+                buffer.append(popOrPanic(queue));
                 continue;
             }
 
             if (c == '"') {
                 while (!queue.isEmpty()) {
-                    final var next = queue.pop();
+                    final var next = popOrPanic(queue);
                     buffer.append(next);
 
                     if (next == '"') break;
                     if (next == '\\') {
-                        buffer.append(queue.pop());
+                        buffer.append(popOrPanic(queue));
                     }
                 }
             }
@@ -168,6 +165,10 @@ public class Main {
         return segments;
     }
 
+    private static <T> T popOrPanic(JavaLinkedList<T> queue) {
+        return JavaOptionals.from(queue.pop()).map(Tuple::left).orElseThrow();
+    }
+
     private static void advance(JavaList<String> segments, StringBuilder buffer) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
@@ -183,7 +184,7 @@ public class Main {
             if (contentStartIndex != -1) {
                 final var name = withoutKeyword.substring(0, contentStartIndex).strip();
                 final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
-                final var compiled = splitAndCompile(Main::splitByStatements, classSegment -> compileClassSegment(classSegment), Main::mergeStatements, content);
+                final var compiled = splitAndCompile(Main::splitByStatements, Main::compileClassSegment, Main::mergeStatements, content);
                 return "struct " + name + " {" + compiled + "\n}";
             }
         }
@@ -344,30 +345,28 @@ public class Main {
     }
 
     private static Option<Integer> findConditionParamEnd(String input) {
-        final var queue = IntStream.range(0, input.length())
-                .mapToObj(index -> new Tuple<>(index, input.charAt(index)))
-                .collect(java.util.stream.Collectors.toCollection(LinkedList::new));
+        final var queue = streamCharsWithIndices(input).collect(JavaLinkedList.collector());
 
         var depth = 0;
         while (!queue.isEmpty()) {
-            final var popped = queue.pop();
+            final var popped = popOrPanic(queue);
             final var i = popped.left();
             final var c = popped.right();
 
             if (c == '\'') {
-                final var popped1 = queue.pop().right();
+                final var popped1 = popOrPanic(queue).right();
                 if (popped1 == '\\') {
-                    queue.pop();
+                    popOrPanic(queue);
                 }
 
-                queue.pop();
+                popOrPanic(queue);
             }
 
             if (c == '"') {
                 while (!queue.isEmpty()) {
-                    final var next = queue.pop().right();
+                    final var next = popOrPanic(queue).right();
                     if (next == '"') break;
-                    if (next == '\\') queue.pop();
+                    if (next == '\\') popOrPanic(queue);
                 }
             }
 
@@ -406,15 +405,12 @@ public class Main {
             char exit
     ) {
         final var queue = streamer.apply(input)
-                .map(index -> new Tuple<>(index, input.charAt(index)))
-                .foldLeft(new LinkedList<Tuple<Integer, Character>>(), (tuples, tuple) -> {
-                    tuples.add(tuple);
-                    return tuples;
-                });
+                .extendBy(input::charAt)
+                .collect(JavaLinkedList.collector());
 
         var current = new Tuple<Option<Integer>, Integer>(new None<>(), 0);
         while (!queue.isEmpty()) {
-            final var tuple = queue.pop();
+            final var tuple = popOrPanic(queue);
             current = findArgStateFold(current, tuple, search, enter, exit, queue);
         }
 
@@ -431,7 +427,7 @@ public class Main {
             char search,
             char enter,
             char exit,
-            Deque<Tuple<Integer, Character>> queue) {
+            JavaLinkedList<Tuple<Integer, Character>> queue) {
         final var previousOption = previous.left();
         if (previousOption.isPresent()) return previous;
 
@@ -440,11 +436,11 @@ public class Main {
         final var c = tuple.right();
 
         if (c == '\'') {
-            final var popped = queue.pop();
+            final var popped = popOrPanic(queue);
             if (popped.right() == '\\') {
-                queue.pop();
+                popOrPanic(queue);
             }
-            queue.pop();
+            popOrPanic(queue);
         }
 
         if (c == search && depth == 0) return new Tuple<>(new Some<>(i), depth);
@@ -611,15 +607,21 @@ public class Main {
                 ? value.substring(1)
                 : value;
 
-        return IntStream.range(0, value1.length())
-                .mapToObj(value1::charAt)
-                .allMatch(Character::isDigit);
+        return streamChars(value1)
+                .collect(Collectors.allMatch(Character::isDigit));
+    }
+
+    private static Stream<Character> streamChars(String value1) {
+        return new HeadedStream<>(new LengthHead(value1.length()))
+                .map(value1::charAt);
     }
 
     private static boolean isSymbol(String value) {
-        return IntStream.range(0, value.length())
-                .mapToObj(index -> new Tuple<>(index, value.charAt(index)))
-                .allMatch(Main::isSymbolChar);
+        return streamCharsWithIndices(value).collect(Collectors.allMatch(Main::isSymbolChar));
+    }
+
+    private static Stream<Tuple<Integer, Character>> streamCharsWithIndices(String value) {
+        return new HeadedStream<>(new LengthHead(value.length())).extendBy(value::charAt);
     }
 
     private static boolean isSymbolChar(Tuple<Integer, Character> tuple) {
@@ -672,20 +674,18 @@ public class Main {
         var buffer = new StringBuilder();
         var depth = 0;
 
-        final var queue = IntStream.range(0, inputParams.length())
-                .mapToObj(inputParams::charAt)
-                .collect(java.util.stream.Collectors.toCollection(LinkedList::new));
+        final var queue = streamChars(inputParams).collect(JavaLinkedList.collector());
 
         while (!queue.isEmpty()) {
-            final var c = queue.pop();
+            final var c = popOrPanic(queue);
             if (c == ',' && depth == 0) {
                 advance(inputParamsJavaList, buffer);
                 buffer = new StringBuilder();
             } else {
                 buffer.append(c);
                 if (c == '-') {
-                    if (!queue.isEmpty() && queue.peek() == '>') {
-                        buffer.append(queue.pop());
+                    if (!queue.isEmpty() && queue.peek().filter(value -> value == '>').isPresent()) {
+                        buffer.append(popOrPanic(queue));
                     }
                 }
                 if (c == '<' || c == '(') depth++;

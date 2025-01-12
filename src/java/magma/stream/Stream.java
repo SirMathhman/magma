@@ -1,5 +1,6 @@
 package magma.stream;
 
+import magma.Tuple;
 import magma.option.Option;
 
 import java.util.function.BiFunction;
@@ -20,4 +21,6 @@ public interface Stream<T> {
     Stream<T> filter(Predicate<T> predicate);
 
     <C> C collect(Collector<T, C> collector);
+
+    <R> Stream<Tuple<T, R>> extendBy(Function<T, R> mapper);
 }

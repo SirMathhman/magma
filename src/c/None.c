@@ -1,6 +1,7 @@
 import magma.Tuple;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 struct None<T> implements Option<T> {public None() {
     }
@@ -34,6 +35,9 @@ struct None<T> implements Option<T> {public None() {
 		return other;
 	}
 	Option<R> flatMap(Function<T, Option<R>> mapper){
+		return None<>();
+	}
+	Option<T> filter(Predicate<T> predicate){
 		return None<>();
 	}
 }
