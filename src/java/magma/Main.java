@@ -148,33 +148,42 @@ public class Main {
             }
         }
 
-        final var paramStart = classSegment.indexOf('(');
-        if (paramStart != -1) {
-            final var beforeParamStart = classSegment.substring(0, paramStart);
-            final var afterParamStart = classSegment.substring(paramStart + 1);
+        return compileMethod(classSegment)
+                .orElseGet(() -> invalidate("class segment", classSegment));
+    }
 
-            final var paramEnd = afterParamStart.indexOf(')');
-            if (paramEnd != -1) {
-                final var nameSeparator = beforeParamStart.lastIndexOf(' ');
-                if (nameSeparator != -1) {
-                    final var beforeName = beforeParamStart.substring(0, nameSeparator);
-                    final var typeSeparator = beforeName.lastIndexOf(' ');
-                    if (typeSeparator != -1) {
-                        final var type = beforeName.substring(typeSeparator + 1);
-                        final var name = beforeParamStart.substring(nameSeparator + 1);
-                        final var inputParams = afterParamStart.substring(0, paramEnd);
-                        final var afterParams = afterParamStart.substring(paramEnd + 1).strip();
-                        if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
-                            final var inputContent = afterParams.substring(1, afterParams.length() - 1);
-                            final var outputContent = splitAndCompile(new StatementSplitter(), statement -> compileStatement(statement, 2), inputContent);
-                            final var outputParams = splitAndCompile(new ValueSplitter(), value -> compileDefinition(value).orElseGet(() -> invalidate("definition", value)), inputParams);
-                            return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";
-                        }
-                    }
-                }
-            }
+    private static Option<String> compileMethod(String classSegment) {
+        final var paramStart = classSegment.indexOf('(');
+        if (paramStart == -1) {
+            return new None<>();
         }
-        return invalidate("class segment", classSegment);
+        final var beforeParamStart = classSegment.substring(0, paramStart);
+        final var afterParamStart = classSegment.substring(paramStart + 1);
+
+        final var paramEnd = afterParamStart.indexOf(')');
+        if (paramEnd == -1) {
+            return new None<>();
+        }
+        final var nameSeparator = beforeParamStart.lastIndexOf(' ');
+        if (nameSeparator == -1) {
+            return new None<>();
+        }
+        final var beforeName = beforeParamStart.substring(0, nameSeparator);
+        final var typeSeparator = beforeName.lastIndexOf(' ');
+        if (typeSeparator == -1) {
+            return new None<>();
+        }
+        final var type = beforeName.substring(typeSeparator + 1);
+        final var name = beforeParamStart.substring(nameSeparator + 1);
+        final var inputParams = afterParamStart.substring(0, paramEnd);
+        final var afterParams = afterParamStart.substring(paramEnd + 1).strip();
+        if (!afterParams.startsWith("{") || !afterParams.endsWith("}")) {
+            return new None<>();
+        }
+        final var inputContent = afterParams.substring(1, afterParams.length() - 1);
+        final var outputContent = splitAndCompile(new StatementSplitter(), statement -> compileStatement(statement, 2), inputContent);
+        final var outputParams = splitAndCompile(new ValueSplitter(), value -> compileDefinition(value).orElseGet(() -> invalidate("definition", value)), inputParams);
+        return new Some<>("\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}");
     }
 
     private static String compileStatement(String statement, int depth) {
