@@ -82,13 +82,12 @@ public class Main {
     }
 
     private static String compile(String root) {
-        return splitAndCompile(new StatementSplitter(), Main::compileRootMember, root);
+        return splitAndCompile(root, new StatementSplitter(), Main::compileRootMember);
     }
 
     private static String splitAndCompile(
-            Splitter splitter,
-            Function<String, String> compiler,
-            String input
+            String input, Splitter splitter,
+            Function<String, String> compiler
     ) {
         return splitter.split(input)
                 .stream()
@@ -128,7 +127,7 @@ public class Main {
 
         final var name = withoutKeyword.substring(0, contentStartIndex).strip();
         final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
-        final var compiled = splitAndCompile(new StatementSplitter(), Main::compileClassSegment, content);
+        final var compiled = splitAndCompile(content, new StatementSplitter(), Main::compileClassSegment);
         return new Some<>("struct " + name + " {" + compiled + "\n}");
     }
 
@@ -153,37 +152,36 @@ public class Main {
     }
 
     private static Option<String> compileMethod(String classSegment) {
-        final var paramStart = classSegment.indexOf('(');
-        if (paramStart == -1) {
-            return new None<>();
-        }
-        final var beforeParamStart = classSegment.substring(0, paramStart);
-        final var afterParamStart = classSegment.substring(paramStart + 1);
+        return split(classSegment, new FirstLocator("(")).flatMap(tuple -> {
+            final var beforeParamStart = tuple.left();
+            final var afterParamStart = tuple.right();
 
-        final var paramEnd = afterParamStart.indexOf(')');
-        if (paramEnd == -1) {
-            return new None<>();
-        }
-        final var nameSeparator = beforeParamStart.lastIndexOf(' ');
-        if (nameSeparator == -1) {
-            return new None<>();
-        }
-        final var beforeName = beforeParamStart.substring(0, nameSeparator);
-        final var typeSeparator = beforeName.lastIndexOf(' ');
-        if (typeSeparator == -1) {
-            return new None<>();
-        }
-        final var type = beforeName.substring(typeSeparator + 1);
-        final var name = beforeParamStart.substring(nameSeparator + 1);
-        final var inputParams = afterParamStart.substring(0, paramEnd);
-        final var afterParams = afterParamStart.substring(paramEnd + 1).strip();
-        if (!afterParams.startsWith("{") || !afterParams.endsWith("}")) {
-            return new None<>();
-        }
-        final var inputContent = afterParams.substring(1, afterParams.length() - 1);
-        final var outputContent = splitAndCompile(new StatementSplitter(), statement -> compileStatement(statement, 2), inputContent);
-        final var outputParams = splitAndCompile(new ValueSplitter(), value -> compileDefinition(value).orElseGet(() -> invalidate("definition", value)), inputParams);
-        return new Some<>("\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}");
+            return split(beforeParamStart, new LastLocator(" ")).flatMap(tuple2 -> {
+                final var beforeName = tuple2.left();
+                final var name = tuple2.right();
+
+                return split(beforeName, new LastLocator(" ")).flatMap(tuple1 -> {
+                    final var type = compileType(tuple1.right());
+                    return split(afterParamStart, new FirstLocator(")")).flatMap(tuple0 -> {
+                        final var inputParams = tuple0.left();
+                        final var outputParams = splitAndCompile(inputParams, new ValueSplitter(), value -> compileDefinition(value)
+                                .orElseGet(() -> invalidate("definition", value)));
+
+                        final var afterParams = tuple0.right();
+                        return truncateLeft(afterParams, "{").flatMap(withEnd -> {
+                            return truncateRight(withEnd, "}").map(content -> {
+                                final var outputContent = splitAndCompile(content, new StatementSplitter(), statement -> compileStatement(statement, 2));
+                                return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+    private static Option<String> truncateLeft(String input, String slice) {
+        return input.startsWith(slice) ? new Some<>(input.substring(slice.length())) : new None<>();
     }
 
     private static String compileStatement(String statement, int depth) {
@@ -195,7 +193,7 @@ public class Main {
             final String output;
             if (substring.startsWith("{") && substring.endsWith("}")) {
                 final var substring1 = substring.substring(1, substring.length() - 1);
-                output = splitAndCompile(new StatementSplitter(), statement0 -> compileStatement(statement0, depth + 1), substring1);
+                output = splitAndCompile(substring1, new StatementSplitter(), statement0 -> compileStatement(statement0, depth + 1));
             } else {
                 output = compileStatement(substring, depth + 1);
             }
@@ -235,7 +233,7 @@ public class Main {
     }
 
     private static Option<String> compileInitialization(String statement, int depth) {
-        return split(statement, "=").flatMap(tuple -> {
+        return split(statement, new FirstLocator("=")).flatMap(tuple -> {
             final var beforeEquals = tuple.left();
             final var afterEquals = tuple.right();
 
@@ -284,7 +282,7 @@ public class Main {
             final String outputContent;
             if (content.startsWith("{") && content.endsWith("}")) {
                 final var substring = content.substring(1, content.length() - 1);
-                outputContent = splitAndCompile(new StatementSplitter(), statement1 -> compileStatement(statement1, depth + 1), substring);
+                outputContent = splitAndCompile(substring, new StatementSplitter(), statement1 -> compileStatement(statement1, depth + 1));
             } else {
                 outputContent = compileStatement(content, depth + 1);
             }
@@ -339,8 +337,8 @@ public class Main {
             final var caller = substring.substring(0, index);
             final var substring1 = substring.substring(index + 1);
             final var compiled = splitAndCompile(
-                    new ValueSplitter(), value -> compileValue(depth, value.strip()),
-                    substring1);
+                    substring1, new ValueSplitter(), value -> compileValue(depth, value.strip())
+            );
 
             final var newCaller = compileValue(depth, caller.strip());
             return newCaller + "(" + compiled + ")";
@@ -488,7 +486,7 @@ public class Main {
         final String compiled;
         if (afterArrow.startsWith("{") && afterArrow.endsWith("}")) {
             final var substring1 = afterArrow.substring(1, afterArrow.length() - 1);
-            compiled = splitAndCompile(new StatementSplitter(), statement -> compileStatement(statement, depth), substring1);
+            compiled = splitAndCompile(substring1, new StatementSplitter(), statement -> compileStatement(statement, depth));
         } else {
             compiled = generateReturn(compileValue(depth, afterArrow), depth + 1);
         }
@@ -534,7 +532,7 @@ public class Main {
             final var compiled1 = compileType(caller.strip());
 
             final var substring1 = withoutEnd.substring(index + 1);
-            final var compiled = splitAndCompile(new ValueSplitter(), value -> compileValue(depth, value.strip()), substring1);
+            final var compiled = splitAndCompile(substring1, new ValueSplitter(), value -> compileValue(depth, value.strip()));
 
             return compiled1 + "(" + compiled + ")";
         });
@@ -605,11 +603,11 @@ public class Main {
     }
 
     private static Option<String> compileGenericType(String input) {
-        return split(input, "<").flatMap(tuple -> {
+        return split(input, new FirstLocator("<")).flatMap(tuple -> {
             final var caller = tuple.left();
             final var withEnd = tuple.right();
             return truncateRight(withEnd, ">").map(inputArgs -> {
-                final var outputArgs = splitAndCompile(new ValueSplitter(), Main::compileType, inputArgs);
+                final var outputArgs = splitAndCompile(inputArgs, new ValueSplitter(), Main::compileType);
                 return generateGeneric(caller, outputArgs);
             });
         });
@@ -619,13 +617,12 @@ public class Main {
         return caller + "<" + outputArgs + ">";
     }
 
-    private static Option<Tuple<String, String>> split(String input, String infix) {
-        final var index = input.indexOf(infix);
-        if (index == -1) return new None<>();
-
-        final var left = input.substring(0, index);
-        final var right = input.substring(index + infix.length());
-        return new Some<>(new Tuple<>(left, right));
+    private static Option<Tuple<String, String>> split(String input, Locator locator) {
+        return locator.locate(input).map(index -> {
+            final var left = input.substring(0, index);
+            final var right = input.substring(index + locator.sliceLength());
+            return new Tuple<>(left, right);
+        });
     }
 
     private static Option<String> truncateRight(String input, String suffix) {
