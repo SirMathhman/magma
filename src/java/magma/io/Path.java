@@ -3,8 +3,11 @@ package magma.io;
 import magma.java.JavaSet;
 import magma.option.Option;
 import magma.result.Result;
+import magma.stream.Stream;
 
 public interface Path {
+    Stream<Path> streamNames();
+
     boolean exists();
 
     Result<JavaSet<Path>, Error> walk();
@@ -17,17 +20,13 @@ public interface Path {
 
     Path relativize(Path child);
 
-    Option<Path> getParent();
+    Option<Path> findParent();
 
     Path resolve(String segment);
-
-    int getNameCount();
-
-    Option<Path> getName(int index);
 
     java.nio.file.Path unwrap();
 
     boolean isRegularFile();
 
-    Path getFileName();
+    Path findFileName();
 }

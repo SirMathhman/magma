@@ -42,7 +42,7 @@ public class Main {
 
     private static Option<Error> compileSource(Path source) {
         final var relative = SOURCE_DIRECTORY.relativize(source);
-        final var parent = relative.getParent().orElse(JavaPaths.get("."));
+        final var parent = relative.findParent().orElse(JavaPaths.get("."));
         final var namespace = computeNamespace(parent);
         final var name = computeName(relative);
 
@@ -66,14 +66,12 @@ public class Main {
     }
 
     private static String computeName(Path relative) {
-        final var name = relative.getFileName().toString();
+        final var name = relative.findFileName().toString();
         return name.substring(0, name.indexOf('.'));
     }
 
     private static JavaList<String> computeNamespace(Path parent) {
-        return new HeadedStream<>(new LengthHead(parent.getNameCount()))
-                .map(parent::getName)
-                .flatMap(Streams::fromOption)
+        return parent.streamNames()
                 .map(Path::toString)
                 .collect(JavaList.collector());
     }

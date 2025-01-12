@@ -8,6 +8,10 @@ import magma.option.Some;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
+import magma.stream.HeadedStream;
+import magma.stream.LengthHead;
+import magma.stream.Stream;
+import magma.stream.Streams;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -64,7 +68,7 @@ public record JavaPath(Path path) implements magma.io.Path {
     }
 
     @Override
-    public Option<magma.io.Path> getParent() {
+    public Option<magma.io.Path> findParent() {
         final var parent = this.path.getParent();
         return parent == null ? new None<>() : new Some<>(new JavaPath(parent));
     }
@@ -74,14 +78,10 @@ public record JavaPath(Path path) implements magma.io.Path {
         return new JavaPath(this.path.resolve(segment));
     }
 
-    @Override
-    public int getNameCount() {
-        return this.path.getNameCount();
-    }
-
-    @Override
-    public Option<magma.io.Path> getName(int index) {
-        return index < getNameCount() ? new Some<>(new JavaPath(this.path.getName(index))) : new None<magma.io.Path>();
+    private Option<magma.io.Path> getName(int index) {
+        return index < this.path.getNameCount()
+                ? new Some<>(new JavaPath(this.path.getName(index)))
+                : new None<>();
     }
 
     @Override
@@ -95,12 +95,19 @@ public record JavaPath(Path path) implements magma.io.Path {
     }
 
     @Override
-    public magma.io.Path getFileName() {
+    public magma.io.Path findFileName() {
         return new JavaPath(this.path.getFileName());
     }
 
     @Override
     public boolean exists() {
         return Files.exists(this.path);
+    }
+
+    @Override
+    public Stream<magma.io.Path> streamNames() {
+        return new HeadedStream<>(new LengthHead(this.path.getNameCount()))
+                .map(this::getName)
+                .flatMap(Streams::fromOption);
     }
 }
