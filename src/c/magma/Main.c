@@ -39,7 +39,7 @@ struct Main {
 		}
 		auto targetParent = namespace.stream().foldLeft(TARGET_DIRECTORY, Path.resolve);
 		auto target = targetParent.resolve(name + ".c");
-		return ensureDirectory(targetParent).or(auto _lambda1_(magma.option.None@65ae6ba4){
+		return ensureDirectory(targetParent).or(auto _lambda1_(magma.option.None@7960847b){
 			return compileFromSourceToTarget(source, target);
 		});
 	}
@@ -208,7 +208,7 @@ struct Main {
 								return compileStatement(statement, 2);
 							}, Main.mergeStatements, inputContent);
 							auto outputParams = splitAndCompile(Main.splitByValues, auto _lambda7_(Some[value=auto value]){
-								return compileDefinition(value).orElseGet(auto _lambda6_(magma.option.None@512ddf17){
+								return compileDefinition(value).orElseGet(auto _lambda6_(magma.option.None@3b192d32){
 								return invalidate("definition", value);
 							});
 							}, Main.mergeValues, inputParams);
@@ -262,9 +262,9 @@ struct Main {
 			auto substring = statement.substring(0, index1);
 			auto substring1 = statement.substring(index1 + 1);
 			if (substring1.endsWith(";")) {
-				auto compiled = compileDefinition(substring).or(auto _lambda10_(magma.option.None@77556fd){
+				auto compiled = compileDefinition(substring).or(auto _lambda10_(magma.option.None@311d617d){
 					return compileSymbol(substring);
-				}).orElseGet(auto _lambda9_(magma.option.None@2c13da15){
+				}).orElseGet(auto _lambda9_(magma.option.None@16f65612){
 					return invalidate("definition", substring);
 				});
 				auto compiled1 = compileValue(depth, substring1.substring(0, substring1.length() - ";".length()).strip());
@@ -277,11 +277,11 @@ struct Main {
 				return generateStatement(depth, newCaller.unwrap());
 			}
 		}
-		return compileDefinitionStatement(statement).or(auto _lambda13_(magma.option.None@3b192d32){
+		return compileDefinitionStatement(statement).or(auto _lambda13_(magma.option.None@2a33fae0){
 			return compilePostfix(statement, "--", depth);
-		}).or(auto _lambda12_(magma.option.None@9e89d68){
+		}).or(auto _lambda12_(magma.option.None@ed17bee){
 			return compilePostfix(statement, "++", depth);
-		}).orElseGet(auto _lambda11_(magma.option.None@368239c8){
+		}).orElseGet(auto _lambda11_(magma.option.None@7c53a9eb){
 			return invalidate("statement", statement);
 		});
 	}
@@ -426,37 +426,37 @@ struct Main {
 		return Tuple<>(None<>(), depth);
 	}
 	String compileValue(int depth, String input){
-		return compileSymbol(input).or(auto _lambda32_(magma.option.None@2437c6dc){
+		return compileSymbol(input).or(auto _lambda32_(magma.option.None@299a06ac){
 			return compileNumber(input);
-		}).or(auto _lambda31_(magma.option.None@6ed3ef1){
+		}).or(auto _lambda31_(magma.option.None@7b1d7fff){
 			return compileString(input);
-		}).or(auto _lambda30_(magma.option.None@71bc1ae4){
+		}).or(auto _lambda30_(magma.option.None@61064425){
 			return compileChar(input);
-		}).or(auto _lambda29_(magma.option.None@39a054a5){
+		}).or(auto _lambda29_(magma.option.None@e73f9ac){
 			return compileNot(depth, input);
-		}).or(auto _lambda28_(magma.option.None@7a7b0070){
+		}).or(auto _lambda28_(magma.option.None@1f89ab83){
 			return compileConstruction(depth, input);
-		}).or(auto _lambda27_(magma.option.None@4cc77c2e){
+		}).or(auto _lambda27_(magma.option.None@2437c6dc){
 			return compileLambda(depth, input);
-		}).or(auto _lambda26_(magma.option.None@12bb4df8){
+		}).or(auto _lambda26_(magma.option.None@6ed3ef1){
 			return compileInvocation(depth, input);
-		}).or(auto _lambda25_(magma.option.None@77468bd9){
+		}).or(auto _lambda25_(magma.option.None@71bc1ae4){
 			return compileAccess(depth, input, ".");
-		}).or(auto _lambda24_(magma.option.None@2f333739){
+		}).or(auto _lambda24_(magma.option.None@39a054a5){
 			return compileAccess(depth, input, "::");
-		}).or(auto _lambda23_(magma.option.None@2aae9190){
+		}).or(auto _lambda23_(magma.option.None@7a7b0070){
 			return compileOperator(depth, input, "+");
-		}).or(auto _lambda22_(magma.option.None@21588809){
+		}).or(auto _lambda22_(magma.option.None@4cc77c2e){
 			return compileOperator(depth, input, "-");
-		}).or(auto _lambda21_(magma.option.None@14899482){
+		}).or(auto _lambda21_(magma.option.None@12bb4df8){
 			return compileOperator(depth, input, "==");
-		}).or(auto _lambda20_(magma.option.None@11028347){
+		}).or(auto _lambda20_(magma.option.None@77468bd9){
 			return compileOperator(depth, input, "!=");
-		}).or(auto _lambda19_(magma.option.None@707f7052){
+		}).or(auto _lambda19_(magma.option.None@2f333739){
 			return compileOperator(depth, input, "&&");
-		}).or(auto _lambda18_(magma.option.None@2a33fae0){
+		}).or(auto _lambda18_(magma.option.None@2aae9190){
 			return compileTernary(depth, input);
-		}).orElseGet(auto _lambda17_(magma.option.None@ed17bee){
+		}).orElseGet(auto _lambda17_(magma.option.None@21588809){
 			return invalidate("value", input);
 		});
 	}
@@ -643,9 +643,9 @@ struct Main {
 		if (input.endsWith("[]")) {
 			return "Slice<" + input.substring(0, input.length() - "[]".length()) + ">";
 		}
-		return compileGenericType(input).or(auto _lambda40_(magma.option.None@e73f9ac){
+		return compileGenericType(input).or(auto _lambda40_(magma.option.None@6bc168e5){
 			return compileSymbol(input);
-		}).orElseGet(auto _lambda39_(magma.option.None@1f89ab83){
+		}).orElseGet(auto _lambda39_(magma.option.None@383534aa){
 			return invalidate("type", input);
 		});
 	}

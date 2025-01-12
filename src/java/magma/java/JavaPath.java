@@ -66,7 +66,7 @@ public record JavaPath(Path path) implements magma.io.Path {
     @Override
     public Option<magma.io.Path> getParent() {
         final var parent = this.path.getParent();
-        return parent == null ? new Some<>(new JavaPath(parent)) : new None<>();
+        return parent == null ? new None<>() : new Some<>(new JavaPath(parent));
     }
 
     @Override
