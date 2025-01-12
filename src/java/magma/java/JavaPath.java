@@ -67,7 +67,8 @@ public record JavaPath(Path path) implements magma.io.Path {
     public magma.io.Path relativize(magma.io.Path child) {
         final var asNativePath = child.streamNames()
                 .map(Object::toString)
-                .foldLeftWithInit(Paths::get, Path::resolve);
+                .foldLeftWithInit(Paths::get, Path::resolve)
+                .orElse(Paths.get("."));
 
         return new JavaPath(this.path.relativize(asNativePath));
     }

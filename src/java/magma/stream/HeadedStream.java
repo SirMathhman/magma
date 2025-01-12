@@ -36,6 +36,11 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     }
 
     @Override
+    public <R> Option<R> foldLeftWithInit(Function<T, R> initial, BiFunction<R, T, R> folder) {
+        return this.head.next().map(initial).map(next -> foldLeft(next, folder));
+    }
+
+    @Override
     public Option<T> next() {
         return this.head.next();
     }

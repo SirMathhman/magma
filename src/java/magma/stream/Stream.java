@@ -14,7 +14,7 @@ public interface Stream<T> {
 
     <R> R foldLeft(R initial, BiFunction<R, T, R> folder);
 
-    <R> R foldLeftWithInit(Function<T, R> initial, BiFunction<R, T, R> folder);
+    <R> Option<R> foldLeftWithInit(Function<T, R> initial, BiFunction<R, T, R> folder);
 
     Option<T> next();
 
