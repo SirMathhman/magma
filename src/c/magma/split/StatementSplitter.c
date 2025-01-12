@@ -37,13 +37,13 @@ struct StatementSplitter implements Splitter {
 			}
 			if (c == ';' && depth == 0) {
 				Splitter.advance(segments, buffer);
-				buffer = StringBuilder();
+				buffer = new StringBuilder();
 			}
 			else {
 				if (c == '}' && depth == 1) {
 					depth--;
 					Splitter.advance(segments, buffer);
-					buffer = StringBuilder();
+					buffer = new StringBuilder();
 				}
 			}
 			else {

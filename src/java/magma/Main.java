@@ -487,7 +487,8 @@ public class Main {
         return maybeNames.map(names -> {
             final var joinedNames = names.stream()
                     .map(name -> "auto " + name)
-                    .collect(Collectors.joining(", "));
+                    .collect(Collectors.joining(", "))
+                    .orElse("");
 
             return "auto " + createUniqueName() + "(" + joinedNames + "){" + compiled + "\n" + "\t".repeat(depth) + "}";
         });

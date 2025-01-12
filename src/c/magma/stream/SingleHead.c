@@ -8,8 +8,7 @@ struct SingleHead<T> implements Head<T> {private final T value;private boolean r
 	Option<T> next(){
 		if (this.retrieved) {
 			return None<>();
-		}
-		this.retrieved  = true;
+		}= true
 		return Some<>(this.value);
 	}
 }

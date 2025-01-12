@@ -15,12 +15,12 @@ struct ValueSplitter implements Splitter {
 			auto c = queue.popOrPanic();
 			if (c == ',' && depth == 0) {
 				Splitter.advance(inputParamsJavaList, buffer);
-				buffer = StringBuilder();
+				buffer = new StringBuilder();
 			}
 			else {
 				buffer.append(c);
 				if (c == ' - ') {
-					if (!queue.isEmpty() && queue.peek().filter(auto _lambda57_(Some[value=auto value]){
+					if (!queue.isEmpty() && queue.peek().filter(auto _lambda58_(auto value){
 						return value == '>';
 					}).isPresent()) {
 						buffer.append(queue.popOrPanic());
