@@ -2,6 +2,7 @@ package magma;
 
 import magma.io.Error;
 import magma.io.Path;
+import magma.java.Deque;
 import magma.java.JavaLinkedList;
 import magma.java.JavaList;
 import magma.java.JavaOptionals;
@@ -163,7 +164,7 @@ public class Main {
         return segments;
     }
 
-    private static <T> T popOrPanic(JavaLinkedList<T> queue) {
+    private static <T> T popOrPanic(Deque<T> queue) {
         return JavaOptionals.from(queue.pop()).map(Tuple::left).orElseThrow();
     }
 
@@ -425,7 +426,7 @@ public class Main {
             char search,
             char enter,
             char exit,
-            JavaLinkedList<Tuple<Integer, Character>> queue) {
+            Deque<Tuple<Integer, Character>> queue) {
         final var previousOption = previous.left();
         if (previousOption.isPresent()) return previous;
 

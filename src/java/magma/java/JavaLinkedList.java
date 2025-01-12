@@ -8,7 +8,7 @@ import magma.stream.Collector;
 
 import java.util.LinkedList;
 
-public class JavaLinkedList<T> {
+public class JavaLinkedList<T> implements Deque<T> {
     private final LinkedList<T> list;
 
     public JavaLinkedList() {
@@ -19,33 +19,31 @@ public class JavaLinkedList<T> {
         this.list = list;
     }
 
-    public static <T> Collector<T, JavaLinkedList<T>> collector() {
-        return new Collector<T, JavaLinkedList<T>>() {
+    public static <T> Collector<T, Deque<T>> collector() {
+        return new Collector<>() {
             @Override
-            public JavaLinkedList<T> createInitial() {
+            public Deque<T> createInitial() {
                 return new JavaLinkedList<>();
             }
 
             @Override
-            public JavaLinkedList<T> fold(JavaLinkedList<T> current, T next) {
+            public Deque<T> fold(Deque<T> current, T next) {
                 return current.add(next);
             }
         };
     }
 
-    private JavaLinkedList<T> add(T next) {
-        this.list.add(next);
-        return this;
-    }
-
+    @Override
     public boolean isEmpty() {
         return this.list.isEmpty();
     }
 
-    public Option<Tuple<T, JavaLinkedList<T>>> pop() {
+    @Override
+    public Option<Tuple<T, Deque<T>>> pop() {
         return isEmpty() ? new None<>() : new Some<>(new Tuple<>(this.list.pop(), this));
     }
 
+    @Override
     public Option<T> peek() {
         return isEmpty() ? new None<>() : new Some<>(this.list.peek());
     }
