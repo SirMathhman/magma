@@ -4,18 +4,16 @@ import magma.java.JavaSet;
 import magma.option.Option;
 import magma.result.Result;
 
-import java.io.IOException;
-
 public interface Path {
     boolean exists();
 
-    Result<JavaSet<Path>, IOException> walk();
+    Result<JavaSet<Path>, Error> walk();
 
-    Result<String, IOException> readString();
+    Result<String, Error> readString();
 
-    Option<IOException> writeString(String output);
+    Option<Error> writeString(String output);
 
-    Option<IOException> createDirectories();
+    Option<Error> createDirectories();
 
     Path relativize(Path child);
 

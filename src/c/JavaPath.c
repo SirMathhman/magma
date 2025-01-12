@@ -1,3 +1,5 @@
+import magma.io.Error;
+import magma.io.IOError;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;

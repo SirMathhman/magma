@@ -1,5 +1,6 @@
 package magma;
 
+import magma.io.Error;
 import magma.io.Path;
 import magma.java.JavaLinkedList;
 import magma.java.JavaList;
@@ -16,7 +17,6 @@ import magma.stream.LengthHead;
 import magma.stream.Stream;
 import magma.stream.Streams;
 
-import java.io.IOException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -30,17 +30,17 @@ public class Main {
         SOURCE_DIRECTORY.walk()
                 .mapValue(Main::filterPaths)
                 .match(Main::compileSources, Some::new)
-                .ifPresent(Throwable::printStackTrace);
+                .ifPresent(error -> System.err.println(error.display()));
     }
 
-    private static Option<IOException> compileSources(JavaSet<Path> sources) {
+    private static Option<Error> compileSources(JavaSet<Path> sources) {
         return sources.stream()
                 .map(Main::compileSource)
                 .flatMap(Streams::fromOption)
                 .next();
     }
 
-    private static Option<IOException> compileSource(Path source) {
+    private static Option<Error> compileSource(Path source) {
         final var relative = SOURCE_DIRECTORY.relativize(source);
         final var parent = relative.getParent().orElse(JavaPaths.get("."));
         final var namespace = computeNamespace(parent);
@@ -54,12 +54,12 @@ public class Main {
         return ensureDirectory(targetParent).or(() -> compileFromSourceToTarget(source, target));
     }
 
-    private static Option<IOException> ensureDirectory(Path targetParent) {
+    private static Option<Error> ensureDirectory(Path targetParent) {
         if (targetParent.exists()) return new None<>();
         return targetParent.createDirectories();
     }
 
-    private static Option<IOException> compileFromSourceToTarget(Path source, Path target) {
+    private static Option<Error> compileFromSourceToTarget(Path source, Path target) {
         return source.readString()
                 .mapValue(Main::compile)
                 .match(target::writeString, Some::new);

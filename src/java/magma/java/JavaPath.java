@@ -1,5 +1,7 @@
 package magma.java;
 
+import magma.io.Error;
+import magma.io.IOError;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
@@ -14,11 +16,11 @@ import java.util.stream.Collectors;
 
 public record JavaPath(Path path) implements magma.io.Path {
     @Override
-    public Result<JavaSet<magma.io.Path>, IOException> walk() {
+    public Result<JavaSet<magma.io.Path>, Error> walk() {
         try (var stream = Files.walk(unwrap())) {
             return new Ok<>(new JavaSet<>(stream.map(JavaPath::new).collect(Collectors.toSet())));
         } catch (IOException e) {
-            return new Err<>(e);
+            return new Err<>(new IOError(new JavaError(e)));
         }
     }
 
@@ -28,31 +30,31 @@ public record JavaPath(Path path) implements magma.io.Path {
     }
 
     @Override
-    public Result<String, IOException> readString() {
+    public Result<String, Error> readString() {
         try {
             return new Ok<>(Files.readString(unwrap()));
         } catch (IOException e) {
-            return new Err<>(e);
+            return new Err<>(new IOError(new JavaError(e)));
         }
     }
 
     @Override
-    public Option<IOException> writeString(String output) {
+    public Option<Error> writeString(String output) {
         try {
             Files.writeString(unwrap(), output);
             return new None<>();
         } catch (IOException e) {
-            return new Some<>(e);
+            return new Some<>(new IOError(new JavaError(e)));
         }
     }
 
     @Override
-    public Option<IOException> createDirectories() {
+    public Option<Error> createDirectories() {
         try {
             Files.createDirectories(unwrap());
             return new None<>();
         } catch (IOException e) {
-            return new Some<>(e);
+            return new Some<>(new IOError(new JavaError(e)));
         }
     }
 
@@ -79,11 +81,7 @@ public record JavaPath(Path path) implements magma.io.Path {
 
     @Override
     public Option<magma.io.Path> getName(int index) {
-        if (index < getNameCount()) {
-            return new Some<>(new JavaPath(this.path.getName(index)));
-        } else {
-            return new None<>();
-        }
+        return index < getNameCount() ? new Some<>(new JavaPath(this.path.getName(index))) : new None<magma.io.Path>();
     }
 
     @Override
