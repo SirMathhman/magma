@@ -7,6 +7,7 @@ import magma.java.JavaSet;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
+import magma.stream.ArrayHead;
 import magma.stream.Collectors;
 import magma.stream.HeadedStream;
 import magma.stream.LengthHead;
@@ -14,7 +15,6 @@ import magma.stream.Stream;
 import magma.stream.Streams;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.function.BiFunction;
@@ -569,10 +569,10 @@ public class Main {
         if (!nameSlice.startsWith("(") || !nameSlice.endsWith(")")) return new None<>();
 
         final var args = nameSlice.substring(1, nameSlice.length() - 1).split(",");
-        return new Some<>(new JavaList<>(Arrays.stream(args)
+        return new Some<>(new HeadedStream<>(new ArrayHead<>(args))
                 .map(String::strip)
                 .filter(value -> !value.isEmpty())
-                .toList()));
+                .collect(JavaList.collector()));
     }
 
     private static Option<String> compileConstruction(int depth, String input) {
