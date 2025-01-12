@@ -22,6 +22,12 @@ public record JavaSet<T>(Set<T> internal) implements magma.collect.Set<T> {
         return new HeadedStream<>(new JavaListHead<>(new ArrayList<>(this.internal)));
     }
 
+    @Override
+    public magma.collect.Set<T> add(T next) {
+        this.internal.add(next);
+        return this;
+    }
+
     private static class SetCollector<T> implements Collector<T, magma.collect.Set<T>> {
         @Override
         public magma.collect.Set<T> createInitial() {

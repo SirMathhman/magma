@@ -1,6 +1,5 @@
-import magma.collect.Set;
+import magma.java.JavaList;
 import magma.option.Option;
-import magma.result.Result;
 import magma.stream.Stream;
 struct Temp {
 }

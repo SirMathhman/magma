@@ -1,20 +1,25 @@
+import magma.collect.List;
+import magma.collect.Set;
 import magma.io.Error;
 import magma.io.Path;
+import magma.collect.Deque;
 import magma.java.JavaLinkedList;
 import magma.java.JavaList;
-import magma.java.JavaOptionals;
 import magma.java.JavaPaths;
 import magma.java.JavaSet;
+import magma.java.Strings;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
+import magma.split.Splitter;
+import magma.split.StatementSplitter;
+import magma.split.ValueSplitter;
 import magma.stream.ArrayHead;
 import magma.stream.Collectors;
 import magma.stream.HeadedStream;
 import magma.stream.LengthHead;
 import magma.stream.Stream;
 import magma.stream.Streams;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 struct Main {
 	Path SOURCE_DIRECTORY = JavaPaths.get(".", "src", "java");
@@ -25,7 +30,7 @@ struct Main {
 			return System.err.println(error.display());
 		});
 	}
-	Option<Error> compileSources(JavaSet<Path> sources){
+	Option<Error> compileSources(Set<Path> sources){
 		return sources.stream().map(Main.compileSource).flatMap(Streams.fromOption).next();
 	}
 	Option<Error> compileSource(Path source){
@@ -39,7 +44,7 @@ struct Main {
 		}
 		auto targetParent = namespace.stream().foldLeft(TARGET_DIRECTORY, Path.resolve);
 		auto target = targetParent.resolve(name + ".c");
-		return ensureDirectory(targetParent).or(auto _lambda1_(magma.option.None@694e1548){
+		return ensureDirectory(targetParent).or(auto _lambda1_(magma.option.None@65ae6ba4){
 			return compileFromSourceToTarget(source, target);
 		});
 	}
@@ -56,91 +61,28 @@ struct Main {
 		auto name = relative.findFileName().toString();
 		return name.substring(0, name.indexOf('.'));
 	}
-	JavaList<String> computeNamespace(Path parent){
+	List<String> computeNamespace(Path parent){
 		return parent.streamNames().map(Path.toString).collect(JavaList.collector());
 	}
 	String compile(String root){
-		return splitAndCompile(Main.splitByStatements, Main.compileRootMember, Main.mergeStatements, root);
+		return splitAndCompile(StatementSplitter(), Main.compileRootMember, root);
 	}
-	String splitAndCompile(Function<String, JavaList<String>> splitter, Function<String, String> compiler, BiFunction<StringBuilder, String, StringBuilder> merger, String input){
-		return splitter.apply(input).stream().map(String.strip).filter(auto _lambda3_(Some[value=auto value]){
+	String splitAndCompile(Splitter splitter, Function<String, String> compiler, String input){
+		return splitter.split(input).stream().map(String.strip).filter(auto _lambda3_(Some[value=auto value]){
 			return !value.isEmpty();
 		}).<Option<StringBuilder>>foldLeft(None<>(), auto _lambda2_(Some[value=auto output, auto stripped]){
-			return compileAndMerge(compiler, merger, output, stripped);
+			return compileAndMerge(splitter, compiler, output, stripped);
 		}).map(StringBuilder.toString).orElse("");
 	}
-	Option<StringBuilder> compileAndMerge(Function<String, String> compiler, BiFunction<StringBuilder, String, StringBuilder> merger, Option<StringBuilder> output, String stripped){
+	Option<StringBuilder> compileAndMerge(Splitter splitter, Function<String, String> compiler, Option<StringBuilder> output, String stripped){
 		auto compiled = compiler.apply(stripped);
 		if (output.isEmpty()) {
 			return Some<>(StringBuilder(compiled));
 		}
 		else {
 			return output.map(auto _lambda4_(Some[value=auto inner]){
-				return merger.apply(inner, compiled);
+				return splitter.merge(inner, compiled);
 			});
-		}
-	}
-	StringBuilder mergeStatements(StringBuilder inner, String stripped){
-		return inner.append(stripped);
-	}
-	JavaList<String> splitByStatements(String root){
-		auto segments = JavaList<String>();
-		auto buffer = StringBuilder();
-		auto depth = 0;
-		auto queue = streamChars(root).collect(JavaLinkedList.collector());
-		while (!queue.isEmpty()) {
-			auto c = popOrPanic(queue);
-			buffer.append(c);
-			if (c == '\'') {
-				auto popped = popOrPanic(queue);
-				buffer.append(popped);
-				if (popped == '\\') {
-					buffer.append(popOrPanic(queue));
-				}
-				buffer.append(popOrPanic(queue));
-				continue;
-			}
-			if (c == '"') {
-				while (!queue.isEmpty()) {
-					auto next = popOrPanic(queue);
-					buffer.append(next);
-					if (next == '"') {
-						break;
-					}
-					if (next == '\\') {
-						buffer.append(popOrPanic(queue));
-					}
-				}
-			}
-			if (c == ';' && depth == 0) {
-				advance(segments, buffer);
-				buffer = StringBuilder();
-			}
-			else {
-				if (c == '}' && depth == 1) {
-					depth--;
-					advance(segments, buffer);
-					buffer = StringBuilder();
-				}
-			}
-			else {
-				if (c == '{' || c == '(') {
-					depth++;
-				}
-				if (c == '}' || c == ')') {
-					depth--;
-				}
-			}
-		}
-		advance(segments, buffer);
-		return segments;
-	}
-	T popOrPanic(JavaLinkedList<T> queue){
-		return JavaOptionals.from(queue.pop()).map(Tuple.left).orElseThrow();
-	}
-	void advance(JavaList<String> segments, StringBuilder buffer){
-		if (!buffer.isEmpty()) {
-			segments.add(buffer.toString());
 		}
 	}
 	String compileRootMember(String rootSegment){
@@ -157,7 +99,7 @@ struct Main {
 			if (contentStartIndex !=  - 1) {
 				auto name = withoutKeyword.substring(0, contentStartIndex).strip();
 				auto content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
-				auto compiled = splitAndCompile(Main.splitByStatements, Main.compileClassSegment, Main.mergeStatements, content);
+				auto compiled = splitAndCompile(StatementSplitter(), Main.compileClassSegment, content);
 				return "struct " + name + " {" + compiled + "\n}";
 			}
 		}
@@ -200,14 +142,14 @@ struct Main {
 						auto afterParams = afterParamStart.substring(paramEnd + 1).strip();
 						if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
 							auto inputContent = afterParams.substring(1, afterParams.length() - 1);
-							auto outputContent = splitAndCompile(Main.splitByStatements, auto _lambda5_(Some[value=auto statement]){
+							auto outputContent = splitAndCompile(StatementSplitter(), auto _lambda5_(Some[value=auto statement]){
 								return compileStatement(statement, 2);
-							}, Main.mergeStatements, inputContent);
-							auto outputParams = splitAndCompile(Main.splitByValues, auto _lambda7_(Some[value=auto value]){
-								return compileDefinition(value).orElseGet(auto _lambda6_(magma.option.None@51cdd8a){
+							}, inputContent);
+							auto outputParams = splitAndCompile(ValueSplitter(), auto _lambda7_(Some[value=auto value]){
+								return compileDefinition(value).orElseGet(auto _lambda6_(magma.option.None@4aa8f0b4){
 								return invalidate("definition", value);
 							});
-							}, Main.mergeValues, inputParams);
+							}, inputParams);
 							return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";
 						}
 					}
@@ -227,9 +169,9 @@ struct Main {
 			auto substring = statement.substring("else".length()).strip();String output
 			if (substring.startsWith("{") && substring.endsWith("}")) {
 				auto substring1 = substring.substring(1, substring.length() - 1);
-				output = splitAndCompile(Main.splitByStatements, auto _lambda8_(Some[value=auto statement0]){
+				output = splitAndCompile(StatementSplitter(), auto _lambda8_(Some[value=auto statement0]){
 					return compileStatement(statement0, depth + 1);
-				}, Main.mergeStatements, substring1);
+				}, substring1);
 			}
 			else {
 				output = compileStatement(substring, depth + 1);
@@ -258,9 +200,9 @@ struct Main {
 			auto substring = statement.substring(0, index1);
 			auto substring1 = statement.substring(index1 + 1);
 			if (substring1.endsWith(";")) {
-				auto compiled = compileDefinition(substring).or(auto _lambda10_(magma.option.None@4e7dc304){
+				auto compiled = compileDefinition(substring).or(auto _lambda10_(magma.option.None@6a6824be){
 					return compileSymbol(substring);
-				}).orElseGet(auto _lambda9_(magma.option.None@d44fc21){
+				}).orElseGet(auto _lambda9_(magma.option.None@7960847b){
 					return invalidate("definition", substring);
 				});
 				auto compiled1 = compileValue(depth, substring1.substring(0, substring1.length() - ";".length()).strip());
@@ -273,11 +215,11 @@ struct Main {
 				return generateStatement(depth, newCaller.unwrap());
 			}
 		}
-		return compileDefinitionStatement(statement).or(auto _lambda13_(magma.option.None@48503868){
+		return compileDefinitionStatement(statement).or(auto _lambda13_(magma.option.None@2c13da15){
 			return compilePostfix(statement, "--", depth);
-		}).or(auto _lambda12_(magma.option.None@10bbd20a){
+		}).or(auto _lambda12_(magma.option.None@512ddf17){
 			return compilePostfix(statement, "++", depth);
-		}).orElseGet(auto _lambda11_(magma.option.None@64729b1e){
+		}).orElseGet(auto _lambda11_(magma.option.None@5c8da962){
 			return invalidate("statement", statement);
 		});
 	}
@@ -317,7 +259,7 @@ struct Main {
             final String outputContent;
             if (content.startsWith("{") && content.endsWith("}")) {
                 final var substring = content.substring(1, content.length() - 1);
-                outputContent = splitAndCompile(Main::splitByStatements, statement1 -> compileStatement(statement1, depth + 1), Main::mergeStatements, substring);
+                outputContent = splitAndCompile(new StatementSplitter(), statement1 -> compileStatement(statement1, depth + 1), substring);
             } else {
                 outputContent = compileStatement(content, depth + 1);
             }
@@ -330,24 +272,24 @@ struct Main {
 		auto queue = streamCharsWithIndices(input).collect(JavaLinkedList.collector());
 		auto depth = 0;
 		while (!queue.isEmpty()) {
-			auto popped = popOrPanic(queue);
+			auto popped = queue.popOrPanic();
 			auto i = popped.left();
 			auto c = popped.right();
 			if (c == '\'') {
-				auto popped1 = popOrPanic(queue).right();
+				auto popped1 = queue.popOrPanic().right();
 				if (popped1 == '\\') {
-					popOrPanic(queue);
+					queue.popOrPanic();
 				}
-				popOrPanic(queue);
+				queue.popOrPanic();
 			}
 			if (c == '"') {
 				while (!queue.isEmpty()) {
-					auto next = popOrPanic(queue).right();
+					auto next = queue.popOrPanic().right();
 					if (next == '"') {
 						break;
 					}
 					if (next == '\\') {
-						popOrPanic(queue);
+						queue.popOrPanic();
 					}
 				}
 			}
@@ -374,9 +316,9 @@ struct Main {
 		return findMatchingChar(substring, Main.streamReverseIndices, '(', ')', '(').map(auto _lambda15_(Some[value=auto index]){
 		auto caller = substring.substring(0, index);
 		auto substring1 = substring.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda14_(Some[value=auto value]){
+		auto compiled = splitAndCompile(ValueSplitter(), auto _lambda14_(Some[value=auto value]){
 			return compileValue(depth, value.strip());
-		}, Main.mergeValues, substring1);
+		}, substring1);
 		auto newCaller = compileValue(depth, caller.strip());
 		return newCaller + "(" + compiled + ")";
 		});
@@ -385,7 +327,7 @@ struct Main {
 		auto queue = streamer.apply(input).extendBy(input.charAt).collect(JavaLinkedList.collector());
 		auto current = Tuple<Option<Integer>, Integer>(None<>(), 0);
 		while (!queue.isEmpty()) {
-			auto tuple = popOrPanic(queue);
+			auto tuple = queue.popOrPanic();
 			current = findArgStateFold(current, tuple, search, enter, exit, queue);
 		}
 		return current.left();
@@ -395,7 +337,7 @@ struct Main {
 			return input.length() - 1 - index;
 		});
 	}
-	Integer> findArgStateFold(Tuple<Option<Integer>, Integer> previous, Tuple<Integer, Character> tuple, char search, char enter, char exit, JavaLinkedList<Tuple<Integer, Character>> queue){
+	Integer> findArgStateFold(Tuple<Option<Integer>, Integer> previous, Tuple<Integer, Character> tuple, char search, char enter, char exit, Deque<Tuple<Integer, Character>> queue){
 		auto previousOption = previous.left();
 		if (previousOption.isPresent()) {
 			return previous;
@@ -404,11 +346,11 @@ struct Main {
 		auto i = tuple.left();
 		auto c = tuple.right();
 		if (c == '\'') {
-			auto popped = popOrPanic(queue);
+			auto popped = queue.popOrPanic();
 			if (popped.right() == '\\') {
-				popOrPanic(queue);
+				queue.popOrPanic();
 			}
-			popOrPanic(queue);
+			queue.popOrPanic();
 		}
 		if (c == search && depth == 0) {
 			return Tuple<>(Some<>(i), depth);
@@ -422,37 +364,37 @@ struct Main {
 		return Tuple<>(None<>(), depth);
 	}
 	String compileValue(int depth, String input){
-		return compileSymbol(input).or(auto _lambda32_(magma.option.None@6acdbdf5){
+		return compileSymbol(input).or(auto _lambda32_(magma.option.None@12bb4df8){
 			return compileNumber(input);
-		}).or(auto _lambda31_(magma.option.None@15d0c81b){
+		}).or(auto _lambda31_(magma.option.None@77468bd9){
 			return compileString(input);
-		}).or(auto _lambda30_(magma.option.None@74650e52){
+		}).or(auto _lambda30_(magma.option.None@2f333739){
 			return compileChar(input);
-		}).or(auto _lambda29_(magma.option.None@1786dec2){
+		}).or(auto _lambda29_(magma.option.None@2aae9190){
 			return compileNot(depth, input);
-		}).or(auto _lambda28_(magma.option.None@3b088d51){
+		}).or(auto _lambda28_(magma.option.None@21588809){
 			return compileConstruction(depth, input);
-		}).or(auto _lambda27_(magma.option.None@53f65459){
+		}).or(auto _lambda27_(magma.option.None@14899482){
 			return compileLambda(depth, input);
-		}).or(auto _lambda26_(magma.option.None@4d95d2a2){
+		}).or(auto _lambda26_(magma.option.None@11028347){
 			return compileInvocation(depth, input);
-		}).or(auto _lambda25_(magma.option.None@1e965684){
+		}).or(auto _lambda25_(magma.option.None@707f7052){
 			return compileAccess(depth, input, ".");
-		}).or(auto _lambda24_(magma.option.None@167fdd33){
+		}).or(auto _lambda24_(magma.option.None@2a33fae0){
 			return compileAccess(depth, input, "::");
-		}).or(auto _lambda23_(magma.option.None@5f282abb){
+		}).or(auto _lambda23_(magma.option.None@ed17bee){
 			return compileOperator(depth, input, "+");
-		}).or(auto _lambda22_(magma.option.None@1d29cf23){
+		}).or(auto _lambda22_(magma.option.None@7c53a9eb){
 			return compileOperator(depth, input, "-");
-		}).or(auto _lambda21_(magma.option.None@27a5f880){
+		}).or(auto _lambda21_(magma.option.None@311d617d){
 			return compileOperator(depth, input, "==");
-		}).or(auto _lambda20_(magma.option.None@394e1a0f){
+		}).or(auto _lambda20_(magma.option.None@16f65612){
 			return compileOperator(depth, input, "!=");
-		}).or(auto _lambda19_(magma.option.None@396f6598){
+		}).or(auto _lambda19_(magma.option.None@3b192d32){
 			return compileOperator(depth, input, "&&");
-		}).or(auto _lambda18_(magma.option.None@5a1c0542){
+		}).or(auto _lambda18_(magma.option.None@9e89d68){
 			return compileTernary(depth, input);
-		}).orElseGet(auto _lambda17_(magma.option.None@1f7030a6){
+		}).orElseGet(auto _lambda17_(magma.option.None@368239c8){
 			return invalidate("value", input);
 		});
 	}
@@ -531,9 +473,9 @@ struct Main {
 		}String compiled
 		if (afterArrow.startsWith("{") && afterArrow.endsWith("}")) {
 			auto substring1 = afterArrow.substring(1, afterArrow.length() - 1);
-			compiled = splitAndCompile(Main.splitByStatements, auto _lambda33_(Some[value=auto statement]){
+			compiled = splitAndCompile(StatementSplitter(), auto _lambda33_(Some[value=auto statement]){
 				return compileStatement(statement, depth);
-			}, Main.mergeStatements, substring1);
+			}, substring1);
 		}
 		else {
 			compiled = generateReturn(compileValue(depth, afterArrow), depth + 1);
@@ -550,7 +492,7 @@ struct Main {
 		counter++;
 		return lambda;
 	}
-	Option<JavaList<String>> findLambdaNames(String nameSlice){
+	Option<List<String>> findLambdaNames(String nameSlice){
 		if (nameSlice.isEmpty()) {
 			return Some<>(JavaList<>());
 		}
@@ -579,14 +521,11 @@ struct Main {
 		auto caller = withoutEnd.substring(0, index);
 		auto compiled1 = compileType(caller.strip());
 		auto substring1 = withoutEnd.substring(index + 1);
-		auto compiled = splitAndCompile(Main.splitByValues, auto _lambda36_(Some[value=auto value]){
+		auto compiled = splitAndCompile(ValueSplitter(), auto _lambda36_(Some[value=auto value]){
 			return compileValue(depth, value.strip());
-		}, Main.mergeValues, substring1);
+		}, substring1);
 		return compiled1 + "(" + compiled + ")";
 		});
-	}
-	StringBuilder mergeValues(StringBuilder inner, String stripped){
-		return inner.append(", ").append(stripped);
 	}
 	Option<String> compileOperator(int depth, String input, String operator){
 		auto index2 = input.indexOf(operator);
@@ -601,11 +540,7 @@ struct Main {
 		auto value1 = value.startsWith("-")
                 ? value.substring(1)
                 : value;
-		return streamChars(value1).collect(Collectors.allMatch(Character.isDigit));
-	}
-	Stream<Character> streamChars(String value1){
-		return HeadedStream<>(new LengthHead(value1.length()))
-                .map(value1.charAt);
+		return Strings.streamChars(value1).collect(Collectors.allMatch(Character.isDigit));
 	}
 	boolean isSymbol(String value){
 		return streamCharsWithIndices(value).collect(Collectors.allMatch(Main.isSymbolChar));
@@ -639,9 +574,9 @@ struct Main {
 		if (input.endsWith("[]")) {
 			return "Slice<" + input.substring(0, input.length() - "[]".length()) + ">";
 		}
-		return compileGenericType(input).or(auto _lambda40_(magma.option.None@17579e0f){
+		return compileGenericType(input).or(auto _lambda40_(magma.option.None@7a7b0070){
 			return compileSymbol(input);
-		}).orElseGet(auto _lambda39_(magma.option.None@4b1c1ea0){
+		}).orElseGet(auto _lambda39_(magma.option.None@4cc77c2e){
 			return invalidate("type", input);
 		});
 	}
@@ -656,42 +591,11 @@ struct Main {
 			return None<>();
 		}
 		auto inputArgs = withEnd.substring(0, withEnd.length() - ">".length());
-		auto outputArgs = splitAndCompile(Main.splitByValues, Main.compileType, Main.mergeValues, inputArgs);
+		auto outputArgs = splitAndCompile(ValueSplitter(), Main.compileType, inputArgs);
 		return Some<>(caller + "<" + outputArgs + ">");
 	}
-	JavaList<String> splitByValues(String inputParams){
-		auto inputParamsJavaList = JavaList<String>();
-		auto buffer = StringBuilder();
-		auto depth = 0;
-		auto queue = streamChars(inputParams).collect(JavaLinkedList.collector());
-		while (!queue.isEmpty()) {
-			auto c = popOrPanic(queue);
-			if (c == ',' && depth == 0) {
-				advance(inputParamsJavaList, buffer);
-				buffer = StringBuilder();
-			}
-			else {
-				buffer.append(c);
-				if (c == ' - ') {
-					if (!queue.isEmpty() && queue.peek().filter(auto _lambda41_(Some[value=auto value]){
-						return value == '>';
-					}).isPresent()) {
-						buffer.append(popOrPanic(queue));
-					}
-				}
-				if (c == '<' || c == '(') {
-					depth++;
-				}
-				if (c == '>' || c == ')') {
-					depth--;
-				}
-			}
-		}
-		advance(inputParamsJavaList, buffer);
-		return inputParamsJavaList;
-	}
-	JavaSet<Path> filterPaths(JavaSet<Path> paths){
-		return paths.stream().filter(Path.isRegularFile).filter(auto _lambda42_(Some[value=auto path]){
+	Set<Path> filterPaths(Set<Path> paths){
+		return paths.stream().filter(Path.isRegularFile).filter(auto _lambda41_(Some[value=auto path]){
 			return path.toString().endsWith(".java");
 		}).collect(JavaSet.collector());
 	}
