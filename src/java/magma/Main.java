@@ -573,13 +573,19 @@ public class Main {
     }
 
     private static String compileType(String input) {
-        if (input.equals("var")) return "auto";
-
-        if (input.endsWith("[]")) return "Slice<" + input.substring(0, input.length() - "[]".length()) + ">";
-
-        return compileGenericType(input)
+        return compileVar(input)
+                .or(() -> compileArray(input))
+                .or(() -> compileGenericType(input))
                 .or(() -> compileSymbol(input))
                 .orElseGet(() -> invalidate("type", input));
+    }
+
+    private static Option<String> compileVar(String input) {
+        return input.equals("var") ? new Some<>("auto") : new None<>();
+    }
+
+    private static Option<String> compileArray(String input) {
+        return truncateRight(input, "[]").map(inner -> generateGeneric("Slice", compileType(inner)));
     }
 
     private static Option<String> compileGenericType(String input) {
@@ -588,14 +594,19 @@ public class Main {
             final var withEnd = tuple.right();
             return truncateRight(withEnd, ">").map(inputArgs -> {
                 final var outputArgs = splitAndCompile(new ValueSplitter(), Main::compileType, inputArgs);
-                return caller + "<" + outputArgs + ">";
+                return generateGeneric(caller, outputArgs);
             });
         });
+    }
+
+    private static String generateGeneric(String caller, String outputArgs) {
+        return caller + "<" + outputArgs + ">";
     }
 
     private static Option<Tuple<String, String>> split(String input, String infix) {
         final var index = input.indexOf(infix);
         if (index == -1) return new None<>();
+
         final var left = input.substring(0, index);
         final var right = input.substring(index + infix.length());
         return new Some<>(new Tuple<>(left, right));

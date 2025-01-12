@@ -20,7 +20,7 @@ struct ValueSplitter implements Splitter {
 			else {
 				buffer.append(c);
 				if (c == ' - ') {
-					if (!queue.isEmpty() && queue.peek().filter(auto _lambda42_(Some[value=auto value]){
+					if (!queue.isEmpty() && queue.peek().filter(auto _lambda47_(Some[value=auto value]){
 						return value == '>';
 					}).isPresent()) {
 						buffer.append(queue.popOrPanic());
