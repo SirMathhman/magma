@@ -7,21 +7,18 @@ import magma.java.JavaSet;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;
+import magma.stream.Collectors;
 import magma.stream.HeadedStream;
 import magma.stream.LengthHead;
 import magma.stream.Stream;
 import magma.stream.Streams;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Main {
@@ -50,7 +47,8 @@ public class Main {
         final var namespace = computeNamespace(parent);
         final var name = computeName(relative);
 
-        if (namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))) return new None<>();
+        final var namespaceSlice = namespace.slice(0, 2).orElse(new JavaList<>());
+        if (namespaceSlice.equals(JavaList.of("magma", "java"))) return new None<>();
 
         final var targetParent = namespace.stream().foldLeft(TARGET_DIRECTORY, Path::resolve);
         final var target = targetParent.resolve(name + ".c");
@@ -82,11 +80,11 @@ public class Main {
     }
 
     private static String compile(String root) {
-        return splitAndCompile(Main::splitByStatements, rootSegment -> compileRootMember(rootSegment, 1), Main::mergeStatements, root);
+        return splitAndCompile(Main::splitByStatements, Main::compileRootMember, Main::mergeStatements, root);
     }
 
     private static String splitAndCompile(
-            Function<String, List<String>> splitter,
+            Function<String, JavaList<String>> splitter,
             Function<String, String> compiler,
             BiFunction<StringBuilder, String, StringBuilder> merger,
             String input
@@ -95,7 +93,7 @@ public class Main {
                 .stream()
                 .map(String::strip)
                 .filter(value -> !value.isEmpty())
-                .<Option<StringBuilder>>reduce(new None<>(), (output, stripped) -> compileAndMerge(compiler, merger, output, stripped), (_, next) -> next)
+                .<Option<StringBuilder>>foldLeft(new None<>(), (output, stripped) -> compileAndMerge(compiler, merger, output, stripped))
                 .map(StringBuilder::toString)
                 .orElse("");
     }
@@ -118,14 +116,14 @@ public class Main {
         return inner.append(stripped);
     }
 
-    private static List<String> splitByStatements(String root) {
-        var segments = new ArrayList<String>();
+    private static JavaList<String> splitByStatements(String root) {
+        var segments = new JavaList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
 
         final var queue = IntStream.range(0, root.length())
                 .mapToObj(root::charAt)
-                .collect(Collectors.toCollection(LinkedList::new));
+                .collect(java.util.stream.Collectors.toCollection(LinkedList::new));
 
         while (!queue.isEmpty()) {
             var c = queue.pop();
@@ -170,11 +168,11 @@ public class Main {
         return segments;
     }
 
-    private static void advance(List<String> segments, StringBuilder buffer) {
+    private static void advance(JavaList<String> segments, StringBuilder buffer) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static String compileRootMember(String rootSegment, int depth) {
+    private static String compileRootMember(String rootSegment) {
         if (rootSegment.startsWith("package ")) return "";
         if (rootSegment.startsWith("import ")) return rootSegment + "\n";
 
@@ -185,7 +183,7 @@ public class Main {
             if (contentStartIndex != -1) {
                 final var name = withoutKeyword.substring(0, contentStartIndex).strip();
                 final var content = withoutKeyword.substring(contentStartIndex + 1, withoutKeyword.length() - 1);
-                final var compiled = splitAndCompile(Main::splitByStatements, classSegment -> compileClassSegment(classSegment, depth + 1), Main::mergeStatements, content);
+                final var compiled = splitAndCompile(Main::splitByStatements, classSegment -> compileClassSegment(classSegment), Main::mergeStatements, content);
                 return "struct " + name + " {" + compiled + "\n}";
             }
         }
@@ -201,13 +199,13 @@ public class Main {
         return rootSegment;
     }
 
-    private static String compileClassSegment(String classSegment, int depth) {
+    private static String compileClassSegment(String classSegment) {
         if (classSegment.endsWith(";")) {
             final var substring = classSegment.substring(0, classSegment.length() - 1);
             final var index = substring.indexOf('=');
             if (index != -1) {
                 final var definition = substring.substring(0, index);
-                final var compiled = compileValue(depth, substring.substring(index + 1));
+                final var compiled = compileValue(2, substring.substring(index + 1));
                 return "\n\t" + compileDefinition(definition).orElseGet(() -> invalidate("definition", definition)) + " = " + compiled + ";";
             }
         }
@@ -230,7 +228,7 @@ public class Main {
                         final var afterParams = afterParamStart.substring(paramEnd + 1).strip();
                         if (afterParams.startsWith("{") && afterParams.endsWith("}")) {
                             final var inputContent = afterParams.substring(1, afterParams.length() - 1);
-                            final var outputContent = splitAndCompile(Main::splitByStatements, statement -> compileStatement(statement, depth), Main::mergeStatements, inputContent);
+                            final var outputContent = splitAndCompile(Main::splitByStatements, statement -> compileStatement(statement, 2), Main::mergeStatements, inputContent);
                             final var outputParams = splitAndCompile(Main::splitByValues, value -> compileDefinition(value).orElseGet(() -> invalidate("definition", value)), Main::mergeValues, inputParams);
                             return "\n\t" + type + " " + name + "(" + outputParams + "){" + outputContent + "\n\t}";
                         }
@@ -348,7 +346,7 @@ public class Main {
     private static Option<Integer> findConditionParamEnd(String input) {
         final var queue = IntStream.range(0, input.length())
                 .mapToObj(index -> new Tuple<>(index, input.charAt(index)))
-                .collect(Collectors.toCollection(LinkedList::new));
+                .collect(java.util.stream.Collectors.toCollection(LinkedList::new));
 
         var depth = 0;
         while (!queue.isEmpty()) {
@@ -564,17 +562,17 @@ public class Main {
         return lambda;
     }
 
-    private static Option<List<String>> findLambdaNames(String nameSlice) {
-        if (nameSlice.isEmpty()) return new Some<>(Collections.emptyList());
-        if (isSymbol(nameSlice)) return new Some<>(List.of(nameSlice));
+    private static Option<JavaList<String>> findLambdaNames(String nameSlice) {
+        if (nameSlice.isEmpty()) return new Some<>(new JavaList<>());
+        if (isSymbol(nameSlice)) return new Some<>(JavaList.of(nameSlice));
 
         if (!nameSlice.startsWith("(") || !nameSlice.endsWith(")")) return new None<>();
 
         final var args = nameSlice.substring(1, nameSlice.length() - 1).split(",");
-        return new Some<>(Arrays.stream(args)
+        return new Some<>(new JavaList<>(Arrays.stream(args)
                 .map(String::strip)
                 .filter(value -> !value.isEmpty())
-                .toList());
+                .toList()));
     }
 
     private static Option<String> compileConstruction(int depth, String input) {
@@ -669,19 +667,19 @@ public class Main {
         return new Some<>(caller + "<" + outputArgs + ">");
     }
 
-    private static List<String> splitByValues(String inputParams) {
-        final var inputParamsList = new ArrayList<String>();
+    private static JavaList<String> splitByValues(String inputParams) {
+        final var inputParamsJavaList = new JavaList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
 
         final var queue = IntStream.range(0, inputParams.length())
                 .mapToObj(inputParams::charAt)
-                .collect(Collectors.toCollection(LinkedList::new));
+                .collect(java.util.stream.Collectors.toCollection(LinkedList::new));
 
         while (!queue.isEmpty()) {
             final var c = queue.pop();
             if (c == ',' && depth == 0) {
-                advance(inputParamsList, buffer);
+                advance(inputParamsJavaList, buffer);
                 buffer = new StringBuilder();
             } else {
                 buffer.append(c);
@@ -694,13 +692,13 @@ public class Main {
                 if (c == '>' || c == ')') depth--;
             }
         }
-        advance(inputParamsList, buffer);
-        return inputParamsList;
+        advance(inputParamsJavaList, buffer);
+        return inputParamsJavaList;
     }
 
     private static JavaSet<Path> filterPaths(JavaSet<Path> paths) {
         return paths.stream()
-                .filter(path1 -> path1.isRegularFile())
+                .filter(Path::isRegularFile)
                 .filter(path -> path.toString().endsWith(".java"))
                 .collect(JavaSet.collector());
     }

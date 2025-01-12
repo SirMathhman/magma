@@ -8,7 +8,9 @@ import magma.stream.HeadedStream;
 import magma.stream.Stream;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class JavaList<T> {
     private final List<T> internal;
@@ -25,7 +27,25 @@ public class JavaList<T> {
         return new ListCollector<>();
     }
 
-    private JavaList<T> add(T next) {
+    @SafeVarargs
+    public static <T> JavaList<T> of(T... values) {
+        return new JavaList<>(Arrays.asList(values));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JavaList<?> javaList = (JavaList<?>) o;
+        return Objects.equals(this.internal, javaList.internal);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.internal);
+    }
+
+    public JavaList<T> add(T next) {
         this.internal.add(next);
         return this;
     }
@@ -34,7 +54,7 @@ public class JavaList<T> {
         return this.internal.size();
     }
 
-    public Option<JavaList<T>> subList(int start, int end) {
+    public Option<JavaList<T>> slice(int start, int end) {
         if (start >= 0 && end >= 0 && start < size() && end < size() && end >= start) {
             return new Some<>(new JavaList<>(this.internal.subList(start, end)));
         }
