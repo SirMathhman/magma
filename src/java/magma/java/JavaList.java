@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class JavaList<T> {
+public class JavaList<T> implements magma.collect.List<T> {
     private final List<T> internal;
 
     public JavaList() {
@@ -23,12 +23,12 @@ public class JavaList<T> {
         this.internal = internal;
     }
 
-    public static <T> Collector<T, JavaList<T>> collector() {
+    public static <T> Collector<T, magma.collect.List<T>> collector() {
         return new ListCollector<>();
     }
 
     @SafeVarargs
-    public static <T> JavaList<T> of(T... values) {
+    public static <T> magma.collect.List<T> of(T... values) {
         return new JavaList<>(Arrays.asList(values));
     }
 
@@ -45,16 +45,19 @@ public class JavaList<T> {
         return Objects.hashCode(this.internal);
     }
 
+    @Override
     public JavaList<T> add(T next) {
         this.internal.add(next);
         return this;
     }
 
+    @Override
     public int size() {
         return this.internal.size();
     }
 
-    public Option<JavaList<T>> slice(int start, int end) {
+    @Override
+    public Option<magma.collect.List<T>> slice(int start, int end) {
         if (start >= 0 && end >= 0 && start <= size() && end <= size() && start <= end) {
             return new Some<>(new JavaList<>(this.internal.subList(start, end)));
         }
@@ -62,18 +65,19 @@ public class JavaList<T> {
         return new None<>();
     }
 
+    @Override
     public Stream<T> stream() {
         return new HeadedStream<>(new JavaListHead<>(this.internal));
     }
 
-    private static class ListCollector<T> implements Collector<T, JavaList<T>> {
+    private static class ListCollector<T> implements Collector<T, magma.collect.List<T>> {
         @Override
-        public JavaList<T> createInitial() {
+        public magma.collect.List<T> createInitial() {
             return new JavaList<>();
         }
 
         @Override
-        public JavaList<T> fold(JavaList<T> current, T next) {
+        public magma.collect.List<T> fold(magma.collect.List<T> current, T next) {
             return current.add(next);
         }
     }

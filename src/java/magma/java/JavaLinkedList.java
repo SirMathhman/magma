@@ -1,6 +1,7 @@
 package magma.java;
 
 import magma.Tuple;
+import magma.collect.Deque;
 import magma.option.None;
 import magma.option.Option;
 import magma.option.Some;

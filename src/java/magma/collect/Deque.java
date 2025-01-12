@@ -1,4 +1,4 @@
-package magma.java;
+package magma.collect;
 
 import magma.Tuple;
 import magma.option.Option;

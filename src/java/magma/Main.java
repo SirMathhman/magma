@@ -1,8 +1,9 @@
 package magma;
 
+import magma.collect.List;
 import magma.io.Error;
 import magma.io.Path;
-import magma.java.Deque;
+import magma.collect.Deque;
 import magma.java.JavaLinkedList;
 import magma.java.JavaList;
 import magma.java.JavaOptionals;
@@ -71,7 +72,7 @@ public class Main {
         return name.substring(0, name.indexOf('.'));
     }
 
-    private static JavaList<String> computeNamespace(Path parent) {
+    private static List<String> computeNamespace(Path parent) {
         return parent.streamNames()
                 .map(Path::toString)
                 .collect(JavaList.collector());
@@ -82,7 +83,7 @@ public class Main {
     }
 
     private static String splitAndCompile(
-            Function<String, JavaList<String>> splitter,
+            Function<String, List<String>> splitter,
             Function<String, String> compiler,
             BiFunction<StringBuilder, String, StringBuilder> merger,
             String input
@@ -114,7 +115,7 @@ public class Main {
         return inner.append(stripped);
     }
 
-    private static JavaList<String> splitByStatements(String root) {
+    private static List<String> splitByStatements(String root) {
         var segments = new JavaList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -557,7 +558,7 @@ public class Main {
         return lambda;
     }
 
-    private static Option<JavaList<String>> findLambdaNames(String nameSlice) {
+    private static Option<List<String>> findLambdaNames(String nameSlice) {
         if (nameSlice.isEmpty()) return new Some<>(new JavaList<>());
         if (isSymbol(nameSlice)) return new Some<>(JavaList.of(nameSlice));
 
@@ -668,7 +669,7 @@ public class Main {
         return new Some<>(caller + "<" + outputArgs + ">");
     }
 
-    private static JavaList<String> splitByValues(String inputParams) {
+    private static List<String> splitByValues(String inputParams) {
         final var inputParamsJavaList = new JavaList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
