@@ -1,5 +1,6 @@
 package magma.java;
 
+import magma.collect.Set;
 import magma.io.Error;
 import magma.io.IOError;
 import magma.option.None;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 
 public record JavaPath(Path path) implements magma.io.Path {
     @Override
-    public Result<JavaSet<magma.io.Path>, Error> walk() {
+    public Result<Set<magma.io.Path>, Error> walk() {
         try (var stream = Files.walk(this.path)) {
             return new Ok<>(new JavaSet<>(stream.map(JavaPath::new).collect(Collectors.toSet())));
         } catch (IOException e) {

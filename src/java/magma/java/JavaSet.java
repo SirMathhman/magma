@@ -8,32 +8,28 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public record JavaSet<T>(Set<T> internal) {
+public record JavaSet<T>(Set<T> internal) implements magma.collect.Set<T> {
     public JavaSet() {
         this(new HashSet<>());
     }
 
-    public static <T> Collector<T, JavaSet<T>> collector() {
+    public static <T> Collector<T, magma.collect.Set<T>> collector() {
         return new SetCollector<>();
     }
 
-    private JavaSet<T> add(T next) {
-        this.internal.add(next);
-        return this;
-    }
-
+    @Override
     public Stream<T> stream() {
         return new HeadedStream<>(new JavaListHead<>(new ArrayList<>(this.internal)));
     }
 
-    private static class SetCollector<T> implements Collector<T, JavaSet<T>> {
+    private static class SetCollector<T> implements Collector<T, magma.collect.Set<T>> {
         @Override
-        public JavaSet<T> createInitial() {
+        public magma.collect.Set<T> createInitial() {
             return new JavaSet<>();
         }
 
         @Override
-        public JavaSet<T> fold(JavaSet<T> current, T next) {
+        public magma.collect.Set<T> fold(magma.collect.Set<T> current, T next) {
             return current.add(next);
         }
     }

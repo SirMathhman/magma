@@ -1,6 +1,7 @@
 package magma;
 
 import magma.collect.List;
+import magma.collect.Set;
 import magma.io.Error;
 import magma.io.Path;
 import magma.collect.Deque;
@@ -35,7 +36,7 @@ public class Main {
                 .ifPresent(error -> System.err.println(error.display()));
     }
 
-    private static Option<Error> compileSources(JavaSet<Path> sources) {
+    private static Option<Error> compileSources(Set<Path> sources) {
         return sources.stream()
                 .map(Main::compileSource)
                 .flatMap(Streams::fromOption)
@@ -696,7 +697,7 @@ public class Main {
         return inputParamsJavaList;
     }
 
-    private static JavaSet<Path> filterPaths(JavaSet<Path> paths) {
+    private static Set<Path> filterPaths(Set<Path> paths) {
         return paths.stream()
                 .filter(Path::isRegularFile)
                 .filter(path -> path.toString().endsWith(".java"))

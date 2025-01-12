@@ -1,6 +1,6 @@
 package magma.io;
 
-import magma.java.JavaSet;
+import magma.collect.Set;
 import magma.option.Option;
 import magma.result.Result;
 import magma.stream.Stream;
@@ -10,7 +10,7 @@ public interface Path {
 
     boolean exists();
 
-    Result<JavaSet<Path>, Error> walk();
+    Result<Set<Path>, Error> walk();
 
     Result<String, Error> readString();
 
