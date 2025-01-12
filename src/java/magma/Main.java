@@ -210,18 +210,8 @@ public class Main {
         final var value = compileConditional(depth, "if", statement);
         if (value.isPresent()) return value.unwrap();
 
-        final var index1 = statement.indexOf("=");
-        if (index1 != -1) {
-            final var substring = statement.substring(0, index1);
-            final var substring1 = statement.substring(index1 + 1);
-            if (substring1.endsWith(";")) {
-                final var compiled = compileDefinition(substring)
-                        .or(() -> compileSymbol(substring))
-                        .orElseGet(() -> invalidate("definition", substring));
-                final var compiled1 = compileValue(depth, substring1.substring(0, substring1.length() - ";".length()).strip());
-                return generateStatement(depth, compiled + " = " + compiled1);
-            }
-        }
+        final var depth1 = compileInitialization(statement, depth);
+        if (depth1.isPresent()) return depth1.unwrap();
 
         if (statement.endsWith(";")) {
             final var newCaller = compileInvocation(depth, statement.substring(0, statement.length() - ";".length()));
@@ -233,6 +223,20 @@ public class Main {
                 .or(() -> compilePostfix(statement, "++", depth))
                 .orElseGet(() -> invalidate("statement", statement));
 
+    }
+
+    private static Option<String> compileInitialization(String statement, int depth) {
+        return split(statement, "=").flatMap(tuple -> {
+            final var beforeEquals = tuple.left();
+            final var afterEquals = tuple.right();
+
+            return truncateRight(afterEquals, ";")
+                    .map(String::strip)
+                    .flatMap(stripped -> compileDefinition(beforeEquals).map(definition -> {
+                        final var compiled1 = compileValue(depth, stripped);
+                        return generateStatement(depth, definition + " = " + compiled1);
+                    }));
+        });
     }
 
     private static Option<String> compileDefinitionStatement(String statement) {
