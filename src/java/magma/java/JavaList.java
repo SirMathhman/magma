@@ -55,7 +55,7 @@ public class JavaList<T> {
     }
 
     public Option<JavaList<T>> slice(int start, int end) {
-        if (start >= 0 && end >= 0 && start < size() && end < size() && end >= start) {
+        if (start >= 0 && end >= 0 && start <= size() && end <= size() && start <= end) {
             return new Some<>(new JavaList<>(this.internal.subList(start, end)));
         }
 
