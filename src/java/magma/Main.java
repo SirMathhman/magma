@@ -1,10 +1,10 @@
 package magma;
 
+import magma.collect.Deque;
 import magma.collect.List;
 import magma.collect.Set;
 import magma.io.Error;
 import magma.io.Path;
-import magma.collect.Deque;
 import magma.java.JavaLinkedList;
 import magma.java.JavaList;
 import magma.java.JavaPaths;
@@ -583,16 +583,26 @@ public class Main {
     }
 
     private static Option<String> compileGenericType(String input) {
-        final var genStart = input.indexOf("<");
-        if (genStart == -1) return new None<>();
+        return split(input, "<").flatMap(tuple -> {
+            final var caller = tuple.left();
+            final var withEnd = tuple.right();
+            return truncateRight(withEnd, ">").map(inputArgs -> {
+                final var outputArgs = splitAndCompile(new ValueSplitter(), Main::compileType, inputArgs);
+                return caller + "<" + outputArgs + ">";
+            });
+        });
+    }
 
-        final var caller = input.substring(0, genStart);
-        final var withEnd = input.substring(genStart + 1);
-        if (!withEnd.endsWith(">")) return new None<>();
+    private static Option<Tuple<String, String>> split(String input, String infix) {
+        final var index = input.indexOf(infix);
+        if (index == -1) return new None<>();
+        final var left = input.substring(0, index);
+        final var right = input.substring(index + infix.length());
+        return new Some<>(new Tuple<>(left, right));
+    }
 
-        final var inputArgs = withEnd.substring(0, withEnd.length() - ">".length());
-        final var outputArgs = splitAndCompile(new ValueSplitter(), Main::compileType, inputArgs);
-        return new Some<>(caller + "<" + outputArgs + ">");
+    private static Option<String> truncateRight(String input, String suffix) {
+        return input.endsWith(suffix) ? new Some<>(input.substring(0, input.length() - suffix.length())) : new None<String>();
     }
 
     private static Set<Path> filterPaths(Set<Path> paths) {
@@ -601,5 +611,4 @@ public class Main {
                 .filter(path -> path.toString().endsWith(".java"))
                 .collect(JavaSet.collector());
     }
-
 }
