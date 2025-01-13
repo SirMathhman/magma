@@ -29,8 +29,7 @@ struct TypeLocator implements Locator {
 		return 1;
 	}
 	Optional<Integer> locate(String input){
-		auto queue = 
-	auto temp(){}(Collectors.toCollection(LinkedList.new));
+		auto queue = auto temp(){}(Collectors.toCollection(LinkedList.new));
 		auto state = temp();
 		while (1) {}
 		return state.left();

@@ -47,8 +47,7 @@ struct State {
 		return appendAndPop().map(Tuple.left);
 	}
 	Optional<Tuple<State, Character>> appendAndPop(){
-		return pop().map(
-	auto temp(){}(State.append));
+		return pop().map(auto temp(){}(State.append));
 	}
 	Optional<Character> peek(){
 		return this.queue.isEmpty() ? Optional.empty() : Optional.of(this.queue.peek());

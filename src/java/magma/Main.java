@@ -325,14 +325,14 @@ public class Main {
                             segment -> compileDefinition(segment).orElseGet(() -> invalidate("definition", segment)),
                             Main::mergeValues);
 
-                    return generateMethod(definition, compiledParams, outputContent);
+                    return "\n\t" + generateMethod(definition, compiledParams, outputContent);
                 });
             });
         });
     }
 
     private static String generateMethod(String definition, String params, String content) {
-        return "\n\t" + definition + "(" + params + ")" + content;
+        return definition + "(" + params + ")" + content;
     }
 
     private static Optional<String> compileContent(String maybeContent) {
