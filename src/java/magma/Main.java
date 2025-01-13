@@ -1,41 +1,49 @@
 package magma;
 
+import magma.java.JavaFiles;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 
     public static void main(String[] args) {
-        try (final var stream = Files.walk(SOURCE_DIRECTORY)) {
-            final var sources = stream
-                    .filter(Files::isRegularFile)
-                    .filter(file -> file.toString().endsWith(".java"))
-                    .collect(Collectors.toSet());
+        JavaFiles.walk(SOURCE_DIRECTORY).match(Main::compileFiles, Optional::of).ifPresent(Throwable::printStackTrace);
+    }
 
-            for (Path source : sources) {
-                final var relativized = SOURCE_DIRECTORY.relativize(source);
-                final var parent = relativized.getParent();
-                final var name = relativized.getFileName().toString();
-                final var nameWithoutExt = name.substring(0, name.indexOf('.'));
-                final var targetParent = TARGET_DIRECTORY.resolve(parent);
-                if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
+    private static Optional<IOException> compileFiles(List<Path> files) {
+        return files.stream()
+                .filter(Files::isRegularFile)
+                .filter(file -> file.toString().endsWith(".java"))
+                .map(Main::compileSource)
+                .flatMap(Optional::stream)
+                .findFirst();
+    }
 
-                final var target = targetParent.resolve(nameWithoutExt + ".c");
-                final var input = Files.readString(source);
-                Files.writeString(target, compileRoot(input));
-            }
-        } catch (IOException e) {
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
+    private static Optional<IOException> compileSource(Path source) {
+        final var relativized = SOURCE_DIRECTORY.relativize(source);
+        final var parent = relativized.getParent();
+        final var name = relativized.getFileName().toString();
+        final var nameWithoutExt = name.substring(0, name.indexOf('.'));
+        final var targetParent = TARGET_DIRECTORY.resolve(parent);
+        if (!Files.exists(targetParent)) {
+            final var directoryError = JavaFiles.createDirectories(targetParent);
+            if (directoryError.isPresent()) return directoryError;
         }
+
+        final var target = targetParent.resolve(nameWithoutExt + ".c");
+        return JavaFiles.readSafe(source).mapValue(input -> {
+            final var output = compileRoot(input);
+            return JavaFiles.writeSafe(target, output);
+        }).match(value -> value, Optional::of);
     }
 
     private static String compileRoot(String root) {
