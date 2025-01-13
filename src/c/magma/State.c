@@ -17,7 +17,7 @@ struct State {
 		this(temp(), temp(), 0, queue);
 	}
 	Optional<Tuple<State, Character>> pop(){
-		if (this.queue.isEmpty() {}
+		if (this.queue.isEmpty()) return Optional.empty();
 		return Optional.of(temp());
 	}
 	boolean isLevel(){
@@ -26,8 +26,9 @@ struct State {
 	boolean isShallow(){
 		return this.depth == 1;
 	}
-	State exit(){
-		if (this.depth == 0) {}
+	State exit(){if (this.depth == 0) {
+            Results.writeErr("Depth cannot be negative.", "", "");
+        }
 		this.depth = from;
 		return this;
 	}
@@ -39,8 +40,10 @@ struct State {
 		this.depth = from;
 		return this;
 	}
-	State advance(){
-		if (!this.buffer.isEmpty() {}
+	State advance(){if (!this.buffer.isEmpty()) {
+            this.segments.add(this.buffer.toString());
+            this.buffer = new StringBuilder();
+        }
 		return this;
 	}
 	Optional<State> appendFromQueue(){

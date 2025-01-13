@@ -27,12 +27,18 @@ struct Main {
 	Optional<IOException> compileSource(Path source){
 		auto relativized = SOURCE_DIRECTORY.relativize(source);
 		auto parent = relativized.getParent();
-		auto namespace = computeNamespace(parent);
-		if (namespace.size() {}
+		auto namespace = computeNamespace(parent);if (namespace.size() >= 2) {
+            final var slice = namespace.subList(0, 2);
+            if (slice.equals(List.of("magma", "java"))) {
+                return Optional.empty();
+            }
+        }
 		auto name = relativized.getFileName().toString();
 		auto nameWithoutExt = name.substring(0, name.indexOf('.'));
-		auto targetParent = TARGET_DIRECTORY.resolve(parent);
-		if (!Files.exists(targetParent) {}
+		auto targetParent = TARGET_DIRECTORY.resolve(parent);if (!Files.exists(targetParent)) {
+            final var directoryError = JavaFiles.createDirectories(targetParent);
+            if (directoryError.isPresent()) return directoryError;
+        }
 		auto target = targetParent.resolve(nameWithoutExt + ".c");
 		return auto temp(){}(auto temp(){}, Optional.of);
 	}
@@ -53,45 +59,53 @@ struct Main {
 	}
 	List<String> slicesOf(((State, Character) => State) other, String root){
 		auto queue = IntStream.range(0, root.length()).mapToObj(root.charAt).collect(Collectors.toCollection(LinkedList.new));
-		auto state = temp();
-		while (true) {}
+		auto state = temp();while (true) {
+            final var optional = state.pop().map(Tuple::right);
+            if (optional.isEmpty()) break;
+
+            final var c = optional.orElseThrow();
+            state = splitAtChar(state, c, other);
+        }
 		auto segments = state.advance().segments;
-		if (state.isLevel() {}
+		return segments;
 		return Results.writeErr("Invalid depth '" + state.depth + "'", root, segments);
 	}
 	State splitAtChar(State state, Character c, ((State, Character) => State) other){
 		return auto temp(){}(auto temp(){}(state, c));
 	}
 	Optional<State> splitDoubleQuotes(State state, char c){
-		if (c != '"') {}
-		auto current = state.append(c);
-		while (true) {}
+		if (c != '"') return Optional.empty();
+		auto current = state.append(c);while (true) {
+            final var processed = splitDoubleQuotesChar(state);
+            if (processed.isEmpty()) break;
+            else current = processed.get();
+        }
 		return Optional.of(current);
 	}
 	Optional<State> splitDoubleQuotesChar(State state){
 		auto maybeNext = state.appendAndPop();
-		if (maybeNext.isEmpty() {}
+		if (maybeNext.isEmpty()) return Optional.empty();
 		auto nextTuple = maybeNext.get();
 		auto nextChar = nextTuple.right();
-		if (nextChar == '"') {}
-		if (nextChar == '\\') {}
+		if (nextChar == '"')
+            return Optional.empty();if (nextChar == '\\') {
+            return Optional.of(state.appendFromQueue().orElse(state));
+        }
 		else {}
 	}
 	State statementChars(State state, char c){
 		auto appended = state.append(c);
-		if (c == ';' && appended.isLevel() {}
-		if (c == '}' && appended.isShallow() {}
-		if (c == '{' || c == '(') {}
-		if (c == '}' || c == ') {}
+		if (c == ';' && appended.isLevel()) return appended.advance();
+		if (c == '}' && appended.isShallow()) return appended.exit().advance();
+		if (c == '{' || c == '(') return appended.enter();
+		if (c == '}' || c == ')') return appended.exit();
 		return appended;
 	}
 	Optional<State> splitSingleQuotes(State state, char c){
-		if (c != '\'') {}
+		if (c != '\'') return Optional.empty();
 		return state.append(c).appendAndPop().flatMap(auto temp(){});
 	}
-	String compileRootSegment(String rootSegment){
-		if (rootSegment.startsWith("package") {}
-		if (rootSegment.startsWith("import") {}
+	String compileRootSegment(String rootSegment){if (rootSegment.startsWith("package")) return "";if (rootSegment.startsWith("import")) return "#include \"temp.h\"\n";
 		return auto temp(){}(auto temp(){}("root segment", rootSegment));
 	}
 	String invalidate(String type, String rootSegment){
@@ -111,7 +125,7 @@ struct Main {
 	}
 	Optional<String> compileType(String type){
 		auto optional = auto temp(){}(auto temp(){}(type));
-		if (optional.isPresent() {}
+		return optional;
 		return writeDebug("type", type);
 	}
 	Optional<String> compileExact(String type, String match, String output){
@@ -128,15 +142,21 @@ struct Main {
 		return truncateRight(type, ">").flatMap(auto temp(){}(auto temp(){}));
 	}
 	StringBuilder mergeValues(StringBuilder builder, String slice){
-		if (builder.isEmpty() {}
+		if (builder.isEmpty()) return builder.append(slice);
 		return builder.append(", ").append(slice);
 	}
 	State valueStrings(State state, Character c){
-		if (c == ',' && state.isLevel() {}
-		auto appended = state.append(c);
-		if (c == '-') {}
-		if (c == '<' || c == '(') {}
-		if (c == '>' || c == ') {}
+		if (c == ',' && state.isLevel()) return state.advance();
+		auto appended = state.append(c);if (c == '-') {
+            final var peeked = appended.peek();
+            if (peeked.isPresent()) {
+                if (peeked.get() == '>') {
+                    return appended.appendFromQueue().orElse(appended);
+                }
+            }
+        }
+		if (c == '<' || c == '(') return appended.enter();
+		if (c == '>' || c == ')') return appended.exit();
 		return appended;
 	}
 	Optional<String> compileFilter(Predicate<String> filter, String type){
@@ -221,7 +241,7 @@ struct Main {
 		return truncateRight(structSegment, ";").flatMap(auto temp(){});
 	}
 	Optional<String> truncateRight(String input, String slice){
-		if (input.endsWith(slice) {}
+		if (input.endsWith(slice)) return Optional.of(input.substring(0, input.length() - slice.length()));
 		return Optional.empty();
 	}
 	Optional<Tuple<String, String>> split(String input, Locator locator){

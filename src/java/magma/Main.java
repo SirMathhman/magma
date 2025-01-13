@@ -361,8 +361,10 @@ public class Main {
         return truncateLeft(statement, prefix).flatMap(inner -> {
             return truncateLeft(inner.strip(), "(").flatMap(inner0 -> {
                 return split(inner0, new FirstLocator(")")).flatMap(tuple -> {
-                    return compileValue(tuple.left().strip()).map(condition -> {
-                        return "\n\t\t" + prefix + " (" + condition + ") {}";
+                    return compileValue(tuple.left().strip()).flatMap(condition -> {
+                        return compileContent(tuple.right()).map(content -> {
+                            return "\n\t\t" + prefix + " (" + condition + ") " + content;
+                        });
                     });
                 });
             });
