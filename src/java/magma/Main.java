@@ -374,7 +374,16 @@ public class Main {
     }
 
     private static String compileValue(String value) {
-        return invalidate("value", value);
+        return compileDataAccess(value)
+                .or(() -> compileSymbol(value))
+                .orElseGet(() -> invalidate("value", value));
+    }
+
+    private static Optional<String> compileDataAccess(String value) {
+        return split(value, new LastLocator(".")).map(tuple -> {
+            final var s = compileValue(tuple.left().strip());
+            return s + "." + tuple.right();
+        });
     }
 
     private static Optional<String> compileInitialization(String structSegment, int depth) {

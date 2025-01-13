@@ -181,6 +181,9 @@ struct Main {
 	String compileValue(String value){
 		return temp;
 	}
+	Optional<String> compileDataAccess(String value){
+		return temp;
+	}
 	Optional<String> compileInitialization(String structSegment, int depth){
 		return temp;
 	}
