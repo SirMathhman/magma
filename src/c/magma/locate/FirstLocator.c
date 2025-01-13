@@ -4,8 +4,8 @@ struct FirstLocator(String slice) implements Locator {
 		return this.slice.length();
 	}
 	Optional<Integer> locate(String input){
-		auto index = input.indexOf();
+		auto index = input.indexOf(this.slice);
 		if (1) {}
-		return Optional.of();
+		return Optional.of(index);
 	}
 };

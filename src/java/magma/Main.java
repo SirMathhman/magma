@@ -364,12 +364,13 @@ public class Main {
         return split(input.strip(), new FirstLocator("(")).flatMap(inner -> truncateRight(inner.right(), ")").map(withoutEnd -> {
             final var caller = inner.left();
             final var compiled = compileValue(caller);
-            return generateInvocation(compiled);
+            final var compiledArgs = compileAndMerge(slicesOf(Main::valueStrings, withoutEnd), Main::compileValue, Main::mergeValues);
+            return generateInvocation(compiled, compiledArgs);
         }));
     }
 
-    private static String generateInvocation(String caller) {
-        return caller + "()";
+    private static String generateInvocation(String caller, String args) {
+        return caller + "(" + args + ")";
     }
 
     private static Optional<String> compileReturn(String statement, int depth) {
@@ -419,7 +420,7 @@ public class Main {
     }
 
     private static Optional<String> compileConstruction(String value) {
-        return value.startsWith("new ") ? Optional.of(generateInvocation("temp")) : Optional.empty();
+        return value.startsWith("new ") ? Optional.of(generateInvocation("temp", "")) : Optional.empty();
     }
 
     private static Optional<String> compileDataAccess(String value) {

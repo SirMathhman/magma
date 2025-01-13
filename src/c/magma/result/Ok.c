@@ -8,9 +8,9 @@ struct Ok<T, X> implements Result<T, X> {
 		return temp();
 	}
 	R match((T => R) onOk, (X => R) onErr){
-		return onOk.apply();
+		return onOk.apply(this.value);
 	}
 	Result<R, X> flatMapValue((T => Result<R, X>) mapper){
-		return mapper.apply();
+		return mapper.apply(this.value);
 	}
 };

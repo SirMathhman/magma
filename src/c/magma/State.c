@@ -14,11 +14,11 @@ struct State {
 		this.queue = from;
 	}
 	public State(Deque<Character> queue){
-		this();
+		this(temp(), temp(), 0, queue);
 	}
 	Optional<Tuple<State, Character>> pop(){
 		if (1) {}
-		return Optional.of();
+		return Optional.of(temp(), this.queue.pop()));
 	}
 	boolean isLevel(){
 		return this.depth == 0;
@@ -31,7 +31,7 @@ struct State {
 		return this;
 	}
 	State append(char c){
-		this.buffer.append();
+		this.buffer.append(c);
 		return this;
 	}
 	State enter(){
@@ -43,9 +43,9 @@ struct State {
 		return this;
 	}
 	Optional<State> appendFromQueue(){
-		return appendAndPop();
+		return appendAndPop().map(Tuple::left);
 	}
 	Optional<Tuple<State, Character>> appendAndPop(){
-		return pop();
+		return pop().map(tuple -> tuple.mergeIntoLeft(State::append));
 	}
 };
