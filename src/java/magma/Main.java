@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -65,8 +66,23 @@ public class Main {
         if (rootSegment.startsWith("package")) return "";
         if (rootSegment.startsWith("import")) return "#include \"temp.h\"\n";
 
-        System.err.println("Invalid root segment: " + rootSegment);
-        return rootSegment;
+        return split(rootSegment, "class").flatMap(tuple -> {
+            return split(tuple.right(), "{").map(tuple0 -> {
+                return "struct " + tuple0.left().strip() + " {\n};";
+            });
+        }).orElseGet(() -> {
+            System.err.println("Invalid root segment: " + rootSegment);
+            return rootSegment;
+        });
+    }
+
+    private static Optional<Tuple<String, String>> split(String input, String slice) {
+        final var index = input.indexOf(slice);
+        if (index == -1) return Optional.empty();
+
+        final var left = input.substring(0, index);
+        final var right = input.substring(index + slice.length());
+        return Optional.of(new Tuple<>(left, right));
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
