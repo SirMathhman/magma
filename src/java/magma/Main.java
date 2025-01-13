@@ -99,8 +99,17 @@ public class Main {
     }
 
     private static Optional<String> compileMethod(String structSegment) {
-        return split(structSegment, "{")
-                .map(inner -> "\n\tvoid temp(){\n\t}");
+        return truncateRight(structSegment, "}")
+                .flatMap(inner -> split(inner, "{")
+                        .map(tuple -> {
+                            final var inputContent = tuple.right();
+                            final var outputContent = splitAndCompile(inputContent, Main::compileStatement);
+                            return "\n\tvoid temp(){" + outputContent + "\n\t}";
+                        }));
+    }
+
+    private static String compileStatement(String statement) {
+        return invalidate("statement", statement);
     }
 
     private static Optional<String> compileInitialization(String structSegment) {
