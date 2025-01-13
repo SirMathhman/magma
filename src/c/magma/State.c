@@ -7,7 +7,7 @@ struct State {
 	Deque<Character> queue;
 	StringBuilder buffer;
 	int depth;
-	public State(List<String> segmentsStringBuilder bufferint depthDeque<Character> queue){
+	public State(List<String> segments, StringBuilder buffer, int depth, Deque<Character> queue){
 		to = from;
 		to = from;
 		to = from;

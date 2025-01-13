@@ -40,22 +40,22 @@ struct Main {
 	String compileRoot(String root){
 		return temp;
 	}
-	String compileAndMerge(List<String> segmentsFunction<String, String> compilerBiFunction<StringBuilder, String, StringBuilder> merger){
+	String compileAndMerge(List<String> segments, Function<String, String> compiler, BiFunction<StringBuilder, String, StringBuilder> merger){
 		to = from;
 		to = from;
 		return temp;
 	}
-	List<String> slicesOf(BiFunction<State, Character, State> otherString root){
+	List<String> slicesOf(BiFunction<State, Character, State> other, String root){
 		to = from;
 		to = from;
 		to = from;
 		to = from;if (1) {}
 		return temp;
 	}
-	State splitAtChar(State stateCharacter cBiFunction<State, Character, State> other){
+	State splitAtChar(State state, Character c, BiFunction<State, Character, State> other){
 		return temp;
 	}
-	Optional<State> splitDoubleQuotes(State statechar c){
+	Optional<State> splitDoubleQuotes(State state, char c){
 		to = from;
 		to = from;
 		to = from;
@@ -71,7 +71,7 @@ struct Main {
             return Optional.of(nextTuple.left());
         }
 	}
-	State statementChars(State statechar c){
+	State statementChars(State state, char c){
 		to = from;
 		to = from;
 		to = from;
@@ -79,21 +79,21 @@ struct Main {
 		to = from;
 		return temp;
 	}
-	Optional<State> splitSingleQuotes(State statechar c){
+	Optional<State> splitSingleQuotes(State state, char c){
 		to = from;
 		to = from;
 	}
 	String compileRootSegment(String rootSegment){if (1) {}if (1) {}
 		return temp;
 	}
-	String invalidate(String typeString rootSegment){
+	String invalidate(String type, String rootSegment){
 		return temp;
 	}
-	T writeError(String messageString rootSegmentT value){
+	T writeError(String message, String rootSegment, T value){
 		temp();
 		return temp;
 	}
-	Optional<String> compileToStruct(String keywordString rootSegment){
+	Optional<String> compileToStruct(String keyword, String rootSegment){
 		to = from;
 	}
 	String compileStructSegment(String structSegment){
@@ -114,11 +114,11 @@ struct Main {
 	Optional<String> compileGeneric(String type){
 		to = from;
 	}
-	StringBuilder mergeValues(StringBuilder builderString slice){
+	StringBuilder mergeValues(StringBuilder builder, String slice){
 		temp();
 		return temp;
 	}
-	State valueStringFrom(State stateCharacter c){
+	State valueStrings(State state, Character c){
 		to = from;
 		to = from;
 		to = from;
@@ -129,41 +129,41 @@ struct Main {
 		to = from;
 		return temp;
 	}
-	String generateDefinition(String typeString name){
+	String generateDefinition(String type, String name){
 		return temp;
 	}
-	String generateStatement(int depthString content){
+	String generateStatement(int depth, String content){
 		return temp;
 	}
 	Optional<String> compileMethod(String structSegment){
 		to = from;
 	}
-	String compileStatement(String statementint depth){
+	String compileStatement(String statement, int depth){
 		return temp;
 	}
 	Optional<String> compileIf(String statement){
 		return temp;
 	}
-	Optional<String> compileInvocation(String statementint depth){
+	Optional<String> compileInvocation(String statement, int depth){
 		return temp;
 	}
-	Optional<String> compileReturn(String statementint depth){
+	Optional<String> compileReturn(String statement, int depth){
 		return temp;
 	}
-	Optional<String> truncateLeft(String inputString slice){
+	Optional<String> truncateLeft(String input, String slice){
 		return temp;
 	}
-	Optional<String> compileAssignment(String statementint depth){
+	Optional<String> compileAssignment(String statement, int depth){
 		to = from;
 	}
 	Optional<String> compileInitialization(String structSegment){
 		to = from;
 	}
-	Optional<String> truncateRight(String inputString slice){
+	Optional<String> truncateRight(String input, String slice){
 		temp();
 		return temp;
 	}
-	Optional<Tuple<String, String>> split(String inputLocator locator){
+	Optional<Tuple<String, String>> split(String input, Locator locator){
 		to = from;
 	}
 };

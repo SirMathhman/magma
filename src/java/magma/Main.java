@@ -228,7 +228,7 @@ public class Main {
     private static Optional<String> compileGeneric(String type) {
         return truncateRight(type, ">").flatMap(inner -> split(inner, new FirstLocator("<")).map(tuple -> {
             final var caller = tuple.left();
-            final var compiledArgs = compileAndMerge(slicesOf(Main::valueStringFrom, tuple.right()), Main::compileType, Main::mergeValues);
+            final var compiledArgs = compileAndMerge(slicesOf(Main::valueStrings, tuple.right()), Main::compileType, Main::mergeValues);
             return caller + "<" + compiledArgs + ">";
         }));
     }
@@ -238,7 +238,7 @@ public class Main {
         return builder.append(", ").append(slice);
     }
 
-    private static State valueStringFrom(State state, Character c) {
+    private static State valueStrings(State state, Character c) {
         if (c == ',' && state.isLevel()) return state.advance();
 
         final var appended = state.append(c);
@@ -272,9 +272,9 @@ public class Main {
 
             return split(beforeContent, new FirstLocator("(")).flatMap(tuple1 -> {
                 final var inputDefinition = tuple1.left();
-                final var compiledParams = compileAndMerge(slicesOf(Main::valueStringFrom, tuple1.right()), segment -> {
-                    return compileDefinition(segment).orElseGet(() -> invalidate("definition", segment));
-                }, StringBuilder::append);
+                final var compiledParams = compileAndMerge(slicesOf(Main::valueStrings, tuple1.right()),
+                        segment -> compileDefinition(segment).orElseGet(() -> invalidate("definition", segment)),
+                        Main::mergeValues);
 
                 return compileDefinition(inputDefinition).map(definition -> {
                     final var outputContent = truncateLeft(maybeContent, "{").flatMap(inner -> truncateRight(inner, "}").map(inner0 -> {
