@@ -164,8 +164,22 @@ public class Main {
             final var left = tuple.left().strip();
             final var type = split(left, new LastLocator(" ")).map(Tuple::right).orElse(left);
 
-            return generateDefinition(type, tuple.right().strip());
+            return generateDefinition(compileType(type), tuple.right().strip());
         });
+    }
+
+    private static String compileType(String type) {
+        return compileSymbol(type).orElseGet(() -> invalidate("type", type));
+    }
+
+    private static Optional<String> compileSymbol(String type) {
+        for (int i = 0; i < type.length(); i++) {
+            final var c = type.charAt(i);
+            if (Character.isLetter(c)) continue;
+            return Optional.empty();
+        }
+
+        return Optional.of(type);
     }
 
     private static String generateDefinition(String type, String name) {

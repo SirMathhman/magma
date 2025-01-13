@@ -77,6 +77,13 @@ struct Main {
 	Optional<String> compileDefinition(){
 		to = from;
 	}
+	String compileType(){
+		return temp;
+	}
+	Optional<String> compileSymbol(){
+		to = from;
+		return temp;
+	}
 	String generateDefinition(){
 		return temp;
 	}
