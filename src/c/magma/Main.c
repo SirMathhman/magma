@@ -18,13 +18,13 @@
 struct Main {
 	int value = 0;
 	int value = 0;
-	void main(){
+	void main(String[] args){
 		temp();
 	}
-	Optional<IOException> compileFiles(){
+	Optional<IOException> compileFiles(List<Path> files){
 		return temp;
 	}
-	Optional<IOException> compileSource(){
+	Optional<IOException> compileSource(Path source){
 		to = from;
 		to = from;
 		to = from;

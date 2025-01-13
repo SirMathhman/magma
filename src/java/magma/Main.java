@@ -251,14 +251,21 @@ public class Main {
 
     private static Optional<String> compileMethod(String structSegment) {
         return split(structSegment, new FirstLocator(")")).flatMap(tuple -> {
-            return split(tuple.left(), new FirstLocator("(")).flatMap(tuple1 -> {
-                return compileDefinition(tuple1.left()).map(definition -> {
-                    final var maybeContent = tuple.right().strip();
+            final var beforeContent = tuple.left().strip();
+            final var maybeContent = tuple.right().strip();
+
+            return split(beforeContent, new FirstLocator("(")).flatMap(tuple1 -> {
+                final var inputDefinition = tuple1.left();
+                final var compiledParams = compileAndMerge(() -> slicesOf(Main::valueChars, tuple1.right()), segment -> {
+                    return compileDefinition(segment).orElseGet(() -> invalidate("definition", segment));
+                });
+
+                return compileDefinition(inputDefinition).map(definition -> {
                     final var outputContent = truncateLeft(maybeContent, "{").flatMap(inner -> truncateRight(inner, "}").map(inner0 -> {
                         return "{" + compileAndMerge(() -> slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2)) + "\n\t}";
                     })).orElse(";");
 
-                    return "\n\t" + definition + "()" + outputContent;
+                    return "\n\t" + definition + "(" + compiledParams + ")" + outputContent;
                 });
             });
         });

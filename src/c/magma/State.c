@@ -7,13 +7,13 @@ struct State {
 	Deque<Character> queue;
 	StringBuilder buffer;
 	int depth;
-	public State(){
+	public State(List<String> segmentsStringBuilder bufferint depthDeque<Character> queue){
 		to = from;
 		to = from;
 		to = from;
 		to = from;
 	}
-	public State(){
+	public State(Deque<Character> queue){
 		temp();
 	}
 	Character>> pop(){
@@ -30,7 +30,7 @@ struct State {
 		to = from;
 		return temp;
 	}
-	State append(){
+	State append(char c){
 		temp();
 		return temp;
 	}
