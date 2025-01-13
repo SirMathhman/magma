@@ -1,16 +1,24 @@
 #include "temp.h"
 #include "temp.h"
+#include "temp.h"
+#include "temp.h"
 struct State {
-	List<String> segments;
+	List<> segments;
+	Deque<> queue;
 	StringBuilder buffer;
 	int depth;
 	public State(){
 		to = from;
 		to = from;
 		to = from;
+		to = from;
 	}
 	public State(){
 		temp();
+	}
+	Character>> pop(){
+		temp();
+		return temp;
 	}
 	boolean isLevel(){
 		to = from;
@@ -32,6 +40,12 @@ struct State {
 	}
 	State advance(){
 		to = from;
+		return temp;
+	}
+	Optional<> appendFromQueue(){
+		return temp;
+	}
+	Character>> appendAndPop(){
 		return temp;
 	}
 };

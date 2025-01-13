@@ -3,7 +3,7 @@ struct LastLocator(String slice) implements Locator {
 	int computeLength(){
 		return temp;
 	}
-	Optional<Integer> locate(){
+	Optional<> locate(){
 		to = from;
 		to = from;
 		return temp;

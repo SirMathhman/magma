@@ -10,11 +10,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -66,21 +67,11 @@ public class Main {
     }
 
     private static String compileRoot(String root) {
-        return splitAndCompile(root, Main::compileRootSegment);
+        return compileAndMerge(() -> slicesOf(Main::statementChars, root), Main::compileRootSegment);
     }
 
-    private static String splitAndCompile(String root, Function<String, String> compiler) {
-        var state = new State();
-
-        final var queue = IntStream.range(0, root.length())
-                .mapToObj(root::charAt)
-                .collect(Collectors.toCollection(LinkedList::new));
-
-        while (!queue.isEmpty()) {
-            final var c = queue.pop();
-            state = splitAtChar(state, c, queue);
-        }
-        final var segments = state.advance().segments;
+    private static String compileAndMerge(Supplier<List<String>> splitter, Function<String, String> compiler) {
+        final var segments = splitter.get();
 
         final var output = new StringBuilder();
         for (String segment : segments) {
@@ -92,32 +83,81 @@ public class Main {
         return output.toString();
     }
 
-    private static State splitAtChar(State state, char c, Deque<Character> queue) {
+    private static List<String> slicesOf(BiFunction<State, Character, State> other, String root) {
+        final var queue = IntStream.range(0, root.length())
+                .mapToObj(root::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        var state = new State(queue);
+        while (true) {
+            final var optional = state.pop().map(Tuple::right);
+            if (optional.isEmpty()) break;
+
+            final var c = optional.orElseThrow();
+            state = splitAtChar(state, c, other);
+        }
+
+        return state.advance().segments;
+    }
+
+    private static State splitAtChar(State state, Character c, BiFunction<State, Character, State> other) {
+        return splitSingleQuotes(state, c)
+                .or(() -> splitDoubleQuotes(state, c))
+                .orElseGet(() -> other.apply(state, c));
+    }
+
+    private static Optional<State> splitDoubleQuotes(State state, char c) {
+        if (c != '"') return Optional.empty();
+
+        var current = state.append(c);
+        while (true) {
+            final var processed = splitDoubleQuotesChar(state);
+            if (processed.isEmpty()) break;
+            else current = processed.get();
+        }
+
+        return Optional.of(current);
+    }
+
+    private static Optional<State> splitDoubleQuotesChar(State state) {
+        final var maybeNext = state.appendAndPop();
+        if (maybeNext.isEmpty()) return Optional.empty();
+
+        final var nextTuple = maybeNext.get();
+        final var nextChar = nextTuple.right();
+
+        if (nextChar == '"')
+            return Optional.empty();
+        if (nextChar == '\\') {
+            return Optional.of(state.appendFromQueue().orElse(state));
+        } else {
+            return Optional.of(nextTuple.left());
+        }
+    }
+
+    private static State statementChars(State state, char c) {
         final var appended = state.append(c);
-
-        if (c == '\'') {
-            final var maybeEscape = queue.pop();
-            final var withMaybeEscape = appended.append(maybeEscape);
-            final var withEscaped = maybeEscape == '\\' ? withMaybeEscape.append(queue.pop()) : withMaybeEscape;
-            return withEscaped.append(queue.pop());
-        }
-
-        if (c == '"') {
-            var current = appended;
-            while (!queue.isEmpty()) {
-                final var next = queue.pop();
-                current = current.append(next);
-                if (next == '"') break;
-                if (next == '\\') current = current.append(queue.pop());
-            }
-            return current;
-        }
-
         if (c == ';' && appended.isLevel()) return appended.advance();
         if (c == '}' && appended.isShallow()) return appended.exit().advance();
         if (c == '{' || c == '(') return appended.enter();
         if (c == '}' || c == ')') return appended.exit();
         return appended;
+    }
+
+    private static Optional<State> splitSingleQuotes(State state, char c) {
+        if (c != '\'') return Optional.empty();
+
+        return state.append(c).appendAndPop().flatMap(maybeEscapeTuple -> {
+            final var escapedState = maybeEscapeTuple.left();
+            final var escapedChar = maybeEscapeTuple.right();
+
+            final var withMaybeEscape = escapedState.append(escapedChar);
+            final var withEscaped = escapedChar == '\\'
+                    ? state.appendFromQueue().orElse(withMaybeEscape)
+                    : withMaybeEscape;
+
+            return withEscaped.appendFromQueue();
+        });
     }
 
     private static String compileRootSegment(String rootSegment) {
@@ -139,7 +179,7 @@ public class Main {
         return split(rootSegment, new FirstLocator(keyword)).flatMap(tuple -> {
             return split(tuple.right(), new FirstLocator("{")).flatMap(tuple0 -> {
                 return truncateRight(tuple0.right().strip(), "}").map(content -> {
-                    final var outputContent = splitAndCompile(content, Main::compileStructSegment);
+                    final var outputContent = compileAndMerge(() -> slicesOf(Main::statementChars, content), Main::compileStructSegment);
                     return "struct " + tuple0.left().strip() + " {" + outputContent + "\n};";
                 });
             });
@@ -169,7 +209,24 @@ public class Main {
     }
 
     private static String compileType(String type) {
-        return compileSymbol(type).orElseGet(() -> invalidate("type", type));
+        return compileSymbol(type)
+                .or(() -> compileGeneric(type))
+                .orElseGet(() -> invalidate("type", type));
+    }
+
+    private static Optional<String> compileGeneric(String type) {
+        return truncateRight(type, ">").flatMap(inner -> split(inner, new FirstLocator("<")).map(tuple -> {
+            final var caller = tuple.left();
+            final var compiledArgs = compileAndMerge(() -> slicesOf(Main::valueChars, tuple.right()), Main::compileType);
+            return caller + "<" + compiledArgs + ">";
+        }));
+    }
+
+    private static State valueChars(State state, Character c) {
+        if (c == ',' && state.isLevel()) return state.advance();
+        if (c == '<') return state.enter();
+        if (c == '>') return state.exit();
+        return state;
     }
 
     private static Optional<String> compileSymbol(String type) {
@@ -198,7 +255,7 @@ public class Main {
                             return split(beforeContent, new FirstLocator("(")).flatMap(tuple0 -> {
                                 return compileDefinition(tuple0.left().strip()).map(definition -> {
                                     final var inputContent = tuple.right();
-                                    final var outputContent = splitAndCompile(inputContent, statement -> compileStatement(statement, 2));
+                                    final var outputContent = compileAndMerge(() -> slicesOf(Main::statementChars, inputContent), statement -> compileStatement(statement, 2));
                                     return "\n\t" + definition + "(){" + outputContent + "\n\t}";
                                 });
                             });
