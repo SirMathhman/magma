@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -231,7 +232,7 @@ public class Main {
 
     private static Optional<String> compileType(String type) {
         final var optional = compileExact(type, "var", "auto")
-                .or(() -> compileSymbol(type))
+                .or(() -> compileFilter(Main::isSymbol, type))
                 .or(() -> compileGeneric(type))
                 .or(() -> compileArray(type));
 
@@ -290,8 +291,8 @@ public class Main {
         return appended;
     }
 
-    private static Optional<String> compileSymbol(String type) {
-        return isSymbol(type) ? Optional.of(type) : Optional.empty();
+    private static Optional<String> compileFilter(Predicate<String> filter, String type) {
+        return filter.test(type) ? Optional.of(type) : Optional.empty();
     }
 
     private static boolean isSymbol(String type) {
@@ -354,18 +355,24 @@ public class Main {
     }
 
     private static Optional<String> compileInvocationStatement(String input, int depth) {
-        return compileInvocation(input).map(output -> generateStatement(depth, output));
+        return truncateRight(input, ";").flatMap(inner -> {
+            return compileInvocation(inner).map(output -> generateStatement(depth, output));
+        });
     }
 
     private static Optional<String> compileInvocation(String input) {
-        return split(input.strip(), new FirstLocator("(")).flatMap(inner -> truncateRight(inner.right(), ");").map(inner0 -> {
-            return "temp()";
+        return split(input.strip(), new FirstLocator("(")).flatMap(inner -> truncateRight(inner.right(), ")").map(inner0 -> {
+            return generateInvocation();
         }));
     }
 
+    private static String generateInvocation() {
+        return "temp()";
+    }
+
     private static Optional<String> compileReturn(String statement, int depth) {
-        return truncateLeft(statement, "return").flatMap(inner -> truncateRight(inner, ";").map(inner0 -> {
-            return generateStatement(depth, "return temp");
+        return truncateLeft(statement, "return").flatMap(inner -> truncateRight(inner, ";").map(value -> {
+            return generateStatement(depth, "return " + compileValue(value.strip()));
         }));
     }
 
@@ -383,10 +390,22 @@ public class Main {
     }
 
     private static String compileValue(String value) {
-        return compileDataAccess(value)
-                .or(() -> compileSymbol(value))
+        return compileConstruction(value)
+                .or(() -> compileDataAccess(value))
+                .or(() -> compileFilter(Main::isSymbol, value))
+                .or(() -> compileFilter(Main::isNumber, value))
                 .or(() -> compileInvocation(value))
                 .orElseGet(() -> invalidate("value", value));
+    }
+
+    private static boolean isNumber(String input) {
+        return IntStream.range(0, input.length())
+                .mapToObj(input::charAt)
+                .allMatch(Character::isDigit);
+    }
+
+    private static Optional<String> compileConstruction(String value) {
+        return value.startsWith("new ") ? Optional.of(generateInvocation()) : Optional.empty();
     }
 
     private static Optional<String> compileDataAccess(String value) {
