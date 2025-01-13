@@ -50,7 +50,7 @@ struct Main {
 		return merge(compileSegments(segments, compiler), merger);
 	}
 	String merge(List<String> segments, ((StringBuilder, String) => StringBuilder) merger){
-		return segments.stream().reduce(temp()), merger, (_, next) -> next).toString();
+		return segments.stream().reduce(temp(), merger, (_, next) -> next).toString();
 	}
 	List<String> compileSegments(List<String> segments, (String => String) compiler){
 		return segments.stream().map(String::strip).filter(segment -> !segment.isEmpty()).map(compiler).toList();
@@ -115,7 +115,14 @@ struct Main {
 		return value;
 	}
 	Optional<String> compileToStruct(String keyword, String rootSegment){
-		return split(rootSegment, temp());
+		return split(rootSegment, temp()).flatMap(tuple -> {
+            return split(tuple.right(), temp()).flatMap(tuple0 -> {
+                return truncateRight(tuple0.right().strip(), "}").map(content -> {
+                    final var outputContent = compileAndMerge(slicesOf(Main::statementChars, content), Main::compileStructSegment, StringBuilder::append);
+                    return "struct " + tuple0.left().strip() + " {" + outputContent + "\n};";
+                });
+            });
+        });
 	}
 	String compileStructSegment(String structSegment){
 		return compileInitialization(structSegment, 1).or(() -> compileMethod(structSegment)).or(() -> compileDefinitionStatement(structSegment, 1)).orElseGet(() -> invalidate("struct segment", structSegment));
@@ -126,7 +133,14 @@ struct Main {
         });
 	}
 	Optional<String> compileDefinition(String definition){
-		return split(definition, temp());
+		return split(definition, temp()).flatMap(tuple -> {
+            final var left = tuple.left().strip();
+            final var inputType = split(left, temp(), '>', '<')).map(Tuple::right).orElse(left);
+            final var name = tuple.right().strip();
+
+            if (!isSymbol(name)) return Optional.empty();
+            return compileType(inputType).map(outputType -> generateDefinition(outputType, name));
+        });
 	}
 	Optional<String> compileType(String type){
 		auto optional = compileExact(type, "var", "auto").or(() -> compileFilter(Main::isSymbol, type)).or(() -> compileGeneric(type)).or(() -> compileArray(type));
@@ -144,7 +158,10 @@ struct Main {
 		return truncateRight(type, "[]").map(inner -> compileType(inner).orElse("") + "[]");
 	}
 	Optional<String> compileGeneric(String type){
-		return truncateRight(type, ">").flatMap(inner -> split(inner, temp()).orElse(""));
+		return truncateRight(type, ">").flatMap(inner -> split(inner, temp()).map(tuple -> {
+            final var caller = tuple.left();
+            final var segments = slicesOf(Main::valueStrings, tuple.right());
+            final var compiledSegments = compileSegments(segments, type1 -> compileType(type1).orElse(""));
 
             if (caller.equals("Function") && compiledSegments.size() == 2) {
                 final var paramType = compiledSegments.get(0);
@@ -187,7 +204,11 @@ struct Main {
 		return "\n" + "\t".repeat(depth) + content + ";";
 	}
 	Optional<String> compileMethod(String structSegment){
-		return split(structSegment, temp());
+		return split(structSegment, new FirstLocator(")")).flatMap(tuple -> {
+            final var beforeContent = tuple.left().strip();
+            final var maybeContent = tuple.right().strip();
+
+            return split(beforeContent, temp());
 	}
 	Optional<String> compileContent(String maybeContent){
 		return truncateLeft(maybeContent, "{").flatMap(inner -> truncateRight(inner, "}").map(inner0 -> "{" + compileAndMerge(slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2), StringBuilder::append) + "\n\t}"));
@@ -207,7 +228,14 @@ struct Main {
         });
 	}
 	Optional<String> compileInvocation(String input){
-		return split(input.strip(), temp());
+		return truncateRight(input, ")").flatMap(withoutEnd -> {
+            return split(withoutEnd, temp(), ')', '(')).map(withoutStart -> {
+                final var caller = withoutStart.left();
+                final var compiled = compileValue(caller);
+                final var compiledArgs = compileAndMerge(slicesOf(Main::valueStrings, withoutStart.right()), Main::compileValue, Main::mergeValues);
+                return generateInvocation(compiled, compiledArgs);
+            });
+        });
 	}
 	String generateInvocation(String caller, String args){
 		return caller + "(" + args + ")";
@@ -222,7 +250,7 @@ struct Main {
 	}
 	Optional<String> compileAssignment(String statement, int depth){
 		return truncateRight(statement, ";").flatMap(inner -> {
-            return split(inner, temp())).map(inner0 -> {
+            return split(inner, temp()).map(inner0 -> {
                 final var destination = compileValue(inner0.left());
                 return generateStatement(depth, destination + " = from");
             });
@@ -235,7 +263,9 @@ struct Main {
 		return truncateLeft(value, "\"").flatMap(inner -> truncateRight(inner, "\"").map(inner0 -> "\"" + inner0 + "\""));
 	}
 	Optional<String> compileAdd(String value){
-		return split(value, temp());
+		return split(value, temp()).map(tuple -> {
+            return compileValue(tuple.left().strip()) + " + " + compileValue(tuple.right().strip());
+        });
 	}
 	boolean isNumber(String input){
 		return IntStream.range(0, input.length()).mapToObj(input::charAt).allMatch(Character::isDigit);
@@ -244,11 +274,15 @@ struct Main {
 		return value.startsWith("new ") ? Optional.of(generateInvocation("temp", "")) : Optional.empty();
 	}
 	Optional<String> compileDataAccess(String value){
-		return split(value, temp());
+		return split(value, temp()).map(tuple -> {
+            final var s = compileValue(tuple.left().strip());
+            return s + "." + tuple.right().strip();
+        });
 	}
 	Optional<String> compileInitialization(String structSegment, int depth){
 		return truncateRight(structSegment, ";").flatMap(inner -> {
-            return split(inner, temp()).map(definition -> {
+            return split(inner, temp()).flatMap(tuple -> {
+                return compileDefinition(tuple.left().strip()).map(definition -> {
                     final var value = compileValue(tuple.right().strip());
                     return generateStatement(depth, definition + " = " + value);
                 });

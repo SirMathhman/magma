@@ -222,7 +222,7 @@ public class Main {
     private static Optional<String> compileDefinition(String definition) {
         return split(definition, new LastLocator(" ")).flatMap(tuple -> {
             final var left = tuple.left().strip();
-            final var inputType = split(left, new TypeLocator()).map(Tuple::right).orElse(left);
+            final var inputType = split(left, new TypeLocator(' ', '>', '<')).map(Tuple::right).orElse(left);
             final var name = tuple.right().strip();
 
             if (!isSymbol(name)) return Optional.empty();
@@ -361,12 +361,14 @@ public class Main {
     }
 
     private static Optional<String> compileInvocation(String input) {
-        return split(input.strip(), new FirstLocator("(")).flatMap(inner -> truncateRight(inner.right(), ")").map(withoutEnd -> {
-            final var caller = inner.left();
-            final var compiled = compileValue(caller);
-            final var compiledArgs = compileAndMerge(slicesOf(Main::valueStrings, withoutEnd), Main::compileValue, Main::mergeValues);
-            return generateInvocation(compiled, compiledArgs);
-        }));
+        return truncateRight(input, ")").flatMap(withoutEnd -> {
+            return split(withoutEnd, new TypeLocator('(', ')', '(')).map(withoutStart -> {
+                final var caller = withoutStart.left();
+                final var compiled = compileValue(caller);
+                final var compiledArgs = compileAndMerge(slicesOf(Main::valueStrings, withoutStart.right()), Main::compileValue, Main::mergeValues);
+                return generateInvocation(compiled, compiledArgs);
+            });
+        });
     }
 
     private static String generateInvocation(String caller, String args) {

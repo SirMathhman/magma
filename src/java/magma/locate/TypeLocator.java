@@ -6,7 +6,17 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class TypeLocator implements Locator {
-    private static Tuple<Optional<Integer>, Integer> fold(
+    private final char search;
+    private final char enter;
+    private final char exit;
+
+    public TypeLocator(char search, char enter, char exit) {
+        this.search = search;
+        this.enter = enter;
+        this.exit = exit;
+    }
+
+    private Tuple<Optional<Integer>, Integer> fold(
             String input,
             Tuple<Optional<Integer>, Integer> current,
             int index
@@ -16,9 +26,9 @@ public class TypeLocator implements Locator {
 
         final var depth = current.right();
         final var c = input.charAt(index);
-        if (c == ' ' && depth == 0) return new Tuple<>(Optional.of(index), depth);
-        if (c == '>') return new Tuple<>(Optional.empty(), depth + 1);
-        if (c == '<') return new Tuple<>(Optional.empty(), depth - 1);
+        if (c == this.search && depth == 0) return new Tuple<>(Optional.of(index), depth);
+        if (c == this.enter) return new Tuple<>(Optional.empty(), depth + 1);
+        if (c == this.exit) return new Tuple<>(Optional.empty(), depth - 1);
         return new Tuple<>(Optional.empty(), depth);
     }
 
