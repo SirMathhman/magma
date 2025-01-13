@@ -177,13 +177,23 @@ public class Main {
     }
 
     private static String compileRootSegment(String rootSegment) {
-        if (rootSegment.startsWith("package")) return "";
-        if (rootSegment.startsWith("import")) return "#include \"temp.h\"\n";
+        return compileDisjunction("root segment", rootSegment, List.of(
+                () -> compilePackage(rootSegment),
+                () -> compileImport(rootSegment),
+                () -> compileToStruct("class", rootSegment),
+                () -> compileToStruct("record", rootSegment),
+                () -> compileToStruct("interface", rootSegment)
+        ));
+    }
 
-        return compileToStruct("class", rootSegment)
-                .or(() -> compileToStruct("record", rootSegment))
-                .or(() -> compileToStruct("interface", rootSegment))
-                .orElseGet(() -> invalidate("root segment", rootSegment));
+    private static Optional<String> compileImport(String rootSegment) {
+        if (rootSegment.startsWith("import")) return Optional.of("#include \"temp.h\"\n");
+        return Optional.empty();
+    }
+
+    private static Optional<String> compilePackage(String rootSegment) {
+        if (rootSegment.startsWith("package")) return Optional.of("");
+        else return Optional.empty();
     }
 
     private static String invalidate(String type, String rootSegment) {
@@ -202,10 +212,11 @@ public class Main {
     }
 
     private static String compileStructSegment(String structSegment) {
-        return compileInitialization(structSegment, 1)
-                .or(() -> compileMethod(structSegment))
-                .or(() -> compileDefinitionStatement(structSegment, 1))
-                .orElseGet(() -> invalidate("struct segment", structSegment));
+        return compileDisjunction("struct segment", structSegment, List.of(
+                () -> compileInitialization(structSegment, 1),
+                () -> compileMethod(structSegment),
+                () -> compileDefinitionStatement(structSegment, 1)
+        ));
     }
 
     private static Optional<String> compileDefinitionStatement(String structSegment, int depth) {
@@ -221,18 +232,17 @@ public class Main {
             final var name = tuple.right().strip();
 
             if (!isSymbol(name)) return Optional.empty();
-            return compileType(inputType).map(outputType -> generateDefinition(outputType, name));
+            return Optional.ofNullable(compileType(inputType)).map(outputType -> generateDefinition(outputType, name));
         });
     }
 
-    private static Optional<String> compileType(String type) {
-        final var optional = compileExact(type, "var", "auto")
-                .or(() -> compileFilter(Main::isSymbol, type))
-                .or(() -> compileGeneric(type))
-                .or(() -> compileArray(type));
-
-        if (optional.isPresent()) return optional;
-        return writeDebug("type", type);
+    private static String compileType(String type) {
+        return compileDisjunction("type", type, List.of(
+                () -> compileExact(type, "var", "auto"),
+                () -> compileFilter(Main::isSymbol, type),
+                () -> compileGeneric(type),
+                () -> compileArray(type))
+        );
     }
 
     private static Optional<String> compileExact(String type, String match, String output) {
@@ -245,14 +255,14 @@ public class Main {
     }
 
     private static Optional<String> compileArray(String type) {
-        return truncateRight(type, "[]").map(inner -> compileType(inner).orElse("") + "[]");
+        return truncateRight(type, "[]").map(inner -> Optional.ofNullable(compileType(inner)).orElse("") + "[]");
     }
 
     private static Optional<String> compileGeneric(String type) {
         return truncateRight(type, ">").flatMap(inner -> split(inner, new FirstLocator("<")).map(tuple -> {
             final var caller = tuple.left();
             final var segments = slicesOf(Main::valueStrings, tuple.right());
-            final var compiledSegments = compileSegments(segments, type1 -> compileType(type1).orElse(""));
+            final var compiledSegments = compileSegments(segments, type1 -> Optional.ofNullable(compileType(type1)).orElse(""));
 
             if (caller.equals("Function") && compiledSegments.size() == 2) {
                 final var paramType = compiledSegments.get(0);
@@ -354,6 +364,10 @@ public class Main {
                 () -> compileAssignment(statement, depth)
         );
 
+        return compileDisjunction("statement", statement, compilers);
+    }
+
+    private static String compileDisjunction(String type, String input, List<Supplier<Optional<String>>> compilers) {
         for (Supplier<Optional<String>> compiler : compilers) {
             final var optional = compiler.get();
             if (optional.isPresent()) {
@@ -361,7 +375,7 @@ public class Main {
             }
         }
 
-        return invalidate("statement", statement);
+        return invalidate(type, input);
     }
 
     private static Optional<String> compileElse(String statement) {
@@ -372,7 +386,7 @@ public class Main {
         return truncateLeft(statement, prefix).flatMap(inner -> {
             return truncateLeft(inner.strip(), "(").flatMap(inner0 -> {
                 return split(inner0, new FirstLocator(")")).flatMap(tuple -> {
-                    return compileValue(tuple.left().strip()).flatMap(condition -> {
+                    return Optional.ofNullable(compileValue(tuple.left().strip())).flatMap(condition -> {
                         return compileContent(tuple.right()).map(content -> {
                             return "\n\t\t" + prefix + " (" + condition + ") " + content;
                         });
@@ -392,8 +406,8 @@ public class Main {
         return truncateRight(input, ")").flatMap(withoutEnd -> {
             return split(withoutEnd, new TypeLocator('(', ')', '(')).map(withoutStart -> {
                 final var caller = withoutStart.left();
-                final var compiled = compileValue(caller).orElse(caller);
-                final var compiledArgs = compileAndMerge(slicesOf(Main::valueStrings, withoutStart.right()), value -> compileValue(value).orElse(value), Main::mergeValues);
+                final var compiled = Optional.ofNullable(compileValue(caller)).orElse(caller);
+                final var compiledArgs = compileAndMerge(slicesOf(Main::valueStrings, withoutStart.right()), value -> Optional.ofNullable(compileValue(value)).orElse(value), Main::mergeValues);
                 return generateInvocation(compiled, compiledArgs);
             });
         });
@@ -406,7 +420,7 @@ public class Main {
     private static Optional<String> compileReturn(String statement, int depth) {
         return truncateLeft(statement, "return").flatMap(inner -> truncateRight(inner, ";").map(value -> {
             String value1 = value.strip();
-            return generateStatement(depth, "return " + compileValue(value1).orElse(value1));
+            return generateStatement(depth, "return " + Optional.ofNullable(compileValue(value1)).orElse(value1));
         }));
     }
 
@@ -418,32 +432,33 @@ public class Main {
         return truncateRight(statement, ";").flatMap(inner -> {
             return split(inner, new FirstLocator("=")).map(inner0 -> {
                 String value = inner0.left();
-                final var destination = compileValue(value).orElse(value);
+                final var destination = Optional.ofNullable(compileValue(value)).orElse(value);
                 return generateStatement(depth, destination + " = from");
             });
         });
     }
 
-    private static Optional<String> compileValue(String value) {
-        return compileString(value)
-                .or(() -> compileChar(value))
-                .or(() -> compileConstruction(value))
-                .or(() -> compileInvocation(value))
-                .or(() -> compileLambda(value))
-                .or(() -> compileDataAccess(value))
-                .or(() -> compileOperator(value, "+"))
-                .or(() -> compileOperator(value, "=="))
-                .or(() -> compileOperator(value, "!="))
-                .or(() -> compileOperator(value, "&&"))
-                .or(() -> compileMethodAccess(value))
-                .or(() -> compileFilter(Main::isSymbol, value))
-                .or(() -> compileFilter(Main::isNumber, value))
-                .or(() -> compileNot(value))
-                .or(() -> writeDebug("value", value));
+    private static String compileValue(String value) {
+        return compileDisjunction("value", value, List.of(
+                () -> compileString(value),
+                () -> compileChar(value),
+                () -> compileConstruction(value),
+                () -> compileInvocation(value),
+                () -> compileLambda(value),
+                () -> compileDataAccess(value),
+                () -> compileOperator(value, "+"),
+                () -> compileOperator(value, "=="),
+                () -> compileOperator(value, "!="),
+                () -> compileOperator(value, "&&"),
+                () -> compileMethodAccess(value),
+                () -> compileFilter(Main::isSymbol, value),
+                () -> compileFilter(Main::isNumber, value),
+                () -> compileNot(value)
+        ));
     }
 
     private static Optional<String> compileNot(String value) {
-        return truncateLeft(value, "!").flatMap(inner -> compileValue(inner).map(inner0 -> "!" + inner0));
+        return truncateLeft(value, "!").flatMap(inner -> Optional.ofNullable(compileValue(inner)).map(inner0 -> "!" + inner0));
     }
 
     private static Optional<String> compileChar(String value) {
@@ -453,7 +468,7 @@ public class Main {
     private static Optional<String> compileMethodAccess(String value) {
         return split(value, new LastLocator("::")).map(tuple -> {
             String value1 = tuple.left().strip();
-            final var s = compileValue(value1).orElse(value1);
+            final var s = Optional.ofNullable(compileValue(value1)).orElse(value1);
             return s + "." + tuple.right().strip();
         });
     }
@@ -472,8 +487,8 @@ public class Main {
         return split(value, new FirstLocator(operator)).flatMap(tuple -> {
             String value1 = tuple.right().strip();
             String value2 = tuple.left().strip();
-            return compileValue(value2).flatMap(inner -> {
-                return compileValue(value1).map(inner0 -> {
+            return Optional.ofNullable(compileValue(value2)).flatMap(inner -> {
+                return Optional.ofNullable(compileValue(value1)).map(inner0 -> {
                     return inner + " " + operator + " " + inner0;
                 });
             });
@@ -493,7 +508,7 @@ public class Main {
     private static Optional<String> compileDataAccess(String value) {
         return split(value, new LastLocator(".")).flatMap(tuple -> {
             String caller = tuple.left().strip();
-            return compileValue(caller).map(compiled -> {
+            return Optional.ofNullable(compileValue(caller)).map(compiled -> {
                 return compiled + "." + tuple.right().strip();
             });
         });
@@ -504,7 +519,7 @@ public class Main {
             return split(inner, new FirstLocator("=")).flatMap(tuple -> {
                 return compileDefinition(tuple.left().strip()).map(definition -> {
                     String value1 = tuple.right().strip();
-                    final var value = compileValue(value1).orElse(value1);
+                    final var value = Optional.ofNullable(compileValue(value1)).orElse(value1);
                     return generateStatement(depth, definition + " = " + value);
                 });
             });
