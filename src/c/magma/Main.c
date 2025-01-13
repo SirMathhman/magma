@@ -35,9 +35,8 @@ struct Main {
 	to = from;i < root.length();
 	to = from;
 	to = from;
-	to = from;for (String segment : segments) {
-            output.append(compiler.apply(segment.strip()));
-        }return output.toString();
+	to = from;
+	to = from;return output.toString();
 	}
 	void temp(){
 	to = from;

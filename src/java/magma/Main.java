@@ -59,7 +59,9 @@ public class Main {
 
         final var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compiler.apply(segment.strip()));
+            final var stripped = segment.strip();
+            if (stripped.isEmpty()) continue;
+            output.append(compiler.apply(stripped));
         }
 
         return output.toString();
