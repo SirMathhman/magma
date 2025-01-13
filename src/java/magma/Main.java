@@ -387,7 +387,7 @@ public class Main {
     private static Optional<String> compileDataAccess(String value) {
         return split(value, new LastLocator(".")).map(tuple -> {
             final var s = compileValue(tuple.left().strip());
-            return s + "." + tuple.right();
+            return s + "." + tuple.right().strip();
         });
     }
 
