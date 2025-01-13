@@ -18,14 +18,18 @@ struct State {
 	to = from;
 	}
 	void temp(){
-	to = from;return this;
+	to = from;
+	return temp;
 	}
-	void temp(){this.buffer.append(c);return this;
+	void temp(){this.buffer.append(c);
+	return temp;
 	}
 	void temp(){
-	to = from;return this;
+	to = from;
+	return temp;
 	}
 	void temp(){
-	to = from;return this;
+	to = from;
+	return temp;
 	}
 };

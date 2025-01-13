@@ -11,12 +11,8 @@ struct Main {
 	int value = 0;
 	void temp(){JavaFiles.walk(SOURCE_DIRECTORY).match(Main::compileFiles, Optional::of).ifPresent(Throwable::printStackTrace);
 	}
-	void temp(){return files.stream()
-                .filter(Files::isRegularFile)
-                .filter(file -> file.toString().endsWith(".java"))
-                .map(Main::compileSource)
-                .flatMap(Optional::stream)
-                .findFirst();
+	void temp(){
+	return temp;
 	}
 	void temp(){
 	to = from;
@@ -28,7 +24,8 @@ struct Main {
 	to = from;
 	to = from;).match(value -> value, Optional::of);
 	}
-	void temp(){return splitAndCompile(root, Main::compileRootSegment);
+	void temp(){
+	return temp;
 	}
 	void temp(){
 	to = from;
@@ -36,7 +33,8 @@ struct Main {
 	to = from;
 	to = from;
 	to = from;
-	to = from;return output.toString();
+	to = from;
+	return temp;
 	}
 	void temp(){
 	to = from;
@@ -88,7 +86,15 @@ struct Main {
                             return "\n\tvoid temp(){" + outputContent + "\n\t}";
                         }));
     }private static String compileStatement(String statement) {
-        return compileAssignment(statement).orElseGet(() -> invalidate("statement", statement));
+        return compileAssignment(statement)
+                .or(() -> compileReturn(statement))
+                .orElseGet(() -> invalidate("statement", statement));
+    }private static Optional<String> compileReturn(String statement) {
+        return truncateLeft(statement, "return").flatMap(inner -> truncateRight(inner, ";").map(inner0 -> {
+            return generateStatement("return temp");
+        }));
+    }private static Optional<String> truncateLeft(String input, String slice) {
+        return input.startsWith(slice) ? Optional.of(input.substring(slice.length())) : Optional.empty();
     }private static Optional<String> compileAssignment(String statement) {
         return split(statement, "=").map(inner -> generateStatement("to = from"));
     }private static Optional<String> compileInitialization(String structSegment) {

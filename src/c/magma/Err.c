@@ -4,10 +4,13 @@ struct Err<T, X> implements Result<T, X> {
 	void temp(){
 	to = from;
 	}
-	void temp(){return new Err<>(this.error);
+	void temp(){
+	return temp;
 	}
-	void temp(){return onErr.apply(this.error);
+	void temp(){
+	return temp;
 	}
-	void temp(){return new Err<>(this.error);
+	void temp(){
+	return temp;
 	}
 };

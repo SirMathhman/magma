@@ -131,7 +131,19 @@ public class Main {
     }
 
     private static String compileStatement(String statement) {
-        return compileAssignment(statement).orElseGet(() -> invalidate("statement", statement));
+        return compileAssignment(statement)
+                .or(() -> compileReturn(statement))
+                .orElseGet(() -> invalidate("statement", statement));
+    }
+
+    private static Optional<String> compileReturn(String statement) {
+        return truncateLeft(statement, "return").flatMap(inner -> truncateRight(inner, ";").map(inner0 -> {
+            return generateStatement("return temp");
+        }));
+    }
+
+    private static Optional<String> truncateLeft(String input, String slice) {
+        return input.startsWith(slice) ? Optional.of(input.substring(slice.length())) : Optional.empty();
     }
 
     private static Optional<String> compileAssignment(String statement) {
