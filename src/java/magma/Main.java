@@ -324,7 +324,9 @@ public class Main {
     }
 
     private static String compileStatement(String statement, int depth) {
-        return compileAssignment(statement, depth)
+        return compileInitialization(statement)
+                .or(() -> compileDefinitionStatement(statement))
+                .or(() -> compileAssignment(statement, depth))
                 .or(() -> compileReturn(statement, depth))
                 .or(() -> compileInvocation(statement, depth))
                 .or(() -> compileIf(statement))
@@ -357,7 +359,16 @@ public class Main {
     }
 
     private static Optional<String> compileAssignment(String statement, int depth) {
-        return split(statement, new FirstLocator("=")).map(inner -> generateStatement(depth, "to = from"));
+        return truncateRight(statement, ";").flatMap(inner -> {
+            return split(inner, new FirstLocator("=")).map(inner0 -> {
+                final var destination = compileValue(inner0.left());
+                return generateStatement(depth, destination + " = from");
+            });
+        });
+    }
+
+    private static String compileValue(String value) {
+        return invalidate("value", value);
     }
 
     private static Optional<String> compileInitialization(String structSegment) {

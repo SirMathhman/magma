@@ -8,44 +8,44 @@ struct State {
 	StringBuilder buffer;
 	int depth;
 	public State(List<String> segments, StringBuilder buffer, int depth, Deque<Character> queue){
-		to = from;
-		to = from;
-		to = from;
-		to = from;
+	int value = 0;
+	int value = 0;
+	int value = 0;
+	int value = 0;
 	}
 	public State(Deque<Character> queue){
-		temp();
+	0, queue);
 	}
 	Optional<Tuple<State, Character>> pop(){
-		temp();
-		return temp;
+	return Optional.empty();
+	Tuple<>(this, this.queue.pop()));
 	}
 	boolean isLevel(){
-		to = from;
+	int value = 0;
 	}
 	boolean isShallow(){
-		to = from;
+	int value = 0;
 	}
 	State exit(){
-		to = from;
-		return temp;
+	int value = 0;
+	return this;
 	}
 	State append(char c){
 		temp();
-		return temp;
+	return this;
 	}
 	State enter(){
-		to = from;
-		return temp;
+	int value = 0;
+	return this;
 	}
 	State advance(){
-		to = from;
-		return temp;
+		if (1) {}
+	return this;
 	}
 	Optional<State> appendFromQueue(){
-		return temp;
+	return appendAndPop().map(Tuple::left);
 	}
 	Optional<Tuple<State, Character>> appendAndPop(){
-		return temp;
+	return pop().map(tuple -> tuple.mergeIntoLeft(State::append));
 	}
 };
