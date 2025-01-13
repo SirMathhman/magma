@@ -84,8 +84,8 @@ public class Main {
         final var appended = state.append(c);
         if (c == ';' && appended.isLevel()) return appended.advance();
         if (c == '}' && appended.isShallow()) return appended.exit().advance();
-        if (c == '{') return appended.enter();
-        if (c == '}') return appended.exit();
+        if (c == '{' || c == '(') return appended.enter();
+        if (c == '}' || c == ')') return appended.exit();
         return appended;
     }
 
