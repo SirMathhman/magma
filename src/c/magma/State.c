@@ -18,7 +18,7 @@ struct State {
 	}
 	Optional<Tuple<State, Character>> pop(){
 		if (1) {}
-		return Optional.of(temp(), this.queue.pop()));
+		return Optional.of(temp());
 	}
 	boolean isLevel(){
 		return this.depth == 0;
@@ -44,11 +44,11 @@ struct State {
 		return this;
 	}
 	Optional<State> appendFromQueue(){
-		return appendAndPop().map(Tuple::left);
+		return appendAndPop().map(Tuple.left);
 	}
 	Optional<Tuple<State, Character>> appendAndPop(){
 		return pop().map(
-	auto temp(){}(State::append));
+	auto temp(){}(State.append));
 	}
 	Optional<Character> peek(){
 		return this.queue.isEmpty() ? Optional.empty() : Optional.of(this.queue.peek());

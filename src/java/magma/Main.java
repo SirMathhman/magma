@@ -289,8 +289,8 @@ public class Main {
             }
         }
 
-        if (c == '<') return appended.enter();
-        if (c == '>') return appended.exit();
+        if (c == '<' || c == '(') return appended.enter();
+        if (c == '>' || c == ')') return appended.exit();
         return appended;
     }
 
@@ -403,14 +403,27 @@ public class Main {
 
     private static String compileValue(String value) {
         return compileString(value)
+                .or(() -> compileChar(value))
                 .or(() -> compileConstruction(value))
                 .or(() -> compileInvocation(value))
                 .or(() -> compileLambda(value))
+                .or(() -> compileAdd(value))
                 .or(() -> compileDataAccess(value))
+                .or(() -> compileMethodAccess(value))
                 .or(() -> compileFilter(Main::isSymbol, value))
                 .or(() -> compileFilter(Main::isNumber, value))
-                .or(() -> compileAdd(value))
                 .orElseGet(() -> invalidate("value", value));
+    }
+
+    private static Optional<String> compileChar(String value) {
+        return truncateLeft(value, "'").flatMap(inner -> truncateRight(inner, "'").map(inner0 -> "'" + inner0 + "'"));
+    }
+
+    private static Optional<String> compileMethodAccess(String value) {
+        return split(value, new LastLocator("::")).map(tuple -> {
+            final var s = compileValue(tuple.left().strip());
+            return s + "." + tuple.right().strip();
+        });
     }
 
     private static Optional<String> compileLambda(String value) {
