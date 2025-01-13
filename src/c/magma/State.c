@@ -17,7 +17,7 @@ struct State {
 		this(temp(), temp(), 0, queue);
 	}
 	Optional<Tuple<State, Character>> pop(){
-		if (1) {}
+		if (this.queue.isEmpty() {}
 		return Optional.of(temp());
 	}
 	boolean isLevel(){
@@ -27,7 +27,7 @@ struct State {
 		return this.depth == 1;
 	}
 	State exit(){
-		if (1) {}
+		if (this.depth == 0) {}
 		this.depth = from;
 		return this;
 	}
@@ -39,8 +39,10 @@ struct State {
 		this.depth = from;
 		return this;
 	}
-	State advance(){
-		if (1) {}
+	State advance(){if (!this.buffer.isEmpty()) {
+            this.segments.add(this.buffer.toString());
+            this.buffer = new StringBuilder();
+        }
 		return this;
 	}
 	Optional<State> appendFromQueue(){

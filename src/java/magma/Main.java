@@ -358,7 +358,15 @@ public class Main {
     }
 
     private static Optional<String> compileCondition(String statement, String prefix) {
-        return truncateLeft(statement, prefix).map(inner -> "\n\t\t" + prefix + " (1) {}");
+        return truncateLeft(statement, prefix).flatMap(inner -> {
+            return truncateLeft(inner.strip(), "(").flatMap(inner0 -> {
+                return split(inner0, new FirstLocator(")")).flatMap(tuple -> {
+                    return compileValue(tuple.left().strip()).map(condition -> {
+                        return "\n\t\t" + prefix + " (" + condition + ") {}";
+                    });
+                });
+            });
+        });
     }
 
     private static Optional<String> compileInvocationStatement(String input, int depth) {
