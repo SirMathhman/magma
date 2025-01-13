@@ -2,15 +2,15 @@
 struct Ok<T, X> implements Result<T, X> {
 	int value;
 	void temp(){
-	to = from;
+		to = from;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 };

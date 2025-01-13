@@ -5,33 +5,33 @@ struct State {
 	int value;
 	int value;
 	void temp(){
-	to = from;
-	to = from;
-	to = from;
+		to = from;
+		to = from;
+		to = from;
 	}
 	void temp(){
-	temp();
+		temp();
 	}
 	void temp(){
-	to = from;
+		to = from;
 	}
 	void temp(){
-	to = from;
+		to = from;
 	}
 	void temp(){
-	to = from;
-	return temp;
+		to = from;
+		return temp;
 	}
 	void temp(){
-	temp();
-	return temp;
+		temp();
+		return temp;
 	}
 	void temp(){
-	to = from;
-	return temp;
+		to = from;
+		return temp;
 	}
 	void temp(){
-	to = from;
-	return temp;
+		to = from;
+		return temp;
 	}
 };

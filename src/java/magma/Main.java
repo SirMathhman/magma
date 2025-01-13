@@ -151,15 +151,15 @@ public class Main {
     }
 
     private static Optional<String> compileDefinition(String structSegment) {
-        return truncateRight(structSegment, ";").map(inner -> generateStatement(generateDefinition()));
+        return truncateRight(structSegment, ";").map(inner -> generateStatement(1, generateDefinition()));
     }
 
     private static String generateDefinition() {
         return "int value";
     }
 
-    private static String generateStatement(String content) {
-        return "\n\t" + content + ";";
+    private static String generateStatement(int depth, String content) {
+        return "\n" + "\t".repeat(depth) + content + ";";
     }
 
     private static Optional<String> compileMethod(String structSegment) {
@@ -167,15 +167,15 @@ public class Main {
                 .flatMap(inner -> split(inner, "{")
                         .map(tuple -> {
                             final var inputContent = tuple.right();
-                            final var outputContent = splitAndCompile(inputContent, Main::compileStatement);
+                            final var outputContent = splitAndCompile(inputContent, statement -> compileStatement(statement, 2));
                             return "\n\tvoid temp(){" + outputContent + "\n\t}";
                         }));
     }
 
-    private static String compileStatement(String statement) {
-        return compileAssignment(statement)
-                .or(() -> compileReturn(statement))
-                .or(() -> compileInvocation(statement))
+    private static String compileStatement(String statement, int depth) {
+        return compileAssignment(statement, depth)
+                .or(() -> compileReturn(statement, depth))
+                .or(() -> compileInvocation(statement, depth))
                 .or(() -> compileIf(statement))
                 .orElseGet(() -> invalidate("statement", statement));
     }
@@ -184,15 +184,15 @@ public class Main {
         return truncateLeft(statement, "if").map(inner -> "if (1) {}");
     }
 
-    private static Optional<String> compileInvocation(String statement) {
+    private static Optional<String> compileInvocation(String statement, int depth) {
         return split(statement.strip(), "(").flatMap(inner -> truncateRight(inner.right(), ");").map(inner0 -> {
-            return generateStatement("temp()");
+            return generateStatement(depth, "temp()");
         }));
     }
 
-    private static Optional<String> compileReturn(String statement) {
+    private static Optional<String> compileReturn(String statement, int depth) {
         return truncateLeft(statement, "return").flatMap(inner -> truncateRight(inner, ";").map(inner0 -> {
-            return generateStatement("return temp");
+            return generateStatement(depth, "return temp");
         }));
     }
 
@@ -200,13 +200,13 @@ public class Main {
         return input.startsWith(slice) ? Optional.of(input.substring(slice.length())) : Optional.empty();
     }
 
-    private static Optional<String> compileAssignment(String statement) {
-        return split(statement, "=").map(inner -> generateStatement("to = from"));
+    private static Optional<String> compileAssignment(String statement, int depth) {
+        return split(statement, "=").map(inner -> generateStatement(depth, "to = from"));
     }
 
     private static Optional<String> compileInitialization(String structSegment) {
         return truncateRight(structSegment, ";").flatMap(inner -> {
-            return split(inner, "=").map(value -> generateStatement(generateDefinition() + " = 0"));
+            return split(inner, "=").map(value -> generateStatement(1, generateDefinition() + " = 0"));
         });
     }
 

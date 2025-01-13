@@ -15,101 +15,101 @@ struct Main {
 	int value = 0;
 	int value = 0;
 	void temp(){
-	temp();
+		temp();
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	return temp;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		return temp;
 	}
 	void temp(){
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	return temp;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		return temp;
 	}
 	void temp(){if (1) {}if (1) {}
-	return temp;
+		return temp;
 	}
 	void temp(){
-	temp();
-	return temp;
+		temp();
+		return temp;
 	}
 	void temp(){
-	to = from;
+		to = from;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	to = from;
+		to = from;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	return temp;
+		return temp;
 	}
 	void temp(){
-	to = from;
+		to = from;
 	}
 	void temp(){
-	to = from;
+		to = from;
 	}
 	void temp(){
-	temp();
-	return temp;
+		temp();
+		return temp;
 	}
 	void temp(){
-	to = from;
-	to = from;
-	to = from;
-	to = from;
-	return temp;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		return temp;
 	}
 };
