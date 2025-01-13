@@ -5,12 +5,12 @@ struct Ok<T, X> implements Result<T, X> {
 	int value = 0;
 	}
 	Result<R, X> mapValue((T => R) mapper){
-	new Ok<>(mapper.apply(this.value));
+		return temp;
 	}
 	R match((T => R) onOk, (X => R) onErr){
-	return onOk.apply(this.value);
+		return temp;
 	}
 	Result<R, X> flatMapValue((T => Result<R, X>) mapper){
-	return mapper.apply(this.value);
+		return temp;
 	}
 };

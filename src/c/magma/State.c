@@ -17,35 +17,35 @@ struct State {
 	0, queue);
 	}
 	Optional<Tuple<State, Character>> pop(){
-	return Optional.empty();
-	Tuple<>(this, this.queue.pop()));
+		if (1) {}
+		return temp;
 	}
 	boolean isLevel(){
-	int value = 0;
+		return temp;
 	}
 	boolean isShallow(){
-	int value = 0;
+		return temp;
 	}
 	State exit(){
 	int value = 0;
-	return this;
+		return temp;
 	}
 	State append(char c){
 		temp();
-	return this;
+		return temp;
 	}
 	State enter(){
 	int value = 0;
-	return this;
+		return temp;
 	}
 	State advance(){
 		if (1) {}
-	return this;
+		return temp;
 	}
 	Optional<State> appendFromQueue(){
-	return appendAndPop().map(Tuple::left);
+		return temp;
 	}
 	Optional<Tuple<State, Character>> appendAndPop(){
-	return pop().map(tuple -> tuple.mergeIntoLeft(State::append));
+		return temp;
 	}
 };

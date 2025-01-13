@@ -22,7 +22,7 @@ struct Main {
 	JavaFiles.walk(SOURCE_DIRECTORY).match(Main::compileFiles, Optional::of).ifPresent(Throwable::printStackTrace);
 	}
 	Optional<IOException> compileFiles(List<Path> files){
-	.flatMap(Optional::stream) .findFirst();
+		return temp;
 	}
 	Optional<IOException> compileSource(Path source){
 	int value = 0;
@@ -36,19 +36,19 @@ struct Main {
 	int value = 0;
 		if (1) {}
 	int value = 0;
-	int value = 0;
+		return temp;
 	}
 	String compileRoot(String root){
-	Main::compileRootSegment, StringBuilder::append);
+		return temp;
 	}
 	String compileAndMerge(List<String> segments, (String => String) compiler, ((StringBuilder, String) => StringBuilder) merger){
-	compiler), merger);
+		return temp;
 	}
 	String merge(List<String> segments, ((StringBuilder, String) => StringBuilder) merger){
 	int value = 0;for (var segment : segments) {
             output = merger.apply(output, segment);
         }
-	return output.toString();
+		return temp;
 	}
 	List<String> compileSegments(List<String> segments, (String => String) compiler){
 	int value = 0;for (String segment : segments) {
@@ -57,7 +57,7 @@ struct Main {
             final var compiled = compiler.apply(stripped);
             compiledSegments.add(compiled);
         }
-	return compiledSegments;
+		return temp;
 	}
 	List<String> slicesOf(((State, Character) => State) other, String root){
 	int value = 0;
@@ -69,137 +69,137 @@ struct Main {
             state = splitAtChar(state, c, other);
         }
 	int value = 0;
-	return segments;
-	root, segments);
+		if (1) {}
+		return temp;
 	}
 	State splitAtChar(State state, Character c, ((State, Character) => State) other){
-	other.apply(state, c));
+		return temp;
 	}
 	Optional<State> splitDoubleQuotes(State state, char c){
-	int value = 0;
+		if (1) {}
 	int value = 0;while (true) {
             final var processed = splitDoubleQuotesChar(state);
             if (processed.isEmpty()) break;
             else current = processed.get();
         }
-	return Optional.of(current);
+		return temp;
 	}
 	Optional<State> splitDoubleQuotesChar(State state){
 	int value = 0;
-	return Optional.empty();
+		if (1) {}
 	int value = 0;
 	int value = 0;
-	int value = 0;
+		if (1) {}
 		if (1) {}
 		else {}
 	}
 	State statementChars(State state, char c){
 	int value = 0;
-	int value = 0;
-	int value = 0;
-	int value = 0;
-	int value = 0;
-	return appended;
+		if (1) {}
+		if (1) {}
+		if (1) {}
+		if (1) {}
+		return temp;
 	}
 	Optional<State> splitSingleQuotes(State state, char c){
-	int value = 0;
-	int value = 0;
+		if (1) {}
+		return temp;
 	}
 	String compileRootSegment(String rootSegment){
-	return "";
-	"#include \"temp.h\"\n";
-	segment", rootSegment));
+		if (1) {}
+		if (1) {}
+		return temp;
 	}
 	String invalidate(String type, String rootSegment){
-	rootSegment, rootSegment);
+		return temp;
 	}
 	T writeError(String message, String rootSegment, T value){
 	+ rootSegment);
-	return value;
+		return temp;
 	}
 	Optional<String> compileToStruct(String keyword, String rootSegment){
-	int value = 0;
+		return temp;
 	}
 	String compileStructSegment(String structSegment){
-	segment", structSegment));
+		return temp;
 	}
 	Optional<String> compileDefinitionStatement(String structSegment){
-	inner0)); });
+		return temp;
 	}
 	Optional<String> compileDefinition(String definition){
-	int value = 0;
+		return temp;
 	}
 	String compileType(String type){
-	invalidate("type", type));
+		return temp;
 	}
 	Optional<String> compileArray(String type){
-	+ "[]");
+		return temp;
 	}
 	Optional<String> compileGeneric(String type){
-	int value = 0;
+		return temp;
 	}
 	StringBuilder mergeValues(StringBuilder builder, String slice){
-	return builder.append(slice);
-	builder.append(", ").append(slice);
+		if (1) {}
+		return temp;
 	}
 	State valueStrings(State state, Character c){
+		if (1) {}
 	int value = 0;
-	int value = 0;
-	int value = 0;
-	int value = 0;
-	return appended;
+		if (1) {}
+		if (1) {}
+		return temp;
 	}
 	Optional<String> compileSymbol(String type){for (int i = 0; i < type.length(); i++) {
             final var c = type.charAt(i);
             if (Character.isLetter(c)) continue;
             return Optional.empty();
         }
-	return Optional.of(type);
+		return temp;
 	}
 	String generateDefinition(String type, String name){
-	+ name;
+		return temp;
 	}
 	String generateStatement(int depth, String content){
-	+ ";";
+		return temp;
 	}
 	Optional<String> compileMethod(String structSegment){
-	int value = 0;
+		return temp;
 	}
 	Optional<String> compileContent(String maybeContent){
-	+ "\n\t}"));
+		return temp;
 	}
 	String compileStatement(String statement, int depth){
-	invalidate("statement", statement));
+		return temp;
 	}
 	Optional<String> compileElse(String statement){
-	"\n\t\telse {}");
+		return temp;
 	}
 	Optional<String> compileIf(String statement){
-	(1) {}");
+		return temp;
 	}
 	Optional<String> compileInvocation(String statement, int depth){
-	"temp()"); }));
+		return temp;
 	}
 	Optional<String> compileReturn(String statement, int depth){
-	temp"); }));
+		return temp;
 	}
 	Optional<String> truncateLeft(String input, String slice){
-	: Optional.empty();
+		return temp;
 	}
 	Optional<String> compileAssignment(String statement, int depth){
-	int value = 0;
+		return temp;
 	}
 	String compileValue(String value){
-	invalidate("value", value);
+		return temp;
 	}
 	Optional<String> compileInitialization(String structSegment){
-	int value = 0;
+		return temp;
 	}
 	Optional<String> truncateRight(String input, String slice){
-	- slice.length()));
-	return Optional.empty();
+		if (1) {}
+		return temp;
 	}
 	Optional<Tuple<String, String>> split(String input, Locator locator){
-	int value = 0;
+		return temp;
 	}
 };

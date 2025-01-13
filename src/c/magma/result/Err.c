@@ -5,12 +5,12 @@ struct Err<T, X> implements Result<T, X> {
 	int value = 0;
 	}
 	Result<R, X> mapValue((T => R) mapper){
-	new Err<>(this.error);
+		return temp;
 	}
 	R match((T => R) onOk, (X => R) onErr){
-	return onErr.apply(this.error);
+		return temp;
 	}
 	Result<R, X> flatMapValue((T => Result<R, X>) mapper){
-	new Err<>(this.error);
+		return temp;
 	}
 };

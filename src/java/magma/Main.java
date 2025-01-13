@@ -324,13 +324,13 @@ public class Main {
     }
 
     private static String compileStatement(String statement, int depth) {
-        return compileInitialization(statement)
-                .or(() -> compileDefinitionStatement(statement))
-                .or(() -> compileAssignment(statement, depth))
-                .or(() -> compileReturn(statement, depth))
-                .or(() -> compileInvocation(statement, depth))
+        return compileReturn(statement, depth)
                 .or(() -> compileIf(statement))
                 .or(() -> compileElse(statement))
+                .or(() -> compileInitialization(statement))
+                .or(() -> compileDefinitionStatement(statement))
+                .or(() -> compileAssignment(statement, depth))
+                .or(() -> compileInvocation(statement, depth))
                 .orElseGet(() -> invalidate("statement", statement));
     }
 
