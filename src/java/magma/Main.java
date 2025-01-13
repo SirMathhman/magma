@@ -99,6 +99,17 @@ public class Main {
             return withEscaped.append(queue.pop());
         }
 
+        if (c == '"') {
+            var current = appended;
+            while (!queue.isEmpty()) {
+                final var next = queue.pop();
+                current = current.append(next);
+                if (next == '"') break;
+                if (next == '\\') current = current.append(queue.pop());
+            }
+            return current;
+        }
+
         if (c == ';' && appended.isLevel()) return appended.advance();
         if (c == '}' && appended.isShallow()) return appended.exit().advance();
         if (c == '{' || c == '(') return appended.enter();

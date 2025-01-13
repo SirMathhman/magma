@@ -52,6 +52,7 @@ struct Main {
 	to = from;
 	to = from;
 	to = from;
+	to = from;
 	return temp;
 	}
 	void temp(){if (1) {}if (1) {}
@@ -74,9 +75,9 @@ struct Main {
 	return temp;
 	}
 	void temp(){
-	return temp;";
+	return temp;
 	}
-	void temp(){return truncateRight(structSegment, "}
+	void temp(){
 	to = from;
 	}
 	void temp(){
