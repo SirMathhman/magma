@@ -3,8 +3,8 @@
 #include "temp.h"
 #include "temp.h"
 struct State {
-	List<> segments;
-	Deque<> queue;
+	List<String> segments;
+	Deque<Character> queue;
 	StringBuilder buffer;
 	int depth;
 	public State(){
@@ -42,7 +42,7 @@ struct State {
 		to = from;
 		return temp;
 	}
-	Optional<> appendFromQueue(){
+	Optional<State> appendFromQueue(){
 		return temp;
 	}
 	Character>> appendAndPop(){

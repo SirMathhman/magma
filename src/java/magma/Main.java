@@ -224,9 +224,11 @@ public class Main {
 
     private static State valueChars(State state, Character c) {
         if (c == ',' && state.isLevel()) return state.advance();
-        if (c == '<') return state.enter();
-        if (c == '>') return state.exit();
-        return state;
+
+        final var appended = state.append(c);
+        if (c == '<') return appended.enter();
+        if (c == '>') return appended.exit();
+        return appended;
     }
 
     private static Optional<String> compileSymbol(String type) {

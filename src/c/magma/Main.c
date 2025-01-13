@@ -21,10 +21,10 @@ struct Main {
 	void main(){
 		temp();
 	}
-	Optional<> compileFiles(){
+	Optional<IOException> compileFiles(){
 		return temp;
 	}
-	Optional<> compileSource(){
+	Optional<IOException> compileSource(){
 		to = from;
 		to = from;
 		to = from;
