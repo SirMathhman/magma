@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -38,6 +39,10 @@ public class Main {
     }
 
     private static String compileRoot(String root) {
+        return splitAndCompile(root, Main::compileRootSegment);
+    }
+
+    private static String splitAndCompile(String root, Function<String, String> compiler) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -56,7 +61,7 @@ public class Main {
 
         final var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootSegment(segment.strip()));
+            output.append(compiler.apply(segment.strip()));
         }
 
         return output.toString();
@@ -68,18 +73,32 @@ public class Main {
 
         return compileToStruct("class", rootSegment)
                 .or(() -> compileToStruct("record", rootSegment))
-                .orElseGet(() -> {
-                    System.err.println("Invalid root segment: " + rootSegment);
-                    return rootSegment;
-                });
+                .orElseGet(() -> invalidate("root segment", rootSegment));
+    }
+
+    private static String invalidate(String type, String rootSegment) {
+        System.err.println("Invalid " + type + ": " + rootSegment);
+        return rootSegment;
     }
 
     private static Optional<String> compileToStruct(String keyword, String rootSegment) {
         return split(rootSegment, keyword).flatMap(tuple -> {
-            return split(tuple.right(), "{").map(tuple0 -> {
-                return "struct " + tuple0.left().strip() + " {\n};";
+            return split(tuple.right(), "{").flatMap(tuple0 -> {
+                return truncateRight(tuple0.right().strip(), "}").map(content -> {
+                    final var outputContent = splitAndCompile(content, Main::compileStructSegment);
+                    return "struct " + tuple0.left().strip() + " {" + outputContent + "\n};";
+                });
             });
         });
+    }
+
+    private static String compileStructSegment(String structSegment) {
+        return invalidate("struct segment", structSegment);
+    }
+
+    private static Optional<String> truncateRight(String input, String slice) {
+        if (input.endsWith(slice)) return Optional.of(input.substring(0, input.length() - slice.length()));
+        return Optional.empty();
     }
 
     private static Optional<Tuple<String, String>> split(String input, String slice) {
