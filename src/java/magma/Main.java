@@ -130,7 +130,11 @@ public class Main {
     }
 
     private static String compileStatement(String statement) {
-        return invalidate("statement", statement);
+        return compileAssignment(statement).orElseGet(() -> invalidate("statement", statement));
+    }
+
+    private static Optional<String> compileAssignment(String statement) {
+        return split(statement, "=").map(inner -> generateStatement("to = from"));
     }
 
     private static Optional<String> compileInitialization(String structSegment) {
