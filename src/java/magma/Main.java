@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -342,15 +343,25 @@ public class Main {
     }
 
     private static String compileStatement(String statement, int depth) {
-        return compileReturn(statement, depth)
-                .or(() -> compileCondition(statement, "if"))
-                .or(() -> compileCondition(statement, "while"))
-                .or(() -> compileElse(statement))
-                .or(() -> compileInitialization(statement, depth))
-                .or(() -> compileInvocationStatement(statement, depth))
-                .or(() -> compileDefinitionStatement(statement, depth))
-                .or(() -> compileAssignment(statement, depth))
-                .orElseGet(() -> invalidate("statement", statement));
+        List<Supplier<Optional<String>>> compilers = List.of(
+                () -> compileReturn(statement, depth),
+                () -> compileCondition(statement, "if"),
+                () -> compileCondition(statement, "while"),
+                () -> compileElse(statement),
+                () -> compileInitialization(statement, depth),
+                () -> compileInvocationStatement(statement, depth),
+                () -> compileDefinitionStatement(statement, depth),
+                () -> compileAssignment(statement, depth)
+        );
+
+        for (Supplier<Optional<String>> compiler : compilers) {
+            final var optional = compiler.get();
+            if (optional.isPresent()) {
+                return optional.get();
+            }
+        }
+
+        return invalidate("statement", statement);
     }
 
     private static Optional<String> compileElse(String statement) {
