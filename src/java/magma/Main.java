@@ -207,7 +207,7 @@ public class Main {
     private static Optional<String> compileDefinition(String definition) {
         return split(definition, new LastLocator(" ")).map(tuple -> {
             final var left = tuple.left().strip();
-            final var type = split(left, new LastLocator(" ")).map(Tuple::right).orElse(left);
+            final var type = split(left, new TypeLocator()).map(Tuple::right).orElse(left);
 
             return generateDefinition(compileType(type), tuple.right().strip());
         });
@@ -289,7 +289,7 @@ public class Main {
                 .orElseGet(() -> invalidate("statement", statement));
     }
 
-    private static Optional<? extends String> compileIf(String statement) {
+    private static Optional<String> compileIf(String statement) {
         return truncateLeft(statement, "if").map(inner -> "if (1) {}");
     }
 
@@ -330,5 +330,24 @@ public class Main {
             final var right = input.substring(index + locator.computeLength());
             return new Tuple<>(left, right);
         });
+    }
+
+    private static class TypeLocator implements Locator {
+        @Override
+        public int computeLength() {
+            return 1;
+        }
+
+        @Override
+        public Optional<Integer> locate(String input) {
+            var depth = 0;
+            for (int i = input.length() - 1; i >= 0; i--) {
+                final var c = input.charAt(i);
+                if (c == ' ' && depth == 0) return Optional.of(i);
+                if (c == '>') depth++;
+                if (c == '<') depth--;
+            }
+            return Optional.empty();
+        }
     }
 }

@@ -16,7 +16,7 @@ struct State {
 	public State(Deque<Character> queue){
 		temp();
 	}
-	Character>> pop(){
+	Optional<Tuple<StateCharacter>> pop(){
 		temp();
 		return temp;
 	}
@@ -45,7 +45,7 @@ struct State {
 	Optional<State> appendFromQueue(){
 		return temp;
 	}
-	Character>> appendAndPop(){
+	Optional<Tuple<StateCharacter>> appendAndPop(){
 		return temp;
 	}
 };

@@ -40,20 +40,20 @@ struct Main {
 	String compileRoot(String root){
 		return temp;
 	}
-	String compileAndMerge(Supplier<List<String>> splitterString> compiler){
+	String compileAndMerge(Supplier<List<String>> splitterFunction<StringString> compiler){
 		to = from;
 		to = from;
 		to = from;
 		return temp;
 	}
-	List<String> slicesOf(State> otherString root){
+	List<String> slicesOf(BiFunction<StateCharacterState> otherString root){
 		to = from;
 		to = from;
 		to = from;
 		to = from;if (1) {}
 		return temp;
 	}
-	State splitAtChar(State stateCharacter cState> other){
+	State splitAtChar(State stateCharacter cBiFunction<StateCharacterState> other){
 		return temp;
 	}
 	Optional<State> splitDoubleQuotes(State statechar c){
@@ -138,7 +138,7 @@ struct Main {
 	String compileStatement(String statementint depth){
 		return temp;
 	}
-	String> compileIf(String statement){
+	Optional<String> compileIf(String statement){
 		return temp;
 	}
 	Optional<String> compileInvocation(String statementint depth){
@@ -160,7 +160,13 @@ struct Main {
 		temp();
 		return temp;
 	}
-	String>> split(String inputLocator locator){
+	Optional<Tuple<StringString>> split(String inputLocator locator){
 		to = from;
+	}
+	int computeLength(){
+		return temp;
+		to = from;
+		to = from;
+		return temp;}
 	}
 };

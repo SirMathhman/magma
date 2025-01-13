@@ -1,6 +1,6 @@
 #include "temp.h"
 struct Result<T, X> {
-	X> mapValue(R> mapper);
-	R match(R> onOkR> onErr);
-	X> flatMapValue(X>> mapper);
+	Result<RX> mapValue(Function<TR> mapper);
+	R match(Function<TR> onOkFunction<XR> onErr);
+	Result<RX> flatMapValue(Function<TResult<RX>> mapper);
 };

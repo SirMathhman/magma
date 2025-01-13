@@ -4,13 +4,13 @@ struct Ok<T, X> implements Result<T, X> {
 	public Ok(T value){
 		to = from;
 	}
-	X> mapValue(R> mapper){
+	Result<RX> mapValue(Function<TR> mapper){
 		return temp;
 	}
-	R match(R> onOkR> onErr){
+	R match(Function<TR> onOkFunction<XR> onErr){
 		return temp;
 	}
-	X> flatMapValue(X>> mapper){
+	Result<RX> flatMapValue(Function<TResult<RX>> mapper){
 		return temp;
 	}
 };
