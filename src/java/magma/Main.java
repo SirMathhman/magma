@@ -39,12 +39,16 @@ public class Main {
     private static String compileRoot(String root) {
         var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
+        var depth = 0;
         for (int i = 0; i < root.length(); i++) {
             var c = root.charAt(i);
             buffer.append(c);
-            if (c == ';') {
+            if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
             }
         }
         advance(buffer, segments);
