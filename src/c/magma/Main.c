@@ -9,5 +9,6 @@
 struct Main {
 	int value = 0;
 	int value = 0;
-	int value = 0;
+	void temp(){
+	}
 };

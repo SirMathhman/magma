@@ -93,11 +93,20 @@ public class Main {
     }
 
     private static String compileStructSegment(String structSegment) {
-        return compileInitialization(structSegment).orElseGet(() -> invalidate("struct segment", structSegment));
+        return compileInitialization(structSegment)
+                .or(() -> compileMethod(structSegment))
+                .orElseGet(() -> invalidate("struct segment", structSegment));
+    }
+
+    private static Optional<String> compileMethod(String structSegment) {
+        return split(structSegment, "{")
+                .map(inner -> "\n\tvoid temp(){\n\t}");
     }
 
     private static Optional<String> compileInitialization(String structSegment) {
-        return split(structSegment, "=").map(value -> "\n\tint value = 0;");
+        return truncateRight(structSegment, ";").flatMap(inner -> {
+            return split(inner, "=").map(value -> "\n\tint value = 0;");
+        });
     }
 
     private static Optional<String> truncateRight(String input, String slice) {
