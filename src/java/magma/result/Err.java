@@ -47,4 +47,9 @@ public class Err<T, X> implements Result<T, X> {
     public <R> Result<T, R> mapErr(Function<X, R> mapper) {
         return new Err<>(mapper.apply(this.error));
     }
+
+    @Override
+    public Optional<X> findError() {
+        return Optional.of(this.error);
+    }
 }

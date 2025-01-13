@@ -80,6 +80,6 @@ public class TypeLocator implements Locator {
 
     @Override
     public String createErrorMessage() {
-        return "No space present.";
+        return "No space present";
     }
 }

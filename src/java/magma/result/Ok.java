@@ -47,4 +47,9 @@ public class Ok<T, X> implements Result<T, X> {
     public <R> Result<T, R> mapErr(Function<X, R> mapper) {
         return new Ok<>(this.value);
     }
+
+    @Override
+    public Optional<X> findError() {
+        return Optional.empty();
+    }
 }

@@ -206,10 +206,6 @@ public class Main {
         return truncateLeft(rootSegment, "package ").mapValue(_ -> "");
     }
 
-    private static String invalidate(String type, String rootSegment) {
-        return Results.writeErr("Invalid " + type, rootSegment, rootSegment);
-    }
-
     private static Result<String, CompileError> compileToStruct(String keyword, String rootSegment) {
         Locator locator1 = new FirstLocator(keyword);
         return split(rootSegment, locator1).flatMapValue(tuple -> {
@@ -377,14 +373,17 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileDisjunction(String type, String input, List<Supplier<Result<String, CompileError>>> compilers) {
+        var errors = new ArrayList<CompileError>();
         for (var compiler : compilers) {
             final var result = compiler.get();
             if (result.isOk()) {
                 return result;
+            } else {
+                errors.add(result.findError().orElseThrow());
             }
         }
 
-        return new Err<>(new CompileError("Invalid type '" + type + "'", input));
+        return new Err<>(new CompileError("Invalid type '" + type + "'", input, errors));
     }
 
     private static Result<String, CompileError> compileElse(String statement) {
