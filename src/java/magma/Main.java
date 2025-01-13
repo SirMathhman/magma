@@ -250,18 +250,18 @@ public class Main {
     }
 
     private static Optional<String> compileMethod(String structSegment) {
-        return truncateRight(structSegment, "}")
-                .flatMap(inner -> split(inner, new FirstLocator("{"))
-                        .flatMap(tuple -> {
-                            final var beforeContent = tuple.left();
-                            return split(beforeContent, new FirstLocator("(")).flatMap(tuple0 -> {
-                                return compileDefinition(tuple0.left().strip()).map(definition -> {
-                                    final var inputContent = tuple.right();
-                                    final var outputContent = compileAndMerge(() -> slicesOf(Main::statementChars, inputContent), statement -> compileStatement(statement, 2));
-                                    return "\n\t" + definition + "(){" + outputContent + "\n\t}";
-                                });
-                            });
-                        }));
+        return split(structSegment, new FirstLocator(")")).flatMap(tuple -> {
+            return split(tuple.left(), new FirstLocator("(")).flatMap(tuple1 -> {
+                return compileDefinition(tuple1.left()).map(definition -> {
+                    final var maybeContent = tuple.right().strip();
+                    final var outputContent = truncateLeft(maybeContent, "{").flatMap(inner -> truncateRight(inner, "\n\t}").map(inner0 -> {
+                        return compileAndMerge(() -> slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2));
+                    })).orElse(";");
+
+                    return "\n\t" + definition + "()" + outputContent;
+                });
+            });
+        });
     }
 
     private static String compileStatement(String statement, int depth) {
