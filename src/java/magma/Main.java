@@ -214,9 +214,10 @@ public class Main {
         Locator locator1 = new FirstLocator(keyword);
         return split(rootSegment, locator1).flatMapValue(tuple -> {
             Locator locator = new FirstLocator("{");
-            return split(tuple.right(), locator).flatMapValue(tuple0 -> truncateRight(tuple0.right().strip(), "}").mapValue(content -> {
-                final var outputContent = compileAndMerge(slicesOf(Main::statementChars, content), Main::compileStructSegment, StringBuilder::append);
-                return "struct " + tuple0.left().strip() + " {" + outputContent + "\n};";
+            return split(tuple.right(), locator).flatMapValue(tuple0 -> truncateRight(tuple0.right().strip(), "}").flatMapValue(content -> {
+                return compileAndMerge(slicesOf(Main::statementChars, content), Main::compileStructSegment, StringBuilder::append).mapValue(outputContent -> {
+                    return "struct " + tuple0.left().strip() + " {" + outputContent + "\n};";
+                });
             }));
         });
     }

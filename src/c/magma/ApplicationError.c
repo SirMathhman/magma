@@ -1,2 +1,4 @@
-struct ApplicationError(Error error) implements Error {magma.result.Ok@1edf1c96
+struct ApplicationError(Error error) implements Error {
+	String display(){magma.result.Ok@4c98385c
+	}
 };
