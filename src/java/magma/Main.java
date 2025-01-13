@@ -26,11 +26,17 @@ public class Main {
                 if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
 
                 final var target = targetParent.resolve(nameWithoutExt + ".c");
-                Files.writeString(target, Files.readString(source));
+                final var input = Files.readString(source);
+                Files.writeString(target, compileRoot(input));
             }
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
+    }
+
+    private static String compileRoot(String root) {
+        System.err.println("Invalid root: " + root);
+        return root;
     }
 }
