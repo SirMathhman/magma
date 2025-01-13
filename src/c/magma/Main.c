@@ -76,9 +76,8 @@ struct Main {
 		to = from;
 		to = from;
 		to = from;
-		to = from;else {
-            return Optional.of(nextTuple.left());
-        }
+		to = from;
+		else {}
 	}
 	State statementChars(State state, char c){
 		to = from;
@@ -150,6 +149,9 @@ struct Main {
 		to = from;
 	}
 	String compileStatement(String statement, int depth){
+		return temp;
+	}
+	Optional<String> compileElse(String statement){
 		return temp;
 	}
 	Optional<String> compileIf(String statement){

@@ -253,7 +253,7 @@ public class Main {
                 return "(" + paramType + " => " + returnType + ")";
             }
 
-            if(caller.equals("BiFunction") && compiledSegments.size() == 3) {
+            if (caller.equals("BiFunction") && compiledSegments.size() == 3) {
                 final var firstParamType = compiledSegments.get(0);
                 final var secondParamType = compiledSegments.get(1);
                 final var returnType = compiledSegments.get(2);
@@ -324,7 +324,12 @@ public class Main {
                 .or(() -> compileReturn(statement, depth))
                 .or(() -> compileInvocation(statement, depth))
                 .or(() -> compileIf(statement))
+                .or(() -> compileElse(statement))
                 .orElseGet(() -> invalidate("statement", statement));
+    }
+
+    private static Optional<String> compileElse(String statement) {
+        return truncateLeft(statement, "else").map(inner -> "\n\t\telse {}");
     }
 
     private static Optional<String> compileIf(String statement) {
