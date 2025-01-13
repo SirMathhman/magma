@@ -25,15 +25,15 @@ struct Main {
 		return temp;
 	}
 	Optional<IOException> compileSource(Path source){
-		var relativized = 0;
-		var parent = 0;
-		var namespace = 0;
+		auto relativized = 0;
+		auto parent = 0;
+		auto namespace = 0;
 		if (1) {}
-		var name = 0;
-		var nameWithoutExt = 0;
-		var targetParent = 0;
+		auto name = 0;
+		auto nameWithoutExt = 0;
+		auto targetParent = 0;
 		if (1) {}
-		var target = 0;
+		auto target = 0;
 		return temp;
 	}
 	List<String> computeNamespace(Path parent){
@@ -52,10 +52,10 @@ struct Main {
 		return temp;
 	}
 	List<String> slicesOf(((State, Character) => State) other, String root){
-		var queue = 0;
-		var state = 0;
+		auto queue = 0;
+		auto state = 0;
 		while (1) {}
-		var segments = 0;
+		auto segments = 0;
 		if (1) {}
 		return temp;
 	}
@@ -64,21 +64,21 @@ struct Main {
 	}
 	Optional<State> splitDoubleQuotes(State state, char c){
 		if (1) {}
-		var current = 0;
+		auto current = 0;
 		while (1) {}
 		return temp;
 	}
 	Optional<State> splitDoubleQuotesChar(State state){
-		var maybeNext = 0;
+		auto maybeNext = 0;
 		if (1) {}
-		var nextTuple = 0;
-		var nextChar = 0;
+		auto nextTuple = 0;
+		auto nextChar = 0;
 		if (1) {}
 		if (1) {}
 		else {}
 	}
 	State statementChars(State state, char c){
-		var appended = 0;
+		auto appended = 0;
 		if (1) {}
 		if (1) {}
 		if (1) {}
@@ -114,8 +114,11 @@ struct Main {
 		return temp;
 	}
 	Optional<String> compileType(String type){
-		var optional = 0;
+		auto optional = 0;
 		if (1) {}
+		return temp;
+	}
+	Optional<String> compileExact(String type, String match, String output){
 		return temp;
 	}
 	Optional<String> writeDebug(String type){
@@ -134,7 +137,7 @@ struct Main {
 	}
 	State valueStrings(State state, Character c){
 		if (1) {}
-		var appended = 0;
+		auto appended = 0;
 		if (1) {}
 		if (1) {}
 		return temp;

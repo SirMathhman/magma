@@ -4,7 +4,7 @@ struct LastLocator(String slice) implements Locator {
 		return temp;
 	}
 	Optional<Integer> locate(String input){
-		var index = 0;
+		auto index = 0;
 		if (1) {}
 		return temp;
 	}

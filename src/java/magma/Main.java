@@ -230,12 +230,17 @@ public class Main {
     }
 
     private static Optional<String> compileType(String type) {
-        final var optional = compileSymbol(type)
+        final var optional = compileExact(type, "var", "auto")
+                .or(() -> compileSymbol(type))
                 .or(() -> compileGeneric(type))
                 .or(() -> compileArray(type));
 
         if (optional.isPresent()) return optional;
         return writeDebug(type);
+    }
+
+    private static Optional<String> compileExact(String type, String match, String output) {
+        return type.equals(match) ? Optional.of(output) : Optional.empty();
     }
 
     private static Optional<String> writeDebug(String type) {
