@@ -7,9 +7,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
@@ -64,9 +68,14 @@ public class Main {
 
     private static String splitAndCompile(String root, Function<String, String> compiler) {
         var state = new State();
-        for (int i = 0; i < root.length(); i++) {
-            var c = root.charAt(i);
-            state = splitAtChar(state, c);
+
+        final var queue = IntStream.range(0, root.length())
+                .mapToObj(root::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        while (!queue.isEmpty()) {
+            final var c = queue.pop();
+            state = splitAtChar(state, c, queue);
         }
         final var segments = state.advance().segments;
 
@@ -80,8 +89,16 @@ public class Main {
         return output.toString();
     }
 
-    private static State splitAtChar(State state, char c) {
+    private static State splitAtChar(State state, char c, Deque<Character> queue) {
         final var appended = state.append(c);
+
+        if (c == '\'') {
+            final var maybeEscape = queue.pop();
+            final var withMaybeEscape = appended.append(maybeEscape);
+            final var withEscaped = maybeEscape == '\\' ? withMaybeEscape.append(queue.pop()) : withMaybeEscape;
+            return withEscaped.append(queue.pop());
+        }
+
         if (c == ';' && appended.isLevel()) return appended.advance();
         if (c == '}' && appended.isShallow()) return appended.exit().advance();
         if (c == '{' || c == '(') return appended.enter();
@@ -147,7 +164,12 @@ public class Main {
         return compileAssignment(statement)
                 .or(() -> compileReturn(statement))
                 .or(() -> compileInvocation(statement))
+                .or(() -> compileIf(statement))
                 .orElseGet(() -> invalidate("statement", statement));
+    }
+
+    private static Optional<? extends String> compileIf(String statement) {
+        return truncateLeft(statement, "if").map(inner -> "if (1) {}");
     }
 
     private static Optional<String> compileInvocation(String statement) {
