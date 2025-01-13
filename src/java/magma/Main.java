@@ -5,6 +5,9 @@ import magma.locate.FirstLocator;
 import magma.locate.LastLocator;
 import magma.locate.Locator;
 import magma.locate.TypeLocator;
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -347,7 +350,7 @@ public class Main {
     }
 
     private static Optional<String> compileContent(String maybeContent) {
-        return truncateLeft(maybeContent, "{")
+        return truncateLeft(maybeContent, "{").findValue()
                 .flatMap(inner -> truncateRight(inner, "}")
                         .map(inner0 -> "{" + compileAndMerge(slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2), StringBuilder::append) + "\n\t}"));
     }
@@ -379,12 +382,12 @@ public class Main {
     }
 
     private static Optional<String> compileElse(String statement) {
-        return truncateLeft(statement, "else").map(inner -> "\n\t\telse {}");
+        return truncateLeft(statement, "else").findValue().map(inner -> "\n\t\telse {}");
     }
 
     private static Optional<String> compileCondition(String statement, String prefix) {
-        return truncateLeft(statement, prefix).flatMap(inner -> {
-            return truncateLeft(inner.strip(), "(").flatMap(inner0 -> {
+        return truncateLeft(statement, prefix).findValue().flatMap(inner -> {
+            return truncateLeft(inner.strip(), "(").findValue().flatMap(inner0 -> {
                 return split(inner0, new FirstLocator(")")).flatMap(tuple -> {
                     return Optional.ofNullable(compileValue(tuple.left().strip())).flatMap(condition -> {
                         return compileContent(tuple.right()).map(content -> {
@@ -418,14 +421,15 @@ public class Main {
     }
 
     private static Optional<String> compileReturn(String statement, int depth) {
-        return truncateLeft(statement, "return").flatMap(inner -> truncateRight(inner, ";").map(value -> {
+        return truncateLeft(statement, "return").findValue().flatMap(inner -> truncateRight(inner, ";").map(value -> {
             String value1 = value.strip();
             return generateStatement(depth, "return " + Optional.ofNullable(compileValue(value1)).orElse(value1));
         }));
     }
 
-    private static Optional<String> truncateLeft(String input, String slice) {
-        return input.startsWith(slice) ? Optional.of(input.substring(slice.length())) : Optional.empty();
+    private static Result<String, CompileError> truncateLeft(String input, String prefix) {
+        if (input.startsWith(prefix)) return new Ok<>(input.substring(prefix.length()));
+        return new Err<>(new CompileError("Prefix '" + prefix + "' not present", input));
     }
 
     private static Optional<String> compileAssignment(String statement, int depth) {
@@ -458,11 +462,11 @@ public class Main {
     }
 
     private static Optional<String> compileNot(String value) {
-        return truncateLeft(value, "!").flatMap(inner -> Optional.ofNullable(compileValue(inner)).map(inner0 -> "!" + inner0));
+        return truncateLeft(value, "!").findValue().flatMap(inner -> Optional.ofNullable(compileValue(inner)).map(inner0 -> "!" + inner0));
     }
 
     private static Optional<String> compileChar(String value) {
-        return truncateLeft(value, "'").flatMap(inner -> truncateRight(inner, "'").map(inner0 -> "'" + inner0 + "'"));
+        return truncateLeft(value, "'").findValue().flatMap(inner -> truncateRight(inner, "'").map(inner0 -> "'" + inner0 + "'"));
     }
 
     private static Optional<String> compileMethodAccess(String value) {
@@ -480,7 +484,7 @@ public class Main {
     }
 
     private static Optional<String> compileString(String value) {
-        return truncateLeft(value, "\"").flatMap(inner -> truncateRight(inner, "\"").map(inner0 -> "\"" + inner0 + "\""));
+        return truncateLeft(value, "\"").findValue().flatMap(inner -> truncateRight(inner, "\"").map(inner0 -> "\"" + inner0 + "\""));
     }
 
     private static Optional<String> compileOperator(String value, String operator) {
