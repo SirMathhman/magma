@@ -254,8 +254,8 @@ public class Main {
             return split(tuple.left(), new FirstLocator("(")).flatMap(tuple1 -> {
                 return compileDefinition(tuple1.left()).map(definition -> {
                     final var maybeContent = tuple.right().strip();
-                    final var outputContent = truncateLeft(maybeContent, "{").flatMap(inner -> truncateRight(inner, "\n\t}").map(inner0 -> {
-                        return compileAndMerge(() -> slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2));
+                    final var outputContent = truncateLeft(maybeContent, "{").flatMap(inner -> truncateRight(inner, "}").map(inner0 -> {
+                        return "{" + compileAndMerge(() -> slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2)) + "\n\t}";
                     })).orElse(";");
 
                     return "\n\t" + definition + "()" + outputContent;

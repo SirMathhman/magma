@@ -7,15 +7,45 @@ struct State {
 	Deque<Character> queue;
 	StringBuilder buffer;
 	int depth;
-	public State();
-	public State();
-	Character>> pop();
-	boolean isLevel();
-	boolean isShallow();
-	State exit();
-	State append();
-	State enter();
-	State advance();
-	Optional<State> appendFromQueue();
-	Character>> appendAndPop();
+	public State(){
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+	}
+	public State(){
+		temp();
+	}
+	Character>> pop(){
+		temp();
+		return temp;
+	}
+	boolean isLevel(){
+		to = from;
+	}
+	boolean isShallow(){
+		to = from;
+	}
+	State exit(){
+		to = from;
+		return temp;
+	}
+	State append(){
+		temp();
+		return temp;
+	}
+	State enter(){
+		to = from;
+		return temp;
+	}
+	State advance(){
+		to = from;
+		return temp;
+	}
+	Optional<State> appendFromQueue(){
+		return temp;
+	}
+	Character>> appendAndPop(){
+		return temp;
+	}
 };
