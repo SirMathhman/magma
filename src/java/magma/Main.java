@@ -280,10 +280,10 @@ public class Main {
         if (c == ',' && state.isLevel()) return state.advance();
 
         final var appended = state.append(c);
-        if(c == '-') {
+        if (c == '-') {
             final var peeked = appended.peek();
-            if(peeked.isPresent()) {
-                if(peeked.get() == '>') {
+            if (peeked.isPresent()) {
+                if (peeked.get() == '>') {
                     return appended.appendFromQueue().orElse(appended);
                 }
             }
@@ -325,10 +325,14 @@ public class Main {
                             segment -> compileDefinition(segment).orElseGet(() -> invalidate("definition", segment)),
                             Main::mergeValues);
 
-                    return "\n\t" + definition + "(" + compiledParams + ")" + outputContent;
+                    return generateMethod(definition, compiledParams, outputContent);
                 });
             });
         });
+    }
+
+    private static String generateMethod(String definition, String params, String content) {
+        return "\n\t" + definition + "(" + params + ")" + content;
     }
 
     private static Optional<String> compileContent(String maybeContent) {
@@ -400,12 +404,19 @@ public class Main {
     private static String compileValue(String value) {
         return compileConstruction(value)
                 .or(() -> compileInvocation(value))
+                .or(() -> compileLambda(value))
                 .or(() -> compileDataAccess(value))
                 .or(() -> compileFilter(Main::isSymbol, value))
                 .or(() -> compileFilter(Main::isNumber, value))
                 .or(() -> compileAdd(value))
                 .or(() -> compileString(value))
                 .orElseGet(() -> invalidate("value", value));
+    }
+
+    private static Optional<String> compileLambda(String value) {
+        return value.contains("->")
+                ? Optional.of(generateMethod(generateDefinition("auto", "temp"), "", "{}"))
+                : Optional.empty();
     }
 
     private static Optional<String> compileString(String value) {

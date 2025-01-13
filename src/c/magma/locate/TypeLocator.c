@@ -24,6 +24,7 @@ struct TypeLocator implements Locator {
 		return 1;
 	}
 	Optional<Integer> locate(String input){
-		return IntStream.range(0, input.length()).mapToObj(index -> input.length() - 1 - index).reduce(temp(), 0), (current, tuple) -> fold(input, current, tuple), (_, next) -> next).left();
+		return 
+	auto temp(){}();
 	}
 };
