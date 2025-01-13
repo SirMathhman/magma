@@ -1,16 +1,16 @@
 #include "temp.h"
 struct Err<T, X> implements Result<T, X> {
-	int error;
-	void Err(){
+	X error;
+	public Err(){
 		to = from;
 	}
-	void mapValue(){
+	X> mapValue(){
 		return temp;
 	}
-	void match(){
+	R match(){
 		return temp;
 	}
-	void flatMapValue(){
+	X> flatMapValue(){
 		return temp;
 	}
 };

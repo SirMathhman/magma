@@ -20,10 +20,10 @@ struct Main {
 	void main(){
 		temp();
 	}
-	void compileFiles(){
+	Optional<IOException> compileFiles(){
 		return temp;
 	}
-	void compileSource(){
+	Optional<IOException> compileSource(){
 		to = from;
 		to = from;
 		to = from;
@@ -36,20 +36,10 @@ struct Main {
 		to = from;
 		to = from;
 	}
-	void compileRoot(){
+	String compileRoot(){
 		return temp;
 	}
-	void splitAndCompile(){
-		to = from;
-		to = from;
-		to = from;
-		to = from;
-		to = from;
-		to = from;
-		return temp;
-	}
-	void splitAtChar(){
-		to = from;
+	String splitAndCompile(){
 		to = from;
 		to = from;
 		to = from;
@@ -58,57 +48,70 @@ struct Main {
 		to = from;
 		return temp;
 	}
-	void compileRootSegment(){if (1) {}if (1) {}
+	State splitAtChar(){
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
+		to = from;
 		return temp;
 	}
-	void invalidate(){
+	String compileRootSegment(){if (1) {}if (1) {}
+		return temp;
+	}
+	String invalidate(){
 		temp();
 		return temp;
 	}
-	void compileToStruct(){
+	Optional<String> compileToStruct(){
 		to = from;
 	}
-	void compileStructSegment(){
+	String compileStructSegment(){
 		return temp;
 	}
-	void compileDefinition(){
+	Optional<String> compileDefinitionStatement(){
 		return temp;
 	}
-	void generateDefinition(){
-		return temp;
-	}
-	void generateStatement(){
-		return temp;
-	}
-	void compileMethod(){
+	Optional<String> compileDefinition(){
 		to = from;
 	}
-	void compileStatement(){
+	String generateDefinition(){
 		return temp;
 	}
-	void compileIf(){
+	String generateStatement(){
 		return temp;
 	}
-	void compileInvocation(){
-		return temp;
-	}
-	void compileReturn(){
-		return temp;
-	}
-	void truncateLeft(){
-		return temp;
-	}
-	void compileAssignment(){
+	Optional<String> compileMethod(){
 		to = from;
 	}
-	void compileInitialization(){
+	String compileStatement(){
+		return temp;
+	}
+	String> compileIf(){
+		return temp;
+	}
+	Optional<String> compileInvocation(){
+		return temp;
+	}
+	Optional<String> compileReturn(){
+		return temp;
+	}
+	Optional<String> truncateLeft(){
+		return temp;
+	}
+	Optional<String> compileAssignment(){
 		to = from;
 	}
-	void truncateRight(){
+	Optional<String> compileInitialization(){
+		to = from;
+	}
+	Optional<String> truncateRight(){
 		temp();
 		return temp;
 	}
-	void split(){
+	String>> split(){
 		to = from;
 	}
 };

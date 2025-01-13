@@ -1,6 +1,6 @@
 #include "temp.h"
 struct Result<T, X> {
-	int mapper);
-	int onErr);
-	int mapper);
+	R> mapper);
+	R> onErr);
+	X>> mapper);
 };

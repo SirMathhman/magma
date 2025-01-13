@@ -148,21 +148,28 @@ public class Main {
 
     private static String compileStructSegment(String structSegment) {
         return compileInitialization(structSegment)
-                .or(() -> compileDefinition(structSegment))
+                .or(() -> compileDefinitionStatement(structSegment))
                 .or(() -> compileMethod(structSegment))
                 .orElseGet(() -> invalidate("struct segment", structSegment));
     }
 
-    private static Optional<String> compileDefinition(String structSegment) {
+    private static Optional<String> compileDefinitionStatement(String structSegment) {
         return truncateRight(structSegment, ";").flatMap(inner -> {
-            return split(inner, new LastLocator(" ")).map(tuple -> {
-                return generateStatement(1, generateDefinition(tuple.right().strip()));
-            });
+            return compileDefinition(inner).map(inner0 -> generateStatement(1, inner0));
         });
     }
 
-    private static String generateDefinition(String name) {
-        return "int " + name;
+    private static Optional<String> compileDefinition(String definition) {
+        return split(definition, new LastLocator(" ")).map(tuple -> {
+            final var left = tuple.left().strip();
+            final var type = split(left, new LastLocator(" ")).map(Tuple::right).orElse(left);
+
+            return generateDefinition(type, tuple.right().strip());
+        });
+    }
+
+    private static String generateDefinition(String type, String name) {
+        return type + " " + name;
     }
 
     private static String generateStatement(int depth, String content) {
@@ -175,11 +182,10 @@ public class Main {
                         .flatMap(tuple -> {
                             final var beforeContent = tuple.left();
                             return split(beforeContent, new FirstLocator("(")).flatMap(tuple0 -> {
-                                return split(tuple0.left().strip(), new LastLocator(" ")).map(tuple1 -> {
+                                return compileDefinition(tuple0.left().strip()).map(definition -> {
                                     final var inputContent = tuple.right();
                                     final var outputContent = splitAndCompile(inputContent, statement -> compileStatement(statement, 2));
-                                    final var name = tuple1.right().strip();
-                                    return "\n\tvoid " + name + "(){" + outputContent + "\n\t}";
+                                    return "\n\t" + definition + "(){" + outputContent + "\n\t}";
                                 });
                             });
                         }));
@@ -219,7 +225,7 @@ public class Main {
 
     private static Optional<String> compileInitialization(String structSegment) {
         return truncateRight(structSegment, ";").flatMap(inner -> {
-            return split(inner, new FirstLocator("=")).map(value -> generateStatement(1, generateDefinition("value") + " = 0"));
+            return split(inner, new FirstLocator("=")).map(value -> generateStatement(1, generateDefinition("int", "value") + " = 0"));
         });
     }
 

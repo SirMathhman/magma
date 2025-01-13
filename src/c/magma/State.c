@@ -1,36 +1,36 @@
 #include "temp.h"
 #include "temp.h"
 struct State {
-	int segments;
-	int buffer;
+	List<String> segments;
+	StringBuilder buffer;
 	int depth;
-	void State(){
+	public State(){
 		to = from;
 		to = from;
 		to = from;
 	}
-	void State(){
+	public State(){
 		temp();
 	}
-	void isLevel(){
+	boolean isLevel(){
 		to = from;
 	}
-	void isShallow(){
+	boolean isShallow(){
 		to = from;
 	}
-	void exit(){
+	State exit(){
 		to = from;
 		return temp;
 	}
-	void append(){
+	State append(){
 		temp();
 		return temp;
 	}
-	void enter(){
+	State enter(){
 		to = from;
 		return temp;
 	}
-	void advance(){
+	State advance(){
 		to = from;
 		return temp;
 	}
