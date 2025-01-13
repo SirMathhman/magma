@@ -211,7 +211,12 @@ public class Main {
     private static String compileType(String type) {
         return compileSymbol(type)
                 .or(() -> compileGeneric(type))
+                .or(() -> compileArray(type))
                 .orElseGet(() -> invalidate("type", type));
+    }
+
+    private static Optional<String> compileArray(String type) {
+        return truncateRight(type, "[]").map(inner -> compileType(inner) + "[]");
     }
 
     private static Optional<String> compileGeneric(String type) {
