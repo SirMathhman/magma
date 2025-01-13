@@ -4,13 +4,13 @@ struct Err<T, X> implements Result<T, X> {
 	public Err(X error){
 		to = from;
 	}
-	Result<RX> mapValue(Function<TR> mapper){
+	Result<R, X> mapValue(Function<T, R> mapper){
 		return temp;
 	}
-	R match(Function<TR> onOkFunction<XR> onErr){
+	R match(Function<T, R> onOkFunction<X, R> onErr){
 		return temp;
 	}
-	Result<RX> flatMapValue(Function<TResult<RX>> mapper){
+	Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper){
 		return temp;
 	}
 };

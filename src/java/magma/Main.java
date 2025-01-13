@@ -4,6 +4,7 @@ import magma.java.JavaFiles;
 import magma.locate.FirstLocator;
 import magma.locate.LastLocator;
 import magma.locate.Locator;
+import magma.locate.TypeLocator;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -67,17 +67,18 @@ public class Main {
     }
 
     private static String compileRoot(String root) {
-        return compileAndMerge(() -> slicesOf(Main::statementChars, root), Main::compileRootSegment);
+        return compileAndMerge(slicesOf(Main::statementChars, root), Main::compileRootSegment, StringBuilder::append);
     }
 
-    private static String compileAndMerge(Supplier<List<String>> splitter, Function<String, String> compiler) {
-        final var segments = splitter.get();
-
-        final var output = new StringBuilder();
+    private static String compileAndMerge(
+            List<String> segments, Function<String, String> compiler, BiFunction<StringBuilder, String, StringBuilder> merger
+    ) {
+        var output = new StringBuilder();
         for (String segment : segments) {
             final var stripped = segment.strip();
             if (stripped.isEmpty()) continue;
-            output.append(compiler.apply(stripped));
+            final var compiled = compiler.apply(stripped);
+            output = merger.apply(output, compiled);
         }
 
         return output.toString();
@@ -184,7 +185,7 @@ public class Main {
         return split(rootSegment, new FirstLocator(keyword)).flatMap(tuple -> {
             return split(tuple.right(), new FirstLocator("{")).flatMap(tuple0 -> {
                 return truncateRight(tuple0.right().strip(), "}").map(content -> {
-                    final var outputContent = compileAndMerge(() -> slicesOf(Main::statementChars, content), Main::compileStructSegment);
+                    final var outputContent = compileAndMerge(slicesOf(Main::statementChars, content), Main::compileStructSegment, StringBuilder::append);
                     return "struct " + tuple0.left().strip() + " {" + outputContent + "\n};";
                 });
             });
@@ -227,12 +228,17 @@ public class Main {
     private static Optional<String> compileGeneric(String type) {
         return truncateRight(type, ">").flatMap(inner -> split(inner, new FirstLocator("<")).map(tuple -> {
             final var caller = tuple.left();
-            final var compiledArgs = compileAndMerge(() -> slicesOf(Main::valueChars, tuple.right()), Main::compileType);
+            final var compiledArgs = compileAndMerge(slicesOf(Main::valueStringFrom, tuple.right()), Main::compileType, Main::mergeValues);
             return caller + "<" + compiledArgs + ">";
         }));
     }
 
-    private static State valueChars(State state, Character c) {
+    private static StringBuilder mergeValues(StringBuilder builder, String slice) {
+        if (builder.isEmpty()) return builder.append(slice);
+        return builder.append(", ").append(slice);
+    }
+
+    private static State valueStringFrom(State state, Character c) {
         if (c == ',' && state.isLevel()) return state.advance();
 
         final var appended = state.append(c);
@@ -266,13 +272,13 @@ public class Main {
 
             return split(beforeContent, new FirstLocator("(")).flatMap(tuple1 -> {
                 final var inputDefinition = tuple1.left();
-                final var compiledParams = compileAndMerge(() -> slicesOf(Main::valueChars, tuple1.right()), segment -> {
+                final var compiledParams = compileAndMerge(slicesOf(Main::valueStringFrom, tuple1.right()), segment -> {
                     return compileDefinition(segment).orElseGet(() -> invalidate("definition", segment));
-                });
+                }, StringBuilder::append);
 
                 return compileDefinition(inputDefinition).map(definition -> {
                     final var outputContent = truncateLeft(maybeContent, "{").flatMap(inner -> truncateRight(inner, "}").map(inner0 -> {
-                        return "{" + compileAndMerge(() -> slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2)) + "\n\t}";
+                        return "{" + compileAndMerge(slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2), StringBuilder::append) + "\n\t}";
                     })).orElse(";");
 
                     return "\n\t" + definition + "(" + compiledParams + ")" + outputContent;
@@ -330,24 +336,5 @@ public class Main {
             final var right = input.substring(index + locator.computeLength());
             return new Tuple<>(left, right);
         });
-    }
-
-    private static class TypeLocator implements Locator {
-        @Override
-        public int computeLength() {
-            return 1;
-        }
-
-        @Override
-        public Optional<Integer> locate(String input) {
-            var depth = 0;
-            for (int i = input.length() - 1; i >= 0; i--) {
-                final var c = input.charAt(i);
-                if (c == ' ' && depth == 0) return Optional.of(i);
-                if (c == '>') depth++;
-                if (c == '<') depth--;
-            }
-            return Optional.empty();
-        }
     }
 }

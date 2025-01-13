@@ -40,20 +40,19 @@ struct Main {
 	String compileRoot(String root){
 		return temp;
 	}
-	String compileAndMerge(Supplier<List<String>> splitterFunction<StringString> compiler){
-		to = from;
+	String compileAndMerge(List<String> segmentsFunction<String, String> compilerBiFunction<StringBuilder, String, StringBuilder> merger){
 		to = from;
 		to = from;
 		return temp;
 	}
-	List<String> slicesOf(BiFunction<StateCharacterState> otherString root){
+	List<String> slicesOf(BiFunction<State, Character, State> otherString root){
 		to = from;
 		to = from;
 		to = from;
 		to = from;if (1) {}
 		return temp;
 	}
-	State splitAtChar(State stateCharacter cBiFunction<StateCharacterState> other){
+	State splitAtChar(State stateCharacter cBiFunction<State, Character, State> other){
 		return temp;
 	}
 	Optional<State> splitDoubleQuotes(State statechar c){
@@ -115,7 +114,11 @@ struct Main {
 	Optional<String> compileGeneric(String type){
 		to = from;
 	}
-	State valueChars(State stateCharacter c){
+	StringBuilder mergeValues(StringBuilder builderString slice){
+		temp();
+		return temp;
+	}
+	State valueStringFrom(State stateCharacter c){
 		to = from;
 		to = from;
 		to = from;
@@ -160,13 +163,7 @@ struct Main {
 		temp();
 		return temp;
 	}
-	Optional<Tuple<StringString>> split(String inputLocator locator){
+	Optional<Tuple<String, String>> split(String inputLocator locator){
 		to = from;
-	}
-	int computeLength(){
-		return temp;
-		to = from;
-		to = from;
-		return temp;}
 	}
 };
