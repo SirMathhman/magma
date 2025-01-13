@@ -1,4 +1,4 @@
-package magma;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -58,6 +58,8 @@ public class Main {
     }
 
     private static String compileRootSegment(String rootSegment) {
+        if (rootSegment.startsWith("package")) return "";
+
         System.err.println("Invalid root segment: " + rootSegment);
         return rootSegment;
     }
