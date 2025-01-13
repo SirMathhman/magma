@@ -188,8 +188,8 @@ public class Main {
 
     private static String compileStructSegment(String structSegment) {
         return compileInitialization(structSegment)
-                .or(() -> compileDefinitionStatement(structSegment))
                 .or(() -> compileMethod(structSegment))
+                .or(() -> compileDefinitionStatement(structSegment))
                 .orElseGet(() -> invalidate("struct segment", structSegment));
     }
 
