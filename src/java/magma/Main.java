@@ -402,14 +402,14 @@ public class Main {
     }
 
     private static String compileValue(String value) {
-        return compileConstruction(value)
+        return compileString(value)
+                .or(() -> compileConstruction(value))
                 .or(() -> compileInvocation(value))
                 .or(() -> compileLambda(value))
                 .or(() -> compileDataAccess(value))
                 .or(() -> compileFilter(Main::isSymbol, value))
                 .or(() -> compileFilter(Main::isNumber, value))
                 .or(() -> compileAdd(value))
-                .or(() -> compileString(value))
                 .orElseGet(() -> invalidate("value", value));
     }
 
