@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -26,11 +27,42 @@ public class Main {
                 if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
 
                 final var target = targetParent.resolve(nameWithoutExt + ".c");
-                Files.writeString(target, Files.readString(source));
+                final var input = Files.readString(source);
+                Files.writeString(target, compileRoot(input));
             }
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
+    }
+
+    private static String compileRoot(String root) {
+        var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        for (int i = 0; i < root.length(); i++) {
+            var c = root.charAt(i);
+            buffer.append(c);
+            if (c == ';') {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            }
+        }
+        advance(buffer, segments);
+
+        final var output = new StringBuilder();
+        for (String segment : segments) {
+            output.append(compileRootSegment(segment));
+        }
+
+        return output.toString();
+    }
+
+    private static String compileRootSegment(String rootSegment) {
+        System.err.println("Invalid root segment: " + rootSegment);
+        return rootSegment;
+    }
+
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 }
