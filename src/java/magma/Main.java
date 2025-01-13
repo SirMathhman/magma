@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -51,25 +50,12 @@ public class Main {
     }
 
     private static String splitAndCompile(String root, Function<String, String> compiler) {
-        var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
+        var state = new State();
         for (int i = 0; i < root.length(); i++) {
             var c = root.charAt(i);
-            buffer.append(c);
-            if (c == ';' && depth == 0) {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            } else if (c == '}' && depth == 1) {
-                depth--;
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            } else {
-                if (c == '{') depth++;
-                if (c == '}') depth--;
-            }
+            state = splitAtChar(state, c);
         }
-        advance(buffer, segments);
+        final var segments = state.advance().segments;
 
         final var output = new StringBuilder();
         for (String segment : segments) {
@@ -77,6 +63,15 @@ public class Main {
         }
 
         return output.toString();
+    }
+
+    private static State splitAtChar(State state, char c) {
+        final var appended = state.append(c);
+        if (c == ';' && appended.isLevel()) return appended.advance();
+        if (c == '}' && appended.isShallow()) return appended.exit().advance();
+        if (c == '{') return appended.enter();
+        if (c == '}') return appended.exit();
+        return appended;
     }
 
     private static String compileRootSegment(String rootSegment) {
@@ -159,9 +154,5 @@ public class Main {
         final var left = input.substring(0, index);
         final var right = input.substring(index + slice.length());
         return Optional.of(new Tuple<>(left, right));
-    }
-
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 }
