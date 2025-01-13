@@ -4,33 +4,33 @@ struct State {
 	int segments;
 	int buffer;
 	int depth;
-	void temp(){
+	void State(){
 		to = from;
 		to = from;
 		to = from;
 	}
-	void temp(){
+	void State(){
 		temp();
 	}
-	void temp(){
+	void isLevel(){
 		to = from;
 	}
-	void temp(){
+	void isShallow(){
 		to = from;
 	}
-	void temp(){
+	void exit(){
 		to = from;
 		return temp;
 	}
-	void temp(){
+	void append(){
 		temp();
 		return temp;
 	}
-	void temp(){
+	void enter(){
 		to = from;
 		return temp;
 	}
-	void temp(){
+	void advance(){
 		to = from;
 		return temp;
 	}

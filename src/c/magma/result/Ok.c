@@ -1,16 +1,16 @@
 #include "temp.h"
 struct Ok<T, X> implements Result<T, X> {
 	int value;
-	void temp(){
+	void Ok(){
 		to = from;
 	}
-	void temp(){
+	void mapValue(){
 		return temp;
 	}
-	void temp(){
+	void match(){
 		return temp;
 	}
-	void temp(){
+	void flatMapValue(){
 		return temp;
 	}
 };

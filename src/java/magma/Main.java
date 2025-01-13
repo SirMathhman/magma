@@ -172,10 +172,16 @@ public class Main {
     private static Optional<String> compileMethod(String structSegment) {
         return truncateRight(structSegment, "}")
                 .flatMap(inner -> split(inner, new FirstLocator("{"))
-                        .map(tuple -> {
-                            final var inputContent = tuple.right();
-                            final var outputContent = splitAndCompile(inputContent, statement -> compileStatement(statement, 2));
-                            return "\n\tvoid temp(){" + outputContent + "\n\t}";
+                        .flatMap(tuple -> {
+                            final var beforeContent = tuple.left();
+                            return split(beforeContent, new FirstLocator("(")).flatMap(tuple0 -> {
+                                return split(tuple0.left().strip(), new LastLocator(" ")).map(tuple1 -> {
+                                    final var inputContent = tuple.right();
+                                    final var outputContent = splitAndCompile(inputContent, statement -> compileStatement(statement, 2));
+                                    final var name = tuple1.right().strip();
+                                    return "\n\tvoid " + name + "(){" + outputContent + "\n\t}";
+                                });
+                            });
                         }));
     }
 

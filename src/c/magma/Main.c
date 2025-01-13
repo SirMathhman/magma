@@ -17,13 +17,13 @@
 struct Main {
 	int value = 0;
 	int value = 0;
-	void temp(){
+	void main(){
 		temp();
 	}
-	void temp(){
+	void compileFiles(){
 		return temp;
 	}
-	void temp(){
+	void compileSource(){
 		to = from;
 		to = from;
 		to = from;
@@ -36,20 +36,10 @@ struct Main {
 		to = from;
 		to = from;
 	}
-	void temp(){
+	void compileRoot(){
 		return temp;
 	}
-	void temp(){
-		to = from;
-		to = from;
-		to = from;
-		to = from;
-		to = from;
-		to = from;
-		return temp;
-	}
-	void temp(){
-		to = from;
+	void splitAndCompile(){
 		to = from;
 		to = from;
 		to = from;
@@ -58,57 +48,67 @@ struct Main {
 		to = from;
 		return temp;
 	}
-	void temp(){if (1) {}if (1) {}
-		return temp;
-	}
-	void temp(){
-		temp();
-		return temp;
-	}
-	void temp(){
+	void splitAtChar(){
 		to = from;
-	}
-	void temp(){
-		return temp;
-	}
-	void temp(){
-		return temp;
-	}
-	void temp(){
-		return temp;
-	}
-	void temp(){
-		return temp;
-	}
-	void temp(){
 		to = from;
-	}
-	void temp(){
-		return temp;
-	}
-	void temp(){
-		return temp;
-	}
-	void temp(){
-		return temp;
-	}
-	void temp(){
-		return temp;
-	}
-	void temp(){
-		return temp;
-	}
-	void temp(){
 		to = from;
-	}
-	void temp(){
 		to = from;
+		to = from;
+		to = from;
+		to = from;
+		return temp;
 	}
-	void temp(){
+	void compileRootSegment(){if (1) {}if (1) {}
+		return temp;
+	}
+	void invalidate(){
 		temp();
 		return temp;
 	}
-	void temp(){
+	void compileToStruct(){
+		to = from;
+	}
+	void compileStructSegment(){
+		return temp;
+	}
+	void compileDefinition(){
+		return temp;
+	}
+	void generateDefinition(){
+		return temp;
+	}
+	void generateStatement(){
+		return temp;
+	}
+	void compileMethod(){
+		to = from;
+	}
+	void compileStatement(){
+		return temp;
+	}
+	void compileIf(){
+		return temp;
+	}
+	void compileInvocation(){
+		return temp;
+	}
+	void compileReturn(){
+		return temp;
+	}
+	void truncateLeft(){
+		return temp;
+	}
+	void compileAssignment(){
+		to = from;
+	}
+	void compileInitialization(){
+		to = from;
+	}
+	void truncateRight(){
+		temp();
+		return temp;
+	}
+	void split(){
 		to = from;
 	}
 };

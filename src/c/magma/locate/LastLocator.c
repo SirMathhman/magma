@@ -1,9 +1,9 @@
 #include "temp.h"
 struct LastLocator(String slice) implements Locator {
-	void temp(){
+	void computeLength(){
 		return temp;
 	}
-	void temp(){
+	void locate(){
 		to = from;
 		to = from;
 		return temp;
