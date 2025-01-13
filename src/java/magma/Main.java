@@ -186,7 +186,7 @@ public class Main {
                 () -> compileToStruct("class", rootSegment),
                 () -> compileToStruct("record", rootSegment),
                 () -> compileToStruct("interface", rootSegment)
-        ));
+        )).findValue().orElse("");
     }
 
     private static Optional<String> compileImport(String rootSegment) {
@@ -221,7 +221,7 @@ public class Main {
                 () -> compileInitialization(structSegment, 1),
                 () -> compileMethod(structSegment),
                 () -> compileDefinitionStatement(structSegment, 1)
-        ));
+        )).findValue().orElse("");
     }
 
     private static Optional<String> compileDefinitionStatement(String structSegment, int depth) {
@@ -247,8 +247,7 @@ public class Main {
                 () -> compileExact(type, "var", "auto"),
                 () -> compileFilter(Main::isSymbol, type),
                 () -> compileGeneric(type),
-                () -> compileArray(type))
-        );
+                () -> compileArray(type))).findValue().orElse("");
     }
 
     private static Optional<String> compileExact(String type, String match, String output) {
@@ -375,18 +374,18 @@ public class Main {
                 () -> compileAssignment(statement, depth)
         );
 
-        return compileDisjunction("statement", statement, compilers);
+        return compileDisjunction("statement", statement, compilers).findValue().orElse("");
     }
 
-    private static String compileDisjunction(String type, String input, List<Supplier<Optional<String>>> compilers) {
+    private static Result<String, CompileError> compileDisjunction(String type, String input, List<Supplier<Optional<String>>> compilers) {
         for (Supplier<Optional<String>> compiler : compilers) {
             final var optional = compiler.get();
             if (optional.isPresent()) {
-                return optional.get();
+                return new Ok<>(optional.get());
             }
         }
 
-        return invalidate(type, input);
+        return new Err<>(new CompileError("Invalid type '" + type + "'", input));
     }
 
     private static Optional<String> compileElse(String statement) {
@@ -468,7 +467,7 @@ public class Main {
                 () -> compileFilter(Main::isSymbol, value),
                 () -> compileFilter(Main::isNumber, value),
                 () -> compileNot(value)
-        ));
+        )).findValue().orElse("");
     }
 
     private static Optional<String> compileNot(String value) {
