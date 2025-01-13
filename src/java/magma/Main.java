@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -30,6 +31,18 @@ public class Main {
     private static Optional<IOException> compileSource(Path source) {
         final var relativized = SOURCE_DIRECTORY.relativize(source);
         final var parent = relativized.getParent();
+        final var namespace = new ArrayList<String>();
+        for (int i = 0; i < parent.getNameCount(); i++) {
+            namespace.add(parent.getName(i).toString());
+        }
+
+        if (namespace.size() >= 2) {
+            final var slice = namespace.subList(0, 2);
+            if (slice.equals(List.of("magma", "java"))) {
+                return Optional.empty();
+            }
+        }
+
         final var name = relativized.getFileName().toString();
         final var nameWithoutExt = name.substring(0, name.indexOf('.'));
         final var targetParent = TARGET_DIRECTORY.resolve(parent);
