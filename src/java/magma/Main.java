@@ -309,14 +309,18 @@ public class Main {
                         Main::mergeValues);
 
                 return compileDefinition(inputDefinition).map(definition -> {
-                    final var outputContent = truncateLeft(maybeContent, "{")
-                            .flatMap(inner -> truncateRight(inner, "}")
-                                    .map(inner0 -> "{" + compileAndMerge(slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2), StringBuilder::append) + "\n\t}")).orElse(";");
+                    final var outputContent = compileContent(maybeContent).orElse(";");
 
                     return "\n\t" + definition + "(" + compiledParams + ")" + outputContent;
                 });
             });
         });
+    }
+
+    private static Optional<String> compileContent(String maybeContent) {
+        return truncateLeft(maybeContent, "{")
+                .flatMap(inner -> truncateRight(inner, "}")
+                        .map(inner0 -> "{" + compileAndMerge(slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2), StringBuilder::append) + "\n\t}"));
     }
 
     private static String compileStatement(String statement, int depth) {
