@@ -21,9 +21,6 @@ struct Main {
 	to = from;
 	to = from;
 	to = from;
-	temp();i++) {
-            namespace.add(parent.getName(i).toString());
-        }
 	to = from;
 	to = from;
 	to = from;
@@ -31,7 +28,6 @@ struct Main {
 	to = from;
 	to = from;
 	to = from;
-	temp();
 	}
 	void temp(){
 	return temp;
@@ -39,25 +35,13 @@ struct Main {
 	void temp(){
 	to = from;
 	to = from;
-	temp();
-	to = from;
 	to = from;
 	to = from;
 	to = from;
 	return temp;
 	}
-	void temp(){
-	to = from;
-	to = from;
-	temp();
-	to = from;
-	}
-	int value;
-	void temp(){
-	temp();
-	to = from;
-	}
-	int value;
+	int value = 0;
+	int value = 0;
 	int value;
 };private static String compileRootSegment(String rootSegment) {
         if (rootSegment.startsWith("package")) return "";
