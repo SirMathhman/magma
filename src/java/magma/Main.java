@@ -189,25 +189,23 @@ public class Main {
         ));
     }
 
-    private static Optional<String> compileImport(String rootSegment) {
-        if (rootSegment.startsWith("import")) return Optional.of("#include \"temp.h\"\n");
-        return Optional.empty();
+    private static Result<String, CompileError> compileImport(String rootSegment) {
+        return truncateLeft(rootSegment, "import").mapValue(inner -> "#include \"temp.h\"\n");
     }
 
-    private static Optional<String> compilePackage(String rootSegment) {
-        if (rootSegment.startsWith("package")) return Optional.of("");
-        else return Optional.empty();
+    private static Result<String, CompileError> compilePackage(String rootSegment) {
+        return truncateLeft(rootSegment, "package ").mapValue(_ -> "");
     }
 
     private static String invalidate(String type, String rootSegment) {
         return Results.writeErr("Invalid " + type, rootSegment, rootSegment);
     }
 
-    private static Optional<String> compileToStruct(String keyword, String rootSegment) {
+    private static Result<String, CompileError> compileToStruct(String keyword, String rootSegment) {
         Locator locator1 = new FirstLocator(keyword);
-        return split(rootSegment, locator1).findValue().flatMap(tuple -> {
+        return split(rootSegment, locator1).flatMapValue(tuple -> {
             Locator locator = new FirstLocator("{");
-            return split(tuple.right(), locator).findValue().flatMap(tuple0 -> truncateRight(tuple0.right().strip(), "}").findValue().map(content -> {
+            return split(tuple.right(), locator).flatMapValue(tuple0 -> truncateRight(tuple0.right().strip(), "}").mapValue(content -> {
                 final var outputContent = compileAndMerge(slicesOf(Main::statementChars, content), structSegment -> compileStructSegment(structSegment).findValue().orElse(""), StringBuilder::append);
                 return "struct " + tuple0.left().strip() + " {" + outputContent + "\n};";
             }));
@@ -222,19 +220,21 @@ public class Main {
         ));
     }
 
-    private static Optional<String> compileDefinitionStatement(String structSegment, int depth) {
-        return truncateRight(structSegment, ";").findValue().flatMap(inner -> compileDefinition(inner).map(inner0 -> generateStatement(depth, inner0)));
+    private static Result<String, CompileError> compileDefinitionStatement(String structSegment, int depth) {
+        return truncateRight(structSegment, ";").flatMapValue(inner -> compileDefinition(inner).mapValue(inner0 -> generateStatement(depth, inner0)));
     }
 
-    private static Optional<String> compileDefinition(String definition) {
+    private static Result<String, CompileError> compileDefinition(String definition) {
         Locator locator = new LastLocator(" ");
-        return split(definition, locator).findValue().flatMap(tuple -> {
+        return split(definition, locator).flatMapValue(tuple -> {
             final var left = tuple.left().strip();
-            final var inputType = split(left, new TypeLocator(' ', '>', '<')).findValue().map(Tuple::right).orElse(left);
+            final var inputType = split(left, new TypeLocator(' ', '>', '<')).mapValue(Tuple::right);
             final var name = tuple.right().strip();
 
-            if (!isSymbol(name)) return Optional.empty();
-            return Optional.of(compileType(inputType).findValue().orElse("")).map(outputType -> generateDefinition(outputType, name));
+            if (!isSymbol(name)) return new Err<>(new CompileError("Not a name", name));
+            return inputType.flatMapValue(Main::compileType).mapValue(inner -> {
+                return generateDefinition(inner, name);
+            });
         });
     }
 
@@ -246,18 +246,18 @@ public class Main {
                 () -> compileArray(type)));
     }
 
-    private static Optional<String> compileExact(String type, String match, String output) {
-        return type.equals(match) ? Optional.of(output) : Optional.empty();
+    private static Result<String, CompileError> compileExact(String input, String match, String output) {
+        return input.equals(match) ? new Ok<>(output) : new Err<>(new CompileError("No exact match for '" + match + "'", input));
     }
 
-    private static Optional<String> compileArray(String type) {
-        return truncateRight(type, "[]").findValue().map(inner -> Optional.of(compileType(inner).findValue().orElse("")).orElse("") + "[]");
+    private static Result<String, CompileError> compileArray(String type) {
+        return truncateRight(type, "[]").mapValue(inner -> Optional.of(compileType(inner).findValue().orElse("")).orElse("") + "[]");
     }
 
-    private static Optional<String> compileGeneric(String type) {
-        return truncateRight(type, ">").findValue().flatMap(inner -> {
+    private static Result<String, CompileError> compileGeneric(String type) {
+        return truncateRight(type, ">").flatMapValue(inner -> {
             Locator locator = new FirstLocator("<");
-            return split(inner, locator).findValue().map(tuple -> {
+            return split(inner, locator).mapValue(tuple -> {
                 final var caller = tuple.left();
                 final var segments = slicesOf(Main::valueStrings, tuple.right());
                 final var compiledSegments = compileSegments(segments, type1 -> Optional.of(compileType(type1).findValue().orElse("")).orElse(""));
@@ -304,8 +304,8 @@ public class Main {
         return appended;
     }
 
-    private static Optional<String> compileFilter(Predicate<String> filter, String type) {
-        return filter.test(type) ? Optional.of(type) : Optional.empty();
+    private static Result<String, CompileError> compileFilter(Predicate<String> filter, String type) {
+        return filter.test(type) ? new Ok<>(type) : new Err<>(new CompileError("Invalid input for filter.", type));
     }
 
     private static boolean isSymbol(String type) {
@@ -322,19 +322,19 @@ public class Main {
         return "\n" + "\t".repeat(depth) + content + ";";
     }
 
-    private static Optional<String> compileMethod(String structSegment) {
+    private static Result<String, CompileError> compileMethod(String structSegment) {
         Locator locator1 = new FirstLocator(")");
-        return split(structSegment, locator1).findValue().flatMap(tuple -> {
+        return split(structSegment, locator1).flatMapValue(tuple -> {
             final var beforeContent = tuple.left().strip();
             final var maybeContent = tuple.right().strip();
 
             Locator locator = new FirstLocator("(");
-            return split(beforeContent, locator).findValue().flatMap(tuple1 -> {
+            return split(beforeContent, locator).flatMapValue(tuple1 -> {
                 final var inputDefinition = tuple1.left();
-                return compileDefinition(inputDefinition).map(definition -> {
-                    final var outputContent = compileContent(maybeContent).orElse(";");
+                return compileDefinition(inputDefinition).mapValue(definition -> {
+                    final var outputContent = compileContent(maybeContent).findValue().orElse(";");
                     final var compiledParams = compileAndMerge(slicesOf(Main::valueStrings, tuple1.right()),
-                            segment -> compileDefinition(segment).orElseGet(() -> invalidate("definition", segment)),
+                            segment -> compileDefinition(segment).findValue().orElseGet(() -> invalidate("definition", segment)),
                             Main::mergeValues);
 
                     return "\n\t" + generateMethod(definition, compiledParams, outputContent);
@@ -347,10 +347,10 @@ public class Main {
         return definition + "(" + params + ")" + content;
     }
 
-    private static Optional<String> compileContent(String maybeContent) {
-        return truncateLeft(maybeContent, "{").findValue()
-                .flatMap(inner -> truncateRight(inner, "}").findValue()
-                        .map(inner0 -> "{" + compileAndMerge(slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2).findValue().orElse(""), StringBuilder::append) + "\n\t}"));
+    private static Result<String, CompileError> compileContent(String maybeContent) {
+        return truncateLeft(maybeContent, "{").flatMapValue(inner ->
+                truncateRight(inner, "}").mapValue(inner0 -> "{" + compileAndMerge(slicesOf(Main::statementChars, inner0), statement ->
+                        compileStatement(statement, 2).findValue().orElse(""), StringBuilder::append) + "\n\t}"));
     }
 
     private static Result<String, CompileError> compileStatement(String statement, int depth) {
@@ -366,28 +366,28 @@ public class Main {
         ));
     }
 
-    private static Result<String, CompileError> compileDisjunction(String type, String input, List<Supplier<Optional<String>>> compilers) {
-        for (Supplier<Optional<String>> compiler : compilers) {
-            final var optional = compiler.get();
-            if (optional.isPresent()) {
-                return new Ok<>(optional.get());
+    private static Result<String, CompileError> compileDisjunction(String type, String input, List<Supplier<Result<String, CompileError>>> compilers) {
+        for (var compiler : compilers) {
+            final var result = compiler.get();
+            if (result.isOk()) {
+                return result;
             }
         }
 
         return new Err<>(new CompileError("Invalid type '" + type + "'", input));
     }
 
-    private static Optional<String> compileElse(String statement) {
-        return truncateLeft(statement, "else").findValue().map(inner -> "\n\t\telse {}");
+    private static Result<String, CompileError> compileElse(String statement) {
+        return truncateLeft(statement, "else").mapValue(inner -> "\n\t\telse {}");
     }
 
-    private static Optional<String> compileCondition(String statement, String prefix) {
-        return truncateLeft(statement, prefix).findValue().flatMap(inner -> {
-            return truncateLeft(inner.strip(), "(").findValue().flatMap(inner0 -> {
+    private static Result<String, CompileError> compileCondition(String statement, String prefix) {
+        return truncateLeft(statement, prefix).flatMapValue(inner -> {
+            return truncateLeft(inner.strip(), "(").flatMapValue(inner0 -> {
                 Locator locator = new FirstLocator(")");
-                return split(inner0, locator).findValue().flatMap(tuple -> {
-                    return Optional.of(compileValue(tuple.left().strip()).findValue().orElse("")).flatMap(condition -> {
-                        return compileContent(tuple.right()).map(content -> {
+                return split(inner0, locator).flatMapValue(tuple -> {
+                    return compileValue(tuple.left().strip()).flatMapValue(condition -> {
+                        return compileContent(tuple.right()).mapValue(content -> {
                             return "\n\t\t" + prefix + " (" + condition + ") " + content;
                         });
                     });
@@ -396,15 +396,15 @@ public class Main {
         });
     }
 
-    private static Optional<String> compileInvocationStatement(String input, int depth) {
-        return truncateRight(input, ";").findValue().flatMap(inner -> {
-            return compileInvocation(inner).map(output -> generateStatement(depth, output));
+    private static Result<String, CompileError> compileInvocationStatement(String input, int depth) {
+        return truncateRight(input, ";").flatMapValue(inner -> {
+            return compileInvocation(inner).mapValue(output -> generateStatement(depth, output));
         });
     }
 
-    private static Optional<String> compileInvocation(String input) {
-        return truncateRight(input, ")").findValue().flatMap(withoutEnd -> {
-            return split(withoutEnd, new TypeLocator('(', ')', '(')).findValue().map(withoutStart -> {
+    private static Result<String, CompileError> compileInvocation(String input) {
+        return truncateRight(input, ")").flatMapValue(withoutEnd -> {
+            return split(withoutEnd, new TypeLocator('(', ')', '(')).mapValue(withoutStart -> {
                 final var caller = withoutStart.left();
                 final var compiled = Optional.of(compileValue(caller).findValue().orElse("")).orElse(caller);
                 final var compiledArgs = compileAndMerge(slicesOf(Main::valueStrings, withoutStart.right()), value -> Optional.of(compileValue(value).findValue().orElse("")).orElse(value), Main::mergeValues);
@@ -417,8 +417,8 @@ public class Main {
         return caller + "(" + args + ")";
     }
 
-    private static Optional<String> compileReturn(String statement, int depth) {
-        return truncateLeft(statement, "return").findValue().flatMap(inner -> truncateRight(inner, ";").findValue().map(value -> {
+    private static Result<String, CompileError> compileReturn(String statement, int depth) {
+        return truncateLeft(statement, "return").flatMapValue(inner -> truncateRight(inner, ";").mapValue(value -> {
             String value1 = value.strip();
             return generateStatement(depth, "return " + Optional.of(compileValue(value1).findValue().orElse("")).orElse(value1));
         }));
@@ -429,10 +429,10 @@ public class Main {
         return new Err<>(new CompileError("Prefix '" + prefix + "' not present", input));
     }
 
-    private static Optional<String> compileAssignment(String statement, int depth) {
-        return truncateRight(statement, ";").findValue().flatMap(inner -> {
+    private static Result<String, CompileError> compileAssignment(String statement, int depth) {
+        return truncateRight(statement, ";").flatMapValue(inner -> {
             Locator locator = new FirstLocator("=");
-            return split(inner, locator).findValue().map(inner0 -> {
+            return split(inner, locator).mapValue(inner0 -> {
                 String value = inner0.left();
                 final var destination = Optional.of(compileValue(value).findValue().orElse("")).orElse(value);
                 return generateStatement(depth, destination + " = from");
@@ -459,40 +459,38 @@ public class Main {
         ));
     }
 
-    private static Optional<String> compileNot(String value) {
-        return truncateLeft(value, "!").findValue().flatMap(inner -> Optional.of(compileValue(inner).findValue().orElse("")).map(inner0 -> "!" + inner0));
+    private static Result<String, CompileError> compileNot(String value) {
+        return truncateLeft(value, "!").flatMapValue(inner -> compileValue(inner).mapValue(inner0 -> "!" + inner0));
     }
 
-    private static Optional<String> compileChar(String value) {
-        return truncateLeft(value, "'").findValue().flatMap(inner -> truncateRight(inner, "'").findValue().map(inner0 -> "'" + inner0 + "'"));
+    private static Result<String, CompileError> compileChar(String value) {
+        return truncateLeft(value, "'").flatMapValue(inner -> truncateRight(inner, "'").mapValue(inner0 -> "'" + inner0 + "'"));
     }
 
-    private static Optional<String> compileMethodAccess(String value) {
+    private static Result<String, CompileError> compileMethodAccess(String value) {
         Locator locator = new LastLocator("::");
-        return split(value, locator).findValue().map(tuple -> {
+        return split(value, locator).mapValue(tuple -> {
             String value1 = tuple.left().strip();
             final var s = Optional.of(compileValue(value1).findValue().orElse("")).orElse(value1);
             return s + "." + tuple.right().strip();
         });
     }
 
-    private static Optional<String> compileLambda(String value) {
-        return value.contains("->")
-                ? Optional.of(generateMethod(generateDefinition("auto", "temp"), "", "{}"))
-                : Optional.empty();
+    private static Result<String, CompileError> compileLambda(String value) {
+        return split(value, new FirstLocator("->")).mapValue(_ -> generateMethod(generateDefinition("auto", "temp"), "", "{}"));
     }
 
-    private static Optional<String> compileString(String value) {
-        return truncateLeft(value, "\"").findValue().flatMap(inner -> truncateRight(inner, "\"").findValue().map(inner0 -> "\"" + inner0 + "\""));
+    private static Result<String, CompileError> compileString(String value) {
+        return truncateLeft(value, "\"").flatMapValue(inner -> truncateRight(inner, "\"").mapValue(inner0 -> "\"" + inner0 + "\""));
     }
 
-    private static Optional<String> compileOperator(String value, String operator) {
+    private static Result<String, CompileError> compileOperator(String value, String operator) {
         Locator locator = new FirstLocator(operator);
-        return split(value, locator).findValue().flatMap(tuple -> {
+        return split(value, locator).flatMapValue(tuple -> {
             String value1 = tuple.right().strip();
             String value2 = tuple.left().strip();
-            return Optional.of(compileValue(value2).findValue().orElse("")).flatMap(inner -> {
-                return Optional.of(compileValue(value1).findValue().orElse("")).map(inner0 -> {
+            return compileValue(value2).flatMapValue(inner -> {
+                return compileValue(value1).mapValue(inner0 -> {
                     return inner + " " + operator + " " + inner0;
                 });
             });
@@ -505,25 +503,25 @@ public class Main {
                 .allMatch(tuple -> (tuple.left() == 0 && tuple.right() == '-') || Character.isDigit(tuple.right()));
     }
 
-    private static Optional<String> compileConstruction(String value) {
-        return value.startsWith("new ") ? Optional.of(generateInvocation("temp", "")) : Optional.empty();
+    private static Result<String, CompileError> compileConstruction(String value) {
+        return truncateLeft(value, "new ").mapValue(_ -> generateInvocation("temp", ""));
     }
 
-    private static Optional<String> compileDataAccess(String value) {
+    private static Result<String, CompileError> compileDataAccess(String value) {
         Locator locator = new LastLocator(".");
-        return split(value, locator).findValue().flatMap(tuple -> {
+        return split(value, locator).flatMapValue(tuple -> {
             String caller = tuple.left().strip();
-            return Optional.of(compileValue(caller).findValue().orElse("")).map(compiled -> {
+            return compileValue(caller).mapValue(compiled -> {
                 return compiled + "." + tuple.right().strip();
             });
         });
     }
 
-    private static Optional<String> compileInitialization(String structSegment, int depth) {
-        return truncateRight(structSegment, ";").findValue().flatMap(inner -> {
+    private static Result<String, CompileError> compileInitialization(String structSegment, int depth) {
+        return truncateRight(structSegment, ";").flatMapValue(inner -> {
             Locator locator = new FirstLocator("=");
-            return split(inner, locator).findValue().flatMap(tuple -> {
-                return compileDefinition(tuple.left().strip()).map(definition -> {
+            return split(inner, locator).flatMapValue(tuple -> {
+                return compileDefinition(tuple.left().strip()).mapValue(definition -> {
                     String value1 = tuple.right().strip();
                     final var value = Optional.of(compileValue(value1).findValue().orElse("")).orElse(value1);
                     return generateStatement(depth, definition + " = " + value);

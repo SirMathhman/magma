@@ -29,4 +29,9 @@ public class Ok<T, X> implements Result<T, X> {
     public Optional<T> findValue() {
         return Optional.of(this.value);
     }
+
+    @Override
+    public boolean isOk() {
+        return true;
+    }
 }

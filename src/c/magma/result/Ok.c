@@ -2,19 +2,19 @@
 #include "temp.h"
 struct Ok<T, X> implements Result<T, X> {
 	T value;
-	public Ok(T value){
-		= value;
-	}
-	Result<R, X> mapValue((T => R) mapper){
+	Result<R, X> mapValue(Function<T, R> mapper){
 		return temp();
 	}
-	R match((T => R) onOk, (X => R) onErr){
+	R match(Function<T, R> onOk, Function<X, R> onErr){
 		return onOk.apply(this.value);
 	}
-	Result<R, X> flatMapValue((T => Result<R, X>) mapper){
+	Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper){
 		return mapper.apply(this.value);
 	}
 	Optional<T> findValue(){
 		return Optional.of(this.value);
+	}
+	boolean isOk(){
+		return true;
 	}
 };

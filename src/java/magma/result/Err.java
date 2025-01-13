@@ -29,4 +29,9 @@ public class Err<T, X> implements Result<T, X> {
     public Optional<T> findValue() {
         return Optional.empty();
     }
+
+    @Override
+    public boolean isOk() {
+        return false;
+    }
 }
