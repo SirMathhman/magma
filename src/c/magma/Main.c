@@ -14,9 +14,10 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
+#include "temp.h"
 struct Main {
-	int value = 0;
-	int value = 0;
+	Path SOURCE_DIRECTORY = 0;
+	Path TARGET_DIRECTORY = 0;
 	void main(String[] args){
 		temp();
 	}
@@ -24,15 +25,15 @@ struct Main {
 		return temp;
 	}
 	Optional<IOException> compileSource(Path source){
-		int value = 0;
-		int value = 0;
-		int value = 0;
+		var relativized = 0;
+		var parent = 0;
+		var namespace = 0;
 		if (1) {}
-		int value = 0;
-		int value = 0;
-		int value = 0;
+		var name = 0;
+		var nameWithoutExt = 0;
+		var targetParent = 0;
 		if (1) {}
-		int value = 0;
+		var target = 0;
 		return temp;
 	}
 	List<String> computeNamespace(Path parent){
@@ -51,10 +52,10 @@ struct Main {
 		return temp;
 	}
 	List<String> slicesOf(((State, Character) => State) other, String root){
-		int value = 0;
-		int value = 0;
+		var queue = 0;
+		var state = 0;
 		while (1) {}
-		int value = 0;
+		var segments = 0;
 		if (1) {}
 		return temp;
 	}
@@ -63,21 +64,21 @@ struct Main {
 	}
 	Optional<State> splitDoubleQuotes(State state, char c){
 		if (1) {}
-		int value = 0;
+		var current = 0;
 		while (1) {}
 		return temp;
 	}
 	Optional<State> splitDoubleQuotesChar(State state){
-		int value = 0;
+		var maybeNext = 0;
 		if (1) {}
-		int value = 0;
-		int value = 0;
+		var nextTuple = 0;
+		var nextChar = 0;
 		if (1) {}
 		if (1) {}
 		else {}
 	}
 	State statementChars(State state, char c){
-		int value = 0;
+		var appended = 0;
 		if (1) {}
 		if (1) {}
 		if (1) {}
@@ -96,7 +97,7 @@ struct Main {
 	String invalidate(String type, String rootSegment){
 		return temp;
 	}
-	T writeError(String message, String rootSegment, T value){
+	T writeError(PrintStream stream, String message, String rootSegment, T value){
 		temp();
 		return temp;
 	}
@@ -112,7 +113,13 @@ struct Main {
 	Optional<String> compileDefinition(String definition){
 		return temp;
 	}
-	String compileType(String type){
+	Optional<String> compileType(String type){
+		var optional = 0;
+		if (1) {}
+		return temp;
+	}
+	Optional<String> writeDebug(String type){
+		temp();
 		return temp;
 	}
 	Optional<String> compileArray(String type){
@@ -127,7 +134,7 @@ struct Main {
 	}
 	State valueStrings(State state, Character c){
 		if (1) {}
-		int value = 0;
+		var appended = 0;
 		if (1) {}
 		if (1) {}
 		return temp;

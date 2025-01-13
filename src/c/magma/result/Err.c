@@ -2,7 +2,7 @@
 struct Err<T, X> implements Result<T, X> {
 	X error;
 	public Err(X error){
-		int value = 0;
+		this.error  = from;
 	}
 	Result<R, X> mapValue((T => R) mapper){
 		return temp;

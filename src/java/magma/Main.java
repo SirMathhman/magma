@@ -7,6 +7,7 @@ import magma.locate.Locator;
 import magma.locate.TypeLocator;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -112,7 +113,7 @@ public class Main {
 
         final var segments = state.advance().segments;
         if (state.isLevel()) return segments;
-        return writeError("Invalid depth '" + state.depth + "'", root, segments);
+        return writeError(System.err, "Invalid depth '" + state.depth + "'", root, segments);
     }
 
     private static State splitAtChar(State state, Character c, BiFunction<State, Character, State> other) {
@@ -185,11 +186,11 @@ public class Main {
     }
 
     private static String invalidate(String type, String rootSegment) {
-        return writeError("Invalid " + type, rootSegment, rootSegment);
+        return writeError(System.err, "Invalid " + type, rootSegment, rootSegment);
     }
 
-    private static <T> T writeError(String message, String rootSegment, T value) {
-        System.err.println(message + ": " + rootSegment);
+    private static <T> T writeError(PrintStream stream, String message, String rootSegment, T value) {
+        stream.println(message + ": " + rootSegment);
         return value;
     }
 
@@ -218,30 +219,39 @@ public class Main {
     }
 
     private static Optional<String> compileDefinition(String definition) {
-        return split(definition, new LastLocator(" ")).map(tuple -> {
+        return split(definition, new LastLocator(" ")).flatMap(tuple -> {
             final var left = tuple.left().strip();
-            final var type = split(left, new TypeLocator()).map(Tuple::right).orElse(left);
+            final var inputType = split(left, new TypeLocator()).map(Tuple::right).orElse(left);
+            final var name = tuple.right().strip();
 
-            return generateDefinition(compileType(type), tuple.right().strip());
+            if (!isSymbol(name)) return Optional.empty();
+            return compileType(inputType).map(outputType -> generateDefinition(outputType, name));
         });
     }
 
-    private static String compileType(String type) {
-        return compileSymbol(type)
+    private static Optional<String> compileType(String type) {
+        final var optional = compileSymbol(type)
                 .or(() -> compileGeneric(type))
-                .or(() -> compileArray(type))
-                .orElseGet(() -> invalidate("type", type));
+                .or(() -> compileArray(type));
+
+        if (optional.isPresent()) return optional;
+        return writeDebug(type);
+    }
+
+    private static Optional<String> writeDebug(String type) {
+        writeError(System.out, "Invalid type", type, type);
+        return Optional.empty();
     }
 
     private static Optional<String> compileArray(String type) {
-        return truncateRight(type, "[]").map(inner -> compileType(inner) + "[]");
+        return truncateRight(type, "[]").map(inner -> compileType(inner).orElse("") + "[]");
     }
 
     private static Optional<String> compileGeneric(String type) {
         return truncateRight(type, ">").flatMap(inner -> split(inner, new FirstLocator("<")).map(tuple -> {
             final var caller = tuple.left();
             final var segments = slicesOf(Main::valueStrings, tuple.right());
-            final var compiledSegments = compileSegments(segments, Main::compileType);
+            final var compiledSegments = compileSegments(segments, type1 -> compileType(type1).orElse(""));
 
             if (caller.equals("Function") && compiledSegments.size() == 2) {
                 final var paramType = compiledSegments.get(0);
@@ -282,7 +292,7 @@ public class Main {
     private static boolean isSymbol(String type) {
         return IntStream.range(0, type.length())
                 .mapToObj(type::charAt)
-                .allMatch(Character::isLetter);
+                .allMatch(ch -> Character.isLetter(ch) || ch == '_');
     }
 
     private static String generateDefinition(String type, String name) {
@@ -300,12 +310,11 @@ public class Main {
 
             return split(beforeContent, new FirstLocator("(")).flatMap(tuple1 -> {
                 final var inputDefinition = tuple1.left();
-                final var compiledParams = compileAndMerge(slicesOf(Main::valueStrings, tuple1.right()),
-                        segment -> compileDefinition(segment).orElseGet(() -> invalidate("definition", segment)),
-                        Main::mergeValues);
-
                 return compileDefinition(inputDefinition).map(definition -> {
                     final var outputContent = compileContent(maybeContent).orElse(";");
+                    final var compiledParams = compileAndMerge(slicesOf(Main::valueStrings, tuple1.right()),
+                            segment -> compileDefinition(segment).orElseGet(() -> invalidate("definition", segment)),
+                            Main::mergeValues);
 
                     return "\n\t" + definition + "(" + compiledParams + ")" + outputContent;
                 });
@@ -370,7 +379,11 @@ public class Main {
 
     private static Optional<String> compileInitialization(String structSegment, int depth) {
         return truncateRight(structSegment, ";").flatMap(inner -> {
-            return split(inner, new FirstLocator("=")).map(value -> generateStatement(depth, generateDefinition("int", "value") + " = 0"));
+            return split(inner, new FirstLocator("=")).flatMap(tuple -> {
+                return compileDefinition(tuple.left().strip()).map(definition -> {
+                    return generateStatement(depth, definition + " = 0");
+                });
+            });
         });
     }
 

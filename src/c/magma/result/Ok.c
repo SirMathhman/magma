@@ -2,7 +2,7 @@
 struct Ok<T, X> implements Result<T, X> {
 	T value;
 	public Ok(T value){
-		int value = 0;
+		this.value  = from;
 	}
 	Result<R, X> mapValue((T => R) mapper){
 		return temp;
