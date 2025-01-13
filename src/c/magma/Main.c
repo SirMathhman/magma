@@ -75,18 +75,16 @@ struct Main {
 		if (maybeNext.isEmpty() {}
 		auto nextTuple = maybeNext.get();
 		auto nextChar = nextTuple.right();
-		if (nextChar == '"')
-            return Optional.empty();if (nextChar == '\\') {
-            return Optional.of(state.appendFromQueue().orElse(state));
-        }
+		if (nextChar == '"') {}
+		if (nextChar == '\\') {}
 		else {}
 	}
 	State statementChars(State state, char c){
 		auto appended = state.append(c);
 		if (c == ';' && appended.isLevel()) return appended.advance();
 		if (c == '}' && appended.isShallow()) return appended.exit().advance();
-		if (c == '{' || c == '(') return appended.enter();
-		if (c == '}' || c == ')') return appended.exit();
+		if (c == '{' || c == '(') {}
+		if (c == '}' || c == ') {}
 		return appended;
 	}
 	Optional<State> splitSingleQuotes(State state, char c){
@@ -137,16 +135,10 @@ struct Main {
 	}
 	State valueStrings(State state, Character c){
 		if (c == ',' && state.isLevel()) return state.advance();
-		auto appended = state.append(c);if (c == '-') {
-            final var peeked = appended.peek();
-            if (peeked.isPresent()) {
-                if (peeked.get() == '>') {
-                    return appended.appendFromQueue().orElse(appended);
-                }
-            }
-        }
-		if (c == '<' || c == '(') return appended.enter();
-		if (c == '>' || c == ')') return appended.exit();
+		auto appended = state.append(c);
+		if (c == '-') {}
+		if (c == '<' || c == '(') {}
+		if (c == '>' || c == ') {}
 		return appended;
 	}
 	Optional<String> compileFilter(Predicate<String> filter, String type){
@@ -212,11 +204,11 @@ struct Main {
 	Optional<String> compileString(String value){
 		return auto temp(){};
 	}
-	Optional<String> compileAdd(String value){
+	Optional<String> compileOperator(String value, String operator){
 		return split(value, temp()).flatMap(auto temp(){});
 	}
 	boolean isNumber(String input){
-		return IntStream.range(0, input.length()).mapToObj(input.charAt).allMatch(Character.isDigit);
+		return auto temp(){}(auto temp(){}(tuple.right()));
 	}
 	Optional<String> compileConstruction(String value){
 		return value.startsWith("new ") ? Optional.of(generateInvocation("temp", "")) : Optional.empty();

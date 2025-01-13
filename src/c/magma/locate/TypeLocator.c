@@ -17,28 +17,12 @@ struct TypeLocator implements Locator {
 		if (found.isPresent() {}
 		auto depth = current.right();
 		auto index = input.left();
-		auto c = input.right();if (c == '\'') {
-            queue.pop();
-            if(!queue.isEmpty() && queue.peek().right() == '\\') {
-                queue.pop();
-            }
-
-            queue.pop();
-        }if (c == '"') {
-            while (!queue.isEmpty()) {
-                final var next = queue.pop().right();
-                if (next == '"') break;
-
-                if (!queue.isEmpty() && queue.peek().right() == '\\') {
-                    queue.pop();
-                }
-            }
-
-            return new Tuple<>(Optional.empty(), depth);
-        }
-		if (c == this.search && depth == 0) return new Tuple<>(Optional.of(index), depth);
-		if (c == this.enter) return new Tuple<>(Optional.empty(), depth + 1);
-		if (c == this.exit) return new Tuple<>(Optional.empty(), depth - 1);
+		auto c = input.right();
+		if (c == '\'') {}
+		if (c == '"') {}
+		if (c == this.search && depth == 0) {}
+		if (c == this.enter) {}
+		if (c == this.exit) {}
 		return temp();
 	}
 	int computeLength(){

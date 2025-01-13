@@ -418,7 +418,8 @@ public class Main {
                 .or(() -> compileInvocation(value))
                 .or(() -> compileLambda(value))
                 .or(() -> compileDataAccess(value))
-                .or(() -> compileAdd(value))
+                .or(() -> compileOperator(value, "+"))
+                .or(() -> compileOperator(value, "=="))
                 .or(() -> compileMethodAccess(value))
                 .or(() -> compileFilter(Main::isSymbol, value))
                 .or(() -> compileFilter(Main::isNumber, value))
@@ -447,13 +448,13 @@ public class Main {
         return truncateLeft(value, "\"").flatMap(inner -> truncateRight(inner, "\"").map(inner0 -> "\"" + inner0 + "\""));
     }
 
-    private static Optional<String> compileAdd(String value) {
-        return split(value, new FirstLocator("+")).flatMap(tuple -> {
+    private static Optional<String> compileOperator(String value, String operator) {
+        return split(value, new FirstLocator(operator)).flatMap(tuple -> {
             String value1 = tuple.right().strip();
             String value2 = tuple.left().strip();
             return compileValue(value2).flatMap(inner -> {
                 return compileValue(value1).map(inner0 -> {
-                    return inner + " + " + inner0;
+                    return inner + " " + operator + " " + inner0;
                 });
             });
         });
@@ -461,8 +462,8 @@ public class Main {
 
     private static boolean isNumber(String input) {
         return IntStream.range(0, input.length())
-                .mapToObj(input::charAt)
-                .allMatch(Character::isDigit);
+                .mapToObj(index -> new Tuple<>(index, input.charAt(index)))
+                .allMatch(tuple -> (tuple.left() == 0 && tuple.right() == '-') || Character.isDigit(tuple.right()));
     }
 
     private static Optional<String> compileConstruction(String value) {

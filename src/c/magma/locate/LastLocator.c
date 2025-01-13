@@ -5,7 +5,7 @@ struct LastLocator(String slice) implements Locator {
 	}
 	Optional<Integer> locate(String input){
 		auto index = input.lastIndexOf(slice());
-		if (index == -1) return Optional.empty();
+		if (index == -1) {}
 		return Optional.of(index);
 	}
 };
