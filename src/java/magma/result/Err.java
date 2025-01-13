@@ -1,7 +1,10 @@
 package magma.result;
 
+import magma.Tuple;
+
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Err<T, X> implements Result<T, X> {
     private final X error;
@@ -33,5 +36,15 @@ public class Err<T, X> implements Result<T, X> {
     @Override
     public boolean isOk() {
         return false;
+    }
+
+    @Override
+    public <R> Result<Tuple<T, R>, X> and(Supplier<Result<R, X>> other) {
+        return new Err<>(this.error);
+    }
+
+    @Override
+    public <R> Result<T, R> mapErr(Function<X, R> mapper) {
+        return new Err<>(mapper.apply(this.error));
     }
 }

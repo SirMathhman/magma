@@ -1,7 +1,10 @@
 package magma.result;
 
+import magma.Tuple;
+
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Ok<T, X> implements Result<T, X> {
     private final T value;
@@ -33,5 +36,15 @@ public class Ok<T, X> implements Result<T, X> {
     @Override
     public boolean isOk() {
         return true;
+    }
+
+    @Override
+    public <R> Result<Tuple<T, R>, X> and(Supplier<Result<R, X>> other) {
+        return other.get().mapValue(otherValue -> new Tuple<>(this.value, otherValue));
+    }
+
+    @Override
+    public <R> Result<T, R> mapErr(Function<X, R> mapper) {
+        return new Ok<>(this.value);
     }
 }

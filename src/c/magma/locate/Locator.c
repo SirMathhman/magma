@@ -1,3 +1,3 @@
 #include "temp.h"
-struct Locator {
+struct Locator {magma.result.Err@16b3fc9e
 };

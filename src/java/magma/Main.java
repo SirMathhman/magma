@@ -9,10 +9,10 @@ import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -28,10 +28,13 @@ public class Main {
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 
     public static void main(String[] args) {
-        JavaFiles.walk(SOURCE_DIRECTORY).match(Main::compileFiles, Optional::of).ifPresent(Throwable::printStackTrace);
+        JavaFiles.walk(SOURCE_DIRECTORY)
+                .mapErr(JavaError::new)
+                .mapErr(ApplicationError::new)
+                .match(Main::compileFiles, Optional::of).ifPresent(error -> System.err.println(error.display()));
     }
 
-    private static Optional<IOException> compileFiles(List<Path> files) {
+    private static Optional<ApplicationError> compileFiles(List<Path> files) {
         return files.stream()
                 .filter(Files::isRegularFile)
                 .filter(file -> file.toString().endsWith(".java"))
@@ -40,7 +43,7 @@ public class Main {
                 .findFirst();
     }
 
-    private static Optional<IOException> compileSource(Path source) {
+    private static Optional<ApplicationError> compileSource(Path source) {
         final var relativized = SOURCE_DIRECTORY.relativize(source);
         final var parent = relativized.getParent();
         final var namespace = computeNamespace(parent);
@@ -57,13 +60,16 @@ public class Main {
         final var targetParent = TARGET_DIRECTORY.resolve(parent);
         if (!Files.exists(targetParent)) {
             final var directoryError = JavaFiles.createDirectories(targetParent);
-            if (directoryError.isPresent()) return directoryError;
+            if (directoryError.isPresent()) return directoryError.map(JavaError::new).map(ApplicationError::new);
         }
 
         final var target = targetParent.resolve(nameWithoutExt + ".c");
-        return JavaFiles.readSafe(source).mapValue(input -> {
-            final var output = compileRoot(input);
-            return JavaFiles.writeSafe(target, output);
+        return JavaFiles.readSafe(source).mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(input -> {
+            return compileRoot(input).mapErr(ApplicationError::new).match(output -> {
+                return JavaFiles.writeSafe(target, output).map(JavaError::new).map(ApplicationError::new);
+            }, err -> {
+                return Optional.of(err);
+            });
         }).match(value -> value, Optional::of);
     }
 
@@ -74,16 +80,16 @@ public class Main {
                 .toList();
     }
 
-    private static String compileRoot(String root) {
-        return compileAndMerge(slicesOf(Main::statementChars, root), rootSegment -> compileRootSegment(rootSegment).findValue().orElse(""), StringBuilder::append);
+    private static Result<String, CompileError> compileRoot(String root) {
+        return compileAndMerge(slicesOf(Main::statementChars, root), Main::compileRootSegment, StringBuilder::append);
     }
 
-    private static String compileAndMerge(
+    private static Result<String, CompileError> compileAndMerge(
             List<String> segments,
-            Function<String, String> compiler,
+            Function<String, Result<String, CompileError>> compiler,
             BiFunction<StringBuilder, String, StringBuilder> merger
     ) {
-        return merge(compileSegments(segments, compiler), merger);
+        return compileSegments(segments, compiler).mapValue(compiled -> merge(compiled, merger));
     }
 
     private static String merge(
@@ -93,12 +99,15 @@ public class Main {
         return segments.stream().reduce(new StringBuilder(), merger, (_, next) -> next).toString();
     }
 
-    private static List<String> compileSegments(List<String> segments, Function<String, String> compiler) {
+    private static Result<List<String>, CompileError> compileSegments(List<String> segments, Function<String, Result<String, CompileError>> compiler) {
         return segments.stream()
                 .map(String::strip)
                 .filter(segment -> !segment.isEmpty())
                 .map(compiler)
-                .toList();
+                .<Result<List<String>, CompileError>>reduce(new Ok<>(new ArrayList<>()), (current, element) -> current.and(() -> element).mapValue(tuple -> {
+                    tuple.left().add(tuple.right());
+                    return tuple.left();
+                }), (_, next) -> next);
     }
 
     private static List<String> slicesOf(BiFunction<State, Character, State> other, String root) {
@@ -206,7 +215,7 @@ public class Main {
         return split(rootSegment, locator1).flatMapValue(tuple -> {
             Locator locator = new FirstLocator("{");
             return split(tuple.right(), locator).flatMapValue(tuple0 -> truncateRight(tuple0.right().strip(), "}").mapValue(content -> {
-                final var outputContent = compileAndMerge(slicesOf(Main::statementChars, content), structSegment -> compileStructSegment(structSegment).findValue().orElse(""), StringBuilder::append);
+                final var outputContent = compileAndMerge(slicesOf(Main::statementChars, content), Main::compileStructSegment, StringBuilder::append);
                 return "struct " + tuple0.left().strip() + " {" + outputContent + "\n};";
             }));
         });
@@ -257,26 +266,26 @@ public class Main {
     private static Result<String, CompileError> compileGeneric(String type) {
         return truncateRight(type, ">").flatMapValue(inner -> {
             Locator locator = new FirstLocator("<");
-            return split(inner, locator).mapValue(tuple -> {
+            return split(inner, locator).flatMapValue(tuple -> {
                 final var caller = tuple.left();
                 final var segments = slicesOf(Main::valueStrings, tuple.right());
-                final var compiledSegments = compileSegments(segments, type1 -> Optional.of(compileType(type1).findValue().orElse("")).orElse(""));
+                return compileSegments(segments, Main::compileType).mapValue(compiledSegments -> {
+                    if (caller.equals("Function") && compiledSegments.size() == 2) {
+                        final var paramType = compiledSegments.get(0);
+                        final var returnType = compiledSegments.get(1);
+                        return "(" + paramType + " => " + returnType + ")";
+                    }
 
-                if (caller.equals("Function") && compiledSegments.size() == 2) {
-                    final var paramType = compiledSegments.get(0);
-                    final var returnType = compiledSegments.get(1);
-                    return "(" + paramType + " => " + returnType + ")";
-                }
+                    if (caller.equals("BiFunction") && compiledSegments.size() == 3) {
+                        final var firstParamType = compiledSegments.get(0);
+                        final var secondParamType = compiledSegments.get(1);
+                        final var returnType = compiledSegments.get(2);
+                        return "((" + firstParamType + ", " + secondParamType + ") => " + returnType + ")";
+                    }
 
-                if (caller.equals("BiFunction") && compiledSegments.size() == 3) {
-                    final var firstParamType = compiledSegments.get(0);
-                    final var secondParamType = compiledSegments.get(1);
-                    final var returnType = compiledSegments.get(2);
-                    return "((" + firstParamType + ", " + secondParamType + ") => " + returnType + ")";
-                }
-
-                final var compiledArgs = merge(compiledSegments, Main::mergeValues);
-                return caller + "<" + compiledArgs + ">";
+                    final var compiledArgs = merge(compiledSegments, Main::mergeValues);
+                    return caller + "<" + compiledArgs + ">";
+                });
             });
         });
     }
@@ -331,13 +340,13 @@ public class Main {
             Locator locator = new FirstLocator("(");
             return split(beforeContent, locator).flatMapValue(tuple1 -> {
                 final var inputDefinition = tuple1.left();
-                return compileDefinition(inputDefinition).mapValue(definition -> {
+                return compileDefinition(inputDefinition).flatMapValue(definition -> {
                     final var outputContent = compileContent(maybeContent).findValue().orElse(";");
-                    final var compiledParams = compileAndMerge(slicesOf(Main::valueStrings, tuple1.right()),
-                            segment -> compileDefinition(segment).findValue().orElseGet(() -> invalidate("definition", segment)),
-                            Main::mergeValues);
 
-                    return "\n\t" + generateMethod(definition, compiledParams, outputContent);
+                    return compileAndMerge(slicesOf(Main::valueStrings, tuple1.right()),
+                            Main::compileDefinition,
+                            Main::mergeValues)
+                            .mapValue(compiledParams -> "\n\t" + generateMethod(definition, compiledParams, outputContent));
                 });
             });
         });
@@ -350,7 +359,7 @@ public class Main {
     private static Result<String, CompileError> compileContent(String maybeContent) {
         return truncateLeft(maybeContent, "{").flatMapValue(inner ->
                 truncateRight(inner, "}").mapValue(inner0 -> "{" + compileAndMerge(slicesOf(Main::statementChars, inner0), statement ->
-                        compileStatement(statement, 2).findValue().orElse(""), StringBuilder::append) + "\n\t}"));
+                        compileStatement(statement, 2), StringBuilder::append) + "\n\t}"));
     }
 
     private static Result<String, CompileError> compileStatement(String statement, int depth) {
@@ -404,11 +413,13 @@ public class Main {
 
     private static Result<String, CompileError> compileInvocation(String input) {
         return truncateRight(input, ")").flatMapValue(withoutEnd -> {
-            return split(withoutEnd, new TypeLocator('(', ')', '(')).mapValue(withoutStart -> {
+            return split(withoutEnd, new TypeLocator('(', ')', '(')).flatMapValue(withoutStart -> {
                 final var caller = withoutStart.left();
                 final var compiled = Optional.of(compileValue(caller).findValue().orElse("")).orElse(caller);
-                final var compiledArgs = compileAndMerge(slicesOf(Main::valueStrings, withoutStart.right()), value -> Optional.of(compileValue(value).findValue().orElse("")).orElse(value), Main::mergeValues);
-                return generateInvocation(compiled, compiledArgs);
+                final var segments = slicesOf(Main::valueStrings, withoutStart.right());
+                return compileAndMerge(segments, magma.Main::compileValue, Main::mergeValues).mapValue(compiledArgs -> {
+                    return generateInvocation(compiled, compiledArgs);
+                });
             });
         });
     }
