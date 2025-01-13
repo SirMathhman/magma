@@ -8,7 +8,7 @@ struct Err<T, X> implements Result<T, X> {
 		return temp();
 	}
 	R match((T => R) onOk, (X => R) onErr){
-		return onErr.apply(this.error);
+		return temp();
 	}
 	Result<R, X> flatMapValue((T => Result<R, X>) mapper){
 		return temp();

@@ -391,10 +391,10 @@ public class Main {
 
     private static String compileValue(String value) {
         return compileConstruction(value)
+                .or(() -> compileInvocation(value))
                 .or(() -> compileDataAccess(value))
                 .or(() -> compileFilter(Main::isSymbol, value))
                 .or(() -> compileFilter(Main::isNumber, value))
-                .or(() -> compileInvocation(value))
                 .orElseGet(() -> invalidate("value", value));
     }
 
