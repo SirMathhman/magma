@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -39,10 +38,7 @@ public class Main {
     private static Optional<IOException> compileSource(Path source) {
         final var relativized = SOURCE_DIRECTORY.relativize(source);
         final var parent = relativized.getParent();
-        final var namespace = new ArrayList<String>();
-        for (int i = 0; i < parent.getNameCount(); i++) {
-            namespace.add(parent.getName(i).toString());
-        }
+        final var namespace = computeNamespace(parent);
 
         if (namespace.size() >= 2) {
             final var slice = namespace.subList(0, 2);
@@ -66,6 +62,13 @@ public class Main {
         }).match(value -> value, Optional::of);
     }
 
+    private static List<String> computeNamespace(Path parent) {
+        return IntStream.range(0, parent.getNameCount())
+                .mapToObj(parent::getName)
+                .map(Path::toString)
+                .toList();
+    }
+
     private static String compileRoot(String root) {
         return compileAndMerge(slicesOf(Main::statementChars, root), Main::compileRootSegment, StringBuilder::append);
     }
@@ -82,22 +85,15 @@ public class Main {
             List<String> segments,
             BiFunction<StringBuilder, String, StringBuilder> merger
     ) {
-        var output = new StringBuilder();
-        for (var segment : segments) {
-            output = merger.apply(output, segment);
-        }
-        return output.toString();
+        return segments.stream().reduce(new StringBuilder(), merger, (_, next) -> next).toString();
     }
 
     private static List<String> compileSegments(List<String> segments, Function<String, String> compiler) {
-        var compiledSegments = new ArrayList<String>();
-        for (String segment : segments) {
-            final var stripped = segment.strip();
-            if (stripped.isEmpty()) continue;
-            final var compiled = compiler.apply(stripped);
-            compiledSegments.add(compiled);
-        }
-        return compiledSegments;
+        return segments.stream()
+                .map(String::strip)
+                .filter(segment -> !segment.isEmpty())
+                .map(compiler)
+                .toList();
     }
 
     private static List<String> slicesOf(BiFunction<State, Character, State> other, String root) {
@@ -280,13 +276,13 @@ public class Main {
     }
 
     private static Optional<String> compileSymbol(String type) {
-        for (int i = 0; i < type.length(); i++) {
-            final var c = type.charAt(i);
-            if (Character.isLetter(c)) continue;
-            return Optional.empty();
-        }
+        return isSymbol(type) ? Optional.of(type) : Optional.empty();
+    }
 
-        return Optional.of(type);
+    private static boolean isSymbol(String type) {
+        return IntStream.range(0, type.length())
+                .mapToObj(type::charAt)
+                .allMatch(Character::isLetter);
     }
 
     private static String generateDefinition(String type, String name) {
@@ -325,7 +321,8 @@ public class Main {
 
     private static String compileStatement(String statement, int depth) {
         return compileReturn(statement, depth)
-                .or(() -> compileIf(statement))
+                .or(() -> compileCondition(statement, "if"))
+                .or(() -> compileCondition(statement, "while"))
                 .or(() -> compileElse(statement))
                 .or(() -> compileInitialization(statement))
                 .or(() -> compileInvocation(statement, depth))
@@ -338,8 +335,8 @@ public class Main {
         return truncateLeft(statement, "else").map(inner -> "\n\t\telse {}");
     }
 
-    private static Optional<String> compileIf(String statement) {
-        return truncateLeft(statement, "if").map(inner -> "\n\t\tif (1) {}");
+    private static Optional<String> compileCondition(String statement, String prefix) {
+        return truncateLeft(statement, prefix).map(inner -> "\n\t\t" + prefix + " (1) {}");
     }
 
     private static Optional<String> compileInvocation(String statement, int depth) {

@@ -14,7 +14,6 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
-#include "temp.h"
 struct Main {
 	int value = 0;
 	int value = 0;
@@ -27,15 +26,16 @@ struct Main {
 	Optional<IOException> compileSource(Path source){
 	int value = 0;
 	int value = 0;
-	int value = 0;for (int i = 0; i < parent.getNameCount(); i++) {
-            namespace.add(parent.getName(i).toString());
-        }
-		if (1) {}
-	int value = 0;
-	int value = 0;
 	int value = 0;
 		if (1) {}
 	int value = 0;
+	int value = 0;
+	int value = 0;
+		if (1) {}
+	int value = 0;
+		return temp;
+	}
+	List<String> computeNamespace(Path parent){
 		return temp;
 	}
 	String compileRoot(String root){
@@ -45,29 +45,15 @@ struct Main {
 		return temp;
 	}
 	String merge(List<String> segments, ((StringBuilder, String) => StringBuilder) merger){
-	int value = 0;for (var segment : segments) {
-            output = merger.apply(output, segment);
-        }
 		return temp;
 	}
 	List<String> compileSegments(List<String> segments, (String => String) compiler){
-	int value = 0;for (String segment : segments) {
-            final var stripped = segment.strip();
-            if (stripped.isEmpty()) continue;
-            final var compiled = compiler.apply(stripped);
-            compiledSegments.add(compiled);
-        }
 		return temp;
 	}
 	List<String> slicesOf(((State, Character) => State) other, String root){
 	int value = 0;
-	int value = 0;while (true) {
-            final var optional = state.pop().map(Tuple::right);
-            if (optional.isEmpty()) break;
-
-            final var c = optional.orElseThrow();
-            state = splitAtChar(state, c, other);
-        }
+	int value = 0;
+		while (1) {}
 	int value = 0;
 		if (1) {}
 		return temp;
@@ -77,11 +63,8 @@ struct Main {
 	}
 	Optional<State> splitDoubleQuotes(State state, char c){
 		if (1) {}
-	int value = 0;while (true) {
-            final var processed = splitDoubleQuotesChar(state);
-            if (processed.isEmpty()) break;
-            else current = processed.get();
-        }
+	int value = 0;
+		while (1) {}
 		return temp;
 	}
 	Optional<State> splitDoubleQuotesChar(State state){
@@ -149,11 +132,10 @@ struct Main {
 		if (1) {}
 		return temp;
 	}
-	Optional<String> compileSymbol(String type){for (int i = 0; i < type.length(); i++) {
-            final var c = type.charAt(i);
-            if (Character.isLetter(c)) continue;
-            return Optional.empty();
-        }
+	Optional<String> compileSymbol(String type){
+		return temp;
+	}
+	boolean isSymbol(String type){
 		return temp;
 	}
 	String generateDefinition(String type, String name){
@@ -174,7 +156,7 @@ struct Main {
 	Optional<String> compileElse(String statement){
 		return temp;
 	}
-	Optional<String> compileIf(String statement){
+	Optional<String> compileCondition(String statement, String prefix){
 		return temp;
 	}
 	Optional<String> compileInvocation(String statement, int depth){
