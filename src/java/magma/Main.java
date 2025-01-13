@@ -296,7 +296,7 @@ public class Main {
     }
 
     private static Optional<String> compileIf(String statement) {
-        return truncateLeft(statement, "if").map(inner -> "if (1) {}");
+        return truncateLeft(statement, "if").map(inner -> "\n\t\tif (1) {}");
     }
 
     private static Optional<String> compileInvocation(String statement, int depth) {

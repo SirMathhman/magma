@@ -49,7 +49,8 @@ struct Main {
 		to = from;
 		to = from;
 		to = from;
-		to = from;if (1) {}
+		to = from;
+		if (1) {}
 		return temp;
 	}
 	State splitAtChar(State state, Character c, BiFunction<State, Character, State> other){
@@ -83,7 +84,9 @@ struct Main {
 		to = from;
 		to = from;
 	}
-	String compileRootSegment(String rootSegment){if (1) {}if (1) {}
+	String compileRootSegment(String rootSegment){
+		if (1) {}
+		if (1) {}
 		return temp;
 	}
 	String invalidate(String type, String rootSegment){
