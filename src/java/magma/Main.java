@@ -146,7 +146,14 @@ public class Main {
     private static String compileStatement(String statement) {
         return compileAssignment(statement)
                 .or(() -> compileReturn(statement))
+                .or(() -> compileInvocation(statement))
                 .orElseGet(() -> invalidate("statement", statement));
+    }
+
+    private static Optional<String> compileInvocation(String statement) {
+        return split(statement.strip(), "(").flatMap(inner -> truncateRight(inner.right(), ")").map(inner0 -> {
+            return generateStatement("temp()");
+        }));
     }
 
     private static Optional<String> compileReturn(String statement) {
