@@ -39,10 +39,8 @@ struct State {
 		this.depth = from;
 		return this;
 	}
-	State advance(){if (!this.buffer.isEmpty()) {
-            this.segments.add(this.buffer.toString());
-            this.buffer = new StringBuilder();
-        }
+	State advance(){
+		if (!this.buffer.isEmpty() {}
 		return this;
 	}
 	Optional<State> appendFromQueue(){

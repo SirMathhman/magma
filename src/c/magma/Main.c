@@ -31,10 +31,8 @@ struct Main {
 		if (namespace.size() {}
 		auto name = relativized.getFileName().toString();
 		auto nameWithoutExt = name.substring(0, name.indexOf('.'));
-		auto targetParent = TARGET_DIRECTORY.resolve(parent);if (!Files.exists(targetParent)) {
-            final var directoryError = JavaFiles.createDirectories(targetParent);
-            if (directoryError.isPresent()) return directoryError;
-        }
+		auto targetParent = TARGET_DIRECTORY.resolve(parent);
+		if (!Files.exists(targetParent) {}
 		auto target = targetParent.resolve(nameWithoutExt + ".c");
 		return auto temp(){}(auto temp(){}, Optional.of);
 	}
@@ -65,7 +63,7 @@ struct Main {
 		return auto temp(){}(auto temp(){}(state, c));
 	}
 	Optional<State> splitDoubleQuotes(State state, char c){
-		if (c != '"') return Optional.empty();
+		if (c != '"') {}
 		auto current = state.append(c);
 		while (true) {}
 		return Optional.of(current);
@@ -81,14 +79,14 @@ struct Main {
 	}
 	State statementChars(State state, char c){
 		auto appended = state.append(c);
-		if (c == ';' && appended.isLevel()) return appended.advance();
-		if (c == '}' && appended.isShallow()) return appended.exit().advance();
+		if (c == ';' && appended.isLevel() {}
+		if (c == '}' && appended.isShallow() {}
 		if (c == '{' || c == '(') {}
 		if (c == '}' || c == ') {}
 		return appended;
 	}
 	Optional<State> splitSingleQuotes(State state, char c){
-		if (c != '\'') return Optional.empty();
+		if (c != '\'') {}
 		return state.append(c).appendAndPop().flatMap(auto temp(){});
 	}
 	String compileRootSegment(String rootSegment){
@@ -134,7 +132,7 @@ struct Main {
 		return builder.append(", ").append(slice);
 	}
 	State valueStrings(State state, Character c){
-		if (c == ',' && state.isLevel()) return state.advance();
+		if (c == ',' && state.isLevel() {}
 		auto appended = state.append(c);
 		if (c == '-') {}
 		if (c == '<' || c == '(') {}
@@ -191,6 +189,9 @@ struct Main {
 	}
 	Optional<String> compileValue(String value){
 		return auto temp(){}(auto temp(){}("value", value));
+	}
+	Optional<String> compileNot(String value){
+		return truncateLeft(value, "!").flatMap(auto temp(){}(auto temp(){}));
 	}
 	Optional<String> compileChar(String value){
 		return truncateLeft(value, "'").flatMap(auto temp(){}(auto temp(){}));

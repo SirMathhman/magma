@@ -420,10 +420,17 @@ public class Main {
                 .or(() -> compileDataAccess(value))
                 .or(() -> compileOperator(value, "+"))
                 .or(() -> compileOperator(value, "=="))
+                .or(() -> compileOperator(value, "!="))
+                .or(() -> compileOperator(value, "&&"))
                 .or(() -> compileMethodAccess(value))
                 .or(() -> compileFilter(Main::isSymbol, value))
                 .or(() -> compileFilter(Main::isNumber, value))
+                .or(() -> compileNot(value))
                 .or(() -> writeDebug("value", value));
+    }
+
+    private static Optional<String> compileNot(String value) {
+        return truncateLeft(value, "!").flatMap(inner -> compileValue(inner).map(inner0 -> "!" + inner0));
     }
 
     private static Optional<String> compileChar(String value) {

@@ -30,10 +30,8 @@ struct TypeLocator implements Locator {
 	}
 	Optional<Integer> locate(String input){
 		auto queue = auto temp(){}(Collectors.toCollection(LinkedList.new));
-		auto state = temp();while (!queue.isEmpty()) {
-            final var c = queue.pop();
-            state = fold(c, state, queue);
-        }
+		auto state = temp();
+		while (!queue.isEmpty() {}
 		return state.left();
 	}
 };
