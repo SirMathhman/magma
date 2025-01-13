@@ -1,6 +1,8 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
+#include "temp.h"
+#include "temp.h"
 struct TypeLocator implements Locator {
 	char search;
 	char enter;
@@ -10,11 +12,14 @@ struct TypeLocator implements Locator {
 		this.enter = from;
 		this.exit = from;
 	}
-	Tuple<Optional<Integer>, Integer> fold(String input, Tuple<Optional<Integer>, Integer> current, int index){
+	Tuple<Optional<Integer>, Integer> fold(Tuple<Integer, Character> input, Tuple<Optional<Integer>, Integer> current, LinkedList<Tuple<Integer, Character>> queue){
 		auto found = current.left();
 		if (1) {}
 		auto depth = current.right();
-		auto c = input.charAt(index);
+		auto index = input.left();
+		auto c = input.right();
+		if (1) {}
+		if (1) {}
 		if (1) {}
 		if (1) {}
 		if (1) {}
@@ -24,7 +29,10 @@ struct TypeLocator implements Locator {
 		return 1;
 	}
 	Optional<Integer> locate(String input){
-		return 
-	auto temp(){}();
+		auto queue = 
+	auto temp(){}(Collectors.toCollection(LinkedList.new));
+		auto state = temp();
+		while (1) {}
+		return state.left();
 	}
 };

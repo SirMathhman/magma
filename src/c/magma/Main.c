@@ -129,13 +129,13 @@ struct Main {
 	auto temp(){}(
 	auto temp(){}(type));
 		if (1) {}
-		return writeDebug(type);
+		return writeDebug("type", type);
 	}
 	Optional<String> compileExact(String type, String match, String output){
 		return type.equals(match) ? Optional.of(output) : Optional.empty();
 	}
-	Optional<String> writeDebug(String type){
-		Results.write(System.out, "Invalid type", type, type);
+	Optional<String> writeDebug(String category, String input){
+		Results.write(System.out, "Invalid " + category, input, input);
 		return Optional.empty();
 	}
 	Optional<String> compileArray(String type){
@@ -173,8 +173,8 @@ struct Main {
 		return "\n" + "\t".repeat(depth) + content + ";";
 	}
 	Optional<String> compileMethod(String structSegment){
-		return 
-	auto temp(){}(beforeContent, temp());
+		return split(structSegment, temp()).flatMap(
+	auto temp(){});
 	}
 	String generateMethod(String definition, String params, String content){
 		return "\n\t" + definition + "(" + params + ")" + content;
@@ -202,8 +202,8 @@ struct Main {
 	auto temp(){});
 	}
 	Optional<String> compileInvocation(String input){
-		return 
-	auto temp(){}(withoutEnd, temp());
+		return truncateRight(input, ")").flatMap(
+	auto temp(){});
 	}
 	String generateInvocation(String caller, String args){
 		return caller + "(" + args + ")";
@@ -220,7 +220,7 @@ struct Main {
 		return truncateRight(statement, ";").flatMap(
 	auto temp(){});
 	}
-	String compileValue(String value){
+	Optional<String> compileValue(String value){
 		return 
 	auto temp(){}(
 	auto temp(){}("value", value));
@@ -239,12 +239,11 @@ struct Main {
 	auto temp(){}();
 	}
 	Optional<String> compileString(String value){
-		return truncateLeft(value, "\"").flatMap(
-	auto temp(){}(
-	auto temp(){}));
+		return 
+	auto temp(){};
 	}
 	Optional<String> compileAdd(String value){
-		return split(value, new FirstLocator(" + ")).map(
+		return split(value, temp()).flatMap(
 	auto temp(){});
 	}
 	boolean isNumber(String input){
@@ -254,7 +253,7 @@ struct Main {
 		return value.startsWith("new ") ? Optional.of(generateInvocation("temp", "")) : Optional.empty();
 	}
 	Optional<String> compileDataAccess(String value){
-		return split(value, temp()).map(
+		return split(value, temp()).flatMap(
 	auto temp(){});
 	}
 	Optional<String> compileInitialization(String structSegment, int depth){
