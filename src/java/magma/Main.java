@@ -1,6 +1,9 @@
 package magma;
 
 import magma.java.JavaFiles;
+import magma.locate.FirstLocator;
+import magma.locate.LastLocator;
+import magma.locate.Locator;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -133,8 +136,8 @@ public class Main {
     }
 
     private static Optional<String> compileToStruct(String keyword, String rootSegment) {
-        return split(rootSegment, keyword).flatMap(tuple -> {
-            return split(tuple.right(), "{").flatMap(tuple0 -> {
+        return split(rootSegment, new FirstLocator(keyword)).flatMap(tuple -> {
+            return split(tuple.right(), new FirstLocator("{")).flatMap(tuple0 -> {
                 return truncateRight(tuple0.right().strip(), "}").map(content -> {
                     final var outputContent = splitAndCompile(content, Main::compileStructSegment);
                     return "struct " + tuple0.left().strip() + " {" + outputContent + "\n};";
@@ -151,11 +154,15 @@ public class Main {
     }
 
     private static Optional<String> compileDefinition(String structSegment) {
-        return truncateRight(structSegment, ";").map(inner -> generateStatement(1, generateDefinition()));
+        return truncateRight(structSegment, ";").flatMap(inner -> {
+            return split(inner, new LastLocator(" ")).map(tuple -> {
+                return generateStatement(1, generateDefinition(tuple.right().strip()));
+            });
+        });
     }
 
-    private static String generateDefinition() {
-        return "int value";
+    private static String generateDefinition(String name) {
+        return "int " + name;
     }
 
     private static String generateStatement(int depth, String content) {
@@ -164,7 +171,7 @@ public class Main {
 
     private static Optional<String> compileMethod(String structSegment) {
         return truncateRight(structSegment, "}")
-                .flatMap(inner -> split(inner, "{")
+                .flatMap(inner -> split(inner, new FirstLocator("{"))
                         .map(tuple -> {
                             final var inputContent = tuple.right();
                             final var outputContent = splitAndCompile(inputContent, statement -> compileStatement(statement, 2));
@@ -185,7 +192,7 @@ public class Main {
     }
 
     private static Optional<String> compileInvocation(String statement, int depth) {
-        return split(statement.strip(), "(").flatMap(inner -> truncateRight(inner.right(), ");").map(inner0 -> {
+        return split(statement.strip(), new FirstLocator("(")).flatMap(inner -> truncateRight(inner.right(), ");").map(inner0 -> {
             return generateStatement(depth, "temp()");
         }));
     }
@@ -201,12 +208,12 @@ public class Main {
     }
 
     private static Optional<String> compileAssignment(String statement, int depth) {
-        return split(statement, "=").map(inner -> generateStatement(depth, "to = from"));
+        return split(statement, new FirstLocator("=")).map(inner -> generateStatement(depth, "to = from"));
     }
 
     private static Optional<String> compileInitialization(String structSegment) {
         return truncateRight(structSegment, ";").flatMap(inner -> {
-            return split(inner, "=").map(value -> generateStatement(1, generateDefinition() + " = 0"));
+            return split(inner, new FirstLocator("=")).map(value -> generateStatement(1, generateDefinition("value") + " = 0"));
         });
     }
 
@@ -215,12 +222,11 @@ public class Main {
         return Optional.empty();
     }
 
-    private static Optional<Tuple<String, String>> split(String input, String slice) {
-        final var index = input.indexOf(slice);
-        if (index == -1) return Optional.empty();
-
-        final var left = input.substring(0, index);
-        final var right = input.substring(index + slice.length());
-        return Optional.of(new Tuple<>(left, right));
+    private static Optional<Tuple<String, String>> split(String input, Locator locator) {
+        return locator.locate(input).map(index -> {
+            final var left = input.substring(0, index);
+            final var right = input.substring(index + locator.computeLength());
+            return new Tuple<>(left, right);
+        });
     }
 }

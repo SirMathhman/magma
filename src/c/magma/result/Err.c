@@ -1,6 +1,6 @@
 #include "temp.h"
 struct Err<T, X> implements Result<T, X> {
-	int value;
+	int error;
 	void temp(){
 		to = from;
 	}
