@@ -395,7 +395,19 @@ public class Main {
                 .or(() -> compileDataAccess(value))
                 .or(() -> compileFilter(Main::isSymbol, value))
                 .or(() -> compileFilter(Main::isNumber, value))
+                .or(() -> compileAdd(value))
+                .or(() -> compileString(value))
                 .orElseGet(() -> invalidate("value", value));
+    }
+
+    private static Optional<String> compileString(String value) {
+        return truncateLeft(value, "\"").flatMap(inner -> truncateRight(inner, "\"").map(inner0 -> "\"" + inner0 + "\""));
+    }
+
+    private static Optional<String> compileAdd(String value) {
+        return split(value, new FirstLocator("+")).map(tuple -> {
+            return compileValue(tuple.left().strip()) + " + " + compileValue(tuple.right().strip());
+        });
     }
 
     private static boolean isNumber(String input) {

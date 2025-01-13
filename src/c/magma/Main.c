@@ -191,6 +191,12 @@ struct Main {
 	String compileValue(String value){
 		return temp();
 	}
+	Optional<String> compileString(String value){
+		return temp();
+	}
+	Optional<String> compileAdd(String value){
+		return temp();
+	}
 	boolean isNumber(String input){
 		return temp();
 	}
