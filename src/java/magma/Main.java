@@ -97,7 +97,9 @@ public class Main {
             state = splitAtChar(state, c, other);
         }
 
-        return state.advance().segments;
+        final var segments = state.advance().segments;
+        if (state.isLevel()) return segments;
+        return writeError("Invalid depth '" + state.depth + "'", root, segments);
     }
 
     private static State splitAtChar(State state, Character c, BiFunction<State, Character, State> other) {
@@ -151,10 +153,9 @@ public class Main {
             final var escapedState = maybeEscapeTuple.left();
             final var escapedChar = maybeEscapeTuple.right();
 
-            final var withMaybeEscape = escapedState.append(escapedChar);
             final var withEscaped = escapedChar == '\\'
-                    ? state.appendFromQueue().orElse(withMaybeEscape)
-                    : withMaybeEscape;
+                    ? state.appendFromQueue().orElse(escapedState)
+                    : escapedState;
 
             return withEscaped.appendFromQueue();
         });
@@ -171,8 +172,12 @@ public class Main {
     }
 
     private static String invalidate(String type, String rootSegment) {
-        System.err.println("Invalid " + type + ": " + rootSegment);
-        return rootSegment;
+        return writeError("Invalid " + type, rootSegment, rootSegment);
+    }
+
+    private static <T> T writeError(String message, String rootSegment, T value) {
+        System.err.println(message + ": " + rootSegment);
+        return value;
     }
 
     private static Optional<String> compileToStruct(String keyword, String rootSegment) {

@@ -9,7 +9,7 @@ public class State {
     public final List<String> segments;
     public final Deque<Character> queue;
     private StringBuilder buffer;
-    private int depth;
+    public int depth;
 
     public State(List<String> segments, StringBuilder buffer, int depth, Deque<Character> queue) {
         this.segments = segments;
