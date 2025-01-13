@@ -6,7 +6,6 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
-#include "temp.h"
 struct Main {
 	int value = 0;
 	int value = 0;
@@ -33,17 +32,23 @@ struct Main {
 	}
 	void temp(){
 	to = from;
-	to = from;
-	to = from;
 	to = from;i < root.length();
 	to = from;
 	to = from;
+	to = from;for (String segment : segments) {
+            output.append(compiler.apply(segment.strip()));
+        }return output.toString();
+	}
+	void temp(){
+	to = from;
+	to = from;' && appended.isLevel()) return appended.advance();
 	to = from;
 	}
 	int value;
-	int value = 0;
-	void temp(){output.append(compiler.apply(segment.strip()));
+	void temp(){') return appended.enter();
+	to = from;
 	}
+	int value;
 	int value;
 };private static String compileRootSegment(String rootSegment) {
         if (rootSegment.startsWith("package")) return "";
@@ -101,6 +106,4 @@ struct Main {
         final var left = input.substring(0, index);
         final var right = input.substring(index + slice.length());
         return Optional.of(new Tuple<>(left, right));
-    }private static void advance(StringBuilder buffer, ArrayList<String> segments) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
     }}
