@@ -123,6 +123,7 @@ public class Main {
 
         return compileToStruct("class", rootSegment)
                 .or(() -> compileToStruct("record", rootSegment))
+                .or(() -> compileToStruct("interface", rootSegment))
                 .orElseGet(() -> invalidate("root segment", rootSegment));
     }
 
