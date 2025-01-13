@@ -66,13 +66,19 @@ public class Main {
         if (rootSegment.startsWith("package")) return "";
         if (rootSegment.startsWith("import")) return "#include \"temp.h\"\n";
 
-        return split(rootSegment, "class").flatMap(tuple -> {
+        return compileToStruct("class", rootSegment)
+                .or(() -> compileToStruct("record", rootSegment))
+                .orElseGet(() -> {
+                    System.err.println("Invalid root segment: " + rootSegment);
+                    return rootSegment;
+                });
+    }
+
+    private static Optional<String> compileToStruct(String keyword, String rootSegment) {
+        return split(rootSegment, keyword).flatMap(tuple -> {
             return split(tuple.right(), "{").map(tuple0 -> {
                 return "struct " + tuple0.left().strip() + " {\n};";
             });
-        }).orElseGet(() -> {
-            System.err.println("Invalid root segment: " + rootSegment);
-            return rootSegment;
         });
     }
 
