@@ -10,7 +10,8 @@
 struct Main {
 	int value = 0;
 	int value = 0;
-	void temp(){JavaFiles.walk(SOURCE_DIRECTORY).match(Main::compileFiles, Optional::of).ifPresent(Throwable::printStackTrace);
+	void temp(){
+	temp();
 	}
 	void temp(){
 	return temp;
@@ -19,7 +20,8 @@ struct Main {
 	to = from;
 	to = from;
 	to = from;
-	to = from;i < parent.getNameCount();i++) {
+	to = from;
+	temp();i++) {
             namespace.add(parent.getName(i).toString());
         }
 	to = from;
@@ -28,14 +30,16 @@ struct Main {
 	to = from;
 	to = from;
 	to = from;
-	to = from;).match(value -> value, Optional::of);
+	to = from;
+	temp();
 	}
 	void temp(){
 	return temp;
 	}
 	void temp(){
 	to = from;
-	to = from;i < root.length();
+	to = from;
+	temp();
 	to = from;
 	to = from;
 	to = from;
@@ -44,11 +48,13 @@ struct Main {
 	}
 	void temp(){
 	to = from;
-	to = from;' && appended.isLevel()) return appended.advance();
+	to = from;
+	temp();
 	to = from;
 	}
 	int value;
-	void temp(){') return appended.enter();
+	void temp(){
+	temp();
 	to = from;
 	}
 	int value;
@@ -97,7 +103,7 @@ struct Main {
                 .or(() -> compileInvocation(statement))
                 .orElseGet(() -> invalidate("statement", statement));
     }private static Optional<String> compileInvocation(String statement) {
-        return split(statement.strip(), "(").flatMap(inner -> truncateRight(inner.right(), ")").map(inner0 -> {
+        return split(statement.strip(), "(").flatMap(inner -> truncateRight(inner.right(), ");").map(inner0 -> {
             return generateStatement("temp()");
         }));
     }private static Optional<String> compileReturn(String statement) {

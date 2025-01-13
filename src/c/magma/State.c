@@ -9,7 +9,8 @@ struct State {
 	to = from;
 	to = from;
 	}
-	void temp(){this(new ArrayList<>(), new StringBuilder(), 0);
+	void temp(){
+	temp();
 	}
 	void temp(){
 	to = from;
@@ -21,7 +22,8 @@ struct State {
 	to = from;
 	return temp;
 	}
-	void temp(){this.buffer.append(c);
+	void temp(){
+	temp();
 	return temp;
 	}
 	void temp(){

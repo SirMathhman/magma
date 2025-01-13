@@ -151,7 +151,7 @@ public class Main {
     }
 
     private static Optional<String> compileInvocation(String statement) {
-        return split(statement.strip(), "(").flatMap(inner -> truncateRight(inner.right(), ")").map(inner0 -> {
+        return split(statement.strip(), "(").flatMap(inner -> truncateRight(inner.right(), ");").map(inner0 -> {
             return generateStatement("temp()");
         }));
     }
