@@ -4,7 +4,7 @@ struct FirstLocator(String slice) implements Locator {
 		return temp;
 	}
 	Optional<Integer> locate(String input){
-		auto index = 0;
+		auto index = input.indexOf(this.slice);
 		if (1) {}
 		return temp;
 	}

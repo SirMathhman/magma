@@ -395,7 +395,8 @@ public class Main {
         return truncateRight(structSegment, ";").flatMap(inner -> {
             return split(inner, new FirstLocator("=")).flatMap(tuple -> {
                 return compileDefinition(tuple.left().strip()).map(definition -> {
-                    return generateStatement(depth, definition + " = 0");
+                    final var value = compileValue(tuple.right().strip());
+                    return generateStatement(depth, definition + " = " + value);
                 });
             });
         });

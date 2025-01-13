@@ -16,8 +16,8 @@
 #include "temp.h"
 #include "temp.h"
 struct Main {
-	Path SOURCE_DIRECTORY = 0;
-	Path TARGET_DIRECTORY = 0;
+	Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
+	Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 	void main(String[] args){
 		temp();
 	}
@@ -25,15 +25,15 @@ struct Main {
 		return temp;
 	}
 	Optional<IOException> compileSource(Path source){
-		auto relativized = 0;
-		auto parent = 0;
-		auto namespace = 0;
+		auto relativized = SOURCE_DIRECTORY.relativize(source);
+		auto parent = relativized.getParent();
+		auto namespace = computeNamespace(parent);
 		if (1) {}
-		auto name = 0;
-		auto nameWithoutExt = 0;
-		auto targetParent = 0;
+		auto name = relativized.getFileName().toString();
+		auto nameWithoutExt = name.substring(0, name.indexOf('.'));
+		auto targetParent = TARGET_DIRECTORY.resolve(parent);
 		if (1) {}
-		auto target = 0;
+		auto target = targetParent.resolve(nameWithoutExt + ".c");
 		return temp;
 	}
 	List<String> computeNamespace(Path parent){
@@ -52,10 +52,10 @@ struct Main {
 		return temp;
 	}
 	List<String> slicesOf(((State, Character) => State) other, String root){
-		auto queue = 0;
-		auto state = 0;
+		auto queue = IntStream.range(0, root.length()).mapToObj(root::charAt).collect(Collectors.toCollection(LinkedList::new));
+		auto state = new State(queue);
 		while (1) {}
-		auto segments = 0;
+		auto segments = state.advance().segments;
 		if (1) {}
 		return temp;
 	}
@@ -64,21 +64,21 @@ struct Main {
 	}
 	Optional<State> splitDoubleQuotes(State state, char c){
 		if (1) {}
-		auto current = 0;
+		auto current = state.append(c);
 		while (1) {}
 		return temp;
 	}
 	Optional<State> splitDoubleQuotesChar(State state){
-		auto maybeNext = 0;
+		auto maybeNext = state.appendAndPop();
 		if (1) {}
-		auto nextTuple = 0;
-		auto nextChar = 0;
+		auto nextTuple = maybeNext.get();
+		auto nextChar = nextTuple.right();
 		if (1) {}
 		if (1) {}
 		else {}
 	}
 	State statementChars(State state, char c){
-		auto appended = 0;
+		auto appended = state.append(c);
 		if (1) {}
 		if (1) {}
 		if (1) {}
@@ -114,7 +114,7 @@ struct Main {
 		return temp;
 	}
 	Optional<String> compileType(String type){
-		auto optional = 0;
+		auto optional = compileExact(type, "var", "auto").or(() -> compileSymbol(type)).or(() -> compileGeneric(type)).or(() -> compileArray(type));
 		if (1) {}
 		return temp;
 	}
@@ -137,7 +137,7 @@ struct Main {
 	}
 	State valueStrings(State state, Character c){
 		if (1) {}
-		auto appended = 0;
+		auto appended = state.append(c);
 		if (1) {}
 		if (1) {}
 		return temp;
