@@ -1,5 +1,6 @@
 #include "temp.h"
-struct Err<T, X> implements Result<T, X> {private final X error;
+struct Err<T, X> implements Result<T, X> {
+	int value;
 	void temp(){this.error = error;}
 
     @Override

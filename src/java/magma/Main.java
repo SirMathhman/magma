@@ -102,8 +102,21 @@ public class Main {
 
     private static String compileStructSegment(String structSegment) {
         return compileInitialization(structSegment)
+                .or(() -> compileDefinition(structSegment))
                 .or(() -> compileMethod(structSegment))
                 .orElseGet(() -> invalidate("struct segment", structSegment));
+    }
+
+    private static Optional<String> compileDefinition(String structSegment) {
+        return truncateRight(structSegment, ";").map(inner -> generateStatement(generateDefinition()));
+    }
+
+    private static String generateDefinition() {
+        return "int value";
+    }
+
+    private static String generateStatement(String content) {
+        return "\n\t" + content + ";";
     }
 
     private static Optional<String> compileMethod(String structSegment) {
@@ -122,7 +135,7 @@ public class Main {
 
     private static Optional<String> compileInitialization(String structSegment) {
         return truncateRight(structSegment, ";").flatMap(inner -> {
-            return split(inner, "=").map(value -> "\n\tint value = 0;");
+            return split(inner, "=").map(value -> generateStatement(generateDefinition() + " = 0"));
         });
     }
 

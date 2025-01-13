@@ -1,5 +1,6 @@
 #include "temp.h"
-struct Ok<T, X> implements Result<T, X> {private final T value;
+struct Ok<T, X> implements Result<T, X> {
+	int value;
 	void temp(){this.value = value;}
 
     @Override
