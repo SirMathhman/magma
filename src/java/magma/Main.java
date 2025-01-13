@@ -361,13 +361,15 @@ public class Main {
     }
 
     private static Optional<String> compileInvocation(String input) {
-        return split(input.strip(), new FirstLocator("(")).flatMap(inner -> truncateRight(inner.right(), ")").map(inner0 -> {
-            return generateInvocation();
+        return split(input.strip(), new FirstLocator("(")).flatMap(inner -> truncateRight(inner.right(), ")").map(withoutEnd -> {
+            final var caller = inner.left();
+            final var compiled = compileValue(caller);
+            return generateInvocation(compiled);
         }));
     }
 
-    private static String generateInvocation() {
-        return "temp()";
+    private static String generateInvocation(String caller) {
+        return caller + "()";
     }
 
     private static Optional<String> compileReturn(String statement, int depth) {
@@ -417,7 +419,7 @@ public class Main {
     }
 
     private static Optional<String> compileConstruction(String value) {
-        return value.startsWith("new ") ? Optional.of(generateInvocation()) : Optional.empty();
+        return value.startsWith("new ") ? Optional.of(generateInvocation("temp")) : Optional.empty();
     }
 
     private static Optional<String> compileDataAccess(String value) {

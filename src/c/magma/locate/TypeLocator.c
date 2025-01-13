@@ -3,10 +3,10 @@
 #include "temp.h"
 struct TypeLocator implements Locator {
 	Tuple<Optional<Integer>, Integer> fold(String input, Tuple<Optional<Integer>, Integer> current, int index){
-		auto found = temp();
+		auto found = current.left();
 		if (1) {}
-		auto depth = temp();
-		auto c = temp();
+		auto depth = current.right();
+		auto c = input.charAt();
 		if (1) {}
 		if (1) {}
 		if (1) {}
@@ -16,6 +16,6 @@ struct TypeLocator implements Locator {
 		return 1;
 	}
 	Optional<Integer> locate(String input){
-		return temp();
+		return IntStream.range();
 	}
 };

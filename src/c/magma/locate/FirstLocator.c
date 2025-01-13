@@ -1,11 +1,11 @@
 #include "temp.h"
 struct FirstLocator(String slice) implements Locator {
 	int computeLength(){
-		return temp();
+		return this.slice.length();
 	}
 	Optional<Integer> locate(String input){
-		auto index = temp();
+		auto index = input.indexOf();
 		if (1) {}
-		return temp();
+		return Optional.of();
 	}
 };
