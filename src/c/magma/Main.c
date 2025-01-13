@@ -19,7 +19,7 @@ struct Main {
 	int value = 0;
 	int value = 0;
 	void main(String[] args){
-	JavaFiles.walk(SOURCE_DIRECTORY).match(Main::compileFiles, Optional::of).ifPresent(Throwable::printStackTrace);
+		temp();
 	}
 	Optional<IOException> compileFiles(List<Path> files){
 		return temp;
@@ -114,7 +114,7 @@ struct Main {
 		return temp;
 	}
 	T writeError(String message, String rootSegment, T value){
-	+ rootSegment);
+		temp();
 		return temp;
 	}
 	Optional<String> compileToStruct(String keyword, String rootSegment){

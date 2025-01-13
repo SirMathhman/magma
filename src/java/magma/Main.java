@@ -328,9 +328,9 @@ public class Main {
                 .or(() -> compileIf(statement))
                 .or(() -> compileElse(statement))
                 .or(() -> compileInitialization(statement))
+                .or(() -> compileInvocation(statement, depth))
                 .or(() -> compileDefinitionStatement(statement))
                 .or(() -> compileAssignment(statement, depth))
-                .or(() -> compileInvocation(statement, depth))
                 .orElseGet(() -> invalidate("statement", statement));
     }
 

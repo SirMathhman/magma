@@ -14,7 +14,7 @@ struct State {
 	int value = 0;
 	}
 	public State(Deque<Character> queue){
-	0, queue);
+		temp();
 	}
 	Optional<Tuple<State, Character>> pop(){
 		if (1) {}
