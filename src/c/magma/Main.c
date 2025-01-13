@@ -40,12 +40,20 @@ struct Main {
 	String compileRoot(String root){
 		return temp;
 	}
-	String compileAndMerge(List<String> segments, Function<String, String> compiler, BiFunction<StringBuilder, String, StringBuilder> merger){
+	String compileAndMerge(List<String> segments, (String => String) compiler, ((StringBuilder, String) => StringBuilder) merger){
+		return temp;
+	}
+	String merge(List<String> segments, ((StringBuilder, String) => StringBuilder) merger){
 		to = from;
 		to = from;
 		return temp;
 	}
-	List<String> slicesOf(BiFunction<State, Character, State> other, String root){
+	List<String> compileSegments(List<String> segments, (String => String) compiler){
+		to = from;
+		to = from;
+		return temp;
+	}
+	List<String> slicesOf(((State, Character) => State) other, String root){
 		to = from;
 		to = from;
 		to = from;
@@ -53,7 +61,7 @@ struct Main {
 		if (1) {}
 		return temp;
 	}
-	State splitAtChar(State state, Character c, BiFunction<State, Character, State> other){
+	State splitAtChar(State state, Character c, ((State, Character) => State) other){
 		return temp;
 	}
 	Optional<State> splitDoubleQuotes(State state, char c){

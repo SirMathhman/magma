@@ -71,17 +71,33 @@ public class Main {
     }
 
     private static String compileAndMerge(
-            List<String> segments, Function<String, String> compiler, BiFunction<StringBuilder, String, StringBuilder> merger
+            List<String> segments,
+            Function<String, String> compiler,
+            BiFunction<StringBuilder, String, StringBuilder> merger
+    ) {
+        return merge(compileSegments(segments, compiler), merger);
+    }
+
+    private static String merge(
+            List<String> segments,
+            BiFunction<StringBuilder, String, StringBuilder> merger
     ) {
         var output = new StringBuilder();
+        for (var segment : segments) {
+            output = merger.apply(output, segment);
+        }
+        return output.toString();
+    }
+
+    private static List<String> compileSegments(List<String> segments, Function<String, String> compiler) {
+        var compiledSegments = new ArrayList<String>();
         for (String segment : segments) {
             final var stripped = segment.strip();
             if (stripped.isEmpty()) continue;
             final var compiled = compiler.apply(stripped);
-            output = merger.apply(output, compiled);
+            compiledSegments.add(compiled);
         }
-
-        return output.toString();
+        return compiledSegments;
     }
 
     private static List<String> slicesOf(BiFunction<State, Character, State> other, String root) {
@@ -228,7 +244,23 @@ public class Main {
     private static Optional<String> compileGeneric(String type) {
         return truncateRight(type, ">").flatMap(inner -> split(inner, new FirstLocator("<")).map(tuple -> {
             final var caller = tuple.left();
-            final var compiledArgs = compileAndMerge(slicesOf(Main::valueStrings, tuple.right()), Main::compileType, Main::mergeValues);
+            final var segments = slicesOf(Main::valueStrings, tuple.right());
+            final var compiledSegments = compileSegments(segments, Main::compileType);
+
+            if (caller.equals("Function") && compiledSegments.size() == 2) {
+                final var paramType = compiledSegments.get(0);
+                final var returnType = compiledSegments.get(1);
+                return "(" + paramType + " => " + returnType + ")";
+            }
+
+            if(caller.equals("BiFunction") && compiledSegments.size() == 3) {
+                final var firstParamType = compiledSegments.get(0);
+                final var secondParamType = compiledSegments.get(1);
+                final var returnType = compiledSegments.get(2);
+                return "((" + firstParamType + ", " + secondParamType + ") => " + returnType + ")";
+            }
+
+            final var compiledArgs = merge(compiledSegments, Main::mergeValues);
             return caller + "<" + compiledArgs + ">";
         }));
     }
@@ -277,9 +309,9 @@ public class Main {
                         Main::mergeValues);
 
                 return compileDefinition(inputDefinition).map(definition -> {
-                    final var outputContent = truncateLeft(maybeContent, "{").flatMap(inner -> truncateRight(inner, "}").map(inner0 -> {
-                        return "{" + compileAndMerge(slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2), StringBuilder::append) + "\n\t}";
-                    })).orElse(";");
+                    final var outputContent = truncateLeft(maybeContent, "{")
+                            .flatMap(inner -> truncateRight(inner, "}")
+                                    .map(inner0 -> "{" + compileAndMerge(slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2), StringBuilder::append) + "\n\t}")).orElse(";");
 
                     return "\n\t" + definition + "(" + compiledParams + ")" + outputContent;
                 });
