@@ -93,7 +93,11 @@ public class Main {
     }
 
     private static String compileStructSegment(String structSegment) {
-        return invalidate("struct segment", structSegment);
+        return compileInitialization(structSegment).orElseGet(() -> invalidate("struct segment", structSegment));
+    }
+
+    private static Optional<String> compileInitialization(String structSegment) {
+        return split(structSegment, "=").map(value -> "\n\tint value = 0;");
     }
 
     private static Optional<String> truncateRight(String input, String slice) {
