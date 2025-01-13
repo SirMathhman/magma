@@ -24,15 +24,15 @@ struct Main {
 		return temp;
 	}
 	Optional<IOException> compileSource(Path source){
-	int value = 0;
-	int value = 0;
-	int value = 0;
+		int value = 0;
+		int value = 0;
+		int value = 0;
 		if (1) {}
-	int value = 0;
-	int value = 0;
-	int value = 0;
+		int value = 0;
+		int value = 0;
+		int value = 0;
 		if (1) {}
-	int value = 0;
+		int value = 0;
 		return temp;
 	}
 	List<String> computeNamespace(Path parent){
@@ -51,10 +51,10 @@ struct Main {
 		return temp;
 	}
 	List<String> slicesOf(((State, Character) => State) other, String root){
-	int value = 0;
-	int value = 0;
+		int value = 0;
+		int value = 0;
 		while (1) {}
-	int value = 0;
+		int value = 0;
 		if (1) {}
 		return temp;
 	}
@@ -63,21 +63,21 @@ struct Main {
 	}
 	Optional<State> splitDoubleQuotes(State state, char c){
 		if (1) {}
-	int value = 0;
+		int value = 0;
 		while (1) {}
 		return temp;
 	}
 	Optional<State> splitDoubleQuotesChar(State state){
-	int value = 0;
+		int value = 0;
 		if (1) {}
-	int value = 0;
-	int value = 0;
+		int value = 0;
+		int value = 0;
 		if (1) {}
 		if (1) {}
 		else {}
 	}
 	State statementChars(State state, char c){
-	int value = 0;
+		int value = 0;
 		if (1) {}
 		if (1) {}
 		if (1) {}
@@ -106,7 +106,7 @@ struct Main {
 	String compileStructSegment(String structSegment){
 		return temp;
 	}
-	Optional<String> compileDefinitionStatement(String structSegment){
+	Optional<String> compileDefinitionStatement(String structSegment, int depth){
 		return temp;
 	}
 	Optional<String> compileDefinition(String definition){
@@ -127,7 +127,7 @@ struct Main {
 	}
 	State valueStrings(State state, Character c){
 		if (1) {}
-	int value = 0;
+		int value = 0;
 		if (1) {}
 		if (1) {}
 		return temp;
@@ -174,7 +174,7 @@ struct Main {
 	String compileValue(String value){
 		return temp;
 	}
-	Optional<String> compileInitialization(String structSegment){
+	Optional<String> compileInitialization(String structSegment, int depth){
 		return temp;
 	}
 	Optional<String> truncateRight(String input, String slice){

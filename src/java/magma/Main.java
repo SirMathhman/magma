@@ -205,15 +205,15 @@ public class Main {
     }
 
     private static String compileStructSegment(String structSegment) {
-        return compileInitialization(structSegment)
+        return compileInitialization(structSegment, 1)
                 .or(() -> compileMethod(structSegment))
-                .or(() -> compileDefinitionStatement(structSegment))
+                .or(() -> compileDefinitionStatement(structSegment, 1))
                 .orElseGet(() -> invalidate("struct segment", structSegment));
     }
 
-    private static Optional<String> compileDefinitionStatement(String structSegment) {
+    private static Optional<String> compileDefinitionStatement(String structSegment, int depth) {
         return truncateRight(structSegment, ";").flatMap(inner -> {
-            return compileDefinition(inner).map(inner0 -> generateStatement(1, inner0));
+            return compileDefinition(inner).map(inner0 -> generateStatement(depth, inner0));
         });
     }
 
@@ -324,9 +324,9 @@ public class Main {
                 .or(() -> compileCondition(statement, "if"))
                 .or(() -> compileCondition(statement, "while"))
                 .or(() -> compileElse(statement))
-                .or(() -> compileInitialization(statement))
+                .or(() -> compileInitialization(statement, depth))
                 .or(() -> compileInvocation(statement, depth))
-                .or(() -> compileDefinitionStatement(statement))
+                .or(() -> compileDefinitionStatement(statement, depth))
                 .or(() -> compileAssignment(statement, depth))
                 .orElseGet(() -> invalidate("statement", statement));
     }
@@ -368,9 +368,9 @@ public class Main {
         return invalidate("value", value);
     }
 
-    private static Optional<String> compileInitialization(String structSegment) {
+    private static Optional<String> compileInitialization(String structSegment, int depth) {
         return truncateRight(structSegment, ";").flatMap(inner -> {
-            return split(inner, new FirstLocator("=")).map(value -> generateStatement(1, generateDefinition("int", "value") + " = 0"));
+            return split(inner, new FirstLocator("=")).map(value -> generateStatement(depth, generateDefinition("int", "value") + " = 0"));
         });
     }
 

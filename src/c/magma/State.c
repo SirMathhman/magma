@@ -8,10 +8,10 @@ struct State {
 	StringBuilder buffer;
 	int depth;
 	public State(List<String> segments, StringBuilder buffer, int depth, Deque<Character> queue){
-	int value = 0;
-	int value = 0;
-	int value = 0;
-	int value = 0;
+		int value = 0;
+		int value = 0;
+		int value = 0;
+		int value = 0;
 	}
 	public State(Deque<Character> queue){
 		temp();
@@ -27,7 +27,7 @@ struct State {
 		return temp;
 	}
 	State exit(){
-	int value = 0;
+		int value = 0;
 		return temp;
 	}
 	State append(char c){
@@ -35,7 +35,7 @@ struct State {
 		return temp;
 	}
 	State enter(){
-	int value = 0;
+		int value = 0;
 		return temp;
 	}
 	State advance(){
