@@ -8,9 +8,9 @@ struct TypeLocator implements Locator {
 	char enter;
 	char exit;
 	public TypeLocator(char search, char enter, char exit){
-		this.search = from;
-		this.enter = from;
-		this.exit = from;
+		= search;
+		= enter;
+		= exit;
 	}
 	Tuple<Optional<Integer>, Integer> fold(Tuple<Integer, Character> input, Tuple<Optional<Integer>, Integer> current, LinkedList<Tuple<Integer, Character>> queue){
 		auto found = current.left();
@@ -51,5 +51,8 @@ struct TypeLocator implements Locator {
             state = fold(c, state, queue);
         }
 		return state.left();
+	}
+	String createErrorMessage(){
+		return "No space present.";
 	}
 };

@@ -14,4 +14,9 @@ public record LastLocator(String slice) implements Locator {
         if (index == -1) return Optional.empty();
         return Optional.of(index);
     }
+
+    @Override
+    public String createErrorMessage() {
+        return "No slice present: '" + this.slice + "'";
+    }
 }

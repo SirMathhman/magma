@@ -1,8 +1,9 @@
 #include "temp.h"
+#include "temp.h"
 struct Ok<T, X> implements Result<T, X> {
 	T value;
 	public Ok(T value){
-		this.value = from;
+		= value;
 	}
 	Result<R, X> mapValue((T => R) mapper){
 		return temp();
@@ -12,5 +13,8 @@ struct Ok<T, X> implements Result<T, X> {
 	}
 	Result<R, X> flatMapValue((T => Result<R, X>) mapper){
 		return mapper.apply(this.value);
+	}
+	Optional<T> findValue(){
+		return Optional.of(this.value);
 	}
 };

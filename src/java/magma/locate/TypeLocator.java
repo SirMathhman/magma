@@ -77,4 +77,9 @@ public class TypeLocator implements Locator {
 
         return state.left();
     }
+
+    @Override
+    public String createErrorMessage() {
+        return "No space present.";
+    }
 }

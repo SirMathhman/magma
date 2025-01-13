@@ -8,4 +8,7 @@ struct LastLocator(String slice) implements Locator {
 		if (index == -1) return Optional.empty();
 		return Optional.of(index);
 	}
+	String createErrorMessage(){
+		return "No slice present: '" + this.slice + "'";
+	}
 };

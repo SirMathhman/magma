@@ -15,6 +15,10 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
+#include "temp.h"
+#include "temp.h"
+#include "temp.h"
+#include "temp.h"
 struct Main {
 	Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
 	Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
@@ -105,28 +109,36 @@ struct Main {
 		if (c != '\'') return Optional.empty();
 		return state.append(c).appendAndPop().flatMap(auto temp(){});
 	}
-	String compileRootSegment(String rootSegment){if (rootSegment.startsWith("package")) return "";if (rootSegment.startsWith("import")) return "#include \"temp.h\"\n";
-		return auto temp(){}(auto temp(){}("root segment", rootSegment));
+	String compileRootSegment(String rootSegment){
+		return compileDisjunction("root segment", rootSegment, List.of(auto temp(){}(rootSegment), auto temp(){}(rootSegment), auto temp(){}("class", rootSegment), auto temp(){}("record", rootSegment), auto temp(){}("interface", rootSegment)));
+	}
+	Optional<String> compileImport(String rootSegment){
+		if (rootSegment.startsWith("import")) return Optional.of("#include \"temp.h\"\n");
+		return Optional.empty();
+	}
+	Optional<String> compilePackage(String rootSegment){
+		if (rootSegment.startsWith("package")) return Optional.of("");
+		else {}
 	}
 	String invalidate(String type, String rootSegment){
 		return Results.writeErr("Invalid " + type, rootSegment, rootSegment);
 	}
 	Optional<String> compileToStruct(String keyword, String rootSegment){
-		return split(rootSegment, temp()).flatMap(auto temp(){});
+		Locator locator1 = new FirstLocator(keyword);
+		return split(rootSegment, locator1).findValue().flatMap(auto temp(){});
 	}
 	String compileStructSegment(String structSegment){
-		return auto temp(){}(auto temp(){}("struct segment", structSegment));
+		return compileDisjunction("struct segment", structSegment, List.of(auto temp(){}(structSegment, 1), auto temp(){}(structSegment), auto temp(){}(structSegment, 1)));
 	}
 	Optional<String> compileDefinitionStatement(String structSegment, int depth){
-		return truncateRight(structSegment, ";").flatMap(auto temp(){});
+		return truncateRight(structSegment, ";").findValue().flatMap(auto temp(){});
 	}
 	Optional<String> compileDefinition(String definition){
-		return split(definition, temp()).flatMap(auto temp(){});
+		Locator locator = temp();
+		return split(definition, locator).findValue().flatMap(auto temp(){});
 	}
-	Optional<String> compileType(String type){
-		auto optional = auto temp(){}(auto temp(){}(type));
-		return optional;
-		return writeDebug("type", type);
+	String compileType(String type){
+		return compileDisjunction("type", type, List.of(auto temp(){}(type, "var", "auto"), auto temp(){}(Main.isSymbol, type), auto temp(){}(type), auto temp(){}(type)));
 	}
 	Optional<String> compileExact(String type, String match, String output){
 		return type.equals(match) ? Optional.of(output) : Optional.empty();
@@ -136,10 +148,10 @@ struct Main {
 		return Optional.empty();
 	}
 	Optional<String> compileArray(String type){
-		return truncateRight(type, "[]").map(auto temp(){});
+		return truncateRight(type, "[]").findValue().map(auto temp(){});
 	}
 	Optional<String> compileGeneric(String type){
-		return truncateRight(type, ">").flatMap(auto temp(){}(auto temp(){}));
+		return truncateRight(type, ">").findValue().flatMap(auto temp(){});
 	}
 	StringBuilder mergeValues(StringBuilder builder, String slice){
 		if (builder.isEmpty()) return builder.append(slice);
@@ -172,52 +184,64 @@ struct Main {
 		return "\n" + "\t".repeat(depth) + content + ";";
 	}
 	Optional<String> compileMethod(String structSegment){
-		return split(structSegment, temp()).flatMap(auto temp(){});
+		Locator locator1 = new FirstLocator(")");
+		return split(structSegment, locator1).findValue().flatMap(auto temp(){});
 	}
 	String generateMethod(String definition, String params, String content){
 		return definition + "(" + params + ")" + content;
 	}
 	Optional<String> compileContent(String maybeContent){
-		return truncateLeft(maybeContent, "{").flatMap(auto temp(){}(auto temp(){}));
+		return truncateLeft(maybeContent, "{").findValue().flatMap(auto temp(){}(auto temp(){}));
 	}
 	String compileStatement(String statement, int depth){
-		return auto temp(){}(auto temp(){}("statement", statement));
+		List<Supplier<Optional<String>>> compilers = List.of(auto temp(){}(statement, depth), auto temp(){}(statement, "if"), auto temp(){}(statement, "while"), auto temp(){}(statement), auto temp(){}(statement, depth), auto temp(){}(statement, depth), auto temp(){}(statement, depth), auto temp(){}(statement, depth));
+		return compileDisjunction("statement", statement, compilers);
+	}
+	String compileDisjunction(String type, String input, List<Supplier<Optional<String>>> compilers){for (Supplier<Optional<String>> compiler : compilers) {
+            final var optional = compiler.get();
+            if (optional.isPresent()) {
+                return optional.get();
+            }
+        }
+		return invalidate(type, input);
 	}
 	Optional<String> compileElse(String statement){
-		return truncateLeft(statement, "else").map(auto temp(){});
+		return truncateLeft(statement, "else").findValue().map(auto temp(){});
 	}
 	Optional<String> compileCondition(String statement, String prefix){
-		return truncateLeft(statement, prefix).flatMap(auto temp(){});
+		return truncateLeft(statement, prefix).findValue().flatMap(auto temp(){});
 	}
 	Optional<String> compileInvocationStatement(String input, int depth){
-		return truncateRight(input, ";").flatMap(auto temp(){});
+		return truncateRight(input, ";").findValue().flatMap(auto temp(){});
 	}
 	Optional<String> compileInvocation(String input){
-		return truncateRight(input, ")").flatMap(auto temp(){});
+		return truncateRight(input, ")").findValue().flatMap(auto temp(){});
 	}
 	String generateInvocation(String caller, String args){
 		return caller + "(" + args + ")";
 	}
 	Optional<String> compileReturn(String statement, int depth){
-		return truncateLeft(statement, "return").flatMap(auto temp(){}(auto temp(){}));
+		return truncateLeft(statement, "return").findValue().flatMap(auto temp(){}(auto temp(){}));
 	}
-	Optional<String> truncateLeft(String input, String slice){
-		return input.startsWith(slice) ? Optional.of(input.substring(slice.length())) : Optional.empty();
+	Result<String, CompileError> truncateLeft(String input, String prefix){
+		if (input.startsWith(prefix)) return new Ok<>(input.substring(prefix.length()));
+		return temp();
 	}
 	Optional<String> compileAssignment(String statement, int depth){
-		return truncateRight(statement, ";").flatMap(auto temp(){});
+		return truncateRight(statement, ";").findValue().flatMap(auto temp(){});
 	}
-	Optional<String> compileValue(String value){
-		return auto temp(){}(auto temp(){}("value", value));
+	String compileValue(String value){
+		return compileDisjunction("value", value, List.of(auto temp(){}(value), auto temp(){}(value), auto temp(){}(value), auto temp(){}(value), auto temp(){}(value), auto temp(){}(value), auto temp(){}(value, "+"), auto temp(){}(value, "=="), auto temp(){}(value, "!="), auto temp(){}(value, "&&"), auto temp(){}(value), auto temp(){}(Main.isSymbol, value), auto temp(){}(Main.isNumber, value), auto temp(){}(value)));
 	}
 	Optional<String> compileNot(String value){
-		return truncateLeft(value, "!").flatMap(auto temp(){}(auto temp(){}));
+		return truncateLeft(value, "!").findValue().flatMap(auto temp(){}(auto temp(){}));
 	}
 	Optional<String> compileChar(String value){
-		return truncateLeft(value, "'").flatMap(auto temp(){}(auto temp(){}));
+		return truncateLeft(value, "'").findValue().flatMap(auto temp(){}(auto temp(){}));
 	}
 	Optional<String> compileMethodAccess(String value){
-		return split(value, temp()).map(auto temp(){});
+		Locator locator = temp();
+		return split(value, locator).findValue().map(auto temp(){});
 	}
 	Optional<String> compileLambda(String value){
 		return auto temp(){}();
@@ -226,7 +250,8 @@ struct Main {
 		return auto temp(){};
 	}
 	Optional<String> compileOperator(String value, String operator){
-		return split(value, temp()).flatMap(auto temp(){});
+		Locator locator = temp();
+		return split(value, locator).findValue().flatMap(auto temp(){});
 	}
 	boolean isNumber(String input){
 		return auto temp(){}(auto temp(){}(tuple.right()));
@@ -235,16 +260,17 @@ struct Main {
 		return value.startsWith("new ") ? Optional.of(generateInvocation("temp", "")) : Optional.empty();
 	}
 	Optional<String> compileDataAccess(String value){
-		return split(value, temp()).flatMap(auto temp(){});
+		Locator locator = temp();
+		return split(value, locator).findValue().flatMap(auto temp(){});
 	}
 	Optional<String> compileInitialization(String structSegment, int depth){
-		return truncateRight(structSegment, ";").flatMap(auto temp(){});
+		return truncateRight(structSegment, ";").findValue().flatMap(auto temp(){});
 	}
-	Optional<String> truncateRight(String input, String slice){
-		if (input.endsWith(slice)) return Optional.of(input.substring(0, input.length() - slice.length()));
-		return Optional.empty();
+	Result<String, CompileError> truncateRight(String input, String slice){
+		if (input.endsWith(slice)) return new Ok<>(input.substring(0, input.length() - slice.length()));
+		return temp();
 	}
-	Optional<Tuple<String, String>> split(String input, Locator locator){
-		return locator.locate(input).map(auto temp(){});
+	Result<Tuple<String, String>, CompileError> split(String input, Locator locator){
+		return auto temp(){}(auto temp(){}(temp()));
 	}
 };

@@ -8,10 +8,10 @@ struct State {
 	int depth;
 	StringBuilder buffer;
 	public State(List<String> segments, StringBuilder buffer, int depth, Deque<Character> queue){
-		this.segments = from;
-		this.buffer = from;
-		this.depth = from;
-		this.queue = from;
+		= segments;
+		= buffer;
+		= depth;
+		= queue;
 	}
 	public State(Deque<Character> queue){
 		this(temp(), temp(), 0, queue);

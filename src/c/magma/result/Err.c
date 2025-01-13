@@ -1,8 +1,9 @@
 #include "temp.h"
+#include "temp.h"
 struct Err<T, X> implements Result<T, X> {
 	X error;
 	public Err(X error){
-		this.error = from;
+		= error;
 	}
 	Result<R, X> mapValue((T => R) mapper){
 		return temp();
@@ -12,5 +13,8 @@ struct Err<T, X> implements Result<T, X> {
 	}
 	Result<R, X> flatMapValue((T => Result<R, X>) mapper){
 		return temp();
+	}
+	Optional<T> findValue(){
+		return Optional.empty();
 	}
 };
