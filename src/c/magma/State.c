@@ -5,8 +5,8 @@
 struct State {
 	List<String> segments;
 	Deque<Character> queue;
-	StringBuilder buffer;
 	int depth;
+	StringBuilder buffer;
 	public State(List<String> segments, StringBuilder buffer, int depth, Deque<Character> queue){
 		this.segments = from;
 		this.buffer = from;
@@ -27,6 +27,7 @@ struct State {
 		return this.depth == 1;
 	}
 	State exit(){
+		if (1) {}
 		this.depth = from;
 		return this;
 	}
@@ -47,5 +48,8 @@ struct State {
 	}
 	Optional<Tuple<State, Character>> appendAndPop(){
 		return pop().map(tuple -> tuple.mergeIntoLeft(State::append));
+	}
+	Optional<Character> peek(){
+		return this.queue.isEmpty() ? Optional.empty() : Optional.of(this.queue.peek());
 	}
 };

@@ -8,8 +8,8 @@ import java.util.Optional;
 public class State {
     public final List<String> segments;
     public final Deque<Character> queue;
-    private StringBuilder buffer;
     public int depth;
+    private StringBuilder buffer;
 
     public State(List<String> segments, StringBuilder buffer, int depth, Deque<Character> queue) {
         this.segments = segments;
@@ -36,6 +36,10 @@ public class State {
     }
 
     State exit() {
+        if (this.depth == 0) {
+            Results.writeErr("Depth cannot be negative.", "", "");
+        }
+
         this.depth = this.depth - 1;
         return this;
     }
@@ -64,5 +68,9 @@ public class State {
 
     Optional<Tuple<State, Character>> appendAndPop() {
         return pop().map(tuple -> tuple.mergeIntoLeft(State::append));
+    }
+
+    public Optional<Character> peek() {
+        return this.queue.isEmpty() ? Optional.empty() : Optional.of(this.queue.peek());
     }
 }

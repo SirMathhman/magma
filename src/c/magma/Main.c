@@ -15,7 +15,6 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
-#include "temp.h"
 struct Main {
 	Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
 	Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
@@ -61,7 +60,7 @@ struct Main {
 		while (1) {}
 		auto segments = state.advance().segments;
 		if (1) {}
-		return writeError(System.err, "Invalid depth '" + state.depth + "'", root, segments);
+		return Results.writeErr("Invalid depth '" + state.depth + "'", root, segments);
 	}
 	State splitAtChar(State state, Character c, ((State, Character) => State) other){
 		return splitSingleQuotes(state, c).or(() -> splitDoubleQuotes(state, c)).orElseGet(() -> other.apply(state, c));
@@ -108,16 +107,11 @@ struct Main {
 		return compileToStruct("class", rootSegment).or(() -> compileToStruct("record", rootSegment)).or(() -> compileToStruct("interface", rootSegment)).orElseGet(() -> invalidate("root segment", rootSegment));
 	}
 	String invalidate(String type, String rootSegment){
-		return writeError(System.err, "Invalid " + type, rootSegment, rootSegment);
-	}
-	T writeError(PrintStream stream, String message, String rootSegment, T value){
-		stream.println(message + ": " + rootSegment);
-		return value;
+		return Results.writeErr("Invalid " + type, rootSegment, rootSegment);
 	}
 	Optional<String> compileToStruct(String keyword, String rootSegment){
 		return split(rootSegment, temp()).flatMap(tuple -> {
-            return split(tuple.right(), temp()).flatMap(tuple0 -> {
-                return truncateRight(tuple0.right().strip(), "}").map(content -> {
+            return split(tuple.right(), temp(), "}").map(content -> {
                     final var outputContent = compileAndMerge(slicesOf(Main::statementChars, content), Main::compileStructSegment, StringBuilder::append);
                     return "struct " + tuple0.left().strip() + " {" + outputContent + "\n};";
                 });
@@ -151,16 +145,14 @@ struct Main {
 		return type.equals(match) ? Optional.of(output) : Optional.empty();
 	}
 	Optional<String> writeDebug(String type){
-		writeError(System.out, "Invalid type", type, type);
+		Results.write(System.out, "Invalid type", type, type);
 		return Optional.empty();
 	}
 	Optional<String> compileArray(String type){
 		return truncateRight(type, "[]").map(inner -> compileType(inner).orElse("") + "[]");
 	}
 	Optional<String> compileGeneric(String type){
-		return truncateRight(type, ">").flatMap(inner -> split(inner, temp()).map(tuple -> {
-            final var caller = tuple.left();
-            final var segments = slicesOf(Main::valueStrings, tuple.right());
+		return truncateRight(type, ">").flatMap(inner -> split(inner, temp(), tuple.right());
             final var compiledSegments = compileSegments(segments, type1 -> compileType(type1).orElse(""));
 
             if (caller.equals("Function") && compiledSegments.size() == 2) {
@@ -189,6 +181,7 @@ struct Main {
 		auto appended = state.append(c);
 		if (1) {}
 		if (1) {}
+		if (1) {}
 		return appended;
 	}
 	Optional<String> compileFilter(Predicate<String> filter, String type){
@@ -208,7 +201,12 @@ struct Main {
             final var beforeContent = tuple.left().strip();
             final var maybeContent = tuple.right().strip();
 
-            return split(beforeContent, temp());
+            return split(beforeContent, temp(), tuple1.right()), segment -> compileDefinition(segment).orElseGet(() -> invalidate("definition", segment)), Main::mergeValues);
+
+                    return "\n\t" + definition + "(" + compiledParams + ")" + outputContent;
+                });
+            });
+        });
 	}
 	Optional<String> compileContent(String maybeContent){
 		return truncateLeft(maybeContent, "{").flatMap(inner -> truncateRight(inner, "}").map(inner0 -> "{" + compileAndMerge(slicesOf(Main::statementChars, inner0), statement -> compileStatement(statement, 2), StringBuilder::append) + "\n\t}"));
@@ -250,9 +248,7 @@ struct Main {
 	}
 	Optional<String> compileAssignment(String statement, int depth){
 		return truncateRight(statement, ";").flatMap(inner -> {
-            return split(inner, temp()).map(inner0 -> {
-                final var destination = compileValue(inner0.left());
-                return generateStatement(depth, destination + " = from");
+            return split(inner, temp(), destination + " = from");
             });
         });
 	}
@@ -281,10 +277,7 @@ struct Main {
 	}
 	Optional<String> compileInitialization(String structSegment, int depth){
 		return truncateRight(structSegment, ";").flatMap(inner -> {
-            return split(inner, temp()).flatMap(tuple -> {
-                return compileDefinition(tuple.left().strip()).map(definition -> {
-                    final var value = compileValue(tuple.right().strip());
-                    return generateStatement(depth, definition + " = " + value);
+            return split(inner, temp(), definition + " = " + value);
                 });
             });
         });

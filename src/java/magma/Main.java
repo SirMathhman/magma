@@ -7,7 +7,6 @@ import magma.locate.Locator;
 import magma.locate.TypeLocator;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -114,7 +113,7 @@ public class Main {
 
         final var segments = state.advance().segments;
         if (state.isLevel()) return segments;
-        return writeError(System.err, "Invalid depth '" + state.depth + "'", root, segments);
+        return Results.writeErr("Invalid depth '" + state.depth + "'", root, segments);
     }
 
     private static State splitAtChar(State state, Character c, BiFunction<State, Character, State> other) {
@@ -187,12 +186,7 @@ public class Main {
     }
 
     private static String invalidate(String type, String rootSegment) {
-        return writeError(System.err, "Invalid " + type, rootSegment, rootSegment);
-    }
-
-    private static <T> T writeError(PrintStream stream, String message, String rootSegment, T value) {
-        stream.println(message + ": " + rootSegment);
-        return value;
+        return Results.writeErr("Invalid " + type, rootSegment, rootSegment);
     }
 
     private static Optional<String> compileToStruct(String keyword, String rootSegment) {
@@ -245,7 +239,7 @@ public class Main {
     }
 
     private static Optional<String> writeDebug(String type) {
-        writeError(System.out, "Invalid type", type, type);
+        Results.write(System.out, "Invalid type", type, type);
         return Optional.empty();
     }
 
@@ -286,6 +280,15 @@ public class Main {
         if (c == ',' && state.isLevel()) return state.advance();
 
         final var appended = state.append(c);
+        if(c == '-') {
+            final var peeked = appended.peek();
+            if(peeked.isPresent()) {
+                if(peeked.get() == '>') {
+                    return appended.appendFromQueue().orElse(appended);
+                }
+            }
+        }
+
         if (c == '<') return appended.enter();
         if (c == '>') return appended.exit();
         return appended;
