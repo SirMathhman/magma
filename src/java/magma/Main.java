@@ -339,7 +339,7 @@ public class Main {
                 .or(() -> compileCondition(statement, "while"))
                 .or(() -> compileElse(statement))
                 .or(() -> compileInitialization(statement, depth))
-                .or(() -> compileInvocation(statement, depth))
+                .or(() -> compileInvocationStatement(statement, depth))
                 .or(() -> compileDefinitionStatement(statement, depth))
                 .or(() -> compileAssignment(statement, depth))
                 .orElseGet(() -> invalidate("statement", statement));
@@ -353,9 +353,13 @@ public class Main {
         return truncateLeft(statement, prefix).map(inner -> "\n\t\t" + prefix + " (1) {}");
     }
 
-    private static Optional<String> compileInvocation(String statement, int depth) {
-        return split(statement.strip(), new FirstLocator("(")).flatMap(inner -> truncateRight(inner.right(), ");").map(inner0 -> {
-            return generateStatement(depth, "temp()");
+    private static Optional<String> compileInvocationStatement(String input, int depth) {
+        return compileInvocation(input).map(output -> generateStatement(depth, output));
+    }
+
+    private static Optional<String> compileInvocation(String input) {
+        return split(input.strip(), new FirstLocator("(")).flatMap(inner -> truncateRight(inner.right(), ");").map(inner0 -> {
+            return "temp()";
         }));
     }
 
@@ -381,6 +385,7 @@ public class Main {
     private static String compileValue(String value) {
         return compileDataAccess(value)
                 .or(() -> compileSymbol(value))
+                .or(() -> compileInvocation(value))
                 .orElseGet(() -> invalidate("value", value));
     }
 

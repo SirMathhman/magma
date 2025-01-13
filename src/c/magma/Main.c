@@ -169,7 +169,10 @@ struct Main {
 	Optional<String> compileCondition(String statement, String prefix){
 		return temp;
 	}
-	Optional<String> compileInvocation(String statement, int depth){
+	Optional<String> compileInvocationStatement(String input, int depth){
+		return temp;
+	}
+	Optional<String> compileInvocation(String input){
 		return temp;
 	}
 	Optional<String> compileReturn(String statement, int depth){
