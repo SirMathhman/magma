@@ -1,18 +1,13 @@
 #include "temp.h"
 struct Err<T, X> implements Result<T, X> {
 	int value;
-	void temp(){this.error = error;}
-
-    @Override
-    public <R> Result<R, X> mapValue(Function<T, R> mapper) {
-        return new Err<>(this.error);}
-
-    @Override
-    public <R> R match(Function<T, R> onOk, Function<X, R> onErr) {
-        return onErr.apply(this.error);}
-
-    @Override
-    public <R> Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper) {
-        return new Err<>(this.error);
+	void temp(){
+	to = from;
+	}
+	void temp(){return new Err<>(this.error);
+	}
+	void temp(){return onErr.apply(this.error);
+	}
+	void temp(){return new Err<>(this.error);
 	}
 };

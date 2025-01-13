@@ -60,6 +60,10 @@ public class Main {
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else if (c == '}' && depth == 1) {
+                depth--;
+                advance(buffer, segments);
+                buffer = new StringBuilder();
             } else {
                 if (c == '{') depth++;
                 if (c == '}') depth--;

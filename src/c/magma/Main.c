@@ -10,57 +10,52 @@
 struct Main {
 	int value = 0;
 	int value = 0;
-	void temp(){JavaFiles.walk(SOURCE_DIRECTORY).match(Main::compileFiles, Optional::of).ifPresent(Throwable::printStackTrace);}
-
-    private static Optional<IOException> compileFiles(List<Path> files) {
-        return files.stream()
+	void temp(){JavaFiles.walk(SOURCE_DIRECTORY).match(Main::compileFiles, Optional::of).ifPresent(Throwable::printStackTrace);
+	}
+	void temp(){return files.stream()
                 .filter(Files::isRegularFile)
                 .filter(file -> file.toString().endsWith(".java"))
                 .map(Main::compileSource)
                 .flatMap(Optional::stream)
-                .findFirst();}
+                .findFirst();
+	}
+	void temp(){
+	to = from;
+	to = from;
+	to = from;
+	to = from;
+	to = from;
+	to = from;
+	to = from;
+	to = from;).match(value -> value, Optional::of);
+	}
+	void temp(){return splitAndCompile(root, Main::compileRootSegment);
+	}
+	void temp(){
+	to = from;
+	to = from;
+	to = from;
+	to = from;i < root.length();
+	to = from;
+	to = from;
+	to = from;
+	}
+	int value;
+	int value = 0;
+	void temp(){output.append(compiler.apply(segment.strip()));
+	}
+	int value;
+};private static String compileRootSegment(String rootSegment) {
+        if (rootSegment.startsWith("package")) return "";
+        if (rootSegment.startsWith("import")) return "#include \"temp.h\"\n";
 
-    private static Optional<IOException> compileSource(Path source) {
-        final var relativized = SOURCE_DIRECTORY.relativize(source);final var parent = relativized.getParent();final var name = relativized.getFileName().toString();final var nameWithoutExt = name.substring(0, name.indexOf('.'));final var targetParent = TARGET_DIRECTORY.resolve(parent);if (!Files.exists(targetParent)) {
-            final var directoryError = JavaFiles.createDirectories(targetParent);
-            if (directoryError.isPresent()) return directoryError;
-        }
-
-        final var target = targetParent.resolve(nameWithoutExt + ".c");return JavaFiles.readSafe(source).mapValue(input -> {
-            final var output = compileRoot(input);
-            return JavaFiles.writeSafe(target, output);
-        }).match(value -> value, Optional::of);}
-
-    private static String compileRoot(String root) {
-        return splitAndCompile(root, Main::compileRootSegment);}
-
-    private static String splitAndCompile(String root, Function<String, String> compiler) {
-        var segments = new ArrayList<String>();var buffer = new StringBuilder();var depth = 0;for (int i = 0;i < root.length();i++) {
-            var c = root.charAt(i);
-            buffer.append(c);
-            if (c == ';' && depth == 0) {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            } else {
-                if (c == '{') depth++;
-                if (c == '}') depth--;
-            }
-        }
-        advance(buffer, segments);final var output = new StringBuilder();for (String segment : segments) {
-            output.append(compiler.apply(segment.strip()));
-        }
-
-        return output.toString();}
-
-    private static String compileRootSegment(String rootSegment) {
-        if (rootSegment.startsWith("package")) return "";if (rootSegment.startsWith("import")) return "#include \"temp.h\"\n";return compileToStruct("class", rootSegment)
+        return compileToStruct("class", rootSegment)
                 .or(() -> compileToStruct("record", rootSegment))
-                .orElseGet(() -> invalidate("root segment", rootSegment));}
-
-    private static String invalidate(String type, String rootSegment) {
-        System.err.println("Invalid " + type + ": " + rootSegment);return rootSegment;}
-
-    private static Optional<String> compileToStruct(String keyword, String rootSegment) {
+                .orElseGet(() -> invalidate("root segment", rootSegment));
+    }private static String invalidate(String type, String rootSegment) {
+        System.err.println("Invalid " + type + ": " + rootSegment);
+        return rootSegment;
+    }private static Optional<String> compileToStruct(String keyword, String rootSegment) {
         return split(rootSegment, keyword).flatMap(tuple -> {
             return split(tuple.right(), "{").flatMap(tuple0 -> {
                 return truncateRight(tuple0.right().strip(), "}").map(content -> {
@@ -68,47 +63,44 @@ struct Main {
                     return "struct " + tuple0.left().strip() + " {" + outputContent + "\n};";
                 });
             });
-        });}
-
-    private static String compileStructSegment(String structSegment) {
+        });
+    }private static String compileStructSegment(String structSegment) {
         return compileInitialization(structSegment)
                 .or(() -> compileDefinition(structSegment))
                 .or(() -> compileMethod(structSegment))
-                .orElseGet(() -> invalidate("struct segment", structSegment));}
-
-    private static Optional<String> compileDefinition(String structSegment) {
-        return truncateRight(structSegment, ";").map(inner -> generateStatement(generateDefinition()));}
-
-    private static String generateDefinition() {
-        return "int value";}
-
-    private static String generateStatement(String content) {
-        return "\n\t" + content + ";";}
-
-    private static Optional<String> compileMethod(String structSegment) {
+                .orElseGet(() -> invalidate("struct segment", structSegment));
+    }private static Optional<String> compileDefinition(String structSegment) {
+        return truncateRight(structSegment, ";").map(inner -> generateStatement(generateDefinition()));
+    }private static String generateDefinition() {
+        return "int value";
+    }private static String generateStatement(String content) {
+        return "\n\t" + content + ";";
+    }private static Optional<String> compileMethod(String structSegment) {
         return truncateRight(structSegment, "}")
                 .flatMap(inner -> split(inner, "{")
                         .map(tuple -> {
                             final var inputContent = tuple.right();
                             final var outputContent = splitAndCompile(inputContent, Main::compileStatement);
                             return "\n\tvoid temp(){" + outputContent + "\n\t}";
-                        }));}
-
-    private static String compileStatement(String statement) {
-        return invalidate("statement", statement);}
-
-    private static Optional<String> compileInitialization(String structSegment) {
+                        }));
+    }private static String compileStatement(String statement) {
+        return compileAssignment(statement).orElseGet(() -> invalidate("statement", statement));
+    }private static Optional<String> compileAssignment(String statement) {
+        return split(statement, "=").map(inner -> generateStatement("to = from"));
+    }private static Optional<String> compileInitialization(String structSegment) {
         return truncateRight(structSegment, ";").flatMap(inner -> {
             return split(inner, "=").map(value -> generateStatement(generateDefinition() + " = 0"));
-        });}
+        });
+    }private static Optional<String> truncateRight(String input, String slice) {
+        if (input.endsWith(slice)) return Optional.of(input.substring(0, input.length() - slice.length()));
+        return Optional.empty();
+    }private static Optional<Tuple<String, String>> split(String input, String slice) {
+        final var index = input.indexOf(slice);
+        if (index == -1) return Optional.empty();
 
-    private static Optional<String> truncateRight(String input, String slice) {
-        if (input.endsWith(slice)) return Optional.of(input.substring(0, input.length() - slice.length()));return Optional.empty();}
-
-    private static Optional<Tuple<String, String>> split(String input, String slice) {
-        final var index = input.indexOf(slice);if (index == -1) return Optional.empty();final var left = input.substring(0, index);final var right = input.substring(index + slice.length());return Optional.of(new Tuple<>(left, right));}
-
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        final var left = input.substring(0, index);
+        final var right = input.substring(index + slice.length());
+        return Optional.of(new Tuple<>(left, right));
+    }private static void advance(StringBuilder buffer, ArrayList<String> segments) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
-	}
-};
+    }}
