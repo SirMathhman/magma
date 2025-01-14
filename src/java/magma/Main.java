@@ -80,12 +80,13 @@ public class Main {
         final var stripped = input.strip();
         return compileToStruct("class", stripped)
                 .or(() -> compileToStruct("record", stripped))
+                .or(() -> compileToStruct("interface", stripped))
                 .orElseThrow(() -> new CompileException("Unknown root", stripped));
     }
 
     private static Optional<String> compileToStruct(String keyword, String input) {
-        return split(input, keyword).flatMap(tuple -> {
-            return split(tuple.right(), "{").flatMap(tuple1 -> {
+        return split(input, new FirstLocator(keyword)).flatMap(tuple -> {
+            return split(tuple.right(), new FirstLocator("{")).flatMap(tuple1 -> {
                 final var name = tuple1.left().strip();
                 return truncateRight(tuple1.right(), "}").map(content -> {
                     final var segments = split(content);
@@ -125,8 +126,35 @@ public class Main {
     }
 
     private static String compileToStructMember(String structMember) {
-        System.err.println("Invalid struct member: " + structMember);
-        return structMember;
+        return compileInitialization(structMember).orElseGet(() -> {
+            System.err.println("Invalid struct member: " + structMember);
+            return "";
+        });
+    }
+
+    private static Optional<String> compileInitialization(String structMember) {
+        return split(structMember, new FirstLocator("=")).flatMap(tuple -> {
+            final var stripped = tuple.left().strip();
+            return split(stripped, new LastLocator(" ")).flatMap(tuple0 -> {
+                return split(tuple0.left().strip(), new LastLocator(" ")).flatMap(tuple1 -> {
+                    final var right = tuple0.right();
+                    if (isSymbol(right)) {
+                        return Optional.of("\n\t" + tuple1.right() + " " + right + ";");
+                    } else {
+                        return Optional.empty();
+                    }
+                });
+            });
+        });
+    }
+
+    private static boolean isSymbol(String right) {
+        for (int i = 0; i < right.length(); i++) {
+            var c = right.charAt(i);
+            if (Character.isLetter(c)) continue;
+            return false;
+        }
+        return true;
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
@@ -138,12 +166,12 @@ public class Main {
         return Optional.empty();
     }
 
-    private static Optional<Tuple<String, String>> split(String input, String slice) {
-        final var index = input.indexOf(slice);
-        if (index == -1) return Optional.empty();
-
-        final var left = input.substring(0, index);
-        final var right = input.substring(index + slice.length());
-        return Optional.of(new Tuple<>(left, right));
+    private static Optional<Tuple<String, String>> split(String input, Locator locator) {
+        return locator.locate(input).map(index -> {
+            final var left = input.substring(0, index);
+            final var right = input.substring(index + locator.length());
+            return new Tuple<>(left, right);
+        });
     }
+
 }
