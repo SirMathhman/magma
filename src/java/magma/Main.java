@@ -85,18 +85,19 @@ public class Main {
         if(input.startsWith("enum")) {
             final var content = input.substring("enum".length()).strip();
             final var start = content.indexOf("{");
-            if(start != -1 && content.endsWith("}")) {
-                final var values = Arrays.stream(content.substring(start + 1, content.length() - 1).split(","))
-                        .map(String::strip)
-                        .filter(value -> !value.isEmpty())
-                        .collect(Collectors.toList());
 
-                var buffer = new StringBuilder();
-                for (int i = 0; i < values.size(); i++) {
-                    buffer.append("unsigned int " + values.get(i) + " = " + i + ";\n");
+            if (start != -1) {
+                final var name = content.substring(0, start).strip();
+                final var substring = content.substring(start + 1);
+                if (substring.endsWith("}")) {
+                    final var values = Arrays.stream(substring.substring(0, substring.length() - 1).split(","))
+                            .map(String::strip)
+                            .filter(value -> !value.isEmpty())
+                            .map(inner -> "\n\t" + inner)
+                            .collect(Collectors.joining());
+
+                    return Optional.of("enum " + name + " {" + values + "\n};\n");
                 }
-
-                return Optional.of(buffer.toString());
             }
         }
 
@@ -133,6 +134,6 @@ public class Main {
     }
 
     private static String compileStructMember(String member) {
-        return member;
+        return "\n\t" + member;
     }
 }

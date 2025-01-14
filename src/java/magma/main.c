@@ -1,8 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
-unsigned int Ok = 0;
-unsigned int Err = 1;
+enum Type {
+	Ok
+	Err
+};
 struct Result {
+	enum Type type;
+	
 };
 int main() {
     return 0;
