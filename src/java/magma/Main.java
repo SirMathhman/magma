@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -15,7 +14,7 @@ public class Main {
             final var source = Paths.get(".", "src", "java", "magma", "Main.java");
             final var input = Files.readString(source);
             final var target = source.resolveSibling("Main.c");
-            final var output = compile(input);
+            final var output = Results.unwrap(compile(input));
             Files.writeString(target, output);
         } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
@@ -23,16 +22,19 @@ public class Main {
         }
     }
 
-    private static String compile(String root) throws CompileException {
+    private static Result<String, CompileException> compile(String root) {
         final var segments = split(root);
-        final var output = new StringBuilder();
+        Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
-            output.append(compileRootSegment(segment.strip()));
+            output = output.and(() -> compileRootSegment(segment.strip())).mapValue(inner -> {
+                return inner.left().append(inner.right());
+            });
         }
-        return output.toString();
+
+        return output.mapValue(StringBuilder::toString);
     }
 
-    private static ArrayList<String> split(String root) {
+    private static List<String> split(String root) {
         final var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -51,48 +53,50 @@ public class Main {
         return segments;
     }
 
-    private static String compileRootSegment(String rootSegment) throws CompileException {
-        if (rootSegment.startsWith("package ")) return "";
-        if (rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
+    private static Result<String, CompileException> compileRootSegment(String rootSegment) {
+        if (rootSegment.startsWith("package ")) return new Ok<>("");
+        if (rootSegment.startsWith("import ")) return new Ok<>("#include \"temp.h\"\n");
 
-        return compileClass(rootSegment).orElseThrow(() -> new CompileException("Unknown root segment", rootSegment));
+        final var result = compileClass(rootSegment);
+        if (result.isValid()) return result;
+        return new Err<>(new CompileException("Unknown root segment", rootSegment));
     }
 
-    private static Optional<String> compileClass(String rootSegment) {
-        return split(rootSegment, "class ", modifiers -> Optional.of(""), afterKeyword -> {
+    private static Result<String, CompileException> compileClass(String rootSegment) {
+        return split(rootSegment, "class ", modifiers -> new Ok<>(""), afterKeyword -> {
             return split(afterKeyword, "{", name -> {
-                return Optional.of(name.strip());
+                return new Ok<>(name.strip());
             }, withEnd -> {
                 return truncateRight(withEnd.strip(), "}", content -> {
-                    return Optional.of("");
+                    return new Ok<>("");
                 });
             }, (left, _) -> left + " {}");
         }, (left, right) -> left + "struct " + right);
     }
 
-    private static Optional<String> truncateRight(String input, String slice, Function<String, Optional<String>> mapper) {
+    private static Result<String, CompileException> truncateRight(String input, String slice, Function<String, Result<String, CompileException>> mapper) {
         if (input.endsWith(slice)) {
             return mapper.apply(input.substring(0, input.length() - slice.length()));
         }
-        return Optional.empty();
+        return new Err<>(new CompileException("Suffix '" + slice + "' not present", input));
     }
 
-    private static Optional<String> split(
-            String rootSegment,
+    private static Result<String, CompileException> split(
+            String input,
             String infix,
-            Function<String, Optional<String>> inLeft,
-            Function<String, Optional<String>> inRight,
+            Function<String, Result<String, CompileException>> inLeft,
+            Function<String, Result<String, CompileException>> inRight,
             BiFunction<String, String, String> merge
     ) {
-        final var index = rootSegment.indexOf(infix);
-        if (index == -1) return Optional.empty();
+        final var index = input.indexOf(infix);
+        if (index == -1) return new Err<>(new CompileException("Infix '" + infix + "' not present", input));
 
-        final var leftSlice = rootSegment.substring(0, index);
-        final var rightSlice = rootSegment.substring(index + infix.length());
+        final var leftSlice = input.substring(0, index);
+        final var rightSlice = input.substring(index + infix.length());
 
         return inLeft.apply(leftSlice)
-                .flatMap(left -> inRight.apply(rightSlice)
-                        .map(right -> merge.apply(left, right)));
+                .flatMapValue(left -> inRight.apply(rightSlice)
+                        .mapValue(right -> merge.apply(left, right)));
     }
 
     private static void advance(List<String> segments, StringBuilder buffer) {
