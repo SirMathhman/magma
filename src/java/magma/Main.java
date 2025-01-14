@@ -35,6 +35,10 @@ public class Main {
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else if (c == '}' && depth == 1) {
+                depth--;
+                advance(buffer, segments);
+                buffer = new StringBuilder();
             } else if (c == '{') depth++;
             else if (c == '}') depth--;
         }
@@ -56,6 +60,11 @@ public class Main {
         if (input.startsWith("import ") && input.endsWith(";")) {
             return "#include <" + input.substring("import ".length(), input.length() - 1) + ".h>\n";
         }
+
+        if (input.startsWith("namespace ")) {
+            return "";
+        }
+
         return input;
     }
 }
