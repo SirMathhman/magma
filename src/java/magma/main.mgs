@@ -3,7 +3,7 @@ import stdio;
 
 namespace Result {
     struct Result {
-    };
+    }
 }
 
 int main() {
