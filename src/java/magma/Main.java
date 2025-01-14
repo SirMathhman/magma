@@ -63,9 +63,18 @@ public class Main {
             return split(afterKeyword, "{", name -> {
                 return Optional.of(name.strip());
             }, withEnd -> {
-                return Optional.of("");
+                return truncateRight(withEnd.strip(), "}", content -> {
+                    return Optional.of("");
+                });
             }, (left, _) -> left + " {}");
         }, (left, right) -> left + "struct " + right);
+    }
+
+    private static Optional<String> truncateRight(String input, String slice, Function<String, Optional<String>> mapper) {
+        if (input.endsWith(slice)) {
+            return mapper.apply(input.substring(0, input.length() - slice.length()));
+        }
+        return Optional.empty();
     }
 
     private static Optional<String> split(
