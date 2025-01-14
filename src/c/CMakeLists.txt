@@ -4,4 +4,4 @@ project(Magma C)
 
 set(CMAKE_C_COMPILER clang)
 
-add_executable(Magma ./magma/Main.h ./magma/Main.c)
+add_executable(Magma ./magma/Main.h ./magma/Main.c ./magma/Tuple.h ./magma/Tuple.c)

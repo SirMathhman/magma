@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -74,15 +75,24 @@ public class Main {
     }
 
     private static String compile(String input) {
-        final var classIndex = input.indexOf("class");
-        if (classIndex != -1) {
-            final var afterKeyword = input.substring(classIndex + "class".length());
-            final var contentStart = afterKeyword.indexOf('{');
-            if (contentStart != -1) {
-                final var name = afterKeyword.substring(0, contentStart).strip();
+        return compileClass(input).orElse(input);
+    }
+
+    private static Optional<String> compileClass(String input) {
+        return split(input, "class").flatMap(tuple -> {
+            return split(tuple.right(), "{").map(tuple1 -> {
+                final var name = tuple1.left().strip();
                 return "struct " + name + " {};";
-            }
-        }
-        return "";
+            });
+        });
+    }
+
+    private static Optional<Tuple<String, String>> split(String input, String slice) {
+        final var index = input.indexOf(slice);
+        if (index == -1) return Optional.empty();
+
+        final var left = input.substring(0, index);
+        final var right = input.substring(index + slice.length());
+        return Optional.of(new Tuple<>(left, right));
     }
 }
