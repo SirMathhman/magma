@@ -60,8 +60,8 @@ public class Main {
                     .map(TARGET_DIRECTORY::relativize)
                     .map(Path::toString)
                     .map(path -> path.replaceAll("\\\\", "/"))
-                    .map(path -> "./" + path)
-                    .collect(Collectors.joining("\n\t"));
+                    .map(path -> "\n\t./" + path)
+                    .collect(Collectors.joining());
 
             Files.writeString(build, "cmake_minimum_required(VERSION 3.10)\n" +
                                      "\n" +
@@ -69,7 +69,7 @@ public class Main {
                                      "\n" +
                                      "set(CMAKE_C_COMPILER clang)\n" +
                                      "\n" +
-                                     "add_executable(Magma " + joined + ")\n");
+                                     "add_executable(Magma " + joined + "\n)\n");
         } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
