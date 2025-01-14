@@ -30,17 +30,21 @@ public class Main {
                 }
 
                 final var parentDirectory = TARGET_DIRECTORY.resolve(parent);
-
                 if (!Files.exists(parentDirectory)) Files.createDirectories(parentDirectory);
 
                 final var name = source.getFileName().toString();
                 final var nameWithoutExt = name.substring(0, name.indexOf('.'));
 
-                final var header = parentDirectory.resolve(nameWithoutExt + ".h");
+                final var input = Files.readString(source);
+                final var content = input.contains("class") ? "struct Temp {};" : "";
+
                 final var copy = new ArrayList<>(namespace);
                 copy.add(nameWithoutExt + "_h");
                 final var joined = String.join("_", copy);
-                Files.writeString(header, "#ifndef " + joined + "\n#define " + joined + "\n#endif");
+                final var output = "#ifndef " + joined + "\n#define " + joined + "\n" + content + "\n#endif";
+
+                final var header = parentDirectory.resolve(nameWithoutExt + ".h");
+                Files.writeString(header, output);
                 paths.add(header);
 
                 final var target = parentDirectory.resolve(nameWithoutExt + ".c");
