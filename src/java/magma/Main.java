@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,7 +50,8 @@ public class Main {
                 paths.add(header);
 
                 final var target = parentDirectory.resolve(nameWithoutExt + ".c");
-                Files.writeString(target, "#include \"./Main.h\"\nint main(){\n\treturn 0;\n}");
+                final var main = (namespace.equals(List.of("magma")) && nameWithoutExt.equals("Main")) ? "int main(){\n\treturn 0;\n}" : "";
+                Files.writeString(target, "#include \"./Main.h\"\n" + main);
                 paths.add(target);
             }
 
@@ -59,7 +61,7 @@ public class Main {
                     .map(Path::toString)
                     .map(path -> path.replaceAll("\\\\", "/"))
                     .map(path -> "./" + path)
-                    .collect(Collectors.joining(" "));
+                    .collect(Collectors.joining("\n\t"));
 
             Files.writeString(build, "cmake_minimum_required(VERSION 3.10)\n" +
                                      "\n" +
@@ -68,21 +70,23 @@ public class Main {
                                      "set(CMAKE_C_COMPILER clang)\n" +
                                      "\n" +
                                      "add_executable(Magma " + joined + ")\n");
-        } catch (IOException e) {
+        } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
     }
 
-    private static String compile(String input) {
-        return compileClass(input).orElse(input);
+    private static String compile(String input) throws CompileException {
+        return compileToStruct("class", input)
+                .or(() -> compileToStruct("record", input))
+                .orElseThrow(() -> new CompileException("Unknown root", input));
     }
 
-    private static Optional<String> compileClass(String input) {
-        return split(input, "class").flatMap(tuple -> {
+    private static Optional<String> compileToStruct(String keyword, String input) {
+        return split(input, keyword).flatMap(tuple -> {
             return split(tuple.right(), "{").map(tuple1 -> {
                 final var name = tuple1.left().strip();
-                return "struct " + name + " {};";
+                return "struct " + name + " {\n\tint value;\n};";
             });
         });
     }

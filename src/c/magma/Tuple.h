@@ -1,8 +1,6 @@
 #ifndef magma_Tuple_h
 #define magma_Tuple_h
-package magma;
-
-public record Tuple<A, B>(A left, B right) {
-}
-
+struct Tuple<A, B>(A left, B right) {
+	int value;
+};
 #endif
