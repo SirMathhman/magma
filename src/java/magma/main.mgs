@@ -7,8 +7,14 @@ namespace Result {
         Err
     }
 
+    union Value {
+        FILE* okValue;
+        errno_t errValue;
+    }
+
     struct Result {
         Type type;
+        Value value;
     }
 }
 

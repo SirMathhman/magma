@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 public class Main {
     private static final Deque<String> namespace = new LinkedList<>();
     private static final Map<String, List<String>> enums = new HashMap<>();
+    private static final Map<String, List<String>> unions = new HashMap<>();
+    private static final Map<String, List<String>> structs = new HashMap<>();
 
     public static void main(String[] args) {
         try {
@@ -83,7 +85,8 @@ public class Main {
         }
 
         return compileNamespace(input)
-                .or(() -> compileStruct(input))
+                .or(() -> compileTaggedBlock(input, "struct ", structs))
+                .or(() -> compileTaggedBlock(input, "union ", unions))
                 .or(() -> compileEnum(input))
                 .orElse(input);
     }
@@ -94,10 +97,6 @@ public class Main {
             final var start = content.indexOf("{");
 
             if (start != -1) {
-                final var name = content.substring(0, start).strip();
-                final var qualifiedName = new ArrayList<>(namespace);
-                qualifiedName.add(name);
-                final var joinedName = String.join("_", qualifiedName);
 
                 final var substring = content.substring(start + 1);
                 if (substring.endsWith("}")) {
@@ -107,7 +106,8 @@ public class Main {
                             .map(inner -> "\n\t" + inner)
                             .collect(Collectors.joining(","));
 
-                    enums.put(name, qualifiedName);
+                    final var name = content.substring(0, start).strip();
+                    final var joinedName = define(name, enums);
                     return Optional.of("enum " + joinedName + " {" + values + "\n};\n");
                 }
             }
@@ -116,19 +116,28 @@ public class Main {
         return Optional.empty();
     }
 
-    private static Optional<String> compileStruct(String input) {
-        if (!input.startsWith("struct ")) return Optional.empty();
+    private static String define(String name, Map<String, List<String>> map) {
+        final var qualifiedName1 = new ArrayList<>(namespace);
+        qualifiedName1.add(name);
+
+        map.put(name, qualifiedName1);
+        return joinType(qualifiedName1);
+    }
+
+    private static Optional<String> compileTaggedBlock(String input, String prefix, Map<String, List<String>> map) {
+        if (!input.startsWith(prefix)) return Optional.empty();
 
         final var contentStart = input.indexOf('{');
         if (contentStart == -1) return Optional.empty();
 
-        final var name = input.substring("struct ".length(), contentStart).strip();
+        final var name = input.substring(prefix.length(), contentStart).strip();
         final var withEnd = input.substring(contentStart + 1);
         if (!withEnd.endsWith("}")) return Optional.empty();
 
+        final var joinedName = define(name, map);
         final var content = withEnd.substring(0, withEnd.length() - 1);
         final var outputContent = splitAndCompile(content, Main::compileStructMember);
-        return Optional.of("struct " + name + " {" + outputContent + "\n};\n");
+        return Optional.of(prefix + joinedName + " {" + outputContent + "\n};\n");
     }
 
     private static Optional<String> compileNamespace(String input) {
@@ -162,12 +171,30 @@ public class Main {
         if (separator == -1) return Optional.empty();
 
         final var oldType = member1.substring(0, separator).strip();
+
         final var name = member1.substring(separator + 1).strip();
+        final var newType = resolveType(oldType);
 
-        final var newType = enums.containsKey(oldType)
-                ? String.join("_", enums.get(oldType))
-                : oldType;
+        return Optional.of("\n\t" + newType + " " + name + ";");
+    }
 
-        return Optional.of("\n\tenum " + newType + " " + name + ";");
+    private static String resolveType(String type) {
+        return compileEnumType(type, "enum ", enums)
+                .or(() -> compileEnumType(type, "union ", unions))
+                .or(() -> compileEnumType(type, "struct ", structs))
+                .orElse(type);
+    }
+
+    private static Optional<String> compileEnumType(String type, String prefix, Map<String, List<String>> map) {
+        if (map.containsKey(type)) return Optional.of(prefix + joinType(type, map));
+        return Optional.empty();
+    }
+
+    private static String joinType(String oldType, Map<String, List<String>> map) {
+        return joinType(map.get(oldType));
+    }
+
+    private static String joinType(List<String> elements) {
+        return String.join("_", elements);
     }
 }
