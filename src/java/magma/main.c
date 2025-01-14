@@ -18,6 +18,12 @@ struct Result_Result new_Result_Ok(FILE* value){
 	this.value.okValue = value;
 	return this;
 }
+struct Result_Result new_Result_Err(errno_t error){
+	struct Result_Result this;
+	this.type = Err;
+	this.value.errValue = error;
+	return this;
+}
 int main(){
 	return 0;
 }

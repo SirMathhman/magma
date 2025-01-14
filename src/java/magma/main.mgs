@@ -24,6 +24,13 @@ namespace Result {
             this.value.okValue = value;
             return this;
         }
+
+        Result Err(errno_t error) {
+            Result this;
+            this.type = Err;
+            this.value.errValue = error;
+            return this;
+        }
     }
 }
 
