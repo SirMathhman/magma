@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class Main {
@@ -58,20 +59,31 @@ public class Main {
     }
 
     private static Optional<String> compileClass(String rootSegment) {
-        return split(rootSegment, "class ", tuple -> {
-            return split(tuple.right(), "{", tuple0 -> {
-                return Optional.of("struct " + tuple0.left().strip() + " {\n}");
-            });
-        });
+        return split(rootSegment, "class ", modifiers -> Optional.of(""), afterKeyword -> {
+            return split(afterKeyword, "{", name -> {
+                return Optional.of(name.strip());
+            }, withEnd -> {
+                return Optional.of("");
+            }, (left, _) -> left + " {}");
+        }, (left, right) -> left + "struct " + right);
     }
 
-    private static Optional<String> split(String rootSegment, String infix, Function<Tuple<String, String>, Optional<? extends String>> mapper) {
+    private static Optional<String> split(
+            String rootSegment,
+            String infix,
+            Function<String, Optional<String>> inLeft,
+            Function<String, Optional<String>> inRight,
+            BiFunction<String, String, String> merge
+    ) {
         final var index = rootSegment.indexOf(infix);
         if (index == -1) return Optional.empty();
 
-        final var left = rootSegment.substring(0, index);
-        final var right = rootSegment.substring(index + infix.length());
-        return Optional.of(new Tuple<>(left, right)).flatMap(mapper);
+        final var leftSlice = rootSegment.substring(0, index);
+        final var rightSlice = rootSegment.substring(index + infix.length());
+
+        return inLeft.apply(leftSlice)
+                .flatMap(left -> inRight.apply(rightSlice)
+                        .map(right -> merge.apply(left, right)));
     }
 
     private static void advance(List<String> segments, StringBuilder buffer) {
