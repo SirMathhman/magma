@@ -94,7 +94,7 @@ public class Main {
                             .map(String::strip)
                             .filter(value -> !value.isEmpty())
                             .map(inner -> "\n\t" + inner)
-                            .collect(Collectors.joining());
+                            .collect(Collectors.joining(","));
 
                     return Optional.of("enum " + name + " {" + values + "\n};\n");
                 }
