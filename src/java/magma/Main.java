@@ -23,7 +23,7 @@ public class Main {
         final var segments = split(root);
         final var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootSegment(segment));
+            output.append(compileRootSegment(segment.strip()));
         }
         return output.toString();
     }
@@ -44,7 +44,8 @@ public class Main {
     }
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
-        if(rootSegment.startsWith("package ")) return "";
+        if (rootSegment.startsWith("package ")) return "";
+        if (rootSegment.startsWith("import ")) return "#include \"temp.h\"";
         throw new CompileException("Unknown root segment", rootSegment);
     }
 
