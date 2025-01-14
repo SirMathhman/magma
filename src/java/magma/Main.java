@@ -77,18 +77,65 @@ public class Main {
     }
 
     private static String compile(String input) throws CompileException {
-        return compileToStruct("class", input)
-                .or(() -> compileToStruct("record", input))
-                .orElseThrow(() -> new CompileException("Unknown root", input));
+        final var stripped = input.strip();
+        return compileToStruct("class", stripped)
+                .or(() -> compileToStruct("record", stripped))
+                .orElseThrow(() -> new CompileException("Unknown root", stripped));
     }
 
     private static Optional<String> compileToStruct(String keyword, String input) {
         return split(input, keyword).flatMap(tuple -> {
-            return split(tuple.right(), "{").map(tuple1 -> {
+            return split(tuple.right(), "{").flatMap(tuple1 -> {
                 final var name = tuple1.left().strip();
-                return "struct " + name + " {\n\tint value;\n};";
+                return truncateRight(tuple1.right(), "}").map(content -> {
+                    final var segments = split(content);
+
+                    var output = new StringBuilder();
+                    for (String segment : segments) {
+                        output.append(compileToStructMember(segment));
+                    }
+
+                    return "struct " + name + " {" + output + "\n};";
+                });
             });
         });
+    }
+
+    private static ArrayList<String> split(String content) {
+        var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        var depth = 0;
+        for (int i = 0; i < content.length(); i++) {
+            var c = content.charAt(i);
+            buffer.append(c);
+            if (c == ';' && depth == 0) {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            } else if (c == '}' && depth == 1) {
+                depth--;
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            } else {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
+            }
+        }
+        advance(buffer, segments);
+        return segments;
+    }
+
+    private static String compileToStructMember(String structMember) {
+        System.err.println("Invalid struct member: " + structMember);
+        return structMember;
+    }
+
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
+    }
+
+    private static Optional<String> truncateRight(String input, String slice) {
+        if (input.endsWith(slice)) return Optional.of(input.substring(0, input.length() - slice.length()));
+        return Optional.empty();
     }
 
     private static Optional<Tuple<String, String>> split(String input, String slice) {
