@@ -62,7 +62,13 @@ public class Main {
         }
 
         if (input.startsWith("namespace ")) {
-            return "";
+            final var contentStart = input.indexOf('{');
+            if(contentStart != -1) {
+                final var substring = input.substring(contentStart + 1);
+                if(substring.endsWith("}")) {
+                    return substring.substring(0, substring.length() - 1);
+                }
+            }
         }
 
         return input;
