@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
-
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
 
@@ -19,6 +18,7 @@ public class Main {
                     .filter(path -> path.toString().endsWith(".java"))
                     .collect(Collectors.toSet());
 
+            var paths = new ArrayList<Path>();
             for (Path source : sources) {
                 final var relative = SOURCE_DIRECTORY.relativize(source);
                 System.out.println("Compiling source: " + relative);
@@ -37,14 +37,32 @@ public class Main {
                 final var nameWithoutExt = name.substring(0, name.indexOf('.'));
 
                 final var header = parentDirectory.resolve(nameWithoutExt + ".h");
-                final var copy = new ArrayList<String>(namespace);
+                final var copy = new ArrayList<>(namespace);
                 copy.add(nameWithoutExt + "_h");
                 final var joined = String.join("_", copy);
                 Files.writeString(header, "#ifndef " + joined + "\n#define " + joined + "\n#endif");
+                paths.add(header);
 
                 final var target = parentDirectory.resolve(nameWithoutExt + ".c");
                 Files.writeString(target, "#include \"./Main.h\"");
+                paths.add(target);
             }
+
+            final var build = TARGET_DIRECTORY.resolve("CMakeLists.txt");
+            final var joined = paths.stream()
+                    .map(TARGET_DIRECTORY::relativize)
+                    .map(Path::toString)
+                    .map(path -> path.replaceAll("\\\\", "/"))
+                    .map(path -> "./" + path)
+                    .collect(Collectors.joining(" "));
+
+            Files.writeString(build, "cmake_minimum_required(VERSION 3.10)\n" +
+                                     "\n" +
+                                     "project(MyProject C)\n" +
+                                     "\n" +
+                                     "set(CMAKE_C_COMPILER clang)\n" +
+                                     "\n" +
+                                     "add_executable(my_program " + joined + ")\n");
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
