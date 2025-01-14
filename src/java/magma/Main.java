@@ -36,7 +36,7 @@ public class Main {
                 final var nameWithoutExt = name.substring(0, name.indexOf('.'));
 
                 final var input = Files.readString(source);
-                final var content = input.contains("class") ? "struct Temp {};" : "";
+                final var content = compile(input);
 
                 final var copy = new ArrayList<>(namespace);
                 copy.add(nameWithoutExt + "_h");
@@ -71,5 +71,18 @@ public class Main {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
+    }
+
+    private static String compile(String input) {
+        final var classIndex = input.indexOf("class");
+        if (classIndex != -1) {
+            final var afterKeyword = input.substring(classIndex + "class".length());
+            final var contentStart = afterKeyword.indexOf('{');
+            if (contentStart != -1) {
+                final var name = afterKeyword.substring(0, contentStart).strip();
+                return "struct " + name + " {};";
+            }
+        }
+        return "";
     }
 }
