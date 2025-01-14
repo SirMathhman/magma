@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -74,7 +77,30 @@ public class Main {
 
         return compileNamespace(input)
                 .or(() -> compileStruct(input))
+                .or(() -> compileEnum(input))
                 .orElse(input);
+    }
+
+    private static Optional<? extends String> compileEnum(String input) {
+        if(input.startsWith("enum")) {
+            final var content = input.substring("enum".length()).strip();
+            final var start = content.indexOf("{");
+            if(start != -1 && content.endsWith("}")) {
+                final var values = Arrays.stream(content.substring(start + 1, content.length() - 1).split(","))
+                        .map(String::strip)
+                        .filter(value -> !value.isEmpty())
+                        .collect(Collectors.toList());
+
+                var buffer = new StringBuilder();
+                for (int i = 0; i < values.size(); i++) {
+                    buffer.append("unsigned int " + values.get(i) + " = " + i + ";\n");
+                }
+
+                return Optional.of(buffer.toString());
+            }
+        }
+
+        return Optional.empty();
     }
 
     private static Optional<String> compileStruct(String input) {

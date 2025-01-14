@@ -2,6 +2,11 @@ import stdlib;
 import stdio;
 
 namespace Result {
+    enum Type {
+        Ok,
+        Err
+    }
+
     struct Result {
     }
 }
