@@ -12,6 +12,12 @@ struct Result_Result {
 	enum Result_Type type;
 	union Result_Value value;
 };
-int main() {
-    return 0;
+struct Result_Result new_Result_Ok(FILE* value){
+	struct Result_Result this;
+	this.type = Ok;
+	this.value.okValue = value;
+	return this;
+}
+int main(){
+	return 0;
 }

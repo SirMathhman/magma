@@ -16,6 +16,15 @@ namespace Result {
         Type type;
         Value value;
     }
+
+    namespace new {
+        Result Ok(FILE* value) {
+            Result this;
+            this.type = Ok;
+            this.value.okValue = value;
+            return this;
+        }
+    }
 }
 
 int main() {
