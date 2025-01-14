@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) {
@@ -50,8 +51,26 @@ public class Main {
     private static String compileRootSegment(String rootSegment) throws CompileException {
         if (rootSegment.startsWith("package ")) return "";
         if (rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
-        if (rootSegment.contains("class ")) return "struct Temp {\n}";
-        throw new CompileException("Unknown root segment", rootSegment);
+
+        return compileClass(rootSegment).orElseThrow(() -> new CompileException("Unknown root segment", rootSegment));
+    }
+
+    private static Optional<String> compileClass(String rootSegment) {
+        return split(rootSegment, "class ").flatMap(tuple -> {
+            return split(tuple.right(), "{").map(tuple0 -> {
+                return "struct " + tuple0.left().strip() + " {\n}";
+            });
+        });
+    }
+
+    private static Optional<Tuple<String, String>> split(String input, String infix) {
+        final var index = input.indexOf(infix);
+        if (index == -1) {
+            return Optional.empty();
+        }
+        final var left = input.substring(0, index);
+        final var right = input.substring(index + infix.length());
+        return Optional.of(new Tuple<>(left, right));
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
