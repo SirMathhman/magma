@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,6 +24,11 @@ public class Main {
                 System.out.println("Compiling source: " + relative);
 
                 final var parent = relative.getParent();
+                final var namespace = new ArrayList<String>();
+                for (int i = 0; i < parent.getNameCount(); i++) {
+                    namespace.add(parent.getName(i).toString());
+                }
+
                 final var parentDirectory = TARGET_DIRECTORY.resolve(parent);
 
                 if (!Files.exists(parentDirectory)) Files.createDirectories(parentDirectory);
@@ -31,10 +37,13 @@ public class Main {
                 final var nameWithoutExt = name.substring(0, name.indexOf('.'));
 
                 final var header = parentDirectory.resolve(nameWithoutExt + ".h");
-                Files.writeString(header, "");
+                final var copy = new ArrayList<String>(namespace);
+                copy.add(nameWithoutExt + "_h");
+                final var joined = String.join("_", copy);
+                Files.writeString(header, "#ifndef " + joined + "\n#define " + joined + "\n#endif");
 
                 final var target = parentDirectory.resolve(nameWithoutExt + ".c");
-                Files.writeString(target, "");
+                Files.writeString(target, "#include \"./Main.h\"");
             }
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
