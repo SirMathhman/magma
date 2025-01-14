@@ -62,7 +62,7 @@ public class Main {
                                      "\n" +
                                      "set(CMAKE_C_COMPILER clang)\n" +
                                      "\n" +
-                                     "add_executable(my_program " + joined + ")\n");
+                                     "add_executable(Magma " + joined + ")\n");
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();

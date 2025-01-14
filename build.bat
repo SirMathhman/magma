@@ -1,1 +1,3 @@
-cmake --build ./src/c
+cd ./out
+cmake ../src/c
+cmake --build .
