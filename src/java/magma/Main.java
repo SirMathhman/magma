@@ -44,7 +44,7 @@ public class Main {
                 paths.add(header);
 
                 final var target = parentDirectory.resolve(nameWithoutExt + ".c");
-                Files.writeString(target, "#include \"./Main.h\"");
+                Files.writeString(target, "#include \"./Main.h\"\nint main(){\n\treturn 0;\n}");
                 paths.add(target);
             }
 
