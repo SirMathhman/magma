@@ -1,6 +1,5 @@
-import stdlib;
-import stdio;
-
+#include <stdlib.h>
+#include <stdio.h>
 namespace Result {
 
 }
