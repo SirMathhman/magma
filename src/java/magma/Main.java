@@ -58,7 +58,7 @@ public class Main {
 
             Files.writeString(build, "cmake_minimum_required(VERSION 3.10)\n" +
                                      "\n" +
-                                     "project(MyProject C)\n" +
+                                     "project(Magma C)\n" +
                                      "\n" +
                                      "set(CMAKE_C_COMPILER clang)\n" +
                                      "\n" +
