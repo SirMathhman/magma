@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class Main {
     public static void main(String[] args) {
@@ -37,14 +39,14 @@ public class Main {
             final var c = root.charAt(i);
             buffer.append(c);
             if (c == ';' && depth == 0) {
-                advance(buffer, segments);
+                advance(segments, buffer);
                 buffer = new StringBuilder();
             } else {
                 if (c == '{') depth++;
                 if (c == '}') depth--;
             }
         }
-        advance(buffer, segments);
+        advance(segments, buffer);
         return segments;
     }
 
@@ -56,24 +58,23 @@ public class Main {
     }
 
     private static Optional<String> compileClass(String rootSegment) {
-        return split(rootSegment, "class ").flatMap(tuple -> {
-            return split(tuple.right(), "{").map(tuple0 -> {
-                return "struct " + tuple0.left().strip() + " {\n}";
+        return split(rootSegment, "class ", tuple -> {
+            return split(tuple.right(), "{", tuple0 -> {
+                return Optional.of("struct " + tuple0.left().strip() + " {\n}");
             });
         });
     }
 
-    private static Optional<Tuple<String, String>> split(String input, String infix) {
-        final var index = input.indexOf(infix);
-        if (index == -1) {
-            return Optional.empty();
-        }
-        final var left = input.substring(0, index);
-        final var right = input.substring(index + infix.length());
-        return Optional.of(new Tuple<>(left, right));
+    private static Optional<String> split(String rootSegment, String infix, Function<Tuple<String, String>, Optional<? extends String>> mapper) {
+        final var index = rootSegment.indexOf(infix);
+        if (index == -1) return Optional.empty();
+
+        final var left = rootSegment.substring(0, index);
+        final var right = rootSegment.substring(index + infix.length());
+        return Optional.of(new Tuple<>(left, right)).flatMap(mapper);
     }
 
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+    private static void advance(List<String> segments, StringBuilder buffer) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 }
