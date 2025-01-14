@@ -11,7 +11,12 @@ public class Main {
             final var input = Files.readString(source);
             final var target = source.resolveSibling("main.c");
             Files.writeString(target, input);
-        } catch (IOException e) {
+
+            new ProcessBuilder("clang", "main.c", "-o", "main.exe")
+                    .directory(Paths.get(".", "src", "java", "magma").toFile())
+                    .start()
+                    .waitFor();
+        } catch (IOException | InterruptedException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
