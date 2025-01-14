@@ -5,12 +5,19 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Main {
+    private static final Deque<String> namespace = new LinkedList<>();
+    private static final Map<String, List<String>> enums = new HashMap<>();
+
     public static void main(String[] args) {
         try {
             final var source = Paths.get(".", "src", "java", "magma", "main.mgs");
@@ -82,12 +89,16 @@ public class Main {
     }
 
     private static Optional<? extends String> compileEnum(String input) {
-        if(input.startsWith("enum")) {
+        if (input.startsWith("enum")) {
             final var content = input.substring("enum".length()).strip();
             final var start = content.indexOf("{");
 
             if (start != -1) {
                 final var name = content.substring(0, start).strip();
+                final var qualifiedName = new ArrayList<>(namespace);
+                qualifiedName.add(name);
+                final var joinedName = String.join("_", qualifiedName);
+
                 final var substring = content.substring(start + 1);
                 if (substring.endsWith("}")) {
                     final var values = Arrays.stream(substring.substring(0, substring.length() - 1).split(","))
@@ -96,7 +107,8 @@ public class Main {
                             .map(inner -> "\n\t" + inner)
                             .collect(Collectors.joining(","));
 
-                    return Optional.of("enum " + name + " {" + values + "\n};\n");
+                    enums.put(name, qualifiedName);
+                    return Optional.of("enum " + joinedName + " {" + values + "\n};\n");
                 }
             }
         }
@@ -125,15 +137,37 @@ public class Main {
         final var contentStart = input.indexOf('{');
         if (contentStart == -1) return Optional.empty();
 
-        final var substring = input.substring(contentStart + 1);
-        if (!substring.endsWith("}")) return Optional.empty();
+        final var name = input.substring("namespace ".length(), contentStart).strip();
+        final var withEnd = input.substring(contentStart + 1);
+        if (!withEnd.endsWith("}")) return Optional.empty();
 
-        final var inputContent = substring.substring(0, substring.length() - 1);
+        final var inputContent = withEnd.substring(0, withEnd.length() - 1);
+
+        namespace.push(name);
         final var outputContent = splitAndCompile(inputContent, Main::compileRootSegment);
+        namespace.pop();
+
         return Optional.of(outputContent);
     }
 
     private static String compileStructMember(String member) {
-        return "\n\t" + member;
+        return compileDefinition(member).orElse(member);
+    }
+
+    private static Optional<String> compileDefinition(String member) {
+        if (!member.endsWith(";")) return Optional.empty();
+        final var member1 = member.substring(0, member.length() - 1);
+
+        final var separator = member1.lastIndexOf(' ');
+        if (separator == -1) return Optional.empty();
+
+        final var oldType = member1.substring(0, separator).strip();
+        final var name = member1.substring(separator + 1).strip();
+
+        final var newType = enums.containsKey(oldType)
+                ? String.join("_", enums.get(oldType))
+                : oldType;
+
+        return Optional.of("\n\tenum " + newType + " " + name + ";");
     }
 }

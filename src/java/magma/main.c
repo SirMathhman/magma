@@ -1,12 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
-enum Type {
+enum Result_Type {
 	Ok,
 	Err
 };
 struct Result {
-	enum Type type;
-	
+	enum Result_Type type;
 };
 int main() {
     return 0;
