@@ -7,11 +7,19 @@ import java.nio.file.Paths;
 public class Main {
     public static void main(String[] args) {
         try {
-            final var source = Paths.get(".", "src", "java", "magma", "Main.mgs");
+            final var workingDirectory = Paths.get(".", "src", "java", "magma");
+            final var source = workingDirectory.resolve("Main.mgs");
             final var input = Files.readString(source);
-            final var output = source.resolveSibling("Main.c");
+            final var output = workingDirectory.resolve("Main.c");
             Files.writeString(output, input);
-        } catch (IOException e) {
+
+            new ProcessBuilder("clang", "Main.c", "-o", "Magma.exe")
+                    .directory(workingDirectory.toFile())
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                    .redirectError(ProcessBuilder.Redirect.INHERIT)
+                    .start()
+                    .waitFor();
+        } catch (IOException | InterruptedException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
