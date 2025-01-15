@@ -1,4 +1,4 @@
 #include "temp.h"
 #include "temp.h"
-struct Temp {
+struct Tuple<A, B>(A left, B right) {
 };

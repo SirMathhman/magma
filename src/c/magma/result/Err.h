@@ -2,5 +2,5 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
-struct Temp {
+struct Err<T, X>(X error) implements Result<T, X> {
 };

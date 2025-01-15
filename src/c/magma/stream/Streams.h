@@ -1,3 +1,3 @@
 #include "temp.h"
-struct Temp {
+struct Streams {
 };

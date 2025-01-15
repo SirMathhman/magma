@@ -165,9 +165,22 @@ public class Main {
         return new Err<>(new CompileError("No prefix '" + prefix + "' present", input));
     }
 
-    private static Result<String, CompileError> compileToStruct(String rootSegment, String infix) {
-        if (rootSegment.contains(infix)) return new Ok<>("struct Temp {\n};");
-        return new Err<>(new CompileError("Infix '" + infix + "' not present", rootSegment));
+    private static Result<String, CompileError> compileToStruct(String input, String keyword) {
+        return split(input, keyword).flatMapValue(tuple -> {
+            return split(tuple.right(), "{").mapValue(tuple0 -> {
+                final var name = tuple0.left().strip();
+                return "struct " + name + " {\n};";
+            });
+        });
+    }
+
+    private static Result<Tuple<String, String>, CompileError> split(String input, String infix) {
+        final var index = input.indexOf(infix);
+        if (index == -1) return new Err<>(new CompileError("Infix '" + infix + "' not present", input));
+
+        final var left = input.substring(0, index);
+        final var right = input.substring(index + infix.length());
+        return new Ok<>(new Tuple<>(left, right));
     }
 
     private static Result<String, CompileError> compilePackage(String input) {

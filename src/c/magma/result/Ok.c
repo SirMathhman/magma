@@ -2,5 +2,5 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
-struct Temp {
+struct Ok<T, X>(T value) implements Result<T, X> {
 };

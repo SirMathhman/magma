@@ -1,5 +1,5 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
-struct Temp {
+struct HeadedStream<T>(Head<T> head) implements Stream<T> {
 };

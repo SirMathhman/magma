@@ -1,4 +1,4 @@
 #include "temp.h"
 #include "temp.h"
-struct Temp {
+struct JavaError(Exception e) implements Error {
 };
