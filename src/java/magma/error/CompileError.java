@@ -1,6 +1,7 @@
-package magma;
+package magma.error;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CompileError implements Error {
     private final String message;
@@ -15,5 +16,14 @@ public class CompileError implements Error {
         this.message = message;
         this.context = context;
         this.causes = causes;
+    }
+
+    @Override
+    public String display() {
+        final var joinedCauses = this.causes.stream()
+                .map(CompileError::display)
+                .collect(Collectors.joining());
+
+        return this.message + ": " + this.context + joinedCauses;
     }
 }

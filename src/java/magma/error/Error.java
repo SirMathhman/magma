@@ -1,4 +1,4 @@
-package magma;
+package magma.error;
 
 public interface Error {
     String display();

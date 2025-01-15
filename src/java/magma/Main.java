@@ -1,5 +1,12 @@
 package magma;
 
+import magma.error.CompileError;
+import magma.error.JavaError;
+import magma.result.ApplicationError;
+import magma.result.Err;
+import magma.result.Ok;
+import magma.result.Result;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
