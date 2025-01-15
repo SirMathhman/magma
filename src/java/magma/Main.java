@@ -5,47 +5,102 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
+
+    public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
+
     public static void main(String[] args) {
-        final var sourceDirectory = Paths.get(".", "src", "java");
-        try (Stream<Path> stream = Files.walk(sourceDirectory)) {
-            final var sources = stream.filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .collect(Collectors.toSet());
+        walk().mapErr(JavaError::new)
+                .mapErr(ApplicationError::new)
+                .mapValue(Main::runWithSources)
+                .match(Function.identity(), Optional::of)
+                .ifPresent(error -> System.err.println(error.display()));
+    }
 
-            for (Path source : sources) {
-                final var relativized = sourceDirectory.relativize(source);
-                final var parent = relativized.getParent();
+    private static Optional<ApplicationError> runWithSources(Set<Path> paths) {
+        final var sources = paths.stream()
+                .filter(Files::isRegularFile)
+                .filter(path -> path.toString().endsWith(".java"))
+                .collect(Collectors.toSet());
 
-                final var targetDirectory = Paths.get(".", "src", "c");
-                final var targetParent = targetDirectory.resolve(parent);
-                if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
+        for (Path source : sources) {
+            final var error = runWithSource(source);
+            if (error.isPresent()) return error;
+        }
 
-                final var name = relativized.getFileName().toString();
-                final var nameWithoutExt = name.substring(0, name.indexOf('.'));
+        return Optional.empty();
+    }
 
-                final var input = Files.readString(source);
-                final var output = Results.unwrap(compileRoot(input));
-
-                final var header = targetParent.resolve(nameWithoutExt + ".h");
-                Files.writeString(header, output);
-
-                final var target = targetParent.resolve(nameWithoutExt + ".c");
-                Files.writeString(target, output);
-            }
-        } catch (IOException | CompileException e) {
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
+    private static Result<Set<Path>, IOException> walk() {
+        try (Stream<Path> stream = Files.walk(SOURCE_DIRECTORY)) {
+            return new Ok<>(stream.collect(Collectors.toSet()));
+        } catch (IOException e) {
+            return new Err<>(e);
         }
     }
 
-    private static Result<String, CompileException> compileRoot(String root) {
+    private static Optional<ApplicationError> runWithSource(Path source) {
+        final var relativized = Main.SOURCE_DIRECTORY.relativize(source);
+        final var parent = relativized.getParent();
+
+        final var targetDirectory = Paths.get(".", "src", "c");
+        final var targetParent = targetDirectory.resolve(parent);
+        if (!Files.exists(targetParent)) {
+            final var error = createDirectoriesSafe(targetParent);
+            if (error.isPresent()) return error;
+        }
+
+        final var name = relativized.getFileName().toString();
+        final var nameWithoutExt = name.substring(0, name.indexOf('.'));
+
+        return readStringSafe(source).mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(input -> {
+            return compileRoot(input).mapErr(ApplicationError::new).mapValue(output -> {
+                final var header = targetParent.resolve(nameWithoutExt + ".h");
+                final var target = targetParent.resolve(nameWithoutExt + ".c");
+                return writeStringSafe(output, header)
+                        .or(() -> writeStringSafe(output, target))
+                        .map(JavaError::new)
+                        .map(ApplicationError::new);
+            }).match(Function.identity(), Optional::of);
+        }).match(Function.identity(), Optional::of);
+    }
+
+    private static Optional<ApplicationError> createDirectoriesSafe(Path targetParent) {
+        try {
+            Files.createDirectories(targetParent);
+            return Optional.empty();
+        } catch (IOException e) {
+            return Optional.of(new ApplicationError(new JavaError(e)));
+        }
+    }
+
+    private static Result<String, IOException> readStringSafe(Path source) {
+        try {
+            return new Ok<>(Files.readString(source));
+        } catch (IOException e) {
+            return new Err<>(e);
+        }
+    }
+
+    private static Optional<IOException> writeStringSafe(String output, Path header) {
+        try {
+            Files.writeString(header, output);
+            return Optional.empty();
+        } catch (IOException e) {
+            return Optional.of(e);
+        }
+    }
+
+    private static Result<String, CompileError> compileRoot(String root) {
         final var segments = split(root);
 
-        Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
+        Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
             output = output
                     .and(() -> compileRootSegment(segment.strip()))
@@ -72,14 +127,14 @@ public class Main {
         return segments;
     }
 
-    private static Result<String, CompileException> compileRootSegment(String rootSegment) {
+    private static Result<String, CompileError> compileRootSegment(String rootSegment) {
         return compilePackage(rootSegment)
-                .mapErr(err -> new CompileException("Invalid root segment", rootSegment, err));
+                .mapErr(err -> new CompileError("Invalid root segment", rootSegment, err));
     }
 
-    private static Result<String, CompileException> compilePackage(String input) {
+    private static Result<String, CompileError> compilePackage(String input) {
         if (input.startsWith("package ")) return new Ok<>("");
-        return new Err<>(new CompileException("No prefix 'package ' present.", input));
+        return new Err<>(new CompileError("No prefix 'package ' present", input));
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
