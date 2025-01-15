@@ -7,6 +7,7 @@ import magma.result.ApplicationError;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
+import magma.stream.Streams;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,9 +15,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -137,11 +140,19 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRootSegment(String rootSegment) {
-        return compilePackage(rootSegment).mapErr(Collections::singletonList)
-                .or(() -> compileImport(rootSegment)).mapErr(Tuple.merge(JavaCollections::foldList))
-                .or(() -> compileToStruct(rootSegment, "class ")).mapErr(Tuple.merge(JavaCollections::foldList))
-                .or(() -> compileToStruct(rootSegment, "interface ")).mapErr(Tuple.merge(JavaCollections::foldList))
-                .or(() -> compileToStruct(rootSegment, "record ")).mapErr(Tuple.merge(JavaCollections::foldList))
+        final var suppliers = List.<Supplier<Result<String, CompileError>>>of(
+                () -> compilePackage(rootSegment),
+                () -> compileImport(rootSegment),
+                () -> compileToStruct(rootSegment, "class "),
+                () -> compileToStruct(rootSegment, "interface "),
+                () -> compileToStruct(rootSegment, "record ")
+        );
+
+        return Streams.from(suppliers)
+                .foldLeft(
+                        first -> first.get().mapErr(Collections::singletonList),
+                        (current, next) -> current.or(next).mapErr(Tuple.merge(JavaCollections::foldList)))
+                .orElse(new Err<>(Collections.singletonList(new CompileError("No rules present", rootSegment))))
                 .mapErr(errors -> new CompileError("Invalid root segment", rootSegment, errors));
     }
 
