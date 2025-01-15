@@ -157,8 +157,12 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileImport(String input) {
-        if (input.startsWith("import ")) return new Ok<>("#include \"temp.h\"\n");
-        return new Err<>(new CompileError("No prefix 'import ' present", input));
+        return truncateLeft(input, "import ", "#include \"temp.h\"\n");
+    }
+
+    private static Result<String, CompileError> truncateLeft(String input, String prefix, String output) {
+        if (input.startsWith(prefix)) return new Ok<>(output);
+        return new Err<>(new CompileError("No prefix '" + prefix + "' present", input));
     }
 
     private static Result<String, CompileError> compileToStruct(String rootSegment, String infix) {
@@ -167,8 +171,7 @@ public class Main {
     }
 
     private static Result<String, CompileError> compilePackage(String input) {
-        if (input.startsWith("package ")) return new Ok<>("");
-        return new Err<>(new CompileError("No prefix 'package ' present", input));
+        return truncateLeft(input, "package ", "");
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
