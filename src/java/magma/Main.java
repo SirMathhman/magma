@@ -45,25 +45,28 @@ public class Main {
     private static String compileRoot(String root) throws CompileException {
         final var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
+        var depth = 0;
         for (int i = 0; i < root.length(); i++) {
             final var c = root.charAt(i);
             buffer.append(c);
-            if (c == ';') {
+            if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
-            }
+            } else if (c == '{') depth++;
+            else if (c == '}') depth--;
         }
         advance(buffer, segments);
 
         final var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootSegment(segment));
+            output.append(compileRootSegment(segment.strip()));
         }
 
         return output.toString();
     }
 
     private static String compileRootSegment(String rootSegment) throws CompileException {
+        if (rootSegment.startsWith("package ")) return "";
         throw new CompileException("Invalid root segment", rootSegment);
     }
 
