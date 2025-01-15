@@ -167,11 +167,15 @@ public class Main {
 
     private static Result<String, CompileError> compileToStruct(String input, String keyword) {
         return split(input, keyword).flatMapValue(tuple -> {
-            return split(tuple.right(), "{").mapValue(tuple0 -> {
+            return split(tuple.right(), "{").flatMapValue(tuple0 -> {
                 final var name = tuple0.left().strip();
-                return "struct " + name + " {\n};";
+                return new StringRule("name").parse(name).mapValue(Main::generateStruct);
             });
         });
+    }
+
+    private static String generateStruct(Node node) {
+        return "struct " + node.findString("name").orElseThrow() + " {\n};";
     }
 
     private static Result<Tuple<String, String>, CompileError> split(String input, String infix) {
