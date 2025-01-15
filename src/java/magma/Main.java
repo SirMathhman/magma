@@ -28,7 +28,7 @@ public class Main {
                 final var nameWithoutExt = name.substring(0, name.indexOf('.'));
 
                 final var input = Files.readString(source);
-                final var output = compileRoot(input);
+                final var output = Results.unwrap(compileRoot(input));
 
                 final var header = targetParent.resolve(nameWithoutExt + ".h");
                 Files.writeString(header, output);
@@ -42,7 +42,20 @@ public class Main {
         }
     }
 
-    private static String compileRoot(String root) throws CompileException {
+    private static Result<String, CompileException> compileRoot(String root) {
+        final var segments = split(root);
+
+        Result<StringBuilder, CompileException> output = new Ok<>(new StringBuilder());
+        for (String segment : segments) {
+            output = output
+                    .and(() -> compileRootSegment(segment.strip()))
+                    .mapValue(tuple -> tuple.left().append(tuple.right()));
+        }
+
+        return output.mapValue(StringBuilder::toString);
+    }
+
+    private static ArrayList<String> split(String root) {
         final var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -56,18 +69,12 @@ public class Main {
             else if (c == '}') depth--;
         }
         advance(buffer, segments);
-
-        final var output = new StringBuilder();
-        for (String segment : segments) {
-            output.append(compileRootSegment(segment.strip()));
-        }
-
-        return output.toString();
+        return segments;
     }
 
-    private static String compileRootSegment(String rootSegment) throws CompileException {
-        if (rootSegment.startsWith("package ")) return "";
-        throw new CompileException("Invalid root segment", rootSegment);
+    private static Result<String, CompileException> compileRootSegment(String rootSegment) {
+        if (rootSegment.startsWith("package ")) return new Ok<>("");
+        return new Err<>(new CompileException("Invalid root segment", rootSegment));
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
