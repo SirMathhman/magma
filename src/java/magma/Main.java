@@ -11,7 +11,7 @@ public class Main {
             final var source = workingDirectory.resolve("Main.mgs");
             final var input = Files.readString(source);
             final var output = workingDirectory.resolve("Main.c");
-            Files.writeString(output, input);
+            Files.writeString(output, compile(input));
 
             new ProcessBuilder("clang", "Main.c", "-o", "Magma.exe")
                     .directory(workingDirectory.toFile())
@@ -19,9 +19,13 @@ public class Main {
                     .redirectError(ProcessBuilder.Redirect.INHERIT)
                     .start()
                     .waitFor();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException | CompileException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
+    }
+
+    private static String compile(String root) throws CompileException {
+        throw new CompileException("Invalid root", root);
     }
 }

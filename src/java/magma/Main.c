@@ -6,10 +6,10 @@
 
 typedef const char* string;
 
-typedef enum ResultType {
+enum ResultType {
     Ok,
     Err
-} ResultType;
+}
 
 typedef union ResultValue {
     FILE* file;
