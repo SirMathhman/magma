@@ -24,4 +24,9 @@ public record Err<T, X>(X error) implements Result<T, X> {
     public <R> Result<R, X> mapValue(Function<T, R> mapper) {
         return new Err<>(this.error);
     }
+
+    @Override
+    public <R> Result<T, R> mapErr(Function<X, R> mapper) {
+        return new Err<>(mapper.apply(this.error));
+    }
 }

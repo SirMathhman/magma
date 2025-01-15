@@ -12,4 +12,6 @@ public interface Result<T, X> {
     <R> Result<Tuple<T, R>, X> and(Supplier<Result<R, X>> other);
 
     <R> Result<R, X> mapValue(Function<T, R> mapper);
+
+    <R> Result<T, R> mapErr(Function<X, R> mapper);
 }

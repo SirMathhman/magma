@@ -73,8 +73,13 @@ public class Main {
     }
 
     private static Result<String, CompileException> compileRootSegment(String rootSegment) {
-        if (rootSegment.startsWith("package ")) return new Ok<>("");
-        return new Err<>(new CompileException("Invalid root segment", rootSegment));
+        return compilePackage(rootSegment)
+                .mapErr(err -> new CompileException("Invalid root segment", rootSegment, err));
+    }
+
+    private static Result<String, CompileException> compilePackage(String input) {
+        if (input.startsWith("package ")) return new Ok<>("");
+        return new Err<>(new CompileException("No prefix 'package ' present.", input));
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
