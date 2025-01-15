@@ -26,15 +26,22 @@ public class Main {
                 final var name = relativized.getFileName().toString();
                 final var nameWithoutExt = name.substring(0, name.indexOf('.'));
 
+                final var input = Files.readString(source);
+                final var output = compileRoot(input);
+
                 final var header = targetParent.resolve(nameWithoutExt + ".h");
-                Files.writeString(header, "");
+                Files.writeString(header, output);
 
                 final var target = targetParent.resolve(nameWithoutExt + ".c");
-                Files.writeString(target, "");
+                Files.writeString(target, output);
             }
-        } catch (IOException e) {
+        } catch (IOException | CompileException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
+    }
+
+    private static String compileRoot(String root) throws CompileException {
+        throw new CompileException("Invalid root", root);
     }
 }
