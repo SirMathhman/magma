@@ -20,4 +20,6 @@ public interface Result<T, X> {
     <R> Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper);
 
     <R> R match(Function<T, R> onOk, Function<X, R> onErr);
+
+    <R> Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other);
 }

@@ -41,4 +41,9 @@ public record Ok<T, X>(T value) implements Result<T, X> {
     public <R> R match(Function<T, R> onOk, Function<X, R> onErr) {
         return onOk.apply(this.value);
     }
+
+    @Override
+    public <R> Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other) {
+        return new Ok<>(this.value);
+    }
 }

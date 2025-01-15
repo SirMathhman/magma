@@ -41,4 +41,10 @@ public record Err<T, X>(X error) implements Result<T, X> {
     public <R> R match(Function<T, R> onOk, Function<X, R> onErr) {
         return onErr.apply(this.error);
     }
+
+
+    @Override
+    public <R> Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other) {
+        return other.get().mapErr(otherError -> new Tuple<>(this.error, otherError));
+    }
 }

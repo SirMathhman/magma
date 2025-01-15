@@ -2,6 +2,7 @@ package magma;
 
 import magma.error.CompileError;
 import magma.error.JavaError;
+import magma.java.JavaCollections;
 import magma.result.ApplicationError;
 import magma.result.Err;
 import magma.result.Ok;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -135,8 +137,22 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRootSegment(String rootSegment) {
-        return compilePackage(rootSegment)
-                .mapErr(err -> new CompileError("Invalid root segment", rootSegment, err));
+        return compilePackage(rootSegment).mapErr(Collections::singletonList)
+                .or(() -> compileImport(rootSegment)).mapErr(Tuple.merge(JavaCollections::foldList))
+                .or(() -> compileToStruct(rootSegment, "class ")).mapErr(Tuple.merge(JavaCollections::foldList))
+                .or(() -> compileToStruct(rootSegment, "interface ")).mapErr(Tuple.merge(JavaCollections::foldList))
+                .or(() -> compileToStruct(rootSegment, "record ")).mapErr(Tuple.merge(JavaCollections::foldList))
+                .mapErr(errors -> new CompileError("Invalid root segment", rootSegment, errors));
+    }
+
+    private static Result<String, CompileError> compileImport(String input) {
+        if (input.startsWith("import ")) return new Ok<>("#include \"temp.h\"\n");
+        return new Err<>(new CompileError("No prefix 'import ' present", input));
+    }
+
+    private static Result<String, CompileError> compileToStruct(String rootSegment, String infix) {
+        if (rootSegment.contains(infix)) return new Ok<>("struct Temp {\n};");
+        return new Err<>(new CompileError("Infix '" + infix + "' not present", rootSegment));
     }
 
     private static Result<String, CompileError> compilePackage(String input) {
