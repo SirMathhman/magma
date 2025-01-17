@@ -1,4 +1,11 @@
-import java.io.IOException;import java.nio.file.Files;import java.nio.file.Path;import java.nio.file.Paths;import java.util.ArrayList;import java.util.stream.Collectors;import java.util.stream.Stream;public class Main {
+#include "temp.h"
+#include "temp.h"
+#include "temp.h"
+#include "temp.h"
+#include "temp.h"
+#include "temp.h"
+#include "temp.h"
+public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");public static void main(String[] args) {
         try (Stream<Path> stream = Files.walk(SOURCE_DIRECTORY)) {
             final var sources = stream.filter(Files::isRegularFile)
@@ -21,7 +28,7 @@ import java.io.IOException;import java.nio.file.Files;import java.nio.file.Path;
         return output.toString();}
 
     private static String compileRootSegment(String rootSegment) {
-        if(rootSegment.startsWith("package ")) return "";return invalidate(rootSegment, "root segment");}
+        if(rootSegment.startsWith("package ")) return "";if(rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";return invalidate(rootSegment, "root segment");}
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());}

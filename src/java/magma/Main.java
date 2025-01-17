@@ -65,6 +65,7 @@ public class Main {
 
     private static String compileRootSegment(String rootSegment) {
         if(rootSegment.startsWith("package ")) return "";
+        if(rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
         return invalidate(rootSegment, "root segment");
     }
 
