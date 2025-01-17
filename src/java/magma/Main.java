@@ -168,8 +168,9 @@ public class Main {
     private static Result<String, CompileError> compileToStruct(String input, String keyword) {
         return split(input, keyword).flatMapValue(tuple -> {
             return split(tuple.right(), "{").flatMapValue(tuple0 -> {
-                final var name = tuple0.left().strip();
-                return new StringRule("name").parse(name).mapValue(Main::generateStruct);
+                final var left = tuple0.left();
+                return new StripRule(new StringRule("name")).parse(left)
+                        .mapValue(Main::generateStruct);
             });
         });
     }
