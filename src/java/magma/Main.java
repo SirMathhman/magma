@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,11 +44,15 @@ public class Main {
     }
 
     private static String compile(String root) {
+        return splitAndCompile(root, Main::compileRootSegment);
+    }
+
+    private static String splitAndCompile(String input, Function<String, String> compiler) {
         final var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
-        for (int i = 0; i < root.length(); i++) {
-            final var c = root.charAt(i);
+        for (int i = 0; i < input.length(); i++) {
+            final var c = input.charAt(i);
             buffer.append(c);
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
@@ -61,7 +66,7 @@ public class Main {
 
         final var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootSegment(segment.strip()));
+            output.append(compiler.apply(segment.strip()));
         }
 
         return output.toString();
@@ -74,12 +79,22 @@ public class Main {
         if (keyword != -1) {
             final var afterKeyword = rootSegment.substring(keyword + "class".length());
             final var contentStart = afterKeyword.indexOf('{');
-            if(contentStart != -1) {
+            if (contentStart != -1) {
                 final var name = afterKeyword.substring(0, contentStart).strip();
-                return "struct " + name + " {\n};";
+                final var withEnd = afterKeyword.substring(contentStart + 1).strip();
+                if (withEnd.endsWith("}")) {
+                    final var content = withEnd.substring(0, withEnd.length() - 1);
+                    final var outputContent = splitAndCompile(content, Main::compileStructSegment);
+                    return "struct " + name + " {" + outputContent + "\n};";
+                }
             }
         }
         return invalidate(rootSegment, "root segment");
+    }
+
+    private static String compileStructSegment(String structSegment) {
+        if(structSegment.contains("=")) return "\n\tint value = 0;";
+        return invalidate(structSegment, "struct segment");
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
