@@ -70,8 +70,14 @@ public class Main {
     private static String compileRootSegment(String rootSegment) {
         if (rootSegment.startsWith("package ")) return "";
         if (rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
-        if (rootSegment.contains("class")) {
-            return "struct Temp {\n};";
+        final var keyword = rootSegment.indexOf("class");
+        if (keyword != -1) {
+            final var afterKeyword = rootSegment.substring(keyword + "class".length());
+            final var contentStart = afterKeyword.indexOf('{');
+            if(contentStart != -1) {
+                final var name = afterKeyword.substring(0, contentStart).strip();
+                return "struct " + name + " {\n};";
+            }
         }
         return invalidate(rootSegment, "root segment");
     }
