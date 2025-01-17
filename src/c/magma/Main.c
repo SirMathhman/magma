@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,8 +26,9 @@ public class Main {
 
                 final var targetParent = TARGET_DIRECTORY.resolve(parent);
                 if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
-                
-                final var output = Files.readString(source);
+
+                final var input = Files.readString(source);
+                final var output = compile(input);
 
                 final var target = targetParent.resolve(name + ".c");
                 Files.writeString(target, output);
@@ -38,5 +40,39 @@ public class Main {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
+    }
+
+    private static String compile(String root) {
+        final var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        for (int i = 0; i < root.length(); i++) {
+            final var c = root.charAt(i);
+            buffer.append(c);
+            if (c == ';') {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            }
+        }
+        advance(buffer, segments);
+
+        final var output = new StringBuilder();
+        for (String segment : segments) {
+            output.append(compileRootSegment(segment));
+        }
+
+        return output.toString();
+    }
+
+    private static String compileRootSegment(String rootSegment) {
+        return invalidate(rootSegment, "root segment");
+    }
+
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
+    }
+
+    private static String invalidate(String input, String type) {
+        System.err.println("Invalid " + type + ": " + input);
+        return input;
     }
 }
