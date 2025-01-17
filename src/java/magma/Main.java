@@ -1,13 +1,18 @@
 package magma;
 
-import magma.error.CompileError;
-import magma.error.JavaError;
+import magma.api.Tuple;
+import magma.api.compile.Node;
+import magma.api.error.CompileError;
+import magma.api.error.JavaError;
 import magma.java.JavaCollections;
-import magma.result.ApplicationError;
-import magma.result.Err;
-import magma.result.Ok;
-import magma.result.Result;
-import magma.stream.Streams;
+import magma.api.result.ApplicationError;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.api.compile.rule.SplitRule;
+import magma.api.compile.rule.StringRule;
+import magma.api.compile.rule.StripRule;
+import magma.api.stream.Streams;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -166,26 +171,13 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileToStruct(String input, String keyword) {
-        return split(input, keyword).flatMapValue(tuple -> {
-            return split(tuple.right(), "{").flatMapValue(tuple0 -> {
-                final var left = tuple0.left();
-                return new StripRule(new StringRule("name")).parse(left)
-                        .mapValue(Main::generateStruct);
-            });
-        });
+        return new SplitRule(new StringRule("modifiers"), keyword, new SplitRule(new StripRule(new StringRule("name")), "{", new StringRule("temp")))
+                .parse(input)
+                .mapValue(Main::generateStruct);
     }
 
     private static String generateStruct(Node node) {
         return "struct " + node.findString("name").orElseThrow() + " {\n};";
-    }
-
-    private static Result<Tuple<String, String>, CompileError> split(String input, String infix) {
-        final var index = input.indexOf(infix);
-        if (index == -1) return new Err<>(new CompileError("Infix '" + infix + "' not present", input));
-
-        final var left = input.substring(0, index);
-        final var right = input.substring(index + infix.length());
-        return new Ok<>(new Tuple<>(left, right));
     }
 
     private static Result<String, CompileError> compilePackage(String input) {
