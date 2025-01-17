@@ -57,13 +57,14 @@ public class Main {
 
         final var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compileRootSegment(segment));
+            output.append(compileRootSegment(segment.strip()));
         }
 
         return output.toString();
     }
 
     private static String compileRootSegment(String rootSegment) {
+        if(rootSegment.startsWith("package ")) return "";
         return invalidate(rootSegment, "root segment");
     }
 
