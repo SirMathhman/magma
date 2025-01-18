@@ -93,7 +93,15 @@ public class Main {
     }
 
     private static String compileStructSegment(String structSegment) {
-        if(structSegment.contains("=")) return "\n\tint value = 0;";
+        final var index = structSegment.indexOf("=");
+        if(index != -1) {
+            final var stripped = structSegment.substring(0, index).strip();
+            final var index1 = stripped.lastIndexOf(' ');
+            if (index1 != -1) {
+                final var name = stripped.substring(index1 + 1).strip();
+                return "\n\tint " + name + " = 0;";
+            }
+        }
         return invalidate(structSegment, "struct segment");
     }
 
