@@ -1,9 +1,9 @@
 #include "temp.h"
 struct Splitter {
-	void advance(){
+	void advance(List<String> segments, StringBuilder buffer) {
 	}
-	StringBuilder merge(){
+	StringBuilder merge(StringBuilder current, String element) {
 	}
-	List<String> split(){
+	List<String> split(String content) {
 	}
 };

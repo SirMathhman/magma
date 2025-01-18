@@ -53,7 +53,7 @@ public class Main {
     }
 
     private static Optional<String> compile(String root) {
-        return compileStatements(root, Main::compileRootSegment);
+        return splitAndCompile(new StatementSplitter(), root, Main::compileRootSegment);
     }
 
     private static Optional<String> compileRootSegment(String rootSegment) {
@@ -77,14 +77,10 @@ public class Main {
         if (!withEnd.endsWith("}")) return Optional.empty();
 
         final var content = withEnd.substring(0, withEnd.length() - 1);
-        return compileStatements(content, Main::compileStructSegment).map(outputContent -> "struct " + name + " {" + outputContent + "\n};");
+        return splitAndCompile(new StatementSplitter(), content, Main::compileStructSegment).map(outputContent -> "struct " + name + " {" + outputContent + "\n};");
     }
 
-    private static Optional<String> compileStatements(String content, Function<String, Optional<String>> compiler) {
-        return getString(content, compiler, new StatementSplitter());
-    }
-
-    private static Optional<String> getString(String content, Function<String, Optional<String>> compiler, Splitter splitter) {
+    private static Optional<String> splitAndCompile(Splitter splitter, String content, Function<String, Optional<String>> compiler) {
         List<String> segments = splitter.split(content);
         var output = new StringBuilder();
         for (String segment : segments) {
@@ -107,12 +103,20 @@ public class Main {
 
     private static Optional<String> compileMethod(String structSegment) {
         final var index = structSegment.indexOf('(');
-        if (index != -1) {
-            final var inputDefinition = structSegment.substring(0, index).strip();
-            return compileDefinition(inputDefinition).map(outputDefinition -> "\n\t" + outputDefinition + "(){\n\t}");
+        if (index == -1) {
+            return Optional.empty();
+        }
+        final var inputDefinition = structSegment.substring(0, index).strip();
+        final var stripped = structSegment.substring(index + 1).strip();
+        final var index1 = stripped.indexOf(')');
+        if (index1 == -1) {
+            return Optional.empty();
         }
 
-        return Optional.empty();
+        final var inputParams = stripped.substring(0, index1).strip();
+        return splitAndCompile(new ValueSplitter(), inputParams, Main::compileDefinition).flatMap(outputParams ->
+                compileDefinition(inputDefinition).map(outputDefinition -> "\n\t" + outputDefinition + "(" + outputParams + ") {\n\t}"));
+
     }
 
     private static Optional<String> compileInitialization(String structSegment) {
@@ -159,12 +163,8 @@ public class Main {
         if (!stripped.endsWith(")")) return Optional.empty();
 
         final var substring = stripped.substring(0, stripped.length() - 1);
-        return splitAndCompileValues(substring, Main::compileValue)
+        return splitAndCompile(new ValueSplitter(), substring, Main::compileValue)
                 .flatMap(arguments -> compileValue(inputValue).map(outputString -> outputString + "(" + arguments + ")"));
-    }
-
-    private static Optional<String> splitAndCompileValues(String substring, Function<String, Optional<String>> compiler) {
-        return getString(substring, compiler, new ValueSplitter());
     }
 
     private static Optional<String> compileDefinition(String definition) {
@@ -189,7 +189,15 @@ public class Main {
     private static Optional<String> compileType(String type) {
         return compileSymbol(type)
                 .or(() -> compileGeneric(type))
+                .or(() -> compileArray(type))
                 .or(() -> invalidate("type", type));
+    }
+
+    private static Optional<String> compileArray(String type) {
+        if (type.endsWith("[]")) {
+            return compileType(type.substring(0, type.length()  - 2)).map(s -> "Slice<" + s + ">");
+        }
+        return Optional.empty();
     }
 
     private static Optional<String> compileSymbol(String type) {
@@ -206,7 +214,7 @@ public class Main {
         if (!stripped.endsWith(">")) return Optional.empty();
 
         final var substring = stripped.substring(0, stripped.length() - 1);
-        return splitAndCompileValues(substring, Main::compileType).map(compiled -> caller + "<" + compiled + ">");
+        return splitAndCompile(new ValueSplitter(), substring, Main::compileType).map(compiled -> caller + "<" + compiled + ">");
     }
 
     private static boolean isSymbol(String type) {
