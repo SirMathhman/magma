@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,7 +30,7 @@ public class Main {
                 if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
 
                 final var input = Files.readString(source);
-                final var output = compile(input);
+                final var output = compile(input).orElse("");
 
                 final var target = targetParent.resolve(name + ".c");
                 Files.writeString(target, output);
@@ -43,11 +44,11 @@ public class Main {
         }
     }
 
-    private static String compile(String root) {
+    private static Optional<String> compile(String root) {
         return splitAndCompile(root, Main::compileRootSegment);
     }
 
-    private static String splitAndCompile(String input, Function<String, String> compiler) {
+    private static Optional<String> splitAndCompile(String input, Function<String, Optional<String>> compiler) {
         final var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -66,15 +67,17 @@ public class Main {
 
         final var output = new StringBuilder();
         for (String segment : segments) {
-            output.append(compiler.apply(segment.strip()));
+            final var optional = compiler.apply(segment.strip());
+            if (optional.isEmpty()) return Optional.empty();
+            output.append(optional.get());
         }
 
-        return output.toString();
+        return Optional.of(output.toString());
     }
 
-    private static String compileRootSegment(String rootSegment) {
-        if (rootSegment.startsWith("package ")) return "";
-        if (rootSegment.startsWith("import ")) return "#include \"temp.h\"\n";
+    private static Optional<String> compileRootSegment(String rootSegment) {
+        if (rootSegment.startsWith("package ")) return Optional.of("");
+        if (rootSegment.startsWith("import ")) return Optional.of("#include \"temp.h\"\n");
         final var keyword = rootSegment.indexOf("class");
         if (keyword != -1) {
             final var afterKeyword = rootSegment.substring(keyword + "class".length());
@@ -85,32 +88,56 @@ public class Main {
                 if (withEnd.endsWith("}")) {
                     final var content = withEnd.substring(0, withEnd.length() - 1);
                     final var outputContent = splitAndCompile(content, Main::compileStructSegment);
-                    return "struct " + name + " {" + outputContent + "\n};";
+                    return Optional.of("struct " + name + " {" + outputContent + "\n};");
                 }
             }
         }
-        return invalidate(rootSegment, "root segment");
+        return invalidate("root segment", rootSegment);
     }
 
-    private static String compileStructSegment(String structSegment) {
+    private static Optional<String> compileStructSegment(String structSegment) {
         final var index = structSegment.indexOf("=");
-        if(index != -1) {
+        if (index != -1) {
             final var stripped = structSegment.substring(0, index).strip();
             final var index1 = stripped.lastIndexOf(' ');
             if (index1 != -1) {
+                final var beforeName = stripped.substring(0, index1).strip();
+                final Optional<String> outputType;
+                final var index2 = beforeName.lastIndexOf(' ');
+                if (index2 == -1) {
+                    outputType = compileType(beforeName);
+                } else {
+                    outputType = compileType(beforeName.substring(index2 + 1));
+                }
+
                 final var name = stripped.substring(index1 + 1).strip();
-                return "\n\tint " + name + " = 0;";
+                return Optional.of("\n\t" + outputType + " " + name + " = 0;");
             }
         }
-        return invalidate(structSegment, "struct segment");
+        return invalidate("struct segment", structSegment);
+    }
+
+    private static Optional<String> compileType(String type) {
+        if (isSymbol(type)) return Optional.of(type);
+        return invalidate("type", type);
+    }
+
+    private static boolean isSymbol(String type) {
+        for (int i = 0; i < type.length(); i++) {
+            final var c = type.charAt(i);
+            if (Character.isLetter(c)) continue;
+            return false;
+        }
+
+        return true;
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static String invalidate(String input, String type) {
+    private static Optional<String> invalidate(String type, String input) {
         System.err.println("Invalid " + type + ": " + input);
-        return input;
+        return Optional.of(input);
     }
 }
