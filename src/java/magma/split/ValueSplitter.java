@@ -6,6 +6,7 @@ import java.util.List;
 public class ValueSplitter implements Splitter {
     @Override
     public StringBuilder merge(StringBuilder current, String element) {
+        if (current.isEmpty()) return current.append(element);
         return current.append(", ").append(element);
     }
 

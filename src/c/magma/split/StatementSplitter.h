@@ -6,6 +6,6 @@
 struct StatementSplitter implements Splitter {
 	StringBuilder merge(){
 	}
-	List<, String> split(){
+	List<String> split(){
 	}
 };

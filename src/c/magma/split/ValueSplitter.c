@@ -3,6 +3,6 @@
 struct ValueSplitter implements Splitter {
 	StringBuilder merge(){
 	}
-	List<, String> split(){
+	List<String> split(){
 	}
 };
