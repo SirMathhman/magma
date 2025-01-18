@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -51,16 +52,14 @@ public class Main {
     }
 
     private static Optional<String> compile(String root) {
-        return splitAndCompile(root, Main::compileRootSegment);
+        return compileAll(Main.split(root), Main::compileRootSegment);
     }
 
-    private static Optional<String> splitAndCompile(String input, Function<String, Optional<String>> compiler) {
-        final var segments = split(input);
-
+    private static Optional<String> compileAll(List<String> segments, Function<String, Optional<String>> compiler) {
         final var output = new StringBuilder();
         for (String segment : segments) {
             final var stripped = segment.strip();
-            if(stripped.isEmpty()) continue;
+            if (stripped.isEmpty()) continue;
 
             final var optional = compiler.apply(stripped);
             if (optional.isEmpty()) return Optional.empty();
@@ -70,7 +69,7 @@ public class Main {
         return Optional.of(output.toString());
     }
 
-    private static ArrayList<String> split(String input) {
+    private static List<String> split(String input) {
         final var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -102,11 +101,11 @@ public class Main {
             }
 
             if (c == ';' && depth == 0) {
-                advance(buffer, segments);
+                advance(segments, buffer);
                 buffer = new StringBuilder();
             } else if (c == '}' && depth == 1) {
                 depth--;
-                advance(buffer, segments);
+                advance(segments, buffer);
                 buffer = new StringBuilder();
             } else {
                 if (c == '{') depth++;
@@ -114,7 +113,7 @@ public class Main {
             }
         }
 
-        advance(buffer, segments);
+        advance(segments, buffer);
         if (depth != 0) {
             System.err.println("Invalid depth: '" + depth + "': " + input);
         }
@@ -134,7 +133,7 @@ public class Main {
                 final var withEnd = afterKeyword.substring(contentStart + 1).strip();
                 if (withEnd.endsWith("}")) {
                     final var content = withEnd.substring(0, withEnd.length() - 1);
-                    final var maybeOutputContent = splitAndCompile(content, Main::compileStructSegment);
+                    final var maybeOutputContent = compileAll(Main.split(content), Main::compileStructSegment);
                     if (maybeOutputContent.isPresent()) {
                         return Optional.of("struct " + name + " {" + maybeOutputContent.get() + "\n};");
                     }
@@ -151,18 +150,28 @@ public class Main {
     }
 
     private static Optional<? extends String> compileMethod(String structSegment) {
-        return Optional.of("\n\ttemp(){\n\t}");
+        final var index = structSegment.indexOf('(');
+        if (index != -1) {
+            final var inputDefinition = structSegment.substring(0, index).strip();
+            return compileDefinition(inputDefinition).map(outputDefinition -> "\n\t" + outputDefinition + "(){\n\t}");
+        }
+
+        return Optional.empty();
     }
 
     private static Optional<String> compileInitialization(String structSegment) {
         final var index = structSegment.indexOf("=");
         if (index == -1) return Optional.empty();
 
-        final var stripped = structSegment.substring(0, index).strip();
-        final var index1 = stripped.lastIndexOf(' ');
+        final var definition = structSegment.substring(0, index).strip();
+        return compileDefinition(definition).map(outputDefinition -> "\n\t" + outputDefinition + " = 0;");
+    }
+
+    private static Optional<String> compileDefinition(String definition) {
+        final var index1 = definition.lastIndexOf(' ');
         if (index1 == -1) return Optional.empty();
 
-        final var beforeName = stripped.substring(0, index1).strip();
+        final var beforeName = definition.substring(0, index1).strip();
         final Optional<String> maybeOutputType;
         final var index2 = beforeName.lastIndexOf(' ');
         if (index2 == -1) {
@@ -173,13 +182,42 @@ public class Main {
 
         if (maybeOutputType.isEmpty()) return Optional.empty();
         final var outputType = maybeOutputType.get();
-        final var name = stripped.substring(index1 + 1).strip();
-        return Optional.of("\n\t" + outputType + " " + name + " = 0;");
+        final var name = definition.substring(index1 + 1).strip();
+        return Optional.of(outputType + " " + name);
     }
 
     private static Optional<String> compileType(String type) {
         if (isSymbol(type)) return Optional.of(type);
-        return invalidate("type", type);
+
+        return compileGeneric(type).or(() -> invalidate("type", type));
+    }
+
+    private static Optional<String> compileGeneric(String type) {
+        final var index = type.indexOf('<');
+        if (index == -1) return Optional.empty();
+
+        final var caller = type.substring(0, index).strip();
+        final var stripped = type.substring(index + 1).strip();
+        if (!stripped.endsWith(">")) return Optional.empty();
+
+        final var substring = stripped.substring(0, stripped.length() - 1);
+        return compileAll(splitValues(substring), Main::compileType).map(compiled -> caller + "<" + compiled + ">");
+    }
+
+    private static List<String> splitValues(String input) {
+        final var segments = new ArrayList<String>();
+        final var buffer = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            final var c = input.charAt(i);
+            if (c == ',') {
+                advance(segments, buffer);
+            } else {
+                buffer.append(c);
+            }
+        }
+
+        advance(segments, buffer);
+        return segments;
     }
 
     private static boolean isSymbol(String type) {
@@ -192,7 +230,7 @@ public class Main {
         return true;
     }
 
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+    private static void advance(ArrayList<String> segments, StringBuilder buffer) {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 

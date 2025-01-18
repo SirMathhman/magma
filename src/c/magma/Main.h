@@ -9,28 +9,30 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
+#include "temp.h"
 struct Main {
 	Path SOURCE_DIRECTORY = 0;
 	Path TARGET_DIRECTORY = 0;
-	temp(){
-	}
+	(Stream<Path> stream = 0;
 	var relativized = 0;
-	temp(){
+	Optional<String> compile(){
 	}
-	var segments = 0;
+	var output = 0;
 	var segments = 0;
 	var keyword = 0;
-	temp(){
-	}
-	temp(){
+	Optional<String> compileStructSegment(){
 	}
 	var index = 0;
-	temp(){
+	var index = 0;
+	var index1 = 0;
+	Optional<String> compileType(){
 	}
-	temp(){
+	var index = 0;
+	var segments = 0;
+	boolean isSymbol(){
 	}
-	temp(){
+	void advance(){
 	}
-	temp(){
+	Optional<String> invalidate(){
 	}
 };
