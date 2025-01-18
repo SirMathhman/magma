@@ -174,7 +174,19 @@ public class Main {
 
     private static Optional<String> compileValue(String value) {
         return compileInvocation(value)
+                .or(() -> compileDataAccess(value))
+                .or(() -> compileSymbol(value))
                 .or(() -> invalidate("value", value));
+    }
+
+    private static Optional<String> compileDataAccess(String value) {
+        final var index = value.lastIndexOf('.');
+        if (index == -1) return Optional.empty();
+
+        final var stripped = value.substring(0, index).strip();
+        final var optional = compileValue(stripped);
+        final var stripped1 = value.substring(index + 1).strip();
+        return optional.map(s -> s + "." + stripped1);
     }
 
     private static Optional<String> compileInvocation(String value) {
@@ -209,9 +221,14 @@ public class Main {
     }
 
     private static Optional<String> compileType(String type) {
-        if (isSymbol(type)) return Optional.of(type);
+        return compileSymbol(type)
+                .or(() -> compileGeneric(type))
+                .or(() -> invalidate("type", type));
+    }
 
-        return compileGeneric(type).or(() -> invalidate("type", type));
+    private static Optional<String> compileSymbol(String type) {
+        if (isSymbol(type)) return Optional.of(type);
+        return Optional.empty();
     }
 
     private static Optional<String> compileGeneric(String type) {
