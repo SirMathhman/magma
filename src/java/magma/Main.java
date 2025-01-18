@@ -1,16 +1,17 @@
 package magma;
 
+import magma.split.Splitter;
+import magma.split.StatementSplitter;
+import magma.split.ValueSplitter;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Main {
@@ -52,73 +53,7 @@ public class Main {
     }
 
     private static Optional<String> compile(String root) {
-        return compileAll(Main.split(root), Main::compileRootSegment);
-    }
-
-    private static Optional<String> compileAll(List<String> segments, Function<String, Optional<String>> compiler) {
-        final var output = new StringBuilder();
-        for (String segment : segments) {
-            final var stripped = segment.strip();
-            if (stripped.isEmpty()) continue;
-
-            final var optional = compiler.apply(stripped);
-            if (optional.isEmpty()) return Optional.empty();
-            output.append(optional.get());
-        }
-
-        return Optional.of(output.toString());
-    }
-
-    private static List<String> split(String input) {
-        final var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
-
-        final var queue = IntStream.range(0, input.length())
-                .mapToObj(input::charAt)
-                .collect(Collectors.toCollection(LinkedList::new));
-
-        while (!queue.isEmpty()) {
-            final var c = queue.pop();
-            buffer.append(c);
-
-            if (c == '\'') {
-                final var c1 = queue.pop();
-                buffer.append(c1);
-
-                if (c1 == '\\') buffer.append(queue.pop());
-                buffer.append(queue.pop());
-            }
-
-            if (c == '"') {
-                while (!queue.isEmpty()) {
-                    final var c1 = queue.pop();
-                    buffer.append(c1);
-
-                    if (c1 == '"') break;
-                    if (c1 == '\\') buffer.append(queue.pop());
-                }
-            }
-
-            if (c == ';' && depth == 0) {
-                advance(segments, buffer);
-                buffer = new StringBuilder();
-            } else if (c == '}' && depth == 1) {
-                depth--;
-                advance(segments, buffer);
-                buffer = new StringBuilder();
-            } else {
-                if (c == '{') depth++;
-                if (c == '}') depth--;
-            }
-        }
-
-        advance(segments, buffer);
-        if (depth != 0) {
-            System.err.println("Invalid depth: '" + depth + "': " + input);
-        }
-
-        return segments;
+        return compileStatements(root, Main::compileRootSegment);
     }
 
     private static Optional<String> compileRootSegment(String rootSegment) {
@@ -133,7 +68,7 @@ public class Main {
                 final var withEnd = afterKeyword.substring(contentStart + 1).strip();
                 if (withEnd.endsWith("}")) {
                     final var content = withEnd.substring(0, withEnd.length() - 1);
-                    final var maybeOutputContent = compileAll(Main.split(content), Main::compileStructSegment);
+                    final var maybeOutputContent = compileStatements(content, Main::compileStructSegment);
                     if (maybeOutputContent.isPresent()) {
                         return Optional.of("struct " + name + " {" + maybeOutputContent.get() + "\n};");
                     }
@@ -141,6 +76,25 @@ public class Main {
             }
         }
         return invalidate("root segment", rootSegment);
+    }
+
+    private static Optional<String> compileStatements(String content, Function<String, Optional<String>> compiler) {
+        return getString(content, compiler, new StatementSplitter());
+    }
+
+    private static Optional<String> getString(String content, Function<String, Optional<String>> compiler, Splitter splitter) {
+        List<String> segments = splitter.split(content);
+        var output = new StringBuilder();
+        for (String segment : segments) {
+            final var stripped = segment.strip();
+            if (stripped.isEmpty()) continue;
+
+            final var optional = compiler.apply(stripped);
+            if (optional.isEmpty()) return Optional.empty();
+            output = splitter.merge(output, optional.get());
+        }
+
+        return Optional.of(output.toString());
     }
 
     private static Optional<String> compileStructSegment(String structSegment) {
@@ -169,14 +123,19 @@ public class Main {
 
         final var inputValue = stripped.substring(0, stripped.length() - 1);
         return compileValue(inputValue).flatMap(outputValue -> compileDefinition(definition).map(outputDefinition -> "\n\t" + outputDefinition + " = " + outputValue + ";"));
-
     }
 
     private static Optional<String> compileValue(String value) {
         return compileInvocation(value)
                 .or(() -> compileDataAccess(value))
                 .or(() -> compileSymbol(value))
+                .or(() -> compileString(value))
                 .or(() -> invalidate("value", value));
+    }
+
+    private static Optional<String> compileString(String value) {
+        if (value.startsWith("\"") && value.endsWith("\"")) return Optional.of(value);
+        else return Optional.empty();
     }
 
     private static Optional<String> compileDataAccess(String value) {
@@ -191,14 +150,19 @@ public class Main {
 
     private static Optional<String> compileInvocation(String value) {
         final var index = value.indexOf("(");
-        if (index != -1) {
-            final var stripped = value.substring(0, index).strip();
-            final var optional = compileValue(stripped);
-            if (optional.isPresent()) {
-                return Optional.of(optional.get() + "()");
-            }
-        }
-        return Optional.empty();
+        if (index == -1) return Optional.empty();
+
+        final var inputValue = value.substring(0, index).strip();
+        final var stripped = value.substring(index + 1).strip();
+        if (!stripped.endsWith(")")) return Optional.empty();
+
+        final var substring = stripped.substring(0, stripped.length() - 1);
+        return splitAndCompileValues(substring, Main::compileValue)
+                .flatMap(arguments -> compileValue(inputValue).map(outputString -> outputString + "(" + arguments + ")"));
+    }
+
+    private static Optional<String> splitAndCompileValues(String substring, Function<String, Optional<String>> compiler) {
+        return getString(substring, compiler, new ValueSplitter());
     }
 
     private static Optional<String> compileDefinition(String definition) {
@@ -240,23 +204,7 @@ public class Main {
         if (!stripped.endsWith(">")) return Optional.empty();
 
         final var substring = stripped.substring(0, stripped.length() - 1);
-        return compileAll(splitValues(substring), Main::compileType).map(compiled -> caller + "<" + compiled + ">");
-    }
-
-    private static List<String> splitValues(String input) {
-        final var segments = new ArrayList<String>();
-        final var buffer = new StringBuilder();
-        for (int i = 0; i < input.length(); i++) {
-            final var c = input.charAt(i);
-            if (c == ',') {
-                advance(segments, buffer);
-            } else {
-                buffer.append(c);
-            }
-        }
-
-        advance(segments, buffer);
-        return segments;
+        return splitAndCompileValues(substring, Main::compileType).map(compiled -> caller + "<" + compiled + ">");
     }
 
     private static boolean isSymbol(String type) {
@@ -267,10 +215,6 @@ public class Main {
         }
 
         return true;
-    }
-
-    private static void advance(ArrayList<String> segments, StringBuilder buffer) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
     private static Optional<String> invalidate(String type, String input) {

@@ -10,47 +10,54 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
+#include "temp.h"
 struct Main {
-	Path SOURCE_DIRECTORY = Paths.get();
-	Path TARGET_DIRECTORY = Paths.get();
+	Path SOURCE_DIRECTORY = Paths.get(".""." "src""." "src" "java");
+	Path TARGET_DIRECTORY = Paths.get(".""." "src""." "src" "c");
 	void main(){
 	}
 	void compileSource(){
 	}
-	Optional<String> compile(){
+	Optional<, String> compile(){
 	}
-	Optional<String> compileAll(){
+	Optional<, String> compileAll(){
 	}
-	List<String> split(){
+	StringBuilder mergeStatements(){
 	}
-	Optional<String> compileRootSegment(){
+	List<, String> split(){
 	}
-	Optional<String> compileStructSegment(){
+	Optional<, String> compileRootSegment(){
 	}
-	Optional<String> compileMethod(){
+	Optional<, String> compileStructSegment(){
 	}
-	Optional<String> compileInitialization(){
+	Optional<, String> compileMethod(){
 	}
-	Optional<String> compileValue(){
+	Optional<, String> compileInitialization(){
 	}
-	Optional<String> compileDataAccess(){
+	Optional<, String> compileValue(){
 	}
-	Optional<String> compileInvocation(){
+	Optional<, String> compileString(){
 	}
-	Optional<String> compileDefinition(){
+	Optional<, String> compileDataAccess(){
 	}
-	Optional<String> compileType(){
+	Optional<, String> compileInvocation(){
 	}
-	Optional<String> compileSymbol(){
+	Optional<, String> compileDefinition(){
 	}
-	Optional<String> compileGeneric(){
+	Optional<, String> compileType(){
 	}
-	List<String> splitValues(){
+	Optional<, String> compileSymbol(){
+	}
+	Optional<, String> compileGeneric(){
+	}
+	StringBuilder mergeValues(){
+	}
+	List<, String> splitValues(){
 	}
 	boolean isSymbol(){
 	}
 	void advance(){
 	}
-	Optional<String> invalidate(){
+	Optional<, String> invalidate(){
 	}
 };
