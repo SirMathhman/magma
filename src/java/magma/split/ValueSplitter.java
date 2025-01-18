@@ -13,11 +13,12 @@ public class ValueSplitter implements Splitter {
     @Override
     public List<String> split(String content) {
         final var segments = new ArrayList<String>();
-        final var buffer = new StringBuilder();
+        var buffer = new StringBuilder();
         for (int i = 0; i < content.length(); i++) {
             final var c = content.charAt(i);
             if (c == ',') {
                 Splitter.advance(segments, buffer);
+                buffer = new StringBuilder();
             } else {
                 buffer.append(c);
             }
