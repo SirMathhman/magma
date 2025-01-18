@@ -9,7 +9,7 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
-struct Main {Optional[
+struct Main {
 	Path SOURCE_DIRECTORY = 0;
 	Path TARGET_DIRECTORY = 0;
 	temp(){
@@ -32,5 +32,5 @@ struct Main {Optional[
 	temp(){
 	}
 	temp(){
-	}]
+	}
 };

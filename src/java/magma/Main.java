@@ -134,8 +134,10 @@ public class Main {
                 final var withEnd = afterKeyword.substring(contentStart + 1).strip();
                 if (withEnd.endsWith("}")) {
                     final var content = withEnd.substring(0, withEnd.length() - 1);
-                    final var outputContent = splitAndCompile(content, Main::compileStructSegment);
-                    return Optional.of("struct " + name + " {" + outputContent + "\n};");
+                    final var maybeOutputContent = splitAndCompile(content, Main::compileStructSegment);
+                    if (maybeOutputContent.isPresent()) {
+                        return Optional.of("struct " + name + " {" + maybeOutputContent.get() + "\n};");
+                    }
                 }
             }
         }
