@@ -21,22 +21,7 @@ public class Main {
                     .collect(Collectors.toSet());
 
             for (Path source : sources) {
-                final var relativized = SOURCE_DIRECTORY.relativize(source);
-                final var parent = relativized.getParent();
-                final var nameWithExt = relativized.getFileName().toString();
-                final var name = nameWithExt.substring(0, nameWithExt.indexOf('.'));
-
-                final var targetParent = TARGET_DIRECTORY.resolve(parent);
-                if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
-
-                final var input = Files.readString(source);
-                final var output = compile(input).orElse("");
-
-                final var target = targetParent.resolve(name + ".c");
-                Files.writeString(target, output);
-
-                final var header = targetParent.resolve(name + ".h");
-                Files.writeString(header, output);
+                compileSource(source);
             }
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
@@ -44,26 +29,31 @@ public class Main {
         }
     }
 
+    private static void compileSource(Path source) throws IOException {
+        final var relativized = SOURCE_DIRECTORY.relativize(source);
+        final var parent = relativized.getParent();
+        final var nameWithExt = relativized.getFileName().toString();
+        final var name = nameWithExt.substring(0, nameWithExt.indexOf('.'));
+
+        final var targetParent = TARGET_DIRECTORY.resolve(parent);
+        if (!Files.exists(targetParent)) Files.createDirectories(targetParent);
+
+        final var input = Files.readString(source);
+        final var output = compile(input).orElse("");
+
+        final var target = targetParent.resolve(name + ".c");
+        Files.writeString(target, output);
+
+        final var header = targetParent.resolve(name + ".h");
+        Files.writeString(header, output);
+    }
+
     private static Optional<String> compile(String root) {
         return splitAndCompile(root, Main::compileRootSegment);
     }
 
     private static Optional<String> splitAndCompile(String input, Function<String, Optional<String>> compiler) {
-        final var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
-        for (int i = 0; i < input.length(); i++) {
-            final var c = input.charAt(i);
-            buffer.append(c);
-            if (c == ';' && depth == 0) {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            } else {
-                if (c == '{') depth++;
-                if (c == '}') depth--;
-            }
-        }
-        advance(buffer, segments);
+        final var segments = split(input);
 
         final var output = new StringBuilder();
         for (String segment : segments) {
@@ -73,6 +63,34 @@ public class Main {
         }
 
         return Optional.of(output.toString());
+    }
+
+    private static ArrayList<String> split(String input) {
+        final var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        var depth = 0;
+        for (int i = 0; i < input.length(); i++) {
+            final var c = input.charAt(i);
+            buffer.append(c);
+            if (c == ';' && depth == 0) {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            } else if (c == '}' && depth == 1) {
+                depth--;
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            } else {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
+            }
+        }
+
+        advance(buffer, segments);
+        if (depth != 0) {
+            System.err.println("Invalid depth: '" + depth + "': " + input);
+        }
+
+        return segments;
     }
 
     private static Optional<String> compileRootSegment(String rootSegment) {
@@ -96,25 +114,36 @@ public class Main {
     }
 
     private static Optional<String> compileStructSegment(String structSegment) {
-        final var index = structSegment.indexOf("=");
-        if (index != -1) {
-            final var stripped = structSegment.substring(0, index).strip();
-            final var index1 = stripped.lastIndexOf(' ');
-            if (index1 != -1) {
-                final var beforeName = stripped.substring(0, index1).strip();
-                final Optional<String> outputType;
-                final var index2 = beforeName.lastIndexOf(' ');
-                if (index2 == -1) {
-                    outputType = compileType(beforeName);
-                } else {
-                    outputType = compileType(beforeName.substring(index2 + 1));
-                }
+        return compileInitialization(structSegment)
+                .or(() -> compileMethod(structSegment))
+                .or(() -> invalidate("struct segment", structSegment));
+    }
 
-                final var name = stripped.substring(index1 + 1).strip();
-                return Optional.of("\n\t" + outputType + " " + name + " = 0;");
-            }
+    private static Optional<? extends String> compileMethod(String structSegment) {
+        return Optional.of("\n\ttemp(){\n\t}");
+    }
+
+    private static Optional<String> compileInitialization(String structSegment) {
+        final var index = structSegment.indexOf("=");
+        if (index == -1) return Optional.empty();
+
+        final var stripped = structSegment.substring(0, index).strip();
+        final var index1 = stripped.lastIndexOf(' ');
+        if (index1 == -1) return Optional.empty();
+
+        final var beforeName = stripped.substring(0, index1).strip();
+        final Optional<String> maybeOutputType;
+        final var index2 = beforeName.lastIndexOf(' ');
+        if (index2 == -1) {
+            maybeOutputType = compileType(beforeName);
+        } else {
+            maybeOutputType = compileType(beforeName.substring(index2 + 1));
         }
-        return invalidate("struct segment", structSegment);
+
+        if (maybeOutputType.isEmpty()) return Optional.empty();
+        final var outputType = maybeOutputType.get();
+        final var name = stripped.substring(index1 + 1).strip();
+        return Optional.of("\n\t" + outputType + " " + name + " = 0;");
     }
 
     private static Optional<String> compileType(String type) {
@@ -138,6 +167,6 @@ public class Main {
 
     private static Optional<String> invalidate(String type, String input) {
         System.err.println("Invalid " + type + ": " + input);
-        return Optional.of(input);
+        return Optional.empty();
     }
 }
