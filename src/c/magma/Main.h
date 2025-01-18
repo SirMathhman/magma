@@ -21,6 +21,8 @@ struct Main {
 	}
 	Optional<, String> compileRootSegment(){
 	}
+	Optional<, String> compileToStruct(){
+	}
 	Optional<, String> compileStatements(){
 	}
 	Optional<, String> getString(){

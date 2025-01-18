@@ -59,23 +59,25 @@ public class Main {
     private static Optional<String> compileRootSegment(String rootSegment) {
         if (rootSegment.startsWith("package ")) return Optional.of("");
         if (rootSegment.startsWith("import ")) return Optional.of("#include \"temp.h\"\n");
-        final var keyword = rootSegment.indexOf("class");
-        if (keyword != -1) {
-            final var afterKeyword = rootSegment.substring(keyword + "class".length());
-            final var contentStart = afterKeyword.indexOf('{');
-            if (contentStart != -1) {
-                final var name = afterKeyword.substring(0, contentStart).strip();
-                final var withEnd = afterKeyword.substring(contentStart + 1).strip();
-                if (withEnd.endsWith("}")) {
-                    final var content = withEnd.substring(0, withEnd.length() - 1);
-                    final var maybeOutputContent = compileStatements(content, Main::compileStructSegment);
-                    if (maybeOutputContent.isPresent()) {
-                        return Optional.of("struct " + name + " {" + maybeOutputContent.get() + "\n};");
-                    }
-                }
-            }
-        }
-        return invalidate("root segment", rootSegment);
+        return compileToStruct(rootSegment, "class")
+                .or(() -> compileToStruct(rootSegment, "interface"))
+                .or(() -> invalidate("root segment", rootSegment));
+    }
+
+    private static Optional<String> compileToStruct(String rootSegment, String keyword) {
+        final var keywordIndex = rootSegment.indexOf(keyword);
+        if (keywordIndex == -1) return Optional.empty();
+
+        final var afterKeyword = rootSegment.substring(keywordIndex + keyword.length());
+        final var contentStart = afterKeyword.indexOf('{');
+        if (contentStart == -1) return Optional.empty();
+
+        final var name = afterKeyword.substring(0, contentStart).strip();
+        final var withEnd = afterKeyword.substring(contentStart + 1).strip();
+        if (!withEnd.endsWith("}")) return Optional.empty();
+
+        final var content = withEnd.substring(0, withEnd.length() - 1);
+        return compileStatements(content, Main::compileStructSegment).map(outputContent -> "struct " + name + " {" + outputContent + "\n};");
     }
 
     private static Optional<String> compileStatements(String content, Function<String, Optional<String>> compiler) {
