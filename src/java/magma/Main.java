@@ -88,6 +88,16 @@ public class Main {
                 buffer.append(queue.pop());
             }
 
+            if (c == '"') {
+                while (!queue.isEmpty()) {
+                    final var c1 = queue.pop();
+                    buffer.append(c1);
+
+                    if (c1 == '"') break;
+                    if (c1 == '\\') buffer.append(queue.pop());
+                }
+            }
+
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
