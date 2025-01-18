@@ -45,11 +45,11 @@ public class StatementSplitter implements Splitter {
             }
 
             if (c == ';' && depth == 0) {
-                advance(segments, buffer);
+                Splitter.advance(segments, buffer);
                 buffer = new StringBuilder();
             } else if (c == '}' && depth == 1) {
                 depth--;
-                advance(segments, buffer);
+                Splitter.advance(segments, buffer);
                 buffer = new StringBuilder();
             } else {
                 if (c == '{') depth++;
@@ -57,7 +57,7 @@ public class StatementSplitter implements Splitter {
             }
         }
 
-        advance(segments, buffer);
+        Splitter.advance(segments, buffer);
         if (depth != 0) {
             System.err.println("Invalid depth: '" + depth + "': " + content);
         }

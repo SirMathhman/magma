@@ -10,23 +10,20 @@
 #include "temp.h"
 #include "temp.h"
 #include "temp.h"
-#include "temp.h"
 struct Main {
-	Path SOURCE_DIRECTORY = Paths.get(".""." "src""." "src" "java");
-	Path TARGET_DIRECTORY = Paths.get(".""." "src""." "src" "c");
+	Path SOURCE_DIRECTORY = Paths.get(, ".", "." "src", "." "src" "java");
+	Path TARGET_DIRECTORY = Paths.get(, ".", "." "src", "." "src" "c");
 	void main(){
 	}
 	void compileSource(){
 	}
 	Optional<, String> compile(){
 	}
-	Optional<, String> compileAll(){
-	}
-	StringBuilder mergeStatements(){
-	}
-	List<, String> split(){
-	}
 	Optional<, String> compileRootSegment(){
+	}
+	Optional<, String> compileStatements(){
+	}
+	Optional<, String> getString(){
 	}
 	Optional<, String> compileStructSegment(){
 	}
@@ -42,6 +39,8 @@ struct Main {
 	}
 	Optional<, String> compileInvocation(){
 	}
+	Optional<, String> splitAndCompileValues(){
+	}
 	Optional<, String> compileDefinition(){
 	}
 	Optional<, String> compileType(){
@@ -50,13 +49,7 @@ struct Main {
 	}
 	Optional<, String> compileGeneric(){
 	}
-	StringBuilder mergeValues(){
-	}
-	List<, String> splitValues(){
-	}
 	boolean isSymbol(){
-	}
-	void advance(){
 	}
 	Optional<, String> invalidate(){
 	}
