@@ -173,8 +173,20 @@ public class Main {
     }
 
     private static Optional<String> compileValue(String value) {
-        if (value.contains("(")) return Optional.of("temp()");
-        return invalidate("value", value);
+        return compileInvocation(value)
+                .or(() -> invalidate("value", value));
+    }
+
+    private static Optional<String> compileInvocation(String value) {
+        final var index = value.indexOf("(");
+        if (index != -1) {
+            final var stripped = value.substring(0, index).strip();
+            final var optional = compileValue(stripped);
+            if (optional.isPresent()) {
+                return Optional.of(optional.get() + "()");
+            }
+        }
+        return Optional.empty();
     }
 
     private static Optional<String> compileDefinition(String definition) {
