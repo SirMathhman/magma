@@ -11,24 +11,36 @@
 #include "temp.h"
 #include "temp.h"
 struct Main {
-	Path SOURCE_DIRECTORY = 0;
-	Path TARGET_DIRECTORY = 0;
-	(Stream<Path> stream = 0;
-	var relativized = 0;
+	Path SOURCE_DIRECTORY = temp();
+	Path TARGET_DIRECTORY = temp();
+	void main(){
+	}
+	void compileSource(){
+	}
 	Optional<String> compile(){
 	}
-	var output = 0;
-	var segments = 0;
-	var keyword = 0;
+	Optional<String> compileAll(){
+	}
+	List<String> split(){
+	}
+	Optional<String> compileRootSegment(){
+	}
 	Optional<String> compileStructSegment(){
 	}
-	var index = 0;
-	var index = 0;
-	var index1 = 0;
+	Optional<String> compileMethod(){
+	}
+	Optional<String> compileInitialization(){
+	}
+	Optional<String> compileValue(){
+	}
+	Optional<String> compileDefinition(){
+	}
 	Optional<String> compileType(){
 	}
-	var index = 0;
-	var segments = 0;
+	Optional<String> compileGeneric(){
+	}
+	List<String> splitValues(){
+	}
 	boolean isSymbol(){
 	}
 	void advance(){

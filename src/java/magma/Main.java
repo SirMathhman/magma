@@ -149,7 +149,7 @@ public class Main {
                 .or(() -> invalidate("struct segment", structSegment));
     }
 
-    private static Optional<? extends String> compileMethod(String structSegment) {
+    private static Optional<String> compileMethod(String structSegment) {
         final var index = structSegment.indexOf('(');
         if (index != -1) {
             final var inputDefinition = structSegment.substring(0, index).strip();
@@ -164,7 +164,17 @@ public class Main {
         if (index == -1) return Optional.empty();
 
         final var definition = structSegment.substring(0, index).strip();
-        return compileDefinition(definition).map(outputDefinition -> "\n\t" + outputDefinition + " = 0;");
+        final var stripped = structSegment.substring(index + 1).strip();
+        if (!stripped.endsWith(";")) return Optional.empty();
+
+        final var inputValue = stripped.substring(0, stripped.length() - 1);
+        return compileValue(inputValue).flatMap(outputValue -> compileDefinition(definition).map(outputDefinition -> "\n\t" + outputDefinition + " = " + outputValue + ";"));
+
+    }
+
+    private static Optional<String> compileValue(String value) {
+        if (value.contains("(")) return Optional.of("temp()");
+        return invalidate("value", value);
     }
 
     private static Optional<String> compileDefinition(String definition) {
