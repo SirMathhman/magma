@@ -6,6 +6,7 @@ import magma.error.JavaError;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
+import magma.stream.Streams;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -130,11 +132,16 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRootSegment(String input) {
-        return compileNamespaced(input, "package ", "").mapErr(Collections::singletonList)
-                .or(() -> compileNamespaced(input, "import ", "#include <temp.h>\n")).mapErr(Main::add)
-                .or(() -> compileToStruct(input, "record ")).mapErr(Main::add)
-                .or(() -> compileToStruct(input, "interface ")).mapErr(Main::add)
-                .mapErr(errors -> new CompileError("Invalid root", input, errors));
+        return Streams.<Supplier<Result<String, CompileError>>>of(
+                        () -> compileNamespaced(input, "package ", ""),
+                        () -> compileNamespaced(input, "import ", "#include <temp.h>\n"),
+                        () -> compileToStruct(input, "class "),
+                        () -> compileToStruct(input, "record "),
+                        () -> compileToStruct(input, "interface "))
+                .map(Main::prepare)
+                .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
+                .map(result -> result.mapErr(errors -> new CompileError("Invalid root segment", input, errors)))
+                .orElseGet(() -> new Err<>(new CompileError("No compilers present", input)));
     }
 
     private static Result<String, CompileError> compileNamespaced(String input, String prefix, String output) {
@@ -142,16 +149,25 @@ public class Main {
         return new Err<>(new CompileError("Prefix '" + prefix + "' not present.", input));
     }
 
-    private static List<CompileError> add(Tuple<List<CompileError>, CompileError> tuple) {
+    private static List<CompileError> merge(Tuple<List<CompileError>, List<CompileError>> tuple) {
         final var left = tuple.left();
         final var right = tuple.right();
         final var copy = new ArrayList<>(left);
-        copy.add(right);
+        copy.addAll(right);
         return copy;
     }
 
     private static Result<String, CompileError> compileToStruct(String input, String infix) {
         if (input.contains(infix)) return new Ok<>("struct Temp {\n};");
         return new Err<>(new CompileError("Infix '" + infix + "' not present", input));
+    }
+
+    private static Supplier<Result<String, List<CompileError>>> prepare(Supplier<Result<String, CompileError>> supplier) {
+        return new Supplier<Result<String, List<CompileError>>>() {
+            @Override
+            public Result<String, List<CompileError>> get() {
+                return supplier.get().mapErr(Collections::singletonList);
+            }
+        };
     }
 }
