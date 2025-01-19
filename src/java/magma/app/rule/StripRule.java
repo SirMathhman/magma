@@ -7,7 +7,7 @@ import magma.app.error.CompileError;
 import java.util.function.Function;
 
 public record StripRule(
-        Function<String, Result<Node, CompileError>> childRule) implements Function<String, Result<Node, CompileError>> {
+        Rule childRule) implements Rule {
     @Override
     public Result<Node, CompileError> apply(String input) {
         return this.childRule.apply(input.strip());

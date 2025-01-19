@@ -37,6 +37,10 @@ struct MapNode implements Node {
 		temp = temp;
 		return current;
 	}
+	String MapNode implements Node_display(void* _this_){
+		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
+		temp = temp;
+	}
 	Node MapNode implements Node_withNode(void* _this_){
 		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
 		this.nodes.put();

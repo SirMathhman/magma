@@ -20,4 +20,6 @@ public interface Node {
     Node mapString(String propertyKey, Function<String, String> mapper);
 
     Node merge(Node other);
+
+    String display();
 }

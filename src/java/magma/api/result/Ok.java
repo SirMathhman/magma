@@ -2,6 +2,7 @@ package magma.api.result;
 
 import magma.api.Tuple;
 
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -34,5 +35,10 @@ public record Ok<T, X>(T value) implements Result<T, X> {
     @Override
     public <R> Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other) {
         return new Ok<>(this.value);
+    }
+
+    @Override
+    public Optional<T> findValue() {
+        return Optional.of(this.value);
     }
 }

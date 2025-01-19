@@ -47,6 +47,11 @@ public final class MapNode implements Node {
     }
 
     @Override
+    public String display() {
+        return toString();
+    }
+
+    @Override
     public Node withNode(String propertyKey, Node propertyValue) {
         this.nodes.put(propertyKey, propertyValue);
         return this;

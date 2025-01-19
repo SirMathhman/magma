@@ -2,20 +2,15 @@
 #include <temp.h>
 #include <temp.h>
 #include <temp.h>
-struct StripRule(
-        Function<String, Result<Node, CompileError>> childRule) implements Function<String, Result<Node, CompileError>> {
-	struct StripRule(
-        Function<String, Result<Node, CompileError>> childRule) implements Function<String, Result<Node, CompileError>> StripRule(
-        Function<String, Result<Node, CompileError>> childRule) implements Function<String, Result<Node, CompileError>>_new(){
-		struct StripRule(
-        Function<String, Result<Node, CompileError>> childRule) implements Function<String, Result<Node, CompileError>> this;
+struct StripRule {
+	Rule childRule;
+	struct StripRule StripRule_new(Rule childRule){
+		struct StripRule this;
+		this.childRule = childRule;
 		return this;
 	}
-	CompileError> StripRule(
-        Function<String, Result<Node, CompileError>> childRule) implements Function<String, Result<Node, CompileError>>_apply(void* _this_){
-		struct StripRule(
-        Function<String, Result<Node, CompileError>> childRule) implements Function<String, Result<Node, CompileError>> this = *(struct StripRule(
-        Function<String, Result<Node, CompileError>> childRule) implements Function<String, Result<Node, CompileError>>*) this;
+	CompileError> StripRule_apply(void* _this_){
+		struct StripRule this = *(struct StripRule*) this;
 		return this.childRule.apply(input.strip());
 	}
 };

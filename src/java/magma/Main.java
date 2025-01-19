@@ -11,11 +11,14 @@ import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
+import magma.app.error.context.NodeContext;
+import magma.app.error.context.StringContext;
 import magma.app.filter.SymbolFilter;
 import magma.app.locate.FirstLocator;
 import magma.app.locate.LastLocator;
 import magma.app.locate.Locator;
 import magma.app.rule.FilterRule;
+import magma.app.rule.Rule;
 import magma.app.rule.StripRule;
 
 import java.io.IOException;
@@ -122,7 +125,7 @@ public class Main {
                 .reduce(new StringBuilder(), merger, (_, next) -> next).toString();
     }
 
-    private static Result<List<Node>, CompileError> compileAll(List<String> segments, Function<String, Result<Node, CompileError>> compiler) {
+    private static Result<List<Node>, CompileError> compileAll(List<String> segments, Rule compiler) {
         Result<List<Node>, CompileError> nodes = new Ok<>(new ArrayList<>());
         for (String segment : segments) {
             final var stripped = segment.strip();
@@ -195,7 +198,7 @@ public class Main {
         if (depth == 0) {
             return new Ok<>(segments);
         } else {
-            return new Err<>(new CompileError("Invalid depth '" + depth + "'", input));
+            return new Err<>(new CompileError("Invalid depth '" + depth + "'", new StringContext(input)));
         }
     }
 
@@ -217,13 +220,13 @@ public class Main {
     private static Result<Node, CompileError> or(String type, String input, Stream<Supplier<Result<Node, CompileError>>> stream) {
         return stream.map(Main::prepare)
                 .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
-                .map(result -> result.mapErr(errors -> new CompileError("Invalid " + type, input, errors)))
-                .orElseGet(() -> new Err<>(new CompileError("No compilers present", input)));
+                .map(result -> result.mapErr(errors -> new CompileError("Invalid " + type, new StringContext(input), errors)))
+                .orElseGet(() -> new Err<>(new CompileError("No compilers present", new StringContext(input))));
     }
 
     private static Result<String, CompileError> compileNamespaced(String input, String prefix, String output) {
         if (input.startsWith(prefix)) return new Ok<>(output);
-        return new Err<>(new CompileError("Prefix '" + prefix + "' not present.", input));
+        return new Err<>(new CompileError("Prefix '" + prefix + "' not present.", new StringContext(input)));
     }
 
     private static List<CompileError> merge(Tuple<List<CompileError>, List<CompileError>> tuple) {
@@ -237,7 +240,7 @@ public class Main {
     private static Result<String, CompileError> compileToStruct(String input, String infix) {
         return split(new FirstLocator(infix), input).flatMapValue(tuple -> {
             return split(new FirstLocator("{"), tuple.right()).flatMapValue(withoutContentStart -> {
-                Stream<Function<String, Result<Node, CompileError>>> rules = Streams.of(
+                Stream<Rule> rules = Streams.of(
                         parseSplit(parseString(DEFAULT_VALUE), new FirstLocator("("), parseSplit(parseDivide("params", Main::splitByValues, definition -> createDefinitionRule().apply(definition)),
                                 new FirstLocator(")"),
                                 parseString("after-params"))),
@@ -292,14 +295,14 @@ public class Main {
         return "struct " + structName + " " + generateBlock(fields + constructor + joinedChildren, 0) + ";";
     }
 
-    private static Function<String, Result<Node, CompileError>> parseOr(String category, Stream<Function<String, Result<Node, CompileError>>> rules) {
+    private static Rule parseOr(String category, Stream<Rule> rules) {
         return input -> or(category, input, rules.map(rule -> () -> rule.apply(input)));
     }
 
-    private static Function<String, Result<Node, CompileError>> parseSplit(
-            Function<String, Result<Node, CompileError>> leftRule,
+    private static Rule parseSplit(
+            Rule leftRule,
             Locator locator,
-            Function<String, Result<Node, CompileError>> rightRule
+            Rule rightRule
     ) {
         return input -> split(locator, input).flatMapValue(sliced -> {
             final var leftSlice = sliced.left();
@@ -310,14 +313,14 @@ public class Main {
         });
     }
 
-    private static Function<String, Result<Node, CompileError>> parseString(String propertyKey) {
+    private static Rule parseString(String propertyKey) {
         return input -> new Ok<>(new MapNode().withString(propertyKey, input));
     }
 
-    private static Function<String, Result<Node, CompileError>> parseDivide(
+    private static Rule parseDivide(
             String propertyKey,
             Function<String, Result<List<String>, CompileError>> splitter,
-            Function<String, Result<Node, CompileError>> compiler
+            Rule compiler
     ) {
         return input -> splitter.apply(input)
                 .flatMapValue(segments -> compileAll(segments, compiler))
@@ -397,7 +400,7 @@ public class Main {
                             return "{" + unwrapThis + outputContent + "\n\t}";
                         });
                     });
-                }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", stripped)));
+                }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", new StringContext(stripped))));
                 return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> createDefaultNode(s)))).mapValue(node -> generateWithDefaultValue(node)).flatMapValue(content -> {
                     return createDefinitionRule().apply(tuple.left().strip())
                             .mapValue(definition -> definition.mapString("name", name -> {
@@ -479,7 +482,7 @@ public class Main {
         if (new SymbolFilter().test(value)) {
             result = new Ok<>(value);
         } else {
-            result = new Err<>(new CompileError("Not a symbol", value));
+            result = new Err<>(new CompileError("Not a symbol", new StringContext(value)));
         }
         return result.mapValue(Main::createDefaultNode);
     }
@@ -501,7 +504,7 @@ public class Main {
 
     private static Result<String, CompileError> truncateLeft(String input, String slice) {
         if (input.startsWith(slice)) return new Ok<>(input.substring(slice.length()));
-        return new Err<>(new CompileError("Prefix '" + slice + "' not present", input));
+        return new Err<>(new CompileError("Prefix '" + slice + "' not present", new StringContext(input)));
     }
 
     private static String generateDefinition(Node node) {
@@ -514,12 +517,14 @@ public class Main {
         return new Function<>() {
             @Override
             public Result<String, CompileError> apply(Node node) {
-                return new Ok<>(node.findString(propertyKey).orElse(""));
+                return node.findString(propertyKey)
+                        .<Result<String, CompileError>>map(Ok::new)
+                        .orElseGet(() -> new Err<>(new CompileError("String '" + propertyKey + "' not present", new NodeContext(node))));
             }
         };
     }
 
-    private static Function<String, Result<Node, CompileError>> createDefinitionRule() {
+    private static Rule createDefinitionRule() {
         return parseSplit(parseOr("type", Streams.of(
                 parseSplit(parseString("modifiers"), new LastLocator(" "), parseString("type")),
                 parseString("type")
@@ -538,7 +543,7 @@ public class Main {
         if (input.endsWith(slice)) {
             return new Ok<>(input.substring(0, input.length() - slice.length()));
         } else {
-            return new Err<>(new CompileError("Suffix '" + slice + "' not present", input));
+            return new Err<>(new CompileError("Suffix '" + slice + "' not present", new StringContext(input)));
         }
     }
 
@@ -548,7 +553,7 @@ public class Main {
             final var right = input.substring(index + locator.length());
             final var tuple = new Tuple<>(left, right);
             return new Ok<>(tuple);
-        }).orElseGet(() -> new Err<>(new CompileError("Infix '" + locator.unwrap() + "' not present", input)));
+        }).orElseGet(() -> new Err<>(new CompileError("Infix '" + locator.unwrap() + "' not present", new StringContext(input))));
     }
 
     private static Supplier<Result<Node, List<CompileError>>> prepare(

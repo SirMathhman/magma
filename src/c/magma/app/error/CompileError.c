@@ -3,33 +3,37 @@
 #include <temp.h>
 #include <temp.h>
 #include <temp.h>
-struct CompileError {
-	String message;
-	String context;
-	List<CompileError> children;
-	struct CompileError CompileError_new(String message, String context, List<CompileError> children){
-		struct CompileError this;
-		this.message = message;
-		this.context = context;
-		this.children = children;
+#include <temp.h>
+struct CompileError implements Error {
+	struct CompileError implements Error CompileError implements Error_new(){
+		struct CompileError implements Error this;
 		return this;
 	}
-	public CompileError_new(void* _this_){
-		struct CompileError this = *(struct CompileError*) this;
+		String message;
+		Context context;
+		List<CompileError> children;
+	public CompileError implements Error_CompileError(void* _this_){
+		struct CompileError implements Error this = *(struct CompileError implements Error*) this;
+		temp = temp;
+		temp = temp;
+		temp = temp;
+	}
+	public CompileError implements Error_CompileError(void* _this_){
+		struct CompileError implements Error this = *(struct CompileError implements Error*) this;
 		this();
 	}
-	String CompileError_display(void* _this_){
-		struct CompileError this = *(struct CompileError*) this;
+	String CompileError implements Error_display(void* _this_){
+		struct CompileError implements Error this = *(struct CompileError implements Error*) this;
 		temp = temp;
 	}
-	int CompileError_maxDepth(void* _this_){
-		struct CompileError this = *(struct CompileError*) this;
+	int CompileError implements Error_maxDepth(void* _this_){
+		struct CompileError implements Error this = *(struct CompileError implements Error*) this;
 		temp = temp;
 	}
-	String CompileError_format(void* _this_){
-		struct CompileError this = *(struct CompileError*) this;
+	String CompileError implements Error_format(void* _this_){
+		struct CompileError implements Error this = *(struct CompileError implements Error*) this;
 		this.children.sort();
 		temp = temp;
-		return this.message + ": " + this.context + joinedChildren;
+		return this.message + ": " + this.context.display() + joinedChildren;
 	}
 };

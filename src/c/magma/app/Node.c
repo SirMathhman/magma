@@ -14,4 +14,5 @@ struct Node {
 	Optional<Node> Node_findNode(void* _this_);
 	Node Node_mapString(void* _this_);
 	Node Node_merge(void* _this_);
+	String Node_display(void* _this_);
 };
