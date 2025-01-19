@@ -391,19 +391,25 @@ public class Main {
 
     private static Result<String, CompileError> compileStatementToString(String statement) {
         Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
-                () -> truncateRight(statement, ");").flatMapValue(inner -> {
-                    return split(new FirstLocator("("), inner).flatMapValue(inner0 -> {
-                        final var inputCaller = inner0.left();
-                        return compileValue(inputCaller).mapValue(outputCaller -> {
-                            return generateStatement(outputCaller + "()");
-                        });
-                    });
-                }),
+                () -> compileInvocation(statement),
                 () -> compileReturn(statement),
                 () -> split(new FirstLocator(" "), statement).mapValue(inner -> generateStatement("temp = temp")),
                 () -> truncateRight(statement, "++;").mapValue(inner -> "temp++;")
         );
         return or("statement segment", statement, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse(""));
+    }
+
+    private static Result<String, CompileError> compileInvocation(String statement) {
+        return truncateRight(statement, ");").flatMapValue(inner -> {
+            return split(new FirstLocator("("), inner).flatMapValue(inner0 -> {
+                final var inputCaller = inner0.left();
+                splitByValues(inner0.right()).flatMapValue(arguments -> compileAll(arguments, Main::compileValue));
+
+                return compileValue(inputCaller).mapValue(node -> node.findString(DEFAULT_VALUE).orElse("")).mapValue(outputCaller -> {
+                    return generateStatement(outputCaller + "()");
+                });
+            });
+        });
     }
 
     private static Result<String, CompileError> compileReturn(String statement) {
@@ -417,24 +423,35 @@ public class Main {
     private static Result<Node, CompileError> parseReturn(String statement) {
         return truncateLeft(statement, "return ").flatMapValue(inner -> {
             return truncateRight(inner, ";").flatMapValue(inputValue -> {
-                return compileValue(inputValue).mapValue(outputValue -> {
+                return compileValue(inputValue).mapValue(node -> node.findString(DEFAULT_VALUE).orElse("")).mapValue(outputValue -> {
                     return new MapNode().withString("value", outputValue);
                 });
             });
         });
     }
 
-    private static Result<String, CompileError> compileValue(String value) {
-        Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
-                () -> split(new LastLocator("."), value).flatMapValue(tuple -> {
-                    return compileValue(tuple.left()).mapValue(inner -> generateAccess(inner, tuple.right()));
-                }),
-                () -> {
-                    if (isSymbol(value)) return new Ok<>(value);
-                    return new Err<>(new CompileError("Not a symbol", value));
-                }
-        );
-        return or("value", value, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse(""));
+    private static Result<Node, CompileError> compileValue(String value) {
+        return or("value", value, Streams.of(
+                () -> compileDataAccess(value),
+                () -> compileSymbol(value)
+        ));
+    }
+
+    private static Result<Node, CompileError> compileSymbol(String value) {
+        Result<String, CompileError> result;
+        if (isSymbol(value)) {
+            result = new Ok<>(value);
+        } else {
+            result = new Err<>(new CompileError("Not a symbol", value));
+        }
+        return result.mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s));
+    }
+
+    private static Result<Node, CompileError> compileDataAccess(String value) {
+        return split(new LastLocator("."), value).flatMapValue(tuple -> {
+            return compileValue(tuple.left()).mapValue(node -> node.findString(DEFAULT_VALUE).orElse(""))
+                    .mapValue(inner -> generateAccess(inner, tuple.right()));
+        }).mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s));
     }
 
     private static String generateAccess(String reference, String property) {

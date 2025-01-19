@@ -186,6 +186,10 @@ struct Main {
 		temp = temp;
 		temp = temp;
 	}
+	CompileError> Main_compileInvocation(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+	}
 	CompileError> Main_compileReturn(void* _this_){
 		struct Main this = *(struct Main*) this;
 		temp = temp;
@@ -201,6 +205,16 @@ struct Main {
 	CompileError> Main_compileValue(void* _this_){
 		struct Main this = *(struct Main*) this;
 		temp = temp;
+	}
+	CompileError> Main_compileSymbol(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+		temp = temp;
+		temp = temp;
+		return result.mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s));
+	}
+	CompileError> Main_compileDataAccess(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
 	String Main_generateAccess(void* _this_){
