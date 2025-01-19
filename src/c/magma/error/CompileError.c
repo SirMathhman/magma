@@ -9,6 +9,9 @@ struct CompileError {
 	List<CompileError> children;
 	struct CompileError new(String message, String context, List<CompileError> children){
 		struct CompileError this;
+		this.message = message;
+		this.context = context;
+		this.children = children;
 	}
 	public CompileError(){
 		this();

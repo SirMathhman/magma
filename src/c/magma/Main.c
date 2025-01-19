@@ -154,6 +154,9 @@ struct Main {
 		temp = temp;
 		temp = temp;
 	}
+	String generateAccess(){
+		temp = temp;
+	}
 	String generateStatement(){
 		temp = temp;
 	}

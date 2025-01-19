@@ -3,6 +3,7 @@ struct LastLocator {
 	String infix;
 	struct LastLocator new(String infix){
 		struct LastLocator this;
+		this.infix = infix;
 	}
 	Optional<Integer> locate(){
 		temp = temp;

@@ -238,7 +238,7 @@ public class Main {
                             final var right = tuple1.right();
                             return split(new FirstLocator(")"), right).flatMapValue(tuple2 -> {
                                 final var params = splitByValues(tuple2.left())
-                                        .flatMapValue(segments -> compileAll(s -> compileDefinition(s).mapValue(Main::generateDefinition).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments));
+                                        .flatMapValue(segments -> compileAll(Main::compileDefinition, segments));
 
                                 return params.mapValue(inner -> {
                                     return new MapNode()
@@ -252,12 +252,10 @@ public class Main {
                 return or("root segment", beforeContent, stream).flatMapValue(node -> {
                     final var stripped = tuple0.right().strip();
                     return truncateRight(stripped, "}").flatMapValue(content -> {
-                        final var params = node.findNodeList("params")
-                                .orElse(new ArrayList<>())
-                                .stream()
-                                .map(param -> param.findString(DEFAULT_VALUE).orElse(""))
-                                .toList();
+                        final var nodes = node.findNodeList("params")
+                                .orElse(new ArrayList<>());
 
+                        final var params = nodes.stream().map(Main::generateDefinition).toList();
                         final var collectorParams = String.join(", ", params);
 
                         final var fields = params.stream()
@@ -267,14 +265,17 @@ public class Main {
                         final var name = node.findString(DEFAULT_VALUE).orElse("");
                         final var thisType = "struct " + name;
 
-
                         final var definition = generateDefinition(new MapNode()
                                 .withString("type", thisType)
                                 .withString("name", "new"));
 
                         final var thisDefinition = new MapNode().withString("type", thisType).withString("name", "this");
-                        final var constructorBody = generateDefinitionStatement(thisDefinition);
+                        final var assignments = nodes.stream()
+                                .map(field -> field.findString("name")).flatMap(Optional::stream)
+                                .map(field -> generateStatement(generateAccess("this", field) + " = " + field))
+                                .collect(Collectors.joining());
 
+                        final var constructorBody = generateDefinitionStatement(thisDefinition) + assignments;
                         final var constructor = generateMethod(definition, collectorParams, generateBlock(constructorBody, 1));
 
                         return splitByStatements(content).flatMapValue(segments -> compileAll(s -> compileStructSegment(s, name).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
@@ -392,7 +393,7 @@ public class Main {
     private static Result<String, CompileError> compileValue(String value) {
         Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
                 () -> split(new LastLocator("."), value).flatMapValue(tuple -> {
-                    return compileValue(tuple.left()).mapValue(inner -> inner + "." + tuple.right());
+                    return compileValue(tuple.left()).mapValue(inner -> generateAccess(inner, tuple.right()));
                 }),
                 () -> {
                     if (isSymbol(value)) return new Ok<>(value);
@@ -400,6 +401,10 @@ public class Main {
                 }
         );
         return or("value", value, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse(""));
+    }
+
+    private static String generateAccess(String reference, String property) {
+        return reference + "." + property;
     }
 
     private static String generateStatement(String content) {

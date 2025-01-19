@@ -3,6 +3,7 @@ struct FirstLocator {
 	String infix;
 	struct FirstLocator new(String infix){
 		struct FirstLocator this;
+		this.infix = infix;
 	}
 	String unwrap(){
 		return this.infix;
