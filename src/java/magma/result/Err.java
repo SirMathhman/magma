@@ -1,6 +1,9 @@
 package magma.result;
 
+import magma.Tuple;
+
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public record Err<T, X>(X error) implements Result<T, X> {
     @Override
@@ -21,5 +24,10 @@ public record Err<T, X>(X error) implements Result<T, X> {
     @Override
     public <R> R match(Function<T, R> onOk, Function<X, R> onErr) {
         return onErr.apply(this.error);
+    }
+
+    @Override
+    public <R> Result<Tuple<T, R>, X> and(Supplier<Result<R, X>> other) {
+        return new Err<>(this.error);
     }
 }

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -98,6 +99,31 @@ public class Main {
     }
 
     private static Result<String, CompileError> compile(String root) {
+        final var segments = new ArrayList<String>();
+        var buffer = new StringBuilder();
+        for (int i = 0; i < root.length(); i++) {
+            final var c = root.charAt(i);
+            buffer.append(c);
+            if (c == ';') {
+                advance(buffer, segments);
+                buffer = new StringBuilder();
+            }
+        }
+        advance(buffer, segments);
+
+        Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
+        for (String segment : segments) {
+            output = output.and(() -> compileRootSegment(segment)).mapValue(tuple -> tuple.left().append(tuple.right()));
+        }
+
+        return output.mapValue(StringBuilder::toString);
+    }
+
+    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
+        if (!buffer.isEmpty()) segments.add(buffer.toString());
+    }
+
+    private static Err<String, CompileError> compileRootSegment(String root) {
         return new Err<>(new CompileError("Invalid root", root));
     }
 }
