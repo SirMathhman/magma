@@ -4,7 +4,7 @@ struct Locator {
 		struct Locator this;
 		return this;
 	}
-	String unwrap();
-	int length();
-	Optional<Integer> locate();
+	String unwrap(void* _this_);
+	int length(void* _this_);
+	Optional<Integer> locate(void* _this_);
 };

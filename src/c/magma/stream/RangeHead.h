@@ -6,10 +6,12 @@ struct RangeHead implements Head<Integer> {
 	}
 		int extent;
 		counter  = temp;
-	public RangeHead(){
+	public RangeHead(void* _this_){
+		struct RangeHead implements Head<Integer> this = *(struct RangeHead implements Head<Integer>*) this;
 		temp = temp;
 	}
-	Optional<Integer> next(){
+	Optional<Integer> next(void* _this_){
+		struct RangeHead implements Head<Integer> this = *(struct RangeHead implements Head<Integer>*) this;
 		temp = temp;
 		temp = temp;temp++;
 		return Optional.of(value);

@@ -8,22 +8,28 @@ struct Ok<T, X> {
 		this.value = value;
 		return this;
 	}
-	X> flatMapValue(){
+	X> flatMapValue(void* _this_){
+		struct Ok<T, X> this = *(struct Ok<T, X>*) this;
 		return mapper.apply(this.value);
 	}
-	X> mapValue(){
+	X> mapValue(void* _this_){
+		struct Ok<T, X> this = *(struct Ok<T, X>*) this;
 		temp = temp;
 	}
-	R> mapErr(){
+	R> mapErr(void* _this_){
+		struct Ok<T, X> this = *(struct Ok<T, X>*) this;
 		temp = temp;
 	}
-	R match(){
+	R match(void* _this_){
+		struct Ok<T, X> this = *(struct Ok<T, X>*) this;
 		return onOk.apply(this.value);
 	}
-	X> and(){
+	X> and(void* _this_){
+		struct Ok<T, X> this = *(struct Ok<T, X>*) this;
 		return other.get().mapValue(otherValue -> new Tuple<>(this.value, otherValue));
 	}
-	R>> or(){
+	R>> or(void* _this_){
+		struct Ok<T, X> this = *(struct Ok<T, X>*) this;
 		temp = temp;
 	}
 };

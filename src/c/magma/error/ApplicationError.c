@@ -5,7 +5,8 @@ struct ApplicationError {
 		this.cause = cause;
 		return this;
 	}
-	String display(){
+	String display(void* _this_){
+		struct ApplicationError this = *(struct ApplicationError*) this;
 		return this.cause.display();
 	}
 };

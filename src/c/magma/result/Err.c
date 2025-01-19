@@ -8,22 +8,28 @@ struct Err<T, X> {
 		this.error = error;
 		return this;
 	}
-	X> flatMapValue(){
+	X> flatMapValue(void* _this_){
+		struct Err<T, X> this = *(struct Err<T, X>*) this;
 		temp = temp;
 	}
-	X> mapValue(){
+	X> mapValue(void* _this_){
+		struct Err<T, X> this = *(struct Err<T, X>*) this;
 		temp = temp;
 	}
-	R> mapErr(){
+	R> mapErr(void* _this_){
+		struct Err<T, X> this = *(struct Err<T, X>*) this;
 		temp = temp;
 	}
-	R match(){
+	R match(void* _this_){
+		struct Err<T, X> this = *(struct Err<T, X>*) this;
 		return onErr.apply(this.error);
 	}
-	X> and(){
+	X> and(void* _this_){
+		struct Err<T, X> this = *(struct Err<T, X>*) this;
 		temp = temp;
 	}
-	R>> or(){
+	R>> or(void* _this_){
+		struct Err<T, X> this = *(struct Err<T, X>*) this;
 		return other.get().mapErr(otherErr -> new Tuple<>(this.error, otherErr));
 	}
 };

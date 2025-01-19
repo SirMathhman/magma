@@ -6,6 +6,6 @@ struct Stream<T> {
 		struct Stream<T> this;
 		return this;
 	}
-	Optional<R> foldLeft();
-	Stream<R> map();
+	Optional<R> foldLeft(void* _this_);
+	Stream<R> map(void* _this_);
 };

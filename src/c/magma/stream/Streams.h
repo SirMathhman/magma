@@ -3,7 +3,8 @@ struct Streams {
 		struct Streams this;
 		return this;
 	}
-	Stream<T> of(){
+	Stream<T> of(void* _this_){
+		struct Streams this = *(struct Streams*) this;
 		temp = temp;
 	}
 };

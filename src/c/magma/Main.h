@@ -32,18 +32,22 @@ struct Main {
 		SOURCE_DIRECTORY  = temp;
 		TARGET_DIRECTORY  = temp;
 		DEFAULT_VALUE  = temp;
-	void main(){
+	void main(void* _this_){
+		struct Main this = *(struct Main*) this;
 		collect();
 	}
-	IOException> collect(){
+	IOException> collect(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 	}
-	Optional<ApplicationError> runWithSources(){
+	Optional<ApplicationError> runWithSources(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		return Optional.empty();
 	}
-	Optional<ApplicationError> runWithSource(){
+	Optional<ApplicationError> runWithSource(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 		temp = temp;
@@ -52,32 +56,39 @@ struct Main {
 		temp = temp;
 		temp = temp;
 	}
-	IOException> readStringWrapped(){
+	IOException> readStringWrapped(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 	}
-	Optional<IOException> createDirectoriesWrapped(){
+	Optional<IOException> createDirectoriesWrapped(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 	}
-	Optional<IOException> writeStringWrapped(){
+	Optional<IOException> writeStringWrapped(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 	}
-	String merge(){
+	String merge(void* _this_){
+		struct Main this = *(struct Main*) this;
 		return nodes.stream()
                 .map(node -> node.findString(DEFAULT_VALUE).orElse(""))
                 .reduce(new StringBuilder(), merger, (_, next) -> next).toString();
 	}
-	CompileError> compileAll(){
+	CompileError> compileAll(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 		return nodes;
 	}
-	StringBuilder mergeStatement(){
+	StringBuilder mergeStatement(void* _this_){
+		struct Main this = *(struct Main*) this;
 		return builder.append(element);
 	}
-	CompileError> splitByStatements(){
+	CompileError> splitByStatements(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 		temp = temp;
@@ -87,113 +98,146 @@ struct Main {
 		temp = temp;
 		temp = temp;
 	}
-	void advance(){
+	void advance(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	CompileError> compileRootSegment(){
+	CompileError> compileRootSegment(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 	}
-	CompileError> or(){
+	CompileError> or(void* _this_){
+		struct Main this = *(struct Main*) this;
 		return stream.map(Main::prepare)
                 .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
                 .map(result -> result.mapErr(errors -> new CompileError("Invalid " + type, input, errors)))
                 .orElseGet(() -> new Err<>(new CompileError("No compilers present", input)));
 	}
-	CompileError> compileNamespaced(){
+	CompileError> compileNamespaced(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 	}
-	List<CompileError> merge(){
+	List<CompileError> merge(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 		temp = temp;
 		copy.addAll();
 		return copy;
 	}
-	CompileError> compileToStruct(){
+	CompileError> compileToStruct(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	String generateBlock(){
+	String generateBlock(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	CompileError> splitByValues(){
+	CompileError> splitByValues(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 		temp = temp;
 		advance();
 		temp = temp;
 	}
-	CompileError> compileStructSegment(){
+	CompileError> compileStructSegment(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 	}
-	CompileError> compileDefinitionStatement(){
+	CompileError> compileDefinitionStatement(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	String generateDefinitionStatement(){
+	String generateDefinitionStatement(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	CompileError> compileInitialization(){
+	CompileError> compileInitialization(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	String generateInitialization(){
-		temp = temp;
-		temp = temp;
-	}
-	CompileError> compileMethod(){
-		temp = temp;
-	}
-	String generateMethod(){
-		temp = temp;
-	}
-	CompileError> compileStatement(){
+	String generateInitialization(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 	}
-	CompileError> compileReturn(){
+	CompileError> compileMethod(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	String generateReturn(){
+	CompileError> compileStatementToNode(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	CompileError> parseReturn(){
+	String generateMethod(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	CompileError> compileValue(){
-		temp = temp;
-		temp = temp;
-	}
-	String generateAccess(){
-		temp = temp;
-	}
-	String generateStatement(){
-		temp = temp;
-	}
-	CompileError> truncateLeft(){
+	CompileError> compileStatementToString(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 	}
-	String generateDefinition(){
+	CompileError> compileReturn(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+	}
+	String generateReturn(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+	}
+	CompileError> parseReturn(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+	}
+	CompileError> compileValue(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+		temp = temp;
+	}
+	String generateAccess(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+	}
+	String generateStatement(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+	}
+	CompileError> truncateLeft(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+		temp = temp;
+	}
+	String generateDefinition(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 		temp = temp;
 	}
-	CompileError> compileDefinition(){
+	CompileError> compileDefinition(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	boolean isSymbol(){
+	boolean isSymbol(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		return true;
 	}
-	String generateDefinition(){
+	String generateDefinition(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	CompileError> truncateRight(){
+	CompileError> truncateRight(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
 	}
-	CompileError> split(){
+	CompileError> split(void* _this_){
+		struct Main this = *(struct Main*) this;
 		return locator.locate(input).<Result<Tuple<String, String>, CompileError>>map(index -> {
             final var left = input.substring(0, index);
             final var right = input.substring(index + locator.length());
@@ -201,7 +245,8 @@ struct Main {
             return new Ok<>(tuple);
         }).orElseGet(() -> new Err<>(new CompileError("Infix '" + locator.unwrap() + "' not present", input)));
 	}
-	List<CompileError>>> prepare(){
+	List<CompileError>>> prepare(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
 };

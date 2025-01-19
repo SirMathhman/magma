@@ -14,16 +14,20 @@ struct CompileError {
 		this.children = children;
 		return this;
 	}
-	public CompileError(){
+	public CompileError(void* _this_){
+		struct CompileError this = *(struct CompileError*) this;
 		this();
 	}
-	String display(){
+	String display(void* _this_){
+		struct CompileError this = *(struct CompileError*) this;
 		temp = temp;
 	}
-	int maxDepth(){
+	int maxDepth(void* _this_){
+		struct CompileError this = *(struct CompileError*) this;
 		temp = temp;
 	}
-	String format(){
+	String format(void* _this_){
+		struct CompileError this = *(struct CompileError*) this;
 		this.children.sort();
 		temp = temp;
 		return this.message + ": " + this.context + joinedChildren;

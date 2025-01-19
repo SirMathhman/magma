@@ -3,5 +3,5 @@ struct Error {
 		struct Error this;
 		return this;
 	}
-	String display();
+	String display(void* _this_);
 };

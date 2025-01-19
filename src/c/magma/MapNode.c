@@ -10,33 +10,41 @@ struct MapNode implements Node {
 		String> strings;
 		List<Node>> nodeLists;
 		Node> nodes;
-	public MapNode(){
+	public MapNode(void* _this_){
+		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
 		this();
 	}
-	public MapNode(){
+	public MapNode(void* _this_){
+		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
 		temp = temp;
 		temp = temp;
 		temp = temp;
 	}
-	Optional<Node> findNode(){
+	Optional<Node> findNode(void* _this_){
+		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
 		return Optional.ofNullable(this.nodes.get(propertyKey));
 	}
-	Node withNode(){
+	Node withNode(void* _this_){
+		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
 		this.nodes.put();
 		return this;
 	}
-	Node withNodeList(){
+	Node withNodeList(void* _this_){
+		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
 		this.nodeLists.put();
 		return this;
 	}
-	Optional<List<Node>> findNodeList(){
+	Optional<List<Node>> findNodeList(void* _this_){
+		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
 		return Optional.ofNullable(this.nodeLists.get(propertyKey));
 	}
-	Node withString(){
+	Node withString(void* _this_){
+		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
 		this.strings.put();
 		return this;
 	}
-	Optional<String> findString(){
+	Optional<String> findString(void* _this_){
+		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
 		return Optional.ofNullable(this.strings.get(propertyKey));
 	}
 };

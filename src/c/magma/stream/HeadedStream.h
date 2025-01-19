@@ -8,14 +8,17 @@ struct HeadedStream<T> {
 		this.head = head;
 		return this;
 	}
-	Optional<R> foldLeft(){
+	Optional<R> foldLeft(void* _this_){
+		struct HeadedStream<T> this = *(struct HeadedStream<T>*) this;
 		return this.head.next().map(mapper).map(initial -> foldLeft(initial, folder));
 	}
-	R foldLeft(){
+	R foldLeft(void* _this_){
+		struct HeadedStream<T> this = *(struct HeadedStream<T>*) this;
 		temp = temp;
 		temp = temp;
 	}
-	Stream<R> map(){
+	Stream<R> map(void* _this_){
+		struct HeadedStream<T> this = *(struct HeadedStream<T>*) this;
 		temp = temp;
 	}
 };

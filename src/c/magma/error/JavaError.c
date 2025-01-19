@@ -7,7 +7,8 @@ struct JavaError {
 		this.e = e;
 		return this;
 	}
-	String display(){
+	String display(void* _this_){
+		struct JavaError this = *(struct JavaError*) this;
 		temp = temp;
 		this.e.printStackTrace();
 		return writer.toString();

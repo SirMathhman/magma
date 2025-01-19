@@ -4,5 +4,5 @@ struct Head<T> {
 		struct Head<T> this;
 		return this;
 	}
-	Optional<T> next();
+	Optional<T> next(void* _this_);
 };

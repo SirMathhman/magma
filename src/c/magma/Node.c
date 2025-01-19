@@ -5,10 +5,10 @@ struct Node {
 		struct Node this;
 		return this;
 	}
-	Node withNodeList();
-	Optional<List<Node>> findNodeList();
-	Node withString();
-	Optional<String> findString();
-	Node withNode();
-	Optional<Node> findNode();
+	Node withNodeList(void* _this_);
+	Optional<List<Node>> findNodeList(void* _this_);
+	Node withString(void* _this_);
+	Optional<String> findString(void* _this_);
+	Node withNode(void* _this_);
+	Optional<Node> findNode(void* _this_);
 };

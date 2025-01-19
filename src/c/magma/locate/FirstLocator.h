@@ -6,13 +6,16 @@ struct FirstLocator {
 		this.infix = infix;
 		return this;
 	}
-	String unwrap(){
+	String unwrap(void* _this_){
+		struct FirstLocator this = *(struct FirstLocator*) this;
 		return this.infix;
 	}
-	int length(){
+	int length(void* _this_){
+		struct FirstLocator this = *(struct FirstLocator*) this;
 		return this.infix.length();
 	}
-	Optional<Integer> locate(){
+	Optional<Integer> locate(void* _this_){
+		struct FirstLocator this = *(struct FirstLocator*) this;
 		temp = temp;
 		temp = temp;
 	}

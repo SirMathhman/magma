@@ -6,14 +6,17 @@ struct LastLocator {
 		this.infix = infix;
 		return this;
 	}
-	Optional<Integer> locate(){
+	Optional<Integer> locate(void* _this_){
+		struct LastLocator this = *(struct LastLocator*) this;
 		temp = temp;
 		temp = temp;
 	}
-	String unwrap(){
+	String unwrap(void* _this_){
+		struct LastLocator this = *(struct LastLocator*) this;
 		return this.infix;
 	}
-	int length(){
+	int length(void* _this_){
+		struct LastLocator this = *(struct LastLocator*) this;
 		return this.infix.length();
 	}
 };

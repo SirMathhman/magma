@@ -73,7 +73,7 @@ public class Main {
         }
 
         return readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(input -> {
-            return splitByStatements(input).flatMapValue(segments -> compileAll(s -> Main.compileRootSegment(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapErr(ApplicationError::new).mapValue(output -> {
+            return splitByStatements(input).flatMapValue(segments -> compileAll(segments, s -> Main.compileRootSegment(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k))).mapValue(list -> merge(list, Main::mergeStatement))).mapErr(ApplicationError::new).mapValue(output -> {
                 final var target = targetParent.resolve(name + ".c");
                 final var header = targetParent.resolve(name + ".h");
                 return writeStringWrapped(target, output)
@@ -116,7 +116,7 @@ public class Main {
                 .reduce(new StringBuilder(), merger, (_, next) -> next).toString();
     }
 
-    private static Result<List<Node>, CompileError> compileAll(Function<String, Result<Node, CompileError>> compiler, List<String> segments) {
+    private static Result<List<Node>, CompileError> compileAll(List<String> segments, Function<String, Result<Node, CompileError>> compiler) {
         Result<List<Node>, CompileError> nodes = new Ok<>(new ArrayList<>());
         for (String segment : segments) {
             final var stripped = segment.strip();
@@ -238,7 +238,7 @@ public class Main {
                             final var right = tuple1.right();
                             return split(new FirstLocator(")"), right).flatMapValue(tuple2 -> {
                                 final var params = splitByValues(tuple2.left())
-                                        .flatMapValue(segments -> compileAll(Main::compileDefinition, segments));
+                                        .flatMapValue(segments -> compileAll(segments, Main::compileDefinition));
 
                                 return params.mapValue(inner -> {
                                     return new MapNode()
@@ -279,7 +279,7 @@ public class Main {
                         final var constructorBody = generateDefinitionStatement(thisDefinition) + assignments + returnThis;
                         final var constructor = generateMethod(definition, collectorParams, generateBlock(constructorBody, 1));
 
-                        return splitByStatements(content).flatMapValue(segments -> compileAll(s -> compileStructSegment(s, name).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
+                        return splitByStatements(content).flatMapValue(segments -> compileAll(segments, s -> compileStructSegment(s, name).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k))).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
                             return "struct " + name + " " + generateBlock(fields + constructor + outputContent, 0) + ";";
                         });
                     });
@@ -350,25 +350,37 @@ public class Main {
                 final var stripped = tuple0.right().strip();
                 Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(() -> truncateLeft(stripped, "{").flatMapValue(left -> {
                     return truncateRight(left, "}").flatMapValue(content -> {
-                        return ((Function<String, Result<List<String>, CompileError>>) Main::splitByStatements).apply(content).flatMapValue(segments -> compileAll(s -> compileStatement(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
-                            return "{" + outputContent + "\n\t}";
+                        return splitByStatements(content).flatMapValue(segments -> compileAll(segments, Main::compileStatementToNode)
+                                .mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
+                            final var unwrapThis = generateInitialization(new MapNode()
+                                    .withString("value", "*(struct " + structName + "*) this")
+                                    .withNode("definition", new MapNode()
+                                            .withString("type", "struct " + structName)
+                                            .withString("name", "this")));
+                            return "{" + unwrapThis + outputContent + "\n\t}";
                         });
                     });
                 }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", stripped)));
                 return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse("")).flatMapValue(content -> {
                     return compileDefinition(tuple.left().strip()).mapValue(Main::generateDefinition).mapValue(definition -> {
-                        return generateMethod(definition, "", content);
+                        return generateMethod(definition, generateDefinition(new MapNode()
+                                .withString("type", "void*")
+                                .withString("name", "_this_")), content);
                     });
                 });
             });
         });
     }
 
+    private static Result<Node, CompileError> compileStatementToNode(String s) {
+        return compileStatementToString(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k));
+    }
+
     private static String generateMethod(String definition, String params, String content) {
         return "\n\t" + definition + "(" + params + ")" + content;
     }
 
-    private static Result<String, CompileError> compileStatement(String statement) {
+    private static Result<String, CompileError> compileStatementToString(String statement) {
         Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
                 () -> truncateRight(statement, ");").flatMapValue(inner -> {
                     return split(new FirstLocator("("), inner).flatMapValue(inner0 -> {

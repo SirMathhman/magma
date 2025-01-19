@@ -6,10 +6,10 @@ struct Result<T, X> {
 		struct Result<T, X> this;
 		return this;
 	}
-	X> flatMapValue();
-	X> mapValue();
-	R> mapErr();
-	R match();
-	X> and();
-	R>> or();
+	X> flatMapValue(void* _this_);
+	X> mapValue(void* _this_);
+	R> mapErr(void* _this_);
+	R match(void* _this_);
+	X> and(void* _this_);
+	R>> or(void* _this_);
 };
