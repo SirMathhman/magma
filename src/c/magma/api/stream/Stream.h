@@ -4,7 +4,6 @@
 struct Stream<T> {
 	(){
 		;
-		return ;
 	}
 	();
 	();

@@ -6,7 +6,6 @@ struct HeadedStream<T> {
 	(){
 		;
 		this.head = head;
-		return ;
 	}
 	(){
 		 = *(struct HeadedStream<T>*) this;

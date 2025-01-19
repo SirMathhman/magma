@@ -5,7 +5,6 @@
 struct Result<T, X> {
 	(){
 		;
-		return ;
 	}
 	();
 	();

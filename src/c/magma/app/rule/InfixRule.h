@@ -9,7 +9,6 @@
 struct InfixRule implements Rule {
 	(){
 		;
-		return ;
 	}
 		;
 		;

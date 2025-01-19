@@ -2,7 +2,6 @@
 struct Locator {
 	(){
 		;
-		return ;
 	}
 	();
 	();

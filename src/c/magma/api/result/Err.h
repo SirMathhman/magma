@@ -7,7 +7,6 @@ struct Err<T, X> {
 	(){
 		;
 		this.error = error;
-		return ;
 	}
 	(){
 		 = *(struct Err<T, X>*) this;

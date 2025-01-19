@@ -4,7 +4,6 @@ struct NodeContext {
 	(){
 		;
 		this.node = node;
-		return ;
 	}
 	(){
 		 = *(struct NodeContext*) this;
