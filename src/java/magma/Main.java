@@ -195,21 +195,21 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRootSegment(String input) {
-        return or("root segment", input, Streams.of(
+        Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
                 () -> compileNamespaced(input, "package ", ""),
                 () -> compileNamespaced(input, "import ", "#include <temp.h>\n"),
                 () -> compileToStruct(input, "class "),
                 () -> compileToStruct(input, "record "),
                 () -> compileToStruct(input, "interface ")
-        )).mapValue(Node::value);
+        );
+        return or("root segment", input, stream.map(supplier -> () -> supplier.get().mapValue(s -> new Node().withString(Node.VALUE, s)))).mapValue(node -> node.findString(Node.VALUE).orElse(""));
     }
 
-    private static Result<Node, CompileError> or(String type, String input, Stream<Supplier<Result<String, CompileError>>> stream) {
+    private static Result<Node, CompileError> or(String type, String input, Stream<Supplier<Result<Node, CompileError>>> stream) {
         return stream.map(Main::prepare)
                 .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
                 .map(result -> result.mapErr(errors -> new CompileError("Invalid " + type, input, errors)))
-                .orElseGet(() -> new Err<>(new CompileError("No compilers present", input)))
-                .mapValue(Node::new);
+                .orElseGet(() -> new Err<>(new CompileError("No compilers present", input)));
     }
 
     private static Result<String, CompileError> compileNamespaced(String input, String prefix, String output) {
@@ -229,7 +229,7 @@ public class Main {
         return split(new FirstLocator(infix), input).flatMapValue(tuple -> {
             return split(new FirstLocator("{"), tuple.right()).flatMapValue(tuple0 -> {
                 final var beforeContent = tuple0.left().strip();
-                Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
+                Stream<Supplier<Result<Node, CompileError>>> stream = Streams.of(
                         () -> split(new FirstLocator("("), beforeContent).mapValue(tuple1 -> {
                             final var name = tuple1.left();
                             final var params = splitAndCompile(tuple1.right(), Main::splitByValues, Main::compileDefinition, (builder, element) -> builder
@@ -237,13 +237,14 @@ public class Main {
                                     .append(element)
                                     .append(";"));
 
-                            return name;
+                            return new Node().withString(Node.VALUE, name);
                         }),
-                        () -> new Ok<>(beforeContent)
+                        () -> new Ok<>(new Node().withString(Node.VALUE, beforeContent))
                 );
-                return or("root segment", beforeContent, stream).mapValue(Node::value).flatMapValue(name -> {
+                return or("root segment", beforeContent, stream).flatMapValue(node -> {
                     final var stripped = tuple0.right().strip();
                     return truncateRight(stripped, "}").flatMapValue(content -> {
+                        final var name = node.findString(Node.VALUE).orElse("");
                         return splitAndCompile(content, Main::splitByStatements, structSegment -> compileStructSegment(structSegment, name), Main::mergeStatement).mapValue(outputContent -> {
                             return "struct " + name + " {" + outputContent + "\n};";
                         });
@@ -258,7 +259,7 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileStructSegment(String structSegment, String structName) {
-        return or("struct segment", structSegment, Streams.of(
+        Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
                 () -> compileMethod(structSegment, structName),
                 () -> truncateRight(structSegment, ";").flatMapValue(inner -> {
                     return split(new FirstLocator("="), inner).flatMapValue(tuple -> {
@@ -266,7 +267,8 @@ public class Main {
                     });
                 }),
                 () -> truncateRight(structSegment, ";").flatMapValue(Main::compileDefinition)
-        )).mapValue(Node::value);
+        );
+        return or("struct segment", structSegment, stream.map(supplier -> () -> supplier.get().mapValue(s -> new Node().withString(Node.VALUE, s)))).mapValue(node -> node.findString(Node.VALUE).orElse(""));
     }
 
     private static Result<String, CompileError> compileMethod(String structSegment, String structName) {
@@ -280,7 +282,7 @@ public class Main {
                         });
                     });
                 }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", stripped)));
-                return or("root segment", stripped, stream).mapValue(Node::value).flatMapValue(content -> {
+                return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> new Node().withString(Node.VALUE, s)))).mapValue(node -> node.findString(Node.VALUE).orElse("")).flatMapValue(content -> {
                     return compileDefinition(tuple.left().strip()).mapValue(definition -> {
                         return "\n\t" + definition + "()" + content;
                     });
@@ -290,7 +292,7 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileStatement(String statement) {
-        return or("statement segment", statement, Streams.of(
+        Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
                 () -> truncateRight(statement, ");").flatMapValue(inner -> {
                     return split(new FirstLocator("("), inner).flatMapValue(inner0 -> {
                         final var inputCaller = inner0.left();
@@ -308,11 +310,12 @@ public class Main {
                 }),
                 () -> split(new FirstLocator(" "), statement).mapValue(inner -> generateStatement("temp = temp")),
                 () -> truncateRight(statement, "++;").mapValue(inner -> "temp++;")
-        )).mapValue(Node::value);
+        );
+        return or("statement segment", statement, stream.map(supplier -> () -> supplier.get().mapValue(s -> new Node().withString(Node.VALUE, s)))).mapValue(node -> node.findString(Node.VALUE).orElse(""));
     }
 
     private static Result<String, CompileError> compileValue(String value) {
-        return or("value", value, Streams.of(
+        Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
                 () -> split(new LastLocator("."), value).flatMapValue(tuple -> {
                     return compileValue(tuple.left()).mapValue(inner -> inner + "." + tuple.right());
                 }),
@@ -320,7 +323,8 @@ public class Main {
                     if (isSymbol(value)) return new Ok<>(value);
                     return new Err<>(new CompileError("Not a symbol", value));
                 }
-        )).mapValue(Node::value);
+        );
+        return or("value", value, stream.map(supplier -> () -> supplier.get().mapValue(s -> new Node().withString(Node.VALUE, s)))).mapValue(node -> node.findString(Node.VALUE).orElse(""));
     }
 
     private static String generateStatement(String content) {
@@ -339,7 +343,7 @@ public class Main {
                     () -> split(new LastLocator(" "), inputType).mapValue(Tuple::right),
                     () -> new Ok<>(inputType)
             );
-            return or("root segment", inputType, stream).mapValue(Node::value).flatMapValue(type -> {
+            return or("root segment", inputType, stream.map(supplier -> () -> supplier.get().mapValue(s -> new Node().withString(Node.VALUE, s)))).mapValue(node -> node.findString(Node.VALUE).orElse("")).flatMapValue(type -> {
                 final var name = tuple1.right();
                 if (isSymbol(name)) {
                     return new Ok<>(generateDefinition(type, name));
@@ -380,7 +384,9 @@ public class Main {
         }).orElseGet(() -> new Err<>(new CompileError("Infix '" + locator.unwrap() + "' not present", input)));
     }
 
-    private static Supplier<Result<String, List<CompileError>>> prepare(Supplier<Result<String, CompileError>> supplier) {
+    private static Supplier<Result<Node, List<CompileError>>> prepare(
+            Supplier<Result<Node, CompileError>> supplier
+    ) {
         return () -> supplier.get().mapErr(Collections::singletonList);
     }
 }

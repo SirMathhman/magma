@@ -23,6 +23,7 @@
 #include <temp.h>
 #include <temp.h>
 #include <temp.h>
+#include <temp.h>
 struct Main {
 		SOURCE_DIRECTORY  = temp;
 		TARGET_DIRECTORY  = temp;
@@ -59,9 +60,22 @@ struct Main {
 		temp = temp;
 	}
 	CompileError> splitAndCompile(){
-		temp = temp;
+		return splitter.apply(input).flatMapValue(segments -> {
+            Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
+            for (String segment : segments) {
+                final var stripped = segment.strip();
+                if (stripped.isEmpty()) continue;
+
+                output = output.and(() -> compiler.apply(stripped)).mapValue(tuple -> merger.apply(tuple.left(), tuple.right()));
+            }
+
+            return output.mapValue(StringBuilder::toString);
+        });
 	}
-	CompileError> split(){
+	StringBuilder mergeStatement(){
+		return builder.append(element);
+	}
+	CompileError> splitByStatements(){
 		temp = temp;
 		temp = temp;
 		temp = temp;
@@ -75,6 +89,7 @@ struct Main {
 		temp = temp;
 	}
 	CompileError> compileRootSegment(){
+		temp = temp;
 		temp = temp;
 	}
 	CompileError> or(){
@@ -97,7 +112,11 @@ struct Main {
 	CompileError> compileToStruct(){
 		temp = temp;
 	}
+	CompileError> splitByValues(){
+		temp = temp;
+	}
 	CompileError> compileStructSegment(){
+		temp = temp;
 		temp = temp;
 	}
 	CompileError> compileMethod(){
@@ -105,8 +124,10 @@ struct Main {
 	}
 	CompileError> compileStatement(){
 		temp = temp;
+		temp = temp;
 	}
 	CompileError> compileValue(){
+		temp = temp;
 		temp = temp;
 	}
 	String generateStatement(){
