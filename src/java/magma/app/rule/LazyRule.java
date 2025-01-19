@@ -12,7 +12,7 @@ import magma.app.error.context.StringContext;
 import java.util.Optional;
 
 public class LazyRule implements Rule {
-    private final Optional<Rule> childRule = Optional.empty();
+    private Optional<Rule> childRule = Optional.empty();
 
     @Override
     public Result<Node, CompileError> parse(String input) {
@@ -30,5 +30,9 @@ public class LazyRule implements Rule {
     @Override
     public Result<String, CompileError> generate(Node node) {
         return findChild(new NodeContext(node)).flatMapValue(rule -> rule.generate(node));
+    }
+
+    public void set(Rule childRule) {
+        this.childRule = Optional.of(childRule);
     }
 }

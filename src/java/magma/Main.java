@@ -18,6 +18,8 @@ import magma.app.locate.LastLocator;
 import magma.app.locate.Locator;
 import magma.app.rule.FilterRule;
 import magma.app.rule.InfixRule;
+import magma.app.rule.LazyRule;
+import magma.app.rule.OrRule;
 import magma.app.rule.PrefixRule;
 import magma.app.rule.Rule;
 import magma.app.rule.StringRule;
@@ -29,7 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -222,27 +223,12 @@ public class Main {
                 () -> compileToStruct(input, "record "),
                 () -> compileToStruct(input, "interface ")
         );
-        return or("root segment", input, stream.map(supplier -> () -> supplier.get().mapValue(s -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(s).findValue().orElse(new MapNode())))).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse(""));
-    }
-
-    private static Result<Node, CompileError> or(String type, String input, Stream<Supplier<Result<Node, CompileError>>> stream) {
-        return stream.map(Main::prepare)
-                .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
-                .map(result -> result.mapErr(errors -> new CompileError("Invalid " + type, new StringContext(input), errors)))
-                .orElseGet(() -> new Err<>(new CompileError("No compilers present", new StringContext(input))));
+        return OrRule.or("root segment", input, stream.map(supplier -> () -> supplier.get().mapValue(s -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(s).findValue().orElse(new MapNode())))).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse(""));
     }
 
     private static Result<String, CompileError> compileNamespaced(String input, String prefix, String output) {
         if (input.startsWith(prefix)) return new Ok<>(output);
         return new Err<>(new CompileError("Prefix '" + prefix + "' not present.", new StringContext(input)));
-    }
-
-    private static List<CompileError> merge(Tuple<List<CompileError>, List<CompileError>> tuple) {
-        final var left = tuple.left();
-        final var right = tuple.right();
-        final var copy = new ArrayList<>(left);
-        copy.addAll(right);
-        return copy;
     }
 
     private static Result<String, CompileError> compileToStruct(String input, String infix) {
@@ -313,7 +299,7 @@ public class Main {
         return new Rule() {
             @Override
             public Result<Node, CompileError> parse(String input) {
-                return or(category, input, rules.map(rule -> () -> rule.parse(input)));
+                return OrRule.or(category, input, rules.map(rule -> () -> rule.parse(input)));
             }
         };
     }
@@ -380,7 +366,7 @@ public class Main {
                 () -> compileInitialization(structSegment),
                 () -> compileDefinitionStatement(structSegment)
         );
-        return or("struct segment", structSegment, stream
+        return OrRule.or("struct segment", structSegment, stream
                 .map(supplier -> () -> supplier.get().mapValue(s -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(s).findValue().orElse(new MapNode()))));
     }
 
@@ -431,7 +417,7 @@ public class Main {
                         });
                     });
                 }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", new StringContext(stripped))));
-                return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(s).findValue().orElse(new MapNode())))).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse("")).flatMapValue(content -> {
+                return OrRule.or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(s).findValue().orElse(new MapNode())))).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse("")).flatMapValue(content -> {
                     return createDefinitionRule().parse(tuple.left().strip())
                             .mapValue(definition -> definition.mapString("name", name -> {
                                 final var actualName = name.equals(structName) ? "new" : name;
@@ -467,7 +453,7 @@ public class Main {
                 () -> InfixRule.split(new FirstLocator(" "), statement).mapValue(inner -> generateStatement("temp = temp")),
                 () -> SuffixRule.truncateRight(statement, "++;").mapValue(inner -> "temp++;")
         );
-        return or("statement segment", statement, stream.map(supplier -> () -> supplier.get().mapValue(s -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(s).findValue().orElse(new MapNode())))).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse(""));
+        return OrRule.or("statement segment", statement, stream.map(supplier -> () -> supplier.get().mapValue(s -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(s).findValue().orElse(new MapNode())))).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse(""));
     }
 
     private static Result<String, CompileError> compileInvocation(String statement) {
@@ -477,11 +463,11 @@ public class Main {
                 splitByValues(inner0.right()).flatMapValue(arguments -> compileAll(arguments, new Rule() {
                     @Override
                     public Result<Node, CompileError> parse(String input) {
-                        return compileValue(input);
+                        return createValueRule().parse(input);
                     }
                 }));
 
-                return compileValue(inputCaller).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse("")).mapValue(outputCaller -> {
+                return createValueRule().parse(inputCaller).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse("")).mapValue(outputCaller -> {
                     return generateStatement(outputCaller + "()");
                 });
             });
@@ -499,29 +485,28 @@ public class Main {
     private static Result<Node, CompileError> parseReturn(String statement) {
         return PrefixRule.truncateLeft(statement, "return ").flatMapValue(inner -> {
             return SuffixRule.truncateRight(inner, ";").flatMapValue(inputValue -> {
-                return compileValue(inputValue).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse("")).mapValue(outputValue -> {
+                return createValueRule().parse(inputValue).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse("")).mapValue(outputValue -> {
                     return new MapNode().withString("value", outputValue);
                 });
             });
         });
     }
 
-    private static Result<Node, CompileError> compileValue(String value) {
-        return or("value", value, Streams.of(
-                () -> compileDataAccess(value),
-                () -> createSymbolRule().parse(value)
-        ));
+    private static Rule createValueRule() {
+        final var value = new LazyRule();
+        value.set(new OrRule(Streams.of(
+                createDataAccessRule(value),
+                createSymbolRule()
+        )));
+        return value;
     }
 
     private static Rule createSymbolRule() {
         return new FilterRule(new SymbolFilter(), new StringRule(DEFAULT_VALUE));
     }
 
-    private static Result<Node, CompileError> compileDataAccess(String value) {
-        return InfixRule.split(new LastLocator("."), value).flatMapValue(tuple -> {
-            return compileValue(tuple.left()).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse(""))
-                    .mapValue(inner -> generateAccess(inner, tuple.right()));
-        }).mapValue(inputType -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(inputType).findValue().orElse(new MapNode()));
+    private static Rule createDataAccessRule(final Rule value) {
+        return new InfixRule(new NodeRule("ref", value), new LastLocator("."), new StringRule("property"));
     }
 
     private static String generateAccess(String reference, String property) {
@@ -538,11 +523,4 @@ public class Main {
                 new StringRule("type")
         )), new LastLocator(" "), new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name"))));
     }
-
-    private static Supplier<Result<Node, List<CompileError>>> prepare(
-            Supplier<Result<Node, CompileError>> supplier
-    ) {
-        return () -> supplier.get().mapErr(Collections::singletonList);
-    }
-
 }
