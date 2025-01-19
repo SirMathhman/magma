@@ -129,6 +129,10 @@ public class Main {
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else if (c == '}' && depth == 1) {
+                depth--;
+                advance(buffer, segments);
+                buffer = new StringBuilder();
             } else {
                 if (c == '{') depth++;
                 if (c == '}') depth--;
@@ -223,7 +227,7 @@ public class Main {
                                    "\n\t}";
                         });
                     });
-                }), () -> new Ok<>(";"))).flatMapValue(content -> {
+                }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", stripped)))).flatMapValue(content -> {
                     return compileDefinition(tuple.left().strip()).mapValue(definition -> {
                         return "\n\t" + definition + "(void* _this_)" + content;
                     });
