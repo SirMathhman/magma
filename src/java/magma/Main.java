@@ -189,6 +189,11 @@ public class Main {
     private static Result<String, CompileError> compileStructSegment(String structSegment, String structName) {
         return or(structSegment, Streams.of(
                 () -> compileMethod(structSegment, structName),
+                () -> truncateRight(structName, ";").flatMapValue(inner -> {
+                    return split(new FirstLocator("="), inner).flatMapValue(tuple -> {
+                        return compileDefinition(tuple.left()).mapValue(inner0 -> "\n\t\t" + inner0 + " = temp;");
+                    });
+                }),
                 () -> truncateRight(structSegment, ";").flatMapValue(Main::compileDefinition)
         ));
     }
@@ -203,9 +208,9 @@ public class Main {
                             final var type = "struct " + structName;
                             final var thisDefinition = generateDefinition(type, "this");
                             return "{\n\t\t" +
-                                thisDefinition + " = (" + type + "*) this;" +
-                                outputContent +
-                                "\n\t}";
+                                   thisDefinition + " = (" + type + "*) this;" +
+                                   outputContent +
+                                   "\n\t}";
                         });
                     });
                 }), () -> new Ok<>(";"))).flatMapValue(content -> {

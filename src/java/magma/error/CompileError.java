@@ -24,7 +24,7 @@ public record CompileError(String message, String context, List<CompileError> ch
     }
 
     private String format(int depth) {
-        children.sort(Comparator.comparingInt(CompileError::maxDepth));
+        this.children.sort(Comparator.comparingInt(CompileError::maxDepth));
 
         final var joinedChildren = IntStream.range(0, this.children.size())
                 .mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
