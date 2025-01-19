@@ -7,7 +7,8 @@ struct CompileError {
 	String message;
 	String context;
 	List<CompileError> children;
-	struct CompileError new(String message, String context, List<CompileError> children);
+	struct CompileError new(String message, String context, List<CompileError> children){
+	}
 	public CompileError(){
 		this();
 	}

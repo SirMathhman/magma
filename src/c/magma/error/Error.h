@@ -1,4 +1,5 @@
 struct Error {
-	struct Error new();
+	struct Error new(){
+	}
 	String display();
 };

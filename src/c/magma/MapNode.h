@@ -3,7 +3,8 @@
 #include <temp.h>
 #include <temp.h>
 struct MapNode implements Node {
-	struct MapNode implements Node new();String> stringsList<Node>> nodeLists
+	struct MapNode implements Node new(){
+	}String> stringsList<Node>> nodeLists
 	public MapNode(){
 		this();
 	}

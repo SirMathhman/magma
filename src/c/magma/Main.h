@@ -25,7 +25,8 @@
 #include <temp.h>
 #include <temp.h>
 struct Main {
-	struct Main new();
+	struct Main new(){
+	}
 		SOURCE_DIRECTORY  = temp;
 		TARGET_DIRECTORY  = temp;
 		DEFAULT_VALUE  = temp;
@@ -109,6 +110,9 @@ struct Main {
 		return copy;
 	}
 	CompileError> compileToStruct(){
+		temp = temp;
+	}
+	String generateBlock(){
 		temp = temp;
 	}
 	CompileError> compileDefinitionToNode(){

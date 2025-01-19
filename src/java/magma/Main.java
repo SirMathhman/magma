@@ -266,15 +266,21 @@ public class Main {
 
                         final var name = node.findString(DEFAULT_VALUE).orElse("");
                         final var definition = generateDefinition("struct " + name, "new");
-                        final var constructor = generateMethod(definition, collectorParams, ";");
+                        final var constructor = generateMethod(definition, collectorParams, generateBlock("", 1));
 
                         return splitByStatements(content).flatMapValue(segments -> compileAll(s -> compileStructSegment(s, name).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
-                            return "struct " + name + " {" + fields + constructor + outputContent + "\n};";
+                            return "struct " + name + " " + generateBlock(fields + constructor + outputContent, 0) + ";";
                         });
                     });
                 });
             });
         });
+    }
+
+    private static String generateBlock(String content, int depth) {
+        return "{" + content + "\n" +
+               "\t".repeat(depth) +
+               "}";
     }
 
     private static Result<Node, CompileError> compileDefinitionToNode(String s) {

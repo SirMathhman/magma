@@ -1,5 +1,6 @@
 struct Streams {
-	struct Streams new();
+	struct Streams new(){
+	}
 	Stream<T> of(){
 		temp = temp;
 	}

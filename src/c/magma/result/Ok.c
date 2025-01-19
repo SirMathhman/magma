@@ -3,7 +3,8 @@
 #include <temp.h>
 struct Ok<T, X> {
 	T value;
-	struct Ok<T, X> new(T value);
+	struct Ok<T, X> new(T value){
+	}
 	X> flatMapValue(){
 		return mapper.apply(this.value);
 	}

@@ -3,7 +3,8 @@
 #include <temp.h>
 struct HeadedStream<T> {
 	Head<T> head;
-	struct HeadedStream<T> new(Head<T> head);
+	struct HeadedStream<T> new(Head<T> head){
+	}
 	Optional<R> foldLeft(){
 		return this.head.next().map(mapper).map(initial -> foldLeft(initial, folder));
 	}
