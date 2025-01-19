@@ -3,7 +3,9 @@
 #include <temp.h>
 struct Stream<T> {
 	Rc_Optional<R> foldLeft(void* _this_){
+		struct Stream<T> this = (struct Stream<T>*) this;
 	}
 	Rc_Stream<R> map(void* _this_){
+		struct Stream<T> this = (struct Stream<T>*) this;
 	}
 };

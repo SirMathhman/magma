@@ -173,7 +173,7 @@ public class Main {
                 final var name = tuple0.left().strip();
                 final var stripped = tuple0.right().strip();
                 return truncateRight(stripped, "}").flatMapValue(content -> {
-                    return splitAndCompile(content, Main::compileStructSegment).mapValue(outputContent -> {
+                    return splitAndCompile(content, structSegment -> compileStructSegment(structSegment, name)).mapValue(outputContent -> {
                         return "struct " + name + " {" + outputContent + "\n};";
                     });
                 });
@@ -181,17 +181,21 @@ public class Main {
         });
     }
 
-    private static Result<String, CompileError> compileStructSegment(String structSegment) {
+    private static Result<String, CompileError> compileStructSegment(String structSegment, String structName) {
         return compileOr(structSegment, Streams.of(
-                () -> compileMethod(structSegment),
+                () -> compileMethod(structSegment, structName),
                 () -> compileDefinition(structSegment)
         ));
     }
 
-    private static Result<String, CompileError> compileMethod(String structSegment) {
+    private static Result<String, CompileError> compileMethod(String structSegment, String structName) {
         return split(new FirstLocator("("), structSegment).flatMapValue(tuple -> {
             return compileDefinition(tuple.left().strip()).mapValue(definition -> {
-                return "\n\t" + definition + "(void* _this_){\n\t}";
+                final var type = "struct " + structName;
+                final var thisDefinition = generateDefinition(type, "this");
+                return "\n\t" + definition + "(void* _this_){\n\t\t" +
+                       thisDefinition + " = (" + type + "*) this;" +
+                       "\n\t}";
             });
         });
     }
@@ -204,9 +208,13 @@ public class Main {
                     () -> new Ok<>(inputType)
             )).mapValue(outputType -> "Rc_" + outputType).mapValue(type -> {
                 final var name = tuple1.right();
-                return type + " " + name;
+                return generateDefinition(type, name);
             });
         });
+    }
+
+    private static String generateDefinition(String type, String name) {
+        return type + " " + name;
     }
 
     private static Result<String, CompileError> truncateRight(String input, String slice) {
