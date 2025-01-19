@@ -276,7 +276,7 @@ public class Main {
                 .collect(Collectors.joining());
 
         Node value = ((Rule) new StringRule(DEFAULT_VALUE)).parse("this").findValue().orElse(new MapNode());
-        final var returnThis = createReturnRule().generate(value).findValue().orElse("");
+        final var returnThis = createReturnRule(createValueRule()).generate(value).findValue().orElse("");
         final var constructorBody = generateDefinitionStatement(thisDefinition) + assignments + returnThis;
         final var constructor = generateMethod(definition, collectorParams, generateBlock(constructorBody, 1));
 
@@ -435,22 +435,32 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileStatementToString(String statement) {
+        final var valueRule = createValueRule();
+
         Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
-                () -> createInvocationRule().parse(statement)
-                        .flatMapValue(node -> createInvocationRule().generate(node)),
-                () -> createReturnRule().parse(statement).flatMapValue(value -> createReturnRule().generate(value)),
-                () -> InfixRule.split(new FirstLocator(" "), statement).mapValue(inner -> generateStatement("temp = temp")),
-                () -> SuffixRule.truncateRight(statement, "++;").mapValue(inner -> "temp++;")
+                () -> createInvocationRule(valueRule).parse(statement).flatMapValue(node -> createInvocationRule(valueRule).generate(node)),
+                () -> createReturnRule(valueRule).parse(statement).flatMapValue(node -> createReturnRule(valueRule).generate(node)),
+                () -> createAssignmentRule(valueRule).parse(statement).flatMapValue(node -> createAssignmentRule(valueRule).generate(node)),
+                () -> createPostfixRule(valueRule).parse(statement).flatMapValue(node -> createPostfixRule(valueRule).generate(node))
         );
+
         return OrRule.or("statement segment", statement, stream.map(supplier -> () -> supplier.get().mapValue(s -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(s).findValue().orElse(new MapNode())))).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse(""));
     }
 
-    private static SuffixRule createInvocationRule() {
-        return new SuffixRule(new InfixRule(new NodeRule("caller", createValueRule()), new FirstLocator("("), new DivideRule(Main::splitByValues, createValueRule())), ");");
+    private static Rule createPostfixRule(Rule value) {
+        return new SuffixRule(new NodeRule("value", value), "++;");
     }
 
-    private static Rule createReturnRule() {
-        return new PrefixRule("return ", new SuffixRule(new NodeRule("value", createValueRule()), ";"));
+    private static Rule createAssignmentRule(Rule value) {
+        return new SuffixRule(new InfixRule(new NodeRule("destination", value), new FirstLocator(" "), new NodeRule("source", value)), ";");
+    }
+
+    private static SuffixRule createInvocationRule(Rule value) {
+        return new SuffixRule(new InfixRule(new NodeRule("caller", value), new FirstLocator("("), new DivideRule(Main::splitByValues, value)), ");");
+    }
+
+    private static Rule createReturnRule(Rule value) {
+        return new PrefixRule("return ", new SuffixRule(new NodeRule("value", value), ";"));
     }
 
     private static Rule createValueRule() {
