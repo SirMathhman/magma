@@ -1,2 +1,3 @@
-struct ApplicationError {Rc_this.cause.display(); }
+struct ApplicationError {
+	Rc_String display(void* _this_);
 };

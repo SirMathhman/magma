@@ -107,6 +107,19 @@ public class Main {
     }
 
     private static Result<String, CompileError> splitAndCompile(String input, Function<String, Result<String, CompileError>> compiler) {
+        return split(input).flatMapValue(segments -> {
+            Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
+            for (String segment : segments) {
+                final var stripped = segment.strip();
+                if (stripped.isEmpty()) continue;
+                output = output.and(() -> compiler.apply(stripped)).mapValue(tuple -> tuple.left().append(tuple.right()));
+            }
+
+            return output.mapValue(StringBuilder::toString);
+        });
+    }
+
+    private static Result<List<String>, CompileError> split(String input) {
         final var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -123,14 +136,11 @@ public class Main {
         }
         advance(buffer, segments);
 
-        Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
-        for (String segment : segments) {
-            final var stripped = segment.strip();
-            if (stripped.isEmpty()) continue;
-            output = output.and(() -> compiler.apply(stripped)).mapValue(tuple -> tuple.left().append(tuple.right()));
+        if (depth == 0) {
+            return new Ok<>(segments);
+        } else {
+            return new Err<>(new CompileError("Invalid depth '" + depth + "'", input));
         }
-
-        return output.mapValue(StringBuilder::toString);
     }
 
     private static void advance(StringBuilder buffer, ArrayList<String> segments) {
@@ -138,7 +148,7 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRootSegment(String input) {
-        return or(input, Streams.of(
+        return or("root segment", input, Streams.of(
                 () -> compileNamespaced(input, "package ", ""),
                 () -> compileNamespaced(input, "import ", "#include <temp.h>\n"),
                 () -> compileToStruct(input, "class "),
@@ -147,10 +157,10 @@ public class Main {
         ));
     }
 
-    private static Result<String, CompileError> or(String input, Stream<Supplier<Result<String, CompileError>>> stream) {
+    private static Result<String, CompileError> or(String type, String input, Stream<Supplier<Result<String, CompileError>>> stream) {
         return stream.map(Main::prepare)
                 .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
-                .map(result -> result.mapErr(errors -> new CompileError("Invalid root segment", input, errors)))
+                .map(result -> result.mapErr(errors -> new CompileError("Invalid " + type, input, errors)))
                 .orElseGet(() -> new Err<>(new CompileError("No compilers present", input)));
     }
 
@@ -171,7 +181,7 @@ public class Main {
         return split(new FirstLocator(infix), input).flatMapValue(tuple -> {
             return split(new FirstLocator("{"), tuple.right()).flatMapValue(tuple0 -> {
                 final var beforeContent = tuple0.left().strip();
-                return or(beforeContent, Streams.of(
+                return or("root segment", beforeContent, Streams.of(
                         () -> split(new FirstLocator("("), beforeContent).mapValue(Tuple::left),
                         () -> new Ok<>(beforeContent)
                 )).flatMapValue(name -> {
@@ -187,9 +197,9 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileStructSegment(String structSegment, String structName) {
-        return or(structSegment, Streams.of(
+        return or("struct segment", structSegment, Streams.of(
                 () -> compileMethod(structSegment, structName),
-                () -> truncateRight(structName, ";").flatMapValue(inner -> {
+                () -> truncateRight(structSegment, ";").flatMapValue(inner -> {
                     return split(new FirstLocator("="), inner).flatMapValue(tuple -> {
                         return compileDefinition(tuple.left()).mapValue(inner0 -> "\n\t\t" + inner0 + " = temp;");
                     });
@@ -202,7 +212,7 @@ public class Main {
         return split(new FirstLocator("("), structSegment).flatMapValue(tuple -> {
             return split(new FirstLocator(")"), tuple.right().strip()).flatMapValue(tuple0 -> {
                 final var stripped = tuple0.right().strip();
-                return or(stripped, Streams.of(() -> truncateLeft(stripped, "{").flatMapValue(left -> {
+                return or("root segment", stripped, Streams.of(() -> truncateLeft(stripped, "{").flatMapValue(left -> {
                     return truncateRight(left, "}").flatMapValue(content -> {
                         return splitAndCompile(content, Main::compileStatement).mapValue(outputContent -> {
                             final var type = "struct " + structName;
@@ -223,7 +233,7 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileStatement(String statement) {
-        return or(statement, Streams.of(
+        return or("statement segment", statement, Streams.of(
 
         ));
     }
@@ -236,7 +246,7 @@ public class Main {
     private static Result<String, CompileError> compileDefinition(String definition) {
         return split(new LastLocator(" "), definition).flatMapValue(tuple1 -> {
             final var inputType = tuple1.left().strip();
-            return or(inputType, Streams.of(
+            return or("root segment", inputType, Streams.of(
                     () -> split(new LastLocator(" "), inputType).mapValue(Tuple::right),
                     () -> new Ok<>(inputType)
             )).mapValue(outputType -> "Rc_" + outputType).flatMapValue(type -> {
