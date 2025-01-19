@@ -28,6 +28,7 @@
 #include <temp.h>
 #include <temp.h>
 #include <temp.h>
+#include <temp.h>
 struct Main {
 	struct Main Main_new(){
 		struct Main this;

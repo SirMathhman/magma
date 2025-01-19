@@ -1,6 +1,11 @@
 package magma;
 
 import magma.api.Tuple;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.api.stream.Stream;
+import magma.api.stream.Streams;
 import magma.app.MapNode;
 import magma.app.Node;
 import magma.app.error.ApplicationError;
@@ -9,12 +14,8 @@ import magma.app.error.JavaError;
 import magma.app.locate.FirstLocator;
 import magma.app.locate.LastLocator;
 import magma.app.locate.Locator;
-import magma.api.result.Err;
-import magma.api.result.Ok;
-import magma.api.result.Result;
 import magma.app.rule.FilterRule;
-import magma.api.stream.Stream;
-import magma.api.stream.Streams;
+import magma.app.rule.StripRule;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -516,7 +517,7 @@ public class Main {
     }
 
     private static Function<String, Result<Node, CompileError>> parseStrip(Function<String, Result<Node, CompileError>> childRule) {
-        return input -> childRule.apply(input.strip());
+        return new StripRule(childRule);
     }
 
     private static Node createDefaultNode(String inputType) {
@@ -561,5 +562,4 @@ public class Main {
             Supplier<Result<Node, CompileError>> supplier
     ) {
         return () -> supplier.get().mapErr(Collections::singletonList);
-    }
-}
+    }}
