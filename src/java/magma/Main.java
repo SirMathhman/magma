@@ -486,9 +486,9 @@ public class Main {
 
     private static Result<Node, CompileError> compileDataAccess(String value) {
         return split(new LastLocator("."), value).flatMapValue(tuple -> {
-            return compileValue(tuple.left()).mapValue(node -> generateWithDefaultValue(node))
+            return compileValue(tuple.left()).mapValue(Main::generateWithDefaultValue)
                     .mapValue(inner -> generateAccess(inner, tuple.right()));
-        }).mapValue(s -> createDefaultNode(s));
+        }).mapValue(Main::createDefaultNode);
     }
 
     private static String generateAccess(String reference, String property) {

@@ -278,10 +278,6 @@ struct Main {
 		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	CompileError>> Main_parseStrip(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
 	Node Main_createDefaultNode(void* _this_){
 		struct Main this = *(struct Main*) this;
 		temp = temp;
