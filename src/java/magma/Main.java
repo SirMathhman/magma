@@ -507,7 +507,7 @@ public class Main {
     private static String generateDefinition(Node node) {
         final var type = node.findString("type").orElse("");
         final var name = node.findString("name").orElse("");
-        return generateDefinition(type, name);
+        return type + " " + name;
     }
 
     private static Function<String, Result<Node, CompileError>> createDefinitionRule() {
@@ -523,10 +523,6 @@ public class Main {
 
     private static String generateWithDefaultValue(Node node) {
         return node.findString(DEFAULT_VALUE).orElse("");
-    }
-
-    private static String generateDefinition(String type, String name) {
-        return type + " " + name;
     }
 
     private static Result<String, CompileError> truncateRight(String input, String slice) {

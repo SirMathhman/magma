@@ -286,10 +286,6 @@ struct Main {
 		struct Main this = *(struct Main*) this;
 		return node.findString(DEFAULT_VALUE).orElse("");
 	}
-	String Main_generateDefinition(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
 	CompileError> Main_truncateRight(void* _this_){
 		struct Main this = *(struct Main*) this;
 		temp = temp;
