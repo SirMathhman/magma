@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -71,7 +72,7 @@ public class Main {
         }
 
         return readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(input -> {
-            return splitAndCompile(input, Main::compileRootSegment).mapErr(ApplicationError::new).mapValue(output -> {
+            return splitAndCompile(input, Main::splitByStatements, Main::compileRootSegment, Main::mergeStatement).mapErr(ApplicationError::new).mapValue(output -> {
                 final var target = targetParent.resolve(name + ".c");
                 final var header = targetParent.resolve(name + ".h");
                 return writeStringWrapped(target, output)
@@ -108,20 +109,29 @@ public class Main {
         }
     }
 
-    private static Result<String, CompileError> splitAndCompile(String input, Function<String, Result<String, CompileError>> compiler) {
-        return split(input).flatMapValue(segments -> {
+    private static Result<String, CompileError> splitAndCompile(
+            String input, Function<String, Result<List<String>, CompileError>> splitter,
+            Function<String, Result<String, CompileError>> compiler,
+            BiFunction<StringBuilder, String, StringBuilder> merger
+    ) {
+        return splitter.apply(input).flatMapValue(segments -> {
             Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
             for (String segment : segments) {
                 final var stripped = segment.strip();
                 if (stripped.isEmpty()) continue;
-                output = output.and(() -> compiler.apply(stripped)).mapValue(tuple -> tuple.left().append(tuple.right()));
+
+                output = output.and(() -> compiler.apply(stripped)).mapValue(tuple -> merger.apply(tuple.left(), tuple.right()));
             }
 
             return output.mapValue(StringBuilder::toString);
         });
     }
 
-    private static Result<List<String>, CompileError> split(String input) {
+    private static StringBuilder mergeStatement(StringBuilder builder, String element) {
+        return builder.append(element);
+    }
+
+    private static Result<List<String>, CompileError> splitByStatements(String input) {
         final var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
@@ -191,14 +201,15 @@ public class Main {
                 () -> compileToStruct(input, "class "),
                 () -> compileToStruct(input, "record "),
                 () -> compileToStruct(input, "interface ")
-        ));
+        )).mapValue(Node::value);
     }
 
-    private static Result<String, CompileError> or(String type, String input, Stream<Supplier<Result<String, CompileError>>> stream) {
+    private static Result<Node, CompileError> or(String type, String input, Stream<Supplier<Result<String, CompileError>>> stream) {
         return stream.map(Main::prepare)
                 .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
                 .map(result -> result.mapErr(errors -> new CompileError("Invalid " + type, input, errors)))
-                .orElseGet(() -> new Err<>(new CompileError("No compilers present", input)));
+                .orElseGet(() -> new Err<>(new CompileError("No compilers present", input)))
+                .mapValue(Node::new);
     }
 
     private static Result<String, CompileError> compileNamespaced(String input, String prefix, String output) {
@@ -218,19 +229,32 @@ public class Main {
         return split(new FirstLocator(infix), input).flatMapValue(tuple -> {
             return split(new FirstLocator("{"), tuple.right()).flatMapValue(tuple0 -> {
                 final var beforeContent = tuple0.left().strip();
-                return or("root segment", beforeContent, Streams.of(
-                        () -> split(new FirstLocator("("), beforeContent).mapValue(Tuple::left),
+                Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
+                        () -> split(new FirstLocator("("), beforeContent).mapValue(tuple1 -> {
+                            final var name = tuple1.left();
+                            final var params = splitAndCompile(tuple1.right(), Main::splitByValues, Main::compileDefinition, (builder, element) -> builder
+                                    .append("\n\t")
+                                    .append(element)
+                                    .append(";"));
+
+                            return name;
+                        }),
                         () -> new Ok<>(beforeContent)
-                )).flatMapValue(name -> {
+                );
+                return or("root segment", beforeContent, stream).mapValue(Node::value).flatMapValue(name -> {
                     final var stripped = tuple0.right().strip();
                     return truncateRight(stripped, "}").flatMapValue(content -> {
-                        return splitAndCompile(content, structSegment -> compileStructSegment(structSegment, name)).mapValue(outputContent -> {
+                        return splitAndCompile(content, Main::splitByStatements, structSegment -> compileStructSegment(structSegment, name), Main::mergeStatement).mapValue(outputContent -> {
                             return "struct " + name + " {" + outputContent + "\n};";
                         });
                     });
                 });
             });
         });
+    }
+
+    private static Result<List<String>, CompileError> splitByValues(String input) {
+        return new Ok<>(new ArrayList<>());
     }
 
     private static Result<String, CompileError> compileStructSegment(String structSegment, String structName) {
@@ -242,20 +266,21 @@ public class Main {
                     });
                 }),
                 () -> truncateRight(structSegment, ";").flatMapValue(Main::compileDefinition)
-        ));
+        )).mapValue(Node::value);
     }
 
     private static Result<String, CompileError> compileMethod(String structSegment, String structName) {
         return split(new FirstLocator("("), structSegment).flatMapValue(tuple -> {
             return split(new FirstLocator(")"), tuple.right().strip()).flatMapValue(tuple0 -> {
                 final var stripped = tuple0.right().strip();
-                return or("root segment", stripped, Streams.of(() -> truncateLeft(stripped, "{").flatMapValue(left -> {
+                Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(() -> truncateLeft(stripped, "{").flatMapValue(left -> {
                     return truncateRight(left, "}").flatMapValue(content -> {
-                        return splitAndCompile(content, Main::compileStatement).mapValue(outputContent -> {
+                        return splitAndCompile(content, Main::splitByStatements, Main::compileStatement, Main::mergeStatement).mapValue(outputContent -> {
                             return "{" + outputContent + "\n\t}";
                         });
                     });
-                }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", stripped)))).flatMapValue(content -> {
+                }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", stripped)));
+                return or("root segment", stripped, stream).mapValue(Node::value).flatMapValue(content -> {
                     return compileDefinition(tuple.left().strip()).mapValue(definition -> {
                         return "\n\t" + definition + "()" + content;
                     });
@@ -283,7 +308,7 @@ public class Main {
                 }),
                 () -> split(new FirstLocator(" "), statement).mapValue(inner -> generateStatement("temp = temp")),
                 () -> truncateRight(statement, "++;").mapValue(inner -> "temp++;")
-        ));
+        )).mapValue(Node::value);
     }
 
     private static Result<String, CompileError> compileValue(String value) {
@@ -295,7 +320,7 @@ public class Main {
                     if (isSymbol(value)) return new Ok<>(value);
                     return new Err<>(new CompileError("Not a symbol", value));
                 }
-        ));
+        )).mapValue(Node::value);
     }
 
     private static String generateStatement(String content) {
@@ -310,10 +335,11 @@ public class Main {
     private static Result<String, CompileError> compileDefinition(String definition) {
         return split(new LastLocator(" "), definition).flatMapValue(tuple1 -> {
             final var inputType = tuple1.left().strip();
-            return or("root segment", inputType, Streams.of(
+            Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
                     () -> split(new LastLocator(" "), inputType).mapValue(Tuple::right),
                     () -> new Ok<>(inputType)
-            )).flatMapValue(type -> {
+            );
+            return or("root segment", inputType, stream).mapValue(Node::value).flatMapValue(type -> {
                 final var name = tuple1.right();
                 if (isSymbol(name)) {
                     return new Ok<>(generateDefinition(type, name));
