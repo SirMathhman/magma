@@ -364,13 +364,14 @@ public class Main {
                 return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse("")).flatMapValue(content -> {
                     return compileDefinition(tuple.left().strip())
                             .mapValue(definition -> definition.mapString("name", name -> {
-                                return generateUniqueName(structName, name);
+                                final var actualName = name.equals(structName) ? "new" : name;
+                                return generateUniqueName(structName, actualName);
                             }))
                             .mapValue(Main::generateDefinition).mapValue(definition -> {
-                        return generateMethod(definition, generateDefinition(new MapNode()
-                                .withString("type", "void*")
-                                .withString("name", "_this_")), content);
-                    });
+                                return generateMethod(definition, generateDefinition(new MapNode()
+                                        .withString("type", "void*")
+                                        .withString("name", "_this_")), content);
+                            });
                 });
             });
         });

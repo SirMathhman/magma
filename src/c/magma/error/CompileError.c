@@ -14,7 +14,7 @@ struct CompileError {
 		this.children = children;
 		return this;
 	}
-	public CompileError_CompileError(void* _this_){
+	public CompileError_new(void* _this_){
 		struct CompileError this = *(struct CompileError*) this;
 		this();
 	}
