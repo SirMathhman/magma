@@ -278,7 +278,12 @@ public class Main {
         Node value = ((Rule) new StringRule(DEFAULT_VALUE)).parse("this").findValue().orElse(new MapNode());
         final var returnThis = createReturnRule(createValueRule()).generate(value).findValue().orElse("");
         final var constructorBody = generateDefinitionStatement(thisDefinition) + assignments + returnThis;
-        final var constructor = generateMethod(definition, collectorParams, generateBlock(constructorBody, 1));
+        final Node node2 = new MapNode().withString("definition", definition).withString("params", collectorParams);
+        Node node3 = node2.withString("content", generateBlock(constructorBody, 1));
+        final var constructor = createMethodRule()
+                .generate(node3)
+                .findValue()
+                .orElse("");
 
         return "struct " + structName + " " + generateBlock(fields + constructor + joinedChildren, 0) + ";";
     }
@@ -406,7 +411,7 @@ public class Main {
     private static Result<String, CompileError> getStringCompileErrorResult(String structName, Tuple<String, String> tuple, String content) {
         return createDefinitionRule().parse(tuple.left().strip())
                 .mapValue(definition -> definition.mapString("name", name -> getString2(structName, name)))
-                .mapValue(node1 -> new InfixRule(new StringRule("type"), new FirstLocator(" "), new StringRule("name")).generate(node1).findValue().orElse("")).mapValue(definition -> getString1(content, definition));
+                .mapValue(definition -> getStringCompileErrorResult(content, definition).findValue().orElse(""));
     }
 
     private static String getString2(String structName, String name) {
@@ -414,11 +419,19 @@ public class Main {
         return generateUniqueName(structName, actualName);
     }
 
-    private static String getString1(String content, String definition) {
-        Node node = new MapNode()
-                .withString("type", "void*")
-                .withString("name", "_this_");
-        return generateMethod(definition, new InfixRule(new StringRule("type"), new FirstLocator(" "), new StringRule("name")).generate(node).findValue().orElse(""), content);
+    private static Result<String, CompileError> getStringCompileErrorResult(String content, Node definition) {
+        return createDefinitionRule().generate(definition).flatMapValue(definition0 -> {
+            return createDefinitionRule().generate(new MapNode()
+                    .withString("type", "void*")
+                    .withString("name", "_this_")).mapValue(params -> {
+                final Node node = new MapNode().withString("definition", definition0).withString("params", params);
+                Node node1 = node.withString("content", content);
+                return createMethodRule()
+                        .generate(node1)
+                        .findValue()
+                        .orElse("");
+            });
+        });
     }
 
     private static String getString(String structName, String outputContent) {
@@ -434,8 +447,12 @@ public class Main {
         return structName + "_" + name;
     }
 
-    private static String generateMethod(String definition, String params, String content) {
-        return "\n\t" + definition + "(" + params + ")" + content;
+    private static Rule createMethodRule() {
+        final var definition = new StringRule("definition");
+        final var params = new StringRule("params");
+        final var content = new StringRule("content");
+        final var paramsAndContent = new InfixRule(params, new FirstLocator(")"), content);
+        return new PrefixRule("\n\t", new InfixRule(definition, new FirstLocator("("), paramsAndContent));
     }
 
     private static OrRule createStatementRule() {
