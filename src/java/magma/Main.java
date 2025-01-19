@@ -11,7 +11,6 @@ import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
-import magma.app.error.context.NodeContext;
 import magma.app.error.context.StringContext;
 import magma.app.filter.SymbolFilter;
 import magma.app.locate.FirstLocator;
@@ -19,6 +18,7 @@ import magma.app.locate.LastLocator;
 import magma.app.locate.Locator;
 import magma.app.rule.FilterRule;
 import magma.app.rule.Rule;
+import magma.app.rule.StringRule;
 import magma.app.rule.StripRule;
 
 import java.io.IOException;
@@ -381,7 +381,7 @@ public class Main {
 
     private static String generateInitialization(Node node) {
         final var definition = generateDefinition(node.findNode("definition").orElse(new MapNode()));
-        return generateStatement(definition + " = " + generateString(DEFAULT_VALUE).apply(node).findValue().orElse(""));
+        return generateStatement(definition + " = " + ((Function<Node, Result<String, CompileError>>) new StringRule(DEFAULT_VALUE)).apply(node).findValue().orElse(""));
     }
 
     private static Result<String, CompileError> compileMethod(String structSegment, String structName) {
@@ -457,7 +457,7 @@ public class Main {
     }
 
     private static String generateReturn(Node value) {
-        return generateStatement("return " + generateString(DEFAULT_VALUE).apply(value).findValue().orElse(""));
+        return generateStatement("return " + ((Function<Node, Result<String, CompileError>>) new StringRule(DEFAULT_VALUE)).apply(value).findValue().orElse(""));
     }
 
     private static Result<Node, CompileError> parseReturn(String statement) {
@@ -508,20 +508,9 @@ public class Main {
     }
 
     private static String generateDefinition(Node node) {
-        final var type = generateString("type").apply(node).findValue().orElse("");
-        final var name = generateString("name").apply(node).findValue().orElse("");
+        final var type = new StringRule("type").apply(node).findValue().orElse("");
+        final var name = new StringRule("name").apply(node).findValue().orElse("");
         return type + " " + name;
-    }
-
-    private static Function<Node, Result<String, CompileError>> generateString(String propertyKey) {
-        return new Function<>() {
-            @Override
-            public Result<String, CompileError> apply(Node node) {
-                return node.findString(propertyKey)
-                        .<Result<String, CompileError>>map(Ok::new)
-                        .orElseGet(() -> new Err<>(new CompileError("String '" + propertyKey + "' not present", new NodeContext(node))));
-            }
-        };
     }
 
     private static Rule createDefinitionRule() {
@@ -532,7 +521,7 @@ public class Main {
     }
 
     private static String generateWithDefaultValue(Node node) {
-        return generateString(DEFAULT_VALUE).apply(node).findValue().orElse("");
+        return ((Function<Node, Result<String, CompileError>>) new StringRule(DEFAULT_VALUE)).apply(node).findValue().orElse("");
     }
 
     private static Result<String, CompileError> truncateRight(String input, String slice) {
@@ -557,4 +546,5 @@ public class Main {
     ) {
         return () -> supplier.get().mapErr(Collections::singletonList);
     }
+
 }
