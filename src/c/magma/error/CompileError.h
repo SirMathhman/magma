@@ -7,26 +7,26 @@ struct CompileError {
 	String message;
 	String context;
 	List<CompileError> children;
-	struct CompileError new(String message, String context, List<CompileError> children){
+	struct CompileError CompileError_new(String message, String context, List<CompileError> children){
 		struct CompileError this;
 		this.message = message;
 		this.context = context;
 		this.children = children;
 		return this;
 	}
-	public CompileError(void* _this_){
+	public CompileError_CompileError(void* _this_){
 		struct CompileError this = *(struct CompileError*) this;
 		this();
 	}
-	String display(void* _this_){
+	String CompileError_display(void* _this_){
 		struct CompileError this = *(struct CompileError*) this;
 		temp = temp;
 	}
-	int maxDepth(void* _this_){
+	int CompileError_maxDepth(void* _this_){
 		struct CompileError this = *(struct CompileError*) this;
 		temp = temp;
 	}
-	String format(void* _this_){
+	String CompileError_format(void* _this_){
 		struct CompileError this = *(struct CompileError*) this;
 		this.children.sort();
 		temp = temp;

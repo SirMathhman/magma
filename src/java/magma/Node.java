@@ -2,6 +2,7 @@ package magma;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 public interface Node {
     Node withNodeList(String propertyKey, List<Node> propertyValues);
@@ -15,4 +16,6 @@ public interface Node {
     Node withNode(String propertyKey, Node propertyValue);
 
     Optional<Node> findNode(String propertyKey);
+
+    Node mapString(String propertyKey, Function<String, String> mapper);
 }

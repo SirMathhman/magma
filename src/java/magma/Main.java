@@ -267,7 +267,7 @@ public class Main {
 
                         final var definition = generateDefinition(new MapNode()
                                 .withString("type", thisType)
-                                .withString("name", "new"));
+                                .withString("name", generateUniqueName(name, "new")));
 
                         final var thisDefinition = new MapNode().withString("type", thisType).withString("name", "this");
                         final var assignments = nodes.stream()
@@ -362,7 +362,11 @@ public class Main {
                     });
                 }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", stripped)));
                 return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse("")).flatMapValue(content -> {
-                    return compileDefinition(tuple.left().strip()).mapValue(Main::generateDefinition).mapValue(definition -> {
+                    return compileDefinition(tuple.left().strip())
+                            .mapValue(definition -> definition.mapString("name", name -> {
+                                return generateUniqueName(structName, name);
+                            }))
+                            .mapValue(Main::generateDefinition).mapValue(definition -> {
                         return generateMethod(definition, generateDefinition(new MapNode()
                                 .withString("type", "void*")
                                 .withString("name", "_this_")), content);
@@ -370,6 +374,10 @@ public class Main {
                 });
             });
         });
+    }
+
+    private static String generateUniqueName(String structName, String name) {
+        return structName + "_" + name;
     }
 
     private static Result<Node, CompileError> compileStatementToNode(String s) {

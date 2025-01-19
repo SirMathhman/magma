@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 public final class MapNode implements Node {
     private final Map<String, String> strings;
@@ -23,6 +24,11 @@ public final class MapNode implements Node {
     @Override
     public Optional<Node> findNode(String propertyKey) {
         return Optional.ofNullable(this.nodes.get(propertyKey));
+    }
+
+    @Override
+    public Node mapString(String propertyKey, Function<String, String> mapper) {
+        return findString(propertyKey).map(mapper).map(newString -> withString(propertyKey, newString)).orElse(this);
     }
 
     @Override
