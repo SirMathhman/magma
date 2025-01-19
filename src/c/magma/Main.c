@@ -21,14 +21,5 @@
 #include <temp.h>
 #include <temp.h>
 #include <temp.h>
-struct Main {
-	Rc_= Paths.get(void* _this_){
-		struct Main this = (struct Main*) this;
-	}
-	Rc_= Paths.get(void* _this_){
-		struct Main this = (struct Main*) this;
-	}
-	Rc_void main(void* _this_){
-		struct Main this = (struct Main*) this;
-	}
+struct Main {Rc_"src", "java");Rc_"src", "c");Rc_supplier.get().mapErr(Collections::singletonList); }
 };

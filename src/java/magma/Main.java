@@ -138,7 +138,7 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRootSegment(String input) {
-        return compileOr(input, Streams.of(
+        return or(input, Streams.of(
                 () -> compileNamespaced(input, "package ", ""),
                 () -> compileNamespaced(input, "import ", "#include <temp.h>\n"),
                 () -> compileToStruct(input, "class "),
@@ -147,7 +147,7 @@ public class Main {
         ));
     }
 
-    private static Result<String, CompileError> compileOr(String input, Stream<Supplier<Result<String, CompileError>>> stream) {
+    private static Result<String, CompileError> or(String input, Stream<Supplier<Result<String, CompileError>>> stream) {
         return stream.map(Main::prepare)
                 .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
                 .map(result -> result.mapErr(errors -> new CompileError("Invalid root segment", input, errors)))
@@ -170,11 +170,16 @@ public class Main {
     private static Result<String, CompileError> compileToStruct(String input, String infix) {
         return split(new FirstLocator(infix), input).flatMapValue(tuple -> {
             return split(new FirstLocator("{"), tuple.right()).flatMapValue(tuple0 -> {
-                final var name = tuple0.left().strip();
-                final var stripped = tuple0.right().strip();
-                return truncateRight(stripped, "}").flatMapValue(content -> {
-                    return splitAndCompile(content, structSegment -> compileStructSegment(structSegment, name)).mapValue(outputContent -> {
-                        return "struct " + name + " {" + outputContent + "\n};";
+                final var beforeContent = tuple0.left().strip();
+                return or(beforeContent, Streams.of(
+                        () -> split(new FirstLocator("("), beforeContent).mapValue(Tuple::left),
+                        () -> new Ok<>(beforeContent)
+                )).flatMapValue(name -> {
+                    final var stripped = tuple0.right().strip();
+                    return truncateRight(stripped, "}").flatMapValue(content -> {
+                        return splitAndCompile(content, structSegment -> compileStructSegment(structSegment, name)).mapValue(outputContent -> {
+                            return "struct " + name + " {" + outputContent + "\n};";
+                        });
                     });
                 });
             });
@@ -182,7 +187,7 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileStructSegment(String structSegment, String structName) {
-        return compileOr(structSegment, Streams.of(
+        return or(structSegment, Streams.of(
                 () -> compileMethod(structSegment, structName),
                 () -> compileDefinition(structSegment)
         ));
@@ -190,20 +195,41 @@ public class Main {
 
     private static Result<String, CompileError> compileMethod(String structSegment, String structName) {
         return split(new FirstLocator("("), structSegment).flatMapValue(tuple -> {
-            return compileDefinition(tuple.left().strip()).mapValue(definition -> {
-                final var type = "struct " + structName;
-                final var thisDefinition = generateDefinition(type, "this");
-                return "\n\t" + definition + "(void* _this_){\n\t\t" +
-                       thisDefinition + " = (" + type + "*) this;" +
-                       "\n\t}";
+            return split(new FirstLocator(")"), tuple.right().strip()).flatMapValue(tuple0 -> {
+                final var stripped = tuple0.right().strip();
+                return truncateLeft(stripped, "{").flatMapValue(left -> {
+                    return truncateRight(left, "}").flatMapValue(content -> {
+                        return splitAndCompile(content, Main::compileStatement).flatMapValue(outputContent -> {
+                            return compileDefinition(tuple.left().strip()).mapValue(definition -> {
+                                final var type = "struct " + structName;
+                                final var thisDefinition = generateDefinition(type, "this");
+                                return "\n\t" + definition + "(void* _this_){\n\t\t" +
+                                       thisDefinition + " = (" + type + "*) this;" +
+                                       outputContent +
+                                       "\n\t}";
+                            });
+                        });
+                    });
+                });
             });
         });
+    }
+
+    private static Result<String, CompileError> compileStatement(String statement) {
+        return or(statement, Streams.of(
+
+        ));
+    }
+
+    private static Result<String, CompileError> truncateLeft(String input, String slice) {
+        if(input.startsWith(slice)) return new Ok<>(input.substring(slice.length()));
+        return new Err<>(new CompileError("Prefix '" + slice + "' not present", input));
     }
 
     private static Result<String, CompileError> compileDefinition(String definition) {
         return split(new LastLocator(" "), definition).flatMapValue(tuple1 -> {
             final var inputType = tuple1.left().strip();
-            return compileOr(inputType, Streams.of(
+            return or(inputType, Streams.of(
                     () -> split(new LastLocator(" "), inputType).mapValue(Tuple::right),
                     () -> new Ok<>(inputType)
             )).mapValue(outputType -> "Rc_" + outputType).mapValue(type -> {
