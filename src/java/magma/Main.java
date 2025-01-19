@@ -230,23 +230,32 @@ public class Main {
             return split(new FirstLocator("{"), tuple.right()).flatMapValue(tuple0 -> {
                 final var beforeContent = tuple0.left().strip();
                 Stream<Supplier<Result<Node, CompileError>>> stream = Streams.of(
-                        () -> split(new FirstLocator("("), beforeContent).mapValue(tuple1 -> {
+                        () -> split(new FirstLocator("("), beforeContent).flatMapValue(tuple1 -> {
                             final var name = tuple1.left();
-                            final var params = splitAndCompile(tuple1.right(), Main::splitByValues, Main::compileDefinition, (builder, element) -> builder
-                                    .append("\n\t")
-                                    .append(element)
-                                    .append(";"));
+                            final var right = tuple1.right();
+                            return split(new FirstLocator(")"), right).flatMapValue(tuple2 -> {
+                                final var params = splitAndCompile(tuple2.left(), Main::splitByValues, Main::compileDefinition, (builder, element) -> builder
+                                        .append("\n\t")
+                                        .append(element)
+                                        .append(";"));
 
-                            return new Node().withString(Node.VALUE, name);
+                                return params.mapValue(inner -> {
+                                    return new Node()
+                                            .withString(Node.VALUE, name)
+                                            .withString("params", inner);
+                                });
+                            });
                         }),
                         () -> new Ok<>(new Node().withString(Node.VALUE, beforeContent))
                 );
                 return or("root segment", beforeContent, stream).flatMapValue(node -> {
                     final var stripped = tuple0.right().strip();
                     return truncateRight(stripped, "}").flatMapValue(content -> {
+                        final var params = node.findString("params").orElse("");
                         final var name = node.findString(Node.VALUE).orElse("");
+
                         return splitAndCompile(content, Main::splitByStatements, structSegment -> compileStructSegment(structSegment, name), Main::mergeStatement).mapValue(outputContent -> {
-                            return "struct " + name + " {" + outputContent + "\n};";
+                            return "struct " + name + " {" + params + outputContent + "\n};";
                         });
                     });
                 });
@@ -255,7 +264,19 @@ public class Main {
     }
 
     private static Result<List<String>, CompileError> splitByValues(String input) {
-        return new Ok<>(new ArrayList<>());
+        final var segments = new ArrayList<String>();
+        final var buffer = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            final var c = input.charAt(i);
+            if (c == ',') {
+                advance(buffer, segments);
+            } else {
+                buffer.append(c);
+            }
+        }
+
+        advance(buffer, segments);
+        return new Ok<>(segments);
     }
 
     private static Result<String, CompileError> compileStructSegment(String structSegment, String structName) {

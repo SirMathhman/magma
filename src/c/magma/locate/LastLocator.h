@@ -1,5 +1,6 @@
 #include <temp.h>
 struct LastLocator {
+	String infix;
 	Optional<Integer> locate(){
 		temp = temp;
 		temp = temp;

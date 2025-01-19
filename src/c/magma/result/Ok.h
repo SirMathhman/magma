@@ -2,6 +2,7 @@
 #include <temp.h>
 #include <temp.h>
 struct Ok<T, X> {
+	T value;
 	X> flatMapValue(){
 		return mapper.apply(this.value);
 	}

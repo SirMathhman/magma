@@ -114,6 +114,10 @@ struct Main {
 	}
 	CompileError> splitByValues(){
 		temp = temp;
+		temp = temp;
+		temp = temp;
+		advance();
+		temp = temp;
 	}
 	CompileError> compileStructSegment(){
 		temp = temp;

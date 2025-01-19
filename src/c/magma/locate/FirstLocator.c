@@ -1,5 +1,6 @@
 #include <temp.h>
 struct FirstLocator {
+	String infix;
 	String unwrap(){
 		return this.infix;
 	}

@@ -22,6 +22,6 @@ public final class Node {
     }
 
     public Optional<String> findString(String propertyKey) {
-        return Optional.of(this.strings.get(propertyKey));
+        return Optional.ofNullable(this.strings.get(propertyKey));
     }
 }

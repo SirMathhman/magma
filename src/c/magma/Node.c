@@ -14,6 +14,6 @@ struct Node {
 		return this;
 	}
 	Optional<String> findString(){
-		return Optional.of(this.strings.get(propertyKey));
+		return Optional.ofNullable(this.strings.get(propertyKey));
 	}
 };
