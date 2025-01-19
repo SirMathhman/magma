@@ -1,4 +1,4 @@
 struct Streams {
-	void temp(){
+	void of(){
 	}
 };

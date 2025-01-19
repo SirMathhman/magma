@@ -1,4 +1,4 @@
 struct Error {
-	void temp(){
+	void display(){
 	}
 };

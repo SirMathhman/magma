@@ -2,6 +2,6 @@
 struct RangeHead implements Head<Integer> {
 	int value;
 	int value;
-	void temp(){
+	void RangeHead(){
 	}
 };

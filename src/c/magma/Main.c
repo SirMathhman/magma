@@ -18,11 +18,14 @@
 #include <temp.h>
 #include <temp.h>
 #include <temp.h>
+#include <temp.h>
+#include <temp.h>
+#include <temp.h>
 struct Main {
-	void temp(){
+	void Paths.get(){
 	}
-	void temp(){
+	void Paths.get(){
 	}
-	void temp(){
+	void main(){
 	}
 };

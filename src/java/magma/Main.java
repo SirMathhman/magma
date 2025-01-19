@@ -3,6 +3,9 @@ package magma;
 import magma.error.ApplicationError;
 import magma.error.CompileError;
 import magma.error.JavaError;
+import magma.locate.FirstLocator;
+import magma.locate.LastLocator;
+import magma.locate.Locator;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
@@ -165,8 +168,8 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileToStruct(String input, String infix) {
-        return split(input, infix).flatMapValue(tuple -> {
-            return split(tuple.right(), "{").flatMapValue(tuple0 -> {
+        return split(new FirstLocator(infix), input).flatMapValue(tuple -> {
+            return split(new FirstLocator("{"), tuple.right()).flatMapValue(tuple0 -> {
                 final var name = tuple0.left().strip();
                 final var stripped = tuple0.right().strip();
                 return truncateRight(stripped, "}").flatMapValue(content -> {
@@ -186,14 +189,17 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileDefinition(String structSegment) {
-        return split(structSegment, " ").mapValue(tuple -> {
+        return split(new FirstLocator(" "), structSegment).mapValue(tuple -> {
             return "\n\tint value;";
         });
     }
 
     private static Result<String, CompileError> compileMethod(String structSegment) {
-        return split(structSegment, "(").mapValue(tuple -> {
-            return "\n\tvoid temp(){\n\t}";
+        return split(new FirstLocator("("), structSegment).flatMapValue(tuple -> {
+            return split(new LastLocator(" "), tuple.left().strip()).mapValue(tuple1 -> {
+                final var name = tuple1.right();
+                return "\n\tvoid " + name + "(){\n\t}";
+            });
         });
     }
 
@@ -205,14 +211,13 @@ public class Main {
         }
     }
 
-    private static Result<Tuple<String, String>, CompileError> split(String input, String infix) {
-        final var index = input.indexOf(infix);
-        if (index == -1) {
-            return new Err<>(new CompileError("Infix '" + infix + "' not present", input));
-        }
-        final var left = input.substring(0, index);
-        final var right = input.substring(index + infix.length());
-        return new Ok<>(new Tuple<>(left, right));
+    private static Result<Tuple<String, String>, CompileError> split(Locator locator, String input) {
+        return locator.locate(input).<Result<Tuple<String, String>, CompileError>>map(index -> {
+            final var left = input.substring(0, index);
+            final var right = input.substring(index + locator.length());
+            final var tuple = new Tuple<>(left, right);
+            return new Ok<>(tuple);
+        }).orElseGet(() -> new Err<>(new CompileError("Infix '" + locator.unwrap() + "' not present", input)));
     }
 
     private static Supplier<Result<String, List<CompileError>>> prepare(Supplier<Result<String, CompileError>> supplier) {

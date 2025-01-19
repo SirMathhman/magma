@@ -2,16 +2,16 @@
 #include <temp.h>
 #include <temp.h>
 struct Result<T, X> {
-	void temp(){
+	void flatMapValue(){
 	}
-	void temp(){
+	void mapValue(){
 	}
-	void temp(){
+	void mapErr(){
 	}
-	void temp(){
+	void match(){
 	}
-	void temp(){
+	void and(){
 	}
-	void temp(){
+	void or(){
 	}
 };
