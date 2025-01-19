@@ -131,17 +131,17 @@ public class Main {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static Result<String, CompileError> compileRootSegment(String value) {
-        return Streams.<Compiler>of(
-                        (input) -> compileNamespaced(input, "package ", ""),
-                        (input) -> compileNamespaced(input, "import ", "#include <temp.h>\n"),
-                        (input) -> compileToStruct(input, "class "),
-                        (input) -> compileToStruct(input, "record "),
-                        (input) -> compileToStruct(input, "interface "))
-                .map((Compiler supplier) -> prepare(supplier, value))
+    private static Result<String, CompileError> compileRootSegment(String input) {
+        return Streams.<Supplier<Result<String, CompileError>>>of(
+                        () -> compileNamespaced(input, "package ", ""),
+                        () -> compileNamespaced(input, "import ", "#include <temp.h>\n"),
+                        () -> compileToStruct(input, "class "),
+                        () -> compileToStruct(input, "record "),
+                        () -> compileToStruct(input, "interface "))
+                .map(Main::prepare)
                 .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
-                .map(result -> result.mapErr(errors -> new CompileError("Invalid root segment", value, errors)))
-                .orElseGet(() -> new Err<>(new CompileError("No compilers present", value)));
+                .map(result -> result.mapErr(errors -> new CompileError("Invalid root segment", input, errors)))
+                .orElseGet(() -> new Err<>(new CompileError("No compilers present", input)));
     }
 
     private static Result<String, CompileError> compileNamespaced(String input, String prefix, String output) {
@@ -162,7 +162,7 @@ public class Main {
         return new Err<>(new CompileError("Infix '" + infix + "' not present", input));
     }
 
-    private static Supplier<Result<String, List<CompileError>>> prepare(Compiler supplier, String input) {
-        return () -> supplier.compile(input).mapErr(Collections::singletonList);
+    private static Supplier<Result<String, List<CompileError>>> prepare(Supplier<Result<String, CompileError>> supplier) {
+        return () -> supplier.get().mapErr(Collections::singletonList);
     }
 }
