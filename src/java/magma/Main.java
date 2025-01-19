@@ -132,21 +132,30 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRootSegment(String value) {
-        return Streams.<Compiler>of(
-                        (input) -> compileNamespaced(input, "package ", ""),
-                        (input) -> compileNamespaced(input, "import ", "#include <temp.h>\n"),
-                        (input) -> compileToStruct(input, "class "),
-                        (input) -> compileToStruct(input, "record "),
-                        (input) -> compileToStruct(input, "interface "))
-                .map((Compiler supplier) -> prepare(supplier, value))
+        return Streams.of(
+                        compileNamespaced("package ", ""),
+                        compileNamespaced("import ", "#include <temp.h>\n"),
+                        compileToStruct("class "),
+                        compileToStruct("record "),
+                        compileToStruct("interface "))
+                .map((Rule supplier) -> prepare(supplier, value))
                 .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
                 .map(result -> result.mapErr(errors -> new CompileError("Invalid root segment", value, errors)))
                 .orElseGet(() -> new Err<>(new CompileError("No compilers present", value)));
     }
 
-    private static Result<String, CompileError> compileNamespaced(String input, String prefix, String output) {
-        if (input.startsWith(prefix)) return new Ok<>(output);
-        return new Err<>(new CompileError("Prefix '" + prefix + "' not present.", input));
+    private static Rule compileToStruct(String class_) {
+        return (input) -> {
+            if (input.contains(class_)) return new Ok<>("struct Temp {\n};");
+            return new Err<>(new CompileError("Infix '" + class_ + "' not present", input));
+        };
+    }
+
+    private static Rule compileNamespaced(String package_, String output) {
+        return (input) -> {
+            if (input.startsWith(package_)) return new Ok<>(output);
+            return new Err<>(new CompileError("Prefix '" + package_ + "' not present.", input));
+        };
     }
 
     private static List<CompileError> merge(Tuple<List<CompileError>, List<CompileError>> tuple) {
@@ -157,12 +166,7 @@ public class Main {
         return copy;
     }
 
-    private static Result<String, CompileError> compileToStruct(String input, String infix) {
-        if (input.contains(infix)) return new Ok<>("struct Temp {\n};");
-        return new Err<>(new CompileError("Infix '" + infix + "' not present", input));
-    }
-
-    private static Supplier<Result<String, List<CompileError>>> prepare(Compiler supplier, String input) {
+    private static Supplier<Result<String, List<CompileError>>> prepare(Rule supplier, String input) {
         return () -> supplier.compile(input).mapErr(Collections::singletonList);
     }
 }
