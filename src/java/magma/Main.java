@@ -1,17 +1,20 @@
 package magma;
 
-import magma.error.ApplicationError;
-import magma.error.CompileError;
-import magma.error.JavaError;
-import magma.locate.FirstLocator;
-import magma.locate.LastLocator;
-import magma.locate.Locator;
-import magma.result.Err;
-import magma.result.Ok;
-import magma.result.Result;
-import magma.rule.FilterRule;
-import magma.stream.Stream;
-import magma.stream.Streams;
+import magma.api.Tuple;
+import magma.app.MapNode;
+import magma.app.Node;
+import magma.app.error.ApplicationError;
+import magma.app.error.CompileError;
+import magma.app.error.JavaError;
+import magma.app.locate.FirstLocator;
+import magma.app.locate.LastLocator;
+import magma.app.locate.Locator;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.app.rule.FilterRule;
+import magma.api.stream.Stream;
+import magma.api.stream.Streams;
 
 import java.io.IOException;
 import java.nio.file.Files;
