@@ -188,20 +188,23 @@ public class Main {
         ));
     }
 
-    private static Result<String, CompileError> compileDefinition(String structSegment) {
-        return split(new FirstLocator(" "), structSegment).mapValue(tuple -> {
-            return "\n\tint value;";
+    private static Result<String, CompileError> compileMethod(String structSegment) {
+        return split(new FirstLocator("("), structSegment).flatMapValue(tuple -> {
+            return compileDefinition(tuple.left().strip()).mapValue(definition -> {
+                return "\n\t" + definition + "(void* _this_){\n\t}";
+            });
         });
     }
 
-    private static Result<String, CompileError> compileMethod(String structSegment) {
-        return split(new FirstLocator("("), structSegment).flatMapValue(tuple -> {
-            return split(new LastLocator(" "), tuple.left().strip()).flatMapValue(tuple1 -> {
-                return split(new LastLocator(" "), tuple1.left().strip()).mapValue(tuple2 -> {
-                    final var type = "Rc_" + tuple2.right();
-                    final var name = tuple1.right();
-                    return "\n\t" + type + " " + name + "(){\n\t}";
-                });
+    private static Result<String, CompileError> compileDefinition(String definition) {
+        return split(new LastLocator(" "), definition).flatMapValue(tuple1 -> {
+            final var inputType = tuple1.left().strip();
+            return compileOr(inputType, Streams.of(
+                    () -> split(new LastLocator(" "), inputType).mapValue(Tuple::right),
+                    () -> new Ok<>(inputType)
+            )).mapValue(outputType -> "Rc_" + outputType).mapValue(type -> {
+                final var name = tuple1.right();
+                return type + " " + name;
             });
         });
     }

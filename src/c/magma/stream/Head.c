@@ -1,4 +1,5 @@
 #include <temp.h>
 struct Head<T> {
-	int value;
+	Rc_Optional<T> next(void* _this_){
+	}
 };

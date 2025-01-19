@@ -2,5 +2,6 @@
 #include <temp.h>
 #include <temp.h>
 struct CompileError(String message, String context, List<CompileError> children) implements Error {
-	int value;
+	Rc_public CompileError(void* _this_){
+	}
 };

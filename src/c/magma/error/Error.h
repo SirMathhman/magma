@@ -1,3 +1,4 @@
 struct Error {
-	int value;
+	Rc_String display(void* _this_){
+	}
 };
