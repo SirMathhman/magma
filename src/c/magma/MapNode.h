@@ -4,13 +4,25 @@
 #include <temp.h>
 struct MapNode implements Node {
 	struct MapNode implements Node new(){
-	}String> stringsList<Node>> nodeLists
+		struct MapNode implements Node this;
+	}
+		String> strings;
+		List<Node>> nodeLists;
+		Node> nodes;
 	public MapNode(){
 		this();
 	}
 	public MapNode(){
 		temp = temp;
 		temp = temp;
+		temp = temp;
+	}
+	Optional<Node> findNode(){
+		return Optional.ofNullable(this.nodes.get(propertyKey));
+	}
+	Node withNode(){
+		this.nodes.put();
+		return this;
 	}
 	Node withNodeList(){
 		this.nodeLists.put();

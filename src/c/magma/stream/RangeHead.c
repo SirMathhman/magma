@@ -1,7 +1,9 @@
 #include <temp.h>
 struct RangeHead implements Head<Integer> {
 	struct RangeHead implements Head<Integer> new(){
-	}int extent
+		struct RangeHead implements Head<Integer> this;
+	}
+		int extent;
 		counter  = temp;
 	public RangeHead(){
 		temp = temp;

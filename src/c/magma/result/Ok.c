@@ -4,6 +4,7 @@
 struct Ok<T, X> {
 	T value;
 	struct Ok<T, X> new(T value){
+		struct Ok<T, X> this;
 	}
 	X> flatMapValue(){
 		return mapper.apply(this.value);

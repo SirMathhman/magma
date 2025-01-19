@@ -8,14 +8,27 @@ import java.util.Optional;
 public final class MapNode implements Node {
     private final Map<String, String> strings;
     private final Map<String, List<Node>> nodeLists;
+    private final Map<String, Node> nodes;
 
     public MapNode() {
-        this(new HashMap<>(), new HashMap<>());
+        this(new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
-    public MapNode(Map<String, String> strings, Map<String, List<Node>> nodeLists) {
+    public MapNode(Map<String, String> strings, Map<String, List<Node>> nodeLists, Map<String, Node> nodes) {
         this.strings = strings;
         this.nodeLists = nodeLists;
+        this.nodes = nodes;
+    }
+
+    @Override
+    public Optional<Node> findNode(String propertyKey) {
+        return Optional.ofNullable(this.nodes.get(propertyKey));
+    }
+
+    @Override
+    public Node withNode(String propertyKey, Node propertyValue) {
+        this.nodes.put(propertyKey, propertyValue);
+        return this;
     }
 
     @Override

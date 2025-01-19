@@ -3,6 +3,7 @@
 #include <temp.h>
 struct Result<T, X> {
 	struct Result<T, X> new(){
+		struct Result<T, X> this;
 	}
 	X> flatMapValue();
 	X> mapValue();

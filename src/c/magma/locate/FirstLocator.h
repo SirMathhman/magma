@@ -2,6 +2,7 @@
 struct FirstLocator {
 	String infix;
 	struct FirstLocator new(String infix){
+		struct FirstLocator this;
 	}
 	String unwrap(){
 		return this.infix;

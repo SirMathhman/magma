@@ -3,6 +3,7 @@
 struct JavaError {
 	Exception e;
 	struct JavaError new(Exception e){
+		struct JavaError this;
 	}
 	String display(){
 		temp = temp;

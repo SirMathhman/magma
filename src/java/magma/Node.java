@@ -8,7 +8,11 @@ public interface Node {
 
     Optional<List<Node>> findNodeList(String propertyKey);
 
-    Node withString(String propertyKey, String propertyValues);
+    Node withString(String propertyKey, String propertyValue);
 
     Optional<String> findString(String propertyKey);
+
+    Node withNode(String propertyKey, Node propertyValue);
+
+    Optional<Node> findNode(String propertyKey);
 }

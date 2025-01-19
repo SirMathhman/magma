@@ -238,7 +238,7 @@ public class Main {
                             final var right = tuple1.right();
                             return split(new FirstLocator(")"), right).flatMapValue(tuple2 -> {
                                 final var params = splitByValues(tuple2.left())
-                                        .flatMapValue(segments -> compileAll(Main::compileDefinitionToNode, segments));
+                                        .flatMapValue(segments -> compileAll(s -> compileDefinition(s).mapValue(Main::generateDefinition).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments));
 
                                 return params.mapValue(inner -> {
                                     return new MapNode()
@@ -265,8 +265,17 @@ public class Main {
                                 .collect(Collectors.joining(""));
 
                         final var name = node.findString(DEFAULT_VALUE).orElse("");
-                        final var definition = generateDefinition("struct " + name, "new");
-                        final var constructor = generateMethod(definition, collectorParams, generateBlock("", 1));
+                        final var thisType = "struct " + name;
+
+
+                        final var definition = generateDefinition(new MapNode()
+                                .withString("type", thisType)
+                                .withString("name", "new"));
+
+                        final var thisDefinition = new MapNode().withString("type", thisType).withString("name", "this");
+                        final var constructorBody = generateDefinitionStatement(thisDefinition);
+
+                        final var constructor = generateMethod(definition, collectorParams, generateBlock(constructorBody, 1));
 
                         return splitByStatements(content).flatMapValue(segments -> compileAll(s -> compileStructSegment(s, name).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
                             return "struct " + name + " " + generateBlock(fields + constructor + outputContent, 0) + ";";
@@ -281,10 +290,6 @@ public class Main {
         return "{" + content + "\n" +
                "\t".repeat(depth) +
                "}";
-    }
-
-    private static Result<Node, CompileError> compileDefinitionToNode(String s) {
-        return Main.compileDefinitionToString(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k));
     }
 
     private static Result<List<String>, CompileError> splitByValues(String input) {
@@ -306,14 +311,35 @@ public class Main {
     private static Result<String, CompileError> compileStructSegment(String structSegment, String structName) {
         Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
                 () -> compileMethod(structSegment, structName),
-                () -> truncateRight(structSegment, ";").flatMapValue(inner -> {
-                    return split(new FirstLocator("="), inner).flatMapValue(tuple -> {
-                        return compileDefinitionToString(tuple.left()).mapValue(inner0 -> "\n\t\t" + inner0 + " = temp;");
-                    });
-                }),
-                () -> truncateRight(structSegment, ";").flatMapValue(Main::compileDefinitionToString)
+                () -> compileInitialization(structSegment),
+                () -> compileDefinitionStatement(structSegment)
         );
         return or("struct segment", structSegment, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse(""));
+    }
+
+    private static Result<String, CompileError> compileDefinitionStatement(String structSegment) {
+        return truncateRight(structSegment, ";")
+                .flatMapValue(Main::compileDefinition)
+                .mapValue(Main::generateDefinitionStatement);
+    }
+
+    private static String generateDefinitionStatement(Node node) {
+        return generateStatement(generateDefinition(node));
+    }
+
+    private static Result<String, CompileError> compileInitialization(String structSegment) {
+        return truncateRight(structSegment, ";").flatMapValue(inner -> {
+            return split(new FirstLocator("="), inner).flatMapValue(tuple -> {
+                return compileDefinition(tuple.left()).mapValue(node -> generateInitialization(new MapNode()
+                        .withNode("definition", node)
+                        .withString(DEFAULT_VALUE, "temp")));
+            });
+        });
+    }
+
+    private static String generateInitialization(Node node) {
+        final var definition = generateDefinition(node.findNode("definition").orElse(new MapNode()));
+        return generateStatement(definition + " = " + node.findString(DEFAULT_VALUE).orElse(""));
     }
 
     private static Result<String, CompileError> compileMethod(String structSegment, String structName) {
@@ -328,7 +354,7 @@ public class Main {
                     });
                 }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", stripped)));
                 return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse("")).flatMapValue(content -> {
-                    return compileDefinitionToString(tuple.left().strip()).mapValue(definition -> {
+                    return compileDefinition(tuple.left().strip()).mapValue(Main::generateDefinition).mapValue(definition -> {
                         return generateMethod(definition, "", content);
                     });
                 });
@@ -385,21 +411,32 @@ public class Main {
         return new Err<>(new CompileError("Prefix '" + slice + "' not present", input));
     }
 
-    private static Result<String, CompileError> compileDefinitionToString(String definition) {
+    private static String generateDefinition(Node node) {
+        final var type = node.findString("type").orElse("");
+        final var name = node.findString("name").orElse("");
+        return generateDefinition(type, name);
+    }
+
+    private static Result<Node, CompileError> compileDefinition(String definition) {
         return split(new LastLocator(" "), definition).flatMapValue(tuple1 -> {
             final var inputType = tuple1.left().strip();
             Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
                     () -> split(new LastLocator(" "), inputType).mapValue(Tuple::right),
                     () -> new Ok<>(inputType)
             );
-            return or("root segment", inputType, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse("")).flatMapValue(type -> {
-                final var name = tuple1.right();
-                if (isSymbol(name)) {
-                    return new Ok<>(generateDefinition(type, name));
-                } else {
-                    return new Err<>(new CompileError("Not a symbol", name));
-                }
-            });
+            return or("root segment", inputType, stream.map(
+                    supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(
+                    node -> node.findString(DEFAULT_VALUE).orElse("")).flatMapValue(
+                    type -> {
+                        final var name = tuple1.right();
+                        if (isSymbol(name)) {
+                            return new Ok<>(new MapNode()
+                                    .withString("type", type)
+                                    .withString("name", name));
+                        } else {
+                            return new Err<>(new CompileError("Not a symbol", name));
+                        }
+                    });
         });
     }
 

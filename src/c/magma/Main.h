@@ -26,6 +26,7 @@
 #include <temp.h>
 struct Main {
 	struct Main new(){
+		struct Main this;
 	}
 		SOURCE_DIRECTORY  = temp;
 		TARGET_DIRECTORY  = temp;
@@ -115,9 +116,6 @@ struct Main {
 	String generateBlock(){
 		temp = temp;
 	}
-	CompileError> compileDefinitionToNode(){
-		return Main.compileDefinitionToString(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k));
-	}
 	CompileError> splitByValues(){
 		temp = temp;
 		temp = temp;
@@ -126,6 +124,19 @@ struct Main {
 		temp = temp;
 	}
 	CompileError> compileStructSegment(){
+		temp = temp;
+		temp = temp;
+	}
+	CompileError> compileDefinitionStatement(){
+		temp = temp;
+	}
+	String generateDefinitionStatement(){
+		temp = temp;
+	}
+	CompileError> compileInitialization(){
+		temp = temp;
+	}
+	String generateInitialization(){
 		temp = temp;
 		temp = temp;
 	}
@@ -150,7 +161,12 @@ struct Main {
 		temp = temp;
 		temp = temp;
 	}
-	CompileError> compileDefinitionToString(){
+	String generateDefinition(){
+		temp = temp;
+		temp = temp;
+		temp = temp;
+	}
+	CompileError> compileDefinition(){
 		temp = temp;
 	}
 	boolean isSymbol(){
