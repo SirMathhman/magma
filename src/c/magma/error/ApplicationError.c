@@ -1,5 +1,5 @@
 struct ApplicationError {
 	String display(){
-		temp();
+		return value;
 	}
 };

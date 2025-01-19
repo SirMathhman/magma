@@ -3,13 +3,13 @@
 #include <temp.h>
 struct HeadedStream<T> {
 	Optional<R> foldLeft(){
-		temp();
+		return value;
 	}
 	R foldLeft(){
 		temp = temp;
 		temp = temp;
 	}
 	Stream<R> map(){
-		temp();
+		return value;
 	}
 };

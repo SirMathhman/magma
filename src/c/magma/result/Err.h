@@ -3,21 +3,21 @@
 #include <temp.h>
 struct Err<T, X> {
 	X> flatMapValue(){
-		temp();
+		return value;
 	}
 	X> mapValue(){
-		temp();
+		return value;
 	}
 	R> mapErr(){
-		temp();
+		return value;
 	}
 	R match(){
-		temp();
+		return value;
 	}
 	X> and(){
-		temp();
+		return value;
 	}
 	R>> or(){
-		temp();
+		return value;
 	}
 };

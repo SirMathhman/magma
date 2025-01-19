@@ -167,8 +167,8 @@ public class Main {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
             } else {
-                if (c == '{') depth++;
-                if (c == '}') depth--;
+                if (c == '{' || c == '(') depth++;
+                if (c == '}' || c == ')') depth--;
             }
         }
         advance(buffer, segments);
@@ -266,10 +266,29 @@ public class Main {
 
     private static Result<String, CompileError> compileStatement(String statement) {
         return or("statement segment", statement, Streams.of(
-                () -> truncateRight(statement, ");").mapValue(inner -> generateStatement("temp()")),
+                () -> truncateRight(statement, ");").flatMapValue(inner -> {
+                    return split(new FirstLocator("("), inner).flatMapValue(inner0 -> {
+                        final var inputCaller = inner0.left();
+                        return compileValue(inputCaller).mapValue(outputCaller -> {
+                            return generateStatement(outputCaller + "()");
+                        });
+                    });
+                }),
                 () -> truncateLeft(statement, "return ").mapValue(inner -> generateStatement("return value")),
                 () -> split(new FirstLocator(" "), statement).mapValue(inner -> generateStatement("temp = temp")),
                 () -> truncateRight(statement, "++;").mapValue(inner -> "temp++;")
+        ));
+    }
+
+    private static Result<String, CompileError> compileValue(String value) {
+        return or("value", value, Streams.of(
+                () -> split(new LastLocator("."), value).flatMapValue(tuple -> {
+                    return compileValue(tuple.left()).mapValue(inner -> inner + "." + tuple.right());
+                }),
+                () -> {
+                    if(isSymbol(value)) return new Ok<>(value);
+                    return new Err<>(new CompileError("Not a symbol", value));
+                }
         ));
     }
 

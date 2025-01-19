@@ -5,17 +5,17 @@
 #include <temp.h>
 struct CompileError {
 	public CompileError(){
-		temp();
+		this();
 	}
 	String display(){
-		temp();
+		return value;
 	}
 	int maxDepth(){
-		temp();
+		return value;
 	}
 	String format(){
-		temp();
-		temp();
+		this.children.sort();
+		temp = temp;
 		return value;
 	}
 };

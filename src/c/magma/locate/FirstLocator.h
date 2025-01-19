@@ -4,10 +4,10 @@ struct FirstLocator {
 		return value;
 	}
 	int length(){
-		temp();
+		return value;
 	}
 	Optional<Integer> locate(){
-		temp();
-		temp();
+		temp = temp;
+		return value;
 	}
 };

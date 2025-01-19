@@ -27,7 +27,7 @@ struct Main {
 		SOURCE_DIRECTORY  = temp;
 		TARGET_DIRECTORY  = temp;
 	void main(){
-		temp();
+		collect();
 	}
 	IOException> collect(){
 		temp = temp;
@@ -35,17 +35,16 @@ struct Main {
 	}
 	Optional<ApplicationError> runWithSources(){
 		temp = temp;
-		temp();
+		return value;
 	}
 	Optional<ApplicationError> runWithSource(){
-		temp();
-		temp();
-		temp();
-		temp();
-		temp();
+		temp = temp;
+		temp = temp;
+		temp = temp;
+		temp = temp;
+		temp = temp;
 		temp = temp;
 		return value;
-		temp();
 	}
 	IOException> readStringWrapped(){
 		temp = temp;
@@ -61,67 +60,63 @@ struct Main {
 	}
 	CompileError> splitAndCompile(){
 		return value;
-		temp();
 	}
 	CompileError> split(){
-		temp();
-		temp();
 		temp = temp;
-		temp();
 		temp = temp;
-		temp();
+		temp = temp;
+		temp = temp;
+		temp = temp;
+		advance();
 		temp = temp;
 		temp = temp;
 	}
 	void advance(){
-		temp();
+		temp = temp;
 	}
 	CompileError> compileRootSegment(){
-		temp();
+		return value;
 	}
 	CompileError> or(){
-		temp();
+		return value;
 	}
 	CompileError> compileNamespaced(){
-		temp();
-		temp();
+		temp = temp;
+		return value;
 	}
 	List<CompileError> merge(){
-		temp();
-		temp();
-		temp();
-		temp();
+		temp = temp;
+		temp = temp;
+		temp = temp;
+		copy.addAll();
 		return value;
 	}
 	CompileError> compileToStruct(){
 		return value;
-		temp();
 	}
 	CompileError> compileStructSegment(){
 		return value;
-		temp();
 	}
 	CompileError> compileMethod(){
 		return value;
-		temp();
 	}
 	CompileError> compileStatement(){
-		temp();
+		return value;
+	}
+	CompileError> compileValue(){
+		return value;
 	}
 	String generateStatement(){
 		return value;
 	}
 	CompileError> truncateLeft(){
-		temp();
-		temp();
+		temp = temp;
+		return value;
 	}
 	CompileError> compileDefinition(){
 		return value;
-		temp();
 	}
 	boolean isSymbol(){
-		temp = temp;
-		temp();
 		temp = temp;
 		return value;
 	}
@@ -134,9 +129,8 @@ struct Main {
 	}
 	CompileError> split(){
 		return value;
-		temp();
 	}
 	List<CompileError>>> prepare(){
-		temp();
+		return value;
 	}
 };

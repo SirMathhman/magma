@@ -1,5 +1,5 @@
 struct Streams {
 	Stream<T> of(){
-		temp();
+		return value;
 	}
 };
