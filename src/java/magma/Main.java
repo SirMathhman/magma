@@ -511,14 +511,11 @@ public class Main {
     }
 
     private static Function<String, Result<Node, CompileError>> createDefinitionRule() {
+        Function<String, Result<Node, CompileError>> childRule = new FilterRule(input -> new SymbolFilter().test(input), parseString("name"));
         return parseSplit(parseOr("type", Streams.of(
                 parseSplit(parseString("modifiers"), new LastLocator(" "), parseString("type")),
                 parseString("type")
-        )), new LastLocator(" "), parseStrip(new FilterRule(input -> new SymbolFilter().test(input), parseString("name"))));
-    }
-
-    private static Function<String, Result<Node, CompileError>> parseStrip(Function<String, Result<Node, CompileError>> childRule) {
-        return new StripRule(childRule);
+        )), new LastLocator(" "), new StripRule(childRule));
     }
 
     private static Node createDefaultNode(String inputType) {
