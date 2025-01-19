@@ -131,7 +131,7 @@ struct Main {
 		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	CompileError> Main_getStringCompileErrorResult(void* _this_){
+	String Main_modifyAndGenerateStruct(void* _this_){
 		struct Main this = *(struct Main*) this;
 		temp = temp;
 		temp = temp;
@@ -270,6 +270,11 @@ struct Main {
 	}
 	CompileError> Main_compileDefinition(void* _this_){
 		struct Main this = *(struct Main*) this;
+		temp = temp;
+	}
+	CompileError> Main_parseSymbol(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
 		temp = temp;
 	}
 	boolean Main_isSymbol(void* _this_){

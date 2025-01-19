@@ -517,16 +517,19 @@ public class Main {
                     supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(
                     node -> node.findString(DEFAULT_VALUE).orElse("")).flatMapValue(
                     type -> {
+                        final var node = new MapNode().withString("type", type);
                         final var name = tuple1.right();
-                        if (isSymbol(name)) {
-                            return new Ok<>(new MapNode()
-                                    .withString("type", type)
-                                    .withString("name", name));
-                        } else {
-                            return new Err<>(new CompileError("Not a symbol", name));
-                        }
+                        return parseSymbol(name).mapValue(node::merge);
                     });
         });
+    }
+
+    private static Result<Node, CompileError> parseSymbol(String input) {
+        if (isSymbol(input)) {
+            return new Ok<>(new MapNode().withString("name", input));
+        } else {
+            return new Err<>(new CompileError("Not a symbol", input));
+        }
     }
 
     private static boolean isSymbol(String input) {
