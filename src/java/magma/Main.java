@@ -393,7 +393,7 @@ public class Main {
                         return splitByStatements(content).flatMapValue(segments -> DivideRule.compileAll(segments, new Rule() {
                             @Override
                             public Result<Node, CompileError> parse(String input) {
-                                return compileStatementToNode(input);
+                                return createStatementRule().parse(input).flatMapValue(createStatementRule()::generate).mapValue(k -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(k).findValue().orElse(new MapNode()));
                             }
                         }).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
                             final var unwrapThis = generateInitialization(new MapNode()
@@ -426,25 +426,18 @@ public class Main {
         return structName + "_" + name;
     }
 
-    private static Result<Node, CompileError> compileStatementToNode(String s) {
-        return compileStatementToString(s).mapValue(k -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(k).findValue().orElse(new MapNode()));
-    }
-
     private static String generateMethod(String definition, String params, String content) {
         return "\n\t" + definition + "(" + params + ")" + content;
     }
 
-    private static Result<String, CompileError> compileStatementToString(String statement) {
+    private static OrRule createStatementRule() {
         final var valueRule = createValueRule();
-
-        Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
-                () -> createInvocationRule(valueRule).parse(statement).flatMapValue(node -> createInvocationRule(valueRule).generate(node)),
-                () -> createReturnRule(valueRule).parse(statement).flatMapValue(node -> createReturnRule(valueRule).generate(node)),
-                () -> createAssignmentRule(valueRule).parse(statement).flatMapValue(node -> createAssignmentRule(valueRule).generate(node)),
-                () -> createPostfixRule(valueRule).parse(statement).flatMapValue(node -> createPostfixRule(valueRule).generate(node))
-        );
-
-        return OrRule.or("statement segment", statement, stream.map(supplier -> () -> supplier.get().mapValue(s -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(s).findValue().orElse(new MapNode())))).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse(""));
+        return new OrRule(Streams.of(
+                createInvocationRule(valueRule),
+                createReturnRule(valueRule),
+                createAssignmentRule(valueRule),
+                createPostfixRule(valueRule)
+        ));
     }
 
     private static Rule createPostfixRule(Rule value) {
