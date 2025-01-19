@@ -25,6 +25,7 @@
 #include <temp.h>
 #include <temp.h>
 struct Main {
+	struct Main new();
 		SOURCE_DIRECTORY  = temp;
 		TARGET_DIRECTORY  = temp;
 		DEFAULT_VALUE  = temp;
@@ -125,6 +126,9 @@ struct Main {
 		temp = temp;
 	}
 	CompileError> compileMethod(){
+		temp = temp;
+	}
+	String generateMethod(){
 		temp = temp;
 	}
 	CompileError> compileStatement(){

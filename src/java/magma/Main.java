@@ -253,17 +253,23 @@ public class Main {
                     final var stripped = tuple0.right().strip();
                     return truncateRight(stripped, "}").flatMapValue(content -> {
                         final var params = node.findNodeList("params")
-                                .orElse(new ArrayList<>());
+                                .orElse(new ArrayList<>())
+                                .stream()
+                                .map(param -> param.findString(DEFAULT_VALUE).orElse(""))
+                                .toList();
+
+                        final var collectorParams = String.join(", ", params);
 
                         final var fields = params.stream()
-                                .map(param -> param.findString(DEFAULT_VALUE).orElse(""))
                                 .map(param -> "\n\t" + param + ";")
                                 .collect(Collectors.joining(""));
 
                         final var name = node.findString(DEFAULT_VALUE).orElse("");
+                        final var definition = generateDefinition("struct " + name, "new");
+                        final var constructor = generateMethod(definition, collectorParams, ";");
 
                         return splitByStatements(content).flatMapValue(segments -> compileAll(s -> compileStructSegment(s, name).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
-                            return "struct " + name + " {" + fields + outputContent + "\n};";
+                            return "struct " + name + " {" + fields + constructor + outputContent + "\n};";
                         });
                     });
                 });
@@ -317,11 +323,15 @@ public class Main {
                 }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", stripped)));
                 return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse("")).flatMapValue(content -> {
                     return compileDefinitionToString(tuple.left().strip()).mapValue(definition -> {
-                        return "\n\t" + definition + "()" + content;
+                        return generateMethod(definition, "", content);
                     });
                 });
             });
         });
+    }
+
+    private static String generateMethod(String definition, String params, String content) {
+        return "\n\t" + definition + "(" + params + ")" + content;
     }
 
     private static Result<String, CompileError> compileStatement(String statement) {
