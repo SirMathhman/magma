@@ -24,6 +24,7 @@
 #include <temp.h>
 #include <temp.h>
 #include <temp.h>
+#include <temp.h>
 struct Main {
 	struct Main Main_new(){
 		struct Main this;
@@ -74,7 +75,7 @@ struct Main {
 	String Main_merge(void* _this_){
 		struct Main this = *(struct Main*) this;
 		return nodes.stream()
-                .map(node -> node.findString(DEFAULT_VALUE).orElse(""))
+                .map(node -> generateWithDefaultValue(node))
                 .reduce(new StringBuilder(), merger, (_, next) -> next).toString();
 	}
 	CompileError> Main_compileAll(void* _this_){
@@ -147,7 +148,7 @@ struct Main {
 		temp = temp;
 		temp = temp;
 	}
-	CompileError> Main_parseOr(void* _this_){
+	CompileError>> Main_parseOr(void* _this_){
 		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
@@ -243,7 +244,7 @@ struct Main {
 		temp = temp;
 		temp = temp;
 		temp = temp;
-		return result.mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s));
+		return result.mapValue(s -> createDefaultNode(s));
 	}
 	CompileError> Main_compileDataAccess(void* _this_){
 		struct Main this = *(struct Main*) this;
@@ -268,14 +269,21 @@ struct Main {
 		temp = temp;
 		temp = temp;
 	}
-	CompileError> Main_compileDefinition(void* _this_){
+	CompileError>> Main_createDefinitionRule(void* _this_){
 		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
-	CompileError> Main_parseSymbol(void* _this_){
+	CompileError>> Main_parseStrip(void* _this_){
 		struct Main this = *(struct Main*) this;
 		temp = temp;
+	}
+	Node Main_createDefaultNode(void* _this_){
+		struct Main this = *(struct Main*) this;
 		temp = temp;
+	}
+	String Main_generateWithDefaultValue(void* _this_){
+		struct Main this = *(struct Main*) this;
+		return node.findString(DEFAULT_VALUE).orElse("");
 	}
 	boolean Main_isSymbol(void* _this_){
 		struct Main this = *(struct Main*) this;
