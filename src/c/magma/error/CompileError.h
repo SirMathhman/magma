@@ -8,14 +8,14 @@ struct CompileError {
 		this();
 	}
 	String display(){
-		return value;
+		temp = temp;
 	}
 	int maxDepth(){
-		return value;
+		temp = temp;
 	}
 	String format(){
 		this.children.sort();
 		temp = temp;
-		return value;
+		return this.message + ": " + this.context + joinedChildren;
 	}
 };

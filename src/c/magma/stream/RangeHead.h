@@ -7,6 +7,6 @@ struct RangeHead implements Head<Integer> {int extent
 	Optional<Integer> next(){
 		temp = temp;
 		temp = temp;temp++;
-		return value;
+		return Optional.of(value);
 	}
 };

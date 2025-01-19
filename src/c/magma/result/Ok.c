@@ -3,21 +3,21 @@
 #include <temp.h>
 struct Ok<T, X> {
 	X> flatMapValue(){
-		return value;
+		return mapper.apply(this.value);
 	}
 	X> mapValue(){
-		return value;
+		temp = temp;
 	}
 	R> mapErr(){
-		return value;
+		temp = temp;
 	}
 	R match(){
-		return value;
+		return onOk.apply(this.value);
 	}
 	X> and(){
-		return value;
+		return other.get().mapValue(otherValue -> new Tuple<>(this.value, otherValue));
 	}
 	R>> or(){
-		return value;
+		temp = temp;
 	}
 };

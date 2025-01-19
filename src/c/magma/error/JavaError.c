@@ -4,6 +4,6 @@ struct JavaError {
 	String display(){
 		temp = temp;
 		this.e.printStackTrace();
-		return value;
+		return writer.toString();
 	}
 };

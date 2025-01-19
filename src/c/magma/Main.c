@@ -35,7 +35,7 @@ struct Main {
 	}
 	Optional<ApplicationError> runWithSources(){
 		temp = temp;
-		return value;
+		return Optional.empty();
 	}
 	Optional<ApplicationError> runWithSource(){
 		temp = temp;
@@ -44,7 +44,7 @@ struct Main {
 		temp = temp;
 		temp = temp;
 		temp = temp;
-		return value;
+		temp = temp;
 	}
 	IOException> readStringWrapped(){
 		temp = temp;
@@ -59,7 +59,7 @@ struct Main {
 		temp = temp;
 	}
 	CompileError> splitAndCompile(){
-		return value;
+		temp = temp;
 	}
 	CompileError> split(){
 		temp = temp;
@@ -75,62 +75,70 @@ struct Main {
 		temp = temp;
 	}
 	CompileError> compileRootSegment(){
-		return value;
+		temp = temp;
 	}
 	CompileError> or(){
-		return value;
+		return stream.map(Main::prepare)
+                .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
+                .map(result -> result.mapErr(errors -> new CompileError("Invalid " + type, input, errors)))
+                .orElseGet(() -> new Err<>(new CompileError("No compilers present", input)));
 	}
 	CompileError> compileNamespaced(){
 		temp = temp;
-		return value;
+		temp = temp;
 	}
 	List<CompileError> merge(){
 		temp = temp;
 		temp = temp;
 		temp = temp;
 		copy.addAll();
-		return value;
+		return copy;
 	}
 	CompileError> compileToStruct(){
-		return value;
+		temp = temp;
 	}
 	CompileError> compileStructSegment(){
-		return value;
+		temp = temp;
 	}
 	CompileError> compileMethod(){
-		return value;
+		temp = temp;
 	}
 	CompileError> compileStatement(){
-		return value;
+		temp = temp;
 	}
 	CompileError> compileValue(){
-		return value;
+		temp = temp;
 	}
 	String generateStatement(){
-		return value;
+		temp = temp;
 	}
 	CompileError> truncateLeft(){
 		temp = temp;
-		return value;
+		temp = temp;
 	}
 	CompileError> compileDefinition(){
-		return value;
+		temp = temp;
 	}
 	boolean isSymbol(){
 		temp = temp;
-		return value;
+		return true;
 	}
 	String generateDefinition(){
-		return value;
+		temp = temp;
 	}
 	CompileError> truncateRight(){
 		temp = temp;
 		temp = temp;
 	}
 	CompileError> split(){
-		return value;
+		return locator.locate(input).<Result<Tuple<String, String>, CompileError>>map(index -> {
+            final var left = input.substring(0, index);
+            final var right = input.substring(index + locator.length());
+            final var tuple = new Tuple<>(left, right);
+            return new Ok<>(tuple);
+        }).orElseGet(() -> new Err<>(new CompileError("Infix '" + locator.unwrap() + "' not present", input)));
 	}
 	List<CompileError>>> prepare(){
-		return value;
+		temp = temp;
 	}
 };

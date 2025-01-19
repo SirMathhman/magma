@@ -2,12 +2,12 @@
 struct LastLocator {
 	Optional<Integer> locate(){
 		temp = temp;
-		return value;
+		temp = temp;
 	}
 	String unwrap(){
-		return value;
+		return this.infix;
 	}
 	int length(){
-		return value;
+		return this.infix.length();
 	}
 };

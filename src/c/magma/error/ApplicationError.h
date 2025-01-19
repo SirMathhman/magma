@@ -1,5 +1,5 @@
 struct ApplicationError {
 	String display(){
-		return value;
+		return this.cause.display();
 	}
 };

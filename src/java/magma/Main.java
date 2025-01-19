@@ -274,7 +274,13 @@ public class Main {
                         });
                     });
                 }),
-                () -> truncateLeft(statement, "return ").mapValue(inner -> generateStatement("return value")),
+                () -> truncateLeft(statement, "return ").flatMapValue(inner -> {
+                    return truncateRight(inner, ";").flatMapValue(inner1 -> {
+                        return compileValue(inner1).mapValue(inner0 -> {
+                            return generateStatement("return " + inner0);
+                        });
+                    });
+                }),
                 () -> split(new FirstLocator(" "), statement).mapValue(inner -> generateStatement("temp = temp")),
                 () -> truncateRight(statement, "++;").mapValue(inner -> "temp++;")
         ));
@@ -286,7 +292,7 @@ public class Main {
                     return compileValue(tuple.left()).mapValue(inner -> inner + "." + tuple.right());
                 }),
                 () -> {
-                    if(isSymbol(value)) return new Ok<>(value);
+                    if (isSymbol(value)) return new Ok<>(value);
                     return new Err<>(new CompileError("Not a symbol", value));
                 }
         ));
