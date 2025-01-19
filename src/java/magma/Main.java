@@ -163,11 +163,6 @@ public class Main {
     }
 
     private static Supplier<Result<String, List<CompileError>>> prepare(Supplier<Result<String, CompileError>> supplier) {
-        return new Supplier<Result<String, List<CompileError>>>() {
-            @Override
-            public Result<String, List<CompileError>> get() {
-                return supplier.get().mapErr(Collections::singletonList);
-            }
-        };
+        return () -> supplier.get().mapErr(Collections::singletonList);
     }
 }
