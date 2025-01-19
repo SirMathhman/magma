@@ -198,10 +198,6 @@ public class Main {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static Result<String, CompileError> compileRootSegment(String input) {
-        return createRootSegmentRule().parse(input).flatMapValue(createRootSegmentRule()::generate);
-    }
-
     private static OrRule createRootSegmentRule() {
         return new OrRule(Streams.of(
                 createNamespacedRule("package "),
