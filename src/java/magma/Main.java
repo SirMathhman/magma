@@ -73,7 +73,7 @@ public class Main {
         }
 
         return readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(input -> {
-            return ((Function<String, Result<List<String>, CompileError>>) Main::splitByStatements).apply(input).flatMapValue(segments -> compileAll(s -> Main.compileRootSegment(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapErr(ApplicationError::new).mapValue(output -> {
+            return splitByStatements(input).flatMapValue(segments -> compileAll(s -> Main.compileRootSegment(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapErr(ApplicationError::new).mapValue(output -> {
                 final var target = targetParent.resolve(name + ".c");
                 final var header = targetParent.resolve(name + ".h");
                 return writeStringWrapped(target, output)
@@ -237,15 +237,13 @@ public class Main {
                             final var name = tuple1.left();
                             final var right = tuple1.right();
                             return split(new FirstLocator(")"), right).flatMapValue(tuple2 -> {
-                                final var params = ((Function<String, Result<List<String>, CompileError>>) Main::splitByValues).apply(tuple2.left()).flatMapValue(segments -> compileAll(s -> Main.compileDefinition(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, (builder, element) -> builder
-                                        .append("\n\t")
-                                        .append(element)
-                                        .append(";"))));
+                                final var params = splitByValues(tuple2.left())
+                                        .flatMapValue(segments -> compileAll(Main::compileDefinitionToNode, segments));
 
                                 return params.mapValue(inner -> {
                                     return new MapNode()
                                             .withString(DEFAULT_VALUE, name)
-                                            .withString("params", inner);
+                                            .withNodeList("params", inner);
                                 });
                             });
                         }),
@@ -254,18 +252,27 @@ public class Main {
                 return or("root segment", beforeContent, stream).flatMapValue(node -> {
                     final var stripped = tuple0.right().strip();
                     return truncateRight(stripped, "}").flatMapValue(content -> {
-                        final var params = node.findString("params")
-                                .orElse("");
+                        final var params = node.findNodeList("params")
+                                .orElse(new ArrayList<>());
+
+                        final var fields = params.stream()
+                                .map(param -> param.findString(DEFAULT_VALUE).orElse(""))
+                                .map(param -> "\n\t" + param + ";")
+                                .collect(Collectors.joining(""));
 
                         final var name = node.findString(DEFAULT_VALUE).orElse("");
 
-                        return ((Function<String, Result<List<String>, CompileError>>) Main::splitByStatements).apply(content).flatMapValue(segments -> compileAll(s -> compileStructSegment(s, name).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
-                            return "struct " + name + " {" + params + outputContent + "\n};";
+                        return splitByStatements(content).flatMapValue(segments -> compileAll(s -> compileStructSegment(s, name).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
+                            return "struct " + name + " {" + fields + outputContent + "\n};";
                         });
                     });
                 });
             });
         });
+    }
+
+    private static Result<Node, CompileError> compileDefinitionToNode(String s) {
+        return Main.compileDefinitionToString(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k));
     }
 
     private static Result<List<String>, CompileError> splitByValues(String input) {
@@ -289,10 +296,10 @@ public class Main {
                 () -> compileMethod(structSegment, structName),
                 () -> truncateRight(structSegment, ";").flatMapValue(inner -> {
                     return split(new FirstLocator("="), inner).flatMapValue(tuple -> {
-                        return compileDefinition(tuple.left()).mapValue(inner0 -> "\n\t\t" + inner0 + " = temp;");
+                        return compileDefinitionToString(tuple.left()).mapValue(inner0 -> "\n\t\t" + inner0 + " = temp;");
                     });
                 }),
-                () -> truncateRight(structSegment, ";").flatMapValue(Main::compileDefinition)
+                () -> truncateRight(structSegment, ";").flatMapValue(Main::compileDefinitionToString)
         );
         return or("struct segment", structSegment, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse(""));
     }
@@ -309,7 +316,7 @@ public class Main {
                     });
                 }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", stripped)));
                 return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse("")).flatMapValue(content -> {
-                    return compileDefinition(tuple.left().strip()).mapValue(definition -> {
+                    return compileDefinitionToString(tuple.left().strip()).mapValue(definition -> {
                         return "\n\t" + definition + "()" + content;
                     });
                 });
@@ -362,7 +369,7 @@ public class Main {
         return new Err<>(new CompileError("Prefix '" + slice + "' not present", input));
     }
 
-    private static Result<String, CompileError> compileDefinition(String definition) {
+    private static Result<String, CompileError> compileDefinitionToString(String definition) {
         return split(new LastLocator(" "), definition).flatMapValue(tuple1 -> {
             final var inputType = tuple1.left().strip();
             Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
