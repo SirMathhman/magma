@@ -17,6 +17,7 @@ import magma.app.locate.FirstLocator;
 import magma.app.locate.LastLocator;
 import magma.app.locate.Locator;
 import magma.app.rule.FilterRule;
+import magma.app.rule.PrefixRule;
 import magma.app.rule.Rule;
 import magma.app.rule.SplitRule;
 import magma.app.rule.StringRule;
@@ -281,7 +282,7 @@ public class Main {
         final var nodes = node.findNodeList("params")
                 .orElse(new ArrayList<>());
 
-        final var params = nodes.stream().map(Main::generateDefinition).toList();
+        final var params = nodes.stream().map(node2 -> new InfixRule(new StringRule("type"), " ", new StringRule("name")).generate(node2).findValue().orElse("")).toList();
         final var collectorParams = String.join(", ", params);
 
         final var fields = params.stream()
@@ -290,9 +291,10 @@ public class Main {
 
         final var thisType = "struct " + structName;
 
-        final var definition = generateDefinition(new MapNode()
+        Node node1 = new MapNode()
                 .withString("type", thisType)
-                .withString("name", generateUniqueName(structName, "new")));
+                .withString("name", generateUniqueName(structName, "new"));
+        final var definition = new InfixRule(new StringRule("type"), " ", new StringRule("name")).generate(node1).findValue().orElse("");
 
         final var thisDefinition = new MapNode().withString("type", thisType).withString("name", "this");
         final var assignments = nodes.stream()
@@ -398,7 +400,7 @@ public class Main {
     }
 
     private static String generateDefinitionStatement(Node node) {
-        return generateStatement(generateDefinition(node));
+        return generateStatement(new InfixRule(new StringRule("type"), " ", new StringRule("name")).generate(node).findValue().orElse(""));
     }
 
     private static Result<String, CompileError> compileInitialization(String structSegment) {
@@ -412,7 +414,8 @@ public class Main {
     }
 
     private static String generateInitialization(Node node) {
-        final var definition = generateDefinition(node.findNode("definition").orElse(new MapNode()));
+        Node node1 = node.findNode("definition").orElse(new MapNode());
+        final var definition = new InfixRule(new StringRule("type"), " ", new StringRule("name")).generate(node1).findValue().orElse("");
         return generateStatement(definition + " = " + ((Function<Node, Result<String, CompileError>>) new StringRule(DEFAULT_VALUE)).apply(node).findValue().orElse(""));
     }
 
@@ -420,7 +423,7 @@ public class Main {
         return SplitRule.split(new FirstLocator("("), structSegment).flatMapValue(tuple -> {
             return SplitRule.split(new FirstLocator(")"), tuple.right().strip()).flatMapValue(tuple0 -> {
                 final var stripped = tuple0.right().strip();
-                Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(() -> truncateLeft(stripped, "{").flatMapValue(left -> {
+                Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(() -> PrefixRule.truncateLeft(stripped, "{").flatMapValue(left -> {
                     return SuffixRule.truncateRight(left, "}").flatMapValue(content -> {
                         return splitByStatements(content).flatMapValue(segments -> compileAll(segments, new Rule() {
                             @Override
@@ -443,10 +446,11 @@ public class Main {
                                 final var actualName = name.equals(structName) ? "new" : name;
                                 return generateUniqueName(structName, actualName);
                             }))
-                            .mapValue(Main::generateDefinition).mapValue(definition -> {
-                                return generateMethod(definition, generateDefinition(new MapNode()
+                            .mapValue(node1 -> new InfixRule(new StringRule("type"), " ", new StringRule("name")).generate(node1).findValue().orElse("")).mapValue(definition -> {
+                                Node node = new MapNode()
                                         .withString("type", "void*")
-                                        .withString("name", "_this_")), content);
+                                        .withString("name", "_this_");
+                                return generateMethod(definition, new InfixRule(new StringRule("type"), " ", new StringRule("name")).generate(node).findValue().orElse(""), content);
                             });
                 });
             });
@@ -502,7 +506,7 @@ public class Main {
     }
 
     private static Result<Node, CompileError> parseReturn(String statement) {
-        return truncateLeft(statement, "return ").flatMapValue(inner -> {
+        return PrefixRule.truncateLeft(statement, "return ").flatMapValue(inner -> {
             return SuffixRule.truncateRight(inner, ";").flatMapValue(inputValue -> {
                 return compileValue(inputValue).mapValue(node -> new StringRule(DEFAULT_VALUE).apply(node).findValue().orElse("")).mapValue(outputValue -> {
                     return new MapNode().withString("value", outputValue);
@@ -541,19 +545,6 @@ public class Main {
 
     private static String generateStatement(String content) {
         return "\n\t\t" + content + ";";
-    }
-
-    private static Result<String, CompileError> truncateLeft(String input, String slice) {
-        if (input.startsWith(slice)) return new Ok<>(input.substring(slice.length()));
-        return new Err<>(new CompileError("Prefix '" + slice + "' not present", new StringContext(input)));
-    }
-
-    private static String generateDefinition(Node node) {
-        return getString(node, new StringRule("type"), new StringRule("name"));
-    }
-
-    private static String getString(Node node, StringRule leftRule, StringRule rightRule) {
-        return new InfixRule(leftRule, " ", rightRule).generate(node).findValue().orElse("");
     }
 
     private static Rule createDefinitionRule() {
