@@ -7,6 +7,6 @@ struct StringContext {
 	}
 	(){
 		 = *(struct StringContext*) this;
-		return ;
+		temp = temp;
 	}
 };

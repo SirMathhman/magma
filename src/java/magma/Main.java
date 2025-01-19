@@ -288,7 +288,8 @@ public class Main {
                 .map(field -> generateStatement(generateAccess("this", field) + " = " + field))
                 .collect(Collectors.joining());
 
-        final var returnThis = generateReturn(((Rule) new StringRule(DEFAULT_VALUE)).parse("this").findValue().orElse(new MapNode()));
+        Node value = ((Rule) new StringRule(DEFAULT_VALUE)).parse("this").findValue().orElse(new MapNode());
+        final var returnThis = createReturnRule().generate(value).findValue().orElse("");
         final var constructorBody = generateDefinitionStatement(thisDefinition) + assignments + returnThis;
         final var constructor = generateMethod(definition, collectorParams, generateBlock(constructorBody, 1));
 
@@ -449,7 +450,7 @@ public class Main {
     private static Result<String, CompileError> compileStatementToString(String statement) {
         Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
                 () -> compileInvocation(statement),
-                () -> compileReturn(statement),
+                () -> createReturnRule().parse(statement).flatMapValue(value -> createReturnRule().generate(value)),
                 () -> InfixRule.split(new FirstLocator(" "), statement).mapValue(inner -> generateStatement("temp = temp")),
                 () -> SuffixRule.truncateRight(statement, "++;").mapValue(inner -> "temp++;")
         );
@@ -474,15 +475,7 @@ public class Main {
         });
     }
 
-    private static Result<String, CompileError> compileReturn(String statement) {
-        return createReturnRule().parse(statement).mapValue(Main::generateReturn);
-    }
-
-    private static String generateReturn(Node value) {
-        return generateStatement("return " + new StringRule(DEFAULT_VALUE).generate(value).findValue().orElse(""));
-    }
-
-    private static PrefixRule createReturnRule() {
+    private static Rule createReturnRule() {
         return new PrefixRule("return ", new SuffixRule(";", new NodeRule("value", createValueRule())));
     }
 

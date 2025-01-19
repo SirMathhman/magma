@@ -8,6 +8,6 @@ struct NodeContext {
 	}
 	(){
 		 = *(struct NodeContext*) this;
-		return ;
+		temp = temp;
 	}
 };

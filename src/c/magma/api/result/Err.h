@@ -23,7 +23,7 @@ struct Err<T, X> {
 	}
 	(){
 		 = *(struct Err<T, X>*) this;
-		return ;
+		temp = temp;
 	}
 	(){
 		 = *(struct Err<T, X>*) this;
@@ -31,10 +31,10 @@ struct Err<T, X> {
 	}
 	(){
 		 = *(struct Err<T, X>*) this;
-		return ;
+		temp = temp;
 	}
 	(){
 		 = *(struct Err<T, X>*) this;
-		return ;
+		temp = temp;
 	}
 };

@@ -22,10 +22,10 @@ struct InfixRule implements Rule {
 	}
 	(){
 		 = *(struct InfixRule implements Rule*) this;
-		return ;
+		temp = temp;
 	}
 	(){
 		 = *(struct InfixRule implements Rule*) this;
-		return ;
+		temp = temp;
 	}
 };

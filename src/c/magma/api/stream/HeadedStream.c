@@ -10,7 +10,7 @@ struct HeadedStream<T> {
 	}
 	(){
 		 = *(struct HeadedStream<T>*) this;
-		return ;
+		temp = temp;
 	}
 	(){
 		 = *(struct HeadedStream<T>*) this;
