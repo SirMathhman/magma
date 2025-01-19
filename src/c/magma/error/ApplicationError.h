@@ -1,2 +1,2 @@
-struct Temp {
+struct ApplicationError(Error cause) implements Error {
 };

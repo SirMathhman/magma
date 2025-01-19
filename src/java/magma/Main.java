@@ -158,8 +158,18 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileToStruct(String input, String infix) {
-        if (input.contains(infix)) return new Ok<>("struct Temp {\n};");
+        final var index = input.indexOf(infix);
+        if (index != -1) {
+            final var substring = input.substring(index + infix.length());
+            final var index1 = substring.indexOf('{');
+            if (index1 != -1) {
+                final var name = substring.substring(0, index1).strip();
+                return new Ok<>("struct " + name + " {\n};");
+            }
+            return new Err<>(new CompileError("Infix '" + "{" + "' not present", input));
+        }
         return new Err<>(new CompileError("Infix '" + infix + "' not present", input));
+
     }
 
     private static Supplier<Result<String, List<CompileError>>> prepare(Supplier<Result<String, CompileError>> supplier) {
