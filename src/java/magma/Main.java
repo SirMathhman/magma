@@ -189,7 +189,7 @@ public class Main {
     private static Result<String, CompileError> compileStructSegment(String structSegment, String structName) {
         return or(structSegment, Streams.of(
                 () -> compileMethod(structSegment, structName),
-                () -> compileDefinition(structSegment)
+                () -> truncateRight(structSegment, ";").flatMapValue(Main::compileDefinition)
         ));
     }
 
@@ -197,18 +197,20 @@ public class Main {
         return split(new FirstLocator("("), structSegment).flatMapValue(tuple -> {
             return split(new FirstLocator(")"), tuple.right().strip()).flatMapValue(tuple0 -> {
                 final var stripped = tuple0.right().strip();
-                return truncateLeft(stripped, "{").flatMapValue(left -> {
+                return or(stripped, Streams.of(() -> truncateLeft(stripped, "{").flatMapValue(left -> {
                     return truncateRight(left, "}").flatMapValue(content -> {
-                        return splitAndCompile(content, Main::compileStatement).flatMapValue(outputContent -> {
-                            return compileDefinition(tuple.left().strip()).mapValue(definition -> {
-                                final var type = "struct " + structName;
-                                final var thisDefinition = generateDefinition(type, "this");
-                                return "\n\t" + definition + "(void* _this_){\n\t\t" +
-                                       thisDefinition + " = (" + type + "*) this;" +
-                                       outputContent +
-                                       "\n\t}";
-                            });
+                        return splitAndCompile(content, Main::compileStatement).mapValue(outputContent -> {
+                            final var type = "struct " + structName;
+                            final var thisDefinition = generateDefinition(type, "this");
+                            return "{\n\t\t" +
+                                thisDefinition + " = (" + type + "*) this;" +
+                                outputContent +
+                                "\n\t}";
                         });
+                    });
+                }), () -> new Ok<>(";"))).flatMapValue(content -> {
+                    return compileDefinition(tuple.left().strip()).mapValue(definition -> {
+                        return "\n\t" + definition + "(void* _this_)" + content;
                     });
                 });
             });
@@ -222,7 +224,7 @@ public class Main {
     }
 
     private static Result<String, CompileError> truncateLeft(String input, String slice) {
-        if(input.startsWith(slice)) return new Ok<>(input.substring(slice.length()));
+        if (input.startsWith(slice)) return new Ok<>(input.substring(slice.length()));
         return new Err<>(new CompileError("Prefix '" + slice + "' not present", input));
     }
 
@@ -232,11 +234,24 @@ public class Main {
             return or(inputType, Streams.of(
                     () -> split(new LastLocator(" "), inputType).mapValue(Tuple::right),
                     () -> new Ok<>(inputType)
-            )).mapValue(outputType -> "Rc_" + outputType).mapValue(type -> {
+            )).mapValue(outputType -> "Rc_" + outputType).flatMapValue(type -> {
                 final var name = tuple1.right();
-                return generateDefinition(type, name);
+                if (isSymbol(name)) {
+                    return new Ok<>(generateDefinition(type, name));
+                } else {
+                    return new Err<>(new CompileError("Not a symbol", name));
+                }
             });
         });
+    }
+
+    private static boolean isSymbol(String input) {
+        for (int i = 0; i < input.length(); i++) {
+            final var c = input.charAt(i);
+            if (Character.isLetter(c)) continue;
+            return false;
+        }
+        return true;
     }
 
     private static String generateDefinition(String type, String name) {
