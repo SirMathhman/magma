@@ -11,6 +11,7 @@ import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
+import magma.app.filter.SymbolFilter;
 import magma.app.locate.FirstLocator;
 import magma.app.locate.LastLocator;
 import magma.app.locate.Locator;
@@ -475,12 +476,12 @@ public class Main {
 
     private static Result<Node, CompileError> compileSymbol(String value) {
         Result<String, CompileError> result;
-        if (isSymbol(value)) {
+        if (new SymbolFilter().test(value)) {
             result = new Ok<>(value);
         } else {
             result = new Err<>(new CompileError("Not a symbol", value));
         }
-        return result.mapValue(s -> createDefaultNode(s));
+        return result.mapValue(Main::createDefaultNode);
     }
 
     private static Result<Node, CompileError> compileDataAccess(String value) {
@@ -513,7 +514,7 @@ public class Main {
         return parseSplit(parseOr("type", Streams.of(
                 parseSplit(parseString("modifiers"), new LastLocator(" "), parseString("type")),
                 parseString("type")
-        )), new LastLocator(" "), parseStrip(new FilterRule(Main::isSymbol, parseString("name"))));
+        )), new LastLocator(" "), parseStrip(new FilterRule(input -> new SymbolFilter().test(input), parseString("name"))));
     }
 
     private static Function<String, Result<Node, CompileError>> parseStrip(Function<String, Result<Node, CompileError>> childRule) {
@@ -526,15 +527,6 @@ public class Main {
 
     private static String generateWithDefaultValue(Node node) {
         return node.findString(DEFAULT_VALUE).orElse("");
-    }
-
-    private static boolean isSymbol(String input) {
-        for (int i = 0; i < input.length(); i++) {
-            final var c = input.charAt(i);
-            if (Character.isLetter(c)) continue;
-            return false;
-        }
-        return true;
     }
 
     private static String generateDefinition(String type, String name) {
@@ -562,4 +554,5 @@ public class Main {
             Supplier<Result<Node, CompileError>> supplier
     ) {
         return () -> supplier.get().mapErr(Collections::singletonList);
-    }}
+    }
+}

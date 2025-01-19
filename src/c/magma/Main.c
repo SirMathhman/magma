@@ -29,6 +29,7 @@
 #include <temp.h>
 #include <temp.h>
 #include <temp.h>
+#include <temp.h>
 struct Main {
 	struct Main Main_new(){
 		struct Main this;
@@ -248,7 +249,7 @@ struct Main {
 		temp = temp;
 		temp = temp;
 		temp = temp;
-		return result.mapValue(s -> createDefaultNode(s));
+		return result.mapValue(Main::createDefaultNode);
 	}
 	CompileError> Main_compileDataAccess(void* _this_){
 		struct Main this = *(struct Main*) this;
@@ -288,11 +289,6 @@ struct Main {
 	String Main_generateWithDefaultValue(void* _this_){
 		struct Main this = *(struct Main*) this;
 		return node.findString(DEFAULT_VALUE).orElse("");
-	}
-	boolean Main_isSymbol(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		return true;
 	}
 	String Main_generateDefinition(void* _this_){
 		struct Main this = *(struct Main*) this;
