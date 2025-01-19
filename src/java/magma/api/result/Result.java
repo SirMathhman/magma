@@ -2,6 +2,7 @@ package magma.api.result;
 
 import magma.api.Tuple;
 
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -17,4 +18,6 @@ public interface Result<T, X> {
     <R> Result<Tuple<T, R>, X> and(Supplier<Result<R, X>> other);
 
     <R> Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other);
+
+    Optional<T> findValue();
 }

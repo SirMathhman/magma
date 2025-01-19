@@ -378,7 +378,7 @@ public class Main {
 
     private static String generateInitialization(Node node) {
         final var definition = generateDefinition(node.findNode("definition").orElse(new MapNode()));
-        return generateStatement(definition + " = " + node.findString(DEFAULT_VALUE).orElse(""));
+        return generateStatement(definition + " = " + generateString(DEFAULT_VALUE).apply(node).findValue().orElse(""));
     }
 
     private static Result<String, CompileError> compileMethod(String structSegment, String structName) {
@@ -454,7 +454,7 @@ public class Main {
     }
 
     private static String generateReturn(Node value) {
-        return generateStatement("return " + value.findString(DEFAULT_VALUE).orElse(""));
+        return generateStatement("return " + generateString(DEFAULT_VALUE).apply(value).findValue().orElse(""));
     }
 
     private static Result<Node, CompileError> parseReturn(String statement) {
@@ -505,9 +505,18 @@ public class Main {
     }
 
     private static String generateDefinition(Node node) {
-        final var type = node.findString("type").orElse("");
-        final var name = node.findString("name").orElse("");
+        final var type = generateString("type").apply(node).findValue().orElse("");
+        final var name = generateString("name").apply(node).findValue().orElse("");
         return type + " " + name;
+    }
+
+    private static Function<Node, Result<String, CompileError>> generateString(String propertyKey) {
+        return new Function<>() {
+            @Override
+            public Result<String, CompileError> apply(Node node) {
+                return new Ok<>(node.findString(propertyKey).orElse(""));
+            }
+        };
     }
 
     private static Function<String, Result<Node, CompileError>> createDefinitionRule() {
@@ -522,7 +531,7 @@ public class Main {
     }
 
     private static String generateWithDefaultValue(Node node) {
-        return node.findString(DEFAULT_VALUE).orElse("");
+        return generateString(DEFAULT_VALUE).apply(node).findValue().orElse("");
     }
 
     private static Result<String, CompileError> truncateRight(String input, String slice) {
