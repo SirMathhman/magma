@@ -18,12 +18,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
@@ -123,9 +125,25 @@ public class Main {
         final var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
-        for (int i = 0; i < input.length(); i++) {
-            final var c = input.charAt(i);
+
+        final var queue = IntStream.range(0, input.length())
+                .mapToObj(input::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        while (!queue.isEmpty()) {
+            final var c = queue.pop();
             buffer.append(c);
+
+            if (c == '\'') {
+                final var c1 = queue.pop();
+                buffer.append(c1);
+
+                if (c1 == '\\') {
+                    buffer.append(queue.pop());
+                }
+                buffer.append(queue.pop());
+            }
+
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
@@ -238,8 +256,15 @@ public class Main {
 
     private static Result<String, CompileError> compileStatement(String statement) {
         return or("statement segment", statement, Streams.of(
-
+                () -> truncateRight(statement, ");").mapValue(inner -> generateStatement("temp()")),
+                () -> truncateLeft(statement, "return ").mapValue(inner -> generateStatement("return value")),
+                () -> split(new FirstLocator(" "), statement).mapValue(inner -> generateStatement("temp = temp")),
+                () -> truncateRight(statement, "++;").mapValue(inner -> "temp++;")
         ));
+    }
+
+    private static String generateStatement(String content) {
+        return "\n\t\t" + content + ";";
     }
 
     private static Result<String, CompileError> truncateLeft(String input, String slice) {
