@@ -1,10 +1,10 @@
 struct Streams {
-	struct Streams Streams_new(){
-		struct Streams this;
-		return this;
+	(){
+		;
+		return ;
 	}
-	Stream<T> Streams_of(void* _this_){
-		struct Streams this = *(struct Streams*) this;
+	(){
+		 = *(struct Streams*) this;
 		temp = temp;
 	}
 };

@@ -1,21 +1,21 @@
 #include <temp.h>
 struct FirstLocator {
-	String infix;
-	struct FirstLocator FirstLocator_new(String infix){
-		struct FirstLocator this;
+	;
+	(){
+		;
 		this.infix = infix;
-		return this;
+		return ;
 	}
-	String FirstLocator_unwrap(void* _this_){
-		struct FirstLocator this = *(struct FirstLocator*) this;
-		return this.infix;
+	(){
+		 = *(struct FirstLocator*) this;
+		return ;
 	}
-	int FirstLocator_length(void* _this_){
-		struct FirstLocator this = *(struct FirstLocator*) this;
-		return this.infix.length();
+	(){
+		 = *(struct FirstLocator*) this;
+		return ;
 	}
-	Optional<Integer> FirstLocator_locate(void* _this_){
-		struct FirstLocator this = *(struct FirstLocator*) this;
+	(){
+		 = *(struct FirstLocator*) this;
 		temp = temp;
 		temp = temp;
 	}

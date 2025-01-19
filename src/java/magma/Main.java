@@ -87,8 +87,8 @@ public class Main {
         return readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(input -> {
             return splitByStatements(input).flatMapValue(segments -> compileAll(segments, new Rule() {
                 @Override
-                public Result<Node, CompileError> parse(String s) {
-                    return compileRootSegment(s).mapValue(k -> parseString(DEFAULT_VALUE).parse(k).findValue().orElse(new MapNode()));
+                public Result<Node, CompileError> parse(String input) {
+                    return compileRootSegment(input).mapValue(k -> parseString(DEFAULT_VALUE).parse(k).findValue().orElse(new MapNode()));
                 }
             }).mapValue(list -> merge(list, Main::mergeStatement))).mapErr(ApplicationError::new).mapValue(output -> {
                 final var target = targetParent.resolve(name + ".c");
@@ -260,8 +260,8 @@ public class Main {
                         String name = new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse("");
                         return parseDivide("children", Main::splitByStatements, new Rule() {
                             @Override
-                            public Result<Node, CompileError> parse(String s) {
-                                return compileStructSegment(s, name);
+                            public Result<Node, CompileError> parse(String input) {
+                                return compileStructSegment(input, name);
                             }
                         })
                                 .parse(content)
@@ -325,8 +325,8 @@ public class Main {
     ) {
         return new Rule() {
             @Override
-            public Result<Node, CompileError> parse(String s) {
-                return InfixRule.split(locator, s).flatMapValue(sliced -> {
+            public Result<Node, CompileError> parse(String input) {
+                return InfixRule.split(locator, input).flatMapValue(sliced -> {
                     final var leftSlice = sliced.left();
                     final var rightSlice = sliced.right();
                     return leftRule.parse(leftSlice)
@@ -340,8 +340,8 @@ public class Main {
     private static Rule parseString(String propertyKey) {
         return new Rule() {
             @Override
-            public Result<Node, CompileError> parse(String s) {
-                return new Ok<>(new MapNode().withString(propertyKey, s));
+            public Result<Node, CompileError> parse(String input) {
+                return new Ok<>(new MapNode().withString(propertyKey, input));
             }
         };
     }
@@ -353,8 +353,8 @@ public class Main {
     ) {
         return new Rule() {
             @Override
-            public Result<Node, CompileError> parse(String s) {
-                return splitter.apply(s)
+            public Result<Node, CompileError> parse(String input) {
+                return splitter.apply(input)
                         .flatMapValue(segments -> compileAll(segments, compiler))
                         .mapValue(inner -> new MapNode().withNodeList(propertyKey, inner));
             }
@@ -416,7 +416,7 @@ public class Main {
     private static String generateInitialization(Node node) {
         Node node1 = node.findNode("definition").orElse(new MapNode());
         final var definition = new InfixRule(new StringRule("type"), new FirstLocator(" "), new StringRule("name")).generate(node1).findValue().orElse("");
-        return generateStatement(definition + " = " + ((Function<Node, Result<String, CompileError>>) new StringRule(DEFAULT_VALUE)).apply(node).findValue().orElse(""));
+        return generateStatement(definition + " = " + new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse(""));
     }
 
     private static Result<String, CompileError> compileMethod(String structSegment, String structName) {
@@ -427,8 +427,8 @@ public class Main {
                     return SuffixRule.truncateRight(left, "}").flatMapValue(content -> {
                         return splitByStatements(content).flatMapValue(segments -> compileAll(segments, new Rule() {
                             @Override
-                            public Result<Node, CompileError> parse(String s) {
-                                return compileStatementToNode(s);
+                            public Result<Node, CompileError> parse(String input) {
+                                return compileStatementToNode(input);
                             }
                         }).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
                             final var unwrapThis = generateInitialization(new MapNode()
@@ -485,8 +485,8 @@ public class Main {
                 final var inputCaller = inner0.left();
                 splitByValues(inner0.right()).flatMapValue(arguments -> compileAll(arguments, new Rule() {
                     @Override
-                    public Result<Node, CompileError> parse(String s) {
-                        return compileValue(s);
+                    public Result<Node, CompileError> parse(String input) {
+                        return compileValue(input);
                     }
                 }));
 
@@ -502,7 +502,7 @@ public class Main {
     }
 
     private static String generateReturn(Node value) {
-        return generateStatement("return " + ((Function<Node, Result<String, CompileError>>) new StringRule(DEFAULT_VALUE)).apply(value).findValue().orElse(""));
+        return generateStatement("return " + new StringRule(DEFAULT_VALUE).generate(value).findValue().orElse(""));
     }
 
     private static Result<Node, CompileError> parseReturn(String statement) {

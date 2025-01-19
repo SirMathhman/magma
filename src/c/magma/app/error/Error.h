@@ -1,7 +1,7 @@
 struct Error {
-	struct Error Error_new(){
-		struct Error this;
-		return this;
+	(){
+		;
+		return ;
 	}
-	String Error_display(void* _this_);
+	();
 };
