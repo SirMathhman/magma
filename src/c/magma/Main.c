@@ -131,6 +131,10 @@ struct Main {
 		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
+	CompileError> Main_parseOr(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+	}
 	CompileError>> Main_parseSplit(void* _this_){
 		struct Main this = *(struct Main*) this;
 		temp = temp;

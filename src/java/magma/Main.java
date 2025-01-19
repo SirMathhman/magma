@@ -232,20 +232,12 @@ public class Main {
         return split(new FirstLocator(infix), input).flatMapValue(tuple -> {
             return split(new FirstLocator("{"), tuple.right()).flatMapValue(withoutContentStart -> {
                 final var beforeContent = withoutContentStart.left().strip();
-                Stream<Supplier<Result<Node, CompileError>>> stream = Streams.of(
-                        () -> split(new FirstLocator("("), beforeContent).flatMapValue(withoutParamStart -> {
-                            final var name = withoutParamStart.left();
-                            final var right = withoutParamStart.right();
-
-                            final var node = new MapNode().withString(DEFAULT_VALUE, name);
-                            return parseSplit(parseDivide("params", Main::compileDefinition),
-                                    new FirstLocator(")"),
-                                    parseString("after-params")).apply(right)
-                                    .mapValue(node::merge);
-                        }),
-                        () -> parseString(DEFAULT_VALUE).apply(beforeContent)
-                );
-                return or("root segment", beforeContent, stream).flatMapValue(node -> {
+                return parseOr(beforeContent, Streams.of(
+                        parseSplit(parseString(DEFAULT_VALUE), new FirstLocator("("), parseSplit(parseDivide("params", Main::compileDefinition),
+                                new FirstLocator(")"),
+                                parseString("after-params"))),
+                        parseString(DEFAULT_VALUE)
+                )).flatMapValue(node -> {
                     final var stripped = withoutContentStart.right().strip();
                     return truncateRight(stripped, "}").flatMapValue(content -> {
                         final var nodes = node.findNodeList("params")
@@ -282,6 +274,13 @@ public class Main {
                 });
             });
         });
+    }
+
+    private static Result<Node, CompileError> parseOr(
+            String input,
+            Stream<Function<String, Result<Node, CompileError>>> rules
+    ) {
+        return or("root segment", input, rules.map(rule -> () -> rule.apply(input)));
     }
 
     private static Function<String, Result<Node, CompileError>> parseSplit(
