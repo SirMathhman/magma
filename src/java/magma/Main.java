@@ -82,7 +82,7 @@ public class Main {
         }
 
         return readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(input -> {
-            return splitByStatements(input).flatMapValue(segments -> compileAll(segments, s -> compileRootSegment(s).mapValue(k -> createDefaultNode(k))).mapValue(list -> merge(list, Main::mergeStatement))).mapErr(ApplicationError::new).mapValue(output -> {
+            return splitByStatements(input).flatMapValue(segments -> compileAll(segments, s -> compileRootSegment(s).mapValue(k -> parseString(DEFAULT_VALUE).apply(k).findValue().orElse(new MapNode()))).mapValue(list -> merge(list, Main::mergeStatement))).mapErr(ApplicationError::new).mapValue(output -> {
                 final var target = targetParent.resolve(name + ".c");
                 final var header = targetParent.resolve(name + ".h");
                 return writeStringWrapped(target, output)
@@ -214,7 +214,7 @@ public class Main {
                 () -> compileToStruct(input, "record "),
                 () -> compileToStruct(input, "interface ")
         );
-        return or("root segment", input, stream.map(supplier -> () -> supplier.get().mapValue(s -> createDefaultNode(s)))).mapValue(node -> generateWithDefaultValue(node));
+        return or("root segment", input, stream.map(supplier -> () -> supplier.get().mapValue(s -> parseString(DEFAULT_VALUE).apply(s).findValue().orElse(new MapNode())))).mapValue(node -> generateWithDefaultValue(node));
     }
 
     private static Result<Node, CompileError> or(String type, String input, Stream<Supplier<Result<Node, CompileError>>> stream) {
@@ -288,7 +288,7 @@ public class Main {
                 .map(field -> generateStatement(generateAccess("this", field) + " = " + field))
                 .collect(Collectors.joining());
 
-        final var returnThis = generateReturn(createDefaultNode("this"));
+        final var returnThis = generateReturn(parseString(DEFAULT_VALUE).apply("this").findValue().orElse(new MapNode()));
         final var constructorBody = generateDefinitionStatement(thisDefinition) + assignments + returnThis;
         final var constructor = generateMethod(definition, collectorParams, generateBlock(constructorBody, 1));
 
@@ -356,7 +356,7 @@ public class Main {
                 () -> compileDefinitionStatement(structSegment)
         );
         return or("struct segment", structSegment, stream
-                .map(supplier -> () -> supplier.get().mapValue(s -> createDefaultNode(s))));
+                .map(supplier -> () -> supplier.get().mapValue(s -> parseString(DEFAULT_VALUE).apply(s).findValue().orElse(new MapNode()))));
     }
 
     private static Result<String, CompileError> compileDefinitionStatement(String structSegment) {
@@ -401,7 +401,7 @@ public class Main {
                         });
                     });
                 }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", new StringContext(stripped))));
-                return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> createDefaultNode(s)))).mapValue(node -> generateWithDefaultValue(node)).flatMapValue(content -> {
+                return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> parseString(DEFAULT_VALUE).apply(s).findValue().orElse(new MapNode())))).mapValue(node -> generateWithDefaultValue(node)).flatMapValue(content -> {
                     return createDefinitionRule().apply(tuple.left().strip())
                             .mapValue(definition -> definition.mapString("name", name -> {
                                 final var actualName = name.equals(structName) ? "new" : name;
@@ -422,7 +422,7 @@ public class Main {
     }
 
     private static Result<Node, CompileError> compileStatementToNode(String s) {
-        return compileStatementToString(s).mapValue(k -> createDefaultNode(k));
+        return compileStatementToString(s).mapValue(k -> parseString(DEFAULT_VALUE).apply(k).findValue().orElse(new MapNode()));
     }
 
     private static String generateMethod(String definition, String params, String content) {
@@ -436,7 +436,7 @@ public class Main {
                 () -> split(new FirstLocator(" "), statement).mapValue(inner -> generateStatement("temp = temp")),
                 () -> truncateRight(statement, "++;").mapValue(inner -> "temp++;")
         );
-        return or("statement segment", statement, stream.map(supplier -> () -> supplier.get().mapValue(s -> createDefaultNode(s)))).mapValue(node -> generateWithDefaultValue(node));
+        return or("statement segment", statement, stream.map(supplier -> () -> supplier.get().mapValue(s -> parseString(DEFAULT_VALUE).apply(s).findValue().orElse(new MapNode())))).mapValue(node -> generateWithDefaultValue(node));
     }
 
     private static Result<String, CompileError> compileInvocation(String statement) {
@@ -484,14 +484,14 @@ public class Main {
         } else {
             result = new Err<>(new CompileError("Not a symbol", new StringContext(value)));
         }
-        return result.mapValue(Main::createDefaultNode);
+        return result.mapValue(inputType -> parseString(DEFAULT_VALUE).apply(inputType).findValue().orElse(new MapNode()));
     }
 
     private static Result<Node, CompileError> compileDataAccess(String value) {
         return split(new LastLocator("."), value).flatMapValue(tuple -> {
             return compileValue(tuple.left()).mapValue(Main::generateWithDefaultValue)
                     .mapValue(inner -> generateAccess(inner, tuple.right()));
-        }).mapValue(Main::createDefaultNode);
+        }).mapValue(inputType -> parseString(DEFAULT_VALUE).apply(inputType).findValue().orElse(new MapNode()));
     }
 
     private static String generateAccess(String reference, String property) {
@@ -529,10 +529,6 @@ public class Main {
                 parseSplit(parseString("modifiers"), new LastLocator(" "), parseString("type")),
                 parseString("type")
         )), new LastLocator(" "), new StripRule(new FilterRule(new SymbolFilter(), parseString("name"))));
-    }
-
-    private static Node createDefaultNode(String inputType) {
-        return new MapNode().withString(DEFAULT_VALUE, inputType);
     }
 
     private static String generateWithDefaultValue(Node node) {
