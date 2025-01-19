@@ -73,7 +73,7 @@ public class Main {
         }
 
         return readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(input -> {
-            return splitAndCompile(input, Main::splitByStatements, s -> Main.compileRootSegment(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), Main::mergeStatement).mapErr(ApplicationError::new).mapValue(output -> {
+            return ((Function<String, Result<List<String>, CompileError>>) Main::splitByStatements).apply(input).flatMapValue(segments -> compileAll(s -> Main.compileRootSegment(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapErr(ApplicationError::new).mapValue(output -> {
                 final var target = targetParent.resolve(name + ".c");
                 final var header = targetParent.resolve(name + ".h");
                 return writeStringWrapped(target, output)
@@ -110,22 +110,24 @@ public class Main {
         }
     }
 
-    private static Result<String, CompileError> splitAndCompile(
-            String input, Function<String, Result<List<String>, CompileError>> splitter,
-            Function<String, Result<Node, CompileError>> compiler,
-            BiFunction<StringBuilder, String, StringBuilder> merger
-    ) {
-        return splitter.apply(input).flatMapValue(segments -> {
-            Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
-            for (String segment : segments) {
-                final var stripped = segment.strip();
-                if (stripped.isEmpty()) continue;
+    private static String merge(List<Node> nodes, BiFunction<StringBuilder, String, StringBuilder> merger) {
+        return nodes.stream()
+                .map(node -> node.findString(DEFAULT_VALUE).orElse(""))
+                .reduce(new StringBuilder(), merger, (_, next) -> next).toString();
+    }
 
-                output = output.and(() -> compiler.apply(stripped).mapValue(node -> node.findString(DEFAULT_VALUE).orElse(""))).mapValue(tuple -> merger.apply(tuple.left(), tuple.right()));
-            }
+    private static Result<List<Node>, CompileError> compileAll(Function<String, Result<Node, CompileError>> compiler, List<String> segments) {
+        Result<List<Node>, CompileError> nodes = new Ok<>(new ArrayList<>());
+        for (String segment : segments) {
+            final var stripped = segment.strip();
+            if (stripped.isEmpty()) continue;
 
-            return output.mapValue(StringBuilder::toString);
-        });
+            nodes = nodes.and(() -> compiler.apply(stripped)).mapValue(tuple -> {
+                tuple.left().add(tuple.right());
+                return tuple.left();
+            });
+        }
+        return nodes;
     }
 
     private static StringBuilder mergeStatement(StringBuilder builder, String element) {
@@ -235,10 +237,10 @@ public class Main {
                             final var name = tuple1.left();
                             final var right = tuple1.right();
                             return split(new FirstLocator(")"), right).flatMapValue(tuple2 -> {
-                                final var params = splitAndCompile(tuple2.left(), Main::splitByValues, s -> Main.compileDefinition(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), (builder, element) -> builder
+                                final var params = ((Function<String, Result<List<String>, CompileError>>) Main::splitByValues).apply(tuple2.left()).flatMapValue(segments -> compileAll(s -> Main.compileDefinition(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, (builder, element) -> builder
                                         .append("\n\t")
                                         .append(element)
-                                        .append(";"));
+                                        .append(";"))));
 
                                 return params.mapValue(inner -> {
                                     return new MapNode()
@@ -257,7 +259,7 @@ public class Main {
 
                         final var name = node.findString(DEFAULT_VALUE).orElse("");
 
-                        return splitAndCompile(content, Main::splitByStatements, s -> compileStructSegment(s, name).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), Main::mergeStatement).mapValue(outputContent -> {
+                        return ((Function<String, Result<List<String>, CompileError>>) Main::splitByStatements).apply(content).flatMapValue(segments -> compileAll(s -> compileStructSegment(s, name).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
                             return "struct " + name + " {" + params + outputContent + "\n};";
                         });
                     });
@@ -301,7 +303,7 @@ public class Main {
                 final var stripped = tuple0.right().strip();
                 Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(() -> truncateLeft(stripped, "{").flatMapValue(left -> {
                     return truncateRight(left, "}").flatMapValue(content -> {
-                        return splitAndCompile(content, Main::splitByStatements, s -> compileStatement(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), Main::mergeStatement).mapValue(outputContent -> {
+                        return ((Function<String, Result<List<String>, CompileError>>) Main::splitByStatements).apply(content).flatMapValue(segments -> compileAll(s -> compileStatement(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
                             return "{" + outputContent + "\n\t}";
                         });
                     });
