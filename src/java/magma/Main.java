@@ -31,6 +31,7 @@ import java.util.stream.IntStream;
 public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
+    public static final String VALUE = "value";
 
     public static void main(String[] args) {
         collect().mapErr(JavaError::new)
@@ -202,7 +203,7 @@ public class Main {
                 () -> compileToStruct(input, "record "),
                 () -> compileToStruct(input, "interface ")
         );
-        return or("root segment", input, stream.map(supplier -> () -> supplier.get().mapValue(s -> new Node().withString(Node.VALUE, s)))).mapValue(node -> node.findString(Node.VALUE).orElse(""));
+        return or("root segment", input, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(VALUE, s)))).mapValue(node -> node.findString(VALUE).orElse(""));
     }
 
     private static Result<Node, CompileError> or(String type, String input, Stream<Supplier<Result<Node, CompileError>>> stream) {
@@ -240,19 +241,21 @@ public class Main {
                                         .append(";"));
 
                                 return params.mapValue(inner -> {
-                                    return new Node()
-                                            .withString(Node.VALUE, name)
+                                    return new MapNode()
+                                            .withString(VALUE, name)
                                             .withString("params", inner);
                                 });
                             });
                         }),
-                        () -> new Ok<>(new Node().withString(Node.VALUE, beforeContent))
+                        () -> new Ok<>(new MapNode().withString(VALUE, beforeContent))
                 );
                 return or("root segment", beforeContent, stream).flatMapValue(node -> {
                     final var stripped = tuple0.right().strip();
                     return truncateRight(stripped, "}").flatMapValue(content -> {
-                        final var params = node.findString("params").orElse("");
-                        final var name = node.findString(Node.VALUE).orElse("");
+                        final var params = node.findString("params")
+                                .orElse("");
+
+                        final var name = node.findString(VALUE).orElse("");
 
                         return splitAndCompile(content, Main::splitByStatements, structSegment -> compileStructSegment(structSegment, name), Main::mergeStatement).mapValue(outputContent -> {
                             return "struct " + name + " {" + params + outputContent + "\n};";
@@ -289,7 +292,7 @@ public class Main {
                 }),
                 () -> truncateRight(structSegment, ";").flatMapValue(Main::compileDefinition)
         );
-        return or("struct segment", structSegment, stream.map(supplier -> () -> supplier.get().mapValue(s -> new Node().withString(Node.VALUE, s)))).mapValue(node -> node.findString(Node.VALUE).orElse(""));
+        return or("struct segment", structSegment, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(VALUE, s)))).mapValue(node -> node.findString(VALUE).orElse(""));
     }
 
     private static Result<String, CompileError> compileMethod(String structSegment, String structName) {
@@ -303,7 +306,7 @@ public class Main {
                         });
                     });
                 }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", stripped)));
-                return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> new Node().withString(Node.VALUE, s)))).mapValue(node -> node.findString(Node.VALUE).orElse("")).flatMapValue(content -> {
+                return or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(VALUE, s)))).mapValue(node -> node.findString(VALUE).orElse("")).flatMapValue(content -> {
                     return compileDefinition(tuple.left().strip()).mapValue(definition -> {
                         return "\n\t" + definition + "()" + content;
                     });
@@ -332,7 +335,7 @@ public class Main {
                 () -> split(new FirstLocator(" "), statement).mapValue(inner -> generateStatement("temp = temp")),
                 () -> truncateRight(statement, "++;").mapValue(inner -> "temp++;")
         );
-        return or("statement segment", statement, stream.map(supplier -> () -> supplier.get().mapValue(s -> new Node().withString(Node.VALUE, s)))).mapValue(node -> node.findString(Node.VALUE).orElse(""));
+        return or("statement segment", statement, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(VALUE, s)))).mapValue(node -> node.findString(VALUE).orElse(""));
     }
 
     private static Result<String, CompileError> compileValue(String value) {
@@ -345,7 +348,7 @@ public class Main {
                     return new Err<>(new CompileError("Not a symbol", value));
                 }
         );
-        return or("value", value, stream.map(supplier -> () -> supplier.get().mapValue(s -> new Node().withString(Node.VALUE, s)))).mapValue(node -> node.findString(Node.VALUE).orElse(""));
+        return or("value", value, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(VALUE, s)))).mapValue(node -> node.findString(VALUE).orElse(""));
     }
 
     private static String generateStatement(String content) {
@@ -364,7 +367,7 @@ public class Main {
                     () -> split(new LastLocator(" "), inputType).mapValue(Tuple::right),
                     () -> new Ok<>(inputType)
             );
-            return or("root segment", inputType, stream.map(supplier -> () -> supplier.get().mapValue(s -> new Node().withString(Node.VALUE, s)))).mapValue(node -> node.findString(Node.VALUE).orElse("")).flatMapValue(type -> {
+            return or("root segment", inputType, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(VALUE, s)))).mapValue(node -> node.findString(VALUE).orElse("")).flatMapValue(type -> {
                 final var name = tuple1.right();
                 if (isSymbol(name)) {
                     return new Ok<>(generateDefinition(type, name));
