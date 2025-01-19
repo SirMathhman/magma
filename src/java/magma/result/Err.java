@@ -30,4 +30,9 @@ public record Err<T, X>(X error) implements Result<T, X> {
     public <R> Result<Tuple<T, R>, X> and(Supplier<Result<R, X>> other) {
         return new Err<>(this.error);
     }
+
+    @Override
+    public <R> Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other) {
+        return other.get().mapErr(otherErr -> new Tuple<>(this.error, otherErr));
+    }
 }

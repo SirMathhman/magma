@@ -15,4 +15,6 @@ public interface Result<T, X> {
     <R> R match(Function<T, R> onOk, Function<X, R> onErr);
 
     <R> Result<Tuple<T, R>, X> and(Supplier<Result<R, X>> other);
+
+    <R> Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other);
 }

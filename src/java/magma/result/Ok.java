@@ -30,4 +30,9 @@ public record Ok<T, X>(T value) implements Result<T, X> {
     public <R> Result<Tuple<T, R>, X> and(Supplier<Result<R, X>> other) {
         return other.get().mapValue(otherValue -> new Tuple<>(this.value, otherValue));
     }
+
+    @Override
+    public <R> Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other) {
+        return new Ok<>(this.value);
+    }
 }

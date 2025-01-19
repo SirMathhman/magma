@@ -12,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -101,19 +103,23 @@ public class Main {
     private static Result<String, CompileError> compile(String root) {
         final var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
+        var depth = 0;
         for (int i = 0; i < root.length(); i++) {
             final var c = root.charAt(i);
             buffer.append(c);
-            if (c == ';') {
+            if (c == ';' && depth == 0) {
                 advance(buffer, segments);
                 buffer = new StringBuilder();
+            } else {
+                if (c == '{') depth++;
+                if (c == '}') depth--;
             }
         }
         advance(buffer, segments);
 
         Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
-            output = output.and(() -> compileRootSegment(segment)).mapValue(tuple -> tuple.left().append(tuple.right()));
+            output = output.and(() -> compileRootSegment(segment.strip())).mapValue(tuple -> tuple.left().append(tuple.right()));
         }
 
         return output.mapValue(StringBuilder::toString);
@@ -123,7 +129,29 @@ public class Main {
         if (!buffer.isEmpty()) segments.add(buffer.toString());
     }
 
-    private static Err<String, CompileError> compileRootSegment(String root) {
-        return new Err<>(new CompileError("Invalid root", root));
+    private static Result<String, CompileError> compileRootSegment(String input) {
+        return compileNamespaced(input, "package ", "").mapErr(Collections::singletonList)
+                .or(() -> compileNamespaced(input, "import ", "#include <temp.h>\n")).mapErr(Main::add)
+                .or(() -> compileToStruct(input, "record ")).mapErr(Main::add)
+                .or(() -> compileToStruct(input, "interface ")).mapErr(Main::add)
+                .mapErr(errors -> new CompileError("Invalid root", input, errors));
+    }
+
+    private static Result<String, CompileError> compileNamespaced(String input, String prefix, String output) {
+        if (input.startsWith(prefix)) return new Ok<>(output);
+        return new Err<>(new CompileError("Prefix '" + prefix + "' not present.", input));
+    }
+
+    private static List<CompileError> add(Tuple<List<CompileError>, CompileError> tuple) {
+        final var left = tuple.left();
+        final var right = tuple.right();
+        final var copy = new ArrayList<>(left);
+        copy.add(right);
+        return copy;
+    }
+
+    private static Result<String, CompileError> compileToStruct(String input, String infix) {
+        if (input.contains(infix)) return new Ok<>("struct Temp {\n};");
+        return new Err<>(new CompileError("Infix '" + infix + "' not present", input));
     }
 }
