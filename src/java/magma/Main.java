@@ -231,49 +231,58 @@ public class Main {
     private static Result<String, CompileError> compileToStruct(String input, String infix) {
         return split(new FirstLocator(infix), input).flatMapValue(tuple -> {
             return split(new FirstLocator("{"), tuple.right()).flatMapValue(withoutContentStart -> {
-                final var beforeContent = withoutContentStart.left().strip();
-                return parseOr(beforeContent, Streams.of(
-                        parseSplit(parseString(DEFAULT_VALUE), new FirstLocator("("), parseSplit(parseDivide("params", Main::compileDefinition),
+                return parseOr(withoutContentStart.left().strip(), Streams.of(
+                        parseSplit(parseString(DEFAULT_VALUE), new FirstLocator("("), parseSplit(parseDivide("params", Main::splitByValues, Main::compileDefinition),
                                 new FirstLocator(")"),
                                 parseString("after-params"))),
                         parseString(DEFAULT_VALUE)
                 )).flatMapValue(node -> {
                     final var stripped = withoutContentStart.right().strip();
                     return truncateRight(stripped, "}").flatMapValue(content -> {
-                        final var nodes = node.findNodeList("params")
-                                .orElse(new ArrayList<>());
-
-                        final var params = nodes.stream().map(Main::generateDefinition).toList();
-                        final var collectorParams = String.join(", ", params);
-
-                        final var fields = params.stream()
-                                .map(param -> "\n\t" + param + ";")
-                                .collect(Collectors.joining(""));
-
-                        final var name = node.findString(DEFAULT_VALUE).orElse("");
-                        final var thisType = "struct " + name;
-
-                        final var definition = generateDefinition(new MapNode()
-                                .withString("type", thisType)
-                                .withString("name", generateUniqueName(name, "new")));
-
-                        final var thisDefinition = new MapNode().withString("type", thisType).withString("name", "this");
-                        final var assignments = nodes.stream()
-                                .map(field -> field.findString("name")).flatMap(Optional::stream)
-                                .map(field -> generateStatement(generateAccess("this", field) + " = " + field))
-                                .collect(Collectors.joining());
-
-                        final var returnThis = generateReturn(new MapNode().withString(DEFAULT_VALUE, "this"));
-                        final var constructorBody = generateDefinitionStatement(thisDefinition) + assignments + returnThis;
-                        final var constructor = generateMethod(definition, collectorParams, generateBlock(constructorBody, 1));
-
-                        return splitByStatements(content).flatMapValue(segments -> compileAll(segments, s -> compileStructSegment(s, name).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k))).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
-                            return "struct " + name + " " + generateBlock(fields + constructor + outputContent, 0) + ";";
-                        });
+                        String name = node.findString(DEFAULT_VALUE).orElse("");
+                        return parseDivide("children", Main::splitByStatements, segment -> compileStructSegment(segment, name))
+                                .apply(content)
+                                .mapValue(other -> modifyAndGenerateStruct(name, node.merge(other)));
                     });
                 });
             });
         });
+    }
+
+    private static String modifyAndGenerateStruct(String structName, Node node) {
+        final var joinedChildren = node.findNodeList("children")
+                .orElse(new ArrayList<>())
+                .stream()
+                .map(child -> child.findString(DEFAULT_VALUE).orElse(""))
+                .reduce(new StringBuilder(), Main::mergeStatement, (_, next) -> next);
+
+        final var nodes = node.findNodeList("params")
+                .orElse(new ArrayList<>());
+
+        final var params = nodes.stream().map(Main::generateDefinition).toList();
+        final var collectorParams = String.join(", ", params);
+
+        final var fields = params.stream()
+                .map(param -> "\n\t" + param + ";")
+                .collect(Collectors.joining(""));
+
+        final var thisType = "struct " + structName;
+
+        final var definition = generateDefinition(new MapNode()
+                .withString("type", thisType)
+                .withString("name", generateUniqueName(structName, "new")));
+
+        final var thisDefinition = new MapNode().withString("type", thisType).withString("name", "this");
+        final var assignments = nodes.stream()
+                .map(field -> field.findString("name")).flatMap(Optional::stream)
+                .map(field -> generateStatement(generateAccess("this", field) + " = " + field))
+                .collect(Collectors.joining());
+
+        final var returnThis = generateReturn(new MapNode().withString(DEFAULT_VALUE, "this"));
+        final var constructorBody = generateDefinitionStatement(thisDefinition) + assignments + returnThis;
+        final var constructor = generateMethod(definition, collectorParams, generateBlock(constructorBody, 1));
+
+        return "struct " + structName + " " + generateBlock(fields + constructor + joinedChildren, 0) + ";";
     }
 
     private static Result<Node, CompileError> parseOr(
@@ -303,9 +312,10 @@ public class Main {
 
     private static Function<String, Result<Node, CompileError>> parseDivide(
             String propertyKey,
+            Function<String, Result<List<String>, CompileError>> splitter,
             Function<String, Result<Node, CompileError>> compiler
     ) {
-        return input -> splitByValues(input)
+        return input -> splitter.apply(input)
                 .flatMapValue(segments -> compileAll(segments, compiler))
                 .mapValue(inner -> new MapNode().withNodeList(propertyKey, inner));
     }
@@ -332,13 +342,14 @@ public class Main {
         return new Ok<>(segments);
     }
 
-    private static Result<String, CompileError> compileStructSegment(String structSegment, String structName) {
+    private static Result<Node, CompileError> compileStructSegment(String structSegment, String structName) {
         Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(
                 () -> compileMethod(structSegment, structName),
                 () -> compileInitialization(structSegment),
                 () -> compileDefinitionStatement(structSegment)
         );
-        return or("struct segment", structSegment, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse(""));
+        return or("struct segment", structSegment, stream
+                .map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s))));
     }
 
     private static Result<String, CompileError> compileDefinitionStatement(String structSegment) {
