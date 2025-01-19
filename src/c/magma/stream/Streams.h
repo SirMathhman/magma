@@ -1,2 +1,4 @@
 struct Streams {
+	void temp(){
+	}
 };

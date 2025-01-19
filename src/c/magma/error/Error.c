@@ -1,2 +1,4 @@
 struct Error {
+	void temp(){
+	}
 };

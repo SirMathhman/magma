@@ -6,6 +6,7 @@ import magma.error.JavaError;
 import magma.result.Err;
 import magma.result.Ok;
 import magma.result.Result;
+import magma.stream.Stream;
 import magma.stream.Streams;
 
 import java.io.IOException;
@@ -65,7 +66,7 @@ public class Main {
         }
 
         return readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(input -> {
-            return compile(input).mapErr(ApplicationError::new).mapValue(output -> {
+            return splitAndCompile(input, Main::compileRootSegment).mapErr(ApplicationError::new).mapValue(output -> {
                 final var target = targetParent.resolve(name + ".c");
                 final var header = targetParent.resolve(name + ".h");
                 return writeStringWrapped(target, output)
@@ -102,12 +103,12 @@ public class Main {
         }
     }
 
-    private static Result<String, CompileError> compile(String root) {
+    private static Result<String, CompileError> splitAndCompile(String input, Function<String, Result<String, CompileError>> compiler) {
         final var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
         var depth = 0;
-        for (int i = 0; i < root.length(); i++) {
-            final var c = root.charAt(i);
+        for (int i = 0; i < input.length(); i++) {
+            final var c = input.charAt(i);
             buffer.append(c);
             if (c == ';' && depth == 0) {
                 advance(buffer, segments);
@@ -121,7 +122,9 @@ public class Main {
 
         Result<StringBuilder, CompileError> output = new Ok<>(new StringBuilder());
         for (String segment : segments) {
-            output = output.and(() -> compileRootSegment(segment.strip())).mapValue(tuple -> tuple.left().append(tuple.right()));
+            final var stripped = segment.strip();
+            if (stripped.isEmpty()) continue;
+            output = output.and(() -> compiler.apply(stripped)).mapValue(tuple -> tuple.left().append(tuple.right()));
         }
 
         return output.mapValue(StringBuilder::toString);
@@ -132,13 +135,17 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileRootSegment(String input) {
-        return Streams.<Supplier<Result<String, CompileError>>>of(
-                        () -> compileNamespaced(input, "package ", ""),
-                        () -> compileNamespaced(input, "import ", "#include <temp.h>\n"),
-                        () -> compileToStruct(input, "class "),
-                        () -> compileToStruct(input, "record "),
-                        () -> compileToStruct(input, "interface "))
-                .map(Main::prepare)
+        return compileOr(input, Streams.of(
+                () -> compileNamespaced(input, "package ", ""),
+                () -> compileNamespaced(input, "import ", "#include <temp.h>\n"),
+                () -> compileToStruct(input, "class "),
+                () -> compileToStruct(input, "record "),
+                () -> compileToStruct(input, "interface ")
+        ));
+    }
+
+    private static Result<String, CompileError> compileOr(String input, Stream<Supplier<Result<String, CompileError>>> stream) {
+        return stream.map(Main::prepare)
                 .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
                 .map(result -> result.mapErr(errors -> new CompileError("Invalid root segment", input, errors)))
                 .orElseGet(() -> new Err<>(new CompileError("No compilers present", input)));
@@ -159,11 +166,43 @@ public class Main {
 
     private static Result<String, CompileError> compileToStruct(String input, String infix) {
         return split(input, infix).flatMapValue(tuple -> {
-            return split(tuple.right(), "{").mapValue(tuple0 -> {
+            return split(tuple.right(), "{").flatMapValue(tuple0 -> {
                 final var name = tuple0.left().strip();
-                return "struct " + name + " {\n};";
+                final var stripped = tuple0.right().strip();
+                return truncateRight(stripped, "}").flatMapValue(content -> {
+                    return splitAndCompile(content, Main::compileStructSegment).mapValue(outputContent -> {
+                        return "struct " + name + " {" + outputContent + "\n};";
+                    });
+                });
             });
         });
+    }
+
+    private static Result<String, CompileError> compileStructSegment(String structSegment) {
+        return compileOr(structSegment, Streams.of(
+                () -> compileMethod(structSegment),
+                () -> compileDefinition(structSegment)
+        ));
+    }
+
+    private static Result<String, CompileError> compileDefinition(String structSegment) {
+        return split(structSegment, " ").mapValue(tuple -> {
+            return "\n\tint value;";
+        });
+    }
+
+    private static Result<String, CompileError> compileMethod(String structSegment) {
+        return split(structSegment, "(").mapValue(tuple -> {
+            return "\n\tvoid temp(){\n\t}";
+        });
+    }
+
+    private static Result<String, CompileError> truncateRight(String input, String slice) {
+        if (input.endsWith(slice)) {
+            return new Ok<>(input.substring(0, input.length() - slice.length()));
+        } else {
+            return new Err<>(new CompileError("Suffix '" + slice + "' not present", input));
+        }
     }
 
     private static Result<Tuple<String, String>, CompileError> split(String input, String infix) {

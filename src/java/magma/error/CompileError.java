@@ -11,8 +11,12 @@ public record CompileError(String message, String context, List<CompileError> ch
 
     @Override
     public String display() {
+        return format(0);
+    }
+
+    private String format(int depth) {
         final var joinedChildren = this.children.stream()
-                .map(CompileError::display)
+                .map(compileError -> "\n" + "\t".repeat(depth) + compileError.format(depth + 1))
                 .collect(Collectors.joining());
 
         return this.message + ": " + this.context + joinedChildren;
