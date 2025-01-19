@@ -5,6 +5,7 @@ struct JavaError {
 	struct JavaError new(Exception e){
 		struct JavaError this;
 		this.e = e;
+		return this;
 	}
 	String display(){
 		temp = temp;

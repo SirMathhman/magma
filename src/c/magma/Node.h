@@ -3,6 +3,7 @@
 struct Node {
 	struct Node new(){
 		struct Node this;
+		return this;
 	}
 	Node withNodeList();
 	Optional<List<Node>> findNodeList();

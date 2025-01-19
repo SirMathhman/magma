@@ -4,6 +4,7 @@
 struct Result<T, X> {
 	struct Result<T, X> new(){
 		struct Result<T, X> this;
+		return this;
 	}
 	X> flatMapValue();
 	X> mapValue();

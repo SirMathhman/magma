@@ -27,6 +27,7 @@
 struct Main {
 	struct Main new(){
 		struct Main this;
+		return this;
 	}
 		SOURCE_DIRECTORY  = temp;
 		TARGET_DIRECTORY  = temp;
@@ -148,6 +149,15 @@ struct Main {
 	}
 	CompileError> compileStatement(){
 		temp = temp;
+		temp = temp;
+	}
+	CompileError> compileReturn(){
+		temp = temp;
+	}
+	String generateReturn(){
+		temp = temp;
+	}
+	CompileError> parseReturn(){
 		temp = temp;
 	}
 	CompileError> compileValue(){

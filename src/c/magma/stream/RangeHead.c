@@ -2,6 +2,7 @@
 struct RangeHead implements Head<Integer> {
 	struct RangeHead implements Head<Integer> new(){
 		struct RangeHead implements Head<Integer> this;
+		return this;
 	}
 		int extent;
 		counter  = temp;

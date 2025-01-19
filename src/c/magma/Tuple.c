@@ -5,5 +5,6 @@ struct Tuple<A, B> {
 		struct Tuple<A, B> this;
 		this.left = left;
 		this.right = right;
+		return this;
 	}
 };

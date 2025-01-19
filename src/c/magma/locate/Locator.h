@@ -2,6 +2,7 @@
 struct Locator {
 	struct Locator new(){
 		struct Locator this;
+		return this;
 	}
 	String unwrap();
 	int length();

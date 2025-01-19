@@ -12,6 +12,7 @@ struct CompileError {
 		this.message = message;
 		this.context = context;
 		this.children = children;
+		return this;
 	}
 	public CompileError(){
 		this();

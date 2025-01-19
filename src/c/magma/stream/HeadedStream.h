@@ -6,6 +6,7 @@ struct HeadedStream<T> {
 	struct HeadedStream<T> new(Head<T> head){
 		struct HeadedStream<T> this;
 		this.head = head;
+		return this;
 	}
 	Optional<R> foldLeft(){
 		return this.head.next().map(mapper).map(initial -> foldLeft(initial, folder));

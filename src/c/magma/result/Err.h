@@ -6,6 +6,7 @@ struct Err<T, X> {
 	struct Err<T, X> new(X error){
 		struct Err<T, X> this;
 		this.error = error;
+		return this;
 	}
 	X> flatMapValue(){
 		temp = temp;

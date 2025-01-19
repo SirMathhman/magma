@@ -5,6 +5,7 @@
 struct MapNode implements Node {
 	struct MapNode implements Node new(){
 		struct MapNode implements Node this;
+		return this;
 	}
 		String> strings;
 		List<Node>> nodeLists;

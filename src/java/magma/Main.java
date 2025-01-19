@@ -275,7 +275,8 @@ public class Main {
                                 .map(field -> generateStatement(generateAccess("this", field) + " = " + field))
                                 .collect(Collectors.joining());
 
-                        final var constructorBody = generateDefinitionStatement(thisDefinition) + assignments;
+                        final var returnThis = generateReturn(new MapNode().withString(DEFAULT_VALUE, "this"));
+                        final var constructorBody = generateDefinitionStatement(thisDefinition) + assignments + returnThis;
                         final var constructor = generateMethod(definition, collectorParams, generateBlock(constructorBody, 1));
 
                         return splitByStatements(content).flatMapValue(segments -> compileAll(s -> compileStructSegment(s, name).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k)), segments).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
@@ -377,17 +378,29 @@ public class Main {
                         });
                     });
                 }),
-                () -> truncateLeft(statement, "return ").flatMapValue(inner -> {
-                    return truncateRight(inner, ";").flatMapValue(inner1 -> {
-                        return compileValue(inner1).mapValue(inner0 -> {
-                            return generateStatement("return " + inner0);
-                        });
-                    });
-                }),
+                () -> compileReturn(statement),
                 () -> split(new FirstLocator(" "), statement).mapValue(inner -> generateStatement("temp = temp")),
                 () -> truncateRight(statement, "++;").mapValue(inner -> "temp++;")
         );
         return or("statement segment", statement, stream.map(supplier -> () -> supplier.get().mapValue(s -> new MapNode().withString(DEFAULT_VALUE, s)))).mapValue(node -> node.findString(DEFAULT_VALUE).orElse(""));
+    }
+
+    private static Result<String, CompileError> compileReturn(String statement) {
+        return parseReturn(statement).mapValue(Main::generateReturn);
+    }
+
+    private static String generateReturn(Node value) {
+        return generateStatement("return " + value.findString(DEFAULT_VALUE).orElse(""));
+    }
+
+    private static Result<Node, CompileError> parseReturn(String statement) {
+        return truncateLeft(statement, "return ").flatMapValue(inner -> {
+            return truncateRight(inner, ";").flatMapValue(inputValue -> {
+                return compileValue(inputValue).mapValue(outputValue -> {
+                    return new MapNode().withString("value", outputValue);
+                });
+            });
+        });
     }
 
     private static Result<String, CompileError> compileValue(String value) {
