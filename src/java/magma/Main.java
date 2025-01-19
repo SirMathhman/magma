@@ -385,41 +385,49 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileMethod(String structSegment, String structName) {
-        return InfixRule.split(new FirstLocator("("), structSegment).flatMapValue(tuple -> {
-            return InfixRule.split(new FirstLocator(")"), tuple.right().strip()).flatMapValue(tuple0 -> {
-                final var stripped = tuple0.right().strip();
-                Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(() -> PrefixRule.truncateLeft(stripped, "{").flatMapValue(left -> {
-                    return SuffixRule.truncateRight(left, "}").flatMapValue(content -> {
-                        return splitByStatements(content).flatMapValue(segments -> DivideRule.compileAll(segments, new Rule() {
-                            @Override
-                            public Result<Node, CompileError> parse(String input) {
-                                return createStatementRule().parse(input).flatMapValue(createStatementRule()::generate).mapValue(k -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(k).findValue().orElse(new MapNode()));
-                            }
-                        }).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
-                            final var unwrapThis = generateInitialization(new MapNode()
-                                    .withString("value", "*(struct " + structName + "*) this")
-                                    .withNode("definition", new MapNode()
-                                            .withString("type", "struct " + structName)
-                                            .withString("name", "this")));
-                            return "{" + unwrapThis + outputContent + "\n\t}";
-                        });
-                    });
-                }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", new StringContext(stripped))));
-                return OrRule.or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(s).findValue().orElse(new MapNode())))).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse("")).flatMapValue(content -> {
-                    return createDefinitionRule().parse(tuple.left().strip())
-                            .mapValue(definition -> definition.mapString("name", name -> {
-                                final var actualName = name.equals(structName) ? "new" : name;
-                                return generateUniqueName(structName, actualName);
-                            }))
-                            .mapValue(node1 -> new InfixRule(new StringRule("type"), new FirstLocator(" "), new StringRule("name")).generate(node1).findValue().orElse("")).mapValue(definition -> {
-                                Node node = new MapNode()
-                                        .withString("type", "void*")
-                                        .withString("name", "_this_");
-                                return generateMethod(definition, new InfixRule(new StringRule("type"), new FirstLocator(" "), new StringRule("name")).generate(node).findValue().orElse(""), content);
-                            });
-                });
-            });
+        return InfixRule.split(new FirstLocator("("), structSegment).flatMapValue(tuple -> InfixRule.split(new FirstLocator(")"), tuple.right().strip()).flatMapValue(tuple0 -> {
+            final var stripped = tuple0.right().strip();
+            Stream<Supplier<Result<String, CompileError>>> stream = Streams.of(() -> PrefixRule.truncateLeft(stripped, "{").flatMapValue(left -> SuffixRule.truncateRight(left, "}").flatMapValue(content -> getStringCompileErrorResult(structName, content))), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", new StringContext(stripped))));
+            return OrRule.or("root segment", stripped, stream.map(supplier -> () -> supplier.get().mapValue(s -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(s).findValue().orElse(new MapNode())))).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse("")).flatMapValue(content -> getStringCompileErrorResult(structName, tuple, content));
+        }));
+    }
+
+    private static Result<String, CompileError> getStringCompileErrorResult(String structName, String content) {
+        return splitByStatements(content).flatMapValue(segments -> DivideRule.compileAll(segments, new Rule() {
+            @Override
+            public Result<Node, CompileError> parse(String input) {
+                return createStatementRule().parse(input).flatMapValue(createStatementRule()::generate).mapValue(k -> ((Rule) new StringRule(DEFAULT_VALUE)).parse(k).findValue().orElse(new MapNode()));
+            }
+        }).mapValue(list -> merge(list, Main::mergeStatement))).mapValue(outputContent -> {
+            return getString(structName, outputContent);
         });
+    }
+
+    private static Result<String, CompileError> getStringCompileErrorResult(String structName, Tuple<String, String> tuple, String content) {
+        return createDefinitionRule().parse(tuple.left().strip())
+                .mapValue(definition -> definition.mapString("name", name -> getString2(structName, name)))
+                .mapValue(node1 -> new InfixRule(new StringRule("type"), new FirstLocator(" "), new StringRule("name")).generate(node1).findValue().orElse("")).mapValue(definition -> getString1(content, definition));
+    }
+
+    private static String getString2(String structName, String name) {
+        final var actualName = name.equals(structName) ? "new" : name;
+        return generateUniqueName(structName, actualName);
+    }
+
+    private static String getString1(String content, String definition) {
+        Node node = new MapNode()
+                .withString("type", "void*")
+                .withString("name", "_this_");
+        return generateMethod(definition, new InfixRule(new StringRule("type"), new FirstLocator(" "), new StringRule("name")).generate(node).findValue().orElse(""), content);
+    }
+
+    private static String getString(String structName, String outputContent) {
+        final var unwrapThis = generateInitialization(new MapNode()
+                .withString("value", "*(struct " + structName + "*) this")
+                .withNode("definition", new MapNode()
+                        .withString("type", "struct " + structName)
+                        .withString("name", "this")));
+        return "{" + unwrapThis + outputContent + "\n\t}";
     }
 
     private static String generateUniqueName(String structName, String name) {
