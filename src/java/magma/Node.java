@@ -18,4 +18,6 @@ public interface Node {
     Optional<Node> findNode(String propertyKey);
 
     Node mapString(String propertyKey, Function<String, String> mapper);
+
+    Node merge(Node other);
 }

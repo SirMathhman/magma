@@ -131,6 +131,18 @@ struct Main {
 		struct Main this = *(struct Main*) this;
 		temp = temp;
 	}
+	CompileError>> Main_parseSplit(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+	}
+	CompileError>> Main_parseString(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+	}
+	CompileError>> Main_parseDivide(void* _this_){
+		struct Main this = *(struct Main*) this;
+		temp = temp;
+	}
 	String Main_generateBlock(void* _this_){
 		struct Main this = *(struct Main*) this;
 		temp = temp;

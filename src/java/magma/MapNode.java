@@ -32,6 +32,21 @@ public final class MapNode implements Node {
     }
 
     @Override
+    public Node merge(Node other) {
+        var current = other;
+        for (Map.Entry<String, String> entry : this.strings.entrySet()) {
+            current = current.withString(entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<String, Node> entry : this.nodes.entrySet()) {
+            current = current.withNode(entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<String, List<Node>> entry : this.nodeLists.entrySet()) {
+            current = current.withNodeList(entry.getKey(), entry.getValue());
+        }
+        return current;
+    }
+
+    @Override
     public Node withNode(String propertyKey, Node propertyValue) {
         this.nodes.put(propertyKey, propertyValue);
         return this;

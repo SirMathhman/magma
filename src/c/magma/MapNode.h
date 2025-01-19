@@ -29,6 +29,14 @@ struct MapNode implements Node {
 		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
 		temp = temp;
 	}
+	Node MapNode implements Node_merge(void* _this_){
+		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
+		temp = temp;
+		temp = temp;
+		temp = temp;
+		temp = temp;
+		return current;
+	}
 	Node MapNode implements Node_withNode(void* _this_){
 		struct MapNode implements Node this = *(struct MapNode implements Node*) this;
 		this.nodes.put();

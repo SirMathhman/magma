@@ -73,7 +73,7 @@ public class Main {
         }
 
         return readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(input -> {
-            return splitByStatements(input).flatMapValue(segments -> compileAll(segments, s -> Main.compileRootSegment(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k))).mapValue(list -> merge(list, Main::mergeStatement))).mapErr(ApplicationError::new).mapValue(output -> {
+            return splitByStatements(input).flatMapValue(segments -> compileAll(segments, s -> compileRootSegment(s).mapValue(k -> new MapNode().withString(DEFAULT_VALUE, k))).mapValue(list -> merge(list, Main::mergeStatement))).mapErr(ApplicationError::new).mapValue(output -> {
                 final var target = targetParent.resolve(name + ".c");
                 final var header = targetParent.resolve(name + ".h");
                 return writeStringWrapped(target, output)
@@ -230,27 +230,23 @@ public class Main {
 
     private static Result<String, CompileError> compileToStruct(String input, String infix) {
         return split(new FirstLocator(infix), input).flatMapValue(tuple -> {
-            return split(new FirstLocator("{"), tuple.right()).flatMapValue(tuple0 -> {
-                final var beforeContent = tuple0.left().strip();
+            return split(new FirstLocator("{"), tuple.right()).flatMapValue(withoutContentStart -> {
+                final var beforeContent = withoutContentStart.left().strip();
                 Stream<Supplier<Result<Node, CompileError>>> stream = Streams.of(
-                        () -> split(new FirstLocator("("), beforeContent).flatMapValue(tuple1 -> {
-                            final var name = tuple1.left();
-                            final var right = tuple1.right();
-                            return split(new FirstLocator(")"), right).flatMapValue(tuple2 -> {
-                                final var params = splitByValues(tuple2.left())
-                                        .flatMapValue(segments -> compileAll(segments, Main::compileDefinition));
+                        () -> split(new FirstLocator("("), beforeContent).flatMapValue(withoutParamStart -> {
+                            final var name = withoutParamStart.left();
+                            final var right = withoutParamStart.right();
 
-                                return params.mapValue(inner -> {
-                                    return new MapNode()
-                                            .withString(DEFAULT_VALUE, name)
-                                            .withNodeList("params", inner);
-                                });
-                            });
+                            final var node = new MapNode().withString(DEFAULT_VALUE, name);
+                            return parseSplit(parseDivide("params", Main::compileDefinition),
+                                    new FirstLocator(")"),
+                                    parseString("after-params")).apply(right)
+                                    .mapValue(node::merge);
                         }),
-                        () -> new Ok<>(new MapNode().withString(DEFAULT_VALUE, beforeContent))
+                        () -> parseString(DEFAULT_VALUE).apply(beforeContent)
                 );
                 return or("root segment", beforeContent, stream).flatMapValue(node -> {
-                    final var stripped = tuple0.right().strip();
+                    final var stripped = withoutContentStart.right().strip();
                     return truncateRight(stripped, "}").flatMapValue(content -> {
                         final var nodes = node.findNodeList("params")
                                 .orElse(new ArrayList<>());
@@ -286,6 +282,33 @@ public class Main {
                 });
             });
         });
+    }
+
+    private static Function<String, Result<Node, CompileError>> parseSplit(
+            Function<String, Result<Node, CompileError>> leftRule,
+            Locator locator,
+            Function<String, Result<Node, CompileError>> rightRule
+    ) {
+        return input -> split(locator, input).flatMapValue(sliced -> {
+            final var leftSlice = sliced.left();
+            final var rightSlice = sliced.right();
+            return leftRule.apply(leftSlice)
+                    .and(() -> rightRule.apply(rightSlice))
+                    .mapValue(Tuple.merge(Node::merge));
+        });
+    }
+
+    private static Function<String, Result<Node, CompileError>> parseString(String propertyKey) {
+        return input -> new Ok<>(new MapNode().withString(propertyKey, input));
+    }
+
+    private static Function<String, Result<Node, CompileError>> parseDivide(
+            String propertyKey,
+            Function<String, Result<Node, CompileError>> compiler
+    ) {
+        return input -> splitByValues(input)
+                .flatMapValue(segments -> compileAll(segments, compiler))
+                .mapValue(inner -> new MapNode().withNodeList(propertyKey, inner));
     }
 
     private static String generateBlock(String content, int depth) {
