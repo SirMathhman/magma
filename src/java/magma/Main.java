@@ -475,21 +475,15 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileReturn(String statement) {
-        return parseReturn(statement).mapValue(Main::generateReturn);
+        return createReturnRule().parse(statement).mapValue(Main::generateReturn);
     }
 
     private static String generateReturn(Node value) {
         return generateStatement("return " + new StringRule(DEFAULT_VALUE).generate(value).findValue().orElse(""));
     }
 
-    private static Result<Node, CompileError> parseReturn(String statement) {
-        return PrefixRule.truncateLeft(statement, "return ").flatMapValue(inner -> {
-            return SuffixRule.truncateRight(inner, ";").flatMapValue(inputValue -> {
-                return createValueRule().parse(inputValue).mapValue(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse("")).mapValue(outputValue -> {
-                    return new MapNode().withString("value", outputValue);
-                });
-            });
-        });
+    private static PrefixRule createReturnRule() {
+        return new PrefixRule("return ", new SuffixRule(";", new NodeRule("value", createValueRule())));
     }
 
     private static Rule createValueRule() {
