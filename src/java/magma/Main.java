@@ -158,18 +158,22 @@ public class Main {
     }
 
     private static Result<String, CompileError> compileToStruct(String input, String infix) {
-        final var index = input.indexOf(infix);
-        if (index != -1) {
-            final var substring = input.substring(index + infix.length());
-            final var index1 = substring.indexOf('{');
-            if (index1 != -1) {
-                final var name = substring.substring(0, index1).strip();
-                return new Ok<>("struct " + name + " {\n};");
-            }
-            return new Err<>(new CompileError("Infix '" + "{" + "' not present", input));
-        }
-        return new Err<>(new CompileError("Infix '" + infix + "' not present", input));
+        return split(input, infix).flatMapValue(tuple -> {
+            return split(tuple.right(), "{").mapValue(tuple0 -> {
+                final var name = tuple0.left().strip();
+                return "struct " + name + " {\n};";
+            });
+        });
+    }
 
+    private static Result<Tuple<String, String>, CompileError> split(String input, String infix) {
+        final var index = input.indexOf(infix);
+        if (index == -1) {
+            return new Err<>(new CompileError("Infix '" + infix + "' not present", input));
+        }
+        final var left = input.substring(0, index);
+        final var right = input.substring(index + infix.length());
+        return new Ok<>(new Tuple<>(left, right));
     }
 
     private static Supplier<Result<String, List<CompileError>>> prepare(Supplier<Result<String, CompileError>> supplier) {
