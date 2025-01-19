@@ -1,4 +1,4 @@
 struct Streams {
-	void of(){
+	Rc_Stream<T> of(){
 	}
 };

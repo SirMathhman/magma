@@ -2,8 +2,8 @@
 #include <temp.h>
 #include <temp.h>
 struct Stream<T> {
-	void foldLeft(){
+	Rc_Optional<R> foldLeft(){
 	}
-	void map(){
+	Rc_Stream<R> map(){
 	}
 };

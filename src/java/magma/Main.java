@@ -196,9 +196,12 @@ public class Main {
 
     private static Result<String, CompileError> compileMethod(String structSegment) {
         return split(new FirstLocator("("), structSegment).flatMapValue(tuple -> {
-            return split(new LastLocator(" "), tuple.left().strip()).mapValue(tuple1 -> {
-                final var name = tuple1.right();
-                return "\n\tvoid " + name + "(){\n\t}";
+            return split(new LastLocator(" "), tuple.left().strip()).flatMapValue(tuple1 -> {
+                return split(new LastLocator(" "), tuple1.left().strip()).mapValue(tuple2 -> {
+                    final var type = "Rc_" + tuple2.right();
+                    final var name = tuple1.right();
+                    return "\n\t" + type + " " + name + "(){\n\t}";
+                });
             });
         });
     }

@@ -22,10 +22,10 @@
 #include <temp.h>
 #include <temp.h>
 struct Main {
-	void Paths.get(){
+	Rc_= Paths.get(){
 	}
-	void Paths.get(){
+	Rc_= Paths.get(){
 	}
-	void main(){
+	Rc_void main(){
 	}
 };

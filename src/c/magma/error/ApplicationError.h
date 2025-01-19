@@ -1,4 +1,4 @@
 struct ApplicationError(Error cause) implements Error {
-	void display(){
+	Rc_String display(){
 	}
 };

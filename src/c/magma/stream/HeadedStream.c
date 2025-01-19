@@ -2,6 +2,6 @@
 #include <temp.h>
 #include <temp.h>
 struct HeadedStream<T>(Head<T> head) implements Stream<T> {
-	void foldLeft(){
+	Rc_Optional<R> foldLeft(){
 	}
 };

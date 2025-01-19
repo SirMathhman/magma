@@ -1,4 +1,3 @@
 struct Error {
-	void display(){
-	}
+	int value;
 };

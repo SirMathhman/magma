@@ -1,9 +1,6 @@
 #include <temp.h>
 struct Locator {
-	void unwrap(){
-	}
-	void length(){
-	}
-	void locate(){
-	}
+	int value;
+	int value;
+	int value;
 };
