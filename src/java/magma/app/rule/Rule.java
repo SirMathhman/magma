@@ -4,8 +4,12 @@ import magma.api.result.Result;
 import magma.app.Node;
 import magma.app.error.CompileError;
 
-import java.util.function.Function;
-
 public interface Rule {
-    Result<Node, CompileError> apply(String s);
+    default Result<Node, CompileError> parse(String s) {
+        throw new UnsupportedOperationException();
+    }
+
+    default Result<String, CompileError> generate(Node node) {
+        throw new UnsupportedOperationException();
+    }
 }
