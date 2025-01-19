@@ -252,17 +252,12 @@ public class Main {
                 return or("root segment", stripped, Streams.of(() -> truncateLeft(stripped, "{").flatMapValue(left -> {
                     return truncateRight(left, "}").flatMapValue(content -> {
                         return splitAndCompile(content, Main::compileStatement).mapValue(outputContent -> {
-                            final var type = "struct " + structName;
-                            final var thisDefinition = generateDefinition(type, "this");
-                            return "{\n\t\t" +
-                                   thisDefinition + " = (" + type + "*) this;" +
-                                   outputContent +
-                                   "\n\t}";
+                            return "{" + outputContent + "\n\t}";
                         });
                     });
                 }), () -> stripped.equals(";") ? new Ok<>(";") : new Err<>(new CompileError("Exact string ';' was not present", stripped)))).flatMapValue(content -> {
                     return compileDefinition(tuple.left().strip()).mapValue(definition -> {
-                        return "\n\t" + definition + "(void* _this_)" + content;
+                        return "\n\t" + definition + "()" + content;
                     });
                 });
             });
@@ -293,7 +288,7 @@ public class Main {
             return or("root segment", inputType, Streams.of(
                     () -> split(new LastLocator(" "), inputType).mapValue(Tuple::right),
                     () -> new Ok<>(inputType)
-            )).mapValue(outputType -> "Rc_" + outputType).flatMapValue(type -> {
+            )).flatMapValue(type -> {
                 final var name = tuple1.right();
                 if (isSymbol(name)) {
                     return new Ok<>(generateDefinition(type, name));

@@ -2,17 +2,14 @@
 #include <temp.h>
 #include <temp.h>
 struct HeadedStream<T> {
-	Rc_Optional<R> foldLeft(void* _this_){
-		struct HeadedStream<T> this = (struct HeadedStream<T>*) this;
+	Optional<R> foldLeft(){
 		temp();
 	}
-	Rc_R foldLeft(void* _this_){
-		struct HeadedStream<T> this = (struct HeadedStream<T>*) this;
+	R foldLeft(){
 		temp = temp;
 		temp = temp;
 	}
-	Rc_Stream<R> map(void* _this_){
-		struct HeadedStream<T> this = (struct HeadedStream<T>*) this;
+	Stream<R> map(){
 		temp();
 	}
 };
