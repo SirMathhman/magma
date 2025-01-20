@@ -1,11 +1,2 @@
-struct StringContext {
-	;
-	(){
-		;
-		this.value = value;
-	}
-	(){
-		 = *(struct StringContext*) this;
-		temp = temp;
-	}
-};
+package magma.app.error.context;public record StringContext(String value) implements Context {@Override
+    public String display();}

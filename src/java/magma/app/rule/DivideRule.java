@@ -17,7 +17,7 @@ public class DivideRule implements Rule {
     private final Divider divider;
     private final Rule childRule;
 
-    public DivideRule(Divider divider, Rule childRule, String propertyKey) {
+    public DivideRule(String propertyKey, Divider divider, Rule childRule) {
         this.divider = divider;
         this.childRule = childRule;
         this.propertyKey = propertyKey;

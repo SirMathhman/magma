@@ -11,6 +11,7 @@ import magma.app.error.context.StringContext;
 import magma.app.filter.SymbolFilter;
 import magma.app.locate.FirstLocator;
 import magma.app.locate.LastLocator;
+import magma.app.locate.Locator;
 import magma.app.rule.DivideRule;
 import magma.app.rule.ExactRule;
 import magma.app.rule.FilterRule;
@@ -258,35 +259,43 @@ public class Main {
 
     private static Rule createMethodRule() {
         final var orRule = new OrRule(List.of(
-                createBlockRule(),
+                createBlockRule(createStatementRule()),
                 new ExactRule(";")
         ));
 
         final var definition = createDefinitionRule();
         final var definitionProperty = new NodeRule("definition", definition);
-        final var params = new NodeRule("params", definition);
+        final var params = new DivideRule("params", Main::splitByValues, definition);
 
         final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
         return new TypeRule("method", infixRule);
     }
 
-    private static Rule createBlockRule() {
-        return new StripRule(new PrefixRule("{", new SuffixRule(createContentRule(createStatementRule()), "}")));
+    private static Rule createBlockRule(Rule statement) {
+        return new StripRule(new PrefixRule("{", new SuffixRule(createContentRule(statement), "}")));
     }
 
     private static Rule createContentRule(Rule rule) {
-        return new DivideRule(Main::splitByStatements, new StripRule(rule), "children");
+        return new DivideRule("children", Main::splitByStatements, new StripRule(rule));
     }
 
-    private static OrRule createStatementRule() {
+    private static Rule createStatementRule() {
         final var valueRule = createValueRule();
-        return new OrRule(List.of(
+        final var statement = new LazyRule();
+        statement.set(new OrRule(List.of(
+                createIfRule(statement),
                 createInvocationRule(valueRule),
                 createReturnRule(valueRule),
                 createAssignmentRule(valueRule),
                 createPostfixRule(valueRule),
                 createWhitespaceRule()
-        ));
+        )));
+        return statement;
+    }
+
+    private static TypeRule createIfRule(LazyRule statement) {
+        final var leftRule = new StripRule(new PrefixRule("(", new NodeRule("condition", createValueRule())));
+        return new TypeRule("if", new PrefixRule("if", new InfixRule(leftRule, new ParenthesesMatcher(), statement)));
     }
 
     private static TypeRule createWhitespaceRule() {
@@ -301,12 +310,13 @@ public class Main {
         return new SuffixRule(new InfixRule(new NodeRule("destination", value), new FirstLocator(" "), new NodeRule("source", value)), ";");
     }
 
-    private static SuffixRule createInvocationRule(Rule value) {
-        return new SuffixRule(new InfixRule(new NodeRule("caller", value), new FirstLocator("("), new DivideRule(Main::splitByValues, value, "children")), ");");
+    private static Rule createInvocationRule(Rule value) {
+        final var suffixRule = new SuffixRule(new InfixRule(new NodeRule("caller", value), new FirstLocator("("), new DivideRule("children", Main::splitByValues, value)), ");");
+        return new TypeRule("invocation", suffixRule);
     }
 
     private static Rule createReturnRule(Rule value) {
-        return new PrefixRule("return ", new SuffixRule(new NodeRule("value", value), ";"));
+        return new TypeRule("return", new StripRule(new PrefixRule("return ", new SuffixRule(new NodeRule("value", value), ";"))));
     }
 
     private static Rule createValueRule() {
@@ -319,11 +329,13 @@ public class Main {
     }
 
     private static Rule createSymbolRule() {
-        return new FilterRule(new SymbolFilter(), new StringRule(DEFAULT_VALUE));
+        final var rule = new FilterRule(new SymbolFilter(), new StringRule(DEFAULT_VALUE));
+        return new TypeRule("symbol", rule);
     }
 
     private static Rule createDataAccessRule(final Rule value) {
-        return new InfixRule(new NodeRule("ref", value), new LastLocator("."), new StringRule("property"));
+        final var rule = new InfixRule(new NodeRule("ref", value), new LastLocator("."), new StringRule("property"));
+        return new TypeRule("data-access", rule);
     }
 
     private static Rule createDefinitionRule() {
@@ -335,5 +347,29 @@ public class Main {
                 withModifiers,
                 type
         )), new LastLocator(" "), name));
+    }
+
+    private static class ParenthesesMatcher implements Locator {
+        @Override
+        public String unwrap() {
+            return ")";
+        }
+
+        @Override
+        public int length() {
+            return 1;
+        }
+
+        @Override
+        public Optional<Integer> locate(String input) {
+            var depth = 0;
+            for (int i = 0; i < input.length(); i++) {
+                final var c = input.charAt(i);
+                if (c == ')' && depth == 1) return Optional.of(i);
+                if (c == '(') depth++;
+                if (c == ')') depth--;
+            }
+            return Optional.empty();
+        }
     }
 }

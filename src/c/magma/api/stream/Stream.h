@@ -1,1 +1,1 @@
-package magma.api.stream;package java.util.function.BiFunction;package java.util.function.Function;public interface Stream<T> {<R> R foldLeft(R initial, BiFunction<R, T, R> folder);<R> Stream<R> map(Function<T, R> mapper);}
+package magma.api.stream;package java.util.function.BiFunction;package java.util.function.Function;public interface Stream<T> {<R> R foldLeft(R initialR initial BiFunction<RR initial BiFunction<R TR initial BiFunction<R T R> folder);<R> Stream<R> map(Function<T, R> mapper);}
