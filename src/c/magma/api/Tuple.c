@@ -1,12 +1,1 @@
-#include <temp.h>
-#include <temp.h>
-struct Tuple<A, B>(A left, B right) {
-	(){
-		;
-		return ;
-	}
-	(){
-		 = *(struct Tuple<A, B>(A left, B right)*) this;
-		temp = temp;
-	}
-};
+package magma.api;package java.util.function.BiFunction;package java.util.function.Function;public record Tuple<A, B>(A left, B right) {public static <A, B, C> Function<Tuple<A, B>, C> merge(BiFunction<A, B, C> merger){return tuple -> merger.apply(tuple.left, tuple.right);}}

@@ -3,10 +3,16 @@ package magma.api.stream;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public record HeadedStream<T>(Head<T> head) implements Stream<T> {
+
+    @Override
+    public Optional<T> foldLeft(BiFunction<T, T, T> folder) {
+        return this.head.next().map(initial -> foldLeft(initial, folder));
+    }
 
     @Override
     public <R> R foldLeft(R initial, BiFunction<R, T, R> folder) {

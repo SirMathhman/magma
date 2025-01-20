@@ -2,11 +2,13 @@ package magma.api.stream;
 
 import magma.api.result.Result;
 
-import java.util.ArrayList;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public interface Stream<T> {
+    Optional<T> foldLeft(BiFunction<T, T, T> folder);
+
     <R> R foldLeft(R initial, BiFunction<R, T, R> folder);
 
     <R> Stream<R> map(Function<T, R> mapper);

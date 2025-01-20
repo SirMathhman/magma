@@ -1,8 +1,1 @@
-#include <temp.h>
-struct Head<T> {
-	(){
-		;
-		return ;
-	}
-	();
-};
+package magma.api.stream;package java.util.Optional;public interface Head<T> {Optional<T> next();}
