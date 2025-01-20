@@ -283,6 +283,7 @@ public class Main {
         final var valueRule = createValueRule();
         final var statement = new LazyRule();
         statement.set(new OrRule(List.of(
+                createDefinitionStatementRule(),
                 createIfRule(statement),
                 createInvocationRule(valueRule),
                 createReturnRule(valueRule),
@@ -322,10 +323,15 @@ public class Main {
     private static Rule createValueRule() {
         final var value = new LazyRule();
         value.set(new OrRule(List.of(
+                createConstructionRule(value),
                 createDataAccessRule(value),
                 createSymbolRule()
         )));
         return value;
+    }
+
+    private static TypeRule createConstructionRule(LazyRule value) {
+        return new TypeRule("construction", new StripRule(new PrefixRule("new ", new InfixRule(new StringRule("type"), new FirstLocator("("), new StripRule(new SuffixRule(new DivideRule("arguments", Main::splitByValues, value), ")"))))));
     }
 
     private static Rule createSymbolRule() {
