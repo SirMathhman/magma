@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.function.Function;
 
 public final class MapNode implements Node {
@@ -21,6 +22,28 @@ public final class MapNode implements Node {
         this.strings = strings;
         this.nodes = nodes;
         this.nodeLists = nodeLists;
+    }
+
+    @Override
+    public String toString() {
+        final var typeString = this.type.map(inner -> inner + " ").orElse("");
+
+        var builder = new StringBuilder()
+                .append(typeString)
+                .append("{");
+
+        final var joiner = new StringJoiner(",");
+        for (Map.Entry<String, String> entry : this.strings.entrySet()) {
+            joiner.add(new StringBuilder()
+                    .append("\n\t")
+                    .append(entry.getKey())
+                    .append(" : \"")
+                    .append(entry.getValue())
+                    .append("\""));
+        }
+
+        builder.append(joiner);
+        return builder.append("\n}").toString();
     }
 
     @Override
