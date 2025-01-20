@@ -12,8 +12,8 @@ public final struct InfixRule implements Rule {private final Rule leftRule;priva
             return new Ok<>(new Tuple<String, String>(left, right));
         }).orElseGet(() -> new Err<>(new CompileError("Infix '" + locator.unwrap() + "' not present", new StringContext(input))));}@Override
     public Result<String, CompileError> generate(Node node){return this.leftRule.generate(node).and(
-                () -> this.rightRule.generate(node)).mapValue(Tuple.merge(
+                () ->this.rightRule.generate(node)).mapValue(Tuple.merge(
                 (left, right) -> left + this.locator.unwrap() + right));}@Override
-    public Result<Node, CompileError> parse(String input){return split(this.locator, input).flatMapValue(
-                tuple -> this.leftRule.parse(tuple.left()).and(
+    public Result<Node, CompileError> parse(String input){return split(this.locator,  input).flatMapValue(
+                tuple ->this.leftRule.parse(tuple.left()).and(
                         () -> this.rightRule.parse(tuple.right())).mapValue(Tuple.merge(Node::merge)));}}

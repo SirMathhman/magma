@@ -213,9 +213,10 @@ public class Main {
     }
 
     private static Rule createStructSegmentRule() {
+        final var statement = createStatementRule();
         return new OrRule(List.of(
-                createMethodRule(),
-                createInitializationRule(),
+                createMethodRule(statement),
+                createInitializationRule(statement),
                 createDefinitionStatementRule(),
                 createWhitespaceRule()
         ));
@@ -225,14 +226,14 @@ public class Main {
         return new SuffixRule(createDefinitionRule(), ";");
     }
 
-    private static Rule createInitializationRule() {
-        final var infixRule = new InfixRule(new NodeRule("definition", createDefinitionRule()), new FirstLocator("="), new StripRule(new SuffixRule(new NodeRule("value", createValueRule()), ";")));
+    private static Rule createInitializationRule(Rule statement) {
+        final var infixRule = new InfixRule(new NodeRule("definition", createDefinitionRule()), new FirstLocator("="), new StripRule(new SuffixRule(new NodeRule("value", createValueRule(statement)), ";")));
         return new TypeRule("initialization", infixRule);
     }
 
-    private static Rule createMethodRule() {
+    private static Rule createMethodRule(Rule statement) {
         final var orRule = new OrRule(List.of(
-                createBlockRule(createStatementRule()),
+                createBlockRule(statement),
                 new ExactRule(";")
         ));
 
@@ -253,11 +254,11 @@ public class Main {
     }
 
     private static Rule createStatementRule() {
-        final var valueRule = createValueRule();
         final var statement = new LazyRule();
+        final var valueRule = createValueRule(statement);
         statement.set(new OrRule(List.of(
                 createKeywordRule(),
-                createInitializationRule(),
+                createInitializationRule(statement),
                 createDefinitionStatementRule(),
                 createConditionalRule(statement, "if"),
                 createConditionalRule(statement, "while"),
@@ -284,7 +285,7 @@ public class Main {
     }
 
     private static TypeRule createConditionalRule(LazyRule statement, String type) {
-        final var leftRule = new StripRule(new PrefixRule("(", new NodeRule("condition", createValueRule())));
+        final var leftRule = new StripRule(new PrefixRule("(", new NodeRule("condition", createValueRule(statement))));
         final var blockRule = new OrRule(List.of(
                 createBlockRule(statement),
                 new NodeRule("child", statement)
@@ -322,7 +323,7 @@ public class Main {
         return new TypeRule("return", new StripRule(new PrefixRule("return ", new SuffixRule(new NodeRule("value", value), ";"))));
     }
 
-    private static Rule createValueRule() {
+    private static Rule createValueRule(Rule statement) {
         final var value = new LazyRule();
         value.set(new OrRule(List.of(
                 createConstructionRule(value),
@@ -338,14 +339,23 @@ public class Main {
                 createOperatorRule("add", "+", value),
                 createCharRule(),
                 createStringRule(),
-                createTernaryRule(value)
+                createTernaryRule(value),
+                createLambdaRule(statement, value)
         )));
 
         return value;
     }
 
+    private static TypeRule createLambdaRule(Rule statement, LazyRule value) {
+        return new TypeRule("lambda", new InfixRule(new StringRule("args"), new FirstLocator("->"), new OrRule(List.of(
+                createBlockRule(statement),
+                new NodeRule("value", value)
+        ))));
+    }
+
     private static TypeRule createStringRule() {
-        return new TypeRule("string", new PrefixRule("\"", new SuffixRule(new StringRule("value"), "\"")));
+        final var value = new PrefixRule("\"", new SuffixRule(new StringRule("value"), "\""));
+        return new TypeRule("string", new StripRule(value));
     }
 
     private static TypeRule createTernaryRule(LazyRule value) {
@@ -403,8 +413,18 @@ public class Main {
         final var type = new LazyRule();
         type.set(new OrRule(List.of(
                 createSymbolRule(),
-                new TypeRule("generic", new InfixRule(new StringRule("caller"), new FirstLocator("<"), new SuffixRule(new DivideRule("children", ValueDivider.VALUE_DIVIDER, type), ">")))
+                createGenericRule(type),
+                createVarArgsRule(type)
         )));
+
         return type;
+    }
+
+    private static TypeRule createVarArgsRule(LazyRule type) {
+        return new TypeRule("var-args", new SuffixRule(new NodeRule("child", type), "..."));
+    }
+
+    private static TypeRule createGenericRule(LazyRule type) {
+        return new TypeRule("generic", new InfixRule(new StringRule("caller"), new FirstLocator("<"), new SuffixRule(new DivideRule("children", ValueDivider.VALUE_DIVIDER, type), ">")));
     }
 }
