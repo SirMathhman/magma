@@ -65,6 +65,7 @@ public class Main {
     public static final String CONTENT_BEFORE_CHILD = "before-child";
     public static final String PARENT = "caller";
     public static final String GENERIC_CHILDREN = "children";
+    public static final String FUNCTIONAL_TYPE = "functional";
 
     public static void main(String[] args) {
         collect().mapErr(JavaError::new)
@@ -175,12 +176,26 @@ public class Main {
             final var parent = node.findString(PARENT).orElse("");
             final var children = node.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
 
+            if (parent.equals("BiFunction")) {
+                final var paramType = children.get(0);
+                final var paramType1 = children.get(1);
+                final var returnType = children.get(2);
+                return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE)
+                        .withNodeList("params", List.of(paramType, paramType1))
+                        .withNode("return", returnType)));
+            }
             if (parent.equals("Function")) {
                 final var paramType = children.get(0);
                 final var returnType = children.get(1);
-                return Optional.of(new Ok<>(new MapNode("functional")
+                return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE)
                         .withNodeList("params", List.of(paramType))
-                        .withNode("returns", returnType)));
+                        .withNode("return", returnType)));
+            }
+            if (parent.equals("Supplier")) {
+                final var returnType = children.getFirst();
+                return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE)
+                        .withNodeList("params", Collections.emptyList())
+                        .withNode("return", returnType)));
             }
         }
 
@@ -465,10 +480,17 @@ public class Main {
                 createSymbolRule(),
                 createGenericRule(type),
                 createVarArgsRule(type),
-                createArrayRule(type)
+                createArrayRule(type),
+                createFunctionalType(type)
         )));
 
         return type;
+    }
+
+    private static TypeRule createFunctionalType(Rule type) {
+        final var leftRule = new PrefixRule("(", new SuffixRule(new DivideRule("params", ValueDivider.VALUE_DIVIDER, type), ")"));
+        final var rule = new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));
+        return new TypeRule(FUNCTIONAL_TYPE, new PrefixRule("(", new SuffixRule(rule, ")")));
     }
 
     private static TypeRule createArrayRule(LazyRule type) {

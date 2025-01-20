@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 public final struct MapNode implements Node {
 	private final Map<String, String> strings;
 	private final Map<String, List<Node>> nodeLists;
@@ -21,27 +22,50 @@ public final struct MapNode implements Node {
 		this.nodes =nodes;
 		this.nodeLists =nodeLists;
 	}
+	public MapNode(String type){
+		this(Optional.of(type), new HashMap<>(), new HashMap<>(), new HashMap<>());
+	}
+	private static StringBuilder createEntry(String name,  String content,  int depth){
+		return new StringBuilder()
+                .append("\n" + "\t".repeat(depth))
+                .append(name)
+                .append(" : ")
+                .append(content);
+	}
 	@Override
     public String toString(){
+		return format(0);
+	}
+	@Override
+    public String format(int depth){
 		final var typeString =this.type.map(inner ->inner+" ").orElse("");
 		var builder =new StringBuilder().append(typeString)
                 .append("{");
 		final var joiner =new StringJoiner(",");
-		this.strings.entrySet().stream().map(entry -> new StringBuilder()
-                .append("\n\t")
-                .append(entry.getKey())
-                .append(" : \"")
-                .append(entry.getValue())
-                .append("\"")).forEach(joiner::add);
+		this.strings.entrySet()
+                .stream()
+                .map(entry -> createEntry(entry.getKey(), "\"" + entry.getValue() + "\"", depth + 1))
+                .forEach(joiner::add);
+		this.nodes.entrySet()
+                .stream()
+                .map(entry -> createEntry(entry.getKey(), entry.getValue().format(depth + 1), depth + 1))
+                .forEach(joiner::add);
+		this.nodeLists.entrySet()
+                .stream()
+                .map(entry -> createEntry(entry.getKey(), entry.getValue()
+                        .stream()
+                        .map(node -> node.format(depth + 1))
+                        .collect(Collectors.joining(",\n", "[", "]")), depth + 1))
+                .forEach(joiner::add);
 		builder.append(joiner);
-		return builder.append("\n}").toString();
+		return builder.append("\n").append("\t".repeat(depth)).append("}").toString();
 	}
 	@Override
     public Optional<Node> findNode(String propertyKey){
 		return Optional.ofNullable(this.nodes.get(propertyKey));
 	}
 	@Override
-    public Node mapString(String propertyKey,  Function<String, String> mapper){
+    public Node mapString(String propertyKey,  ((String) => String) mapper){
 		return findString(propertyKey).map(mapper).map(newString -> withString(propertyKey, newString)).orElse(this);
 	}
 	@Override
@@ -74,7 +98,7 @@ public final struct MapNode implements Node {
 		return this.type.isPresent() && this.type.get().equals(type);
 	}
 	@Override
-    public Node mapNodeList(String propertyKey,  Function<List<Node>, List<Node>> mapper){
+    public Node mapNodeList(String propertyKey,  ((List<Node>) => List<Node>) mapper){
 		return findNodeList(propertyKey)
                 .map(mapper)
                 .map(list -> withNodeList(propertyKey, list))

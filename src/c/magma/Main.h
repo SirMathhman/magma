@@ -2,6 +2,7 @@ import magma.api.Tuple;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.api.stream.Streams;
+import magma.app.MapNode;
 import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
@@ -58,6 +59,9 @@ public struct Main {
 	public static final String BLOCK_AFTER_CHILDREN ="block-after-children";
 	public static final String BLOCK ="block";
 	public static final String CONTENT_BEFORE_CHILD ="before-child";
+	public static final String PARENT ="caller";
+	public static final String GENERIC_CHILDREN ="children";
+	public static final String FUNCTIONAL_TYPE ="functional";
 	public static void main(String[] args){
 		collect().mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
@@ -145,8 +149,30 @@ public struct Main {
 		return copy;
 	}
 	private static Optional<Result<Node, CompileError>> afterPass(Node node){
+		if(node.is("generic")){
+		final var parent =node.findString(PARENT).orElse("");
+		final var children =node.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
+		if(parent.equals("BiFunction")){
+		final var paramType =children.get(0);
+		final var paramType1 =children.get(1);
+		final var returnType =children.get(2);
+		return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE).withNodeList("params", List.of(paramType, paramType1))
+                        .withNode("return", returnType)));
+	}
+		if(parent.equals("Function")){
+		final var paramType =children.get(0);
+		final var returnType =children.get(1);
+		return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE).withNodeList("params", List.of(paramType))
+                        .withNode("return", returnType)));
+	}
+		if(parent.equals("Supplier")){
+		final var returnType =children.getFirst();
+		return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE).withNodeList("params", Collections.emptyList())
+                        .withNode("return", returnType)));
+	}
+	}
 		if(node.is(BLOCK)){
-		final var newNode =node.mapNodeList("children", children -> {
+		final var newNode =node.mapNodeList(GENERIC_CHILDREN, children -> {
                 return children.stream()
                         .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n\t\t"))
                         .toList();
@@ -154,23 +180,23 @@ public struct Main {
 		return Optional.of(new Ok<>(newNode.withString(BLOCK_AFTER_CHILDREN, "\n\t")));
 	}
 		if(node.is(Main.STRUCT_TYPE)){
-		final var newChildren =node.findNodeList("children").orElse(new ArrayList<>())
+		final var newChildren =node.findNodeList(GENERIC_CHILDREN).orElse(new ArrayList<>())
                     .stream()
                     .filter(child -> !child.is(WHITESPACE_TYPE))
                     .map(child -> child.withString(BEFORE_STRUCT_SEGMENT, "\n\t"))
                     .toList();
 		return Optional.of(new Ok<>(node.withString(STRUCT_AFTER_CHILDREN, "\n")
-                    .withNodeList("children", newChildren)));
+                    .withNodeList(GENERIC_CHILDREN, newChildren)));
 	}
 		if(node.is("import")){
 		return Optional.of(new Ok<>(node.withString(IMPORT_AFTER, "\n")));
 	}
 		if(node.is(ROOT_TYPE)){
-		final var children =node.findNodeList("children").orElse(Collections.emptyList());
+		final var children =node.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
 		final var newChildren =children.stream()
                     .filter(child -> !child.is("package"))
                     .toList();
-		return Optional.of(new Ok<>(node.withNodeList("children", newChildren)));
+		return Optional.of(new Ok<>(node.withNodeList(GENERIC_CHILDREN, newChildren)));
 	}
 		return Optional.empty();
 	}
@@ -233,7 +259,7 @@ public struct Main {
 		return new TypeRule(BLOCK, new StripRule(new PrefixRule("{", new SuffixRule(new StripRule(createContentRule(statement), "", BLOCK_AFTER_CHILDREN), "}"))));
 	}
 	private static Rule createContentRule(Rule rule){
-		return new DivideRule("children", StatementDivider.STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, ""));
+		return new DivideRule(GENERIC_CHILDREN, StatementDivider.STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, ""));
 	}
 	private static Rule createStatementRule(){
 		final var statement =new LazyRule();
@@ -284,7 +310,7 @@ public struct Main {
 	}
 	private static TypeRule createInvocationRule(Rule value){
 		final var caller =new NodeRule("caller", value);
-		final var children =new DivideRule("children", ValueDivider.VALUE_DIVIDER, value);
+		final var children =new DivideRule(GENERIC_CHILDREN, ValueDivider.VALUE_DIVIDER, value);
 		final var suffixRule =new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")");
 		return new TypeRule("invocation", suffixRule);
 	}
@@ -364,9 +390,15 @@ public struct Main {
                 createSymbolRule(),
                 createGenericRule(type),
                 createVarArgsRule(type),
-                createArrayRule(type)
+                createArrayRule(type),
+                createFunctionalType(type)
         )));
 		return type;
+	}
+	private static TypeRule createFunctionalType(Rule type){
+		final var leftRule =new PrefixRule("(", new SuffixRule(new DivideRule("params", ValueDivider.VALUE_DIVIDER, type), ")"));
+		final var rule =new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));
+		return new TypeRule(FUNCTIONAL_TYPE, new PrefixRule("(", new SuffixRule(rule, ")")));
 	}
 	private static TypeRule createArrayRule(LazyRule type){
 		return new TypeRule("array", new SuffixRule(new NodeRule("child", type), "[]"));
@@ -375,6 +407,6 @@ public struct Main {
 		return new TypeRule("var-args", new SuffixRule(new NodeRule("child", type), "..."));
 	}
 	private static TypeRule createGenericRule(LazyRule type){
-		return new TypeRule("generic", new InfixRule(new StripRule(new StringRule("caller")), new FirstLocator("<"), new SuffixRule(new DivideRule("children", ValueDivider.VALUE_DIVIDER, type), ">")));
+		return new TypeRule("generic", new InfixRule(new StripRule(new StringRule(PARENT)), new FirstLocator("<"), new SuffixRule(new DivideRule(GENERIC_CHILDREN, ValueDivider.VALUE_DIVIDER, type), ">")));
 	}
 }
