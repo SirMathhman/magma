@@ -1,22 +1,4 @@
-#include <temp.h>
-struct LastLocator {
-	String infix;
-	struct LastLocator LastLocator_new(String infix){
-		struct LastLocator this;
-		this.infix = infix;
-		return this;
-	}
-	Optional<Integer> LastLocator_locate(void* _this_){
-		struct LastLocator this = *(struct LastLocator*) this;
-		temp = temp;
-		temp = temp;
-	}
-	String LastLocator_unwrap(void* _this_){
-		struct LastLocator this = *(struct LastLocator*) this;
-		return this.infix;
-	}
-	int LastLocator_length(void* _this_){
-		struct LastLocator this = *(struct LastLocator*) this;
-		return this.infix.length();
-	}
-};
+package magma.app.locate;package java.util.Optional;public record LastLocator(String infix) implements Locator {@Override
+    public Optional<Integer> locate(String input){final var index = input.lastIndexOf(infix());return index == -1 ? Optional.empty() : Optional.of(index);}@Override
+    public String unwrap(){return this.infix;}@Override
+    public int length(){return this.infix.length();}}

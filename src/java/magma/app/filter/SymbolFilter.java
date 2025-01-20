@@ -6,8 +6,9 @@ import java.util.stream.IntStream;
 public class SymbolFilter implements Predicate<String> {
     @Override
     public boolean test(String input) {
-        return IntStream.range(0, input.length())
-                .mapToObj(input::charAt)
-                .allMatch(Character::isLetter);
+        return IntStream.range(0, input.length()).allMatch(index -> {
+            final var c = input.charAt(index);
+            return Character.isLetter(c) || (index != 0 && Character.isDigit(c));
+        });
     }
 }

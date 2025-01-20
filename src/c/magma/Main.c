@@ -1,307 +1,71 @@
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-struct Main {
-	struct Main Main_new(){
-		struct Main this;
-		return this;
-	}
-		SOURCE_DIRECTORY  = temp;
-		TARGET_DIRECTORY  = temp;
-		DEFAULT_VALUE  = temp;
-	void Main_main(void* _this_){
-		struct Main this = *(struct Main*) this;
-		collect();
-	}
-	IOException> Main_collect(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-	}
-	Optional<ApplicationError> Main_runWithSources(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		return Optional.empty();
-	}
-	Optional<ApplicationError> Main_runWithSource(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-	}
-	IOException> Main_readStringWrapped(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-	}
-	Optional<IOException> Main_createDirectoriesWrapped(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-	}
-	Optional<IOException> Main_writeStringWrapped(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-	}
-	String Main_merge(void* _this_){
-		struct Main this = *(struct Main*) this;
-		return nodes.stream()
-                .map(node -> generateWithDefaultValue(node))
-                .reduce(new StringBuilder(), merger, (_, next) -> next).toString();
-	}
-	CompileError> Main_compileAll(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-		return nodes;
-	}
-	StringBuilder Main_mergeStatement(void* _this_){
-		struct Main this = *(struct Main*) this;
-		return builder.append(element);
-	}
-	CompileError> Main_splitByStatements(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		advance();
-		temp = temp;
-		temp = temp;
-	}
-	void Main_advance(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError> Main_compileRootSegment(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-	}
-	CompileError> Main_or(void* _this_){
-		struct Main this = *(struct Main*) this;
-		return stream.map(Main::prepare)
-                .foldLeft(Supplier::get, (current, next) -> current.or(next).mapErr(Main::merge))
-                .map(result -> result.mapErr(errors -> new CompileError("Invalid " + type, input, errors)))
-                .orElseGet(() -> new Err<>(new CompileError("No compilers present", input)));
-	}
-	CompileError> Main_compileNamespaced(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-	}
-	List<CompileError> Main_merge(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		copy.addAll();
-		return copy;
-	}
-	CompileError> Main_compileToStruct(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	String Main_modifyAndGenerateStruct(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-	}
-	CompileError>> Main_parseOr(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError>> Main_parseSplit(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError>> Main_parseString(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError>> Main_parseDivide(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	String Main_generateBlock(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError> Main_splitByValues(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		advance();
-		temp = temp;
-	}
-	CompileError> Main_compileStructSegment(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-	}
-	CompileError> Main_compileDefinitionStatement(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	String Main_generateDefinitionStatement(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError> Main_compileInitialization(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	String Main_generateInitialization(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-	}
-	CompileError> Main_compileMethod(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	String Main_generateUniqueName(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError> Main_compileStatementToNode(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	String Main_generateMethod(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError> Main_compileStatementToString(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-	}
-	CompileError> Main_compileInvocation(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError> Main_compileReturn(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	String Main_generateReturn(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError> Main_parseReturn(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError> Main_compileValue(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError> Main_compileSymbol(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		return result.mapValue(Main::createDefaultNode);
-	}
-	CompileError> Main_compileDataAccess(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	String Main_generateAccess(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	String Main_generateStatement(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	CompileError> Main_truncateLeft(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-	}
-	String Main_generateDefinition(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-	}
-	CompileError>> Main_createDefinitionRule(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	Node Main_createDefaultNode(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-	String Main_generateWithDefaultValue(void* _this_){
-		struct Main this = *(struct Main*) this;
-		return node.findString(DEFAULT_VALUE).orElse("");
-	}
-	CompileError> Main_truncateRight(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-		temp = temp;
-	}
-	CompileError> Main_split(void* _this_){
-		struct Main this = *(struct Main*) this;
-		return locator.locate(input).<Result<Tuple<String, String>, CompileError>>map(index -> {
-            final var left = input.substring(0, index);
-            final var right = input.substring(index + locator.length());
-            final var tuple = new Tuple<>(left, right);
-            return new Ok<>(tuple);
-        }).orElseGet(() -> new Err<>(new CompileError("Infix '" + locator.unwrap() + "' not present", input)));
-	}
-	List<CompileError>>> Main_prepare(void* _this_){
-		struct Main this = *(struct Main*) this;
-		temp = temp;
-	}
-};
+package magma;package magma.api.result.Err;package magma.api.result.Ok;package magma.api.result.Result;package magma.app.Node;package magma.app.error.ApplicationError;package magma.app.error.CompileError;package magma.app.error.JavaError;package magma.app.error.context.StringContext;package magma.app.filter.NumberFilter;package magma.app.filter.SymbolFilter;package magma.app.locate.FirstLocator;package magma.app.locate.LastLocator;package magma.app.locate.LocateTypeSeparator;package magma.app.locate.ParenthesesMatcher;package magma.app.rule.DivideRule;package magma.app.rule.ExactRule;package magma.app.rule.FilterRule;package magma.app.rule.InfixRule;package magma.app.rule.LazyRule;package magma.app.rule.NodeRule;package magma.app.rule.OrRule;package magma.app.rule.PrefixRule;package magma.app.rule.Rule;package magma.app.rule.StringRule;package magma.app.rule.StripRule;package magma.app.rule.SuffixRule;package magma.app.rule.TypeRule;package magma.java.JavaFiles;package java.io.IOException;package java.nio.file.Files;package java.nio.file.Path;package java.nio.file.Paths;package java.util.ArrayList;package java.util.LinkedList;package java.util.List;package java.util.Optional;package java.util.Set;package java.util.function.Function;package java.util.stream.Collectors;package java.util.stream.IntStream;public class Main {public static final Path SOURCE_DIRECTORY =Paths.get(".", "src", "java");public static final Path TARGET_DIRECTORY =Paths.get(".", "src", "c");public static final String DEFAULT_VALUE = "value";public static void main(String[] args){collect().mapErr(JavaError::new)
+                .mapErr(ApplicationError::new)
+                .mapValue(Main::runWithSources)
+                .match(Function.identity(), Optional::of)
+                .ifPresent(error -> System.err.println(error.display()));}private static Result<Set<Path>, IOException> collect(){return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths -> paths.stream()
+                .filter(Files::isRegularFile)
+                .filter(path -> path.toString().endsWith(".java"))
+                .collect(Collectors.toSet()));}private static Optional<ApplicationError> runWithSources(Set<Path> sources){return sources.stream()
+                .map(Main::runWithSource)
+                .flatMap(Optional::stream)
+                .findFirst();}private static Optional<ApplicationError> runWithSource(Path source){final var relative = SOURCE_DIRECTORY.relativize(source);final var parent = relative.getParent();final var namespace = IntStream.range(0, parent.getNameCount())
+                .mapToObj(parent::getName)
+                .map(Path::toString)
+                .toList();if(namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))){return Optional.empty();}final var nameWithExt = relative.getFileName().toString();final var name = nameWithExt.substring(0, nameWithExt.indexOf('.'));final var targetParent = TARGET_DIRECTORY.resolve(parent);if(!Files.exists(targetParent)){final var directoriesError = JavaFiles.createDirectoriesWrapped(targetParent);if (directoriesError.isPresent()) return directoriesError.map(JavaError::new).map(ApplicationError::new);}return JavaFiles.readStringWrapped(source)
+                .mapErr(JavaError::new)
+                .mapErr(ApplicationError::new)
+                .flatMapValue(input -> createContentRule(createRootSegmentRule()).parse(input).mapErr(ApplicationError::new))
+                .flatMapValue(ast -> createContentRule(createRootSegmentRule()).generate(ast).mapErr(ApplicationError::new))
+                .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);}private static Optional<ApplicationError> writeOutput(String outputString output Path targetParentString output Path targetParent String name){final var target = targetParent.resolve(name + ".c");final var header = targetParent.resolve(name + ".h");return JavaFiles.writeStringWrapped(target, output)
+                .or(() -> JavaFiles.writeStringWrapped(header, output))
+                .map(JavaError::new)
+                .map(ApplicationError::new);}private static Result<List<String>, CompileError> splitByStatements(String input){final var segments = new ArrayList<String>();var buffer = new StringBuilder();var depth = 0;final var queue = IntStream.range(0, input.length())
+                .mapToObj(input::charAt)
+                .collect(Collectors.toCollection(LinkedList::new));while(!queue.isEmpty()){final var c = queue.pop();buffer.append(c);if(c=='\''){final var c1 = queue.pop();buffer.append(c1);if(c1=='\\'){buffer.append(queue.pop());}buffer.append(queue.pop());continue;}if(c=='"'){while(!queue.isEmpty()){final var c1 = queue.pop();buffer.append(c1);if (c1 == '"') break;if(c1=='\\'){buffer.append(queue.pop());}}continue;}if(c==';'&&depth==0){advance(buffer, segments);buffer = new StringBuilder();}else if(c=='}'&&depth==1){depth--;advance(buffer, segments);buffer = new StringBuilder();}else {if (c == '{' || c == '(') depth++;if (c == '}' || c == ')') depth--;}}advance(buffer, segments);if(depth==0){return new Ok<>(segments);}else {return new Err<>(new CompileError("Invalid depth '" + depth + "'", new StringContext(input)));}}private static void advance(StringBuilder bufferStringBuilder buffer ArrayList<String> segments){if (!buffer.isEmpty()) segments.add(buffer.toString());}private static OrRule createRootSegmentRule(){return new OrRule(List.of(
+                createNamespacedRule("package "),
+                createNamespacedRule("import "),
+                createStructRule("class", "class "),
+                createStructRule("record", "record "),
+                createStructRule("interface", "interface "),
+                createWhitespaceRule()
+        ));}private static PrefixRule createNamespacedRule(String prefix){return new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";"));}private static Rule createStructRule(String typeString type String infix){final var infixRule = new InfixRule(new StringRule("modifiers"), new FirstLocator(infix),
+                new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
+                        new SuffixRule(createContentRule(createStructSegmentRule()), "}")
+                )));return new TypeRule(type, infixRule);}private static Result<List<String>, CompileError> splitByValues(String input){final var segments = new ArrayList<String>();final var buffer = new StringBuilder();var depth = 0;int i = 0;while(i<input.length()){final var c = input.charAt(i);if(c==','&&depth==0){advance(buffer, segments);}else {buffer.append(c);if (c == '<') depth++;if (c == '>') depth--;}i++;}advance(buffer, segments);return new Ok<>(segments);}private static Rule createStructSegmentRule(){return new OrRule(List.of(
+                createMethodRule(),
+                createInitializationRule(),
+                createDefinitionStatementRule(),
+                createWhitespaceRule()
+        ));}private static SuffixRule createDefinitionStatementRule(){return new SuffixRule(createDefinitionRule(), ";");}private static Rule createInitializationRule(){final var infixRule = new InfixRule(new NodeRule("definition", createDefinitionRule()), new FirstLocator("="), new StripRule(new SuffixRule(new NodeRule("value", createValueRule()), ";")));return new TypeRule("initialization", infixRule);}private static Rule createMethodRule(){final var orRule = new OrRule(List.of(
+                createBlockRule(createStatementRule()),
+                new ExactRule(";")
+        ));final var definition = createDefinitionRule();final var definitionProperty = new NodeRule("definition", definition);final var params = new DivideRule("params", Main::splitByValues, definition);final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));return new TypeRule("method", infixRule);}private static Rule createBlockRule(Rule statement){return new StripRule(new PrefixRule("{", new SuffixRule(createContentRule(statement), "}")));}private static Rule createContentRule(Rule rule){return new DivideRule("children", Main::splitByStatements, new StripRule(rule));}private static Rule createStatementRule(){final var valueRule = createValueRule();final var statement = new LazyRule();statement.set(new OrRule(List.of(
+                createKeywordRule(),
+                createDefinitionStatementRule(),
+                createConditionalRule(statement, "if"),
+                createConditionalRule(statement, "while"),
+                createElseRule(statement),
+                createInvocationRule(valueRule),
+                createReturnRule(valueRule),
+                createAssignmentRule(valueRule),
+                createPostfixRule("post-increment", "++", valueRule),
+                createPostfixRule("post-decrement", "--", valueRule),
+                createWhitespaceRule()
+        )));return statement;}private static TypeRule createKeywordRule(){return new TypeRule("continue", new ExactRule("continue;"));}private static TypeRule createElseRule(LazyRule statement){return new TypeRule("else", new StripRule(new PrefixRule("else ", new OrRule(List.of(
+                createBlockRule(statement),
+                new NodeRule("value", statement)
+        )))));}private static TypeRule createConditionalRule(LazyRule statementLazyRule statement String type){final var leftRule = new StripRule(new PrefixRule("(", new NodeRule("condition", createValueRule())));return new TypeRule(type, new PrefixRule(type, new InfixRule(leftRule, new ParenthesesMatcher(), createBlockRule(statement))));}private static TypeRule createWhitespaceRule(){return new TypeRule("whitespace", new StripRule(new ExactRule("")));}private static Rule createPostfixRule(String typeString type String operatorString type String operator Rule value){return new TypeRule(type, new SuffixRule(new NodeRule("value", value), operator + ";"));}private static Rule createAssignmentRule(Rule value){return new SuffixRule(new InfixRule(new NodeRule("destination", value), new FirstLocator(" "), new NodeRule("source", value)), ";");}private static Rule createInvocationRule(Rule value){final var suffixRule = new SuffixRule(new InfixRule(new NodeRule("caller", value), new FirstLocator("("), new DivideRule("children", Main::splitByValues, value)), ");");return new TypeRule("invocation", suffixRule);}private static Rule createReturnRule(Rule value){return new TypeRule("return", new StripRule(new PrefixRule("return ", new SuffixRule(new NodeRule("value", value), ";"))));}private static Rule createValueRule(){final var value = new LazyRule();value.set(new OrRule(List.of(
+                createConstructionRule(value),
+                createDataAccessRule(value),
+                createSymbolRule(),
+                createNumberRule(),
+                createNotRule(value),
+                createOperatorRule("greater-equals", ">=", value),
+                createOperatorRule("less", "<", value),
+                createOperatorRule("equals", "==", value),
+                createOperatorRule("and", "&&", value),
+                createCharRule()
+        )));return value;}private static TypeRule createCharRule(){return new TypeRule("char", new StripRule(new PrefixRule("'", new SuffixRule(new StringRule("value"), "'"))));}private static TypeRule createNumberRule(){return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule("value"))));}private static TypeRule createOperatorRule(String typeString type String operatorString type String operator LazyRule value){return new TypeRule(type, new InfixRule(new NodeRule("left", value), new FirstLocator(operator), new NodeRule("right", value)));}private static TypeRule createNotRule(LazyRule value){return new TypeRule("not", new StripRule(new PrefixRule("!", new NodeRule("value", value))));}private static TypeRule createConstructionRule(LazyRule value){return new TypeRule("construction", new StripRule(new PrefixRule("new ", new InfixRule(new StringRule("type"), new FirstLocator("("), new StripRule(new SuffixRule(new DivideRule("arguments", Main::splitByValues, value), ")"))))));}private static Rule createSymbolRule(){return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(DEFAULT_VALUE))));}private static Rule createDataAccessRule(final Rule value){final var rule = new InfixRule(new NodeRule("ref", value), new LastLocator("."), new StringRule("property"));return new TypeRule("data-access", rule);}private static Rule createDefinitionRule(){final var modifiers = new StringRule("modifiers");final var type = new StringRule("type");final var name = new StringRule("name");final var withModifiers = new InfixRule(modifiers, new LocateTypeSeparator(), type);final var rule = new InfixRule(new OrRule(List.of(
+                withModifiers,
+                type
+        )), new LastLocator(" "), name);return new TypeRule("definition", rule);}}

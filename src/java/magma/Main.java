@@ -3,6 +3,7 @@ package magma;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
@@ -257,6 +258,7 @@ public class Main {
         final var valueRule = createValueRule();
         final var statement = new LazyRule();
         statement.set(new OrRule(List.of(
+                createKeywordRule(),
                 createDefinitionStatementRule(),
                 createConditionalRule(statement, "if"),
                 createConditionalRule(statement, "while"),
@@ -271,8 +273,15 @@ public class Main {
         return statement;
     }
 
+    private static TypeRule createKeywordRule() {
+        return new TypeRule("continue", new ExactRule("continue;"));
+    }
+
     private static TypeRule createElseRule(LazyRule statement) {
-        return new TypeRule("else", new StripRule(new PrefixRule("else ", createBlockRule(statement))));
+        return new TypeRule("else", new StripRule(new PrefixRule("else ", new OrRule(List.of(
+                createBlockRule(statement),
+                new NodeRule("value", statement)
+        )))));
     }
 
     private static TypeRule createConditionalRule(LazyRule statement, String type) {
@@ -285,7 +294,7 @@ public class Main {
     }
 
     private static Rule createPostfixRule(String type, String operator, Rule value) {
-        return new TypeRule(type,new SuffixRule(new NodeRule("value", value), operator + ";"));
+        return new TypeRule(type, new SuffixRule(new NodeRule("value", value), operator + ";"));
     }
 
     private static Rule createAssignmentRule(Rule value) {
@@ -310,10 +319,17 @@ public class Main {
                 createNumberRule(),
                 createNotRule(value),
                 createOperatorRule("greater-equals", ">=", value),
-                createOperatorRule("less", "<", value)
+                createOperatorRule("less", "<", value),
+                createOperatorRule("equals", "==", value),
+                createOperatorRule("and", "&&", value),
+                createCharRule()
         )));
 
         return value;
+    }
+
+    private static TypeRule createCharRule() {
+        return new TypeRule("char", new StripRule(new PrefixRule("'", new SuffixRule(new StringRule("value"), "'"))));
     }
 
     private static TypeRule createNumberRule() {
