@@ -18,10 +18,10 @@ public struct Ok<T, X>(T value) implements Result<T, X> {
 	<R>((((T) => R), ((X) => R)) => R) match=<R>R match(((T) => R) onOk, ((X) => R) onErr){
 		return onOk.apply(this.value);
 	};
-	<R>(((() => Result<R, X>)) => Result<Tuple<T, R>, X>) and=<R>Result<Tuple<T, R>, X> and((() => Result<R, X>) other){
+	<R>(((() => Result<R, X>)) => Result<[T, R], X>) and=<R>Result<[T, R], X> and((() => Result<R, X>) other){
 		return other.get().mapValue(otherValue -> new Tuple<>(this.value, otherValue));
 	};
-	<R>(((() => Result<T, R>)) => Result<T, Tuple<X, R>>) or=<R>Result<T, Tuple<X, R>> or((() => Result<T, R>) other){
+	<R>(((() => Result<T, R>)) => Result<T, [X, R]>) or=<R>Result<T, [X, R]> or((() => Result<T, R>) other){
 		return new Ok<>(this.value);
 	};
 	(() => boolean) isOk=boolean isOk(){

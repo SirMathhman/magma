@@ -7,8 +7,8 @@ public struct Result<T, X> {
 	<R>((((T) => R)) => Result<R, X>) mapValue;
 	<R>((((X) => R)) => Result<T, R>) mapErr;
 	<R>((((T) => R), ((X) => R)) => R) match;
-	<R>(((() => Result<R, X>)) => Result<Tuple<T, R>, X>) and;
-	<R>(((() => Result<T, R>)) => Result<T, Tuple<X, R>>) or;
+	<R>(((() => Result<R, X>)) => Result<[T, R], X>) and;
+	<R>(((() => Result<T, R>)) => Result<T, [X, R]>) or;
 	(() => boolean) isOk;
 	(() => Option<X>) findError;
 }

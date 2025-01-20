@@ -13,8 +13,8 @@ public struct Node {
 	((String) => Optional<Node>) findNode;
 	((String, ((String) => String)) => Node) mapString;
 	((Node) => Node) merge;
-	(() => Stream<Tuple<String, List<Node>>>) streamNodeLists;
-	(() => Stream<Tuple<String, Node>>) streamNodes;
+	(() => Stream<[String, List<Node>]>) streamNodeLists;
+	(() => Stream<[String, Node]>) streamNodes;
 	(() => String) display;
 	((String) => Node) retype;
 	((String) => boolean) is;

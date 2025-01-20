@@ -28,6 +28,7 @@ import magma.app.rule.TypeRule;
 import magma.app.rule.divide.DivideRule;
 import magma.app.rule.divide.SimpleDivider;
 import magma.app.rule.divide.StatementDivider;
+import magma.app.rule.divide.ValueDivider;
 import magma.app.rule.filter.NumberFilter;
 import magma.app.rule.filter.SymbolFilter;
 import magma.app.rule.locate.FirstLocator;
@@ -78,6 +79,8 @@ public class Main {
     public static final String INITIALIZATION_VALUE = "value";
     public static final String INITIALIZATION_DEFINITION = "definition";
     public static final String DEFINITION_TYPE = "definition";
+    public static final String TUPLE_TYPE = "tuple";
+    public static final String TUPLE_CHILDREN = "children";
 
     public static void main(String[] args) {
         collect().mapErr(JavaError::new)
@@ -251,6 +254,9 @@ public class Main {
                 final var returnType = children.getFirst();
                 return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE)
                         .withNode("return", returnType)));
+            }
+            if (parent.equals("Tuple")) {
+                return Optional.of(new Ok<>(new MapNode(TUPLE_TYPE).withNodeList(TUPLE_CHILDREN, children)));
             }
         }
 
@@ -575,7 +581,8 @@ public class Main {
                 createGenericRule(type),
                 createVarArgsRule(type),
                 createArrayRule(type),
-                createFunctionalType(type)
+                createFunctionalType(type),
+                new TypeRule(TUPLE_TYPE, new PrefixRule("[", new SuffixRule(new DivideRule(TUPLE_CHILDREN, VALUE_DIVIDER, type), "]")))
         )));
 
         return type;

@@ -55,13 +55,13 @@ public final struct MapNode implements Node {
 		final var withNodes=streamNodes().foldLeft(withStrings, (node, tuple) ->node.withNode(tuple.left(), tuple.right()));
 		return streamNodeLists().foldLeft(withNodes, (node, tuple) ->node.withNodeList(tuple.left(), tuple.right()));
 	};
-	(() => Stream<Tuple<String, List<Node>>>) streamNodeLists=Stream<Tuple<String, List<Node>>> streamNodeLists(){
+	(() => Stream<[String, List<Node>]>) streamNodeLists=Stream<[String, List<Node>]> streamNodeLists(){
 		return stream(this.nodeLists);
 	};
-	(() => Stream<Tuple<String, Node>>) streamNodes=Stream<Tuple<String, Node>> streamNodes(){
+	(() => Stream<[String, Node]>) streamNodes=Stream<[String, Node]> streamNodes(){
 		return stream(this.nodes);
 	};
-	<K, V>((Map<K, V>) => Stream<Tuple<K, V>>) stream=<K, V>Stream<Tuple<K, V>> stream(Map<K, V> map){
+	<K, V>((Map<K, V>) => Stream<[K, V]>) stream=<K, V>Stream<[K, V]> stream(Map<K, V> map){
 		return Streams.from(map.entrySet()).map(entry ->new Tuple<>(entry.getKey(), entry.getValue()));
 	};
 	(() => String) display=String display(){

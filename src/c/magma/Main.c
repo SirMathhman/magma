@@ -26,6 +26,7 @@ import magma.app.rule.TypeRule;
 import magma.app.rule.divide.DivideRule;
 import magma.app.rule.divide.SimpleDivider;
 import magma.app.rule.divide.StatementDivider;
+import magma.app.rule.divide.ValueDivider;
 import magma.app.rule.filter.NumberFilter;
 import magma.app.rule.filter.SymbolFilter;
 import magma.app.rule.locate.FirstLocator;
@@ -73,6 +74,8 @@ public struct Main {
 	public static final String INITIALIZATION_VALUE="value";
 	public static final String INITIALIZATION_DEFINITION="definition";
 	public static final String DEFINITION_TYPE="definition";
+	public static final String TUPLE_TYPE="tuple";
+	public static final String TUPLE_CHILDREN="children";
 	((String[]) => void) main=void main(String[] args){
 		collect().mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(Main::runWithSources).match(Function.identity(), Optional::of).ifPresent(error ->System.err.println(error.display()));
 	};
@@ -123,7 +126,7 @@ public struct Main {
 	((Node) => Result<Node, CompileError>) passNodeLists=Result<Node, CompileError> passNodeLists(Node previous){
 		return previous.streamNodeLists().foldLeftToResult(previous, Main::passNodeList);
 	};
-	((Node, Tuple<String, List<Node>>) => Result<Node, CompileError>) passNodeList=Result<Node, CompileError> passNodeList(Node node, Tuple<String, List<Node>> tuple){
+	((Node, [String, List<Node>]) => Result<Node, CompileError>) passNodeList=Result<Node, CompileError> passNodeList(Node node, [String, List<Node>] tuple){
 		return Streams.from(tuple.right()).map(Main::pass).foldLeftToResult(new ArrayList<>(), Main::foldElementIntoList).mapValue(list -> node.withNodeList(tuple.left(), list));
 	};
 	((List<Node>, Result<Node, CompileError>) => Result<List<Node>, CompileError>) foldElementIntoList=Result<List<Node>, CompileError> foldElementIntoList(List<Node> currentNodes, Result<Node, CompileError> node){
@@ -179,6 +182,9 @@ public struct Main {
 		if(parent.equals("Supplier")){
 		final var returnType=children.getFirst();
 		return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE).withNode("return", returnType)));
+	}
+		if(parent.equals("Tuple")){
+		return Optional.of(new Ok<>(new MapNode(TUPLE_TYPE).withNodeList(TUPLE_CHILDREN, children)));
 	}
 	}
 		if(node.is(BLOCK)){
@@ -361,7 +367,7 @@ public struct Main {
 	};
 	(() => Rule) createTypeRule=Rule createTypeRule(){
 		final var type=new LazyRule();
-		type.set(new OrRule(List.of(createSymbolRule(), createGenericRule(type), createVarArgsRule(type), createArrayRule(type), createFunctionalType(type))));
+		type.set(new OrRule(List.of(createSymbolRule(), createGenericRule(type), createVarArgsRule(type), createArrayRule(type), createFunctionalType(type), new TypeRule(TUPLE_TYPE, new PrefixRule("[", new SuffixRule(new DivideRule(TUPLE_CHILDREN, VALUE_DIVIDER, type), "]"))))));
 		return type;
 	};
 	((Rule) => TypeRule) createFunctionalType=TypeRule createFunctionalType(Rule type){

@@ -18,10 +18,10 @@ public struct Err<T, X>(X error) implements Result<T, X> {
 	<R>((((T) => R), ((X) => R)) => R) match=<R>R match(((T) => R) onOk, ((X) => R) onErr){
 		return onErr.apply(this.error);
 	};
-	<R>(((() => Result<R, X>)) => Result<Tuple<T, R>, X>) and=<R>Result<Tuple<T, R>, X> and((() => Result<R, X>) other){
+	<R>(((() => Result<R, X>)) => Result<[T, R], X>) and=<R>Result<[T, R], X> and((() => Result<R, X>) other){
 		return new Err<>(this.error);
 	};
-	<R>(((() => Result<T, R>)) => Result<T, Tuple<X, R>>) or=<R>Result<T, Tuple<X, R>> or((() => Result<T, R>) other){
+	<R>(((() => Result<T, R>)) => Result<T, [X, R]>) or=<R>Result<T, [X, R]> or((() => Result<T, R>) other){
 		return other.get().mapErr(otherErr -> new Tuple<>(this.error, otherErr));
 	};
 	(() => boolean) isOk=boolean isOk(){
