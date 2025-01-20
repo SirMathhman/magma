@@ -7,7 +7,7 @@ import magma.api.result.Result;
 import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.StringContext;
-import magma.app.locate.Locator;
+import magma.app.rule.locate.Locator;
 
 public final class InfixRule implements Rule {
     private final Rule leftRule;

@@ -1,4 +1,4 @@
-package magma.app.rule;
+package magma.app.rule.divide;
 
 import magma.api.result.Err;
 import magma.api.result.Result;
@@ -7,6 +7,7 @@ import magma.app.MapNode;
 import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
+import magma.app.rule.Rule;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package magma.app.locate;
+package magma.app.rule.locate;
 
 public record State(int depth) {
     public boolean isShallow() {

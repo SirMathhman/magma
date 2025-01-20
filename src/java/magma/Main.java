@@ -8,13 +8,6 @@ import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
-import magma.app.filter.NumberFilter;
-import magma.app.filter.SymbolFilter;
-import magma.app.locate.FirstLocator;
-import magma.app.locate.LastLocator;
-import magma.app.locate.LocateTypeSeparator;
-import magma.app.locate.ParenthesesMatcher;
-import magma.app.rule.DivideRule;
 import magma.app.rule.ExactRule;
 import magma.app.rule.FilterRule;
 import magma.app.rule.InfixRule;
@@ -23,11 +16,19 @@ import magma.app.rule.NodeRule;
 import magma.app.rule.OrRule;
 import magma.app.rule.PrefixRule;
 import magma.app.rule.Rule;
-import magma.app.rule.Splitter;
 import magma.app.rule.StringRule;
 import magma.app.rule.StripRule;
 import magma.app.rule.SuffixRule;
 import magma.app.rule.TypeRule;
+import magma.app.rule.divide.DivideRule;
+import magma.app.rule.divide.StatementDivider;
+import magma.app.rule.divide.ValueDivider;
+import magma.app.rule.filter.NumberFilter;
+import magma.app.rule.filter.SymbolFilter;
+import magma.app.rule.locate.FirstLocator;
+import magma.app.rule.locate.LastLocator;
+import magma.app.rule.locate.LocateTypeSeparator;
+import magma.app.rule.locate.ParenthesesMatcher;
 import magma.java.JavaFiles;
 
 import java.io.IOException;
@@ -237,7 +238,7 @@ public class Main {
 
         final var definition = createDefinitionRule();
         final var definitionProperty = new NodeRule("definition", definition);
-        final var params = new DivideRule("params", Splitter::splitByValues, definition);
+        final var params = new DivideRule("params", ValueDivider.VALUE_DIVIDER, definition);
 
         final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
         return new TypeRule("method", infixRule);
@@ -248,7 +249,7 @@ public class Main {
     }
 
     private static Rule createContentRule(Rule rule) {
-        return new DivideRule("children", Splitter::splitByStatements, new StripRule(rule));
+        return new DivideRule("children", StatementDivider.STATEMENT_DIVIDER, new StripRule(rule));
     }
 
     private static Rule createStatementRule() {
@@ -299,7 +300,7 @@ public class Main {
     }
 
     private static Rule createInvocationRule(Rule value) {
-        final var suffixRule = new SuffixRule(new InfixRule(new NodeRule("caller", value), new FirstLocator("("), new DivideRule("children", Splitter::splitByValues, value)), ");");
+        final var suffixRule = new SuffixRule(new InfixRule(new NodeRule("caller", value), new FirstLocator("("), new DivideRule("children", ValueDivider.VALUE_DIVIDER, value)), ");");
         return new TypeRule("invocation", suffixRule);
     }
 
@@ -342,7 +343,7 @@ public class Main {
     }
 
     private static TypeRule createConstructionRule(LazyRule value) {
-        return new TypeRule("construction", new StripRule(new PrefixRule("new ", new InfixRule(new StringRule("type"), new FirstLocator("("), new StripRule(new SuffixRule(new DivideRule("arguments", Splitter::splitByValues, value), ")"))))));
+        return new TypeRule("construction", new StripRule(new PrefixRule("new ", new InfixRule(new StringRule("type"), new FirstLocator("("), new StripRule(new SuffixRule(new DivideRule("arguments", ValueDivider.VALUE_DIVIDER, value), ")"))))));
     }
 
     private static Rule createSymbolRule() {
@@ -356,7 +357,7 @@ public class Main {
 
     private static Rule createDefinitionRule() {
         final var modifiers = new StringRule("modifiers");
-        final var type = new StringRule("type");
+        final var type = new NodeRule("type", createTypeRule());
         final var name = new StringRule("name");
         final var withModifiers = new InfixRule(modifiers, new LocateTypeSeparator(), type);
         final var rule = new InfixRule(new OrRule(List.of(
@@ -365,5 +366,14 @@ public class Main {
         )), new LastLocator(" "), name);
 
         return new TypeRule("definition", rule);
+    }
+
+    private static Rule createTypeRule() {
+        final var type = new LazyRule();
+        type.set(new OrRule(List.of(
+                createSymbolRule(),
+                new TypeRule("generic", new InfixRule(new StringRule("caller"), new FirstLocator("<"), new SuffixRule(new DivideRule("children", ValueDivider.VALUE_DIVIDER, type), ">")))
+        )));
+        return type;
     }
 }

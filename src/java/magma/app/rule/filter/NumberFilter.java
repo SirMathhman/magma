@@ -1,4 +1,4 @@
-package magma.app.filter;
+package magma.app.rule.filter;
 
 import java.util.function.Predicate;
 import java.util.stream.IntStream;

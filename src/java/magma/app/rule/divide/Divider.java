@@ -1,4 +1,4 @@
-package magma.app.rule;
+package magma.app.rule.divide;
 
 import magma.api.result.Result;
 import magma.app.error.CompileError;
