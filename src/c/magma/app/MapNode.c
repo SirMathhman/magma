@@ -1,5 +1,12 @@
 package magma.app;package magma.api.Tuple;package magma.api.stream.Stream;package magma.api.stream.Streams;package java.util.HashMap;package java.util.List;package java.util.Map;package java.util.Optional;package java.util.StringJoiner;package java.util.function.Function;public final class MapNode implements Node {private final Map<String, String> strings;private final Map<String, List<Node>> nodeLists;private final Map<String, Node> nodes;private final Optional<String> type;public MapNode(){this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>());}public MapNode(Optional<String> typeOptional<String> type Map<String, String> stringsOptional<String> type Map<String, String> strings Map<String, Node> nodesOptional<String> type Map<String, String> strings Map<String, Node> nodes Map<String, List<Node>> nodeLists){this.type = type;this.strings = strings;this.nodes = nodes;this.nodeLists = nodeLists;}@Override
-    public String toString();@Override
+    public String toString(){final var typeString = this.type.map(inner -> inner + " ").orElse("");var builder = new StringBuilder()
+                .append(typeString)
+                .append("{");final var joiner = new StringJoiner(",");this.strings.entrySet().stream().map(entry -> new StringBuilder()
+                .append("\n\t")
+                .append(entry.getKey())
+                .append(" : \"")
+                .append(entry.getValue())
+                .append("\"")).forEach(joiner::add);builder.append(joiner);return builder.append("\n}").toString();}@Override
     public Optional<Node> findNode(String propertyKey){return Optional.ofNullable(this.nodes.get(propertyKey));}@Override
     public Node mapString(String propertyKeyString propertyKey Function<String, String> mapper){return findString(propertyKey).map(mapper).map(newString -> withString(propertyKey, newString)).orElse(this);}@Override
     public Node merge(Node other){final var withStrings = stream(this.strings).foldLeft(other, (node, tuple) -> node.withString(tuple.left(), tuple.right()));final var withNodes = stream(this.nodes).foldLeft(withStrings, (node, tuple) -> node.withNode(tuple.left(), tuple.right()));return stream(this.nodeLists).foldLeft(withNodes, (node, tuple) -> node.withNodeList(tuple.left(), tuple.right()));}private <K, V> Stream<Tuple<K, V>> stream(Map<K, V> map){return Streams.from(map.entrySet()).map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));}@Override

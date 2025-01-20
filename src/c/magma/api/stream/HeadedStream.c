@@ -1,5 +1,5 @@
 package magma.api.stream;package magma.api.result.Ok;package magma.api.result.Result;package java.util.Optional;package java.util.function.BiFunction;package java.util.function.Function;public record HeadedStream<T>(Head<T> head) implements Stream<T> {@Override
     public Optional<T> foldLeft(BiFunction<T, T, T> folder){return this.head.next().map(initial -> foldLeft(initial, folder));}@Override
-    public <R> R foldLeft(R initialR initial BiFunction<R, T, R> folder);@Override
+    public <R> R foldLeft(R initialR initial BiFunction<R, T, R> folder){var current = initial;while(true){R finalCurrent = current;final var maybeNext = this.head.next().map(next -> folder.apply(finalCurrent, next));if(maybeNext.isPresent()){current = maybeNext.get();}else {return current;}}}@Override
     public <R> Stream<R> map(Function<T, R> mapper){return new HeadedStream<>(() -> this.head.next().map(mapper));}@Override
     public <R, X> Result<R, X> foldLeftToResult(R initialR initial BiFunction<R, T, Result<R, X>> folder){return this.<Result<R, X>>foldLeft(new Ok<>(initial), (rxResult, t) -> rxResult.flatMapValue(inner -> folder.apply(inner, t)));}}
