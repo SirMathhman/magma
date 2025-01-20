@@ -20,7 +20,7 @@ public class LocateTypeSeparator implements Locator {
         int i = input.length() - 1;
         while (i >= 0) {
             var c = input.charAt(i);
-            if (c == ' ' && depth == 1) return Optional.of(i);
+            if (c == ' ' && depth == 0) return Optional.of(i);
             if (c == '>') depth++;
             if (c == '<') depth--;
             i--;
