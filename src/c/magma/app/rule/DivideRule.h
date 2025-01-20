@@ -1,11 +1,7 @@
 package magma.app.rule;package magma.api.result.Err;package magma.api.result.Result;package magma.api.stream.Streams;package magma.app.MapNode;package magma.app.Node;package magma.app.error.CompileError;package magma.app.error.context.NodeContext;package java.util.ArrayList;package java.util.List;package java.util.function.Function;public class DivideRule implements Rule {private final String propertyKey;private final Divider divider;private final Rule childRule;public DivideRule(String propertyKeyString propertyKey Divider dividerString propertyKey Divider divider Rule childRule){this.divider = divider;this.childRule = childRule;this.propertyKey = propertyKey;}public static <T, R> Result<List<R>, CompileError> compileAll(
             List<T> segments
             List<T> segments
-            Function<T
-            List<T> segments
-            Function<T Result<R
-            List<T> segments
-            Function<T Result<R CompileError>> mapper
+            Function<T, Result<R, CompileError>> mapper
     ){return Streams.from(segments).foldLeftToResult(new ArrayList<>(), (rs, t) -> mapper.apply(t).mapValue(inner -> {
             rs.add(inner);
             return rs;

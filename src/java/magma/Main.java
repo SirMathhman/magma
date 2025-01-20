@@ -226,12 +226,15 @@ public class Main {
     private static Result<List<String>, CompileError> splitByValues(String input) {
         final var segments = new ArrayList<String>();
         final var buffer = new StringBuilder();
+        var depth = 0;
         for (int i = 0; i < input.length(); i++) {
             final var c = input.charAt(i);
-            if (c == ',') {
+            if (c == ',' && depth == 0) {
                 advance(buffer, segments);
             } else {
                 buffer.append(c);
+                if (c == '<') depth++;
+                if (c == '>') depth--;
             }
         }
 
@@ -353,11 +356,13 @@ public class Main {
         final var modifiers = new StringRule("modifiers");
         final var type = new StringRule("type");
         final var name = new StringRule("name");
-        final var withModifiers = new InfixRule(modifiers, new LastLocator(" "), type);
-        return new TypeRule("definition", new InfixRule(new OrRule(List.of(
+        final var withModifiers = new InfixRule(modifiers, new LocateTypeSeparator(), type);
+        final var rule = new InfixRule(new OrRule(List.of(
                 withModifiers,
                 type
-        )), new LastLocator(" "), name));
+        )), new LastLocator(" "), name);
+
+        return new TypeRule("definition", rule);
     }
 
     private static class ParenthesesMatcher implements Locator {
@@ -380,6 +385,31 @@ public class Main {
                 if (c == '(') depth++;
                 if (c == ')') depth--;
             }
+            return Optional.empty();
+        }
+    }
+
+    private static class LocateTypeSeparator implements Locator {
+        @Override
+        public String unwrap() {
+            return " ";
+        }
+
+        @Override
+        public int length() {
+            return 1;
+        }
+
+        @Override
+        public Optional<Integer> locate(String input) {
+            var depth = 0;
+            for (int i = input.length() - 1; i >= 0; i--) {
+                var c = input.charAt(i);
+                if (c == ' ' && depth == 1) return Optional.of(i);
+                if (c == '>') depth++;
+                if (c == '<') depth--;
+            }
+
             return Optional.empty();
         }
     }
