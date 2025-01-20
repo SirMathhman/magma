@@ -402,7 +402,8 @@ public class Main {
         value.set(new OrRule(List.of(
                 createConstructionRule(value),
                 createInvocationRule(value),
-                createDataAccessRule(value),
+                createAccessRule("data-access", ".", value),
+                createAccessRule("method-access", "::", value),
                 createSymbolRule(),
                 createNumberRule(),
                 createNotRule(value),
@@ -463,9 +464,9 @@ public class Main {
         return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(DEFAULT_VALUE))));
     }
 
-    private static Rule createDataAccessRule(final Rule value) {
-        final var rule = new InfixRule(new NodeRule("ref", value), new LastLocator("."), new StringRule("property"));
-        return new TypeRule("data-access", rule);
+    private static Rule createAccessRule(String type, String infix, final Rule value) {
+        final var rule = new InfixRule(new NodeRule("ref", value), new LastLocator(infix), new StringRule("property"));
+        return new TypeRule(type, rule);
     }
 
     private static Rule createDefinitionRule() {
