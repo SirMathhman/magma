@@ -414,10 +414,15 @@ public class Main {
         type.set(new OrRule(List.of(
                 createSymbolRule(),
                 createGenericRule(type),
-                createVarArgsRule(type)
+                createVarArgsRule(type),
+                createArrayRule(type)
         )));
 
         return type;
+    }
+
+    private static TypeRule createArrayRule(LazyRule type) {
+        return new TypeRule("array", new SuffixRule(new NodeRule("child", type), "[]"));
     }
 
     private static TypeRule createVarArgsRule(LazyRule type) {
