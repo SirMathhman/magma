@@ -1,0 +1,17 @@
+type Alloc<T> = *U32;
+
+define import from namespace stdlib {
+    extern def malloc<T>(size : Size<T>) : Alloc<T>;
+    extern def free<T>(value : Alloc<T>) : Void;
+}
+
+impl Alloc<T> {
+    def ~(this){
+        free(this);
+    }
+}
+
+class def Box<T>(value : T) {
+    let ref = malloc(sizeof(T));
+    *ref = value;
+}
