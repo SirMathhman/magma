@@ -20,11 +20,11 @@ public struct SuffixRule implements Rule {
 	}
 	}
 	@Override
-    public Result<Node, CompileError> parse(String input){
+public Result<Node, CompileError> parse(String input){
 		return truncateRight(input, this.suffix).flatMapValue(this.childRule::parse);
 	}
 	@Override
-    public Result<String, CompileError> generate(Node node){
+public Result<String, CompileError> generate(Node node){
 		return childRule.generate(node).mapValue(inner ->inner+suffix);
 	}
 }

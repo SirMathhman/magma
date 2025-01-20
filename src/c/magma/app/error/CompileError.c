@@ -18,7 +18,7 @@ public final struct CompileError implements Error {
 		this(message, context, Collections.emptyList());
 	}
 	@Override
-    public String display(){
+public String display(){
 		return format(0);
 	}
 	public int maxDepth(){

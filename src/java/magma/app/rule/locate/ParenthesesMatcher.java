@@ -1,6 +1,8 @@
 package magma.app.rule.locate;
 
 import magma.api.Tuple;
+import magma.api.stream.Stream;
+import magma.api.stream.Streams;
 
 import java.util.LinkedList;
 import java.util.Optional;
@@ -19,7 +21,7 @@ public class ParenthesesMatcher implements Locator {
     }
 
     @Override
-    public Optional<Integer> locate(String input) {
+    public Stream<Integer> locate(String input) {
         var depth = 0;
 
         final var queue = IntStream.range(0, input.length())
@@ -40,10 +42,10 @@ public class ParenthesesMatcher implements Locator {
                 queue.pop();
             }
 
-            if (c == ')' && depth == 1) return Optional.of(i);
+            if (c == ')' && depth == 1) return Streams.of(i);
             if (c == '(') depth++;
             if (c == ')') depth--;
         }
-        return Optional.empty();
+        return Streams.empty();
     }
 }

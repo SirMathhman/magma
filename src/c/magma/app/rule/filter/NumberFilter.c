@@ -5,7 +5,7 @@ public struct NumberFilter implements Predicate<String> {
 		return IntStream.range(0, input.length()).mapToObj(input::charAt).allMatch(Character::isDigit);
 	}
 	@Override
-    public boolean test(String input){
+public boolean test(String input){
 		if(input.startsWith("-")){
 		return allDigits(input.substring(1));
 	}

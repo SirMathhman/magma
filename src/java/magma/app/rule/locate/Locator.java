@@ -1,11 +1,11 @@
 package magma.app.rule.locate;
 
-import java.util.Optional;
+import magma.api.stream.Stream;
 
 public interface Locator {
     String unwrap();
 
     int length();
 
-    Optional<Integer> locate(String input);
+    Stream<Integer> locate(String input);
 }

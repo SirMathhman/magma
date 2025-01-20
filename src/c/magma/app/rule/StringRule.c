@@ -14,9 +14,11 @@ public struct StringRule implements Rule {
 		return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok::new).orElseGet(() ->new Err<>(new CompileError("String '"+this.propertyKey + "' not present", new NodeContext(node))));
 	}
 	@Override
-    public Result<Node, CompileError> parse(String input);
+public Result<Node, CompileError> parse(String input){
+		return new Ok<>(new MapNode().withString(this.propertyKey, input));
+	}
 	@Override
-    public Result<String, CompileError> generate(Node node){
+public Result<String, CompileError> generate(Node node){
 		return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok::new).orElseGet(() ->new Err<>(new CompileError("String '"+this.propertyKey + "' not present", new NodeContext(node))));
 	}
 }

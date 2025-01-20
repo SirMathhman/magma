@@ -16,11 +16,11 @@ public struct PrefixRule implements Rule {
 		return new Err<>(new CompileError("Prefix '"+slice+"' not present", new StringContext(input)));
 	}
 	@Override
-    public Result<Node, CompileError> parse(String input){
+public Result<Node, CompileError> parse(String input){
 		return truncateLeft(input, this.prefix).flatMapValue(this.childRule::parse);
 	}
 	@Override
-    public Result<String, CompileError> generate(Node node){
+public Result<String, CompileError> generate(Node node){
 		return this.childRule.generate(node).mapValue(inner ->this.prefix + inner);
 	}
 }

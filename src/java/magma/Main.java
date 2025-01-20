@@ -9,8 +9,9 @@ import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
+import magma.app.locate.BackwardsLocator;
 import magma.app.locate.InvocationLocator;
-import magma.app.locate.ModifierSeparator;
+import magma.app.locate.ForwardsLocator;
 import magma.app.rule.ContextRule;
 import magma.app.rule.ExactRule;
 import magma.app.rule.FilterRule;
@@ -25,6 +26,7 @@ import magma.app.rule.StripRule;
 import magma.app.rule.SuffixRule;
 import magma.app.rule.TypeRule;
 import magma.app.rule.divide.DivideRule;
+import magma.app.rule.divide.SimpleDivider;
 import magma.app.rule.divide.StatementDivider;
 import magma.app.rule.filter.NumberFilter;
 import magma.app.rule.filter.SymbolFilter;
@@ -457,7 +459,10 @@ public class Main {
 
     private static TypeRule createConstructionRule(LazyRule value) {
         final var type = new StringRule("type");
-        final var arguments = new DivideRule("arguments", VALUE_DIVIDER, value);
+        final var arguments = new OrRule(List.of(
+                new DivideRule("arguments", VALUE_DIVIDER, value),
+                new ExactRule("")
+        ));
         final var childRule = new InfixRule(type, new FirstLocator("("), new StripRule(new SuffixRule(arguments, ")")));
         return new TypeRule("construction", new StripRule(new PrefixRule("new ", childRule)));
     }
@@ -474,17 +479,27 @@ public class Main {
     private static Rule createDefinitionRule() {
         final var name = new FilterRule(new SymbolFilter(), new StringRule("name"));
         final var typeProperty = new NodeRule("type", createTypeRule());
-        final var rule = new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
-        final var modifiers = new StringRule("modifiers");
+        final var typeAndName = new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
+
+        final var modifierRule = new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
+        final var modifiers = new DivideRule("modifiers", new SimpleDivider(" "), modifierRule);
+
         final var typeParams = new StringRule("type-params");
-        final var rule1 = new OrRule(List.of(
-                new ContextRule("With type params", new InfixRule(new StripRule(new PrefixRule("<", typeParams)), new FirstLocator(">"), new StripRule(rule))),
-                new ContextRule("Without type params", rule)
+        final var maybeTypeParams = new OrRule(List.of(
+                new ContextRule("With type params", new InfixRule(new StripRule(new PrefixRule("<", typeParams)), new FirstLocator(">"), new StripRule(typeAndName))),
+                new ContextRule("Without type params", typeAndName)
         ));
 
+        final var withModifiers = new OrRule(List.of(
+                new ContextRule("With modifiers", new StripRule(new InfixRule(modifiers, new BackwardsLocator(" "), maybeTypeParams))),
+                new ContextRule("Without modifiers", maybeTypeParams)
+        ));
+
+        final var annotation = new TypeRule("annotation", new StripRule(new PrefixRule("@", new StringRule("value"))));
+        final var annotations = new DivideRule("annotations", new SimpleDivider("\n"), annotation);
         return new TypeRule("definition", new OrRule(List.of(
-                new ContextRule("With modifiers", new StripRule(new InfixRule(modifiers, new ModifierSeparator(), rule1))),
-                new ContextRule("Without modifiers", rule1)
+                new ContextRule("With annotations", new InfixRule(annotations, new LastLocator("\n"), withModifiers)),
+                new ContextRule("Without annotations", withModifiers)
         )));
     }
 

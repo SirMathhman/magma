@@ -7,8 +7,9 @@ import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
+import magma.app.locate.BackwardsLocator;
 import magma.app.locate.InvocationLocator;
-import magma.app.locate.ModifierSeparator;
+import magma.app.locate.ForwardsLocator;
 import magma.app.rule.ContextRule;
 import magma.app.rule.ExactRule;
 import magma.app.rule.FilterRule;
@@ -23,6 +24,7 @@ import magma.app.rule.StripRule;
 import magma.app.rule.SuffixRule;
 import magma.app.rule.TypeRule;
 import magma.app.rule.divide.DivideRule;
+import magma.app.rule.divide.SimpleDivider;
 import magma.app.rule.divide.StatementDivider;
 import magma.app.rule.filter.NumberFilter;
 import magma.app.rule.filter.SymbolFilter;
@@ -111,7 +113,7 @@ public struct Main {
 		return previous.streamNodeLists().foldLeftToResult(previous, Main::passNodeList);
 	}
 	private static Result<Node, CompileError> passNodeList(Node node, Tuple<String, List<Node>> tuple){
-		return Streams.from(tuple.right()).map(Main::pass).foldLeftToResult().mapValue(list -> node.withNodeList(tuple.left(), list));
+		return Streams.from(tuple.right()).map(Main::pass).foldLeftToResult(new ArrayList<>(), Main::foldElementIntoList).mapValue(list -> node.withNodeList(tuple.left(), list));
 	}
 	private static Result<List<Node>, CompileError> foldElementIntoList(List<Node> currentNodes, Result<Node, CompileError> node){
 		return node.mapValue(currentNewElement -> merge(currentNodes, currentNewElement));
@@ -152,7 +154,7 @@ public struct Main {
 		return Optional.of(new Ok<>(newNode.withString(BLOCK_AFTER_CHILDREN, "\n\t")));
 	}
 		if(node.is(Main.STRUCT_TYPE)){
-		final var newChildren=node.findNodeList(GENERIC_CHILDREN).orElse().stream().filter(child ->!child.is(WHITESPACE_TYPE)).map(child -> child.withString(BEFORE_STRUCT_SEGMENT, "\n\t"))
+		final var newChildren=node.findNodeList(GENERIC_CHILDREN).orElse(new ArrayList<>()).stream().filter(child ->!child.is(WHITESPACE_TYPE)).map(child -> child.withString(BEFORE_STRUCT_SEGMENT, "\n\t"))
                     .toList();
 		return Optional.of(new Ok<>(node.withString(STRUCT_AFTER_CHILDREN, "\n").withNodeList(GENERIC_CHILDREN, newChildren)));
 	}
@@ -214,14 +216,23 @@ public struct Main {
 	private static Rule createContentRule(Rule rule){
 		return new DivideRule(GENERIC_CHILDREN, StatementDivider.STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, ""));
 	}
-	private static Rule createStatementRule();
+	private static Rule createStatementRule(){
+		final var statement=new LazyRule();
+		final var valueRule=createValueRule(statement);
+		statement.set(new OrRule(List.of(createKeywordRule("continue"), createKeywordRule("break"), createInitializationRule(statement), createDefinitionStatementRule(), createConditionalRule(statement, "if"), createConditionalRule(statement, "while"), createElseRule(statement), createInvocationStatementRule(valueRule), createReturnRule(valueRule), createAssignmentRule(valueRule), createPostfixRule("post-increment", "++", valueRule), createPostfixRule("post-decrement", "--", valueRule), createWhitespaceRule())));
+		return statement;
+	}
 	private static TypeRule createKeywordRule(String keyword){
 		return new TypeRule(keyword, new StripRule(new ExactRule(keyword+";")));
 	}
 	private static TypeRule createElseRule(LazyRule statement){
 		return new TypeRule("else", new StripRule(new PrefixRule("else ", new OrRule(List.of(new NodeRule("child", createBlockRule(statement)), new NodeRule("value", statement))))));
 	}
-	private static TypeRule createConditionalRule(LazyRule statement, String type);
+	private static TypeRule createConditionalRule(LazyRule statement, String type){
+		final var leftRule=new StripRule(new PrefixRule("(", new NodeRule("condition", createValueRule(statement))));
+		final var blockRule=new OrRule(List.of(new NodeRule("child", createBlockRule(statement)), new NodeRule("child", statement)));
+		return new TypeRule(type, new PrefixRule(type, new InfixRule(leftRule, new ParenthesesMatcher(), blockRule)));
+	}
 	private static TypeRule createWhitespaceRule(){
 		return new TypeRule(WHITESPACE_TYPE, new StripRule(new ExactRule("")));
 	}
@@ -236,11 +247,20 @@ public struct Main {
 	private static Rule createInvocationStatementRule(Rule value){
 		return new SuffixRule(createInvocationRule(value), ";");
 	}
-	private static TypeRule createInvocationRule(Rule value);
+	private static TypeRule createInvocationRule(Rule value){
+		final var caller=new NodeRule("caller", value);
+		final var children=new OrRule(List.of(new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, value), new ExactRule("")));
+		final var suffixRule=new StripRule(new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")"));
+		return new TypeRule("invocation", suffixRule);
+	}
 	private static Rule createReturnRule(Rule value){
 		return new TypeRule("return", new StripRule(new PrefixRule("return ", new SuffixRule(new NodeRule("value", value), ";"))));
 	}
-	private static Rule createValueRule(Rule statement);
+	private static Rule createValueRule(Rule statement){
+		final var value=new LazyRule();
+		value.set(new OrRule(List.of(createConstructionRule(value), createInvocationRule(value), createAccessRule("data-access", ".", value), createAccessRule("method-access", "::", value), createSymbolRule(), createNumberRule(), createNotRule(value), createOperatorRule("greater-equals", ">=", value), createOperatorRule("less", "<", value), createOperatorRule("equals", "==", value), createOperatorRule("and", "&&", value), createOperatorRule("add", "+", value), createCharRule(), createStringRule(), createTernaryRule(value), createLambdaRule(statement, value))));
+		return value;
+	}
 	private static TypeRule createLambdaRule(Rule statement, LazyRule value){
 		return new TypeRule("lambda", new InfixRule(new StringRule("args"), new FirstLocator("->"), new OrRule(List.of(new NodeRule("child", createBlockRule(statement)), new NodeRule("child", value)))));
 	}
@@ -254,7 +274,9 @@ public struct Main {
 	private static TypeRule createCharRule(){
 		return new TypeRule("char", new StripRule(new PrefixRule("'", new SuffixRule(new StringRule("value"), "'"))));
 	}
-	private static TypeRule createNumberRule();
+	private static TypeRule createNumberRule(){
+		return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule("value"))));
+	}
 	private static TypeRule createOperatorRule(String type, String operator, LazyRule value){
 		return new TypeRule(type, new InfixRule(new NodeRule("left", value), new FirstLocator(operator), new NodeRule("right", value)));
 	}
@@ -263,17 +285,35 @@ public struct Main {
 	}
 	private static TypeRule createConstructionRule(LazyRule value){
 		final var type=new StringRule("type");
-		final var arguments=new DivideRule("arguments", VALUE_DIVIDER, value);
+		final var arguments=new OrRule(List.of(new DivideRule("arguments", VALUE_DIVIDER, value), new ExactRule("")));
 		final var childRule=new InfixRule(type, new FirstLocator("("), new StripRule(new SuffixRule(arguments, ")")));
 		return new TypeRule("construction", new StripRule(new PrefixRule("new ", childRule)));
 	}
-	private static Rule createSymbolRule();
+	private static Rule createSymbolRule(){
+		return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(DEFAULT_VALUE))));
+	}
 	private static Rule createAccessRule(String type, String infix, final Rule value){
 		final var rule=new InfixRule(new NodeRule("ref", value), new LastLocator(infix), new StringRule("property"));
 		return new TypeRule(type, rule);
 	}
-	private static Rule createDefinitionRule();
-	private static Rule createTypeRule();
+	private static Rule createDefinitionRule(){
+		final var name=new FilterRule(new SymbolFilter(), new StringRule("name"));
+		final var typeProperty=new NodeRule("type", createTypeRule());
+		final var typeAndName=new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
+		final var modifierRule=new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
+		final var modifiers=new DivideRule("modifiers", new SimpleDivider(" "), modifierRule);
+		final var typeParams=new StringRule("type-params");
+		final var maybeTypeParams=new OrRule(List.of(new ContextRule("With type params", new InfixRule(new StripRule(new PrefixRule("<", typeParams)), new FirstLocator(">"), new StripRule(typeAndName))), new ContextRule("Without type params", typeAndName)));
+		final var withModifiers=new OrRule(List.of(new ContextRule("With modifiers", new StripRule(new InfixRule(modifiers, new BackwardsLocator(" "), maybeTypeParams))), new ContextRule("Without modifiers", maybeTypeParams)));
+		final var annotation=new TypeRule("annotation", new StripRule(new PrefixRule("@", new StringRule("value"))));
+		final var annotations=new DivideRule("annotations", new SimpleDivider("\n"), annotation);
+		return new TypeRule("definition", new OrRule(List.of(new ContextRule("With annotations", new InfixRule(annotations, new LastLocator("\n"), withModifiers)), new ContextRule("Without annotations", withModifiers))));
+	}
+	private static Rule createTypeRule(){
+		final var type=new LazyRule();
+		type.set(new OrRule(List.of(createSymbolRule(), createGenericRule(type), createVarArgsRule(type), createArrayRule(type), createFunctionalType(type))));
+		return type;
+	}
 	private static TypeRule createFunctionalType(Rule type){
 		final var leftRule=new PrefixRule("(", new SuffixRule(new DivideRule("params", VALUE_DIVIDER, type), ")"));
 		final var rule=new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));

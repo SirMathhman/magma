@@ -24,4 +24,8 @@ public class Streams {
         return new HeadedStream<>(new RangeHead(value.length()))
                 .map(index -> value.length() - index - 1);
     }
+
+    public static <T> Stream<T> empty() {
+        return new HeadedStream<>(new EmptyHead<>());
+    }
 }

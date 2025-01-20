@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 public struct FilterRule(Predicate<String> filter,
                          Rule childRule) implements Rule {
 	@Override
-    public Result<Node, CompileError> parse(String input){
+public Result<Node, CompileError> parse(String input){
 		if(this.filter.test(input)){
 		return this.childRule.parse(input);
 	}
@@ -16,7 +16,7 @@ public struct FilterRule(Predicate<String> filter,
 	}
 	}
 	@Override
-    public Result<String, CompileError> generate(Node node){
+public Result<String, CompileError> generate(Node node){
 		return this.childRule.generate(node);
 	}
 }

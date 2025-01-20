@@ -8,11 +8,11 @@ public struct StripRule(
 		this(childRule, "", "");
 	}
 	@Override
-    public Result<Node, CompileError> parse(String input){
+public Result<Node, CompileError> parse(String input){
 		return this.childRule.parse(input.strip());
 	}
 	@Override
-    public Result<String, CompileError> generate(Node node){
+public Result<String, CompileError> generate(Node node){
 		final var before=node.findString(this.before).orElse("");
 		final var after=node.findString(this.after).orElse("");
 		return this.childRule.generate(node).mapValue(content ->before+content+after);
