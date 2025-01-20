@@ -85,11 +85,11 @@ public class Main {
 
         final var targetParent = TARGET_DIRECTORY.resolve(parent);
         if (!Files.exists(targetParent)) {
-            final var directoriesError = createDirectoriesWrapped(targetParent);
+            final var directoriesError = JavaFiles.createDirectoriesWrapped(targetParent);
             if (directoriesError.isPresent()) return directoriesError.map(JavaError::new).map(ApplicationError::new);
         }
 
-        return readStringWrapped(source)
+        return JavaFiles.readStringWrapped(source)
                 .mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
                 .flatMapValue(input -> createContentRule(createRootSegmentRule()).parse(input).mapErr(ApplicationError::new))
@@ -100,36 +100,10 @@ public class Main {
     private static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name) {
         final var target = targetParent.resolve(name + ".c");
         final var header = targetParent.resolve(name + ".h");
-        return writeStringWrapped(target, output)
-                .or(() -> writeStringWrapped(header, output))
+        return JavaFiles.writeStringWrapped(target, output)
+                .or(() -> JavaFiles.writeStringWrapped(header, output))
                 .map(JavaError::new)
                 .map(ApplicationError::new);
-    }
-
-    private static Result<String, IOException> readStringWrapped(Path source) {
-        try {
-            return new Ok<>(Files.readString(source));
-        } catch (IOException e) {
-            return new Err<>(e);
-        }
-    }
-
-    private static Optional<IOException> createDirectoriesWrapped(Path targetParent) {
-        try {
-            Files.createDirectories(targetParent);
-            return Optional.empty();
-        } catch (IOException e) {
-            return Optional.of(e);
-        }
-    }
-
-    private static Optional<IOException> writeStringWrapped(Path target, String output) {
-        try {
-            Files.writeString(target, output);
-            return Optional.empty();
-        } catch (IOException e) {
-            return Optional.of(e);
-        }
     }
 
     private static Result<List<String>, CompileError> splitByStatements(String input) {
@@ -222,7 +196,8 @@ public class Main {
         final var segments = new ArrayList<String>();
         final var buffer = new StringBuilder();
         var depth = 0;
-        for (int i = 0; i < input.length(); i++) {
+        int i = 0;
+        while (i < input.length()) {
             final var c = input.charAt(i);
             if (c == ',' && depth == 0) {
                 advance(buffer, segments);
@@ -231,6 +206,7 @@ public class Main {
                 if (c == '<') depth++;
                 if (c == '>') depth--;
             }
+            i++;
         }
 
         advance(buffer, segments);
@@ -333,7 +309,8 @@ public class Main {
                 createSymbolRule(),
                 createNumberRule(),
                 createNotRule(value),
-                createOperatorRule(value)
+                createOperatorRule("greater-equals", ">=", value),
+                createOperatorRule("less", "<", value)
         )));
 
         return value;
@@ -343,8 +320,8 @@ public class Main {
         return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule("value"))));
     }
 
-    private static TypeRule createOperatorRule(LazyRule value) {
-        return new TypeRule("greater-or-equals", new InfixRule(new NodeRule("left", value), new FirstLocator(">="), new NodeRule("right", value)));
+    private static TypeRule createOperatorRule(String type, String operator, LazyRule value) {
+        return new TypeRule(type, new InfixRule(new NodeRule("left", value), new FirstLocator(operator), new NodeRule("right", value)));
     }
 
     private static TypeRule createNotRule(LazyRule value) {
