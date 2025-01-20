@@ -5,11 +5,34 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 public struct ParenthesesMatcher implements Locator {
 	@Override
-    public String unwrap(){return ")";}
+    public String unwrap(){
+		return ")";
+	}
 	@Override
-    public int length(){return 1;}
+    public int length(){
+		return 1;
+	}
 	@Override
-    public Optional<Integer> locate(String input){var depth =0;final var queue =IntStream.range(0, input.length())
+    public Optional<Integer> locate(String input){
+		var depth =0;
+		final var queue =IntStream.range(0, input.length())
                 .mapToObj(index -> new Tuple<>(index, input.charAt(index)))
-                .collect(Collectors.toCollection(LinkedList::new));while(!queue.isEmpty()){final var tuple =queue.pop();final var i =tuple.left();final var c =tuple.right();if(c=='\''){final var tuple1 =queue.pop();if(tuple1.right() == '\\'){queue.pop();}queue.pop();}if (c == ')' && depth == 1) return Optional.of(i);if(c=='(') depth++;if(c==')') depth--;}return Optional.empty();}
+                .collect(Collectors.toCollection(LinkedList::new));
+		while(!queue.isEmpty()){
+		final var tuple =queue.pop();
+		final var i =tuple.left();
+		final var c =tuple.right();
+		if(c=='\''){
+		final var tuple1 =queue.pop();
+		if(tuple1.right() == '\\'){
+		queue.pop();
+	}
+		queue.pop();
+	}
+		if (c == ')' && depth == 1) return Optional.of(i);
+		if(c=='(') depth++;
+		if(c==')') depth--;
+	}
+		return Optional.empty();
+	}
 }

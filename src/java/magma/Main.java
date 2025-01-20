@@ -59,6 +59,9 @@ public class Main {
     public static final String STRUCT_TYPE = "struct";
     public static final String WHITESPACE_TYPE = "whitespace";
     public static final String STRUCT_AFTER_CHILDREN = "struct-after-children";
+    public static final String BLOCK_AFTER_CHILDREN = "block-after-children";
+    public static final String BLOCK = "block";
+    public static final String CONTENT_BEFORE_CHILD = "before-child";
 
     public static void main(String[] args) {
         collect().mapErr(JavaError::new)
@@ -165,6 +168,16 @@ public class Main {
     }
 
     private static Optional<Result<Node, CompileError>> afterPass(Node node) {
+        if (node.is(BLOCK)) {
+            final var newNode = node.mapNodeList("children", children -> {
+                return children.stream()
+                        .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n\t\t"))
+                        .toList();
+            });
+
+            return Optional.of(new Ok<>(newNode.withString(BLOCK_AFTER_CHILDREN, "\n\t")));
+        }
+
         if (node.is(Main.STRUCT_TYPE)) {
             final var newChildren = node.findNodeList("children").orElse(new ArrayList<>())
                     .stream()
@@ -254,7 +267,7 @@ public class Main {
 
     private static Rule createMethodRule(Rule statement) {
         final var orRule = new OrRule(List.of(
-                createBlockRule(statement),
+                new NodeRule("child", createBlockRule(statement)),
                 new ExactRule(";")
         ));
 
@@ -266,12 +279,12 @@ public class Main {
         return new TypeRule("method", infixRule);
     }
 
-    private static Rule createBlockRule(Rule statement) {
-        return new StripRule(new PrefixRule("{", new SuffixRule(createContentRule(statement), "}")));
+    private static TypeRule createBlockRule(Rule statement) {
+        return new TypeRule(BLOCK, new StripRule(new PrefixRule("{", new SuffixRule(new StripRule(createContentRule(statement), "", BLOCK_AFTER_CHILDREN), "}"))));
     }
 
     private static Rule createContentRule(Rule rule) {
-        return new DivideRule("children", StatementDivider.STATEMENT_DIVIDER, new StripRule(rule));
+        return new DivideRule("children", StatementDivider.STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, ""));
     }
 
     private static Rule createStatementRule() {
@@ -300,7 +313,7 @@ public class Main {
 
     private static TypeRule createElseRule(LazyRule statement) {
         return new TypeRule("else", new StripRule(new PrefixRule("else ", new OrRule(List.of(
-                createBlockRule(statement),
+                new NodeRule("child", createBlockRule(statement)),
                 new NodeRule("value", statement)
         )))));
     }
@@ -308,7 +321,7 @@ public class Main {
     private static TypeRule createConditionalRule(LazyRule statement, String type) {
         final var leftRule = new StripRule(new PrefixRule("(", new NodeRule("condition", createValueRule(statement))));
         final var blockRule = new OrRule(List.of(
-                createBlockRule(statement),
+                new NodeRule("child", createBlockRule(statement)),
                 new NodeRule("child", statement)
         ));
 
@@ -369,8 +382,8 @@ public class Main {
 
     private static TypeRule createLambdaRule(Rule statement, LazyRule value) {
         return new TypeRule("lambda", new InfixRule(new StringRule("args"), new FirstLocator("->"), new OrRule(List.of(
-                createBlockRule(statement),
-                new NodeRule("value", value)
+                new NodeRule("child", createBlockRule(statement)),
+                new NodeRule("child", value)
         ))));
     }
 

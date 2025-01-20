@@ -12,41 +12,95 @@ public final struct MapNode implements Node {
 	private final Map<String, List<Node>> nodeLists;
 	private final Map<String, Node> nodes;
 	private final Optional<String> type;
-	public MapNode(){this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>());}
-	public MapNode(Optional<String> type,  Map<String, String> strings,  Map<String, Node> nodes,  Map<String, List<Node>> nodeLists){this.type =type;this.strings =strings;this.nodes =nodes;this.nodeLists =nodeLists;}
+	public MapNode(){
+		this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>());
+	}
+	public MapNode(Optional<String> type,  Map<String, String> strings,  Map<String, Node> nodes,  Map<String, List<Node>> nodeLists){
+		this.type =type;
+		this.strings =strings;
+		this.nodes =nodes;
+		this.nodeLists =nodeLists;
+	}
 	@Override
-    public String toString(){final var typeString =this.type.map(inner ->inner+" ").orElse("");var builder =new StringBuilder().append(typeString)
-                .append("{");final var joiner =new StringJoiner(",");this.strings.entrySet().stream().map(entry -> new StringBuilder()
+    public String toString(){
+		final var typeString =this.type.map(inner ->inner+" ").orElse("");
+		var builder =new StringBuilder().append(typeString)
+                .append("{");
+		final var joiner =new StringJoiner(",");
+		this.strings.entrySet().stream().map(entry -> new StringBuilder()
                 .append("\n\t")
                 .append(entry.getKey())
                 .append(" : \"")
                 .append(entry.getValue())
-                .append("\"")).forEach(joiner::add);builder.append(joiner);return builder.append("\n}").toString();}
+                .append("\"")).forEach(joiner::add);
+		builder.append(joiner);
+		return builder.append("\n}").toString();
+	}
 	@Override
-    public Optional<Node> findNode(String propertyKey){return Optional.ofNullable(this.nodes.get(propertyKey));}
+    public Optional<Node> findNode(String propertyKey){
+		return Optional.ofNullable(this.nodes.get(propertyKey));
+	}
 	@Override
-    public Node mapString(String propertyKey,  Function<String, String> mapper){return findString(propertyKey).map(mapper).map(newString -> withString(propertyKey, newString)).orElse(this);}
+    public Node mapString(String propertyKey,  Function<String, String> mapper){
+		return findString(propertyKey).map(mapper).map(newString -> withString(propertyKey, newString)).orElse(this);
+	}
 	@Override
-    public Node merge(Node other){final var withStrings =stream(this.strings).foldLeft(other,  (node, tuple) ->node.withString(tuple.left(), tuple.right()));final var withNodes =streamNodes().foldLeft(withStrings,  (node, tuple) ->node.withNode(tuple.left(), tuple.right()));return streamNodeLists().foldLeft(withNodes,  (node, tuple) ->node.withNodeList(tuple.left(), tuple.right()));}
+    public Node merge(Node other){
+		final var withStrings =stream(this.strings).foldLeft(other,  (node, tuple) ->node.withString(tuple.left(), tuple.right()));
+		final var withNodes =streamNodes().foldLeft(withStrings,  (node, tuple) ->node.withNode(tuple.left(), tuple.right()));
+		return streamNodeLists().foldLeft(withNodes,  (node, tuple) ->node.withNodeList(tuple.left(), tuple.right()));
+	}
 	@Override
-    public Stream<Tuple<String, List<Node>>> streamNodeLists(){return stream(this.nodeLists);}
+    public Stream<Tuple<String, List<Node>>> streamNodeLists(){
+		return stream(this.nodeLists);
+	}
 	@Override
-    public Stream<Tuple<String, Node>> streamNodes(){return stream(this.nodes);}
-	private <K, V> Stream<Tuple<K, V>> stream(Map<K, V> map){return Streams.from(map.entrySet()).map(entry ->new Tuple<>(entry.getKey(), entry.getValue()));}
+    public Stream<Tuple<String, Node>> streamNodes(){
+		return stream(this.nodes);
+	}
+	private <K, V> Stream<Tuple<K, V>> stream(Map<K, V> map){
+		return Streams.from(map.entrySet()).map(entry ->new Tuple<>(entry.getKey(), entry.getValue()));
+	}
 	@Override
-    public String display(){return toString();}
+    public String display(){
+		return toString();
+	}
 	@Override
-    public Node retype(String type){return new MapNode(Optional.of(type), this.strings, this.nodes, this.nodeLists);}
+    public Node retype(String type){
+		return new MapNode(Optional.of(type), this.strings, this.nodes, this.nodeLists);
+	}
 	@Override
-    public boolean is(String type){return this.type.isPresent() && this.type.get().equals(type);}
+    public boolean is(String type){
+		return this.type.isPresent() && this.type.get().equals(type);
+	}
 	@Override
-    public Node withNode(String propertyKey,  Node propertyValue){this.nodes.put(propertyKey, propertyValue);return this;}
+    public Node mapNodeList(String propertyKey,  Function<List<Node>, List<Node>> mapper){
+		return findNodeList(propertyKey)
+                .map(mapper)
+                .map(list -> withNodeList(propertyKey, list))
+                .orElse(this);
+	}
 	@Override
-    public Node withNodeList(String propertyKey,  List<Node> propertyValues){this.nodeLists.put(propertyKey, propertyValues);return this;}
+    public Node withNode(String propertyKey,  Node propertyValue){
+		this.nodes.put(propertyKey, propertyValue);
+		return this;
+	}
 	@Override
-    public Optional<List<Node>> findNodeList(String propertyKey){return Optional.ofNullable(this.nodeLists.get(propertyKey));}
+    public Node withNodeList(String propertyKey,  List<Node> propertyValues){
+		this.nodeLists.put(propertyKey, propertyValues);
+		return this;
+	}
 	@Override
-    public Node withString(String propertyKey,  String propertyValues){this.strings.put(propertyKey, propertyValues);return this;}
+    public Optional<List<Node>> findNodeList(String propertyKey){
+		return Optional.ofNullable(this.nodeLists.get(propertyKey));
+	}
 	@Override
-    public Optional<String> findString(String propertyKey){return Optional.ofNullable(this.strings.get(propertyKey));}
+    public Node withString(String propertyKey,  String propertyValues){
+		this.strings.put(propertyKey, propertyValues);
+		return this;
+	}
+	@Override
+    public Optional<String> findString(String propertyKey){
+		return Optional.ofNullable(this.strings.get(propertyKey));
+	}
 }

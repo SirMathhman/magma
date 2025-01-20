@@ -95,6 +95,14 @@ public final class MapNode implements Node {
     }
 
     @Override
+    public Node mapNodeList(String propertyKey, Function<List<Node>, List<Node>> mapper) {
+        return findNodeList(propertyKey)
+                .map(mapper)
+                .map(list -> withNodeList(propertyKey, list))
+                .orElse(this);
+    }
+
+    @Override
     public Node withNode(String propertyKey, Node propertyValue) {
         this.nodes.put(propertyKey, propertyValue);
         return this;

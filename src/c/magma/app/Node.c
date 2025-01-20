@@ -17,4 +17,5 @@ public struct Node {
 	String display();
 	Node retype(String type);
 	boolean is(String type);
+	Node mapNodeList(String propertyKey,  Function<List<Node>, List<Node>> mapper);
 }
