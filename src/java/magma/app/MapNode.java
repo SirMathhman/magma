@@ -132,6 +132,17 @@ public final class MapNode implements Node {
     }
 
     @Override
+    public boolean hasNodeList(String propertyKey) {
+        return this.nodeLists.containsKey(propertyKey);
+    }
+
+    @Override
+    public Node removeNodeList(String propertyKey) {
+        this.nodeLists.remove(propertyKey);
+        return this;
+    }
+
+    @Override
     public Node withNode(String propertyKey, Node propertyValue) {
         this.nodes.put(propertyKey, propertyValue);
         return this;

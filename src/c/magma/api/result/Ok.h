@@ -20,11 +20,11 @@ public <R>R match(((T) => R) onOk, ((X) => R) onErr){
 		return onOk.apply(this.value);
 	}
 	@Override
-public <R>Result<Tuple<T, R>, X> and(){
+public <R>Result<Tuple<T, R>, X> and((() => Result<R, X>) other){
 		return other.get().mapValue(otherValue -> new Tuple<>(this.value, otherValue));
 	}
 	@Override
-public <R>Result<T, Tuple<X, R>> or(){
+public <R>Result<T, Tuple<X, R>> or((() => Result<T, R>) other){
 		return new Ok<>(this.value);
 	}
 	@Override

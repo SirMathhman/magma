@@ -19,4 +19,6 @@ public struct Node {
 	Node retype(String type);
 	boolean is(String type);
 	Node mapNodeList(String propertyKey, ((List<Node>) => List<Node>) mapper);
+	boolean hasNodeList(String propertyKey);
+	Node removeNodeList(String propertyKey);
 }

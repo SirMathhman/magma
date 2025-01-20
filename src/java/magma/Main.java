@@ -11,13 +11,13 @@ import magma.app.error.CompileError;
 import magma.app.error.JavaError;
 import magma.app.locate.BackwardsLocator;
 import magma.app.locate.InvocationLocator;
-import magma.app.locate.ForwardsLocator;
 import magma.app.rule.ContextRule;
 import magma.app.rule.ExactRule;
 import magma.app.rule.FilterRule;
 import magma.app.rule.InfixRule;
 import magma.app.rule.LazyRule;
 import magma.app.rule.NodeRule;
+import magma.app.rule.OptionalNodeListRule;
 import magma.app.rule.OrRule;
 import magma.app.rule.PrefixRule;
 import magma.app.rule.Rule;
@@ -108,6 +108,10 @@ public class Main {
         final var nameWithExt = relative.getFileName().toString();
         final var name = nameWithExt.substring(0, nameWithExt.indexOf('.'));
 
+        final var copy = new ArrayList<>(namespace);
+        copy.add(name);
+        System.out.println("Compiling source: " + String.join(".", copy));
+
         final var targetParent = TARGET_DIRECTORY.resolve(parent);
         if (!Files.exists(targetParent)) {
             final var directoriesError = JavaFiles.createDirectoriesWrapped(targetParent);
@@ -176,6 +180,13 @@ public class Main {
     }
 
     private static Optional<Result<Node, CompileError>> afterPass(Node node) {
+        if (node.is("method")) {
+            final var params = node.findNodeList("params").orElse(Collections.emptyList());
+            if (params.isEmpty()) {
+                return Optional.of(new Ok<>(node.removeNodeList("params")));
+            }
+        }
+
         if (node.is("generic")) {
             final var parent = node.findString(PARENT).orElse("");
             final var children = node.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
@@ -198,7 +209,6 @@ public class Main {
             if (parent.equals("Supplier")) {
                 final var returnType = children.getFirst();
                 return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE)
-                        .withNodeList("params", Collections.emptyList())
                         .withNode("return", returnType)));
             }
         }
@@ -308,10 +318,7 @@ public class Main {
 
         final var definition = createDefinitionRule();
         final var definitionProperty = new NodeRule("definition", definition);
-        final var params = new OrRule(List.of(
-                new DivideRule("params", VALUE_DIVIDER, definition),
-                new ExactRule("")
-        ));
+        final var params = new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, definition), new ExactRule(""));
 
         final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
         return new TypeRule("method", infixRule);
@@ -517,7 +524,8 @@ public class Main {
     }
 
     private static TypeRule createFunctionalType(Rule type) {
-        final var leftRule = new PrefixRule("(", new SuffixRule(new DivideRule("params", VALUE_DIVIDER, type), ")"));
+        final var params = new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, type), new ExactRule(""));
+        final var leftRule = new PrefixRule("(", new SuffixRule(params, ")"));
         final var rule = new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));
         return new TypeRule(FUNCTIONAL_TYPE, new PrefixRule("(", new SuffixRule(rule, ")")));
     }

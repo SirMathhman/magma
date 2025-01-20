@@ -37,4 +37,8 @@ public interface Node {
     boolean is(String type);
 
     Node mapNodeList(String propertyKey, Function<List<Node>, List<Node>> mapper);
+
+    boolean hasNodeList(String propertyKey);
+
+    Node removeNodeList(String propertyKey);
 }
