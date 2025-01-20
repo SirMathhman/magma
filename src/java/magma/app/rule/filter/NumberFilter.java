@@ -4,10 +4,18 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public class NumberFilter implements Predicate<String> {
-    @Override
-    public boolean test(String input) {
+    private static boolean allDigits(String input) {
         return IntStream.range(0, input.length())
                 .mapToObj(input::charAt)
                 .allMatch(Character::isDigit);
+    }
+
+    @Override
+    public boolean test(String input) {
+        if (input.startsWith("-")) {
+            return allDigits(input.substring(1));
+        }
+
+        return allDigits(input);
     }
 }

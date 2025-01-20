@@ -257,6 +257,7 @@ public class Main {
         final var statement = new LazyRule();
         statement.set(new OrRule(List.of(
                 createKeywordRule(),
+                createInitializationRule(),
                 createDefinitionStatementRule(),
                 createConditionalRule(statement, "if"),
                 createConditionalRule(statement, "while"),
@@ -320,10 +321,15 @@ public class Main {
                 createOperatorRule("less", "<", value),
                 createOperatorRule("equals", "==", value),
                 createOperatorRule("and", "&&", value),
-                createCharRule()
+                createCharRule(),
+                createTernaryRule(value)
         )));
 
         return value;
+    }
+
+    private static TypeRule createTernaryRule(LazyRule value) {
+        return new TypeRule("ternary", new InfixRule(new NodeRule("condition", value), new FirstLocator("?"), new InfixRule(new NodeRule("ifTrue", value), new FirstLocator(":"), new NodeRule("ifElse", value))));
     }
 
     private static TypeRule createCharRule() {
