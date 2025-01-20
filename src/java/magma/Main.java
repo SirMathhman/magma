@@ -359,11 +359,13 @@ public class Main {
         final var modifiers = new StringRule("modifiers");
         final var type = new NodeRule("type", createTypeRule());
         final var name = new StringRule("name");
-        final var withModifiers = new InfixRule(modifiers, new LocateTypeSeparator(), type);
-        final var rule = new InfixRule(new OrRule(List.of(
-                withModifiers,
+
+        final var maybeModifiers = new OrRule(List.of(
+                new InfixRule(modifiers, new LocateTypeSeparator(), type),
                 type
-        )), new LastLocator(" "), name);
+        ));
+
+        final var rule = new InfixRule(maybeModifiers, new LastLocator(" "), name);
 
         return new TypeRule("definition", rule);
     }
