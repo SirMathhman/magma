@@ -71,6 +71,8 @@ public struct Main {
 	public static final String INITIALIZATION_TYPE="initialization";
 	public static final String METHOD_DEFINITION=Main.INITIALIZATION_TYPE;
 	public static final String INITIALIZATION_VALUE="value";
+	public static final String INITIALIZATION_DEFINITION="definition";
+	public static final String DEFINITION_TYPE="definition";
 	((String[]) => void) main=void main(String[] args){
 		collect().mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(Main::runWithSources).match(Function.identity(), Optional::of).ifPresent(error ->System.err.println(error.display()));
 	};
@@ -142,21 +144,21 @@ public struct Main {
 	});
 		final var maybeValue=cleaned.findNode(METHOD_CHILD);
 		final var paramTypes=cleaned.findNodeList("params").orElse(Collections.emptyList()).stream().map(param ->param.findNode("type")).flatMap(Optional::stream).toList();
+		final var definition=cleaned.findNode(METHOD_DEFINITION).orElse(new MapNode()).mapNode("type", type -> {
+                        final var node2 = new MapNode("functional").withNode("return", type);
+
+                        if (paramTypes.isEmpty()) {
+                            return node2;
+                        } else {
+                            return node2.withNodeList("params", paramTypes);
+                        }
+                    });
 		final Node node1;
 		if(maybeValue.isPresent()){
-		final var definition=cleaned.findNode(METHOD_DEFINITION).orElse(new MapNode()).mapNode("type", type -> {
-                            final var node2 = new MapNode("functional").withNode("return", type);
-
-                            if (paramTypes.isEmpty()) {
-                                return node2;
-                            } else {
-                                return node2.withNodeList("params", paramTypes);
-                            }
-                        });
-		node1=new MapNode(INITIALIZATION_TYPE).withNode(Main.INITIALIZATION_TYPE, definition).withNode(INITIALIZATION_VALUE, cleaned);
+		node1=new MapNode(INITIALIZATION_TYPE).withNode(INITIALIZATION_DEFINITION, definition).withNode(INITIALIZATION_VALUE, cleaned);
 	}
 		else {
-		node1=cleaned;
+		node1=definition;
 	}
 		return Optional.of(new Ok<>(node1));
 	}
@@ -245,7 +247,9 @@ public struct Main {
 		return new SuffixRule(createDefinitionRule(), ";");
 	};
 	((Rule) => Rule) createInitializationRule=Rule createInitializationRule(Rule value){
-		final var infixRule=new InfixRule(new NodeRule(METHOD_DEFINITION, createDefinitionRule()), new FirstLocator("="), new StripRule(new SuffixRule(new NodeRule(INITIALIZATION_VALUE, value), ";")));
+		final var definition=new NodeRule(INITIALIZATION_DEFINITION, createDefinitionRule());
+		final var valueRule=new NodeRule(INITIALIZATION_VALUE, value);
+		final var infixRule=new InfixRule(definition, new FirstLocator("="), new StripRule(new SuffixRule(valueRule, ";")));
 		return new TypeRule(INITIALIZATION_TYPE, infixRule);
 	};
 	((Rule) => Rule) createMethodRule=Rule createMethodRule(Rule statement){
@@ -353,7 +357,7 @@ public struct Main {
 		final var withModifiers=new OrRule(List.of(new ContextRule("With modifiers", new StripRule(new InfixRule(modifiers, new BackwardsLocator(" "), maybeTypeParams))), new ContextRule("Without modifiers", maybeTypeParams)));
 		final var annotation=new TypeRule("annotation", new StripRule(new PrefixRule("@", new StringRule(INITIALIZATION_VALUE))));
 		final var annotations=new DivideRule(DEFINITION_ANNOTATIONS, new SimpleDivider("\n"), annotation);
-		return new TypeRule(METHOD_DEFINITION, new OrRule(List.of(new ContextRule("With annotations", new InfixRule(annotations, new LastLocator("\n"), withModifiers)), new ContextRule("Without annotations", withModifiers))));
+		return new TypeRule(DEFINITION_TYPE, new OrRule(List.of(new ContextRule("With annotations", new InfixRule(annotations, new LastLocator("\n"), withModifiers)), new ContextRule("Without annotations", withModifiers))));
 	};
 	(() => Rule) createTypeRule=Rule createTypeRule(){
 		final var type=new LazyRule();
