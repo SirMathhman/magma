@@ -1,15 +1,12 @@
 import java.util.Optional;
 public struct LocateTypeSeparator implements Locator {
-	@Override
-    public String unwrap(){
+	@Override    public String unwrap(){
 		return " ";
 	}
-	@Override
-    public int length(){
+	@Override    public int length(){
 		return 1;
 	}
-	@Override
-    public Optional<Integer> locate(String input){
+	@Override    public Optional<Integer> locate(String input){
 		var depth =0;
 		int i =input.length() - 1;
 		while(i>=0){

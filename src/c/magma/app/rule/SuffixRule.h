@@ -19,12 +19,10 @@ public struct SuffixRule implements Rule {
 		return new Err<>(new CompileError("Suffix '" + slice + "' not present", new StringContext(input)));
 	}
 	}
-	@Override
-    public Result<Node, CompileError> parse(String input){
+	@Override    public Result<Node, CompileError> parse(String input){
 		return truncateRight(input, this.suffix).flatMapValue(this.childRule::parse);
 	}
-	@Override
-    public Result<String, CompileError> generate(Node node){
+	@Override    public Result<String, CompileError> generate(Node node){
 		return childRule.generate(node).mapValue(inner ->inner+suffix);
 	}
 }

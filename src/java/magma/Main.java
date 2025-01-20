@@ -23,6 +23,7 @@ import magma.app.rule.StripRule;
 import magma.app.rule.SuffixRule;
 import magma.app.rule.TypeRule;
 import magma.app.rule.divide.DivideRule;
+import magma.app.rule.divide.SimpleDivider;
 import magma.app.rule.divide.StatementDivider;
 import magma.app.rule.divide.ValueDivider;
 import magma.app.rule.filter.NumberFilter;
@@ -304,7 +305,10 @@ public class Main {
 
         final var definition = createDefinitionRule();
         final var definitionProperty = new NodeRule("definition", definition);
-        final var params = new DivideRule("params", ValueDivider.VALUE_DIVIDER, definition);
+        final var params = new OrRule(List.of(
+                new DivideRule("params", ValueDivider.VALUE_DIVIDER, definition),
+                new ExactRule("")
+        ));
 
         final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
         return new TypeRule("method", infixRule);
@@ -379,7 +383,11 @@ public class Main {
 
     private static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
-        final var children = new DivideRule(GENERIC_CHILDREN, ValueDivider.VALUE_DIVIDER, value);
+        final var children = new OrRule(List.of(
+                new DivideRule(GENERIC_CHILDREN, ValueDivider.VALUE_DIVIDER, value),
+                new ExactRule("")
+        ));
+
         final var suffixRule = new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")");
         return new TypeRule("invocation", suffixRule);
     }
@@ -460,7 +468,8 @@ public class Main {
     }
 
     private static Rule createDefinitionRule() {
-        final var modifiers = new StringRule("modifiers");
+        final var modifiers = createModifiers();
+
         final var type = new NodeRule("type", createTypeRule());
         final var name = new StringRule("name");
 
@@ -472,6 +481,10 @@ public class Main {
         final var rule = new InfixRule(maybeModifiers, new LastLocator(" "), name);
 
         return new TypeRule("definition", rule);
+    }
+
+    private static DivideRule createModifiers() {
+        return new DivideRule("modifiers", new SimpleDivider(), new StripRule(new StringRule("value")));
     }
 
     private static Rule createTypeRule() {
@@ -504,6 +517,4 @@ public class Main {
     private static TypeRule createGenericRule(LazyRule type) {
         return new TypeRule("generic", new InfixRule(new StripRule(new StringRule(PARENT)), new FirstLocator("<"), new SuffixRule(new DivideRule(GENERIC_CHILDREN, ValueDivider.VALUE_DIVIDER, type), ">")));
     }
-
-
 }

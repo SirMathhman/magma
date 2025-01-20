@@ -11,6 +11,7 @@ import magma.app.rule.Rule;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class DivideRule implements Rule {
@@ -44,6 +45,7 @@ public class DivideRule implements Rule {
     @Override
     public Result<String, CompileError> generate(Node node) {
         return node.findNodeList(this.propertyKey)
+                .flatMap(list -> list.isEmpty() ? Optional.empty() : Optional.of(list))
                 .map(list -> compileAll(list, this.childRule::generate))
                 .map(result -> result.mapValue(this::merge))
                 .orElseGet(() -> new Err<>(new CompileError("Node list '" + this.propertyKey + "' not present", new NodeContext(node))));

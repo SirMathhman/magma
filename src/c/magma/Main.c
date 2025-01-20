@@ -21,6 +21,7 @@ import magma.app.rule.StripRule;
 import magma.app.rule.SuffixRule;
 import magma.app.rule.TypeRule;
 import magma.app.rule.divide.DivideRule;
+import magma.app.rule.divide.SimpleDivider;
 import magma.app.rule.divide.StatementDivider;
 import magma.app.rule.divide.ValueDivider;
 import magma.app.rule.filter.NumberFilter;
@@ -70,16 +71,10 @@ public struct Main {
                 .ifPresent(error ->System.err.println(error.display()));
 	}
 	private static Result<Set<Path>, IOException> collect(){
-		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths -> paths.stream()
-                .filter(Files::isRegularFile)
-                .filter(path -> path.toString().endsWith(".java"))
-                .collect(Collectors.toSet()));
+		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths -> paths.stream()                .filter(Files::isRegularFile)                .filter(path -> path.toString().endsWith(".java"))  .collect(Collectors.toSet()));
 	}
 	private static Optional<ApplicationError> runWithSources(Set<Path> sources){
-		return sources.stream()
-                .map(Main::runWithSource)
-                .flatMap(Optional::stream)
-                .findFirst();
+		return sources.stream()                .map(Main::runWithSource)                .flatMap(Optional::stream)  .findFirst();
 	}
 	private static Optional<ApplicationError> runWithSource(Path source){
 		final var relative =SOURCE_DIRECTORY.relativize(source);
@@ -110,11 +105,7 @@ public struct Main {
 		return new TypeRule(ROOT_TYPE, createContentRule(createCRootSegmentRule()));
 	}
 	private static OrRule createCRootSegmentRule(){
-		return new OrRule(List.of(
-                createNamespacedRule("import", "import "),
-                createJavaCompoundRule(STRUCT_TYPE, "struct "),
-                createWhitespaceRule()
-        ));
+		return new OrRule(List.of(                createNamespacedRule("import", "import "),                createJavaCompoundRule(STRUCT_TYPE, "struct "),                createWhitespaceRule()  ));
 	}
 	private static Result<Node, CompileError> pass(Node root){
 		return beforePass(root).orElse(new Ok<>(root))
@@ -206,20 +197,10 @@ public struct Main {
 	private static Optional<ApplicationError> writeOutput(String output,  Path targetParent,  String name){
 		final var target =targetParent.resolve(name+".c");
 		final var header =targetParent.resolve(name+".h");
-		return JavaFiles.writeStringWrapped(target, output)
-                .or(() -> JavaFiles.writeStringWrapped(header, output))
-                .map(JavaError::new)
-                .map(ApplicationError::new);
+		return JavaFiles.writeStringWrapped(target, output)                .or(() -> JavaFiles.writeStringWrapped(header, output))                .map(JavaError::new)  .map(ApplicationError::new);
 	}
 	private static OrRule createJavaRootSegmentRule(){
-		return new OrRule(List.of(
-                createNamespacedRule("package", "package "),
-                createNamespacedRule("import", "import "),
-                createJavaCompoundRule(CLASS_TYPE, "class "),
-                createJavaCompoundRule(RECORD_TYPE, "record "),
-                createJavaCompoundRule(INTERFACE_TYPE, "interface "),
-                createWhitespaceRule()
-        ));
+		return new OrRule(List.of(                createNamespacedRule("package", "package "),                createNamespacedRule("import", "import "),                createJavaCompoundRule(CLASS_TYPE, "class "),                createJavaCompoundRule(RECORD_TYPE, "record "),                createJavaCompoundRule(INTERFACE_TYPE, "interface "),                createWhitespaceRule()  ));
 	}
 	private static Rule createNamespacedRule(String type,  String prefix){
 		return new TypeRule(type, new StripRule(new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";")), IMPORT_BEFORE, IMPORT_AFTER));
@@ -251,7 +232,7 @@ public struct Main {
 		final var orRule =new OrRule(List.of(new NodeRule("child", createBlockRule(statement)), new ExactRule(";")));
 		final var definition =createDefinitionRule();
 		final var definitionProperty =new NodeRule("definition", definition);
-		final var params =new DivideRule("params", ValueDivider.VALUE_DIVIDER, definition);
+		final var params =new OrRule(List.of(new DivideRule("params", ValueDivider.VALUE_DIVIDER, definition), new ExactRule("")));
 		final var infixRule =new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
 		return new TypeRule("method", infixRule);
 	}
@@ -261,39 +242,14 @@ public struct Main {
 	private static Rule createContentRule(Rule rule){
 		return new DivideRule(GENERIC_CHILDREN, StatementDivider.STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, ""));
 	}
-	private static Rule createStatementRule(){
-		final var statement =new LazyRule();
-		final var valueRule =createValueRule(statement);
-		statement.set(new OrRule(List.of(
-                createKeywordRule(),
-                createInitializationRule(statement),
-                createDefinitionStatementRule(),
-                createConditionalRule(statement, "if"),
-                createConditionalRule(statement, "while"),
-                createElseRule(statement),
-                createInvocationStatementRule(valueRule),
-                createReturnRule(valueRule),
-                createAssignmentRule(valueRule),
-                createPostfixRule("post-increment", "++", valueRule),
-                createPostfixRule("post-decrement", "--", valueRule),
-                createWhitespaceRule()
-        )));
-		return statement;
-	}
+	private static Rule createStatementRule();
 	private static TypeRule createKeywordRule(){
 		return new TypeRule("continue", new ExactRule("continue;"));
 	}
 	private static TypeRule createElseRule(LazyRule statement){
-		return new TypeRule("else", new StripRule(new PrefixRule("else ", new OrRule(List.of(
-                new NodeRule("child", createBlockRule(statement)),
-                new NodeRule("value", statement)
-        )))));
+		return new TypeRule("else", new StripRule(new PrefixRule("else ", new OrRule(List.of(                new NodeRule("child", createBlockRule(statement)),                new NodeRule("value", statement)  )))));
 	}
-	private static TypeRule createConditionalRule(LazyRule statement,  String type){
-		final var leftRule =new StripRule(new PrefixRule("(", new NodeRule("condition", createValueRule(statement))));
-		final var blockRule =new OrRule(List.of(new NodeRule("child", createBlockRule(statement)), new NodeRule("child", statement)));
-		return new TypeRule(type, new PrefixRule(type, new InfixRule(leftRule, new ParenthesesMatcher(), blockRule)));
-	}
+	private static TypeRule createConditionalRule(LazyRule statement,  String type);
 	private static TypeRule createWhitespaceRule(){
 		return new TypeRule(WHITESPACE_TYPE, new StripRule(new ExactRule("")));
 	}
@@ -308,41 +264,13 @@ public struct Main {
 	private static Rule createInvocationStatementRule(Rule value){
 		return new SuffixRule(createInvocationRule(value), ";");
 	}
-	private static TypeRule createInvocationRule(Rule value){
-		final var caller =new NodeRule("caller", value);
-		final var children =new DivideRule(GENERIC_CHILDREN, ValueDivider.VALUE_DIVIDER, value);
-		final var suffixRule =new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")");
-		return new TypeRule("invocation", suffixRule);
-	}
+	private static TypeRule createInvocationRule(Rule value);
 	private static Rule createReturnRule(Rule value){
 		return new TypeRule("return", new StripRule(new PrefixRule("return ", new SuffixRule(new NodeRule("value", value), ";"))));
 	}
-	private static Rule createValueRule(Rule statement){
-		final var value =new LazyRule();
-		value.set(new OrRule(List.of(
-                createConstructionRule(value),
-                createInvocationRule(value),
-                createDataAccessRule(value),
-                createSymbolRule(),
-                createNumberRule(),
-                createNotRule(value),
-                createOperatorRule("greater-equals", ">=", value),
-                createOperatorRule("less", "<", value),
-                createOperatorRule("equals", "==", value),
-                createOperatorRule("and", "&&", value),
-                createOperatorRule("add", "+", value),
-                createCharRule(),
-                createStringRule(),
-                createTernaryRule(value),
-                createLambdaRule(statement, value)
-        )));
-		return value;
-	}
+	private static Rule createValueRule(Rule statement);
 	private static TypeRule createLambdaRule(Rule statement,  LazyRule value){
-		return new TypeRule("lambda", new InfixRule(new StringRule("args"), new FirstLocator("->"), new OrRule(List.of(
-                new NodeRule("child", createBlockRule(statement)),
-                new NodeRule("child", value)
-        ))));
+		return new TypeRule("lambda", new InfixRule(new StringRule("args"), new FirstLocator("->"), new OrRule(List.of(                new NodeRule("child", createBlockRule(statement)),                new NodeRule("child", value)  ))));
 	}
 	private static TypeRule createStringRule(){
 		final var value =new PrefixRule("\"", new SuffixRule(new StringRule("value"), "\""));
@@ -377,24 +305,15 @@ public struct Main {
 		return new TypeRule("data-access", rule);
 	}
 	private static Rule createDefinitionRule(){
-		final var modifiers =new StringRule("modifiers");
+		final var modifiers =createModifiers();
 		final var type =new NodeRule("type", createTypeRule());
 		final var name =new StringRule("name");
-		final var maybeModifiers =new OrRule(List.of(new InfixRule(modifiers, new LocateTypeSeparator(), type), type));
+		final var maybeModifiers =new OrRule(List.of());
 		final var rule =new InfixRule(maybeModifiers, new LastLocator(" "), name);
 		return new TypeRule("definition", rule);
 	}
-	private static Rule createTypeRule(){
-		final var type =new LazyRule();
-		type.set(new OrRule(List.of(
-                createSymbolRule(),
-                createGenericRule(type),
-                createVarArgsRule(type),
-                createArrayRule(type),
-                createFunctionalType(type)
-        )));
-		return type;
-	}
+	private static DivideRule createModifiers();
+	private static Rule createTypeRule();
 	private static TypeRule createFunctionalType(Rule type){
 		final var leftRule =new PrefixRule("(", new SuffixRule(new DivideRule("params", ValueDivider.VALUE_DIVIDER, type), ")"));
 		final var rule =new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));
