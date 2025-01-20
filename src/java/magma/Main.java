@@ -265,7 +265,7 @@ public class Main {
     }
 
     private static Rule createContentRule(Rule rule) {
-        return new DivideRule(Main::splitByStatements, rule);
+        return new DivideRule(Main::splitByStatements, rule, "children");
     }
 
     private static OrRule createStatementRule() {
@@ -287,7 +287,7 @@ public class Main {
     }
 
     private static SuffixRule createInvocationRule(Rule value) {
-        return new SuffixRule(new InfixRule(new NodeRule("caller", value), new FirstLocator("("), new DivideRule(Main::splitByValues, value)), ");");
+        return new SuffixRule(new InfixRule(new NodeRule("caller", value), new FirstLocator("("), new DivideRule(Main::splitByValues, value, "children")), ");");
     }
 
     private static Rule createReturnRule(Rule value) {

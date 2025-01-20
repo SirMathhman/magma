@@ -23,6 +23,13 @@ public class StringRule implements Rule {
 
     @Override
     public Result<Node, CompileError> parse(String input) {
-        return new Ok<>(new MapNode().withString(propertyKey, input));
+        return new Ok<>(new MapNode().withString(this.propertyKey, input));
+    }
+
+    @Override
+    public Result<String, CompileError> generate(Node node) {
+        return node.findString(this.propertyKey)
+                .<Result<String, CompileError>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileError("String '" + this.propertyKey + "' not present", new NodeContext(node))));
     }
 }

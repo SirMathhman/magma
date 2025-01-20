@@ -15,4 +15,9 @@ public record ExactRule(String slice) implements Rule {
         final var context = new StringContext(input);
         return new Err<>(new CompileError("Exact string '" + this.slice + "' was not present", context));
     }
+
+    @Override
+    public Result<String, CompileError> generate(Node node) {
+        return new Ok<>(this.slice);
+    }
 }

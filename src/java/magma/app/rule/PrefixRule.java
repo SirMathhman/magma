@@ -25,4 +25,9 @@ public class PrefixRule implements Rule {
     public Result<Node, CompileError> parse(String input) {
         return truncateLeft(input, this.prefix).flatMapValue(this.childRule::parse);
     }
+
+    @Override
+    public Result<String, CompileError> generate(Node node) {
+        return this.childRule.generate(node).mapValue(inner -> this.prefix + inner);
+    }
 }
