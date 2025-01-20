@@ -8,6 +8,7 @@ import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
+import magma.app.locate.InvocationLocator;
 import magma.app.rule.ExactRule;
 import magma.app.rule.FilterRule;
 import magma.app.rule.InfixRule;
@@ -315,7 +316,7 @@ public class Main {
     private static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
         final var children = new DivideRule("children", ValueDivider.VALUE_DIVIDER, value);
-        final var suffixRule = new SuffixRule(new InfixRule(caller, new FirstLocator("("), children), ")");
+        final var suffixRule = new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")");
         return new TypeRule("invocation", suffixRule);
     }
 
@@ -432,4 +433,5 @@ public class Main {
     private static TypeRule createGenericRule(LazyRule type) {
         return new TypeRule("generic", new InfixRule(new StringRule("caller"), new FirstLocator("<"), new SuffixRule(new DivideRule("children", ValueDivider.VALUE_DIVIDER, type), ">")));
     }
+
 }

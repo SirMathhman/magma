@@ -16,4 +16,4 @@ public final struct InfixRule implements Rule {private final Rule leftRule;priva
                 (left, right) -> left + this.locator.unwrap() + right));}@Override
     public Result<Node, CompileError> parse(String input){return split(this.locator,  input).flatMapValue(
                 tuple ->this.leftRule.parse(tuple.left()).and(
-                        () -> this.rightRule.parse(tuple.right())).mapValue(Tuple.merge(Node::merge)));}}
+                        () ->this.rightRule.parse(tuple.right())).mapValue(Tuple.merge(Node::merge)));}}
