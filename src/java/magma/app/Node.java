@@ -18,6 +18,8 @@ public interface Node {
 
     Node withNode(String propertyKey, Node propertyValue);
 
+    String format(int depth);
+
     Optional<Node> findNode(String propertyKey);
 
     Node mapString(String propertyKey, Function<String, String> mapper);

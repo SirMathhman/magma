@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public final class MapNode implements Node {
     private final Map<String, String> strings;
@@ -28,8 +29,25 @@ public final class MapNode implements Node {
         this.nodeLists = nodeLists;
     }
 
+    public MapNode(String type) {
+        this(Optional.of(type), new HashMap<>(), new HashMap<>(), new HashMap<>());
+    }
+
+    private static StringBuilder createEntry(String name, String content, int depth) {
+        return new StringBuilder()
+                .append("\n" + "\t".repeat(depth))
+                .append(name)
+                .append(" : ")
+                .append(content);
+    }
+
     @Override
     public String toString() {
+        return format(0);
+    }
+
+    @Override
+    public String format(int depth) {
         final var typeString = this.type.map(inner -> inner + " ").orElse("");
 
         var builder = new StringBuilder()
@@ -37,15 +55,26 @@ public final class MapNode implements Node {
                 .append("{");
 
         final var joiner = new StringJoiner(",");
-        this.strings.entrySet().stream().map(entry -> new StringBuilder()
-                .append("\n\t")
-                .append(entry.getKey())
-                .append(" : \"")
-                .append(entry.getValue())
-                .append("\"")).forEach(joiner::add);
+        this.strings.entrySet()
+                .stream()
+                .map(entry -> createEntry(entry.getKey(), "\"" + entry.getValue() + "\"", depth + 1))
+                .forEach(joiner::add);
+
+        this.nodes.entrySet()
+                .stream()
+                .map(entry -> createEntry(entry.getKey(), entry.getValue().format(depth + 1), depth + 1))
+                .forEach(joiner::add);
+
+        this.nodeLists.entrySet()
+                .stream()
+                .map(entry -> createEntry(entry.getKey(), entry.getValue()
+                        .stream()
+                        .map(node -> node.format(depth + 1))
+                        .collect(Collectors.joining(",\n", "[", "]")), depth + 1))
+                .forEach(joiner::add);
 
         builder.append(joiner);
-        return builder.append("\n}").toString();
+        return builder.append("\n").append("\t".repeat(depth)).append("}").toString();
     }
 
     @Override
