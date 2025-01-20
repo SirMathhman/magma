@@ -17,11 +17,15 @@ public final struct CompileError implements Error {
 	public CompileError(String message,  Context context){
 		this(message, context, Collections.emptyList());
 	}
-	@Override    public String display(){
+	@Override
+    public String display(){
 		return format(0);
 	}
 	public int maxDepth(){
-		return 1 + this.children.stream()                .mapToInt(CompileError::maxDepth)                .max()  .orElse(0);
+		return 1 + this.children.stream()
+                .mapToInt(CompileError::maxDepth)
+                .max()
+ .orElse(0);
 	}
 	private String format(int depth){
 		this.children.sort(Comparator.comparingInt(CompileError::maxDepth));

@@ -5,7 +5,8 @@ public final struct RangeHead implements Head<Integer> {
 	public RangeHead(int extent){
 		this.extent =extent;
 	}
-	@Override    public Optional<Integer> next(){
+	@Override
+    public Optional<Integer> next(){
 		if (this.counter >= this.extent) return Optional.empty();
 		final var value =this.counter;
 		this.counter++;

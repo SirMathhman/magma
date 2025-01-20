@@ -8,13 +8,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SimpleDivider implements Divider {
+
+    private final String delimiter;
+
+    public SimpleDivider(String delimiter) {
+        this.delimiter = delimiter;
+    }
+
     @Override
     public String merge(String current, String value) {
-        return current + " " + value;
+        return current + delimiter + value;
     }
 
     @Override
     public Result<List<String>, CompileError> divide(String input) {
-        return new Ok<>(Arrays.stream(input.split(" ")).toList());
+        return new Ok<>(Arrays.stream(input.split(delimiter)).toList());
     }
 }

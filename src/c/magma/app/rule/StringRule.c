@@ -11,10 +11,16 @@ public struct StringRule implements Rule {
 		this.propertyKey =propertyKey;
 	}
 	public Result<String, CompileError> parse(Node node){
-		return node.findString(this.propertyKey)                .<Result<String, CompileError>>map(Ok::new)                .orElseGet(() -> new Err<>(new CompileError("String '" + this.propertyKey + "' not present", new NodeContext(node))));
+		return node.findString(this.propertyKey)
+                .<Result<String, CompileError>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileError("String '" + this.propertyKey + "' not present", new NodeContext(node))));
 	}
-	@Override    public Result<Node, CompileError> parse(String input);
-	@Override    public Result<String, CompileError> generate(Node node){
-		return node.findString(this.propertyKey)                .<Result<String, CompileError>>map(Ok::new)                .orElseGet(() -> new Err<>(new CompileError("String '" + this.propertyKey + "' not present", new NodeContext(node))));
+	@Override
+    public Result<Node, CompileError> parse(String input);
+	@Override
+    public Result<String, CompileError> generate(Node node){
+		return node.findString(this.propertyKey)
+                .<Result<String, CompileError>>map(Ok::new)
+                .orElseGet(() -> new Err<>(new CompileError("String '" + this.propertyKey + "' not present", new NodeContext(node))));
 	}
 }

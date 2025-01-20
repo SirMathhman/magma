@@ -12,8 +12,10 @@ import java.util.stream.IntStream;
 public struct StatementDivider implements Divider {
 	public static final Divider STATEMENT_DIVIDER = new StatementDivider();
 	private StatementDivider();
-	@Override    public String merge(String current,  String value){
+	@Override
+    public String merge(String current,  String value){
 		return current+value;
 	}
-	@Override    public Result<List<String>, CompileError> divide(String input);
+	@Override
+    public Result<List<String>, CompileError> divide(String input);
 }

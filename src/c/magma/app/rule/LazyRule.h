@@ -9,7 +9,8 @@ import magma.app.error.context.StringContext;
 import java.util.Optional;
 public struct LazyRule implements Rule {
 	private Optional<Rule> childRule =Optional.empty();
-	@Override    public Result<Node, CompileError> parse(String input){
+	@Override
+    public Result<Node, CompileError> parse(String input){
 		return findChild(new StringContext(input)).flatMapValue(rule ->rule.parse(input));
 	}
 	private Result<Rule, CompileError> findChild(Context context){
@@ -20,7 +21,8 @@ public struct LazyRule implements Rule {
 		return new Err<>(new CompileError("Child rule is not set.", context));
 	}
 	}
-	@Override    public Result<String, CompileError> generate(Node node){
+	@Override
+    public Result<String, CompileError> generate(Node node){
 		return findChild(new NodeContext(node)).flatMapValue(rule ->rule.generate(node));
 	}
 	public void set(Rule childRule){

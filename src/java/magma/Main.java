@@ -478,13 +478,20 @@ public class Main {
                 type
         ));
 
-        final var rule = new InfixRule(maybeModifiers, new LastLocator(" "), name);
+        final var annotation = new TypeRule("annotation", new StringRule("value"));
+        final var annotations = new DivideRule("annotations", new SimpleDivider("\n"), annotation);
+        final var maybeAnnotations = new OrRule(List.of(
+                new InfixRule(annotations, new LastLocator("\n"), maybeModifiers),
+                maybeModifiers
+        ));
+
+        final var rule = new InfixRule(maybeAnnotations, new LastLocator(" "), name);
 
         return new TypeRule("definition", rule);
     }
 
     private static DivideRule createModifiers() {
-        return new DivideRule("modifiers", new SimpleDivider(), new StripRule(new StringRule("value")));
+        return new DivideRule("modifiers", new SimpleDivider(" "), new StripRule(new StringRule("value")));
     }
 
     private static Rule createTypeRule() {

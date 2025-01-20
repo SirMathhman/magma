@@ -71,10 +71,16 @@ public struct Main {
                 .ifPresent(error ->System.err.println(error.display()));
 	}
 	private static Result<Set<Path>, IOException> collect(){
-		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths -> paths.stream()                .filter(Files::isRegularFile)                .filter(path -> path.toString().endsWith(".java"))  .collect(Collectors.toSet()));
+		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths -> paths.stream()
+                .filter(Files::isRegularFile)
+                .filter(path -> path.toString().endsWith(".java"))
+ .collect(Collectors.toSet()));
 	}
 	private static Optional<ApplicationError> runWithSources(Set<Path> sources){
-		return sources.stream()                .map(Main::runWithSource)                .flatMap(Optional::stream)  .findFirst();
+		return sources.stream()
+                .map(Main::runWithSource)
+                .flatMap(Optional::stream)
+ .findFirst();
 	}
 	private static Optional<ApplicationError> runWithSource(Path source){
 		final var relative =SOURCE_DIRECTORY.relativize(source);
@@ -105,7 +111,11 @@ public struct Main {
 		return new TypeRule(ROOT_TYPE, createContentRule(createCRootSegmentRule()));
 	}
 	private static OrRule createCRootSegmentRule(){
-		return new OrRule(List.of(                createNamespacedRule("import", "import "),                createJavaCompoundRule(STRUCT_TYPE, "struct "),                createWhitespaceRule()  ));
+		return new OrRule(List.of(
+                createNamespacedRule("import", "import "),
+                createJavaCompoundRule(STRUCT_TYPE, "struct "),
+                createWhitespaceRule()
+ ));
 	}
 	private static Result<Node, CompileError> pass(Node root){
 		return beforePass(root).orElse(new Ok<>(root))
@@ -197,10 +207,20 @@ public struct Main {
 	private static Optional<ApplicationError> writeOutput(String output,  Path targetParent,  String name){
 		final var target =targetParent.resolve(name+".c");
 		final var header =targetParent.resolve(name+".h");
-		return JavaFiles.writeStringWrapped(target, output)                .or(() -> JavaFiles.writeStringWrapped(header, output))                .map(JavaError::new)  .map(ApplicationError::new);
+		return JavaFiles.writeStringWrapped(target, output)
+                .or(() -> JavaFiles.writeStringWrapped(header, output))
+                .map(JavaError::new)
+ .map(ApplicationError::new);
 	}
 	private static OrRule createJavaRootSegmentRule(){
-		return new OrRule(List.of(                createNamespacedRule("package", "package "),                createNamespacedRule("import", "import "),                createJavaCompoundRule(CLASS_TYPE, "class "),                createJavaCompoundRule(RECORD_TYPE, "record "),                createJavaCompoundRule(INTERFACE_TYPE, "interface "),                createWhitespaceRule()  ));
+		return new OrRule(List.of(
+                createNamespacedRule("package", "package "),
+                createNamespacedRule("import", "import "),
+                createJavaCompoundRule(CLASS_TYPE, "class "),
+                createJavaCompoundRule(RECORD_TYPE, "record "),
+                createJavaCompoundRule(INTERFACE_TYPE, "interface "),
+                createWhitespaceRule()
+ ));
 	}
 	private static Rule createNamespacedRule(String type,  String prefix){
 		return new TypeRule(type, new StripRule(new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";")), IMPORT_BEFORE, IMPORT_AFTER));
@@ -247,7 +267,10 @@ public struct Main {
 		return new TypeRule("continue", new ExactRule("continue;"));
 	}
 	private static TypeRule createElseRule(LazyRule statement){
-		return new TypeRule("else", new StripRule(new PrefixRule("else ", new OrRule(List.of(                new NodeRule("child", createBlockRule(statement)),                new NodeRule("value", statement)  )))));
+		return new TypeRule("else", new StripRule(new PrefixRule("else ", new OrRule(List.of(
+                new NodeRule("child", createBlockRule(statement)),
+                new NodeRule("value", statement)
+ )))));
 	}
 	private static TypeRule createConditionalRule(LazyRule statement,  String type);
 	private static TypeRule createWhitespaceRule(){
@@ -270,7 +293,10 @@ public struct Main {
 	}
 	private static Rule createValueRule(Rule statement);
 	private static TypeRule createLambdaRule(Rule statement,  LazyRule value){
-		return new TypeRule("lambda", new InfixRule(new StringRule("args"), new FirstLocator("->"), new OrRule(List.of(                new NodeRule("child", createBlockRule(statement)),                new NodeRule("child", value)  ))));
+		return new TypeRule("lambda", new InfixRule(new StringRule("args"), new FirstLocator("->"), new OrRule(List.of(
+                new NodeRule("child", createBlockRule(statement)),
+                new NodeRule("child", value)
+ ))));
 	}
 	private static TypeRule createStringRule(){
 		final var value =new PrefixRule("\"", new SuffixRule(new StringRule("value"), "\""));
@@ -309,10 +335,15 @@ public struct Main {
 		final var type =new NodeRule("type", createTypeRule());
 		final var name =new StringRule("name");
 		final var maybeModifiers =new OrRule(List.of());
-		final var rule =new InfixRule(maybeModifiers, new LastLocator(" "), name);
+		final var annotation =new TypeRule("annotation", new StringRule("value"));
+		final var annotations =new DivideRule("annotations", new SimpleDivider("\n"), annotation);
+		final var maybeAnnotations =new OrRule(List.of(new InfixRule(annotations, new LastLocator("\n"), maybeModifiers), maybeModifiers));
+		final var rule =new InfixRule(maybeAnnotations, new LastLocator(" "), name);
 		return new TypeRule("definition", rule);
 	}
-	private static DivideRule createModifiers();
+	private static DivideRule createModifiers(){
+		return new DivideRule("modifiers", new SimpleDivider(" "), new StripRule(new StringRule("value")));
+	}
 	private static Rule createTypeRule();
 	private static TypeRule createFunctionalType(Rule type){
 		final var leftRule =new PrefixRule("(", new SuffixRule(new DivideRule("params", ValueDivider.VALUE_DIVIDER, type), ")"));

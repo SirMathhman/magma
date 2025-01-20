@@ -3,31 +3,40 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 public struct Err<T, X>(X error) implements Result<T, X> {
-	@Override    public <R> Result<R, X> flatMapValue(((T) => Result<R, X>) mapper){
+	@Override
+    public <R> Result<R, X> flatMapValue(((T) => Result<R, X>) mapper){
 		return new Err<>(this.error);
 	}
-	@Override    public <R> Result<R, X> mapValue(((T) => R) mapper){
+	@Override
+    public <R> Result<R, X> mapValue(((T) => R) mapper){
 		return new Err<>(this.error);
 	}
-	@Override    public <R> Result<T, R> mapErr(((X) => R) mapper){
+	@Override
+    public <R> Result<T, R> mapErr(((X) => R) mapper){
 		return new Err<>(mapper.apply(this.error));
 	}
-	@Override    public <R> R match(((T) => R) onOk,  ((X) => R) onErr){
+	@Override
+    public <R> R match(((T) => R) onOk,  ((X) => R) onErr){
 		return onErr.apply(this.error);
 	}
-	@Override    public <R> Result<Tuple<T, R>, X> and(){
+	@Override
+    public <R> Result<Tuple<T, R>, X> and(){
 		return new Err<>(this.error);
 	}
-	@Override    public <R> Result<T, Tuple<X, R>> or(){
+	@Override
+    public <R> Result<T, Tuple<X, R>> or(){
 		return other.get().mapErr(otherErr -> new Tuple<>(this.error, otherErr));
 	}
-	@Override    public Optional<T> findValue(){
+	@Override
+    public Optional<T> findValue(){
 		return Optional.empty();
 	}
-	@Override    public boolean isOk(){
+	@Override
+    public boolean isOk(){
 		return false;
 	}
-	@Override    public Optional<X> findError(){
+	@Override
+    public Optional<X> findError(){
 		return Optional.of(this.error);
 	}
 }
