@@ -6,6 +6,7 @@ import magma.app.error.CompileError;
 import magma.app.error.context.StringContext;
 import magma.app.rule.locate.Locator;
 import java.util.ArrayList;
+import java.util.Optional;
 public final struct InfixRule implements Rule {
 	private final Rule leftRule;
 	private final Locator locator;
@@ -35,7 +36,7 @@ public Result<Node, CompileError> parse(String input){
 		return result;
 	}
 		else {
-		errors.add(result.findError().orElseThrow());
+		errors.add(result.findError().map(Optional::of).orElseGet(Optional::empty).orElseThrow());
 	}
 		i++;
 	}

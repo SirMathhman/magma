@@ -9,6 +9,7 @@ import magma.app.error.context.StringContext;
 import magma.app.rule.locate.Locator;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public final class InfixRule implements Rule {
     private final Rule leftRule;
@@ -42,7 +43,7 @@ public final class InfixRule implements Rule {
             if (result.isOk()) {
                 return result;
             } else {
-                errors.add(result.findError().orElseThrow());
+                errors.add(result.findError().map(Optional::of).orElseGet(Optional::empty).orElseThrow());
             }
             i++;
         }

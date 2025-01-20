@@ -1,4 +1,7 @@
 import magma.api.Tuple;
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.option.Some;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -28,15 +31,14 @@ public <R>Result<T, Tuple<X, R>> or((() => Result<T, R>) other){
 		return other.get().mapErr(otherErr -> new Tuple<>(this.error, otherErr));
 	}
 	@Override
-public Optional<T> findValue(){
-		return Optional.empty();
-	}
-	@Override
 public boolean isOk(){
 		return false;
 	}
-	@Override
-public Optional<X> findError(){
+	private Optional<X> findError0(){
 		return Optional.of(this.error);
+	}
+	@Override
+public Option<X> findError(){
+		return findError0().<Option<X>>map(Some::new).orElseGet(None::new);
 	}
 }

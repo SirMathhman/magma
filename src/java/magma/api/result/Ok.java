@@ -1,6 +1,9 @@
 package magma.api.result;
 
 import magma.api.Tuple;
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.option.Some;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -38,17 +41,16 @@ public record Ok<T, X>(T value) implements Result<T, X> {
     }
 
     @Override
-    public Optional<T> findValue() {
-        return Optional.of(this.value);
-    }
-
-    @Override
     public boolean isOk() {
         return true;
     }
 
-    @Override
-    public Optional<X> findError() {
+    private Optional<X> findError0() {
         return Optional.empty();
+    }
+
+    @Override
+    public Option<X> findError() {
+        return findError0().<Option<X>>map(Some::new).orElseGet(None::new);
     }
 }

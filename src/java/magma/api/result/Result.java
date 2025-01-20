@@ -1,8 +1,8 @@
 package magma.api.result;
 
 import magma.api.Tuple;
+import magma.api.option.Option;
 
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -19,9 +19,7 @@ public interface Result<T, X> {
 
     <R> Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other);
 
-    Optional<T> findValue();
-
     boolean isOk();
 
-    Optional<X> findError();
+    Option<X> findError();
 }

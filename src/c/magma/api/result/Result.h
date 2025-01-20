@@ -1,5 +1,5 @@
 import magma.api.Tuple;
-import java.util.Optional;
+import magma.api.option.Option;
 import java.util.function.Function;
 import java.util.function.Supplier;
 public struct Result<T, X> {
@@ -9,7 +9,6 @@ public struct Result<T, X> {
 	<R>R match(((T) => R) onOk, ((X) => R) onErr);
 	<R>Result<Tuple<T, R>, X> and((() => Result<R, X>) other);
 	<R>Result<T, Tuple<X, R>> or((() => Result<T, R>) other);
-	Optional<T> findValue();
 	boolean isOk();
-	Optional<X> findError();
+	Option<X> findError();
 }
