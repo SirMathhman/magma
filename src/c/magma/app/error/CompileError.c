@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-public final class CompileError implements Error {private final String message;private final Context context;private final List<CompileError> children;public CompileError(String messageString message Context contextString message Context context List<CompileError> children){this.message = message;this.context = context;this.children = new ArrayList<>(children);}public CompileError(String messageString message Context context){this(message, context, Collections.emptyList());}@Override
+public final struct CompileError implements Error {private final String message;private final Context context;private final List<CompileError> children;public CompileError(String messageString message Context contextString message Context context List<CompileError> children){this.message = message;this.context = context;this.children = new ArrayList<>(children);}public CompileError(String messageString message Context context){this(message, context, Collections.emptyList());}@Override
     public String display(){return format(0);}public int maxDepth(){return 1 + this.children.stream()
                 .mapToInt(CompileError::maxDepth)
                 .max()

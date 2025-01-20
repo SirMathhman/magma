@@ -5,7 +5,7 @@ import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
 import magma.app.error.context.StringContext;
 import java.util.List;
-public record TypeRule(String type, Rule rule) implements Rule {@Override
+public struct TypeRule(String type, Rule rule) implements Rule {@Override
     public Result<Node, CompileError> parse(String input){return this.rule.parse(input)
                 .mapValue(node -> node.retype(this.type))
                 .mapErr(err -> new CompileError("Failed to parse type '" + this.type + "'", new StringContext(input), List.of(err)));}@Override

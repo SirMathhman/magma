@@ -1,2 +1,2 @@
 import java.util.Optional;
-public interface Head<T> {Optional<T> next();}
+public struct Head<T> {Optional<T> next();}

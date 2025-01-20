@@ -50,6 +50,10 @@ public class Main {
     public static final String IMPORT_BEFORE = "before";
     public static final String IMPORT_AFTER = "after";
     public static final String ROOT_TYPE = "root";
+    public static final String STRUCT_TYPE = "struct";
+    public static final String RECORD_TYPE = "record";
+    public static final String CLASS_TYPE = "class";
+    public static final String INTERFACE_TYPE = "interface";
 
     public static void main(String[] args) {
         collect().mapErr(JavaError::new)
@@ -110,9 +114,7 @@ public class Main {
     private static OrRule createCRootSegmentRule() {
         return new OrRule(List.of(
                 createNamespacedRule("import", "import "),
-                createJavaCompoundRule("class", "class "),
-                createJavaCompoundRule("record", "record "),
-                createJavaCompoundRule("interface", "interface "),
+                createJavaCompoundRule(STRUCT_TYPE, "struct "),
                 createWhitespaceRule()
         ));
     }
@@ -149,6 +151,10 @@ public class Main {
     }
 
     private static Optional<Result<Node, CompileError>> afterPass(Node node) {
+        if (node.is(CLASS_TYPE) || node.is(RECORD_TYPE) || node.is(INTERFACE_TYPE)) {
+            return Optional.of(new Ok<>(node.retype(STRUCT_TYPE)));
+        }
+
         if (node.is("import")) {
             return Optional.of(new Ok<>(node.withString(IMPORT_AFTER, "\n")));
         }
@@ -182,9 +188,9 @@ public class Main {
         return new OrRule(List.of(
                 createNamespacedRule("package", "package "),
                 createNamespacedRule("import", "import "),
-                createJavaCompoundRule("class", "class "),
-                createJavaCompoundRule("record", "record "),
-                createJavaCompoundRule("interface", "interface "),
+                createJavaCompoundRule(CLASS_TYPE, "class "),
+                createJavaCompoundRule(RECORD_TYPE, "record "),
+                createJavaCompoundRule(INTERFACE_TYPE, "interface "),
                 createWhitespaceRule()
         ));
     }

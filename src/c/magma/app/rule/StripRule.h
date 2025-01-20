@@ -1,7 +1,7 @@
 import magma.api.result.Result;
 import magma.app.Node;
 import magma.app.error.CompileError;
-public record StripRule(
+public struct StripRule(
         Rule childRule, String before, String after
 ) implements Rule {public StripRule(Rule childRule){this(childRule, "", "");}@Override
     public Result<Node, CompileError> parse(String input){return this.childRule.parse(input.strip());}@Override

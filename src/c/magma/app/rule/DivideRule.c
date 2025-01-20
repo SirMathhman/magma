@@ -8,7 +8,7 @@ import magma.app.error.context.NodeContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-public class DivideRule implements Rule {private final String propertyKey;private final Divider divider;private final Rule childRule;public DivideRule(String propertyKeyString propertyKey Divider dividerString propertyKey Divider divider Rule childRule){this.divider = divider;this.childRule = childRule;this.propertyKey = propertyKey;}public static <T, R> Result<List<R>, CompileError> compileAll(
+public struct DivideRule implements Rule {private final String propertyKey;private final Divider divider;private final Rule childRule;public DivideRule(String propertyKeyString propertyKey Divider dividerString propertyKey Divider divider Rule childRule){this.divider = divider;this.childRule = childRule;this.propertyKey = propertyKey;}public static <T, R> Result<List<R>, CompileError> compileAll(
             List<T> segments
             List<T> segments
             Function<T, Result<R, CompileError>> mapper

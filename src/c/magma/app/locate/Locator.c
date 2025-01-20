@@ -1,2 +1,2 @@
 import java.util.Optional;
-public interface Locator {String unwrap();int length();Optional<Integer> locate(String input);}
+public struct Locator {String unwrap();int length();Optional<Integer> locate(String input);}
