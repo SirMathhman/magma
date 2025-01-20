@@ -1,7 +1,6 @@
 package magma;
 
 import magma.api.Tuple;
-import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.api.stream.Streams;
@@ -9,7 +8,6 @@ import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
-import magma.app.error.context.StringContext;
 import magma.app.filter.NumberFilter;
 import magma.app.filter.SymbolFilter;
 import magma.app.locate.FirstLocator;
@@ -25,6 +23,7 @@ import magma.app.rule.NodeRule;
 import magma.app.rule.OrRule;
 import magma.app.rule.PrefixRule;
 import magma.app.rule.Rule;
+import magma.app.rule.Splitter;
 import magma.app.rule.StringRule;
 import magma.app.rule.StripRule;
 import magma.app.rule.SuffixRule;
@@ -37,7 +36,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -51,6 +49,7 @@ public class Main {
     public static final String DEFAULT_VALUE = "value";
     public static final String IMPORT_BEFORE = "before";
     public static final String IMPORT_AFTER = "after";
+    public static final String ROOT_TYPE = "root";
 
     public static void main(String[] args) {
         collect().mapErr(JavaError::new)
@@ -98,10 +97,24 @@ public class Main {
         return JavaFiles.readStringWrapped(source)
                 .mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
-                .flatMapValue(input -> createRootRule().parse(input).mapErr(ApplicationError::new))
+                .flatMapValue(input -> createJavaRootRule().parse(input).mapErr(ApplicationError::new))
                 .flatMapValue(root -> pass(root).mapErr(ApplicationError::new))
-                .flatMapValue(root -> createRootRule().generate(root).mapErr(ApplicationError::new))
+                .flatMapValue(root -> createCRootRule().generate(root).mapErr(ApplicationError::new))
                 .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
+    }
+
+    private static Rule createCRootRule() {
+        return new TypeRule(ROOT_TYPE, createContentRule(createCRootSegmentRule()));
+    }
+
+    private static OrRule createCRootSegmentRule() {
+        return new OrRule(List.of(
+                createNamespacedRule("import", "import "),
+                createJavaCompoundRule("class", "class "),
+                createJavaCompoundRule("record", "record "),
+                createJavaCompoundRule("interface", "interface "),
+                createWhitespaceRule()
+        ));
     }
 
     private static Result<Node, CompileError> pass(Node root) {
@@ -140,7 +153,7 @@ public class Main {
             return Optional.of(new Ok<>(node.withString(IMPORT_AFTER, "\n")));
         }
 
-        if (node.is("root")) {
+        if (node.is(ROOT_TYPE)) {
             final var children = node.findNodeList("children").orElse(Collections.emptyList());
             final var newChildren = children.stream()
                     .filter(child -> !child.is("package"))
@@ -152,8 +165,8 @@ public class Main {
         return Optional.empty();
     }
 
-    private static Rule createRootRule() {
-        return new TypeRule("root", createContentRule(createRootSegmentRule()));
+    private static Rule createJavaRootRule() {
+        return new TypeRule(ROOT_TYPE, createContentRule(createJavaRootSegmentRule()));
     }
 
     private static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name) {
@@ -165,76 +178,13 @@ public class Main {
                 .map(ApplicationError::new);
     }
 
-    private static Result<List<String>, CompileError> splitByStatements(String input) {
-        final var segments = new ArrayList<String>();
-        var buffer = new StringBuilder();
-        var depth = 0;
-
-        final var queue = IntStream.range(0, input.length())
-                .mapToObj(input::charAt)
-                .collect(Collectors.toCollection(LinkedList::new));
-
-        while (!queue.isEmpty()) {
-            final var c = queue.pop();
-            buffer.append(c);
-
-            if (c == '\'') {
-                final var c1 = queue.pop();
-                buffer.append(c1);
-
-                if (c1 == '\\') {
-                    buffer.append(queue.pop());
-                }
-                buffer.append(queue.pop());
-                continue;
-            }
-
-            if (c == '"') {
-                while (!queue.isEmpty()) {
-                    final var c1 = queue.pop();
-                    buffer.append(c1);
-
-                    if (c1 == '"') break;
-                    if (c1 == '\\') {
-                        buffer.append(queue.pop());
-                    }
-                }
-
-                continue;
-            }
-
-            if (c == ';' && depth == 0) {
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            } else if (c == '}' && depth == 1) {
-                depth--;
-                advance(buffer, segments);
-                buffer = new StringBuilder();
-            } else {
-                if (c == '{' || c == '(') depth++;
-                if (c == '}' || c == ')') depth--;
-            }
-        }
-        advance(buffer, segments);
-
-        if (depth == 0) {
-            return new Ok<>(segments);
-        } else {
-            return new Err<>(new CompileError("Invalid depth '" + depth + "'", new StringContext(input)));
-        }
-    }
-
-    private static void advance(StringBuilder buffer, ArrayList<String> segments) {
-        if (!buffer.isEmpty()) segments.add(buffer.toString());
-    }
-
-    private static OrRule createRootSegmentRule() {
+    private static OrRule createJavaRootSegmentRule() {
         return new OrRule(List.of(
                 createNamespacedRule("package", "package "),
                 createNamespacedRule("import", "import "),
-                createStructRule("class", "class "),
-                createStructRule("record", "record "),
-                createStructRule("interface", "interface "),
+                createJavaCompoundRule("class", "class "),
+                createJavaCompoundRule("record", "record "),
+                createJavaCompoundRule("interface", "interface "),
                 createWhitespaceRule()
         ));
     }
@@ -243,33 +193,16 @@ public class Main {
         return new TypeRule(type, new StripRule(new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";")), IMPORT_BEFORE, IMPORT_AFTER));
     }
 
-    private static Rule createStructRule(String type, String infix) {
-        final var infixRule = new InfixRule(new StringRule("modifiers"), new FirstLocator(infix),
-                new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
-                        new SuffixRule(createContentRule(createStructSegmentRule()), "}")
-                )));
-        return new TypeRule(type, infixRule);
+    private static Rule createJavaCompoundRule(String type, String infix) {
+        return createCompoundRule(type, infix, createStructSegmentRule());
     }
 
-    private static Result<List<String>, CompileError> splitByValues(String input) {
-        final var segments = new ArrayList<String>();
-        final var buffer = new StringBuilder();
-        var depth = 0;
-        int i = 0;
-        while (i < input.length()) {
-            final var c = input.charAt(i);
-            if (c == ',' && depth == 0) {
-                advance(buffer, segments);
-            } else {
-                buffer.append(c);
-                if (c == '<') depth++;
-                if (c == '>') depth--;
-            }
-            i++;
-        }
-
-        advance(buffer, segments);
-        return new Ok<>(segments);
+    private static Rule createCompoundRule(String type, String infix, Rule segmentRule) {
+        final var infixRule = new InfixRule(new StringRule("modifiers"), new FirstLocator(infix),
+                new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
+                        new SuffixRule(createContentRule(segmentRule), "}")
+                )));
+        return new TypeRule(type, infixRule);
     }
 
     private static Rule createStructSegmentRule() {
@@ -298,7 +231,7 @@ public class Main {
 
         final var definition = createDefinitionRule();
         final var definitionProperty = new NodeRule("definition", definition);
-        final var params = new DivideRule("params", Main::splitByValues, definition);
+        final var params = new DivideRule("params", Splitter::splitByValues, definition);
 
         final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
         return new TypeRule("method", infixRule);
@@ -309,7 +242,7 @@ public class Main {
     }
 
     private static Rule createContentRule(Rule rule) {
-        return new DivideRule("children", Main::splitByStatements, new StripRule(rule));
+        return new DivideRule("children", Splitter::splitByStatements, new StripRule(rule));
     }
 
     private static Rule createStatementRule() {
@@ -360,7 +293,7 @@ public class Main {
     }
 
     private static Rule createInvocationRule(Rule value) {
-        final var suffixRule = new SuffixRule(new InfixRule(new NodeRule("caller", value), new FirstLocator("("), new DivideRule("children", Main::splitByValues, value)), ");");
+        final var suffixRule = new SuffixRule(new InfixRule(new NodeRule("caller", value), new FirstLocator("("), new DivideRule("children", Splitter::splitByValues, value)), ");");
         return new TypeRule("invocation", suffixRule);
     }
 
@@ -403,7 +336,7 @@ public class Main {
     }
 
     private static TypeRule createConstructionRule(LazyRule value) {
-        return new TypeRule("construction", new StripRule(new PrefixRule("new ", new InfixRule(new StringRule("type"), new FirstLocator("("), new StripRule(new SuffixRule(new DivideRule("arguments", Main::splitByValues, value), ")"))))));
+        return new TypeRule("construction", new StripRule(new PrefixRule("new ", new InfixRule(new StringRule("type"), new FirstLocator("("), new StripRule(new SuffixRule(new DivideRule("arguments", Splitter::splitByValues, value), ")"))))));
     }
 
     private static Rule createSymbolRule() {
