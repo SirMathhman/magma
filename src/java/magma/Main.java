@@ -3,7 +3,6 @@ package magma;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.api.stream.Streams;
 import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
@@ -200,7 +199,7 @@ public class Main {
     }
 
     private static OrRule createRootSegmentRule() {
-        return new OrRule(Streams.of(
+        return new OrRule(List.of(
                 createNamespacedRule("package "),
                 createNamespacedRule("import "),
                 createStructRule("class "),
@@ -237,8 +236,8 @@ public class Main {
     }
 
     private static Rule createStructSegmentRule() {
-        return new OrRule(Streams.of(
-                createMethodRule0(),
+        return new OrRule(List.of(
+                createMethodRule(),
                 createInitializationRule(),
                 createDefinitionStatementRule()
         ));
@@ -252,8 +251,8 @@ public class Main {
         return new InfixRule(new NodeRule("definition", createDefinitionRule()), new FirstLocator("="), new StripRule(new SuffixRule(new NodeRule("value", createValueRule()), ";")));
     }
 
-    private static InfixRule createMethodRule0() {
-        final var orRule = new OrRule(Streams.of(
+    private static InfixRule createMethodRule() {
+        final var orRule = new OrRule(List.of(
                 createBlockRule(),
                 new ExactRule(";")
         ));
@@ -266,12 +265,12 @@ public class Main {
     }
 
     private static Rule createContentRule(Rule rule) {
-        return new DivideRule(Main::splitByStatements, rule, "children");
+        return new DivideRule(Main::splitByStatements, new StripRule(rule), "children");
     }
 
     private static OrRule createStatementRule() {
         final var valueRule = createValueRule();
-        return new OrRule(Streams.of(
+        return new OrRule(List.of(
                 createInvocationRule(valueRule),
                 createReturnRule(valueRule),
                 createAssignmentRule(valueRule),
@@ -297,7 +296,7 @@ public class Main {
 
     private static Rule createValueRule() {
         final var value = new LazyRule();
-        value.set(new OrRule(Streams.of(
+        value.set(new OrRule(List.of(
                 createDataAccessRule(value),
                 createSymbolRule()
         )));

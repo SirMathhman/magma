@@ -41,4 +41,14 @@ public record Err<T, X>(X error) implements Result<T, X> {
     public Optional<T> findValue() {
         return Optional.empty();
     }
+
+    @Override
+    public boolean isOk() {
+        return false;
+    }
+
+    @Override
+    public Optional<X> findError() {
+        return Optional.of(this.error);
+    }
 }

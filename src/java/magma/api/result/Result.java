@@ -20,4 +20,8 @@ public interface Result<T, X> {
     <R> Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other);
 
     Optional<T> findValue();
+
+    boolean isOk();
+
+    Optional<X> findError();
 }

@@ -41,4 +41,14 @@ public record Ok<T, X>(T value) implements Result<T, X> {
     public Optional<T> findValue() {
         return Optional.of(this.value);
     }
+
+    @Override
+    public boolean isOk() {
+        return true;
+    }
+
+    @Override
+    public Optional<X> findError() {
+        return Optional.empty();
+    }
 }
