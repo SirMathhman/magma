@@ -3,6 +3,7 @@ package magma;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
@@ -33,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -92,9 +94,31 @@ public class Main {
         return JavaFiles.readStringWrapped(source)
                 .mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
-                .flatMapValue(input -> createContentRule(createRootSegmentRule()).parse(input).mapErr(ApplicationError::new))
-                .flatMapValue(ast -> createContentRule(createRootSegmentRule()).generate(ast).mapErr(ApplicationError::new))
+                .flatMapValue(input -> createRootRule().parse(input).mapErr(ApplicationError::new))
+                .flatMapValue(root -> pass(root).mapErr(ApplicationError::new))
+                .flatMapValue(root -> createRootRule().generate(root).mapErr(ApplicationError::new))
                 .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
+    }
+
+    private static Result<Node, CompileError> pass(Node root) {
+        return afterPass(root).orElse(new Ok<>(root));
+    }
+
+    private static Optional<Result<Node, CompileError>> afterPass(Node root) {
+        if (root.is("root")) {
+            final var children = root.findNodeList("children").orElse(Collections.emptyList());
+            final var newChildren = children.stream()
+                    .filter(child -> !child.is("package"))
+                    .toList();
+
+            return Optional.of(new Ok<>(root.withNodeList("children", newChildren)));
+        }
+
+        return Optional.empty();
+    }
+
+    private static Rule createRootRule() {
+        return new TypeRule("root", createContentRule(createRootSegmentRule()));
     }
 
     private static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name) {

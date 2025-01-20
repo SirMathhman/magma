@@ -1,5 +1,8 @@
 package magma.app;
 
+import magma.api.Tuple;
+import magma.api.stream.Stream;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -20,6 +23,10 @@ public interface Node {
     Node mapString(String propertyKey, Function<String, String> mapper);
 
     Node merge(Node other);
+
+    Stream<Tuple<String, List<Node>>> streamNodeLists();
+
+    Stream<Tuple<String, Node>> streamNodes();
 
     String display();
 

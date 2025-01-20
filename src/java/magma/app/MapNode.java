@@ -61,8 +61,18 @@ public final class MapNode implements Node {
     @Override
     public Node merge(Node other) {
         final var withStrings = stream(this.strings).foldLeft(other, (node, tuple) -> node.withString(tuple.left(), tuple.right()));
-        final var withNodes = stream(this.nodes).foldLeft(withStrings, (node, tuple) -> node.withNode(tuple.left(), tuple.right()));
-        return stream(this.nodeLists).foldLeft(withNodes, (node, tuple) -> node.withNodeList(tuple.left(), tuple.right()));
+        final var withNodes = streamNodes().foldLeft(withStrings, (node, tuple) -> node.withNode(tuple.left(), tuple.right()));
+        return streamNodeLists().foldLeft(withNodes, (node, tuple) -> node.withNodeList(tuple.left(), tuple.right()));
+    }
+
+    @Override
+    public Stream<Tuple<String, List<Node>>> streamNodeLists() {
+        return stream(this.nodeLists);
+    }
+
+    @Override
+    public Stream<Tuple<String, Node>> streamNodes() {
+        return stream(this.nodes);
     }
 
     private <K, V> Stream<Tuple<K, V>> stream(Map<K, V> map) {
