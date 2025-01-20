@@ -6,39 +6,31 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 public struct Ok<T, X>(T value) implements Result<T, X> {
-	@Override
-public <R>Result<R, X> flatMapValue(((T) => Result<R, X>) mapper){
+	<R>Result<R, X> flatMapValue=<R>Result<R, X> flatMapValue(((T) => Result<R, X>) mapper){
 		return mapper.apply(this.value);
-	}
-	@Override
-public <R>Result<R, X> mapValue(((T) => R) mapper){
+	};
+	<R>Result<R, X> mapValue=<R>Result<R, X> mapValue(((T) => R) mapper){
 		return new Ok<>(mapper.apply(this.value));
-	}
-	@Override
-public <R>Result<T, R> mapErr(((X) => R) mapper){
+	};
+	<R>Result<T, R> mapErr=<R>Result<T, R> mapErr(((X) => R) mapper){
 		return new Ok<>(this.value);
-	}
-	@Override
-public <R>R match(((T) => R) onOk, ((X) => R) onErr){
+	};
+	<R>R match=<R>R match(((T) => R) onOk, ((X) => R) onErr){
 		return onOk.apply(this.value);
-	}
-	@Override
-public <R>Result<Tuple<T, R>, X> and((() => Result<R, X>) other){
+	};
+	<R>Result<Tuple<T, R>, X> and=<R>Result<Tuple<T, R>, X> and((() => Result<R, X>) other){
 		return other.get().mapValue(otherValue -> new Tuple<>(this.value, otherValue));
-	}
-	@Override
-public <R>Result<T, Tuple<X, R>> or((() => Result<T, R>) other){
+	};
+	<R>Result<T, Tuple<X, R>> or=<R>Result<T, Tuple<X, R>> or((() => Result<T, R>) other){
 		return new Ok<>(this.value);
-	}
-	@Override
-public boolean isOk(){
+	};
+	boolean isOk=boolean isOk(){
 		return true;
-	}
-	private Optional<X> findError0(){
+	};
+	Optional<X> findError0=Optional<X> findError0(){
 		return Optional.empty();
-	}
-	@Override
-public Option<X> findError(){
+	};
+	Option<X> findError=Option<X> findError(){
 		return findError0().<Option<X>>map(Some::new).orElseGet(None::new);
-	}
+	};
 }

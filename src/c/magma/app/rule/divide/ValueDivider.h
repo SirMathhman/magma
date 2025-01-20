@@ -11,13 +11,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 public struct ValueDivider implements Divider {
 	public static final Divider VALUE_DIVIDER=new ValueDivider();
-	private ValueDivider();
-	@Override
-public String merge(String current, String value){
+	private ValueDivider=private ValueDivider();;
+	String merge=String merge(String current, String value){
 		return current+", "+value;
-	}
-	@Override
-public Result<List<String>, CompileError> divide(String input){
+	};
+	Result<List<String>, CompileError> divide=Result<List<String>, CompileError> divide(String input){
 		final var segments=new ArrayList<String>();
 		var buffer=new StringBuilder();
 		var depth=0;
@@ -58,5 +56,5 @@ public Result<List<String>, CompileError> divide(String input){
 	}
 		Splitter.advance(buffer, segments);
 		return new Ok<List<String>, CompileError>(segments);
-	}
+	};
 }

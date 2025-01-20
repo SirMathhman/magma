@@ -143,6 +143,14 @@ public final class MapNode implements Node {
     }
 
     @Override
+    public Node mapNode(String propertyKey, Function<Node, Node> mapper) {
+        return findNode(propertyKey)
+                .map(mapper)
+                .map(node -> withNode(propertyKey, node))
+                .orElse(this);
+    }
+
+    @Override
     public Node withNode(String propertyKey, Node propertyValue) {
         this.nodes.put(propertyKey, propertyValue);
         return this;

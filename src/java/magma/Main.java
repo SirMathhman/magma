@@ -53,7 +53,6 @@ import static magma.app.rule.divide.ValueDivider.VALUE_DIVIDER;
 public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
-    public static final String DEFAULT_VALUE = "value";
     public static final String IMPORT_BEFORE = "before";
     public static final String IMPORT_AFTER = "after";
     public static final String ROOT_TYPE = "root";
@@ -70,6 +69,13 @@ public class Main {
     public static final String PARENT = "caller";
     public static final String GENERIC_CHILDREN = "children";
     public static final String FUNCTIONAL_TYPE = "functional";
+    public static final String METHOD_CHILD = "child";
+    public static final String DEFINITION_ANNOTATIONS = "annotations";
+    public static final String DEFINITION_MODIFIERS = "modifiers";
+    public static final String METHOD_DEFINITION = Main.INITIALIZATION_TYPE;
+    public static final String METHOD_TYPE = "method";
+    public static final String INITIALIZATION_TYPE = "initialization";
+    public static final String INITIALIZATION_VALUE = "value";
 
     public static void main(String[] args) {
         collect().mapErr(JavaError::new)
@@ -180,11 +186,23 @@ public class Main {
     }
 
     private static Optional<Result<Node, CompileError>> afterPass(Node node) {
-        if (node.is("method")) {
-            final var params = node.findNodeList("params").orElse(Collections.emptyList());
-            if (params.isEmpty()) {
-                return Optional.of(new Ok<>(node.removeNodeList("params")));
+        if (node.is(METHOD_TYPE)) {
+            final var pruneParams = removeParams(node).mapNode(METHOD_DEFINITION, definition -> {
+                return definition.removeNodeList(DEFINITION_ANNOTATIONS)
+                        .removeNodeList(DEFINITION_MODIFIERS);
+            });
+
+            final var maybeValue = pruneParams.findNode(METHOD_CHILD);
+            final Node node1;
+            if (maybeValue.isPresent()) {
+                final var definition = pruneParams.findNode(METHOD_DEFINITION).orElse(new MapNode());
+                node1 = new MapNode(INITIALIZATION_TYPE)
+                        .withNode(Main.INITIALIZATION_TYPE, definition)
+                        .withNode(INITIALIZATION_VALUE, pruneParams);
+            } else {
+                node1 = pruneParams;
             }
+            return Optional.of(new Ok<>(node1));
         }
 
         if (node.is("generic")) {
@@ -251,6 +269,17 @@ public class Main {
         return Optional.empty();
     }
 
+    private static Node removeParams(Node node) {
+        final var params = node.findNodeList("params").orElse(Collections.emptyList());
+        final Node pruneParams;
+        if (params.isEmpty()) {
+            pruneParams = node.removeNodeList("params");
+        } else {
+            pruneParams = node;
+        }
+        return pruneParams;
+    }
+
     private static Rule createJavaRootRule() {
         return new TypeRule(ROOT_TYPE, createContentRule(createJavaRootSegmentRule()));
     }
@@ -284,7 +313,7 @@ public class Main {
     }
 
     private static Rule createCompoundRule(String type, String infix, Rule segmentRule) {
-        final var infixRule = new InfixRule(new StringRule("modifiers"), new FirstLocator(infix),
+        final var infixRule = new InfixRule(new StringRule(DEFINITION_MODIFIERS), new FirstLocator(infix),
                 new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
                         new SuffixRule(new StripRule(createContentRule(segmentRule), "", STRUCT_AFTER_CHILDREN), "}")
                 )));
@@ -292,10 +321,13 @@ public class Main {
     }
 
     private static Rule createStructSegmentRule() {
-        final var statement = createStatementRule();
+        final var function = new LazyRule();
+        final var statement = createStatementRule(function);
+        function.set(createMethodRule(statement));
+
         return new StripRule(new OrRule(List.of(
-                createMethodRule(statement),
-                createInitializationRule(statement),
+                function,
+                createInitializationRule(createValueRule(statement, function)),
                 createDefinitionStatementRule(),
                 createWhitespaceRule()
         )), BEFORE_STRUCT_SEGMENT, "");
@@ -305,23 +337,23 @@ public class Main {
         return new SuffixRule(createDefinitionRule(), ";");
     }
 
-    private static Rule createInitializationRule(Rule statement) {
-        final var infixRule = new InfixRule(new NodeRule("definition", createDefinitionRule()), new FirstLocator("="), new StripRule(new SuffixRule(new NodeRule("value", createValueRule(statement)), ";")));
-        return new TypeRule("initialization", infixRule);
+    private static Rule createInitializationRule(Rule value) {
+        final var infixRule = new InfixRule(new NodeRule(METHOD_DEFINITION, createDefinitionRule()), new FirstLocator("="), new StripRule(new SuffixRule(new NodeRule(INITIALIZATION_VALUE, value), ";")));
+        return new TypeRule(INITIALIZATION_TYPE, infixRule);
     }
 
     private static Rule createMethodRule(Rule statement) {
         final var orRule = new OrRule(List.of(
-                new NodeRule("child", createBlockRule(statement)),
+                new NodeRule(METHOD_CHILD, createBlockRule(statement)),
                 new ExactRule(";")
         ));
 
         final var definition = createDefinitionRule();
-        final var definitionProperty = new NodeRule("definition", definition);
+        final var definitionProperty = new NodeRule(METHOD_DEFINITION, definition);
         final var params = new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, definition), new ExactRule(""));
 
         final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
-        return new TypeRule("method", infixRule);
+        return new TypeRule(METHOD_TYPE, infixRule);
     }
 
     private static TypeRule createBlockRule(Rule statement) {
@@ -332,16 +364,16 @@ public class Main {
         return new DivideRule(GENERIC_CHILDREN, StatementDivider.STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, ""));
     }
 
-    private static Rule createStatementRule() {
+    private static Rule createStatementRule(Rule function) {
         final var statement = new LazyRule();
-        final var valueRule = createValueRule(statement);
+        final var valueRule = createValueRule(statement, function);
         statement.set(new OrRule(List.of(
                 createKeywordRule("continue"),
                 createKeywordRule("break"),
-                createInitializationRule(statement),
+                createInitializationRule(createValueRule(statement, function)),
                 createDefinitionStatementRule(),
-                createConditionalRule(statement, "if"),
-                createConditionalRule(statement, "while"),
+                createConditionalRule(statement, "if", createValueRule(statement, function)),
+                createConditionalRule(statement, "while", createValueRule(statement, function)),
                 createElseRule(statement),
                 createInvocationStatementRule(valueRule),
                 createReturnRule(valueRule),
@@ -359,16 +391,16 @@ public class Main {
 
     private static TypeRule createElseRule(LazyRule statement) {
         return new TypeRule("else", new StripRule(new PrefixRule("else ", new OrRule(List.of(
-                new NodeRule("child", createBlockRule(statement)),
-                new NodeRule("value", statement)
+                new NodeRule(METHOD_CHILD, createBlockRule(statement)),
+                new NodeRule(INITIALIZATION_VALUE, statement)
         )))));
     }
 
-    private static TypeRule createConditionalRule(LazyRule statement, String type) {
-        final var leftRule = new StripRule(new PrefixRule("(", new NodeRule("condition", createValueRule(statement))));
+    private static TypeRule createConditionalRule(LazyRule statement, String type, Rule value) {
+        final var leftRule = new StripRule(new PrefixRule("(", new NodeRule("condition", value)));
         final var blockRule = new OrRule(List.of(
-                new NodeRule("child", createBlockRule(statement)),
-                new NodeRule("child", statement)
+                new NodeRule(METHOD_CHILD, createBlockRule(statement)),
+                new NodeRule(METHOD_CHILD, statement)
         ));
 
         return new TypeRule(type, new PrefixRule(type, new InfixRule(leftRule, new ParenthesesMatcher(), blockRule)));
@@ -379,7 +411,7 @@ public class Main {
     }
 
     private static Rule createPostfixRule(String type, String operator, Rule value) {
-        return new TypeRule(type, new SuffixRule(new NodeRule("value", value), operator + ";"));
+        return new TypeRule(type, new SuffixRule(new NodeRule(INITIALIZATION_VALUE, value), operator + ";"));
     }
 
     private static Rule createAssignmentRule(Rule value) {
@@ -405,12 +437,13 @@ public class Main {
     }
 
     private static Rule createReturnRule(Rule value) {
-        return new TypeRule("return", new StripRule(new PrefixRule("return ", new SuffixRule(new NodeRule("value", value), ";"))));
+        return new TypeRule("return", new StripRule(new PrefixRule("return ", new SuffixRule(new NodeRule(INITIALIZATION_VALUE, value), ";"))));
     }
 
-    private static Rule createValueRule(Rule statement) {
+    private static Rule createValueRule(Rule statement, Rule function) {
         final var value = new LazyRule();
         value.set(new OrRule(List.of(
+                function,
                 createConstructionRule(value),
                 createInvocationRule(value),
                 createAccessRule("data-access", ".", value),
@@ -434,13 +467,13 @@ public class Main {
 
     private static TypeRule createLambdaRule(Rule statement, LazyRule value) {
         return new TypeRule("lambda", new InfixRule(new StringRule("args"), new FirstLocator("->"), new OrRule(List.of(
-                new NodeRule("child", createBlockRule(statement)),
-                new NodeRule("child", value)
+                new NodeRule(METHOD_CHILD, createBlockRule(statement)),
+                new NodeRule(METHOD_CHILD, value)
         ))));
     }
 
     private static TypeRule createStringRule() {
-        final var value = new PrefixRule("\"", new SuffixRule(new StringRule("value"), "\""));
+        final var value = new PrefixRule("\"", new SuffixRule(new StringRule(INITIALIZATION_VALUE), "\""));
         return new TypeRule("string", new StripRule(value));
     }
 
@@ -449,11 +482,11 @@ public class Main {
     }
 
     private static TypeRule createCharRule() {
-        return new TypeRule("char", new StripRule(new PrefixRule("'", new SuffixRule(new StringRule("value"), "'"))));
+        return new TypeRule("char", new StripRule(new PrefixRule("'", new SuffixRule(new StringRule(INITIALIZATION_VALUE), "'"))));
     }
 
     private static TypeRule createNumberRule() {
-        return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule("value"))));
+        return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule(INITIALIZATION_VALUE))));
     }
 
     private static TypeRule createOperatorRule(String type, String operator, LazyRule value) {
@@ -461,7 +494,7 @@ public class Main {
     }
 
     private static TypeRule createNotRule(LazyRule value) {
-        return new TypeRule("not", new StripRule(new PrefixRule("!", new NodeRule("value", value))));
+        return new TypeRule("not", new StripRule(new PrefixRule("!", new NodeRule(INITIALIZATION_VALUE, value))));
     }
 
     private static TypeRule createConstructionRule(LazyRule value) {
@@ -475,7 +508,7 @@ public class Main {
     }
 
     private static Rule createSymbolRule() {
-        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(DEFAULT_VALUE))));
+        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
     }
 
     private static Rule createAccessRule(String type, String infix, final Rule value) {
@@ -488,8 +521,8 @@ public class Main {
         final var typeProperty = new NodeRule("type", createTypeRule());
         final var typeAndName = new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
 
-        final var modifierRule = new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
-        final var modifiers = new DivideRule("modifiers", new SimpleDivider(" "), modifierRule);
+        final var modifierRule = new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(INITIALIZATION_VALUE))));
+        final var modifiers = new DivideRule(DEFINITION_MODIFIERS, new SimpleDivider(" "), modifierRule);
 
         final var typeParams = new StringRule("type-params");
         final var maybeTypeParams = new OrRule(List.of(
@@ -502,9 +535,9 @@ public class Main {
                 new ContextRule("Without modifiers", maybeTypeParams)
         ));
 
-        final var annotation = new TypeRule("annotation", new StripRule(new PrefixRule("@", new StringRule("value"))));
-        final var annotations = new DivideRule("annotations", new SimpleDivider("\n"), annotation);
-        return new TypeRule("definition", new OrRule(List.of(
+        final var annotation = new TypeRule("annotation", new StripRule(new PrefixRule("@", new StringRule(INITIALIZATION_VALUE))));
+        final var annotations = new DivideRule(DEFINITION_ANNOTATIONS, new SimpleDivider("\n"), annotation);
+        return new TypeRule(METHOD_DEFINITION, new OrRule(List.of(
                 new ContextRule("With annotations", new InfixRule(annotations, new LastLocator("\n"), withModifiers)),
                 new ContextRule("Without annotations", withModifiers)
         )));
@@ -531,11 +564,11 @@ public class Main {
     }
 
     private static TypeRule createArrayRule(LazyRule type) {
-        return new TypeRule("array", new SuffixRule(new NodeRule("child", type), "[]"));
+        return new TypeRule("array", new SuffixRule(new NodeRule(METHOD_CHILD, type), "[]"));
     }
 
     private static TypeRule createVarArgsRule(LazyRule type) {
-        return new TypeRule("var-args", new SuffixRule(new NodeRule("child", type), "..."));
+        return new TypeRule("var-args", new SuffixRule(new NodeRule(METHOD_CHILD, type), "..."));
     }
 
     private static TypeRule createGenericRule(LazyRule type) {

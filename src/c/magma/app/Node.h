@@ -21,4 +21,5 @@ public struct Node {
 	Node mapNodeList(String propertyKey, ((List<Node>) => List<Node>) mapper);
 	boolean hasNodeList(String propertyKey);
 	Node removeNodeList(String propertyKey);
+	Node mapNode(String propertyKey, ((Node) => Node) mapper);
 }

@@ -1,6 +1,5 @@
 public struct ApplicationError(Error cause) implements Error {
-	@Override
-public String display(){
+	String display=String display(){
 		return this.cause.display();
-	}
+	};
 }

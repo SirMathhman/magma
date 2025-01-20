@@ -9,25 +9,24 @@ public final struct CompileError implements Error {
 	private final String message;
 	private final Context context;
 	private final List<CompileError> children;
-	public CompileError(String message, Context context, List<CompileError> children){
+	public CompileError=public CompileError(String message, Context context, List<CompileError> children){
 		this.message =message;
 		this.context =context;
 		this.children = new ArrayList<>(children);
-	}
-	public CompileError(String message, Context context){
+	};
+	public CompileError=public CompileError(String message, Context context){
 		this(message, context, Collections.emptyList());
-	}
-	@Override
-public String display(){
+	};
+	String display=String display(){
 		return format(0);
-	}
-	public int maxDepth(){
+	};
+	int maxDepth=int maxDepth(){
 		return 1+this.children.stream().mapToInt(CompileError::maxDepth).max().orElse(0);
-	}
-	private String format(int depth){
+	};
+	String format=String format(int depth){
 		this.children.sort(Comparator.comparingInt(CompileError::maxDepth));
 		final var joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
                 .collect(Collectors.joining());
 		return this.message + ": " + this.context.display() + joinedChildren;
-	}
+	};
 }

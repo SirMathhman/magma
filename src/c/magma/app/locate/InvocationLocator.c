@@ -3,16 +3,13 @@ import magma.api.stream.Streams;
 import magma.app.rule.locate.Locator;
 import java.util.Optional;
 public struct InvocationLocator implements Locator {
-	@Override
-public String unwrap(){
+	String unwrap=String unwrap(){
 		return "(";
-	}
-	@Override
-public int length(){
+	};
+	int length=int length(){
 		return 1;
-	}
-	@Override
-public Stream<Integer> locate(String input){
+	};
+	Stream<Integer> locate=Stream<Integer> locate(String input){
 		var depth=0;
 		int i=input.length() - 1;
 		while(i>=0){
@@ -23,5 +20,5 @@ public Stream<Integer> locate(String input){
 		i--;
 	}
 		return Streams.empty();
-	}
+	};
 }

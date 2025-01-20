@@ -6,16 +6,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 public struct ParenthesesMatcher implements Locator {
-	@Override
-public String unwrap(){
+	String unwrap=String unwrap(){
 		return ")";
-	}
-	@Override
-public int length(){
+	};
+	int length=int length(){
 		return 1;
-	}
-	@Override
-public Stream<Integer> locate(String input){
+	};
+	Stream<Integer> locate=Stream<Integer> locate(String input){
 		var depth=0;
 		final var queue=IntStream.range(0, input.length()).mapToObj(index -> new Tuple<>(index, input.charAt(index)))
                 .collect(Collectors.toCollection(LinkedList::new));
@@ -35,5 +32,5 @@ public Stream<Integer> locate(String input){
 		if(c==')')depth--;
 	}
 		return Streams.empty();
-	}
+	};
 }

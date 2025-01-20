@@ -1,5 +1,5 @@
 public struct State(int depth) {
-	public boolean isShallow(){
+	boolean isShallow=boolean isShallow(){
 		return depth==1;
-	}
+	};
 }
