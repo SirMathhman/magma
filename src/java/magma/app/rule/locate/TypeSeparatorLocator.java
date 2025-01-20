@@ -2,7 +2,7 @@ package magma.app.rule.locate;
 
 import java.util.Optional;
 
-public class LocateTypeSeparator implements Locator {
+public class TypeSeparatorLocator implements Locator {
     @Override
     public String unwrap() {
         return " ";

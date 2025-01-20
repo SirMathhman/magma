@@ -23,13 +23,12 @@ import magma.app.rule.TypeRule;
 import magma.app.rule.divide.DivideRule;
 import magma.app.rule.divide.SimpleDivider;
 import magma.app.rule.divide.StatementDivider;
-import magma.app.rule.divide.ValueDivider;
 import magma.app.rule.filter.NumberFilter;
 import magma.app.rule.filter.SymbolFilter;
 import magma.app.rule.locate.FirstLocator;
 import magma.app.rule.locate.LastLocator;
-import magma.app.rule.locate.LocateTypeSeparator;
 import magma.app.rule.locate.ParenthesesMatcher;
+import magma.app.rule.locate.TypeSeparatorLocator;
 import magma.java.JavaFiles;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,6 +42,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import static magma.app.rule.divide.ValueDivider.VALUE_DIVIDER;
 public struct Main {
 	public static final Path SOURCE_DIRECTORY =Paths.get(".", "src", "java");
 	public static final Path TARGET_DIRECTORY =Paths.get(".", "src", "c");
@@ -252,7 +252,7 @@ public struct Main {
 		final var orRule =new OrRule(List.of(new NodeRule("child", createBlockRule(statement)), new ExactRule(";")));
 		final var definition =createDefinitionRule();
 		final var definitionProperty =new NodeRule("definition", definition);
-		final var params =new OrRule(List.of(new DivideRule("params", ValueDivider.VALUE_DIVIDER, definition), new ExactRule("")));
+		final var params =new OrRule(List.of(new DivideRule("params", VALUE_DIVIDER, definition), new ExactRule("")));
 		final var infixRule =new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
 		return new TypeRule("method", infixRule);
 	}
@@ -319,7 +319,7 @@ public struct Main {
 	}
 	private static TypeRule createConstructionRule(LazyRule value){
 		final var type =new StringRule("type");
-		final var arguments =new DivideRule("arguments", ValueDivider.VALUE_DIVIDER, value);
+		final var arguments =new DivideRule("arguments", VALUE_DIVIDER, value);
 		final var childRule =new InfixRule(type, new FirstLocator("("), new StripRule(new SuffixRule(arguments, ")")));
 		return new TypeRule("construction", new StripRule(new PrefixRule("new ", childRule)));
 	}
@@ -333,6 +333,9 @@ public struct Main {
 	private static Rule createDefinitionRule(){
 		final var modifiers =createModifiers();
 		final var type =new NodeRule("type", createTypeRule());
+		final var typeParam =new TypeRule("type-param", new StringRule("value"));
+		final var typeParams =new PrefixRule("<", new SuffixRule(new DivideRule("type-params", VALUE_DIVIDER, typeParam), ">"));
+		final var maybeTypeParams =new OrRule(List.of());
 		final var name =new StringRule("name");
 		final var maybeModifiers =new OrRule(List.of());
 		final var annotation =new TypeRule("annotation", new StringRule("value"));
@@ -346,7 +349,7 @@ public struct Main {
 	}
 	private static Rule createTypeRule();
 	private static TypeRule createFunctionalType(Rule type){
-		final var leftRule =new PrefixRule("(", new SuffixRule(new DivideRule("params", ValueDivider.VALUE_DIVIDER, type), ")"));
+		final var leftRule =new PrefixRule("(", new SuffixRule(new DivideRule("params", VALUE_DIVIDER, type), ")"));
 		final var rule =new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));
 		return new TypeRule(FUNCTIONAL_TYPE, new PrefixRule("(", new SuffixRule(rule, ")")));
 	}
@@ -357,6 +360,6 @@ public struct Main {
 		return new TypeRule("var-args", new SuffixRule(new NodeRule("child", type), "..."));
 	}
 	private static TypeRule createGenericRule(LazyRule type){
-		return new TypeRule("generic", new InfixRule(new StripRule(new StringRule(PARENT)), new FirstLocator("<"), new SuffixRule(new DivideRule(GENERIC_CHILDREN, ValueDivider.VALUE_DIVIDER, type), ">")));
+		return new TypeRule("generic", new InfixRule(new StripRule(new StringRule(PARENT)), new FirstLocator("<"), new SuffixRule(new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, type), ">")));
 	}
 }

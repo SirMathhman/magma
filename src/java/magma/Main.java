@@ -25,13 +25,12 @@ import magma.app.rule.TypeRule;
 import magma.app.rule.divide.DivideRule;
 import magma.app.rule.divide.SimpleDivider;
 import magma.app.rule.divide.StatementDivider;
-import magma.app.rule.divide.ValueDivider;
 import magma.app.rule.filter.NumberFilter;
 import magma.app.rule.filter.SymbolFilter;
 import magma.app.rule.locate.FirstLocator;
 import magma.app.rule.locate.LastLocator;
-import magma.app.rule.locate.LocateTypeSeparator;
 import magma.app.rule.locate.ParenthesesMatcher;
+import magma.app.rule.locate.TypeSeparatorLocator;
 import magma.java.JavaFiles;
 
 import java.io.IOException;
@@ -46,6 +45,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static magma.app.rule.divide.ValueDivider.VALUE_DIVIDER;
 
 public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
@@ -306,7 +307,7 @@ public class Main {
         final var definition = createDefinitionRule();
         final var definitionProperty = new NodeRule("definition", definition);
         final var params = new OrRule(List.of(
-                new DivideRule("params", ValueDivider.VALUE_DIVIDER, definition),
+                new DivideRule("params", VALUE_DIVIDER, definition),
                 new ExactRule("")
         ));
 
@@ -384,7 +385,7 @@ public class Main {
     private static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
         final var children = new OrRule(List.of(
-                new DivideRule(GENERIC_CHILDREN, ValueDivider.VALUE_DIVIDER, value),
+                new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, value),
                 new ExactRule("")
         ));
 
@@ -453,7 +454,7 @@ public class Main {
 
     private static TypeRule createConstructionRule(LazyRule value) {
         final var type = new StringRule("type");
-        final var arguments = new DivideRule("arguments", ValueDivider.VALUE_DIVIDER, value);
+        final var arguments = new DivideRule("arguments", VALUE_DIVIDER, value);
         final var childRule = new InfixRule(type, new FirstLocator("("), new StripRule(new SuffixRule(arguments, ")")));
         return new TypeRule("construction", new StripRule(new PrefixRule("new ", childRule)));
     }
@@ -471,11 +472,18 @@ public class Main {
         final var modifiers = createModifiers();
 
         final var type = new NodeRule("type", createTypeRule());
+        final var typeParam = new TypeRule("type-param", new StringRule("value"));
+        final var typeParams = new PrefixRule("<", new SuffixRule(new DivideRule("type-params", VALUE_DIVIDER, typeParam), ">"));
+        final var maybeTypeParams = new OrRule(List.of(
+                new InfixRule(new StripRule(typeParams), new TypeSeparatorLocator(), type),
+                type
+        ));
+
         final var name = new StringRule("name");
 
         final var maybeModifiers = new OrRule(List.of(
-                new InfixRule(modifiers, new LocateTypeSeparator(), type),
-                type
+                new InfixRule(modifiers, new TypeSeparatorLocator(), maybeTypeParams),
+                maybeTypeParams
         ));
 
         final var annotation = new TypeRule("annotation", new StringRule("value"));
@@ -508,7 +516,7 @@ public class Main {
     }
 
     private static TypeRule createFunctionalType(Rule type) {
-        final var leftRule = new PrefixRule("(", new SuffixRule(new DivideRule("params", ValueDivider.VALUE_DIVIDER, type), ")"));
+        final var leftRule = new PrefixRule("(", new SuffixRule(new DivideRule("params", VALUE_DIVIDER, type), ")"));
         final var rule = new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));
         return new TypeRule(FUNCTIONAL_TYPE, new PrefixRule("(", new SuffixRule(rule, ")")));
     }
@@ -522,6 +530,6 @@ public class Main {
     }
 
     private static TypeRule createGenericRule(LazyRule type) {
-        return new TypeRule("generic", new InfixRule(new StripRule(new StringRule(PARENT)), new FirstLocator("<"), new SuffixRule(new DivideRule(GENERIC_CHILDREN, ValueDivider.VALUE_DIVIDER, type), ">")));
+        return new TypeRule("generic", new InfixRule(new StripRule(new StringRule(PARENT)), new FirstLocator("<"), new SuffixRule(new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, type), ">")));
     }
 }
