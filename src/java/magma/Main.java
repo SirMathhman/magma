@@ -321,11 +321,17 @@ public class Main {
                 createOperatorRule("less", "<", value),
                 createOperatorRule("equals", "==", value),
                 createOperatorRule("and", "&&", value),
+                createOperatorRule("add", "+", value),
                 createCharRule(),
+                createStringRule(),
                 createTernaryRule(value)
         )));
 
         return value;
+    }
+
+    private static TypeRule createStringRule() {
+        return new TypeRule("string", new PrefixRule("\"", new SuffixRule(new StringRule("value"), "\"")));
     }
 
     private static TypeRule createTernaryRule(LazyRule value) {
@@ -349,7 +355,10 @@ public class Main {
     }
 
     private static TypeRule createConstructionRule(LazyRule value) {
-        return new TypeRule("construction", new StripRule(new PrefixRule("new ", new InfixRule(new StringRule("type"), new FirstLocator("("), new StripRule(new SuffixRule(new DivideRule("arguments", ValueDivider.VALUE_DIVIDER, value), ")"))))));
+        final var type = new StringRule("type");
+        final var arguments = new DivideRule("arguments", ValueDivider.VALUE_DIVIDER, value);
+        final var childRule = new InfixRule(type, new FirstLocator("("), new StripRule(new SuffixRule(arguments, ")")));
+        return new TypeRule("construction", new StripRule(new PrefixRule("new ", childRule)));
     }
 
     private static Rule createSymbolRule() {

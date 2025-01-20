@@ -27,8 +27,8 @@ public class ValueDivider implements Divider {
                 buffer = new StringBuilder();
             } else {
                 buffer.append(c);
-                if (c == '<') depth++;
-                if (c == '>') depth--;
+                if (c == '<' || c == '(') depth++;
+                if (c == '>' || c == ')') depth--;
             }
             i++;
         }
