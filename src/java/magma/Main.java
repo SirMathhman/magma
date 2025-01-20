@@ -11,7 +11,8 @@ import magma.app.error.context.StringContext;
 import magma.app.filter.SymbolFilter;
 import magma.app.locate.FirstLocator;
 import magma.app.locate.LastLocator;
-import magma.app.locate.Locator;
+import magma.app.locate.LocateTypeSeparator;
+import magma.app.locate.ParenthesesMatcher;
 import magma.app.rule.DivideRule;
 import magma.app.rule.ExactRule;
 import magma.app.rule.FilterRule;
@@ -369,54 +370,5 @@ public class Main {
         )), new LastLocator(" "), name);
 
         return new TypeRule("definition", rule);
-    }
-
-    private static class ParenthesesMatcher implements Locator {
-        @Override
-        public String unwrap() {
-            return ")";
-        }
-
-        @Override
-        public int length() {
-            return 1;
-        }
-
-        @Override
-        public Optional<Integer> locate(String input) {
-            var depth = 0;
-            for (int i = 0; i < input.length(); i++) {
-                final var c = input.charAt(i);
-                if (c == ')' && depth == 1) return Optional.of(i);
-                if (c == '(') depth++;
-                if (c == ')') depth--;
-            }
-            return Optional.empty();
-        }
-    }
-
-    private static class LocateTypeSeparator implements Locator {
-        @Override
-        public String unwrap() {
-            return " ";
-        }
-
-        @Override
-        public int length() {
-            return 1;
-        }
-
-        @Override
-        public Optional<Integer> locate(String input) {
-            var depth = 0;
-            for (int i = input.length() - 1; i >= 0; i--) {
-                var c = input.charAt(i);
-                if (c == ' ' && depth == 1) return Optional.of(i);
-                if (c == '>') depth++;
-                if (c == '<') depth--;
-            }
-
-            return Optional.empty();
-        }
     }
 }
