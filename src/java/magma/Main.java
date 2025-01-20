@@ -3,7 +3,6 @@ package magma;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
@@ -172,8 +171,8 @@ public class Main {
 
     private static OrRule createRootSegmentRule() {
         return new OrRule(List.of(
-                createNamespacedRule("package "),
-                createNamespacedRule("import "),
+                createNamespacedRule("package", "package "),
+                createNamespacedRule("import", "import "),
                 createStructRule("class", "class "),
                 createStructRule("record", "record "),
                 createStructRule("interface", "interface "),
@@ -181,8 +180,8 @@ public class Main {
         ));
     }
 
-    private static PrefixRule createNamespacedRule(String prefix) {
-        return new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";"));
+    private static Rule createNamespacedRule(String type, String prefix) {
+        return new TypeRule(type, new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";")));
     }
 
     private static Rule createStructRule(String type, String infix) {

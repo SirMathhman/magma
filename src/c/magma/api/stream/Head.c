@@ -1,1 +1,1 @@
-package magma.api.stream;package java.util.Optional;public interface Head<T> {Optional<T> next();}
+package magma.api.stream;import java.util.Optional;public interface Head<T> {Optional<T> next();}

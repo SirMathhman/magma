@@ -1,1 +1,1 @@
-package magma.app.rule;package magma.api.result.Result;package magma.app.Node;package magma.app.error.CompileError;public interface Rule {Result<Node, CompileError> parse(String input);Result<String, CompileError> generate(Node node);}
+package magma.app.rule;import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;public interface Rule {Result<Node, CompileError> parse(String input);Result<String, CompileError> generate(Node node);}
