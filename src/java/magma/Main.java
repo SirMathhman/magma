@@ -431,7 +431,7 @@ public class Main {
     }
 
     private static TypeRule createGenericRule(LazyRule type) {
-        return new TypeRule("generic", new InfixRule(new StringRule("caller"), new FirstLocator("<"), new SuffixRule(new DivideRule("children", ValueDivider.VALUE_DIVIDER, type), ">")));
+        return new TypeRule("generic", new InfixRule(new StripRule(new StringRule("caller")), new FirstLocator("<"), new SuffixRule(new DivideRule("children", ValueDivider.VALUE_DIVIDER, type), ">")));
     }
 
 }
