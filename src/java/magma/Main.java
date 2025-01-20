@@ -285,6 +285,7 @@ public class Main {
         statement.set(new OrRule(List.of(
                 createDefinitionStatementRule(),
                 createIfRule(statement),
+                createElseRule(statement),
                 createInvocationRule(valueRule),
                 createReturnRule(valueRule),
                 createAssignmentRule(valueRule),
@@ -292,6 +293,10 @@ public class Main {
                 createWhitespaceRule()
         )));
         return statement;
+    }
+
+    private static TypeRule createElseRule(LazyRule statement) {
+        return new TypeRule("else", new StripRule(new PrefixRule("else ", createBlockRule(statement))));
     }
 
     private static TypeRule createIfRule(LazyRule statement) {
