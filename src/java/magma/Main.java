@@ -17,6 +17,7 @@ import magma.app.rule.ExactRule;
 import magma.app.rule.FilterRule;
 import magma.app.rule.InfixRule;
 import magma.app.rule.LazyRule;
+import magma.app.rule.NodeRule;
 import magma.app.rule.OrRule;
 import magma.app.rule.PrefixRule;
 import magma.app.rule.Rule;
