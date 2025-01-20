@@ -16,7 +16,7 @@ public struct Ok<T, X>(T value) implements Result<T, X> {
 		return new Ok<>(this.value);
 	}
 	@Override
-    public <R> R match(((T) => R) onOk,  ((X) => R) onErr){
+    public <R> R match(((T) => R) onOk, ((X) => R) onErr){
 		return onOk.apply(this.value);
 	}
 	@Override

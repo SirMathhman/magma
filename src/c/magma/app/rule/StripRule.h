@@ -13,8 +13,8 @@ public struct StripRule(
 	}
 	@Override
     public Result<String, CompileError> generate(Node node){
-		final var before =node.findString(this.before).orElse("");
-		final var after =node.findString(this.after).orElse("");
+		final var before=node.findString(this.before).orElse("");
+		final var after=node.findString(this.after).orElse("");
 		return this.childRule.generate(node).mapValue(content ->before+content+after);
 	}
 }

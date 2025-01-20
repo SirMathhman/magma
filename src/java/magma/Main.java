@@ -327,7 +327,8 @@ public class Main {
         final var statement = new LazyRule();
         final var valueRule = createValueRule(statement);
         statement.set(new OrRule(List.of(
-                createKeywordRule(),
+                createKeywordRule("continue"),
+                createKeywordRule("break"),
                 createInitializationRule(statement),
                 createDefinitionStatementRule(),
                 createConditionalRule(statement, "if"),
@@ -343,8 +344,8 @@ public class Main {
         return statement;
     }
 
-    private static TypeRule createKeywordRule() {
-        return new TypeRule("continue", new ExactRule("continue;"));
+    private static TypeRule createKeywordRule(String keyword) {
+        return new TypeRule(keyword, new StripRule(new ExactRule(keyword + ";")));
     }
 
     private static TypeRule createElseRule(LazyRule statement) {
@@ -477,7 +478,7 @@ public class Main {
         final var modifiers = new StringRule("modifiers");
         final var typeParams = new StringRule("type-params");
         final var rule1 = new OrRule(List.of(
-                new ContextRule("With type params", new InfixRule(new StripRule(new PrefixRule("<", typeParams)),  new FirstLocator(">"), new StripRule(rule))),
+                new ContextRule("With type params", new InfixRule(new StripRule(new PrefixRule("<", typeParams)), new FirstLocator(">"), new StripRule(rule))),
                 new ContextRule("Without type params", rule)
         ));
 

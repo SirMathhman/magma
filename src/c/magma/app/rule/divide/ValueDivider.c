@@ -13,7 +13,7 @@ public struct ValueDivider implements Divider {
 	public static final Divider VALUE_DIVIDER = new ValueDivider();
 	private ValueDivider();
 	@Override
-    public String merge(String current,  String value){
+    public String merge(String current, String value){
 		return current+", "+value;
 	}
 	@Override

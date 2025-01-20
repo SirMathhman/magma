@@ -7,16 +7,16 @@ import magma.app.error.context.StringContext;
 public struct SuffixRule implements Rule {
 	private final String suffix;
 	private final Rule childRule;
-	public SuffixRule(Rule childRule,  String suffix){
+	public SuffixRule(Rule childRule, String suffix){
 		this.suffix =suffix;
 		this.childRule =childRule;
 	}
-	public static Result<String, CompileError> truncateRight(String input,  String slice){
+	public static Result<String, CompileError> truncateRight(String input, String slice){
 		if(input.endsWith(slice)){
 		return new Ok<>(input.substring(0, input.length() - slice.length()));
 	}
 		else {
-		return new Err<>(new CompileError("Suffix '" + slice + "' not present", new StringContext(input)));
+		return new Err<>(new CompileError("Suffix '"+slice+"' not present", new StringContext(input)));
 	}
 	}
 	@Override
