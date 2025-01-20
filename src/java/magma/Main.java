@@ -10,6 +10,8 @@ import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
 import magma.app.locate.InvocationLocator;
+import magma.app.locate.ModifierSeparator;
+import magma.app.rule.ContextRule;
 import magma.app.rule.ExactRule;
 import magma.app.rule.FilterRule;
 import magma.app.rule.InfixRule;
@@ -23,14 +25,12 @@ import magma.app.rule.StripRule;
 import magma.app.rule.SuffixRule;
 import magma.app.rule.TypeRule;
 import magma.app.rule.divide.DivideRule;
-import magma.app.rule.divide.SimpleDivider;
 import magma.app.rule.divide.StatementDivider;
 import magma.app.rule.filter.NumberFilter;
 import magma.app.rule.filter.SymbolFilter;
 import magma.app.rule.locate.FirstLocator;
 import magma.app.rule.locate.LastLocator;
 import magma.app.rule.locate.ParenthesesMatcher;
-import magma.app.rule.locate.TypeSeparatorLocator;
 import magma.java.JavaFiles;
 
 import java.io.IOException;
@@ -469,37 +469,14 @@ public class Main {
     }
 
     private static Rule createDefinitionRule() {
-        final var modifiers = createModifiers();
-
-        final var type = new NodeRule("type", createTypeRule());
-        final var typeParam = new TypeRule("type-param", new StringRule("value"));
-        final var typeParams = new PrefixRule("<", new SuffixRule(new DivideRule("type-params", VALUE_DIVIDER, typeParam), ">"));
-        final var maybeTypeParams = new OrRule(List.of(
-                new InfixRule(new StripRule(typeParams), new TypeSeparatorLocator(), type),
-                type
-        ));
-
-        final var name = new StringRule("name");
-
-        final var maybeModifiers = new OrRule(List.of(
-                new InfixRule(modifiers, new TypeSeparatorLocator(), maybeTypeParams),
-                maybeTypeParams
-        ));
-
-        final var annotation = new TypeRule("annotation", new StringRule("value"));
-        final var annotations = new DivideRule("annotations", new SimpleDivider("\n"), annotation);
-        final var maybeAnnotations = new OrRule(List.of(
-                new InfixRule(annotations, new LastLocator("\n"), maybeModifiers),
-                maybeModifiers
-        ));
-
-        final var rule = new InfixRule(maybeAnnotations, new LastLocator(" "), name);
-
-        return new TypeRule("definition", rule);
-    }
-
-    private static DivideRule createModifiers() {
-        return new DivideRule("modifiers", new SimpleDivider(" "), new StripRule(new StringRule("value")));
+        final var name = new FilterRule(new SymbolFilter(), new StringRule("name"));
+        final var typeProperty = new NodeRule("type", createTypeRule());
+        final var rule = new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
+        final var modifiers = new StringRule("modifiers");
+        return new TypeRule("definition", new OrRule(List.of(
+                new ContextRule("With modifiers", new StripRule(new InfixRule(modifiers, new ModifierSeparator(), rule))),
+                new ContextRule("Without modifiers", rule)
+        )));
     }
 
     private static Rule createTypeRule() {
@@ -532,4 +509,5 @@ public class Main {
     private static TypeRule createGenericRule(LazyRule type) {
         return new TypeRule("generic", new InfixRule(new StripRule(new StringRule(PARENT)), new FirstLocator("<"), new SuffixRule(new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, type), ">")));
     }
+
 }

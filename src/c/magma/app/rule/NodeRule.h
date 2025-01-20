@@ -13,6 +13,6 @@ public struct NodeRule(String propertyKey, Rule childRule) implements Rule {
     public Result<String, CompileError> generate(Node node){
 		return node.findNode(this.propertyKey)
                 .map(this.childRule::generate)
-                .orElseGet(() -> new Err<>(new CompileError("Node '" + this.propertyKey + "' was not present", new NodeContext(node))));
+                .orElseGet(() ->new Err<>(new CompileError("Node '"+this.propertyKey + "' was not present", new NodeContext(node))));
 	}
 }

@@ -6,7 +6,7 @@ public struct Result<T, X> {
 	<R> Result<R, X> flatMapValue(((T) => Result<R, X>) mapper);
 	<R> Result<R, X> mapValue(((T) => R) mapper);
 	<R> Result<T, R> mapErr(((X) => R) mapper);
-	<R> R match(((T) => R) onOk,  ((X) => R) onErr);
+	<R> R match(((T) => R) onOk, ((X) => R) onErr);
 	<R> Result<Tuple<T, R>, X> and();
 	<R> Result<T, Tuple<X, R>> or();
 	Optional<T> findValue();

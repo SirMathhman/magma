@@ -9,6 +9,8 @@ import magma.app.error.CompileError;
 import magma.app.error.context.StringContext;
 import magma.app.rule.locate.Locator;
 
+import java.util.List;
+
 public final class InfixRule implements Rule {
     private final Rule leftRule;
     private final Locator locator;
@@ -28,6 +30,10 @@ public final class InfixRule implements Rule {
         }).orElseGet(() -> new Err<>(new CompileError("Infix '" + locator.unwrap() + "' not present", new StringContext(input))));
     }
 
+    private static CompileError invalidate(CompileError err, String left, String type) {
+        return new CompileError("Failed to process " + type, new StringContext(left), List.of(err));
+    }
+
     @Override
     public Result<String, CompileError> generate(Node node) {
         return this.leftRule.generate(node).and(
@@ -37,8 +43,13 @@ public final class InfixRule implements Rule {
 
     @Override
     public Result<Node, CompileError> parse(String input) {
-        return split(this.locator, input).flatMapValue(
-                tuple -> this.leftRule.parse(tuple.left()).and(
-                        () -> this.rightRule.parse(tuple.right())).mapValue(Tuple.merge(Node::merge)));
+        return split(this.locator, input).flatMapValue(tuple -> {
+            final var left = tuple.left();
+            final var right = tuple.right();
+            return this.leftRule.parse(left)
+                    .mapErr(err -> invalidate(err, left, "left"))
+                    .and(() -> this.rightRule.parse(right).mapErr(err -> invalidate(err, right, "right")))
+                    .mapValue(Tuple.merge(Node::merge));
+        });
     }
 }

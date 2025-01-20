@@ -9,11 +9,11 @@ public struct SimpleDivider implements Divider {
 		this.delimiter =delimiter;
 	}
 	@Override
-    public String merge(String current,  String value){
+public String merge(String current, String value){
 		return current+delimiter+value;
 	}
 	@Override
-    public Result<List<String>, CompileError> divide(String input){
+public Result<List<String>, CompileError> divide(String input){
 		return new Ok<>(Arrays.stream(input.split(delimiter)).toList());
 	}
 }

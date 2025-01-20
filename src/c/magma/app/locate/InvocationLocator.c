@@ -11,13 +11,13 @@ public struct InvocationLocator implements Locator {
 	}
 	@Override
     public Optional<Integer> locate(String input){
-		var depth =0;
-		int i =input.length() - 1;
+		var depth=0;
+		int i=input.length() - 1;
 		while(i>=0){
-		var c =input.charAt(i);
-		if (c == '(' && depth == 0) return Optional.of(i);
-		if(c==')') depth++;
-		if(c=='(') depth--;
+		var c=input.charAt(i);
+		if(c=='('&&depth==0)return Optional.of(i);
+		if(c==')')depth++;
+		if(c=='(')depth--;
 		i--;
 	}
 		return Optional.empty();
