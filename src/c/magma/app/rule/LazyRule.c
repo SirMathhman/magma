@@ -8,7 +8,7 @@ import magma.app.error.context.NodeContext;
 import magma.app.error.context.StringContext;
 import java.util.Optional;
 public struct LazyRule implements Rule {
-	private Optional<Rule> childRule =Optional.empty();
+	private Optional<Rule> childRule=Optional.empty();
 	@Override
     public Result<Node, CompileError> parse(String input){
 		return findChild(new StringContext(input)).flatMapValue(rule ->rule.parse(input));

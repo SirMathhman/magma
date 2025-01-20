@@ -18,7 +18,7 @@ public final struct InfixRule implements Rule {
 	}
 	public static Result<Tuple<String, String>, CompileError> split(Locator locator, String input){
 		return locator.locate(input).<Result<Tuple<String, String>, CompileError>>map(index -> {
-final var left =input.substring(0, index);
+            final var left=input.substring(0, index);
             final var right = input.substring(index + locator.length());
             return new Ok<>(new Tuple<String, String>(left, right));
         }).orElseGet(() ->new Err<>(new CompileError("Infix '"+locator.unwrap() + "' not present", new StringContext(input))));
@@ -27,15 +27,15 @@ final var left =input.substring(0, index);
 		return new CompileError("Failed to process "+type, new StringContext(left), List.of(err));
 	}
 	@Override
-public Result<String, CompileError> generate(Node node){
+    public Result<String, CompileError> generate(Node node){
 		return this.leftRule.generate(node).and(
                 () ->this.rightRule.generate(node)).mapValue(Tuple.merge(
                 (left, right) ->left+this.locator.unwrap() + right));
 	}
 	@Override
-public Result<Node, CompileError> parse(String input){
+    public Result<Node, CompileError> parse(String input){
 		return split(this.locator, input).flatMapValue(tuple -> {
-final var left =tuple.left();
+            final var left=tuple.left();
             final var right = tuple.right();
             return this.leftRule.parse(left)
                     .mapErr(err -> invalidate(err, left, "left"))

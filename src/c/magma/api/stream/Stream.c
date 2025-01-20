@@ -6,5 +6,5 @@ public struct Stream<T> {
 	Optional<T> foldLeft(((T, T) => T) folder);
 	<R> R foldLeft(R initial, ((R, T) => R) folder);
 	<R> Stream<R> map(((T) => R) mapper);
-	<R,  X> Result<R, X> foldLeftToResult(R initial, ((R, T) => Result<R, X>) folder);
+	<R, X> Result<R, X> foldLeftToResult(R initial, ((R, T) => Result<R, X>) folder);
 }

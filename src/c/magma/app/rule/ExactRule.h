@@ -7,9 +7,9 @@ import magma.app.error.CompileError;
 import magma.app.error.context.StringContext;
 public struct ExactRule(String slice) implements Rule {
 	@Override
-public Result<Node, CompileError> parse(String input);
+    public Result<Node, CompileError> parse(String input);
 	@Override
-public Result<String, CompileError> generate(Node node){
+    public Result<String, CompileError> generate(Node node){
 		return new Ok<>(this.slice);
 	}
 }

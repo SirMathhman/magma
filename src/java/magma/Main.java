@@ -473,9 +473,15 @@ public class Main {
         final var typeProperty = new NodeRule("type", createTypeRule());
         final var rule = new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
         final var modifiers = new StringRule("modifiers");
+        final var typeParams = new StringRule("type-params");
+        final var rule1 = new OrRule(List.of(
+                new ContextRule("With type params", new InfixRule(new StripRule(new PrefixRule("<", typeParams)),  new FirstLocator(">"), new StripRule(rule))),
+                new ContextRule("Without type params", rule)
+        ));
+
         return new TypeRule("definition", new OrRule(List.of(
-                new ContextRule("With modifiers", new StripRule(new InfixRule(modifiers, new ModifierSeparator(), rule))),
-                new ContextRule("Without modifiers", rule)
+                new ContextRule("With modifiers", new StripRule(new InfixRule(modifiers, new ModifierSeparator(), rule1))),
+                new ContextRule("Without modifiers", rule1)
         )));
     }
 

@@ -16,7 +16,7 @@ public struct Err<T, X>(X error) implements Result<T, X> {
 		return new Err<>(mapper.apply(this.error));
 	}
 	@Override
-    public <R> R match(((T) => R) onOk,  ((X) => R) onErr){
+    public <R> R match(((T) => R) onOk, ((X) => R) onErr){
 		return onErr.apply(this.error);
 	}
 	@Override

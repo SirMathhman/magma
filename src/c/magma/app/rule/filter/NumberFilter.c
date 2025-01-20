@@ -4,7 +4,7 @@ public struct NumberFilter implements Predicate<String> {
 	private static boolean allDigits(String input){
 		return IntStream.range(0, input.length())
                 .mapToObj(input::charAt)
- .allMatch(Character::isDigit);
+                .allMatch(Character::isDigit);
 	}
 	@Override
     public boolean test(String input){
