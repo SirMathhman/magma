@@ -1,8 +1,8 @@
 package magma.app.rule;
 
 import magma.api.result.Err;
-import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.api.stream.Streams;
 import magma.app.MapNode;
 import magma.app.Node;
 import magma.app.error.CompileError;
@@ -27,14 +27,10 @@ public class DivideRule implements Rule {
             List<T> segments,
             Function<T, Result<R, CompileError>> mapper
     ) {
-        Result<List<R>, CompileError> nodes = new Ok<>(new ArrayList<>());
-        for (T segment : segments) {
-            nodes = nodes.and(() -> mapper.apply(segment)).mapValue(tuple -> {
-                tuple.left().add(tuple.right());
-                return tuple.left();
-            });
-        }
-        return nodes;
+        return Streams.from(segments).foldLeftToResult(new ArrayList<>(), (rs, t) -> mapper.apply(t).mapValue(inner -> {
+            rs.add(inner);
+            return rs;
+        }));
     }
 
     @Override
