@@ -11,17 +11,17 @@ public final struct InfixRule implements Rule {
 	private final Rule leftRule;
 	private final Locator locator;
 	private final Rule rightRule;
-	public InfixRule=public InfixRule(Rule leftRule, Locator locator, Rule rightRule){
+	((Rule, Locator, Rule) => public) InfixRule=public InfixRule(Rule leftRule, Locator locator, Rule rightRule){
 		this.leftRule =leftRule;
 		this.locator =locator;
 		this.rightRule =rightRule;
 	};
-	Result<String, CompileError> generate=Result<String, CompileError> generate(Node node){
+	((Node) => Result<String, CompileError>) generate=Result<String, CompileError> generate(Node node){
 		return this.leftRule.generate(node).and(
                 () ->this.rightRule.generate(node)).mapValue(Tuple.merge(
                 (left, right) ->left+this.locator.unwrap() + right));
 	};
-	Result<Node, CompileError> parse=Result<Node, CompileError> parse(String input){
+	((String) => Result<Node, CompileError>) parse=Result<Node, CompileError> parse(String input){
 		final var indices=this.locator.locate(input).foldLeft(new ArrayList<>(), InfixRule::add);
 		final var errors=new ArrayList<CompileError>();
 		int i=0;
@@ -40,7 +40,7 @@ public final struct InfixRule implements Rule {
 	}
 		return new Err<>(new CompileError("Infix '"+this.locator.unwrap() + "' not present", new StringContext(input), errors));
 	};
-	ArrayList<Integer> add=ArrayList<Integer> add(ArrayList<Integer> integers, Integer integer){
+	((ArrayList<Integer>, Integer) => ArrayList<Integer>) add=ArrayList<Integer> add(ArrayList<Integer> integers, Integer integer){
 		integers.add(integer);
 		return integers;
 	};

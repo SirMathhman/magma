@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 public struct StatementDivider implements Divider {
 	public static final Divider STATEMENT_DIVIDER=new StatementDivider();
-	private StatementDivider=private StatementDivider();;
-	String merge=String merge(String current, String value){
+	(() => private) StatementDivider=private StatementDivider();;
+	((String, String) => String) merge=String merge(String current, String value){
 		return current+value;
 	};
-	Result<List<String>, CompileError> divide=Result<List<String>, CompileError> divide(String input){
+	((String) => Result<List<String>, CompileError>) divide=Result<List<String>, CompileError> divide(String input){
 		final var segments=new ArrayList<String>();
 		var buffer=new StringBuilder();
 		var depth=0;

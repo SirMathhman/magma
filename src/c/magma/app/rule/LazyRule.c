@@ -9,10 +9,10 @@ import magma.app.error.context.StringContext;
 import java.util.Optional;
 public struct LazyRule implements Rule {
 	private Optional<Rule> childRule=Optional.empty();
-	Result<Node, CompileError> parse=Result<Node, CompileError> parse(String input){
+	((String) => Result<Node, CompileError>) parse=Result<Node, CompileError> parse(String input){
 		return findChild(new StringContext(input)).flatMapValue(rule ->rule.parse(input));
 	};
-	Result<Rule, CompileError> findChild=Result<Rule, CompileError> findChild(Context context){
+	((Context) => Result<Rule, CompileError>) findChild=Result<Rule, CompileError> findChild(Context context){
 		if(this.childRule.isPresent()){
 		return new Ok<>(this.childRule.get());
 	}
@@ -20,10 +20,10 @@ public struct LazyRule implements Rule {
 		return new Err<>(new CompileError("Child rule is not set.", context));
 	}
 	};
-	Result<String, CompileError> generate=Result<String, CompileError> generate(Node node){
+	((Node) => Result<String, CompileError>) generate=Result<String, CompileError> generate(Node node){
 		return findChild(new NodeContext(node)).flatMapValue(rule ->rule.generate(node));
 	};
-	void set=void set(Rule childRule){
+	((Rule) => void) set=void set(Rule childRule){
 		this.childRule = Optional.of(childRule);
 	};
 }

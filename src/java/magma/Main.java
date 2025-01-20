@@ -72,9 +72,9 @@ public class Main {
     public static final String METHOD_CHILD = "child";
     public static final String DEFINITION_ANNOTATIONS = "annotations";
     public static final String DEFINITION_MODIFIERS = "modifiers";
-    public static final String METHOD_DEFINITION = Main.INITIALIZATION_TYPE;
     public static final String METHOD_TYPE = "method";
     public static final String INITIALIZATION_TYPE = "initialization";
+    public static final String METHOD_DEFINITION = Main.INITIALIZATION_TYPE;
     public static final String INITIALIZATION_VALUE = "value";
 
     public static void main(String[] args) {
@@ -187,20 +187,40 @@ public class Main {
 
     private static Optional<Result<Node, CompileError>> afterPass(Node node) {
         if (node.is(METHOD_TYPE)) {
-            final var pruneParams = removeParams(node).mapNode(METHOD_DEFINITION, definition -> {
-                return definition.removeNodeList(DEFINITION_ANNOTATIONS)
+            final var cleaned = removeParams(node).mapNode(METHOD_DEFINITION, definition -> {
+                return definition
+                        .removeNodeList(DEFINITION_ANNOTATIONS)
                         .removeNodeList(DEFINITION_MODIFIERS);
             });
 
-            final var maybeValue = pruneParams.findNode(METHOD_CHILD);
+            final var maybeValue = cleaned.findNode(METHOD_CHILD);
+            final var paramTypes = cleaned.findNodeList("params")
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(param -> param.findNode("type"))
+                    .flatMap(Optional::stream)
+                    .toList();
+
             final Node node1;
             if (maybeValue.isPresent()) {
-                final var definition = pruneParams.findNode(METHOD_DEFINITION).orElse(new MapNode());
+                final var definition = cleaned.findNode(METHOD_DEFINITION)
+                        .orElse(new MapNode())
+                        .mapNode("type", type -> {
+                            final var node2 = new MapNode("functional")
+                                    .withNode("return", type);
+
+                            if (paramTypes.isEmpty()) {
+                                return node2;
+                            } else {
+                                return node2.withNodeList("params", paramTypes);
+                            }
+                        });
+
                 node1 = new MapNode(INITIALIZATION_TYPE)
                         .withNode(Main.INITIALIZATION_TYPE, definition)
-                        .withNode(INITIALIZATION_VALUE, pruneParams);
+                        .withNode(INITIALIZATION_VALUE, cleaned);
             } else {
-                node1 = pruneParams;
+                node1 = cleaned;
             }
             return Optional.of(new Ok<>(node1));
         }

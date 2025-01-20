@@ -5,13 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 public struct SimpleDivider implements Divider {
 	private final String delimiter;
-	public SimpleDivider=public SimpleDivider(String delimiter){
+	((String) => public) SimpleDivider=public SimpleDivider(String delimiter){
 		this.delimiter =delimiter;
 	};
-	String merge=String merge(String current, String value){
+	((String, String) => String) merge=String merge(String current, String value){
 		return current+delimiter+value;
 	};
-	Result<List<String>, CompileError> divide=Result<List<String>, CompileError> divide(String input){
+	((String) => Result<List<String>, CompileError>) divide=Result<List<String>, CompileError> divide(String input){
 		return new Ok<>(Arrays.stream(input.split(delimiter)).toList());
 	};
 }

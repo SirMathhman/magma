@@ -5,10 +5,10 @@ import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
 public struct NodeRule(String propertyKey, Rule childRule) implements Rule {
-	Result<Node, CompileError> parse=Result<Node, CompileError> parse(String input){
+	((String) => Result<Node, CompileError>) parse=Result<Node, CompileError> parse(String input){
 		return this.childRule.parse(input).mapValue(node -> new MapNode().withNode(this.propertyKey, node));
 	};
-	Result<String, CompileError> generate=Result<String, CompileError> generate(Node node){
+	((Node) => Result<String, CompileError>) generate=Result<String, CompileError> generate(Node node){
 		return node.findNode(this.propertyKey).map(this.childRule::generate).orElseGet(() ->new Err<>(new CompileError("Node '"+this.propertyKey + "' was not present", new NodeContext(node))));
 	};
 }

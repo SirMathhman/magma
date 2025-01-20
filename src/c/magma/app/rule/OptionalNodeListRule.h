@@ -7,16 +7,16 @@ public final struct OptionalNodeListRule implements Rule {
 	private final Rule ifPresent;
 	private final Rule ifEmpty;
 	private final OrRule rule;
-	public OptionalNodeListRule=public OptionalNodeListRule(String propertyKey, Rule ifPresent, Rule ifEmpty){
+	((String, Rule, Rule) => public) OptionalNodeListRule=public OptionalNodeListRule(String propertyKey, Rule ifPresent, Rule ifEmpty){
 		this.propertyKey =propertyKey;
 		this.ifPresent =ifPresent;
 		this.ifEmpty =ifEmpty;
 		this.rule = new OrRule(List.of(ifPresent, ifEmpty));
 	};
-	Result<Node, CompileError> parse=Result<Node, CompileError> parse(String input){
+	((String) => Result<Node, CompileError>) parse=Result<Node, CompileError> parse(String input){
 		return this.rule.parse(input);
 	};
-	Result<String, CompileError> generate=Result<String, CompileError> generate(Node node){
+	((Node) => Result<String, CompileError>) generate=Result<String, CompileError> generate(Node node){
 		if(node.hasNodeList(this.propertyKey)){
 		return this.ifPresent.generate(node);
 	}

@@ -138,8 +138,9 @@ public final class MapNode implements Node {
 
     @Override
     public Node removeNodeList(String propertyKey) {
-        this.nodeLists.remove(propertyKey);
-        return this;
+        final var copy = new HashMap<>(this.nodeLists);
+        copy.remove(propertyKey);
+        return new MapNode(this.type, this.strings, this.nodes, copy);
     }
 
     @Override
@@ -152,14 +153,16 @@ public final class MapNode implements Node {
 
     @Override
     public Node withNode(String propertyKey, Node propertyValue) {
-        this.nodes.put(propertyKey, propertyValue);
-        return this;
+        final var copy = new HashMap<>(this.nodes);
+        copy.put(propertyKey, propertyValue);
+        return new MapNode(this.type, this.strings, copy, this.nodeLists);
     }
 
     @Override
     public Node withNodeList(String propertyKey, List<Node> propertyValues) {
-        this.nodeLists.put(propertyKey, propertyValues);
-        return this;
+        final var copy = new HashMap<>(this.nodeLists);
+        copy.put(propertyKey, propertyValues);
+        return new MapNode(this.type, this.strings, this.nodes, copy);
     }
 
     @Override
@@ -169,8 +172,9 @@ public final class MapNode implements Node {
 
     @Override
     public Node withString(String propertyKey, String propertyValues) {
-        this.strings.put(propertyKey, propertyValues);
-        return this;
+        final var copy = new HashMap<>(this.strings);
+        copy.put(propertyKey, propertyValues);
+        return new MapNode(this.type, copy, this.nodes, this.nodeLists);
     }
 
     @Override
