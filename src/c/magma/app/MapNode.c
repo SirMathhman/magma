@@ -1,4 +1,13 @@
-import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.Streams;import java.util.HashMap;import java.util.List;import java.util.Map;import java.util.Optional;import java.util.StringJoiner;import java.util.function.Function;public final class MapNode implements Node {private final Map<String, String> strings;private final Map<String, List<Node>> nodeLists;private final Map<String, Node> nodes;private final Optional<String> type;public MapNode(){this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>());}public MapNode(Optional<String> typeOptional<String> type Map<String, String> stringsOptional<String> type Map<String, String> strings Map<String, Node> nodesOptional<String> type Map<String, String> strings Map<String, Node> nodes Map<String, List<Node>> nodeLists){this.type = type;this.strings = strings;this.nodes = nodes;this.nodeLists = nodeLists;}@Override
+import magma.api.Tuple;
+import magma.api.stream.Stream;
+import magma.api.stream.Streams;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.StringJoiner;
+import java.util.function.Function;
+public final class MapNode implements Node {private final Map<String, String> strings;private final Map<String, List<Node>> nodeLists;private final Map<String, Node> nodes;private final Optional<String> type;public MapNode(){this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>());}public MapNode(Optional<String> typeOptional<String> type Map<String, String> stringsOptional<String> type Map<String, String> strings Map<String, Node> nodesOptional<String> type Map<String, String> strings Map<String, Node> nodes Map<String, List<Node>> nodeLists){this.type = type;this.strings = strings;this.nodes = nodes;this.nodeLists = nodeLists;}@Override
     public String toString(){final var typeString = this.type.map(inner -> inner + " ").orElse("");var builder = new StringBuilder()
                 .append(typeString)
                 .append("{");final var joiner = new StringJoiner(",");this.strings.entrySet().stream().map(entry -> new StringBuilder()

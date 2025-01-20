@@ -1,2 +1,3 @@
-import magma.app.Node;public record NodeContext(Node node) implements Context {@Override
+import magma.app.Node;
+public record NodeContext(Node node) implements Context {@Override
     public String display(){return node.display();}}

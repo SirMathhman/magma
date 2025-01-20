@@ -1,4 +1,47 @@
-import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.app.Node;import magma.app.error.ApplicationError;import magma.app.error.CompileError;import magma.app.error.JavaError;import magma.app.error.context.StringContext;import magma.app.filter.NumberFilter;import magma.app.filter.SymbolFilter;import magma.app.locate.FirstLocator;import magma.app.locate.LastLocator;import magma.app.locate.LocateTypeSeparator;import magma.app.locate.ParenthesesMatcher;import magma.app.rule.DivideRule;import magma.app.rule.ExactRule;import magma.app.rule.FilterRule;import magma.app.rule.InfixRule;import magma.app.rule.LazyRule;import magma.app.rule.NodeRule;import magma.app.rule.OrRule;import magma.app.rule.PrefixRule;import magma.app.rule.Rule;import magma.app.rule.StringRule;import magma.app.rule.StripRule;import magma.app.rule.SuffixRule;import magma.app.rule.TypeRule;import magma.java.JavaFiles;import java.io.IOException;import java.nio.file.Files;import java.nio.file.Path;import java.nio.file.Paths;import java.util.ArrayList;import java.util.Collections;import java.util.LinkedList;import java.util.List;import java.util.Optional;import java.util.Set;import java.util.function.Function;import java.util.stream.Collectors;import java.util.stream.IntStream;public class Main {public static final Path SOURCE_DIRECTORY =Paths.get(".", "src", "java");public static final Path TARGET_DIRECTORY =Paths.get(".", "src", "c");public static final String DEFAULT_VALUE = "value";public static void main(String[] args){collect().mapErr(JavaError::new)
+import magma.api.Tuple;
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.api.stream.Streams;
+import magma.app.Node;
+import magma.app.error.ApplicationError;
+import magma.app.error.CompileError;
+import magma.app.error.JavaError;
+import magma.app.error.context.StringContext;
+import magma.app.filter.NumberFilter;
+import magma.app.filter.SymbolFilter;
+import magma.app.locate.FirstLocator;
+import magma.app.locate.LastLocator;
+import magma.app.locate.LocateTypeSeparator;
+import magma.app.locate.ParenthesesMatcher;
+import magma.app.rule.DivideRule;
+import magma.app.rule.ExactRule;
+import magma.app.rule.FilterRule;
+import magma.app.rule.InfixRule;
+import magma.app.rule.LazyRule;
+import magma.app.rule.NodeRule;
+import magma.app.rule.OrRule;
+import magma.app.rule.PrefixRule;
+import magma.app.rule.Rule;
+import magma.app.rule.StringRule;
+import magma.app.rule.StripRule;
+import magma.app.rule.SuffixRule;
+import magma.app.rule.TypeRule;
+import magma.java.JavaFiles;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+public class Main {public static final Path SOURCE_DIRECTORY =Paths.get(".", "src", "java");public static final Path TARGET_DIRECTORY =Paths.get(".", "src", "c");public static final String DEFAULT_VALUE = "value";public static final String IMPORT_BEFORE = "before";public static final String IMPORT_AFTER = "after";public static void main(String[] args){collect().mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
                 .mapValue(Main::runWithSources)
                 .match(Function.identity(), Optional::of)
@@ -17,9 +60,14 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
                 .flatMapValue(input -> createRootRule().parse(input).mapErr(ApplicationError::new))
                 .flatMapValue(root -> pass(root).mapErr(ApplicationError::new))
                 .flatMapValue(root -> createRootRule().generate(root).mapErr(ApplicationError::new))
-                .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);}private static Result<Node, CompileError> pass(Node root){return afterPass(root).orElse(new Ok<>(root));}private static Optional<Result<Node, CompileError>> afterPass(Node root){if(root.is("root")){final var children = root.findNodeList("children").orElse(Collections.emptyList());final var newChildren = children.stream()
+                .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);}private static Result<Node, CompileError> pass(Node root){return passNodes(root)
+                .flatMapValue(Main::passNodeLists)
+                .flatMapValue(inner -> afterPass(inner).orElse(new Ok<>(inner)));}private static Result<Node, CompileError> passNodeLists(Node previous){return previous.streamNodeLists().foldLeftToResult(previous, Main::passNodeList);}private static Result<Node, CompileError> passNodeList(Node nodeNode node Tuple<String, List<Node>> tuple){return Streams.from(tuple.right())
+                .map(Main::pass)
+                .foldLeftToResult(new ArrayList<>(), Main::foldElementIntoList)
+                .mapValue(list -> node.withNodeList(tuple.left(), list));}private static Result<List<Node>, CompileError> foldElementIntoList(List<Node> currentNodesList<Node> currentNodes Result<Node, CompileError> node){return node.mapValue(currentNewElement -> merge(currentNodes, currentNewElement));}private static Result<Node, CompileError> passNodes(Node root){return root.streamNodes().foldLeftToResult(root, (node, tuple) -> pass(tuple.right()).mapValue(passed -> node.withNode(tuple.left(), passed)));}private static List<Node> merge(List<Node> nodesList<Node> nodes Node result){final var copy = new ArrayList<>(nodes);copy.add(result);return copy;}private static Optional<Result<Node, CompileError>> afterPass(Node node){if(node.is("import")){return Optional.of(new Ok<>(node.withString(IMPORT_AFTER, "\n")));}if(node.is("root")){final var children = node.findNodeList("children").orElse(Collections.emptyList());final var newChildren = children.stream()
                     .filter(child -> !child.is("package"))
-                    .toList();return Optional.of(new Ok<>(root.withNodeList("children", newChildren)));}return Optional.empty();}private static Rule createRootRule(){return new TypeRule("root", createContentRule(createRootSegmentRule()));}private static Optional<ApplicationError> writeOutput(String outputString output Path targetParentString output Path targetParent String name){final var target = targetParent.resolve(name + ".c");final var header = targetParent.resolve(name + ".h");return JavaFiles.writeStringWrapped(target, output)
+                    .toList();return Optional.of(new Ok<>(node.withNodeList("children", newChildren)));}return Optional.empty();}private static Rule createRootRule(){return new TypeRule("root", createContentRule(createRootSegmentRule()));}private static Optional<ApplicationError> writeOutput(String outputString output Path targetParentString output Path targetParent String name){final var target = targetParent.resolve(name + ".c");final var header = targetParent.resolve(name + ".h");return JavaFiles.writeStringWrapped(target, output)
                 .or(() -> JavaFiles.writeStringWrapped(header, output))
                 .map(JavaError::new)
                 .map(ApplicationError::new);}private static Result<List<String>, CompileError> splitByStatements(String input){final var segments = new ArrayList<String>();var buffer = new StringBuilder();var depth = 0;final var queue = IntStream.range(0, input.length())
@@ -31,7 +79,7 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
                 createStructRule("record", "record "),
                 createStructRule("interface", "interface "),
                 createWhitespaceRule()
-        ));}private static Rule createNamespacedRule(String typeString type String prefix){return new TypeRule(type, new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";")));}private static Rule createStructRule(String typeString type String infix){final var infixRule = new InfixRule(new StringRule("modifiers"), new FirstLocator(infix),
+        ));}private static Rule createNamespacedRule(String typeString type String prefix){return new TypeRule(type, new StripRule(new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";")), IMPORT_BEFORE, IMPORT_AFTER));}private static Rule createStructRule(String typeString type String infix){final var infixRule = new InfixRule(new StringRule("modifiers"), new FirstLocator(infix),
                 new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
                         new SuffixRule(createContentRule(createStructSegmentRule()), "}")
                 )));return new TypeRule(type, infixRule);}private static Result<List<String>, CompileError> splitByValues(String input){final var segments = new ArrayList<String>();final var buffer = new StringBuilder();var depth = 0;int i = 0;while(i<input.length()){final var c = input.charAt(i);if(c==','&&depth==0){advance(buffer, segments);}else {buffer.append(c);if (c == '<') depth++;if (c == '>') depth--;}i++;}advance(buffer, segments);return new Ok<>(segments);}private static Rule createStructSegmentRule(){return new OrRule(List.of(

@@ -1,4 +1,14 @@
-import magma.api.result.Err;import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.MapNode;import magma.app.Node;import magma.app.error.CompileError;import magma.app.error.context.NodeContext;import java.util.ArrayList;import java.util.List;import java.util.function.Function;public class DivideRule implements Rule {private final String propertyKey;private final Divider divider;private final Rule childRule;public DivideRule(String propertyKeyString propertyKey Divider dividerString propertyKey Divider divider Rule childRule){this.divider = divider;this.childRule = childRule;this.propertyKey = propertyKey;}public static <T, R> Result<List<R>, CompileError> compileAll(
+import magma.api.result.Err;
+import magma.api.result.Result;
+import magma.api.stream.Streams;
+import magma.app.MapNode;
+import magma.app.Node;
+import magma.app.error.CompileError;
+import magma.app.error.context.NodeContext;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+public class DivideRule implements Rule {private final String propertyKey;private final Divider divider;private final Rule childRule;public DivideRule(String propertyKeyString propertyKey Divider dividerString propertyKey Divider divider Rule childRule){this.divider = divider;this.childRule = childRule;this.propertyKey = propertyKey;}public static <T, R> Result<List<R>, CompileError> compileAll(
             List<T> segments
             List<T> segments
             Function<T, Result<R, CompileError>> mapper

@@ -1,8 +1,10 @@
 package magma;
 
+import magma.api.Tuple;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.api.stream.Streams;
 import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
@@ -47,6 +49,8 @@ public class Main {
     public static final Path SOURCE_DIRECTORY = Paths.get(".", "src", "java");
     public static final Path TARGET_DIRECTORY = Paths.get(".", "src", "c");
     public static final String DEFAULT_VALUE = "value";
+    public static final String IMPORT_BEFORE = "before";
+    public static final String IMPORT_AFTER = "after";
 
     public static void main(String[] args) {
         collect().mapErr(JavaError::new)
@@ -101,17 +105,48 @@ public class Main {
     }
 
     private static Result<Node, CompileError> pass(Node root) {
-        return afterPass(root).orElse(new Ok<>(root));
+        return passNodes(root)
+                .flatMapValue(Main::passNodeLists)
+                .flatMapValue(inner -> afterPass(inner).orElse(new Ok<>(inner)));
     }
 
-    private static Optional<Result<Node, CompileError>> afterPass(Node root) {
-        if (root.is("root")) {
-            final var children = root.findNodeList("children").orElse(Collections.emptyList());
+    private static Result<Node, CompileError> passNodeLists(Node previous) {
+        return previous.streamNodeLists().foldLeftToResult(previous, Main::passNodeList);
+    }
+
+    private static Result<Node, CompileError> passNodeList(Node node, Tuple<String, List<Node>> tuple) {
+        return Streams.from(tuple.right())
+                .map(Main::pass)
+                .foldLeftToResult(new ArrayList<>(), Main::foldElementIntoList)
+                .mapValue(list -> node.withNodeList(tuple.left(), list));
+    }
+
+    private static Result<List<Node>, CompileError> foldElementIntoList(List<Node> currentNodes, Result<Node, CompileError> node) {
+        return node.mapValue(currentNewElement -> merge(currentNodes, currentNewElement));
+    }
+
+    private static Result<Node, CompileError> passNodes(Node root) {
+        return root.streamNodes().foldLeftToResult(root, (node, tuple) -> pass(tuple.right()).mapValue(passed -> node.withNode(tuple.left(), passed)));
+    }
+
+    private static List<Node> merge(List<Node> nodes, Node result) {
+        final var copy = new ArrayList<>(nodes);
+        copy.add(result);
+        return copy;
+    }
+
+    private static Optional<Result<Node, CompileError>> afterPass(Node node) {
+        if (node.is("import")) {
+            return Optional.of(new Ok<>(node.withString(IMPORT_AFTER, "\n")));
+        }
+
+        if (node.is("root")) {
+            final var children = node.findNodeList("children").orElse(Collections.emptyList());
             final var newChildren = children.stream()
                     .filter(child -> !child.is("package"))
                     .toList();
 
-            return Optional.of(new Ok<>(root.withNodeList("children", newChildren)));
+            return Optional.of(new Ok<>(node.withNodeList("children", newChildren)));
         }
 
         return Optional.empty();
@@ -205,7 +240,7 @@ public class Main {
     }
 
     private static Rule createNamespacedRule(String type, String prefix) {
-        return new TypeRule(type, new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";")));
+        return new TypeRule(type, new StripRule(new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";")), IMPORT_BEFORE, IMPORT_AFTER));
     }
 
     private static Rule createStructRule(String type, String infix) {
