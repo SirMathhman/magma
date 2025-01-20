@@ -1,10 +1,1 @@
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-struct Stream<T> {
-	(){
-		;
-	}
-	();
-	();
-};
+package magma.api.stream;package java.util.function.BiFunction;package java.util.function.Function;public interface Stream<T> {<R> R foldLeft(R initial, BiFunction<R, T, R> folder);<R> Stream<R> map(Function<T, R> mapper);}

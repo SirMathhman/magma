@@ -203,9 +203,9 @@ public class Main {
         return new OrRule(List.of(
                 createNamespacedRule("package "),
                 createNamespacedRule("import "),
-                createStructRule("class "),
-                createStructRule("record "),
-                createStructRule("interface "),
+                createStructRule("class", "class "),
+                createStructRule("record", "record "),
+                createStructRule("interface", "interface "),
                 createWhitespaceRule()
         ));
     }
@@ -214,11 +214,12 @@ public class Main {
         return new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";"));
     }
 
-    private static InfixRule createStructRule(String infix) {
-        return new InfixRule(new StringRule("modifiers"), new FirstLocator(infix),
+    private static Rule createStructRule(String type, String infix) {
+        final var infixRule = new InfixRule(new StringRule("modifiers"), new FirstLocator(infix),
                 new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
                         new SuffixRule(createContentRule(createStructSegmentRule()), "}")
                 )));
+        return new TypeRule(type, infixRule);
     }
 
     private static Result<List<String>, CompileError> splitByValues(String input) {
@@ -250,22 +251,27 @@ public class Main {
         return new SuffixRule(createDefinitionRule(), ";");
     }
 
-    private static InfixRule createInitializationRule() {
-        return new InfixRule(new NodeRule("definition", createDefinitionRule()), new FirstLocator("="), new StripRule(new SuffixRule(new NodeRule("value", createValueRule()), ";")));
+    private static Rule createInitializationRule() {
+        final var infixRule = new InfixRule(new NodeRule("definition", createDefinitionRule()), new FirstLocator("="), new StripRule(new SuffixRule(new NodeRule("value", createValueRule()), ";")));
+        return new TypeRule("initialization", infixRule);
     }
 
-    private static InfixRule createMethodRule() {
+    private static Rule createMethodRule() {
         final var orRule = new OrRule(List.of(
                 createBlockRule(),
                 new ExactRule(";")
         ));
 
         final var definition = createDefinitionRule();
-        return new InfixRule(definition, new FirstLocator("("), new InfixRule(definition, new FirstLocator(")"), orRule));
+        final var definitionProperty = new NodeRule("definition", definition);
+        final var params = new NodeRule("params", definition);
+
+        final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
+        return new TypeRule("method", infixRule);
     }
 
-    private static PrefixRule createBlockRule() {
-        return new PrefixRule("{", new SuffixRule(createContentRule(createStatementRule()), "}"));
+    private static Rule createBlockRule() {
+        return new StripRule(new PrefixRule("{", new SuffixRule(createContentRule(createStatementRule()), "}")));
     }
 
     private static Rule createContentRule(Rule rule) {

@@ -1,9 +1,1 @@
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-struct Divider {
-	(){
-		;
-	}
-	();
-};
+package magma.app.rule;package magma.api.result.Result;package magma.app.error.CompileError;package java.util.List;public interface Divider {Result<List<String>, CompileError> divide(String input);}

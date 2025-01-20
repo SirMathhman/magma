@@ -1,0 +1,3 @@
+package magma.app.rule;package magma.api.result.Err;package magma.api.result.Result;package magma.app.MapNode;package magma.app.Node;package magma.app.error.CompileError;package magma.app.error.context.NodeContext;public record NodeRule(String propertyKey, Rule childRule) implements Rule {@Override
+    public Result<Node, CompileError> parse(String input);@Override
+    public Result<String, CompileError> generate(Node node);}
