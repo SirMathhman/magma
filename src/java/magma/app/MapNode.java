@@ -1,5 +1,9 @@
 package magma.app;
 
+import magma.api.Tuple;
+import magma.api.stream.Stream;
+import magma.api.stream.Streams;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,14 +37,12 @@ public final class MapNode implements Node {
                 .append("{");
 
         final var joiner = new StringJoiner(",");
-        for (Map.Entry<String, String> entry : this.strings.entrySet()) {
-            joiner.add(new StringBuilder()
-                    .append("\n\t")
-                    .append(entry.getKey())
-                    .append(" : \"")
-                    .append(entry.getValue())
-                    .append("\""));
-        }
+        this.strings.entrySet().stream().map(entry -> new StringBuilder()
+                .append("\n\t")
+                .append(entry.getKey())
+                .append(" : \"")
+                .append(entry.getValue())
+                .append("\"")).forEach(joiner::add);
 
         builder.append(joiner);
         return builder.append("\n}").toString();
@@ -58,17 +60,13 @@ public final class MapNode implements Node {
 
     @Override
     public Node merge(Node other) {
-        var current = other;
-        for (Map.Entry<String, String> entry : this.strings.entrySet()) {
-            current = current.withString(entry.getKey(), entry.getValue());
-        }
-        for (Map.Entry<String, Node> entry : this.nodes.entrySet()) {
-            current = current.withNode(entry.getKey(), entry.getValue());
-        }
-        for (Map.Entry<String, List<Node>> entry : this.nodeLists.entrySet()) {
-            current = current.withNodeList(entry.getKey(), entry.getValue());
-        }
-        return current;
+        final var withStrings = stream(this.strings).foldLeft(other, (node, tuple) -> node.withString(tuple.left(), tuple.right()));
+        final var withNodes = stream(this.nodes).foldLeft(withStrings, (node, tuple) -> node.withNode(tuple.left(), tuple.right()));
+        return stream(this.nodeLists).foldLeft(withNodes, (node, tuple) -> node.withNodeList(tuple.left(), tuple.right()));
+    }
+
+    private <K, V> Stream<Tuple<K, V>> stream(Map<K, V> map) {
+        return Streams.from(map.entrySet()).map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));
     }
 
     @Override

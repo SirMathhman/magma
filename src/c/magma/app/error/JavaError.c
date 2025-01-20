@@ -1,16 +1,2 @@
-#include <temp.h>
-#include <temp.h>
-struct JavaError {
-	;
-	(){
-		;
-		this.e = e;
-		return ;
-	}
-	(){
-		 = *(struct JavaError*) this;
-		temp = temp;
-		this.e.printStackTrace();
-		return ;
-	}
-};
+package magma.app.error;package java.io.PrintWriter;package java.io.StringWriter;public record JavaError(Exception e) implements Error {@Override
+    public String display(){final var writer = new StringWriter();this.e.printStackTrace(new PrintWriter(writer));return writer.toString();}}

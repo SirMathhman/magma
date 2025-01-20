@@ -65,11 +65,10 @@ public class Main {
     }
 
     private static Optional<ApplicationError> runWithSources(Set<Path> sources) {
-        for (Path source : sources) {
-            final var error = runWithSource(source);
-            if (error.isPresent()) return error;
-        }
-        return Optional.empty();
+        return sources.stream()
+                .map(Main::runWithSource)
+                .flatMap(Optional::stream)
+                .findFirst();
     }
 
     private static Optional<ApplicationError> runWithSource(Path source) {

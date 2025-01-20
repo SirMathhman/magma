@@ -1,6 +1,8 @@
 package magma.api.stream;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Streams {
     @SafeVarargs
@@ -12,5 +14,9 @@ public class Streams {
     public static <T> Stream<T> from(List<T> list) {
         return new HeadedStream<>(new RangeHead(list.size()))
                 .map(list::get);
+    }
+
+    public static <T> Stream<T> from(Set<T> entries) {
+        return from(new ArrayList<>(entries));
     }
 }

@@ -1,15 +1,13 @@
 package magma.app.filter;
 
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 public class SymbolFilter implements Predicate<String> {
     @Override
-    public boolean test(String input1) {
-        for (int i = 0; i < input1.length(); i++) {
-            final var c = input1.charAt(i);
-            if (Character.isLetter(c)) continue;
-            return false;
-        }
-        return true;
+    public boolean test(String input) {
+        return IntStream.range(0, input.length())
+                .mapToObj(input::charAt)
+                .allMatch(Character::isLetter);
     }
 }

@@ -1,67 +1,13 @@
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-struct MapNode implements Node {
-	(){
-		;
-		return ;
-	}
-		;
-		;
-		;
-	(){
-		 = *(struct MapNode implements Node*) this;
-		this();
-	}
-	(){
-		 = *(struct MapNode implements Node*) this;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-	}
-	(){
-		 = *(struct MapNode implements Node*) this;
-		return ;
-	}
-	(){
-		 = *(struct MapNode implements Node*) this;
-		temp = temp;
-	}
-	(){
-		 = *(struct MapNode implements Node*) this;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		temp = temp;
-		return ;
-	}
-	(){
-		 = *(struct MapNode implements Node*) this;
-		temp = temp;
-	}
-	(){
-		 = *(struct MapNode implements Node*) this;
-		this.nodes.put();
-		return ;
-	}
-	(){
-		 = *(struct MapNode implements Node*) this;
-		this.nodeLists.put();
-		return ;
-	}
-	(){
-		 = *(struct MapNode implements Node*) this;
-		return ;
-	}
-	(){
-		 = *(struct MapNode implements Node*) this;
-		this.strings.put();
-		return ;
-	}
-	(){
-		 = *(struct MapNode implements Node*) this;
-		return ;
-	}
-};
+package magma.app;package magma.api.Tuple;package magma.api.stream.Stream;package magma.api.stream.Streams;package java.util.HashMap;package java.util.List;package java.util.Map;package java.util.Optional;package java.util.StringJoiner;package java.util.function.Function;public final class MapNode implements Node {private final Map<String, String> strings;private final Map<String, List<Node>> nodeLists;private final Map<String, Node> nodes;private final Optional<String> type;public MapNode(){this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>());}public MapNode(Optional<String> typeOptional<String> type Map<String, String> stringsOptional<String> type Map<String, String> strings Map<String, Node> nodesOptional<String> type Map<String, String> strings Map<String, Node> nodes Map<String, List<Node>> nodeLists){this.type = type;this.strings = strings;this.nodes = nodes;this.nodeLists = nodeLists;}@Override
+    public String toString();@Override
+    public Optional<Node> findNode(String propertyKey){return Optional.ofNullable(this.nodes.get(propertyKey));}@Override
+    public Node mapString(String propertyKeyString propertyKey Function<String, String> mapper){return findString(propertyKey).map(mapper).map(newString -> withString(propertyKey, newString)).orElse(this);}@Override
+    public Node merge(Node other){final var withStrings = stream(this.strings).foldLeft(other, (node, tuple) -> node.withString(tuple.left(), tuple.right()));final var withNodes = stream(this.nodes).foldLeft(withStrings, (node, tuple) -> node.withNode(tuple.left(), tuple.right()));return stream(this.nodeLists).foldLeft(withNodes, (node, tuple) -> node.withNodeList(tuple.left(), tuple.right()));}private <K, V> Stream<Tuple<K, V>> stream(Map<K, V> map){return Streams.from(map.entrySet()).map(entry -> new Tuple<>(entry.getKey(), entry.getValue()));}@Override
+    public String display(){return toString();}@Override
+    public Node retype(String type){return new MapNode(Optional.of(type), this.strings, this.nodes, this.nodeLists);}@Override
+    public boolean is(String type){return this.type.isPresent() && this.type.get().equals(type);}@Override
+    public Node withNode(String propertyKeyString propertyKey Node propertyValue){this.nodes.put(propertyKey, propertyValue);return this;}@Override
+    public Node withNodeList(String propertyKeyString propertyKey List<Node> propertyValues){this.nodeLists.put(propertyKey, propertyValues);return this;}@Override
+    public Optional<List<Node>> findNodeList(String propertyKey){return Optional.ofNullable(this.nodeLists.get(propertyKey));}@Override
+    public Node withString(String propertyKeyString propertyKey String propertyValues){this.strings.put(propertyKey, propertyValues);return this;}@Override
+    public Optional<String> findString(String propertyKey){return Optional.ofNullable(this.strings.get(propertyKey));}}

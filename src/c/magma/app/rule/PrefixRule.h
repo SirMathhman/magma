@@ -1,16 +1,3 @@
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-#include <temp.h>
-struct PrefixRule {
-	(){
-		;
-		return ;
-	}
-	(){
-		 = *(struct PrefixRule*) this;
-		temp = temp;
-		temp = temp;
-	}
-};
+package magma.app.rule;package magma.api.result.Err;package magma.api.result.Ok;package magma.api.result.Result;package magma.app.Node;package magma.app.error.CompileError;package magma.app.error.context.StringContext;public class PrefixRule implements Rule {private final String prefix;private final Rule childRule;public PrefixRule(String prefixString prefix Rule childRule){this.prefix = prefix;this.childRule = childRule;}public static Result<String, CompileError> truncateLeft(String inputString input String slice){if (input.startsWith(slice)) return new Ok<>(input.substring(slice.length()));return new Err<>(new CompileError("Prefix '" + slice + "' not present", new StringContext(input)));}@Override
+    public Result<Node, CompileError> parse(String input){return truncateLeft(input, this.prefix).flatMapValue(this.childRule::parse);}@Override
+    public Result<String, CompileError> generate(Node node){return this.childRule.generate(node).mapValue(inner -> this.prefix + inner);}}
