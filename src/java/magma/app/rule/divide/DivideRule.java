@@ -45,7 +45,13 @@ public class DivideRule implements Rule {
     public Result<String, CompileError> generate(Node node) {
         return node.findNodeList(this.propertyKey)
                 .map(list -> compileAll(list, this.childRule::generate))
-                .map(result -> result.mapValue(list -> String.join("", list)))
+                .map(result -> result.mapValue(this::merge))
                 .orElseGet(() -> new Err<>(new CompileError("Node list '" + this.propertyKey + "' not present", new NodeContext(node))));
+    }
+
+    private String merge(List<String> elements) {
+        return Streams.from(elements)
+                .foldLeft(this.divider::merge)
+                .orElse("");
     }
 }

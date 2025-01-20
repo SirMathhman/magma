@@ -20,6 +20,11 @@ public class StatementDivider implements Divider {
     }
 
     @Override
+    public String merge(String current, String value) {
+        return current + value;
+    }
+
+    @Override
     public Result<List<String>, CompileError> divide(String input) {
         final var segments = new ArrayList<String>();
         var buffer = new StringBuilder();
