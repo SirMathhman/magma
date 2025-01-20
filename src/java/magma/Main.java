@@ -25,6 +25,7 @@ import magma.app.rule.StringRule;
 import magma.app.rule.StripRule;
 import magma.app.rule.SuffixRule;
 import magma.app.rule.TypeRule;
+import magma.java.JavaFiles;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -54,14 +55,10 @@ public class Main {
     }
 
     private static Result<Set<Path>, IOException> collect() {
-        try (var stream = Files.walk(SOURCE_DIRECTORY)) {
-            final var sources = stream.filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .collect(Collectors.toSet());
-            return new Ok<>(sources);
-        } catch (IOException e) {
-            return new Err<>(e);
-        }
+        return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths -> paths.stream()
+                .filter(Files::isRegularFile)
+                .filter(path -> path.toString().endsWith(".java"))
+                .collect(Collectors.toSet()));
     }
 
     private static Optional<ApplicationError> runWithSources(Set<Path> sources) {
@@ -74,6 +71,15 @@ public class Main {
     private static Optional<ApplicationError> runWithSource(Path source) {
         final var relative = SOURCE_DIRECTORY.relativize(source);
         final var parent = relative.getParent();
+        final var namespace = IntStream.range(0, parent.getNameCount())
+                .mapToObj(parent::getName)
+                .map(Path::toString)
+                .toList();
+
+        if (namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))) {
+            return Optional.empty();
+        }
+
         final var nameWithExt = relative.getFileName().toString();
         final var name = nameWithExt.substring(0, nameWithExt.indexOf('.'));
 
