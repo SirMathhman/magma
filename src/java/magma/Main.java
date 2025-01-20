@@ -287,7 +287,8 @@ public class Main {
         final var statement = new LazyRule();
         statement.set(new OrRule(List.of(
                 createDefinitionStatementRule(),
-                createIfRule(statement),
+                createConditionalRule(statement, "if"),
+                createConditionalRule(statement, "while"),
                 createElseRule(statement),
                 createInvocationRule(valueRule),
                 createReturnRule(valueRule),
@@ -302,9 +303,9 @@ public class Main {
         return new TypeRule("else", new StripRule(new PrefixRule("else ", createBlockRule(statement))));
     }
 
-    private static TypeRule createIfRule(LazyRule statement) {
+    private static TypeRule createConditionalRule(LazyRule statement, String type) {
         final var leftRule = new StripRule(new PrefixRule("(", new NodeRule("condition", createValueRule())));
-        return new TypeRule("if", new PrefixRule("if", new InfixRule(leftRule, new ParenthesesMatcher(), createBlockRule(statement))));
+        return new TypeRule(type, new PrefixRule(type, new InfixRule(leftRule, new ParenthesesMatcher(), createBlockRule(statement))));
     }
 
     private static TypeRule createWhitespaceRule() {
