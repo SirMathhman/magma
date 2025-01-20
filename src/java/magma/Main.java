@@ -389,7 +389,8 @@ public class Main {
                 new ExactRule("")
         ));
 
-        final var suffixRule = new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")");
+        final var suffixRule = new StripRule(new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")")
+        );
         return new TypeRule("invocation", suffixRule);
     }
 

@@ -37,8 +37,7 @@ public final struct InfixRule implements Rule {
 		return split(this.locator, input).flatMapValue(tuple -> {
             final var left=tuple.left();
             final var right = tuple.right();
-            return this.leftRule.parse(left)
-                    .mapErr(err -> invalidate(err, left, "left"))
+            return this.leftRule.parse(left).mapErr(err -> invalidate(err, left, "left"))
                     .and(() -> this.rightRule.parse(right).mapErr(err -> invalidate(err, right, "right")))
                     .mapValue(Tuple.merge(Node::merge));
         });

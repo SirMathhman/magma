@@ -24,8 +24,7 @@ public struct DivideRule implements Rule {
 	}
 	@Override
     public Result<Node, CompileError> parse(String input){
-		return this.divider.divide(input)
-                .flatMapValue(segments -> compileAll(segments, this.childRule::parse))
+		return this.divider.divide(input).flatMapValue(segments -> compileAll(segments, this.childRule::parse))
                 .mapValue(segments -> new MapNode().withNodeList(this.propertyKey, segments));
 	}
 	@Override
@@ -33,12 +32,9 @@ public struct DivideRule implements Rule {
 		return node.findNodeList(this.propertyKey)
                 .flatMap(list ->list.isEmpty() ? Optional.empty() : Optional.of(list))
                 .map(list -> compileAll(list, this.childRule::generate))
-                .map(result -> result.mapValue(this::merge))
-                .orElseGet(() ->new Err<>(new CompileError("Node list '"+this.propertyKey + "' not present", new NodeContext(node))));
+                .map(result ->result.mapValue(this::merge)).orElseGet(() ->new Err<>(new CompileError("Node list '"+this.propertyKey + "' not present", new NodeContext(node))));
 	}
 	private String merge(List<String> elements){
-		return Streams.from(elements)
-                .foldLeft(this.divider::merge)
-                .orElse("");
+		return Streams.from(elements).foldLeft(this.divider::merge).orElse("");
 	}
 }

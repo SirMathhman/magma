@@ -14,24 +14,18 @@ public final struct MapNode implements Node {
 	private final Map<String, Node> nodes;
 	private final Optional<String> type;
 	public MapNode(){
-		this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>());
+		this();
 	}
-	public MapNode(Optional<String> type,  Map<String, String> strings,  Map<String, Node> nodes,  Map<String, List<Node>> nodeLists){
+	public MapNode(Optional<String> type, Map<String, String> strings, Map<String, Node> nodes, Map<String, List<Node>> nodeLists){
 		this.type =type;
 		this.strings =strings;
 		this.nodes =nodes;
 		this.nodeLists =nodeLists;
 	}
 	public MapNode(String type){
-		this(Optional.of(type), new HashMap<>(), new HashMap<>(), new HashMap<>());
+		this();
 	}
-	private static StringBuilder createEntry(String name,  String content,  int depth){
-		return new StringBuilder()
-                .append("\n" + "\t".repeat(depth))
-                .append(name)
-                .append(" : ")
- .append(content);
-	}
+	private static StringBuilder createEntry(String name, String content, int depth);
 	@Override
     public String toString(){
 		return format(0);
@@ -43,14 +37,14 @@ public final struct MapNode implements Node {
 		return Optional.ofNullable(this.nodes.get(propertyKey));
 	}
 	@Override
-    public Node mapString(String propertyKey,  ((String) => String) mapper){
+    public Node mapString(String propertyKey, ((String) => String) mapper){
 		return findString(propertyKey).map(mapper).map(newString -> withString(propertyKey, newString)).orElse(this);
 	}
 	@Override
     public Node merge(Node other){
-		final var withStrings =stream(this.strings).foldLeft(other,  (node, tuple) ->node.withString(tuple.left(), tuple.right()));
-		final var withNodes =streamNodes().foldLeft(withStrings,  (node, tuple) ->node.withNode(tuple.left(), tuple.right()));
-		return streamNodeLists().foldLeft(withNodes,  (node, tuple) ->node.withNodeList(tuple.left(), tuple.right()));
+		final var withStrings=stream(this.strings).foldLeft(other, (node, tuple) ->node.withString(tuple.left(), tuple.right()));
+		final var withNodes=streamNodes().foldLeft(withStrings, (node, tuple) ->node.withNode(tuple.left(), tuple.right()));
+		return streamNodeLists().foldLeft(withNodes, (node, tuple) ->node.withNodeList(tuple.left(), tuple.right()));
 	}
 	@Override
     public Stream<Tuple<String, List<Node>>> streamNodeLists(){
@@ -76,19 +70,17 @@ public final struct MapNode implements Node {
 		return this.type.isPresent() && this.type.get().equals(type);
 	}
 	@Override
-    public Node mapNodeList(String propertyKey,  ((List<Node>) => List<Node>) mapper){
-		return findNodeList(propertyKey)
-                .map(mapper)
-                .map(list -> withNodeList(propertyKey, list))
- .orElse(this);
+    public Node mapNodeList(String propertyKey, ((List<Node>) => List<Node>) mapper){
+		return findNodeList(propertyKey).map(mapper).map(list -> withNodeList(propertyKey, list))
+                .orElse(this);
 	}
 	@Override
-    public Node withNode(String propertyKey,  Node propertyValue){
+    public Node withNode(String propertyKey, Node propertyValue){
 		this.nodes.put(propertyKey, propertyValue);
 		return this;
 	}
 	@Override
-    public Node withNodeList(String propertyKey,  List<Node> propertyValues){
+    public Node withNodeList(String propertyKey, List<Node> propertyValues){
 		this.nodeLists.put(propertyKey, propertyValues);
 		return this;
 	}
@@ -97,7 +89,7 @@ public final struct MapNode implements Node {
 		return Optional.ofNullable(this.nodeLists.get(propertyKey));
 	}
 	@Override
-    public Node withString(String propertyKey,  String propertyValues){
+    public Node withString(String propertyKey, String propertyValues){
 		this.strings.put(propertyKey, propertyValues);
 		return this;
 	}

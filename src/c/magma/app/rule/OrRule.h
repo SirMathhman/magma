@@ -13,7 +13,7 @@ import java.util.function.Function;
 public struct OrRule(List<Rule> rules) implements Rule {
 	@Override
     public Result<Node, CompileError> parse(String value){
-		return process(new StringContext(value),  rule ->rule.parse(value));
+		return process(new StringContext(value), rule ->rule.parse(value));
 	}
 	private <R> Result<R, CompileError> process(Context context, ((Rule) => Result<R, CompileError>) mapper){
 		return Streams.from(this.rules)
@@ -28,6 +28,6 @@ public struct OrRule(List<Rule> rules) implements Rule {
 	}
 	@Override
     public Result<String, CompileError> generate(Node node){
-		return process(new NodeContext(node),  rule ->rule.generate(node));
+		return process(new NodeContext(node), rule ->rule.generate(node));
 	}
 }
