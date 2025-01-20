@@ -296,7 +296,7 @@ public class Main {
 
     private static TypeRule createIfRule(LazyRule statement) {
         final var leftRule = new StripRule(new PrefixRule("(", new NodeRule("condition", createValueRule())));
-        return new TypeRule("if", new PrefixRule("if", new InfixRule(leftRule, new ParenthesesMatcher(), statement)));
+        return new TypeRule("if", new PrefixRule("if", new InfixRule(leftRule, new ParenthesesMatcher(), createBlockRule(statement))));
     }
 
     private static TypeRule createWhitespaceRule() {
