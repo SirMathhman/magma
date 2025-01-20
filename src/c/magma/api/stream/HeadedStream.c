@@ -4,10 +4,10 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 public struct HeadedStream<T>(Head<T> head) implements Stream<T> {
-	((((T, T) => T)) => Optional<T>) foldLeft=Optional<T> foldLeft(((T, T) => T) folder){
+	(([Capture, ((Capture, T, T) => T)]) => Optional<T>) foldLeft=Optional<T> foldLeft([Capture, ((Capture, T, T) => T)] folder){
 		return this.head.next().map(initial -> foldLeft(initial, folder));
 	};
-	<R>((R, ((R, T) => R)) => R) foldLeft=<R>R foldLeft(R initial, ((R, T) => R) folder){
+	<R>((R, [Capture, ((Capture, R, T) => R)]) => R) foldLeft=<R>R foldLeft(R initial, [Capture, ((Capture, R, T) => R)] folder){
 		var current=initial;
 		while(true){
 		R finalCurrent=current;
@@ -20,10 +20,10 @@ public struct HeadedStream<T>(Head<T> head) implements Stream<T> {
 	}
 	}
 	};
-	<R>((((T) => R)) => Stream<R>) map=<R>Stream<R> map(((T) => R) mapper){
+	<R>(([Capture, ((Capture, T) => R)]) => Stream<R>) map=<R>Stream<R> map([Capture, ((Capture, T) => R)] mapper){
 		return new HeadedStream<>(() ->this.head.next().map(mapper));
 	};
-	<R, X>((R, ((R, T) => Result<R, X>)) => Result<R, X>) foldLeftToResult=<R, X>Result<R, X> foldLeftToResult(R initial, ((R, T) => Result<R, X>) folder){
+	<R, X>((R, [Capture, ((Capture, R, T) => Result<R, X>)]) => Result<R, X>) foldLeftToResult=<R, X>Result<R, X> foldLeftToResult(R initial, [Capture, ((Capture, R, T) => Result<R, X>)] folder){
 		return this.<Result<R, X>>foldLeft(new Ok<>(initial), (rxResult, t) -> rxResult.flatMapValue(inner -> folder.apply(inner, t)));
 	};
 }

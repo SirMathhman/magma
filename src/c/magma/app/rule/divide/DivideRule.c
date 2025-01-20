@@ -19,7 +19,7 @@ public struct DivideRule implements Rule {
 		this.childRule =childRule;
 		this.propertyKey =propertyKey;
 	};
-	<T, R>((List<T>, ((T) => Result<R, CompileError>)) => Result<List<R>, CompileError>) compileAll=<T, R>Result<List<R>, CompileError> compileAll(List<T> segments, ((T) => Result<R, CompileError>) mapper){
+	<T, R>((List<T>, [Capture, ((Capture, T) => Result<R, CompileError>)]) => Result<List<R>, CompileError>) compileAll=<T, R>Result<List<R>, CompileError> compileAll(List<T> segments, [Capture, ((Capture, T) => Result<R, CompileError>)] mapper){
 		return Streams.from(segments).foldLeftToResult(new ArrayList<>(), (rs, t) ->mapper.apply(t).mapValue(inner ->{
 		rs.add(inner);
 		return rs;

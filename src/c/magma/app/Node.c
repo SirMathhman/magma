@@ -11,15 +11,15 @@ public struct Node {
 	((String, Node) => Node) withNode;
 	((int) => String) format;
 	((String) => Optional<Node>) findNode;
-	((String, ((String) => String)) => Node) mapString;
+	((String, [Capture, ((Capture, String) => String)]) => Node) mapString;
 	((Node) => Node) merge;
 	(() => Stream<[String, List<Node>]>) streamNodeLists;
 	(() => Stream<[String, Node]>) streamNodes;
 	(() => String) display;
 	((String) => Node) retype;
 	((String) => boolean) is;
-	((String, ((List<Node>) => List<Node>)) => Node) mapNodeList;
+	((String, [Capture, ((Capture, List<Node>) => List<Node>)]) => Node) mapNodeList;
 	((String) => boolean) hasNodeList;
 	((String) => Node) removeNodeList;
-	((String, ((Node) => Node)) => Node) mapNode;
+	((String, [Capture, ((Capture, Node) => Node)]) => Node) mapNode;
 }

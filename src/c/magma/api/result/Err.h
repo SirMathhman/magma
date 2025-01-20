@@ -6,22 +6,22 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 public struct Err<T, X>(X error) implements Result<T, X> {
-	<R>((((T) => Result<R, X>)) => Result<R, X>) flatMapValue=<R>Result<R, X> flatMapValue(((T) => Result<R, X>) mapper){
+	<R>(([Capture, ((Capture, T) => Result<R, X>)]) => Result<R, X>) flatMapValue=<R>Result<R, X> flatMapValue([Capture, ((Capture, T) => Result<R, X>)] mapper){
 		return new Err<>(this.error);
 	};
-	<R>((((T) => R)) => Result<R, X>) mapValue=<R>Result<R, X> mapValue(((T) => R) mapper){
+	<R>(([Capture, ((Capture, T) => R)]) => Result<R, X>) mapValue=<R>Result<R, X> mapValue([Capture, ((Capture, T) => R)] mapper){
 		return new Err<>(this.error);
 	};
-	<R>((((X) => R)) => Result<T, R>) mapErr=<R>Result<T, R> mapErr(((X) => R) mapper){
+	<R>(([Capture, ((Capture, X) => R)]) => Result<T, R>) mapErr=<R>Result<T, R> mapErr([Capture, ((Capture, X) => R)] mapper){
 		return new Err<>(mapper.apply(this.error));
 	};
-	<R>((((T) => R), ((X) => R)) => R) match=<R>R match(((T) => R) onOk, ((X) => R) onErr){
+	<R>(([Capture, ((Capture, T) => R)], [Capture, ((Capture, X) => R)]) => R) match=<R>R match([Capture, ((Capture, T) => R)] onOk, [Capture, ((Capture, X) => R)] onErr){
 		return onErr.apply(this.error);
 	};
-	<R>(((() => Result<R, X>)) => Result<[T, R], X>) and=<R>Result<[T, R], X> and((() => Result<R, X>) other){
+	<R>(([Capture, ((Capture) => Result<R, X>)]) => Result<[T, R], X>) and=<R>Result<[T, R], X> and([Capture, ((Capture) => Result<R, X>)] other){
 		return new Err<>(this.error);
 	};
-	<R>(((() => Result<T, R>)) => Result<T, [X, R]>) or=<R>Result<T, [X, R]> or((() => Result<T, R>) other){
+	<R>(([Capture, ((Capture) => Result<T, R>)]) => Result<T, [X, R]>) or=<R>Result<T, [X, R]> or([Capture, ((Capture) => Result<T, R>)] other){
 		return other.get().mapErr(otherErr -> new Tuple<>(this.error, otherErr));
 	};
 	(() => boolean) isOk=boolean isOk(){

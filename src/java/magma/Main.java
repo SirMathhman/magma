@@ -162,6 +162,35 @@ public class Main {
             return Optional.of(new Ok<>(node.retype(STRUCT_TYPE)));
         }
 
+        if (node.is("generic")) {
+            final var parent = node.findString(PARENT).orElse("");
+            final var children = node.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
+
+            if (parent.equals("BiFunction")) {
+                final var paramType = children.get(0);
+                final var paramType1 = children.get(1);
+                final var returnType = children.get(2);
+                return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE)
+                        .withNodeList("params", List.of(paramType, paramType1))
+                        .withNode("return", returnType)));
+            }
+            if (parent.equals("Function")) {
+                final var paramType = children.get(0);
+                final var returnType = children.get(1);
+                return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE)
+                        .withNodeList("params", List.of(paramType))
+                        .withNode("return", returnType)));
+            }
+            if (parent.equals("Supplier")) {
+                final var returnType = children.getFirst();
+                return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE)
+                        .withNode("return", returnType)));
+            }
+            if (parent.equals("Tuple")) {
+                return Optional.of(new Ok<>(new MapNode(TUPLE_TYPE).withNodeList(TUPLE_CHILDREN, children)));
+            }
+        }
+
         return Optional.empty();
     }
 
@@ -191,6 +220,21 @@ public class Main {
     }
 
     private static Optional<Result<Node, CompileError>> afterPass(Node node) {
+        if(node.is(FUNCTIONAL_TYPE)) {
+            final var params = node.findNodeList("params")
+                    .map(ArrayList::new)
+                    .orElse(new ArrayList<>());
+
+            final var captureType = new MapNode("symbol").withString("value", "Capture");
+            final var copy = new ArrayList<Node>();
+            copy.add(captureType);
+            copy.addAll(params);
+
+            final var withParams = node.withNodeList("params", copy);
+            return Optional.of(new Ok<>(new MapNode(TUPLE_TYPE)
+                    .withNodeList(TUPLE_CHILDREN, List.of(captureType,withParams))));
+        }
+
         if (node.is(METHOD_TYPE)) {
             final var cleaned = removeParams(node).mapNode(METHOD_DEFINITION, definition -> {
                 return definition
@@ -229,35 +273,6 @@ public class Main {
             }
 
             return Optional.of(new Ok<>(node1));
-        }
-
-        if (node.is("generic")) {
-            final var parent = node.findString(PARENT).orElse("");
-            final var children = node.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
-
-            if (parent.equals("BiFunction")) {
-                final var paramType = children.get(0);
-                final var paramType1 = children.get(1);
-                final var returnType = children.get(2);
-                return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE)
-                        .withNodeList("params", List.of(paramType, paramType1))
-                        .withNode("return", returnType)));
-            }
-            if (parent.equals("Function")) {
-                final var paramType = children.get(0);
-                final var returnType = children.get(1);
-                return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE)
-                        .withNodeList("params", List.of(paramType))
-                        .withNode("return", returnType)));
-            }
-            if (parent.equals("Supplier")) {
-                final var returnType = children.getFirst();
-                return Optional.of(new Ok<>(new MapNode(FUNCTIONAL_TYPE)
-                        .withNode("return", returnType)));
-            }
-            if (parent.equals("Tuple")) {
-                return Optional.of(new Ok<>(new MapNode(TUPLE_TYPE).withNodeList(TUPLE_CHILDREN, children)));
-            }
         }
 
         if (node.is(BLOCK)) {

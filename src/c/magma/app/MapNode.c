@@ -47,7 +47,7 @@ public final struct MapNode implements Node {
 	((String) => Optional<Node>) findNode=Optional<Node> findNode(String propertyKey){
 		return Optional.ofNullable(this.nodes.get(propertyKey));
 	};
-	((String, ((String) => String)) => Node) mapString=Node mapString(String propertyKey, ((String) => String) mapper){
+	((String, [Capture, ((Capture, String) => String)]) => Node) mapString=Node mapString(String propertyKey, [Capture, ((Capture, String) => String)] mapper){
 		return findString(propertyKey).map(mapper).map(newString -> withString(propertyKey, newString)).orElse(this);
 	};
 	((Node) => Node) merge=Node merge(Node other){
@@ -73,7 +73,7 @@ public final struct MapNode implements Node {
 	((String) => boolean) is=boolean is(String type){
 		return this.type.isPresent() && this.type.get().equals(type);
 	};
-	((String, ((List<Node>) => List<Node>)) => Node) mapNodeList=Node mapNodeList(String propertyKey, ((List<Node>) => List<Node>) mapper){
+	((String, [Capture, ((Capture, List<Node>) => List<Node>)]) => Node) mapNodeList=Node mapNodeList(String propertyKey, [Capture, ((Capture, List<Node>) => List<Node>)] mapper){
 		return findNodeList(propertyKey).map(mapper).map(list -> withNodeList(propertyKey, list))
                 .orElse(this);
 	};
@@ -85,7 +85,7 @@ public final struct MapNode implements Node {
 		copy.remove(propertyKey);
 		return new MapNode(this.type, this.strings, this.nodes, copy);
 	};
-	((String, ((Node) => Node)) => Node) mapNode=Node mapNode(String propertyKey, ((Node) => Node) mapper){
+	((String, [Capture, ((Capture, Node) => Node)]) => Node) mapNode=Node mapNode(String propertyKey, [Capture, ((Capture, Node) => Node)] mapper){
 		return findNode(propertyKey).map(mapper).map(node -> withNode(propertyKey, node))
                 .orElse(this);
 	};
