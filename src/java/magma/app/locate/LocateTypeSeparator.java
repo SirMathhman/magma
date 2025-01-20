@@ -16,11 +16,14 @@ public class LocateTypeSeparator implements Locator {
     @Override
     public Optional<Integer> locate(String input) {
         var depth = 0;
-        for (int i = input.length() - 1; i >= 0; i--) {
+
+        int i = input.length() - 1;
+        while (i >= 0) {
             var c = input.charAt(i);
             if (c == ' ' && depth == 1) return Optional.of(i);
             if (c == '>') depth++;
             if (c == '<') depth--;
+            i--;
         }
 
         return Optional.empty();

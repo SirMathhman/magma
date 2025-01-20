@@ -4,7 +4,6 @@ import magma.api.result.Err;
 import magma.api.result.Result;
 import magma.app.Node;
 import magma.app.error.CompileError;
-import magma.app.error.context.NodeContext;
 import magma.app.error.context.StringContext;
 
 import java.util.function.Predicate;
@@ -22,6 +21,6 @@ public record FilterRule(Predicate<String> filter,
 
     @Override
     public Result<String, CompileError> generate(Node node) {
-        return new Err<>(new CompileError(getClass() + " cannot generate.", new NodeContext(node)));
+        return this.childRule.generate(node);
     }
 }

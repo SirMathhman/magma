@@ -19,4 +19,9 @@ public class Streams {
     public static <T> Stream<T> from(Set<T> entries) {
         return from(new ArrayList<>(entries));
     }
+
+    public static Stream<Integer> reverse(String value) {
+        return new HeadedStream<>(new RangeHead(value.length()))
+                .map(index -> value.length() - index - 1);
+    }
 }

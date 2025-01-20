@@ -3,11 +3,11 @@ package magma;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
 import magma.app.error.context.StringContext;
+import magma.app.filter.NumberFilter;
 import magma.app.filter.SymbolFilter;
 import magma.app.locate.FirstLocator;
 import magma.app.locate.LastLocator;
@@ -37,7 +37,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -131,16 +130,6 @@ public class Main {
         } catch (IOException e) {
             return Optional.of(e);
         }
-    }
-
-    private static String merge(List<Node> nodes, BiFunction<StringBuilder, String, StringBuilder> merger) {
-        return nodes.stream()
-                .map(node -> new StringRule(DEFAULT_VALUE).parse(node).findValue().orElse(""))
-                .reduce(new StringBuilder(), merger, (_, next) -> next).toString();
-    }
-
-    private static StringBuilder mergeStatement(StringBuilder builder, String element) {
-        return builder.append(element);
     }
 
     private static Result<List<String>, CompileError> splitByStatements(String input) {
@@ -299,7 +288,8 @@ public class Main {
                 createInvocationRule(valueRule),
                 createReturnRule(valueRule),
                 createAssignmentRule(valueRule),
-                createPostfixRule(valueRule),
+                createPostfixRule("post-increment", "++", valueRule),
+                createPostfixRule("post-decrement", "--", valueRule),
                 createWhitespaceRule()
         )));
         return statement;
@@ -318,8 +308,8 @@ public class Main {
         return new TypeRule("whitespace", new StripRule(new ExactRule("")));
     }
 
-    private static Rule createPostfixRule(Rule value) {
-        return new SuffixRule(new NodeRule("value", value), "++;");
+    private static Rule createPostfixRule(String type, String operator, Rule value) {
+        return new TypeRule(type,new SuffixRule(new NodeRule("value", value), operator + ";"));
     }
 
     private static Rule createAssignmentRule(Rule value) {
@@ -340,9 +330,25 @@ public class Main {
         value.set(new OrRule(List.of(
                 createConstructionRule(value),
                 createDataAccessRule(value),
-                createSymbolRule()
+                createSymbolRule(),
+                createNumberRule(),
+                createNotRule(value),
+                createOperatorRule(value)
         )));
+
         return value;
+    }
+
+    private static TypeRule createNumberRule() {
+        return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule("value"))));
+    }
+
+    private static TypeRule createOperatorRule(LazyRule value) {
+        return new TypeRule("greater-or-equals", new InfixRule(new NodeRule("left", value), new FirstLocator(">="), new NodeRule("right", value)));
+    }
+
+    private static TypeRule createNotRule(LazyRule value) {
+        return new TypeRule("not", new StripRule(new PrefixRule("!", new NodeRule("value", value))));
     }
 
     private static TypeRule createConstructionRule(LazyRule value) {
@@ -350,8 +356,7 @@ public class Main {
     }
 
     private static Rule createSymbolRule() {
-        final var rule = new FilterRule(new SymbolFilter(), new StringRule(DEFAULT_VALUE));
-        return new TypeRule("symbol", rule);
+        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(DEFAULT_VALUE))));
     }
 
     private static Rule createDataAccessRule(final Rule value) {
