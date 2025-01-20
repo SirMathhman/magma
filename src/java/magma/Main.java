@@ -262,7 +262,7 @@ public class Main {
                 createConditionalRule(statement, "if"),
                 createConditionalRule(statement, "while"),
                 createElseRule(statement),
-                createInvocationRule(valueRule),
+                createInvocationStatementRule(valueRule),
                 createReturnRule(valueRule),
                 createAssignmentRule(valueRule),
                 createPostfixRule("post-increment", "++", valueRule),
@@ -285,7 +285,12 @@ public class Main {
 
     private static TypeRule createConditionalRule(LazyRule statement, String type) {
         final var leftRule = new StripRule(new PrefixRule("(", new NodeRule("condition", createValueRule())));
-        return new TypeRule(type, new PrefixRule(type, new InfixRule(leftRule, new ParenthesesMatcher(), createBlockRule(statement))));
+        final var blockRule = new OrRule(List.of(
+                createBlockRule(statement),
+                new NodeRule("child", statement)
+        ));
+
+        return new TypeRule(type, new PrefixRule(type, new InfixRule(leftRule, new ParenthesesMatcher(), blockRule)));
     }
 
     private static TypeRule createWhitespaceRule() {
@@ -297,11 +302,19 @@ public class Main {
     }
 
     private static Rule createAssignmentRule(Rule value) {
-        return new SuffixRule(new InfixRule(new NodeRule("destination", value), new FirstLocator(" "), new NodeRule("source", value)), ";");
+        final var destination = new NodeRule("destination", value);
+        final var source = new NodeRule("source", value);
+        return new TypeRule("assignment", new SuffixRule(new InfixRule(destination, new FirstLocator("="), source), ";"));
     }
 
-    private static Rule createInvocationRule(Rule value) {
-        final var suffixRule = new SuffixRule(new InfixRule(new NodeRule("caller", value), new FirstLocator("("), new DivideRule("children", ValueDivider.VALUE_DIVIDER, value)), ");");
+    private static Rule createInvocationStatementRule(Rule value) {
+        return new SuffixRule(createInvocationRule(value), ";");
+    }
+
+    private static TypeRule createInvocationRule(Rule value) {
+        final var caller = new NodeRule("caller", value);
+        final var children = new DivideRule("children", ValueDivider.VALUE_DIVIDER, value);
+        final var suffixRule = new SuffixRule(new InfixRule(caller, new FirstLocator("("), children), ")");
         return new TypeRule("invocation", suffixRule);
     }
 
@@ -313,6 +326,7 @@ public class Main {
         final var value = new LazyRule();
         value.set(new OrRule(List.of(
                 createConstructionRule(value),
+                createInvocationRule(value),
                 createDataAccessRule(value),
                 createSymbolRule(),
                 createNumberRule(),

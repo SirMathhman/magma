@@ -1,6 +1,11 @@
 package magma.app.rule.locate;
 
+import magma.api.Tuple;
+
+import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ParenthesesMatcher implements Locator {
     @Override
@@ -16,13 +21,28 @@ public class ParenthesesMatcher implements Locator {
     @Override
     public Optional<Integer> locate(String input) {
         var depth = 0;
-        int i = 0;
-        while (i < input.length()) {
-            final var c = input.charAt(i);
+
+        final var queue = IntStream.range(0, input.length())
+                .mapToObj(index -> new Tuple<>(index, input.charAt(index)))
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        while (!queue.isEmpty()) {
+            final var tuple = queue.pop();
+            final var i = tuple.left();
+            final var c = tuple.right();
+
+            if (c == '\'') {
+                final var tuple1 = queue.pop();
+                if (tuple1.right() == '\\') {
+                    queue.pop();
+                }
+
+                queue.pop();
+            }
+
             if (c == ')' && depth == 1) return Optional.of(i);
             if (c == '(') depth++;
             if (c == ')') depth--;
-            i++;
         }
         return Optional.empty();
     }
