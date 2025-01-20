@@ -205,7 +205,8 @@ public class Main {
                 createNamespacedRule("import "),
                 createStructRule("class "),
                 createStructRule("record "),
-                createStructRule("interface ")
+                createStructRule("interface "),
+                createWhitespaceRule()
         ));
     }
 
@@ -240,7 +241,8 @@ public class Main {
         return new OrRule(List.of(
                 createMethodRule(),
                 createInitializationRule(),
-                createDefinitionStatementRule()
+                createDefinitionStatementRule(),
+                createWhitespaceRule()
         ));
     }
 
@@ -276,8 +278,13 @@ public class Main {
                 createInvocationRule(valueRule),
                 createReturnRule(valueRule),
                 createAssignmentRule(valueRule),
-                createPostfixRule(valueRule)
+                createPostfixRule(valueRule),
+                createWhitespaceRule()
         ));
+    }
+
+    private static TypeRule createWhitespaceRule() {
+        return new TypeRule("whitespace", new StripRule(new ExactRule("")));
     }
 
     private static Rule createPostfixRule(Rule value) {
@@ -317,6 +324,10 @@ public class Main {
         final var modifiers = new StringRule("modifiers");
         final var type = new StringRule("type");
         final var name = new StringRule("name");
-        return new TypeRule("definition", new InfixRule(new InfixRule(modifiers, new LastLocator(" "), type), new LastLocator(" "), name));
+        final var withModifiers = new InfixRule(modifiers, new LastLocator(" "), type);
+        return new TypeRule("definition", new InfixRule(new OrRule(List.of(
+                withModifiers,
+                type
+        )), new LastLocator(" "), name));
     }
 }
