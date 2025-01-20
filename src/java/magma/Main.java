@@ -52,10 +52,13 @@ public class Main {
     public static final String IMPORT_BEFORE = "before";
     public static final String IMPORT_AFTER = "after";
     public static final String ROOT_TYPE = "root";
-    public static final String STRUCT_TYPE = "struct";
     public static final String RECORD_TYPE = "record";
     public static final String CLASS_TYPE = "class";
     public static final String INTERFACE_TYPE = "interface";
+    public static final String BEFORE_STRUCT_SEGMENT = "before-struct-segment";
+    public static final String STRUCT_TYPE = "struct";
+    public static final String WHITESPACE_TYPE = "whitespace";
+    public static final String STRUCT_AFTER_CHILDREN = "struct-after-children";
 
     public static void main(String[] args) {
         collect().mapErr(JavaError::new)
@@ -122,9 +125,18 @@ public class Main {
     }
 
     private static Result<Node, CompileError> pass(Node root) {
-        return passNodes(root)
+        return beforePass(root).orElse(new Ok<>(root))
+                .flatMapValue(Main::passNodes)
                 .flatMapValue(Main::passNodeLists)
                 .flatMapValue(inner -> afterPass(inner).orElse(new Ok<>(inner)));
+    }
+
+    private static Optional<Result<Node, CompileError>> beforePass(Node node) {
+        if (node.is(CLASS_TYPE) || node.is(RECORD_TYPE) || node.is(INTERFACE_TYPE)) {
+            return Optional.of(new Ok<>(node.retype(STRUCT_TYPE)));
+        }
+
+        return Optional.empty();
     }
 
     private static Result<Node, CompileError> passNodeLists(Node previous) {
@@ -153,8 +165,16 @@ public class Main {
     }
 
     private static Optional<Result<Node, CompileError>> afterPass(Node node) {
-        if (node.is(CLASS_TYPE) || node.is(RECORD_TYPE) || node.is(INTERFACE_TYPE)) {
-            return Optional.of(new Ok<>(node.retype(STRUCT_TYPE)));
+        if (node.is(Main.STRUCT_TYPE)) {
+            final var newChildren = node.findNodeList("children").orElse(new ArrayList<>())
+                    .stream()
+                    .filter(child -> !child.is(WHITESPACE_TYPE))
+                    .map(child -> child.withString(BEFORE_STRUCT_SEGMENT, "\n\t"))
+                    .toList();
+
+            return Optional.of(new Ok<>(node
+                    .withString(STRUCT_AFTER_CHILDREN, "\n")
+                    .withNodeList("children", newChildren)));
         }
 
         if (node.is("import")) {
@@ -208,19 +228,19 @@ public class Main {
     private static Rule createCompoundRule(String type, String infix, Rule segmentRule) {
         final var infixRule = new InfixRule(new StringRule("modifiers"), new FirstLocator(infix),
                 new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
-                        new SuffixRule(createContentRule(segmentRule), "}")
+                        new SuffixRule(new StripRule(createContentRule(segmentRule), "", STRUCT_AFTER_CHILDREN), "}")
                 )));
         return new TypeRule(type, infixRule);
     }
 
     private static Rule createStructSegmentRule() {
         final var statement = createStatementRule();
-        return new OrRule(List.of(
+        return new StripRule(new OrRule(List.of(
                 createMethodRule(statement),
                 createInitializationRule(statement),
                 createDefinitionStatementRule(),
                 createWhitespaceRule()
-        ));
+        )), BEFORE_STRUCT_SEGMENT, "");
     }
 
     private static SuffixRule createDefinitionStatementRule() {
@@ -296,7 +316,7 @@ public class Main {
     }
 
     private static TypeRule createWhitespaceRule() {
-        return new TypeRule("whitespace", new StripRule(new ExactRule("")));
+        return new TypeRule(WHITESPACE_TYPE, new StripRule(new ExactRule("")));
     }
 
     private static Rule createPostfixRule(String type, String operator, Rule value) {
@@ -433,5 +453,6 @@ public class Main {
     private static TypeRule createGenericRule(LazyRule type) {
         return new TypeRule("generic", new InfixRule(new StripRule(new StringRule("caller")), new FirstLocator("<"), new SuffixRule(new DivideRule("children", ValueDivider.VALUE_DIVIDER, type), ">")));
     }
+
 
 }
