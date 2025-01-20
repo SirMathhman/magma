@@ -22,4 +22,8 @@ public interface Node {
     Node merge(Node other);
 
     String display();
+
+    Node retype(String type);
+
+    boolean is(String type);
 }

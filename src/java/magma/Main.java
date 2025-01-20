@@ -23,6 +23,7 @@ import magma.app.rule.Rule;
 import magma.app.rule.StringRule;
 import magma.app.rule.StripRule;
 import magma.app.rule.SuffixRule;
+import magma.app.rule.TypeRule;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -257,7 +258,8 @@ public class Main {
                 new ExactRule(";")
         ));
 
-        return new InfixRule(createDefinitionRule(), new FirstLocator("("), new InfixRule(createDefinitionRule(), new FirstLocator(")"), orRule));
+        final var definition = createDefinitionRule();
+        return new InfixRule(definition, new FirstLocator("("), new InfixRule(definition, new FirstLocator(")"), orRule));
     }
 
     private static PrefixRule createBlockRule() {
@@ -312,6 +314,9 @@ public class Main {
     }
 
     private static Rule createDefinitionRule() {
-        return new InfixRule(new InfixRule(new StringRule("modifiers"), new LastLocator(" "), new StringRule("type")), new LastLocator(" "), new StringRule("name"));
+        final var modifiers = new StringRule("modifiers");
+        final var type = new StringRule("type");
+        final var name = new StringRule("name");
+        return new TypeRule("definition", new InfixRule(new InfixRule(modifiers, new LastLocator(" "), type), new LastLocator(" "), name));
     }
 }

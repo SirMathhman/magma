@@ -10,15 +10,17 @@ public final class MapNode implements Node {
     private final Map<String, String> strings;
     private final Map<String, List<Node>> nodeLists;
     private final Map<String, Node> nodes;
+    private final Optional<String> type;
 
     public MapNode() {
-        this(new HashMap<>(), new HashMap<>(), new HashMap<>());
+        this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
-    public MapNode(Map<String, String> strings, Map<String, List<Node>> nodeLists, Map<String, Node> nodes) {
+    public MapNode(Optional<String> type, Map<String, String> strings, Map<String, Node> nodes, Map<String, List<Node>> nodeLists) {
+        this.type = type;
         this.strings = strings;
-        this.nodeLists = nodeLists;
         this.nodes = nodes;
+        this.nodeLists = nodeLists;
     }
 
     @Override
@@ -49,6 +51,16 @@ public final class MapNode implements Node {
     @Override
     public String display() {
         return toString();
+    }
+
+    @Override
+    public Node retype(String type) {
+        return new MapNode(Optional.of(type), this.strings, this.nodes, this.nodeLists);
+    }
+
+    @Override
+    public boolean is(String type) {
+        return this.type.isPresent() && this.type.get().equals(type);
     }
 
     @Override

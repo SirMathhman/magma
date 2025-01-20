@@ -2,6 +2,7 @@ package magma.app.error;
 
 import magma.app.error.context.Context;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -16,7 +17,7 @@ public final class CompileError implements Error {
     public CompileError(String message, Context context, List<CompileError> children) {
         this.message = message;
         this.context = context;
-        this.children = children;
+        this.children = new ArrayList<>(children);
     }
 
     public CompileError(String message, Context context) {
