@@ -10,10 +10,10 @@ Optional<T> foldLeft(BiFunction<T, T, T> folder){
 	}
 	@Override
 <R>R foldLeft(R initial, BiFunction<R, T, R> folder){
-		var current=initial;
+		auto current=initial;
 		while(true){
 			R finalCurrent=current;
-			const var maybeNext=this.head.next().map(next -> folder.apply(finalCurrent, next));
+			const auto maybeNext=this.head.next().map(next -> folder.apply(finalCurrent, next));
 			if(maybeNext.isPresent()){
 				current=maybeNext.get();
 			}

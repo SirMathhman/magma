@@ -32,20 +32,20 @@ struct Main {
 		return sources.stream().map(Main::runWithSource).flatMap(Optional::stream).findFirst();
 	}
 	static Optional<ApplicationError> runWithSource(Path source){
-		const var relative=SOURCE_DIRECTORY.relativize(source);
-		const var parent=relative.getParent();
-		const var namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent::getName).map(Path::toString).toList();
+		const auto relative=SOURCE_DIRECTORY.relativize(source);
+		const auto parent=relative.getParent();
+		const auto namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent::getName).map(Path::toString).toList();
 		if(namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))){
 			return Optional.empty();
 		}
-		const var nameWithExt=relative.getFileName().toString();
-		const var name=nameWithExt.substring(0, nameWithExt.indexOf('.''));
-		const var copy=new ArrayList<>(namespace);
+		const auto nameWithExt=relative.getFileName().toString();
+		const auto name=nameWithExt.substring(0, nameWithExt.indexOf('.''));
+		const auto copy=new ArrayList<>(namespace);
 		copy.add(name);
 		System.out.println("Compiling source: "+String.join(".", copy));
-		const var targetParent=TARGET_DIRECTORY.resolve(parent);
+		const auto targetParent=TARGET_DIRECTORY.resolve(parent);
 		if(!Files.exists(targetParent)){
-			const var directoriesError=JavaFiles.createDirectoriesWrapped(targetParent);
+			const auto directoriesError=JavaFiles.createDirectoriesWrapped(targetParent);
 			if(directoriesError.isPresent())return directoriesError.map(JavaError::new).map(ApplicationError::new);
 		}
 		return JavaFiles.readStringWrapped(source)
@@ -60,8 +60,8 @@ struct Main {
                 .flatMapValue(root ->CLang.createCRootRule().generate(root));
 	}
 	static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
-		const var target=targetParent.resolve(name+".c");
-		const var header=targetParent.resolve(name+".h");
+		const auto target=targetParent.resolve(name+".c");
+		const auto header=targetParent.resolve(name+".h");
 		return JavaFiles.writeStringWrapped(target, output)
                 .or(() ->JavaFiles.writeStringWrapped(header, output))
                 .map(JavaError::new).map(ApplicationError::new);

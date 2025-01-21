@@ -26,7 +26,7 @@ String display(){
 	}
 	String format(int depth){
 		this.children.sort(Comparator.comparingInt(CompileError::maxDepth));
-		const var joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
+		const auto joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
                 .collect(Collectors.joining());
 		return this.message + ": " + this.context.display() + joinedChildren;
 	}

@@ -43,19 +43,33 @@ public class Passer {
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> removeAccessModifiersFromDefinitions(State state, Node node) {
         if (node.is("definition")) {
-            final var newNode = pruneModifiers(node).mapNodeList("modifiers", modifiers -> {
-                return modifiers.stream()
-                        .map(child -> child.findString("value"))
-                        .flatMap(Optional::stream)
-                        .map(modifier -> modifier.equals("final") ? "const" : modifier)
-                        .map(value -> new MapNode("modifier").withString("value", value))
-                        .toList();
-            });
+            final var newNode = pruneModifiers(node)
+                    .mapNodeList("modifiers", Passer::replaceFinalWithConst)
+                    .mapNode("type", Passer::replaceVarWithAuto);
 
             return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
         }
 
         return Optional.empty();
+    }
+
+    private static List<Node> replaceFinalWithConst(List<Node> modifiers) {
+        return modifiers.stream()
+                .map(child -> child.findString("value"))
+                .flatMap(Optional::stream)
+                .map(modifier -> modifier.equals("final") ? "const" : modifier)
+                .map(value -> new MapNode("modifier").withString("value", value))
+                .toList();
+    }
+
+    private static Node replaceVarWithAuto(Node type) {
+        if (!type.is("symbol")) return type;
+
+        final var value = type.findString("value").orElse("");
+        if (!value.equals("var")) return type;
+
+        return new MapNode("symbol").withString("value", "auto");
+
     }
 
     private static Node pruneModifiers(Node node) {

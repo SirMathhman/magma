@@ -54,20 +54,20 @@ struct CommonLang {
 	static const String TUPLE_CHILDREN="children";
 	static const String CONTENT_AFTER_CHILD="after-child";
 	static Rule createNamespacedRule(String type, String prefix){
-		const var namespace=new StringRule("namespace");
-		const var childRule=new PrefixRule(prefix, new SuffixRule(namespace, ";"));
+		const auto namespace=new StringRule("namespace");
+		const auto childRule=new PrefixRule(prefix, new SuffixRule(namespace, ";"));
 		return new TypeRule(type, new StripRule(childRule));
 	}
 	static Rule createCompoundRule(String type, String infix, Rule segmentRule){
-		const var modifiers=createModifiersRule();
-		const var maybeModifiers=new OrRule(List.of(new SuffixRule(modifiers, " "), new ExactRule("")));
-		const var nameAndContent=new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(new SuffixRule(new StripRule(createContentRule(segmentRule), "", STRUCT_AFTER_CHILDREN), "}")));
-		const var infixRule=new InfixRule(maybeModifiers, new FirstLocator(infix), nameAndContent);
+		const auto modifiers=createModifiersRule();
+		const auto maybeModifiers=new OrRule(List.of(new SuffixRule(modifiers, " "), new ExactRule("")));
+		const auto nameAndContent=new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(new SuffixRule(new StripRule(createContentRule(segmentRule), "", STRUCT_AFTER_CHILDREN), "}")));
+		const auto infixRule=new InfixRule(maybeModifiers, new FirstLocator(infix), nameAndContent);
 		return new TypeRule(type, infixRule);
 	}
 	static Rule createStructSegmentRule(){
-		const var function=new LazyRule();
-		const var statement=createStatementRule(function);
+		const auto function=new LazyRule();
+		const auto statement=createStatementRule(function);
 		function.set(createMethodRule(statement));
 		return new StripRule(new OrRule(List.of(function, createInitializationRule(createValueRule(statement, function)), createDefinitionStatementRule(), createWhitespaceRule())), BEFORE_STRUCT_SEGMENT, "");
 	}
@@ -75,17 +75,17 @@ struct CommonLang {
 		return new SuffixRule(createDefinitionRule(), ";");
 	}
 	static Rule createInitializationRule(Rule value){
-		const var definition=new NodeRule(INITIALIZATION_DEFINITION, createDefinitionRule());
-		const var valueRule=new NodeRule(INITIALIZATION_VALUE, value);
-		const var infixRule=new InfixRule(definition, new FirstLocator("="), new StripRule(new SuffixRule(valueRule, ";")));
+		const auto definition=new NodeRule(INITIALIZATION_DEFINITION, createDefinitionRule());
+		const auto valueRule=new NodeRule(INITIALIZATION_VALUE, value);
+		const auto infixRule=new InfixRule(definition, new FirstLocator("="), new StripRule(new SuffixRule(valueRule, ";")));
 		return new TypeRule(INITIALIZATION_TYPE, infixRule);
 	}
 	static Rule createMethodRule(Rule statement){
-		const var orRule=new OrRule(List.of(new NodeRule(METHOD_CHILD, createBlockRule(statement)), new ExactRule(";")));
-		const var definition=createDefinitionRule();
-		const var definitionProperty=new NodeRule(METHOD_DEFINITION, definition);
-		const var params=new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, definition), new ExactRule(""));
-		const var infixRule=new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
+		const auto orRule=new OrRule(List.of(new NodeRule(METHOD_CHILD, createBlockRule(statement)), new ExactRule(";")));
+		const auto definition=createDefinitionRule();
+		const auto definitionProperty=new NodeRule(METHOD_DEFINITION, definition);
+		const auto params=new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, definition), new ExactRule(""));
+		const auto infixRule=new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
 		return new TypeRule(METHOD_TYPE, infixRule);
 	}
 	static TypeRule createBlockRule(Rule statement){
@@ -95,8 +95,8 @@ struct CommonLang {
 		return new OptionalNodeListRule("children", new DivideRule("children", STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD)), new ExactRule(""));
 	}
 	static Rule createStatementRule(Rule function){
-		const var statement=new LazyRule();
-		const var valueRule=createValueRule(statement, function);
+		const auto statement=new LazyRule();
+		const auto valueRule=createValueRule(statement, function);
 		statement.set(new OrRule(List.of(createKeywordRule("continue"), createKeywordRule("break"), createInitializationRule(createValueRule(statement, function)), createDefinitionStatementRule(), createConditionalRule(statement, "if", createValueRule(statement, function)), createConditionalRule(statement, "while", createValueRule(statement, function)), createElseRule(statement), createInvocationStatementRule(valueRule), createReturnRule(valueRule), createAssignmentRule(valueRule), createPostfixRule("post-increment", "++", valueRule), createPostfixRule("post-decrement", "--", valueRule), createWhitespaceRule())));
 		return statement;
 	}
@@ -107,8 +107,8 @@ struct CommonLang {
 		return new TypeRule("else", new StripRule(new PrefixRule("else ", new OrRule(List.of(new NodeRule(METHOD_CHILD, createBlockRule(statement)), new NodeRule(INITIALIZATION_VALUE, statement))))));
 	}
 	static TypeRule createConditionalRule(LazyRule statement, String type, Rule value){
-		const var leftRule=new StripRule(new PrefixRule("(", new NodeRule("condition", value)));
-		const var blockRule=new OrRule(List.of(new NodeRule(METHOD_CHILD, createBlockRule(statement)), new NodeRule(METHOD_CHILD, statement)));
+		const auto leftRule=new StripRule(new PrefixRule("(", new NodeRule("condition", value)));
+		const auto blockRule=new OrRule(List.of(new NodeRule(METHOD_CHILD, createBlockRule(statement)), new NodeRule(METHOD_CHILD, statement)));
 		return new TypeRule(type, new PrefixRule(type, new InfixRule(leftRule, new ParenthesesMatcher(), blockRule)));
 	}
 	static TypeRule createWhitespaceRule(){
@@ -118,24 +118,24 @@ struct CommonLang {
 		return new TypeRule(type, new SuffixRule(new NodeRule(INITIALIZATION_VALUE, value), operator+";"));
 	}
 	static Rule createAssignmentRule(Rule value){
-		const var destination=new NodeRule("destination", value);
-		const var source=new NodeRule("source", value);
+		const auto destination=new NodeRule("destination", value);
+		const auto source=new NodeRule("source", value);
 		return new TypeRule("assignment", new SuffixRule(new InfixRule(destination, new FirstLocator("="), source), ";"));
 	}
 	static Rule createInvocationStatementRule(Rule value){
 		return new SuffixRule(createInvocationRule(value), ";");
 	}
 	static TypeRule createInvocationRule(Rule value){
-		const var caller=new NodeRule("caller", value);
-		const var children=new OrRule(List.of(new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, value), new ExactRule("")));
-		const var suffixRule=new StripRule(new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")"));
+		const auto caller=new NodeRule("caller", value);
+		const auto children=new OrRule(List.of(new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, value), new ExactRule("")));
+		const auto suffixRule=new StripRule(new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")"));
 		return new TypeRule("invocation", suffixRule);
 	}
 	static Rule createReturnRule(Rule value){
 		return new TypeRule("return", new StripRule(new PrefixRule("return ", new SuffixRule(new NodeRule(INITIALIZATION_VALUE, value), ";"))));
 	}
 	static Rule createValueRule(Rule statement, Rule function){
-		const var value=new LazyRule();
+		const auto value=new LazyRule();
 		value.set(new OrRule(List.of(function, createConstructionRule(value), createInvocationRule(value), createAccessRule("data-access", ".", value), createAccessRule("method-access", "::", value), createSymbolRule(), createNumberRule(), createNotRule(value), createOperatorRule("greater-equals", ">=", value), createOperatorRule("less", "<", value), createOperatorRule("equals", "==", value), createOperatorRule("and", "&&", value), createOperatorRule("add", "+", value), createCharRule(), createStringRule(), createTernaryRule(value), createLambdaRule(statement, value))));
 		return value;
 	}
@@ -143,7 +143,7 @@ struct CommonLang {
 		return new TypeRule("lambda", new InfixRule(new StringRule("args"), new FirstLocator("->"), new OrRule(List.of(new NodeRule(METHOD_CHILD, createBlockRule(statement)), new NodeRule(METHOD_CHILD, value)))));
 	}
 	static TypeRule createStringRule(){
-		const var value=new PrefixRule("\"", new SuffixRule(new StringRule(INITIALIZATION_VALUE), "\""));
+		const auto value=new PrefixRule("\"", new SuffixRule(new StringRule(INITIALIZATION_VALUE), "\""));
 		return new TypeRule("string", new StripRule(value));
 	}
 	static TypeRule createTernaryRule(LazyRule value){
@@ -162,37 +162,37 @@ struct CommonLang {
 		return new TypeRule("not", new StripRule(new PrefixRule("!", new NodeRule(INITIALIZATION_VALUE, value))));
 	}
 	static TypeRule createConstructionRule(LazyRule value){
-		const var type=new StringRule("type");
-		const var arguments=new OrRule(List.of(new DivideRule("arguments", VALUE_DIVIDER, value), new ExactRule("")));
-		const var childRule=new InfixRule(type, new FirstLocator("("), new StripRule(new SuffixRule(arguments, ")")));
+		const auto type=new StringRule("type");
+		const auto arguments=new OrRule(List.of(new DivideRule("arguments", VALUE_DIVIDER, value), new ExactRule("")));
+		const auto childRule=new InfixRule(type, new FirstLocator("("), new StripRule(new SuffixRule(arguments, ")")));
 		return new TypeRule("construction", new StripRule(new PrefixRule("new ", childRule)));
 	}
 	static Rule createSymbolRule(){
 		return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
 	}
 	static Rule createAccessRule(String type, String infix, const Rule value){
-		const var rule=new InfixRule(new NodeRule("ref", value), new LastLocator(infix), new StringRule("property"));
+		const auto rule=new InfixRule(new NodeRule("ref", value), new LastLocator(infix), new StringRule("property"));
 		return new TypeRule(type, rule);
 	}
 	static Rule createDefinitionRule(){
-		const var name=new FilterRule(new SymbolFilter(), new StringRule("name"));
-		const var typeProperty=new NodeRule("type", createTypeRule());
-		const var typeAndName=new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
-		const var modifiers=createModifiersRule();
-		const var maybeModifiers=new OrRule(List.of(modifiers, new ExactRule("")));
-		const var typeParams=new StringRule("type-params");
-		const var maybeTypeParams=new OrRule(List.of(new ContextRule("With type params", new InfixRule(new StripRule(new PrefixRule("<", typeParams)), new FirstLocator(">"), new StripRule(typeAndName))), new ContextRule("Without type params", typeAndName)));
-		const var withModifiers=new OptionalNodeListRule("modifiers", new ContextRule("With modifiers", new StripRule(new InfixRule(maybeModifiers, new BackwardsLocator(" "), maybeTypeParams))), new ContextRule("Without modifiers", maybeTypeParams));
-		const var annotation=new TypeRule("annotation", new StripRule(new PrefixRule("@", new StringRule(INITIALIZATION_VALUE))));
-		const var annotations=new DivideRule(DEFINITION_ANNOTATIONS, new SimpleDivider("\n"), annotation);
+		const auto name=new FilterRule(new SymbolFilter(), new StringRule("name"));
+		const auto typeProperty=new NodeRule("type", createTypeRule());
+		const auto typeAndName=new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
+		const auto modifiers=createModifiersRule();
+		const auto maybeModifiers=new OrRule(List.of(modifiers, new ExactRule("")));
+		const auto typeParams=new StringRule("type-params");
+		const auto maybeTypeParams=new OrRule(List.of(new ContextRule("With type params", new InfixRule(new StripRule(new PrefixRule("<", typeParams)), new FirstLocator(">"), new StripRule(typeAndName))), new ContextRule("Without type params", typeAndName)));
+		const auto withModifiers=new OptionalNodeListRule("modifiers", new ContextRule("With modifiers", new StripRule(new InfixRule(maybeModifiers, new BackwardsLocator(" "), maybeTypeParams))), new ContextRule("Without modifiers", maybeTypeParams));
+		const auto annotation=new TypeRule("annotation", new StripRule(new PrefixRule("@", new StringRule(INITIALIZATION_VALUE))));
+		const auto annotations=new DivideRule(DEFINITION_ANNOTATIONS, new SimpleDivider("\n"), annotation);
 		return new TypeRule(DEFINITION_TYPE, new OrRule(List.of(new ContextRule("With annotations", new InfixRule(annotations, new LastLocator("\n"), withModifiers)), new ContextRule("Without annotations", withModifiers))));
 	}
 	static DivideRule createModifiersRule(){
-		const var modifierRule=new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(INITIALIZATION_VALUE))));
+		const auto modifierRule=new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(INITIALIZATION_VALUE))));
 		return new DivideRule("modifiers", new SimpleDivider(" "), modifierRule);
 	}
 	static Rule createTypeRule(){
-		const var type=new LazyRule();
+		const auto type=new LazyRule();
 		type.set(new OrRule(List.of(createSymbolRule(), createGenericRule(type), createVarArgsRule(type), createArrayRule(type), createFunctionalRule(type), createTupleRule(type), createSliceRule(type))));
 		return type;
 	}
@@ -203,9 +203,9 @@ struct CommonLang {
 		return new TypeRule(TUPLE_TYPE, new PrefixRule("[", new SuffixRule(new DivideRule(TUPLE_CHILDREN, VALUE_DIVIDER, type), "]")));
 	}
 	static TypeRule createFunctionalRule(Rule type){
-		const var params=new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, type), new ExactRule(""));
-		const var leftRule=new PrefixRule("(", new SuffixRule(params, ")"));
-		const var rule=new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));
+		const auto params=new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, type), new ExactRule(""));
+		const auto leftRule=new PrefixRule("(", new SuffixRule(params, ")"));
+		const auto rule=new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));
 		return new TypeRule(FUNCTIONAL_TYPE, new PrefixRule("(", new SuffixRule(rule, ")")));
 	}
 	static TypeRule createArrayRule(LazyRule type){

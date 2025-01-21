@@ -24,14 +24,14 @@ Result<String, CompileError> generate(Node node){
 	}
 	@Override
 Result<Node, CompileError> parse(String input){
-		const var indices=this.locator.locate(input).foldLeft(new ArrayList<>(), InfixRule::add);
-		const var errors=new ArrayList<CompileError>();
+		const auto indices=this.locator.locate(input).foldLeft(new ArrayList<>(), InfixRule::add);
+		const auto errors=new ArrayList<CompileError>();
 		int i=0;
 		while(i<indices.size()){
 			int index=indices.get(i);
-			const var left=input.substring(0, index);
-			const var right=input.substring(index+this.locator.length());
-			const var result=this.leftRule.parse(left).and(() ->this.rightRule.parse(right)).mapValue(Tuple.merge(Node::merge));
+			const auto left=input.substring(0, index);
+			const auto right=input.substring(index+this.locator.length());
+			const auto result=this.leftRule.parse(left).and(() ->this.rightRule.parse(right)).mapValue(Tuple.merge(Node::merge));
 			if(result.isOk()){
 				return result;
 			}

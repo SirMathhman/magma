@@ -8,7 +8,7 @@ final struct RangeHead implements Head<Integer> {
 	@Override
 Optional<Integer> next(){
 		if(this.counter >= this.extent)return Optional.empty();
-		const var value=this.counter;
+		const auto value=this.counter;
 		this.counter++;
 		return Optional.of(value);
 	}

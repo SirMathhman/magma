@@ -34,9 +34,9 @@ String toString(){
 	}
 	@Override
 String format(int depth){
-		const var typeString=this.type.map(inner ->inner+" ").orElse("");
-		var builder=new StringBuilder().append(typeString).append("{");
-		const var joiner=new StringJoiner(",");
+		const auto typeString=this.type.map(inner ->inner+" ").orElse("");
+		auto builder=new StringBuilder().append(typeString).append("{");
+		const auto joiner=new StringJoiner(",");
 		this.strings.entrySet().stream().map(entry -> createEntry(entry.getKey(), "\"" + entry.getValue() + "\"", depth + 1))
                 .forEach(joiner::add);
 		this.nodes.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().format(depth + 1), depth + 1))
@@ -56,8 +56,8 @@ Node mapString(String propertyKey, Function<String, String> mapper){
 	}
 	@Override
 Node merge(Node other){
-		const var withStrings=stream(this.strings).foldLeft(other, (node, tuple) ->node.withString(tuple.left(), tuple.right()));
-		const var withNodes=streamNodes().foldLeft(withStrings, (node, tuple) ->node.withNode(tuple.left(), tuple.right()));
+		const auto withStrings=stream(this.strings).foldLeft(other, (node, tuple) ->node.withString(tuple.left(), tuple.right()));
+		const auto withNodes=streamNodes().foldLeft(withStrings, (node, tuple) ->node.withNode(tuple.left(), tuple.right()));
 		return streamNodeLists().foldLeft(withNodes, (node, tuple) ->node.withNodeList(tuple.left(), tuple.right()));
 	}
 	@Override
@@ -94,7 +94,7 @@ boolean hasNodeList(String propertyKey){
 	}
 	@Override
 Node removeNodeList(String propertyKey){
-		const var copy=new HashMap<>(this.nodeLists);
+		const auto copy=new HashMap<>(this.nodeLists);
 		copy.remove(propertyKey);
 		return new MapNode(this.type, this.strings, this.nodes, copy);
 	}
@@ -105,13 +105,13 @@ Node mapNode(String propertyKey, Function<Node, Node> mapper){
 	}
 	@Override
 Node withNode(String propertyKey, Node propertyValue){
-		const var copy=new HashMap<>(this.nodes);
+		const auto copy=new HashMap<>(this.nodes);
 		copy.put(propertyKey, propertyValue);
 		return new MapNode(this.type, this.strings, copy, this.nodeLists);
 	}
 	@Override
 Node withNodeList(String propertyKey, List<Node> propertyValues){
-		const var copy=new HashMap<>(this.nodeLists);
+		const auto copy=new HashMap<>(this.nodeLists);
 		copy.put(propertyKey, propertyValues);
 		return new MapNode(this.type, this.strings, this.nodes, copy);
 	}
@@ -121,7 +121,7 @@ Optional<List<Node>> findNodeList(String propertyKey){
 	}
 	@Override
 Node withString(String propertyKey, String propertyValues){
-		const var copy=new HashMap<>(this.strings);
+		const auto copy=new HashMap<>(this.strings);
 		copy.put(propertyKey, propertyValues);
 		return new MapNode(this.type, copy, this.nodes, this.nodeLists);
 	}

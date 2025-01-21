@@ -19,15 +19,15 @@ String merge(String current, String value){
 	}
 	@Override
 Result<List<String>, CompileError> divide(String input){
-		const var segments=new ArrayList<String>();
-		var buffer=new StringBuilder();
-		var depth=0;
-		const var queue=IntStream.range(0, input.length()).mapToObj(input::charAt).collect(Collectors.toCollection(LinkedList::new));
+		const auto segments=new ArrayList<String>();
+		auto buffer=new StringBuilder();
+		auto depth=0;
+		const auto queue=IntStream.range(0, input.length()).mapToObj(input::charAt).collect(Collectors.toCollection(LinkedList::new));
 		while(!queue.isEmpty()){
-			const var c=queue.pop();
+			const auto c=queue.pop();
 			buffer.append(c);
 			if(c=='\''){
-				const var c1=queue.pop();
+				const auto c1=queue.pop();
 				buffer.append(c1);
 				if(c1=='\\'){
 					buffer.append(queue.pop());
@@ -37,7 +37,7 @@ Result<List<String>, CompileError> divide(String input){
 			}
 			if(c=='"'){
 				while(!queue.isEmpty()){
-					const var c1=queue.pop();
+					const auto c1=queue.pop();
 					buffer.append(c1);
 					if(c1=='"')break;
 					if(c1=='\\'){

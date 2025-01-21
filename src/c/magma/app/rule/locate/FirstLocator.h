@@ -12,7 +12,7 @@ int length(){
 	}
 	@Override
 Stream<Integer> locate(String input){
-		const var index=input.indexOf(this.infix);
+		const auto index=input.indexOf(this.infix);
 		return index==-1?Streams.empty():Streams.of(index);
 	}
 }

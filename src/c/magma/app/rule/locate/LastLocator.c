@@ -4,7 +4,7 @@ import java.util.Optional;
 struct LastLocator(String infix) implements Locator {
 	@Override
 Stream<Integer> locate(String input){
-		const var index=input.lastIndexOf(infix());
+		const auto index=input.lastIndexOf(infix());
 		return index==-1?Streams.empty():Streams.of(index);
 	}
 	@Override

@@ -3,7 +3,7 @@ import java.io.StringWriter;
 struct JavaError(Exception e) implements Error {
 	@Override
 String display(){
-		const var writer=new StringWriter();
+		const auto writer=new StringWriter();
 		this.e.printStackTrace(new PrintWriter(writer));
 		return writer.toString();
 	}

@@ -13,10 +13,10 @@ int length(){
 	}
 	@Override
 Stream<Integer> locate(String input){
-		var depth=0;
+		auto depth=0;
 		int i=input.length() - 1;
 		while(i>=0){
-			var c=input.charAt(i);
+			auto c=input.charAt(i);
 			if(c=='('&&depth==0)return Streams.of(i);
 			if(c==')')depth++;
 			if(c=='(')depth--;
