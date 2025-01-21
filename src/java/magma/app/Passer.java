@@ -15,79 +15,108 @@ import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILD;
 import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;
 
 public class Passer {
-    public static Result<Node, CompileError> pass(Node root) {
-        return beforePass(root).orElse(new Ok<>(root))
-                .flatMapValue(Passer::passNodes)
-                .flatMapValue(Passer::passNodeLists)
-                .flatMapValue(inner -> afterPass(inner).orElse(new Ok<>(inner)));
+    public static Result<Tuple<State, Node>, CompileError> pass(State state, Node root) {
+        return beforePass(state, root).orElse(new Ok<>(new Tuple<>(state, root)))
+                .flatMapValue(passedBefore -> passNodes(passedBefore.left(), passedBefore.right()))
+                .flatMapValue(passedNodes -> passNodeLists(passedNodes.left(), passedNodes.right()))
+                .flatMapValue(passedNodeLists -> afterPass(passedNodeLists.left(), passedNodeLists.right()).orElse(new Ok<>(new Tuple<>(passedNodeLists.left(), passedNodeLists.right()))));
     }
 
-    public static Optional<Result<Node, CompileError>> beforePass(Node node) {
-        return removePackageStatements(node)
-                .or(() -> renameToStruct(node));
+    public static Optional<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
+        return removePackageStatements(state, node)
+                .or(() -> renameToStruct(state, node));
     }
 
-    private static Optional<? extends Result<Node, CompileError>> renameToStruct(Node node) {
+    private static Optional<Result<Tuple<State, Node>, CompileError>> renameToStruct(State state, Node node) {
         if (node.is("class") || node.is("interface") || node.is("record")) {
-            return Optional.of(new Ok<>(node.retype("struct")));
+            return Optional.of(new Ok<>(new Tuple<>(state, node.retype("struct"))));
         }
 
         return Optional.empty();
     }
 
-    private static Optional<Result<Node, CompileError>> removePackageStatements(Node node) {
+    private static Optional<Result<Tuple<State, Node>, CompileError>> removePackageStatements(State state, Node node) {
         if (!node.is("root")) {
             return Optional.empty();
         }
+
         final var node1 = node.mapNodeList("children", children -> {
             return children.stream()
                     .filter(child -> !child.is("package"))
                     .toList();
         });
-        return Optional.of(new Ok<>(node1));
+
+        return Optional.of(new Ok<>(new Tuple<>(state, node1)));
     }
 
-    public static Result<Node, CompileError> passNodeLists(Node previous) {
-        return previous.streamNodeLists().foldLeftToResult(previous, Passer::passNodeList);
+    public static Result<Tuple<State, Node>, CompileError> passNodeLists(State state, Node previous) {
+        return previous.streamNodeLists()
+                .foldLeftToResult(new Tuple<>(state, previous),
+                        (current, tuple) -> passNodeList(current.left(), current.right(), tuple));
     }
 
-    public static Result<Node, CompileError> passNodeList(Node node, Tuple<String, List<Node>> tuple) {
-        return Streams.from(tuple.right())
-                .map(Passer::pass)
-                .foldLeftToResult(new ArrayList<>(), Passer::foldElementIntoList)
-                .mapValue(list -> node.withNodeList(tuple.left(), list));
+    public static Result<Tuple<State, Node>, CompileError> passNodeList(
+            State state,
+            Node root,
+            Tuple<String, List<Node>> pair
+    ) {
+        final var propertyKey = pair.left();
+        final var propertyValues = pair.right();
+        return passNodeListInStream(state, propertyValues)
+                .mapValue(list -> list.mapRight(right -> root.withNodeList(propertyKey, right)));
     }
 
-    public static Optional<Result<Node, CompileError>> afterPass(Node node) {
-        if(node.is("root")) {
-            return Optional.of(new Ok<>(node.mapNodeList("children", children -> {
+    private static Result<Tuple<State, List<Node>>, CompileError> passNodeListInStream(State state, List<Node> elements) {
+        return Streams.from(elements).foldLeftToResult(new Tuple<>(state, new ArrayList<>()), (current, currentElement) -> {
+            final var currentState = current.left();
+            final var currentElements = current.right();
+
+            return pass(currentState, currentElement).mapValue(passingResult -> {
+                return passingResult.mapRight(passedElement -> {
+                    final var copy = new ArrayList<>(currentElements);
+                    copy.add(passedElement);
+                    return copy;
+                });
+            });
+        });
+    }
+
+    public static Optional<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
+        if (node.is("root")) {
+            final var newNode = node.mapNodeList("children", children -> {
                 return children.stream()
                         .map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
                         .toList();
-            })));
+            });
+            return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
         }
 
         if (node.is("block") || node.is("struct")) {
-            return Optional.of(new Ok<>(node.withString(BLOCK_AFTER_CHILDREN, "\n").mapNodeList("children", children -> {
+            final var newNode = node.withString(BLOCK_AFTER_CHILDREN, "\n").mapNodeList("children", children -> {
                 return children.stream()
                         .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n\t"))
                         .toList();
-            })));
+            });
+
+            return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
         }
+
         return Optional.empty();
     }
 
-    public static Result<List<Node>, CompileError> foldElementIntoList(List<Node> currentNodes, Result<Node, CompileError> node) {
-        return node.mapValue(currentNewElement -> merge(currentNodes, currentNewElement));
+    public static Result<Tuple<State, Node>, CompileError> passNodes(State state, Node root) {
+        return root.streamNodes().foldLeftToResult(new Tuple<>(state, root), Passer::foldNode);
     }
 
-    private static List<Node> merge(List<Node> nodes, Node result) {
-        final var copy = new ArrayList<>(nodes);
-        copy.add(result);
-        return copy;
-    }
+    private static Result<Tuple<State, Node>, CompileError> foldNode(
+            Tuple<State, Node> current,
+            Tuple<String, Node> tuple
+    ) {
+        final var currentState = current.left();
+        final var currentRoot = current.right();
+        final var pairKey = tuple.left();
+        final var pairNode = tuple.right();
 
-    public static Result<Node, CompileError> passNodes(Node root) {
-        return root.streamNodes().foldLeftToResult(root, (node, tuple) -> pass(tuple.right()).mapValue(passed -> node.withNode(tuple.left(), passed)));
+        return pass(currentState, pairNode).mapValue(passed -> passed.mapRight(right -> currentRoot.withNode(pairKey, right)));
     }
 }

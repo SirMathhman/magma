@@ -116,7 +116,10 @@ public class CommonLang {
     }
 
     public static Rule createContentRule(Rule rule) {
-        return new DivideRule(GENERIC_CHILDREN, STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD));
+        return new OrRule(List.of(
+                new DivideRule(GENERIC_CHILDREN, STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD)),
+                new ExactRule("")
+        ));
     }
 
     private static Rule createStatementRule(Rule function) {

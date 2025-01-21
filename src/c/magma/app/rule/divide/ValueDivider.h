@@ -11,7 +11,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 public struct ValueDivider implements Divider {
 	public static final Divider VALUE_DIVIDER=new ValueDivider();
-	private ValueDivider();
+	private ValueDivider(){
+}
 	@Override
 public String merge(String current, String value){
 	return current+", "+value;

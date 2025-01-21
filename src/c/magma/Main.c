@@ -1,5 +1,7 @@
+import magma.api.Tuple;
 import magma.api.result.Result;
 import magma.app.Passer;
+import magma.app.State;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
@@ -53,7 +55,9 @@ public struct Main {
                 .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
 }
 	private static Result<String, CompileError> compile(String input){
-	return JavaLang.createJavaRootRule().parse(input).flatMapValue(Passer::pass).flatMapValue(root ->CLang.createCRootRule().generate(root));
+	return JavaLang.createJavaRootRule().parse(input)
+                .flatMapValue(root1 ->Passer.pass(new State(), root1).mapValue(Tuple::right))
+                .flatMapValue(root ->CLang.createCRootRule().generate(root));
 }
 	private static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
 	final var target=targetParent.resolve(name+".c");
