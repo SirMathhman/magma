@@ -1,6 +1,7 @@
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
-public struct SymbolFilter implements Predicate<String> {@Override
+public struct SymbolFilter implements Predicate<String> {
+	@Override
 public boolean test(String input){
 	return IntStream.range(0, input.length()).allMatch(index ->{
 	final var c=input.charAt(index);

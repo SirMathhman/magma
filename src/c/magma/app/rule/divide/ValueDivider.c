@@ -9,10 +9,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-public struct ValueDivider implements Divider {public static final Divider VALUE_DIVIDER=new ValueDivider();private ValueDivider();@Override
+public struct ValueDivider implements Divider {
+	public static final Divider VALUE_DIVIDER=new ValueDivider();
+	private ValueDivider();
+	@Override
 public String merge(String current, String value){
 	return current+", "+value;
-}@Override
+}
+	@Override
 public Result<List<String>, CompileError> divide(String input){
 	final var segments=new ArrayList<String>();
 	var buffer=new StringBuilder();

@@ -67,7 +67,7 @@ public class Passer {
             })));
         }
 
-        if (node.is("block")) {
+        if (node.is("block") || node.is("struct")) {
             return Optional.of(new Ok<>(node.withString(BLOCK_AFTER_CHILDREN, "\n").mapNodeList("children", children -> {
                 return children.stream()
                         .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n\t"))

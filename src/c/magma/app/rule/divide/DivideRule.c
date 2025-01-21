@@ -10,29 +10,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-public struct DivideRule implements Rule {private final String propertyKey;private final Divider divider;private final Rule childRule;public DivideRule(String propertyKey, Divider divider, Rule childRule){
+public struct DivideRule implements Rule {
+	private final String propertyKey;
+	private final Divider divider;
+	private final Rule childRule;
+	public DivideRule(String propertyKey, Divider divider, Rule childRule){
 	this.divider =divider;
 	this.childRule =childRule;
 	this.propertyKey =propertyKey;
-}public static <T, R>Result<List<R>, CompileError> compileAll(List<T> segments, Function<T, Result<R, CompileError>> mapper){
+}
+	public static <T, R>Result<List<R>, CompileError> compileAll(List<T> segments, Function<T, Result<R, CompileError>> mapper){
 	return Streams.from(segments).foldLeftToResult(new ArrayList<>(), (rs, t) ->mapper.apply(t).mapValue(inner ->{
 	rs.add(inner);
 	return rs;
 }));
-}@Override
+}
+	@Override
 public Result<Node, CompileError> parse(String input){
 	return this.divider.divide(input).flatMapValue(segments -> compileAll(segments, this.childRule::parse))
                 .mapValue(segments -> {
                     final var node = new MapNode();
                     return segments.isEmpty() ? node : node.withNodeList(this.propertyKey, segments);
                 });
-}@Override
+}
+	@Override
 public Result<String, CompileError> generate(Node node){
 	return node.findNodeList(this.propertyKey)
                 .flatMap(list ->list.isEmpty() ? Optional.empty() : Optional.of(list))
                 .map(list -> compileAll(list, this.childRule::generate))
                 .map(result ->result.mapValue(this::merge)).orElseGet(() ->new Err<>(new CompileError("Node list '"+this.propertyKey + "' not present", new NodeContext(node))));
-}private String merge(List<String> elements){
+}
+	private String merge(List<String> elements){
 	return Streams.from(elements).foldLeft(this.divider::merge).orElse("");
 }}
 

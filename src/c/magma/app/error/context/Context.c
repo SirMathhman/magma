@@ -1,2 +1,3 @@
-public struct Context {String display();}
+public struct Context {
+	String display();}
 

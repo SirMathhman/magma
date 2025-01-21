@@ -17,13 +17,19 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-public struct Main {public static final Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");public static final Path TARGET_DIRECTORY=Paths.get(".", "src", "c");public static void main(String[] args){
+public struct Main {
+	public static final Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
+	public static final Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
+	public static void main(String[] args){
 	collect().mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(Main::runWithSources).match(Function.identity(), Optional::of).ifPresent(error ->System.err.println(error.display()));
-}private static Result<Set<Path>, IOException> collect(){
+}
+	private static Result<Set<Path>, IOException> collect(){
 	return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths ->paths.stream().filter(Files::isRegularFile).filter(path ->path.toString().endsWith(".java")).collect(Collectors.toSet()));
-}private static Optional<ApplicationError> runWithSources(Set<Path> sources){
+}
+	private static Optional<ApplicationError> runWithSources(Set<Path> sources){
 	return sources.stream().map(Main::runWithSource).flatMap(Optional::stream).findFirst();
-}private static Optional<ApplicationError> runWithSource(Path source){
+}
+	private static Optional<ApplicationError> runWithSource(Path source){
 	final var relative=SOURCE_DIRECTORY.relativize(source);
 	final var parent=relative.getParent();
 	final var namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent::getName).map(Path::toString).toList();
@@ -45,9 +51,11 @@ public struct Main {public static final Path SOURCE_DIRECTORY=Paths.get(".", "sr
                 .mapErr(ApplicationError::new)
                 .flatMapValue(input ->compile(input).mapErr(ApplicationError::new))
                 .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
-}private static Result<String, CompileError> compile(String input){
+}
+	private static Result<String, CompileError> compile(String input){
 	return JavaLang.createJavaRootRule().parse(input).flatMapValue(Passer::pass).flatMapValue(root ->CLang.createCRootRule().generate(root));
-}private static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
+}
+	private static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
 	final var target=targetParent.resolve(name+".c");
 	final var header=targetParent.resolve(name+".h");
 	return JavaFiles.writeStringWrapped(target, output)

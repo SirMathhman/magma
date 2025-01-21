@@ -7,16 +7,22 @@ import magma.app.error.context.StringContext;
 import magma.app.rule.locate.Locator;
 import java.util.ArrayList;
 import java.util.Optional;
-public final struct InfixRule implements Rule {private final Rule leftRule;private final Locator locator;private final Rule rightRule;public InfixRule(Rule leftRule, Locator locator, Rule rightRule){
+public final struct InfixRule implements Rule {
+	private final Rule leftRule;
+	private final Locator locator;
+	private final Rule rightRule;
+	public InfixRule(Rule leftRule, Locator locator, Rule rightRule){
 	this.leftRule =leftRule;
 	this.locator =locator;
 	this.rightRule =rightRule;
-}@Override
+}
+	@Override
 public Result<String, CompileError> generate(Node node){
 	return this.leftRule.generate(node).and(
                 () ->this.rightRule.generate(node)).mapValue(Tuple.merge(
                 (left, right) ->left+this.locator.unwrap() + right));
-}@Override
+}
+	@Override
 public Result<Node, CompileError> parse(String input){
 	final var indices=this.locator.locate(input).foldLeft(new ArrayList<>(), InfixRule::add);
 	final var errors=new ArrayList<CompileError>();
@@ -35,7 +41,8 @@ public Result<Node, CompileError> parse(String input){
 	i++;
 }
 	return new Err<>(new CompileError("Infix '"+this.locator.unwrap() + "' not present", new StringContext(input), errors));
-}private static ArrayList<Integer> add(ArrayList<Integer> integers, Integer integer){
+}
+	private static ArrayList<Integer> add(ArrayList<Integer> integers, Integer integer){
 	integers.add(integer);
 	return integers;
 }}

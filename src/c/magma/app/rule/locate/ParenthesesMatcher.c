@@ -5,13 +5,16 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-public struct ParenthesesMatcher implements Locator {@Override
+public struct ParenthesesMatcher implements Locator {
+	@Override
 public String unwrap(){
 	return ")";
-}@Override
+}
+	@Override
 public int length(){
 	return 1;
-}@Override
+}
+	@Override
 public Stream<Integer> locate(String input){
 	var depth=0;
 	final var queue=IntStream.range(0, input.length()).mapToObj(index -> new Tuple<>(index, input.charAt(index)))
