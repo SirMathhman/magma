@@ -1,4 +1,4 @@
-package magma.lang;
+package magma.app.lang;
 
 import magma.app.locate.BackwardsLocator;
 import magma.app.locate.InvocationLocator;
@@ -58,30 +58,11 @@ public class CommonLang {
     public static final String TUPLE_TYPE = "tuple";
     public static final String TUPLE_CHILDREN = "children";
 
-    public static Rule createJavaRootRule() {
-        return new TypeRule(ROOT_TYPE, createContentRule(createJavaRootSegmentRule()));
-    }
-
-    private static OrRule createJavaRootSegmentRule() {
-        return new OrRule(List.of(
-                createNamespacedRule("package", "package "),
-                createNamespacedRule("import", "import "),
-                createJavaCompoundRule(CLASS_TYPE, "class "),
-                createJavaCompoundRule(RECORD_TYPE, "record "),
-                createJavaCompoundRule(INTERFACE_TYPE, "interface "),
-                createWhitespaceRule()
-        ));
-    }
-
     public static Rule createNamespacedRule(String type, String prefix) {
         return new TypeRule(type, new StripRule(new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";")), IMPORT_BEFORE, IMPORT_AFTER));
     }
 
-    public static Rule createJavaCompoundRule(String type, String infix) {
-        return createCompoundRule(type, infix, createStructSegmentRule());
-    }
-
-    private static Rule createCompoundRule(String type, String infix, Rule segmentRule) {
+    public static Rule createCompoundRule(String type, String infix, Rule segmentRule) {
         final var infixRule = new InfixRule(new StringRule(DEFINITION_MODIFIERS), new FirstLocator(infix),
                 new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
                         new SuffixRule(new StripRule(createContentRule(segmentRule), "", STRUCT_AFTER_CHILDREN), "}")
@@ -89,7 +70,7 @@ public class CommonLang {
         return new TypeRule(type, infixRule);
     }
 
-    private static Rule createStructSegmentRule() {
+    public static Rule createStructSegmentRule() {
         final var function = new LazyRule();
         final var statement = createStatementRule(function);
         function.set(createMethodRule(statement));
@@ -347,15 +328,4 @@ public class CommonLang {
         return new TypeRule("generic", new InfixRule(new StripRule(new StringRule(PARENT)), new FirstLocator("<"), new SuffixRule(new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, type), ">")));
     }
 
-    public static Rule createCRootRule() {
-        return new TypeRule(ROOT_TYPE, createContentRule(createCRootSegmentRule()));
-    }
-
-    private static OrRule createCRootSegmentRule() {
-        return new OrRule(List.of(
-                createNamespacedRule("import", "import "),
-                createJavaCompoundRule(STRUCT_TYPE, "struct "),
-                createWhitespaceRule()
-        ));
-    }
 }

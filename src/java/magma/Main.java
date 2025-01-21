@@ -6,7 +6,8 @@ import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
 import magma.java.JavaFiles;
-import magma.lang.CommonLang;
+import magma.app.lang.CLang;
+import magma.app.lang.JavaLang;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -79,9 +80,9 @@ public class Main {
     }
 
     private static Result<String, CompileError> compile(String input) {
-        return CommonLang.createJavaRootRule().parse(input)
+        return JavaLang.createJavaRootRule().parse(input)
                 .flatMapValue(Passer::pass)
-                .flatMapValue(root -> CommonLang.createCRootRule().generate(root));
+                .flatMapValue(root -> CLang.createCRootRule().generate(root));
     }
 
     private static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name) {
