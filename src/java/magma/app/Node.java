@@ -43,4 +43,6 @@ public interface Node {
     Node removeNodeList(String propertyKey);
 
     Node mapNode(String propertyKey, Function<Node, Node> mapper);
+
+    boolean hasNode(String propertyKey);
 }

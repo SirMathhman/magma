@@ -11,16 +11,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 struct DivideRule implements Rule {
-	const String propertyKey;
-	const Divider divider;
-	const Rule childRule;
+	 String propertyKey;
+	 Divider divider;
+	 Rule childRule;
 	public DivideRule(String propertyKey, Divider divider, Rule childRule){
 		this.divider =divider;
 		this.childRule =childRule;
 		this.propertyKey =propertyKey;
 	}
-	static <T, R>Result<List<R>, CompileError> compileAll(List<T> segments, Function<T, Result<R, CompileError>> mapper){
-		return Streams.from(segments).foldLeftToResult(new ArrayList<>(), (rs, t) ->mapper.apply(t).mapValue(inner ->{
+	 <T, R>Result<List<R>, CompileError> compileAll(List<T> segments, Function<T, Result<R, CompileError>> mapper){
+		return Streams.from(segments).foldLeftToResult(new ArrayList<>(), auto temp(){
+			return mapper;
+		}.apply(t).mapValue(auto temp(){
 			rs.add(inner);
 			return rs;
 		}));
@@ -35,10 +37,15 @@ Result<Node, CompileError> parse(String input){
 	}
 	@Override
 Result<String, CompileError> generate(Node node){
-		return node.findNodeList(this.propertyKey)
-                .flatMap(list ->list.isEmpty() ? Optional.empty() : Optional.of(list))
+		auto temp(){
+			return list;
+		}.isEmpty() ? Optional.empty() : Optional.of(list))
                 .map(list -> compileAll(list, this.childRule::generate))
-                .map(result ->result.mapValue(this.merge)).orElseGet(() ->new Err<>(new CompileError("Node list '"+this.propertyKey + "' not present", new NodeContext(node))));
+                .map(auto temp(){
+			return result;
+		}.mapValue(this.merge)).orElseGet(auto temp(){
+			return new Err<>(new CompileError("Node list '"+this.propertyKey + "' not present", new NodeContext(node)));
+		});
 	}
 	String merge(List<String> elements){
 		return Streams.from(elements).foldLeft(this.divider::merge).orElse("");

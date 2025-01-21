@@ -5,13 +5,13 @@ import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.StringContext;
 struct PrefixRule implements Rule {
-	const String prefix;
-	const Rule childRule;
+	 String prefix;
+	 Rule childRule;
 	public PrefixRule(String prefix, Rule childRule){
 		this.prefix =prefix;
 		this.childRule =childRule;
 	}
-	static Result<String, CompileError> truncateLeft(String input, String slice){
+	 Result<String, CompileError> truncateLeft(String input, String slice){
 		if(input.startsWith(slice))return new Ok<>(input.substring(slice.length()));
 		return new Err<>(new CompileError("Prefix '"+slice+"' not present", new StringContext(input)));
 	}
@@ -21,6 +21,8 @@ Result<Node, CompileError> parse(String input){
 	}
 	@Override
 Result<String, CompileError> generate(Node node){
-		return this.childRule.generate(node).mapValue(inner ->this.prefix + inner);
+		return this.childRule.generate(node).mapValue(auto temp(){
+			return this;
+		}.prefix + inner);
 	}
 }

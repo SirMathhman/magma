@@ -5,13 +5,13 @@ import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.StringContext;
 struct SuffixRule implements Rule {
-	const String suffix;
-	const Rule childRule;
+	 String suffix;
+	 Rule childRule;
 	public SuffixRule(Rule childRule, String suffix){
 		this.suffix =suffix;
 		this.childRule =childRule;
 	}
-	static Result<String, CompileError> truncateRight(String input, String slice){
+	 Result<String, CompileError> truncateRight(String input, String slice){
 		if(input.endsWith(slice)){
 			return new Ok<>(input.substring(0, input.length() - slice.length()));
 		}
@@ -25,6 +25,8 @@ Result<Node, CompileError> parse(String input){
 	}
 	@Override
 Result<String, CompileError> generate(Node node){
-		return childRule.generate(node).mapValue(inner ->inner+suffix);
+		return childRule.generate(node).mapValue(auto temp(){
+			return inner;
+		}+suffix);
 	}
 }

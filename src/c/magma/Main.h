@@ -20,50 +20,59 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 struct Main {
-	static const Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
-	static const Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
-	static void main(&[String] args){
-		collect().mapErr(JavaError.new).mapErr(ApplicationError.new).mapValue(Main.runWithSources).match(Function.identity(), Optional.of).ifPresent(error ->System.err.println(error.display()));
+	 Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
+	 Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
+	 void main(&[String] args){
+		collect().mapErr(JavaError.new).mapErr(ApplicationError.new).mapValue(Main.runWithSources).match(Function.identity(), Optional.of).ifPresent(auto temp(){
+			return System;
+		}.err.println(error.display()));
 	}
-	static Result<Set<Path>, IOException> collect(){
-		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths ->paths.stream().filter(Files.isRegularFile).filter(path ->path.toString().endsWith(".java")).collect(Collectors.toSet()));
+	 Result<Set<Path>, IOException> collect(){
+		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(auto temp(){
+			return paths;
+		}.stream().filter(Files.isRegularFile).filter(auto temp(){
+			return path;
+		}.toString().endsWith(".java")).collect(Collectors.toSet()));
 	}
-	static Optional<ApplicationError> runWithSources(Set<Path> sources){
+	 Optional<ApplicationError> runWithSources(Set<Path> sources){
 		return sources.stream().map(Main.runWithSource).flatMap(Optional.stream).findFirst();
 	}
-	static Optional<ApplicationError> runWithSource(Path source){
-		const auto relative=SOURCE_DIRECTORY.relativize(source);
-		const auto parent=relative.getParent();
-		const auto namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent.getName).map(Path.toString).toList();
+	 Optional<ApplicationError> runWithSource(Path source){
+		 auto relative=SOURCE_DIRECTORY.relativize(source);
+		 auto parent=relative.getParent();
+		 auto namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent.getName).map(Path.toString).toList();
 		if(namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))){
 			return Optional.empty();
 		}
-		const auto nameWithExt=relative.getFileName().toString();
-		const auto name=nameWithExt.substring(0, nameWithExt.indexOf('.''));
-		const auto copy=new ArrayList<>(namespace);
+		 auto nameWithExt=relative.getFileName().toString();
+		 auto name=nameWithExt.substring(0, nameWithExt.indexOf('.''));
+		 auto copy=new ArrayList<>(namespace);
 		copy.add(name);
 		System.out.println("Compiling source: "+String.join(".", copy));
-		const auto targetParent=TARGET_DIRECTORY.resolve(parent);
+		 auto targetParent=TARGET_DIRECTORY.resolve(parent);
 		if(!Files.exists(targetParent)){
-			const auto directoriesError=JavaFiles.createDirectoriesWrapped(targetParent);
+			 auto directoriesError=JavaFiles.createDirectoriesWrapped(targetParent);
 			if(directoriesError.isPresent())return directoriesError.map(JavaError.new).map(ApplicationError.new);
 		}
-		return JavaFiles.readStringWrapped(source)
-                .mapErr(JavaError::new)
-                .mapErr(ApplicationError::new)
-                .flatMapValue(input ->compile(input).mapErr(ApplicationError::new))
+		auto temp(){
+			return compile;
+		}(input).mapErr(ApplicationError::new))
                 .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional.of);
 	}
-	static Result<String, CompileError> compile(String input){
-		return JavaLang.createJavaRootRule().parse(input)
-                .flatMapValue(root1 ->Passer.pass(new State(), root1).mapValue(Tuple::right))
-                .flatMapValue(root ->CLang.createCRootRule().generate(root));
+	 Result<String, CompileError> compile(String input){
+		auto temp(){
+			return Passer;
+		}.pass(new State(), root1).mapValue(Tuple::right))
+                .flatMapValue(auto temp(){
+			return CLang;
+		}.createCRootRule().generate(root));
 	}
-	static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
-		const auto target=targetParent.resolve(name+".c");
-		const auto header=targetParent.resolve(name+".h");
-		return JavaFiles.writeStringWrapped(target, output)
-                .or(() ->JavaFiles.writeStringWrapped(header, output))
+	 Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
+		 auto target=targetParent.resolve(name+".c");
+		 auto header=targetParent.resolve(name+".h");
+		auto temp(){
+			return JavaFiles;
+		}.writeStringWrapped(header, output))
                 .map(JavaError.new).map(ApplicationError.new);
 	}
 }

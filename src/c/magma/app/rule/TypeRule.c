@@ -8,7 +8,9 @@ import java.util.List;
 struct TypeRule(String type, Rule rule) implements Rule {
 	@Override
 Result<Node, CompileError> parse(String input){
-		return this.rule.parse(input).mapValue(node ->node.retype(this.type)).mapErr(err -> new CompileError("Failed to parse type '" + this.type + "'", new StringContext(input), List.of(err)));
+		return this.rule.parse(input).mapValue(auto temp(){
+			return node;
+		}.retype(this.type)).mapErr(err -> new CompileError("Failed to parse type '" + this.type + "'", new StringContext(input), List.of(err)));
 	}
 	@Override
 Result<String, CompileError> generate(Node node){

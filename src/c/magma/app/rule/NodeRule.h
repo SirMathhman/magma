@@ -11,7 +11,9 @@ Result<Node, CompileError> parse(String input){
 	}
 	@Override
 Result<String, CompileError> generate(Node node){
-		return node.findNode(this.propertyKey).map(this.childRule::generate).orElseGet(() ->new Err<>(new CompileError("Node '"+this.propertyKey + "' was not present", new NodeContext(node))));
+		return node.findNode(this.propertyKey).map(this.childRule::generate).orElseGet(auto temp(){
+			return new Err<>(new CompileError("Node '"+this.propertyKey + "' was not present", new NodeContext(node)));
+		});
 	}
 }
 

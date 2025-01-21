@@ -14,6 +14,8 @@ import java.util.Optional;
 import static magma.app.lang.CommonLang.BLOCK_AFTER_CHILDREN;
 import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILD;
 import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;
+import static magma.app.lang.CommonLang.METHOD_CHILD;
+import static magma.app.lang.CommonLang.METHOD_TYPE;
 import static magma.app.lang.CommonLang.STRUCT_AFTER_CHILDREN;
 
 public class Passer {
@@ -29,7 +31,32 @@ public class Passer {
                 .or(() -> renameToStruct(state, node))
                 .or(() -> renameToSlice(state, node))
                 .or(() -> renameToDataAccess(state, node))
+                .or(() -> renameLambdaToMethod(state, node))
                 .or(() -> enterBlock(state, node));
+    }
+
+    private static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameLambdaToMethod(State state, Node node) {
+        if (node.is("lambda")) {
+            final var value = node.findNode("child").orElse(new MapNode());
+
+            final var propertyValue = value.is("block") ? value : new MapNode("block").withNodeList("children", List.of(
+                    new MapNode("return").withNode("value", value)
+            ));
+
+            final var method = node.retype(METHOD_TYPE)
+                    .withNode(METHOD_CHILD, propertyValue)
+                    .withNode("definition", new MapNode("definition")
+                            .withString("name", "temp")
+                            .withNode("type", createAutoType()));
+
+            return Optional.of(new Ok<>(new Tuple<>(state, method)));
+        }
+
+        return Optional.empty();
+    }
+
+    private static Node createAutoType() {
+        return new MapNode("symbol").withString("value", "auto");
     }
 
     private static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameToDataAccess(State state, Node node) {
@@ -75,9 +102,7 @@ public class Passer {
 
         final var value = type.findString("value").orElse("");
         if (!value.equals("var")) return type;
-
-        return new MapNode("symbol").withString("value", "auto");
-
+        return createAutoType();
     }
 
     private static Node pruneModifiers(Node node) {

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 struct ValueDivider implements Divider {
-	static const Divider VALUE_DIVIDER=new ValueDivider();
+	 Divider VALUE_DIVIDER=new ValueDivider();
 	private ValueDivider(){
 	}
 	@Override
@@ -19,18 +19,18 @@ String merge(String current, String value){
 	}
 	@Override
 Result<List<String>, CompileError> divide(String input){
-		const auto segments=new ArrayList<String>();
+		 auto segments=new ArrayList<String>();
 		auto buffer=new StringBuilder();
 		auto depth=0;
-		const auto queue=IntStream.range(0, input.length()).mapToObj(input.charAt).collect(Collectors.toCollection(LinkedList.new));
+		 auto queue=IntStream.range(0, input.length()).mapToObj(input.charAt).collect(Collectors.toCollection(LinkedList.new));
 		while(!queue.isEmpty()){
-			const auto c=queue.pop();
+			 auto c=queue.pop();
 			if(c=='\''){
 				buffer.append(c);
 				if(queue.isEmpty()){
 					return new Err<>(new CompileError("Malformed chars", new StringContext(input)));
 				}
-				const auto c1=queue.pop();
+				 auto c1=queue.pop();
 				buffer.append(c1);
 				if(c1=='\\'){
 					buffer.append(queue.pop());
@@ -40,7 +40,7 @@ Result<List<String>, CompileError> divide(String input){
 			if(c=='\"'){
 				buffer.append(c);
 				while(!queue.isEmpty()){
-					const auto next=queue.pop();
+					 auto next=queue.pop();
 					buffer.append(next);
 					if(next=='\\')buffer.append(queue.pop());
 					if(next=='\"')break;

@@ -17,14 +17,14 @@ int length(){
 	@Override
 Stream<Integer> locate(String input){
 		auto depth=0;
-		const auto queue=IntStream.range(0, input.length()).mapToObj(index -> new Tuple<>(index, input.charAt(index)))
+		 auto queue=IntStream.range(0, input.length()).mapToObj(index -> new Tuple<>(index, input.charAt(index)))
                 .collect(Collectors.toCollection(LinkedList.new));
 		while(!queue.isEmpty()){
-			const auto tuple=queue.pop();
-			const auto i=tuple.left();
-			const auto c=tuple.right();
+			 auto tuple=queue.pop();
+			 auto i=tuple.left();
+			 auto c=tuple.right();
 			if(c=='\''){
-				const auto tuple1=queue.pop();
+				 auto tuple1=queue.pop();
 				if(tuple1.right() == '\\'){
 					queue.pop();
 				}

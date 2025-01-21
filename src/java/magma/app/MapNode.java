@@ -152,6 +152,11 @@ public final class MapNode implements Node {
     }
 
     @Override
+    public boolean hasNode(String propertyKey) {
+        return this.nodes.containsKey(propertyKey);
+    }
+
+    @Override
     public Node withNode(String propertyKey, Node propertyValue) {
         final var copy = new HashMap<>(this.nodes);
         copy.put(propertyKey, propertyValue);

@@ -8,6 +8,7 @@ import magma.app.rule.FilterRule;
 import magma.app.rule.InfixRule;
 import magma.app.rule.LazyRule;
 import magma.app.rule.NodeRule;
+import magma.app.rule.OptionalNodeRule;
 import magma.app.rule.OptionalNodeListRule;
 import magma.app.rule.OrRule;
 import magma.app.rule.PrefixRule;
@@ -30,8 +31,6 @@ import static magma.app.rule.divide.StatementDivider.STATEMENT_DIVIDER;
 import static magma.app.rule.divide.ValueDivider.VALUE_DIVIDER;
 
 public class CommonLang {
-    public static final String NAMESPACED_BEFORE = "before";
-    public static final String NAMESPACED_AFTER = "after";
     public static final String ROOT_TYPE = "root";
     public static final String RECORD_TYPE = "record";
     public static final String CLASS_TYPE = "class";
@@ -48,10 +47,9 @@ public class CommonLang {
     public static final String FUNCTIONAL_TYPE = "functional";
     public static final String METHOD_CHILD = "child";
     public static final String DEFINITION_ANNOTATIONS = "annotations";
-    public static final String DEFINITION_MODIFIERS = "modifiers";
     public static final String METHOD_TYPE = "method";
     public static final String INITIALIZATION_TYPE = "initialization";
-    public static final String METHOD_DEFINITION = INITIALIZATION_TYPE;
+    public static final String METHOD_DEFINITION = "definition";
     public static final String INITIALIZATION_VALUE = "value";
     public static final String INITIALIZATION_DEFINITION = "definition";
     public static final String DEFINITION_TYPE = "definition";
@@ -67,7 +65,10 @@ public class CommonLang {
 
     public static Rule createCompoundRule(String type, String infix, Rule segmentRule) {
         final var modifiers = createModifiersRule();
-        final var maybeModifiers = new OrRule(List.of(new SuffixRule(modifiers, " "), new ExactRule("")));
+        final var maybeModifiers = new OptionalNodeRule("modifiers",
+                new SuffixRule(modifiers, " ")
+        );
+
         final var nameAndContent = new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
                 new SuffixRule(new StripRule(createContentRule(segmentRule), "", STRUCT_AFTER_CHILDREN), "}")
         ));
@@ -100,14 +101,14 @@ public class CommonLang {
     }
 
     private static Rule createMethodRule(Rule statement) {
-        final var orRule = new OrRule(List.of(
+        final var orRule = new OptionalNodeRule(METHOD_CHILD,
                 new NodeRule(METHOD_CHILD, createBlockRule(statement)),
                 new ExactRule(";")
-        ));
+        );
 
         final var definition = createDefinitionRule();
         final var definitionProperty = new NodeRule(METHOD_DEFINITION, definition);
-        final var params = new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, definition), new ExactRule(""));
+        final var params = new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, definition));
 
         final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
         return new TypeRule(METHOD_TYPE, infixRule);
@@ -119,8 +120,7 @@ public class CommonLang {
 
     public static Rule createContentRule(Rule rule) {
         return new OptionalNodeListRule("children",
-                new DivideRule("children", STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD)),
-                new ExactRule("")
+                new DivideRule("children", STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD))
         );
     }
 
@@ -186,10 +186,9 @@ public class CommonLang {
 
     private static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
-        final var children = new OrRule(List.of(
-                new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, value),
-                new ExactRule("")
-        ));
+        final var children = new OptionalNodeListRule("children",
+                new DivideRule("children", VALUE_DIVIDER, value)
+        );
 
         final var suffixRule = new StripRule(new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")")
         );
@@ -259,10 +258,9 @@ public class CommonLang {
 
     private static TypeRule createConstructionRule(LazyRule value) {
         final var type = new StringRule("type");
-        final var arguments = new OrRule(List.of(
-                new DivideRule("arguments", VALUE_DIVIDER, value),
-                new ExactRule("")
-        ));
+        final var arguments = new OptionalNodeListRule("arguments",
+                new DivideRule("arguments", VALUE_DIVIDER, value)
+        );
         final var childRule = new InfixRule(type, new FirstLocator("("), new StripRule(new SuffixRule(arguments, ")")));
         return new TypeRule("construction", new StripRule(new PrefixRule("new ", childRule)));
     }
@@ -282,7 +280,7 @@ public class CommonLang {
         final var typeAndName = new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
 
         final var modifiers = createModifiersRule();
-        final var maybeModifiers = new OrRule(List.of(modifiers, new ExactRule("")));
+        final var maybeModifiers = new OptionalNodeRule("modifiers", modifiers);
 
         final var typeParams = new StringRule("type-params");
         final var maybeTypeParams = new OrRule(List.of(
@@ -332,7 +330,7 @@ public class CommonLang {
     }
 
     private static TypeRule createFunctionalRule(Rule type) {
-        final var params = new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, type), new ExactRule(""));
+        final var params = new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, type));
         final var leftRule = new PrefixRule("(", new SuffixRule(params, ")"));
         final var rule = new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));
         return new TypeRule(FUNCTIONAL_TYPE, new PrefixRule("(", new SuffixRule(rule, ")")));

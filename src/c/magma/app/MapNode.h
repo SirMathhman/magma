@@ -8,11 +8,11 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-final struct MapNode implements Node {
-	const Map<String, String> strings;
-	const Map<String, List<Node>> nodeLists;
-	const Map<String, Node> nodes;
-	const Optional<String> type;
+struct MapNode implements Node {
+	 Map<String, String> strings;
+	 Map<String, List<Node>> nodeLists;
+	 Map<String, Node> nodes;
+	 Optional<String> type;
 	public MapNode(){
 		this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>());
 	}
@@ -25,7 +25,7 @@ final struct MapNode implements Node {
 	public MapNode(String type){
 		this(Optional.of(type), new HashMap<>(), new HashMap<>(), new HashMap<>());
 	}
-	static StringBuilder createEntry(String name, String content, int depth){
+	 StringBuilder createEntry(String name, String content, int depth){
 		return new StringBuilder().append("\n"+"\t".repeat(depth)).append(name).append(" : ").append(content);
 	}
 	@Override
@@ -34,14 +34,18 @@ String toString(){
 	}
 	@Override
 String format(int depth){
-		const auto typeString=this.type.map(inner ->inner+" ").orElse("");
+		 auto typeString=this.type.map(auto temp(){
+			return inner;
+		}+" ").orElse("");
 		auto builder=new StringBuilder().append(typeString).append("{");
-		const auto joiner=new StringJoiner(",");
+		 auto joiner=new StringJoiner(",");
 		this.strings.entrySet().stream().map(entry -> createEntry(entry.getKey(), "\"" + entry.getValue() + "\"", depth + 1))
                 .forEach(joiner.add);
 		this.nodes.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().format(depth + 1), depth + 1))
                 .forEach(joiner.add);
-		this.nodeLists.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().stream().map(node ->node.format(depth+1)).collect(Collectors.joining(",\n", "[", "]")), depth + 1))
+		this.nodeLists.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().stream().map(auto temp(){
+			return node;
+		}.format(depth+1)).collect(Collectors.joining(",\n", "[", "]")), depth + 1))
                 .forEach(joiner.add);
 		builder.append(joiner);
 		return builder.append("\n").append("\t".repeat(depth)).append("}").toString();
@@ -56,9 +60,15 @@ Node mapString(String propertyKey, Function<String, String> mapper){
 	}
 	@Override
 Node merge(Node other){
-		const auto withStrings=stream(this.strings).foldLeft(other, (node, tuple) ->node.withString(tuple.left(), tuple.right()));
-		const auto withNodes=streamNodes().foldLeft(withStrings, (node, tuple) ->node.withNode(tuple.left(), tuple.right()));
-		return streamNodeLists().foldLeft(withNodes, (node, tuple) ->node.withNodeList(tuple.left(), tuple.right()));
+		 auto withStrings=stream(this.strings).foldLeft(other, auto temp(){
+			return node;
+		}.withString(tuple.left(), tuple.right()));
+		 auto withNodes=streamNodes().foldLeft(withStrings, auto temp(){
+			return node;
+		}.withNode(tuple.left(), tuple.right()));
+		return streamNodeLists().foldLeft(withNodes, auto temp(){
+			return node;
+		}.withNodeList(tuple.left(), tuple.right()));
 	}
 	@Override
 Stream<Tuple<String, List<Node>>> streamNodeLists(){
@@ -69,7 +79,9 @@ Stream<Tuple<String, Node>> streamNodes(){
 		return stream(this.nodes);
 	}
 	<K, V>Stream<Tuple<K, V>> stream(Map<K, V> map){
-		return Streams.from(map.entrySet()).map(entry ->new Tuple<>(entry.getKey(), entry.getValue()));
+		return Streams.from(map.entrySet()).map(auto temp(){
+			return new Tuple<>(entry.getKey();
+		}, entry.getValue()));
 	}
 	@Override
 String display(){
@@ -94,7 +106,7 @@ boolean hasNodeList(String propertyKey){
 	}
 	@Override
 Node removeNodeList(String propertyKey){
-		const auto copy=new HashMap<>(this.nodeLists);
+		 auto copy=new HashMap<>(this.nodeLists);
 		copy.remove(propertyKey);
 		return new MapNode(this.type, this.strings, this.nodes, copy);
 	}
@@ -104,14 +116,18 @@ Node mapNode(String propertyKey, Function<Node, Node> mapper){
                 .orElse(this);
 	}
 	@Override
+boolean hasNode(String propertyKey){
+		return this.nodes.containsKey(propertyKey);
+	}
+	@Override
 Node withNode(String propertyKey, Node propertyValue){
-		const auto copy=new HashMap<>(this.nodes);
+		 auto copy=new HashMap<>(this.nodes);
 		copy.put(propertyKey, propertyValue);
 		return new MapNode(this.type, this.strings, copy, this.nodeLists);
 	}
 	@Override
 Node withNodeList(String propertyKey, List<Node> propertyValues){
-		const auto copy=new HashMap<>(this.nodeLists);
+		 auto copy=new HashMap<>(this.nodeLists);
 		copy.put(propertyKey, propertyValues);
 		return new MapNode(this.type, this.strings, this.nodes, copy);
 	}
@@ -121,7 +137,7 @@ Optional<List<Node>> findNodeList(String propertyKey){
 	}
 	@Override
 Node withString(String propertyKey, String propertyValues){
-		const auto copy=new HashMap<>(this.strings);
+		 auto copy=new HashMap<>(this.strings);
 		copy.put(propertyKey, propertyValues);
 		return new MapNode(this.type, copy, this.nodes, this.nodeLists);
 	}

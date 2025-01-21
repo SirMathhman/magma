@@ -4,8 +4,8 @@ struct SymbolFilter implements Predicate<String> {
 	@Override
 boolean test(String input){
 		if(input.isEmpty())return false;
-		return IntStream.range(0, input.length()).allMatch(index ->{
-			const auto c=input.charAt(index);
+		return IntStream.range(0, input.length()).allMatch(auto temp(){
+			 auto c=input.charAt(index);
 			return Character.isLetter(c) || c == '_'' || (index != 0 && Character.isDigit(c));
 		});
 	}

@@ -5,10 +5,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-final struct CompileError implements Error {
-	const String message;
-	const Context context;
-	const List<CompileError> children;
+struct CompileError implements Error {
+	 String message;
+	 Context context;
+	 List<CompileError> children;
 	public CompileError(String message, Context context, List<CompileError> children){
 		this.message =message;
 		this.context =context;
@@ -26,7 +26,7 @@ String display(){
 	}
 	String format(int depth){
 		this.children.sort(Comparator.comparingInt(CompileError.maxDepth));
-		const auto joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
+		 auto joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
                 .collect(Collectors.joining());
 		return this.message + ": " + this.context.display() + joinedChildren;
 	}

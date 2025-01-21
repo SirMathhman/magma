@@ -4,7 +4,7 @@ import magma.app.rule.locate.Locator;
 import java.util.ArrayList;
 import java.util.List;
 struct BackwardsLocator implements Locator {
-	const String infix;
+	 String infix;
 	public BackwardsLocator(String infix){
 		this.infix =infix;
 	}
