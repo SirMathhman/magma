@@ -1,5 +1,6 @@
 package magma.app.lang;
 
+import magma.app.rule.LazyRule;
 import magma.app.rule.OrRule;
 import magma.app.rule.Rule;
 import magma.app.rule.TypeRule;
@@ -12,9 +13,11 @@ public class CLang {
     }
 
     private static OrRule createCRootSegmentRule() {
+        final var function = new LazyRule();
         return new OrRule(List.of(
                 CommonLang.createNamespacedRule("import", "import "),
-                JavaLang.createJavaCompoundRule(CommonLang.STRUCT_TYPE, "struct "),
+                JavaLang.createJavaCompoundRule(CommonLang.STRUCT_TYPE, "struct ", function),
+                function,
                 CommonLang.createWhitespaceRule()
         ));
     }

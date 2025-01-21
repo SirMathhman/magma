@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static magma.app.lang.CommonLang.BLOCK_AFTER_CHILDREN;
 import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILD;
@@ -238,8 +239,19 @@ public class Passer {
         return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
     }
 
-    private static List<Node> indentRootChildren(List<Node> children) {
-        return children.stream()
+    private static List<Node> indentRootChildren(List<Node> rootChildren) {
+        return rootChildren.stream()
+                .flatMap(child -> {
+                    if(child.is("wrap")) {
+                        final var groupChildren = child.findNodeList("children").orElse(new ArrayList<>());
+                        final var value = child.findNode("value").orElse(new MapNode());
+                        final var copy = new ArrayList<>(groupChildren);
+                        copy.add(value);
+                        return copy.stream();
+                    } else {
+                        return Stream.of(child);
+                    }
+                })
                 .map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
                 .toList();
     }
@@ -253,13 +265,36 @@ public class Passer {
     private static Optional<Result<Tuple<State, Node>, CompileError>> pruneAndFormatStruct(State state, Node node) {
         if (!node.is("struct")) return Optional.empty();
 
-        return Optional.of(new Ok<>(new Tuple<>(state, formatContent(state, pruneModifiers(node)))));
+        final var pruned = pruneModifiers(node);
+        final var children = pruned.findNodeList("children").orElse(new ArrayList<>());
+        final var methods = new ArrayList<Node>();
+        final var newChildren = new ArrayList<Node>();
+        children.forEach(child -> {
+            if (child.is("method")) {
+                methods.add(child);
+            } else {
+                newChildren.add(child);
+            }
+        });
+
+        final Node withNewChildren;
+        if (newChildren.isEmpty()) {
+            withNewChildren = pruned.removeNodeList("children");
+        } else {
+            withNewChildren = pruned.withNodeList("children", newChildren);
+        }
+
+        final var wrapped = new MapNode("wrap")
+                .withNodeList("children", methods)
+                .withNode("value", withNewChildren);
+
+        return Optional.of(new Ok<>(new Tuple<>(state, formatContent(state, wrapped))));
     }
 
     private static Node formatContent(State state, Node node) {
-        return node.withString(BLOCK_AFTER_CHILDREN, "\n" + "\t".repeat(state.depth())).mapNodeList("children", children -> {
+        return node.withString(BLOCK_AFTER_CHILDREN, "\n" + "\t".repeat(Math.max(state.depth() - 1, 0))).mapNodeList("children", children -> {
             return children.stream()
-                    .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n" + "\t".repeat(state.depth() + 1)))
+                    .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n" + "\t".repeat(state.depth())))
                     .toList();
         });
     }

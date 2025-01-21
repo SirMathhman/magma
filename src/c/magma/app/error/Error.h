@@ -1,4 +1,5 @@
+
+String display();
 struct Error {
-	String display();
 }
 

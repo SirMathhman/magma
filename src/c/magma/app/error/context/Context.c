@@ -1,4 +1,5 @@
+
+String display();
 struct Context {
-	String display();
 }
 

@@ -1,8 +1,9 @@
 import java.util.Optional;
-struct EmptyHead<T> implements Head<T> {
-	@Override
+
+@Override
 Optional<T> next(){
-		return Optional.empty();
-	}
+	return Optional.empty();
+}
+struct EmptyHead<T> implements Head<T> {
 }
 

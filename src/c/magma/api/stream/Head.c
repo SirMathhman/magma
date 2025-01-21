@@ -1,5 +1,6 @@
 import java.util.Optional;
+
+Optional<T> next();
 struct Head<T> {
-	Optional<T> next();
 }
 

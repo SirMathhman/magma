@@ -76,11 +76,7 @@ public class CommonLang {
         return new TypeRule(type, infixRule);
     }
 
-    public static Rule createStructSegmentRule() {
-        final var function = new LazyRule();
-        final var statement = createStatementRule(function);
-        function.set(createMethodRule(statement));
-
+    public static StripRule createStructSegmentRule(LazyRule function, Rule statement) {
         return new StripRule(new OrRule(List.of(
                 function,
                 createInitializationRule(createValueRule(statement, function)),
@@ -100,7 +96,7 @@ public class CommonLang {
         return new TypeRule(INITIALIZATION_TYPE, infixRule);
     }
 
-    private static Rule createMethodRule(Rule statement) {
+    static Rule createMethodRule(Rule statement) {
         final var orRule = new OptionalNodeRule(METHOD_CHILD,
                 new NodeRule(METHOD_CHILD, createBlockRule(statement)),
                 new ExactRule(";")
@@ -124,7 +120,7 @@ public class CommonLang {
         );
     }
 
-    private static Rule createStatementRule(Rule function) {
+    static Rule createStatementRule(Rule function) {
         final var statement = new LazyRule();
         final var valueRule = createValueRule(statement, function);
         statement.set(new OrRule(List.of(

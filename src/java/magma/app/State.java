@@ -5,7 +5,6 @@ public record State(int depth) {
         this(0);
     }
 
-
     public State exit() {
         return new State(this.depth - 1);
     }

@@ -5,25 +5,28 @@ import magma.app.MapNode;
 import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
-struct StringRule implements Rule {
-	 String propertyKey;
-	public StringRule(String propertyKey){
-		this.propertyKey =propertyKey;
-	}
-	Result<String, CompileError> parse(Node node){
-		return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok.new).orElseGet(auto _lambda24_(){
-			return new Err<>(new CompileError("String '"+this.propertyKey + "' not present", new NodeContext(node)));
-		});
-	}
-	@Override
+
+public StringRule(String propertyKey){
+	this.propertyKey =propertyKey;
+}
+
+Result<String, CompileError> parse(Node node){
+	return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok.new).orElseGet(auto _lambda26_(){
+		return new Err<>(new CompileError("String '"+this.propertyKey + "' not present", new NodeContext(node)));
+	});
+}
+
+@Override
 Result<Node, CompileError> parse(String input){
-		return new Ok<>(new MapNode().withString(this.propertyKey, input));
-	}
-	@Override
+	return new Ok<>(new MapNode().withString(this.propertyKey, input));
+}
+
+@Override
 Result<String, CompileError> generate(Node node){
-		return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok.new).orElseGet(auto _lambda25_(){
-			return new Err<>(new CompileError("String '"+this.propertyKey + "' not present", new NodeContext(node)));
-		});
-	}
+	return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok.new).orElseGet(auto _lambda27_(){
+		return new Err<>(new CompileError("String '"+this.propertyKey + "' not present", new NodeContext(node)));
+	});
+}
+struct StringRule implements Rule { String propertyKey;
 }
 
