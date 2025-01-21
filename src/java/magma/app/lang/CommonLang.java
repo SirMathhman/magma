@@ -118,10 +118,10 @@ public class CommonLang {
     }
 
     public static Rule createContentRule(Rule rule) {
-        return new OrRule(List.of(
-                new DivideRule(GENERIC_CHILDREN, STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD)),
+        return new OptionalNodeListRule("children",
+                new DivideRule("children", STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD)),
                 new ExactRule("")
-        ));
+        );
     }
 
     private static Rule createStatementRule(Rule function) {
@@ -315,14 +315,23 @@ public class CommonLang {
                 createGenericRule(type),
                 createVarArgsRule(type),
                 createArrayRule(type),
-                createFunctionalType(type),
-                new TypeRule(TUPLE_TYPE, new PrefixRule("[", new SuffixRule(new DivideRule(TUPLE_CHILDREN, VALUE_DIVIDER, type), "]")))
+                createFunctionalRule(type),
+                createTupleRule(type),
+                createSliceRule(type)
         )));
 
         return type;
     }
 
-    private static TypeRule createFunctionalType(Rule type) {
+    private static TypeRule createSliceRule(LazyRule type) {
+        return new TypeRule("slice", new PrefixRule("&[", new SuffixRule(new NodeRule("child", type), "]")));
+    }
+
+    private static TypeRule createTupleRule(LazyRule type) {
+        return new TypeRule(TUPLE_TYPE, new PrefixRule("[", new SuffixRule(new DivideRule(TUPLE_CHILDREN, VALUE_DIVIDER, type), "]")));
+    }
+
+    private static TypeRule createFunctionalRule(Rule type) {
         final var params = new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, type), new ExactRule(""));
         final var leftRule = new PrefixRule("(", new SuffixRule(params, ")"));
         final var rule = new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));

@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 struct Main {
 	static final Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
 	static final Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
-	static void main(String[] args){
+	static void main(&[String] args){
 		collect().mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(Main::runWithSources).match(Function.identity(), Optional::of).ifPresent(error ->System.err.println(error.display()));
 	}
 	static Result<Set<Path>, IOException> collect(){

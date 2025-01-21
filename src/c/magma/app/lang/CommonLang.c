@@ -92,7 +92,7 @@ struct CommonLang {
 		return new TypeRule(BLOCK, new StripRule(new PrefixRule("{", new SuffixRule(new StripRule(createContentRule(statement), "", BLOCK_AFTER_CHILDREN), "}"))));
 	}
 	static Rule createContentRule(Rule rule){
-		return new OrRule(List.of(new DivideRule(GENERIC_CHILDREN, STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD)), new ExactRule("")));
+		return new OptionalNodeListRule("children", new DivideRule("children", STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD)), new ExactRule(""));
 	}
 	static Rule createStatementRule(Rule function){
 		final var statement=new LazyRule();
@@ -193,10 +193,16 @@ struct CommonLang {
 	}
 	static Rule createTypeRule(){
 		final var type=new LazyRule();
-		type.set(new OrRule(List.of(createSymbolRule(), createGenericRule(type), createVarArgsRule(type), createArrayRule(type), createFunctionalType(type), new TypeRule(TUPLE_TYPE, new PrefixRule("[", new SuffixRule(new DivideRule(TUPLE_CHILDREN, VALUE_DIVIDER, type), "]"))))));
+		type.set(new OrRule(List.of(createSymbolRule(), createGenericRule(type), createVarArgsRule(type), createArrayRule(type), createFunctionalRule(type), createTupleRule(type), createSliceRule(type))));
 		return type;
 	}
-	static TypeRule createFunctionalType(Rule type){
+	static TypeRule createSliceRule(LazyRule type){
+		return new TypeRule("slice", new PrefixRule("&[", new SuffixRule(new NodeRule("child", type), "]")));
+	}
+	static TypeRule createTupleRule(LazyRule type){
+		return new TypeRule(TUPLE_TYPE, new PrefixRule("[", new SuffixRule(new DivideRule(TUPLE_CHILDREN, VALUE_DIVIDER, type), "]")));
+	}
+	static TypeRule createFunctionalRule(Rule type){
 		final var params=new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, type), new ExactRule(""));
 		final var leftRule=new PrefixRule("(", new SuffixRule(params, ")"));
 		final var rule=new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));

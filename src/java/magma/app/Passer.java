@@ -27,7 +27,18 @@ public class Passer {
     public static Optional<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
         return removePackageStatements(state, node)
                 .or(() -> renameToStruct(state, node))
-                .or(() -> enterBlocks(state, node));
+                .or(()-> renameToSlice(state, node))
+                .or(() -> enterBlock(state, node));
+    }
+
+    private static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameToSlice(State state, Node node) {
+        if(node.is("array")) {
+            final var child = node.findNode("child").orElse(new MapNode());
+            return Optional.of(new Ok<>(new Tuple<>(state, new MapNode("slice")
+                    .withNode("child", child))));
+        }
+
+        return Optional.empty();
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> removeAccessModifiersFromDefinitions(State state, Node node) {
@@ -57,7 +68,7 @@ public class Passer {
         return newNode;
     }
 
-    private static Optional<? extends Result<Tuple<State, Node>, CompileError>> enterBlocks(State state, Node node) {
+    private static Optional<? extends Result<Tuple<State, Node>, CompileError>> enterBlock(State state, Node node) {
         if (node.is("block")) {
             return Optional.of(new Ok<>(new Tuple<>(state.enter(), node)));
         }
