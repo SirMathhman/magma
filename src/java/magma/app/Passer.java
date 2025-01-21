@@ -241,19 +241,19 @@ public class Passer {
 
     private static List<Node> indentRootChildren(List<Node> rootChildren) {
         return rootChildren.stream()
-                .flatMap(child -> {
-                    if(child.is("wrap")) {
-                        final var groupChildren = child.findNodeList("children").orElse(new ArrayList<>());
-                        final var value = child.findNode("value").orElse(new MapNode());
-                        final var copy = new ArrayList<>(groupChildren);
-                        copy.add(value);
-                        return copy.stream();
-                    } else {
-                        return Stream.of(child);
-                    }
-                })
+                .flatMap(Passer::flattenWrap)
                 .map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
                 .toList();
+    }
+
+    private static Stream<Node> flattenWrap(Node child) {
+        if (!child.is("wrap")) return Stream.of(child);
+
+        final var groupChildren = child.findNodeList("children").orElse(new ArrayList<>());
+        final var value = child.findNode("value").orElse(new MapNode());
+        final var copy = new ArrayList<>(groupChildren);
+        copy.add(value);
+        return copy.stream();
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> formatBlock(State state, Node node) {
