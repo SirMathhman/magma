@@ -20,7 +20,14 @@ struct Passer {
 	static Optional<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node){
 		return removePackageStatements(state, node).or(() -> renameToStruct(state, node))
                 .or(() -> renameToSlice(state, node))
+                .or(() -> renameToDataAccess(state, node))
                 .or(() -> enterBlock(state, node));
+	}
+	static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameToDataAccess(State state, Node node){
+		if(node.is("method-access")){
+			return Optional.of(new Ok<>(new Tuple<>(state, node.retype("data-access"))));
+		}
+		return Optional.empty();
 	}
 	static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameToSlice(State state, Node node){
 		if(node.is("array")){
@@ -32,7 +39,7 @@ struct Passer {
 	}
 	static Optional<Result<Tuple<State, Node>, CompileError>> removeAccessModifiersFromDefinitions(State state, Node node){
 		if(node.is("definition")){
-			const auto newNode=pruneModifiers(node).mapNodeList("modifiers", Passer::replaceFinalWithConst).mapNode("type", Passer::replaceVarWithAuto);
+			const auto newNode=pruneModifiers(node).mapNodeList("modifiers", Passer.replaceFinalWithConst).mapNode("type", Passer.replaceVarWithAuto);
 			return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
 		}
 		return Optional.empty();
@@ -40,7 +47,7 @@ struct Passer {
 	static List<Node> replaceFinalWithConst(List<Node> modifiers){
 		return modifiers.stream()
                 .map(child ->child.findString("value"))
-                .flatMap(Optional::stream).map(modifier ->modifier.equals("final") ? "const" : modifier).map(value -> new MapNode("modifier").withString("value", value))
+                .flatMap(Optional.stream).map(modifier ->modifier.equals("final") ? "const" : modifier).map(value -> new MapNode("modifier").withString("value", value))
                 .toList();
 	}
 	static Node replaceVarWithAuto(Node type){
@@ -51,7 +58,7 @@ struct Passer {
 	}
 	static Node pruneModifiers(Node node){
 		const auto modifiers=node.findNodeList("modifiers").orElse(Collections.emptyList());
-		const auto newModifiers=modifiers.stream().map(modifier ->modifier.findString("value")).flatMap(Optional::stream).filter(modifier ->!modifier.equals("public") && !modifier.equals("private")).map(modifier -> new MapNode("modifier").withString("value", modifier))
+		const auto newModifiers=modifiers.stream().map(modifier ->modifier.findString("value")).flatMap(Optional.stream).filter(modifier ->!modifier.equals("public") && !modifier.equals("private")).map(modifier -> new MapNode("modifier").withString("value", modifier))
                 .toList();
 		Node newNode;
 		if(newModifiers.isEmpty()){
@@ -143,7 +150,7 @@ struct Passer {
         });
 	}
 	static Result<Tuple<State, Node>, CompileError> passNodes(State state, Node root){
-		return root.streamNodes().foldLeftToResult(new Tuple<>(state, root), Passer::foldNode);
+		return root.streamNodes().foldLeftToResult(new Tuple<>(state, root), Passer.foldNode);
 	}
 	static Result<Tuple<State, Node>, CompileError> foldNode(Tuple<State, Node> current, Tuple<String, Node> tuple){
 		const auto currentState=current.left();

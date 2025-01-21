@@ -38,11 +38,11 @@ String format(int depth){
 		auto builder=new StringBuilder().append(typeString).append("{");
 		const auto joiner=new StringJoiner(",");
 		this.strings.entrySet().stream().map(entry -> createEntry(entry.getKey(), "\"" + entry.getValue() + "\"", depth + 1))
-                .forEach(joiner::add);
+                .forEach(joiner.add);
 		this.nodes.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().format(depth + 1), depth + 1))
-                .forEach(joiner::add);
+                .forEach(joiner.add);
 		this.nodeLists.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().stream().map(node ->node.format(depth+1)).collect(Collectors.joining(",\n", "[", "]")), depth + 1))
-                .forEach(joiner::add);
+                .forEach(joiner.add);
 		builder.append(joiner);
 		return builder.append("\n").append("\t".repeat(depth)).append("}").toString();
 	}

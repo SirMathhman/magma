@@ -18,7 +18,7 @@ int length(){
 Stream<Integer> locate(String input){
 		auto depth=0;
 		const auto queue=IntStream.range(0, input.length()).mapToObj(index -> new Tuple<>(index, input.charAt(index)))
-                .collect(Collectors.toCollection(LinkedList::new));
+                .collect(Collectors.toCollection(LinkedList.new));
 		while(!queue.isEmpty()){
 			const auto tuple=queue.pop();
 			const auto i=tuple.left();

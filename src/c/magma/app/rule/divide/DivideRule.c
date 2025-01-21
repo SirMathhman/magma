@@ -38,7 +38,7 @@ Result<String, CompileError> generate(Node node){
 		return node.findNodeList(this.propertyKey)
                 .flatMap(list ->list.isEmpty() ? Optional.empty() : Optional.of(list))
                 .map(list -> compileAll(list, this.childRule::generate))
-                .map(result ->result.mapValue(this::merge)).orElseGet(() ->new Err<>(new CompileError("Node list '"+this.propertyKey + "' not present", new NodeContext(node))));
+                .map(result ->result.mapValue(this.merge)).orElseGet(() ->new Err<>(new CompileError("Node list '"+this.propertyKey + "' not present", new NodeContext(node))));
 	}
 	String merge(List<String> elements){
 		return Streams.from(elements).foldLeft(this.divider::merge).orElse("");

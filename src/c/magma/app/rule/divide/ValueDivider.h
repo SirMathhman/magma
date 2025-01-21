@@ -22,7 +22,7 @@ Result<List<String>, CompileError> divide(String input){
 		const auto segments=new ArrayList<String>();
 		auto buffer=new StringBuilder();
 		auto depth=0;
-		const auto queue=IntStream.range(0, input.length()).mapToObj(input::charAt).collect(Collectors.toCollection(LinkedList::new));
+		const auto queue=IntStream.range(0, input.length()).mapToObj(input.charAt).collect(Collectors.toCollection(LinkedList.new));
 		while(!queue.isEmpty()){
 			const auto c=queue.pop();
 			if(c=='\''){

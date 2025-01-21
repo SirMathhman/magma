@@ -39,7 +39,7 @@ boolean isOk(){
 	}
 	@Override
 Option<X> findError(){
-		return findError0().<Option<X>>map(Some::new).orElseGet(None::new);
+		return findError0().<Option<X>>map(Some.new).orElseGet(None.new);
 	}
 }
 

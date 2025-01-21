@@ -28,7 +28,15 @@ public class Passer {
         return removePackageStatements(state, node)
                 .or(() -> renameToStruct(state, node))
                 .or(() -> renameToSlice(state, node))
+                .or(() -> renameToDataAccess(state, node))
                 .or(() -> enterBlock(state, node));
+    }
+
+    private static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameToDataAccess(State state, Node node) {
+        if (node.is("method-access")) {
+            return Optional.of(new Ok<>(new Tuple<>(state, node.retype("data-access"))));
+        }
+        return Optional.empty();
     }
 
     private static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameToSlice(State state, Node node) {

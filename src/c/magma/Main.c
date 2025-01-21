@@ -23,18 +23,18 @@ struct Main {
 	static const Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
 	static const Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
 	static void main(&[String] args){
-		collect().mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(Main::runWithSources).match(Function.identity(), Optional::of).ifPresent(error ->System.err.println(error.display()));
+		collect().mapErr(JavaError.new).mapErr(ApplicationError.new).mapValue(Main.runWithSources).match(Function.identity(), Optional.of).ifPresent(error ->System.err.println(error.display()));
 	}
 	static Result<Set<Path>, IOException> collect(){
-		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths ->paths.stream().filter(Files::isRegularFile).filter(path ->path.toString().endsWith(".java")).collect(Collectors.toSet()));
+		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths ->paths.stream().filter(Files.isRegularFile).filter(path ->path.toString().endsWith(".java")).collect(Collectors.toSet()));
 	}
 	static Optional<ApplicationError> runWithSources(Set<Path> sources){
-		return sources.stream().map(Main::runWithSource).flatMap(Optional::stream).findFirst();
+		return sources.stream().map(Main.runWithSource).flatMap(Optional.stream).findFirst();
 	}
 	static Optional<ApplicationError> runWithSource(Path source){
 		const auto relative=SOURCE_DIRECTORY.relativize(source);
 		const auto parent=relative.getParent();
-		const auto namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent::getName).map(Path::toString).toList();
+		const auto namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent.getName).map(Path.toString).toList();
 		if(namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))){
 			return Optional.empty();
 		}
@@ -46,13 +46,13 @@ struct Main {
 		const auto targetParent=TARGET_DIRECTORY.resolve(parent);
 		if(!Files.exists(targetParent)){
 			const auto directoriesError=JavaFiles.createDirectoriesWrapped(targetParent);
-			if(directoriesError.isPresent())return directoriesError.map(JavaError::new).map(ApplicationError::new);
+			if(directoriesError.isPresent())return directoriesError.map(JavaError.new).map(ApplicationError.new);
 		}
 		return JavaFiles.readStringWrapped(source)
                 .mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
                 .flatMapValue(input ->compile(input).mapErr(ApplicationError::new))
-                .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
+                .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional.of);
 	}
 	static Result<String, CompileError> compile(String input){
 		return JavaLang.createJavaRootRule().parse(input)
@@ -64,7 +64,7 @@ struct Main {
 		const auto header=targetParent.resolve(name+".h");
 		return JavaFiles.writeStringWrapped(target, output)
                 .or(() ->JavaFiles.writeStringWrapped(header, output))
-                .map(JavaError::new).map(ApplicationError::new);
+                .map(JavaError.new).map(ApplicationError.new);
 	}
 }
 
