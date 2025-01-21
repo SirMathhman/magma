@@ -1,5 +1,2 @@
-public struct StringContext(String value) implements Context {
-	(() => String) display=String display(){
-		return this.value;
-	};
-}
+public struct StringContext(String value) implements Context {@Override
+public String display(){return this.value;}}

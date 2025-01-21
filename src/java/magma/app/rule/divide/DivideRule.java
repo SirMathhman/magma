@@ -39,7 +39,10 @@ public class DivideRule implements Rule {
     public Result<Node, CompileError> parse(String input) {
         return this.divider.divide(input)
                 .flatMapValue(segments -> compileAll(segments, this.childRule::parse))
-                .mapValue(segments -> new MapNode().withNodeList(this.propertyKey, segments));
+                .mapValue(segments -> {
+                    final var node = new MapNode();
+                    return segments.isEmpty() ? node : node.withNodeList(this.propertyKey, segments);
+                });
     }
 
     @Override

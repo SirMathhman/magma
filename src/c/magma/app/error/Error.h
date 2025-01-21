@@ -1,3 +1,1 @@
-public struct Error {
-	(() => String) display;
-}
+public struct Error {String display();}

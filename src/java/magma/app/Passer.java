@@ -19,7 +19,28 @@ public class Passer {
     }
 
     public static Optional<Result<Node, CompileError>> beforePass(Node node) {
+        return removePackageStatements(node)
+                .or(() -> renameToStruct(node));
+    }
+
+    private static Optional<? extends Result<Node, CompileError>> renameToStruct(Node node) {
+        if (node.is("class") || node.is("interface") || node.is("record")) {
+            return Optional.of(new Ok<>(node.retype("struct")));
+        }
+
         return Optional.empty();
+    }
+
+    private static Optional<Result<Node, CompileError>> removePackageStatements(Node node) {
+        if (!node.is("root")) {
+            return Optional.empty();
+        }
+        final var node1 = node.mapNodeList("children", children -> {
+            return children.stream()
+                    .filter(child -> !child.is("package"))
+                    .toList();
+        });
+        return Optional.of(new Ok<>(node1));
     }
 
     public static Result<Node, CompileError> passNodeLists(Node previous) {
