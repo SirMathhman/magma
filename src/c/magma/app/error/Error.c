@@ -1,3 +1,4 @@
 public struct Error {
-	String display();}
+	String display();
+}
 

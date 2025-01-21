@@ -13,6 +13,7 @@ import java.util.Optional;
 import static magma.app.lang.CommonLang.BLOCK_AFTER_CHILDREN;
 import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILD;
 import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;
+import static magma.app.lang.CommonLang.STRUCT_AFTER_CHILDREN;
 
 public class Passer {
     public static Result<Tuple<State, Node>, CompileError> pass(State state, Node root) {
@@ -29,7 +30,13 @@ public class Passer {
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> renameToStruct(State state, Node node) {
         if (node.is("class") || node.is("interface") || node.is("record")) {
-            return Optional.of(new Ok<>(new Tuple<>(state, node.retype("struct"))));
+            return Optional.of(new Ok<>(new Tuple<>(state, node
+                    .retype("struct")
+                    .withString(STRUCT_AFTER_CHILDREN, "\n"))));
+        }
+
+        if (node.is("block")) {
+            return Optional.of(new Ok<>(new Tuple<>(state.enter(), node)));
         }
 
         return Optional.empty();
@@ -91,17 +98,23 @@ public class Passer {
             return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
         }
 
-        if (node.is("block") || node.is("struct")) {
-            final var newNode = node.withString(BLOCK_AFTER_CHILDREN, "\n").mapNodeList("children", children -> {
-                return children.stream()
-                        .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n\t"))
-                        .toList();
-            });
+        if (node.is("block")) {
+            return Optional.of(new Ok<>(new Tuple<>(state.exit(), getChildren(state, node))));
+        }
 
-            return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
+        if (node.is("struct")) {
+            return Optional.of(new Ok<>(new Tuple<>(state, getChildren(state, node))));
         }
 
         return Optional.empty();
+    }
+
+    private static Node getChildren(State state, Node node) {
+        return node.withString(BLOCK_AFTER_CHILDREN, "\n" + "\t".repeat(state.depth())).mapNodeList("children", children -> {
+            return children.stream()
+                    .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n" + "\t".repeat(state.depth() + 1)))
+                    .toList();
+        });
     }
 
     public static Result<Tuple<State, Node>, CompileError> passNodes(State state, Node root) {

@@ -23,47 +23,48 @@ public struct Main {
 	public static final Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
 	public static final Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
 	public static void main(String[] args){
-	collect().mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(Main::runWithSources).match(Function.identity(), Optional::of).ifPresent(error ->System.err.println(error.display()));
-}
+		collect().mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(Main::runWithSources).match(Function.identity(), Optional::of).ifPresent(error ->System.err.println(error.display()));
+	}
 	private static Result<Set<Path>, IOException> collect(){
-	return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths ->paths.stream().filter(Files::isRegularFile).filter(path ->path.toString().endsWith(".java")).collect(Collectors.toSet()));
-}
+		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths ->paths.stream().filter(Files::isRegularFile).filter(path ->path.toString().endsWith(".java")).collect(Collectors.toSet()));
+	}
 	private static Optional<ApplicationError> runWithSources(Set<Path> sources){
-	return sources.stream().map(Main::runWithSource).flatMap(Optional::stream).findFirst();
-}
+		return sources.stream().map(Main::runWithSource).flatMap(Optional::stream).findFirst();
+	}
 	private static Optional<ApplicationError> runWithSource(Path source){
-	final var relative=SOURCE_DIRECTORY.relativize(source);
-	final var parent=relative.getParent();
-	final var namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent::getName).map(Path::toString).toList();
-	if(namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))){
-	return Optional.empty();
-}
-	final var nameWithExt=relative.getFileName().toString();
-	final var name=nameWithExt.substring(0, nameWithExt.indexOf('.''));
-	final var copy=new ArrayList<>(namespace);
-	copy.add(name);
-	System.out.println("Compiling source: "+String.join(".", copy));
-	final var targetParent=TARGET_DIRECTORY.resolve(parent);
-	if(!Files.exists(targetParent)){
-	final var directoriesError=JavaFiles.createDirectoriesWrapped(targetParent);
-	if(directoriesError.isPresent())return directoriesError.map(JavaError::new).map(ApplicationError::new);
-}
-	return JavaFiles.readStringWrapped(source)
+		final var relative=SOURCE_DIRECTORY.relativize(source);
+		final var parent=relative.getParent();
+		final var namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent::getName).map(Path::toString).toList();
+		if(namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))){
+			return Optional.empty();
+		}
+		final var nameWithExt=relative.getFileName().toString();
+		final var name=nameWithExt.substring(0, nameWithExt.indexOf('.''));
+		final var copy=new ArrayList<>(namespace);
+		copy.add(name);
+		System.out.println("Compiling source: "+String.join(".", copy));
+		final var targetParent=TARGET_DIRECTORY.resolve(parent);
+		if(!Files.exists(targetParent)){
+			final var directoriesError=JavaFiles.createDirectoriesWrapped(targetParent);
+			if(directoriesError.isPresent())return directoriesError.map(JavaError::new).map(ApplicationError::new);
+		}
+		return JavaFiles.readStringWrapped(source)
                 .mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
                 .flatMapValue(input ->compile(input).mapErr(ApplicationError::new))
                 .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
-}
+	}
 	private static Result<String, CompileError> compile(String input){
-	return JavaLang.createJavaRootRule().parse(input)
+		return JavaLang.createJavaRootRule().parse(input)
                 .flatMapValue(root1 ->Passer.pass(new State(), root1).mapValue(Tuple::right))
                 .flatMapValue(root ->CLang.createCRootRule().generate(root));
-}
+	}
 	private static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
-	final var target=targetParent.resolve(name+".c");
-	final var header=targetParent.resolve(name+".h");
-	return JavaFiles.writeStringWrapped(target, output)
+		final var target=targetParent.resolve(name+".c");
+		final var header=targetParent.resolve(name+".h");
+		return JavaFiles.writeStringWrapped(target, output)
                 .or(() ->JavaFiles.writeStringWrapped(header, output))
                 .map(JavaError::new).map(ApplicationError::new);
-}}
+	}
+}
 

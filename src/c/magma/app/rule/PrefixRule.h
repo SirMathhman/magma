@@ -8,18 +8,19 @@ public struct PrefixRule implements Rule {
 	private final String prefix;
 	private final Rule childRule;
 	public PrefixRule(String prefix, Rule childRule){
-	this.prefix =prefix;
-	this.childRule =childRule;
-}
+		this.prefix =prefix;
+		this.childRule =childRule;
+	}
 	public static Result<String, CompileError> truncateLeft(String input, String slice){
-	if(input.startsWith(slice))return new Ok<>(input.substring(slice.length()));
-	return new Err<>(new CompileError("Prefix '"+slice+"' not present", new StringContext(input)));
-}
+		if(input.startsWith(slice))return new Ok<>(input.substring(slice.length()));
+		return new Err<>(new CompileError("Prefix '"+slice+"' not present", new StringContext(input)));
+	}
 	@Override
 public Result<Node, CompileError> parse(String input){
-	return truncateLeft(input, this.prefix).flatMapValue(this.childRule::parse);
-}
+		return truncateLeft(input, this.prefix).flatMapValue(this.childRule::parse);
+	}
 	@Override
 public Result<String, CompileError> generate(Node node){
-	return this.childRule.generate(node).mapValue(inner ->this.prefix + inner);
-}}
+		return this.childRule.generate(node).mapValue(inner ->this.prefix + inner);
+	}
+}

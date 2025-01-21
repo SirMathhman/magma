@@ -6,27 +6,28 @@ import java.util.List;
 public struct BackwardsLocator implements Locator {
 	private final String infix;
 	public BackwardsLocator(String infix){
-	this.infix =infix;
-}
+		this.infix =infix;
+	}
 	@Override
 public String unwrap(){
-	return this.infix;
-}
+		return this.infix;
+	}
 	@Override
 public int length(){
-	return this.infix.length();
-}
+		return this.infix.length();
+	}
 	@Override
 public Stream<Integer> locate(String input){
-	return Streams.from(searchForIndices(input));
-}
+		return Streams.from(searchForIndices(input));
+	}
 	private List<Integer> searchForIndices(String input){
-	List<Integer> indices=new ArrayList<>();
-	int index=input.lastIndexOf(this.infix);
-	while(index>=0){
-	indices.add(index);
-	index=input.lastIndexOf(this.infix, index - 1);
+		List<Integer> indices=new ArrayList<>();
+		int index=input.lastIndexOf(this.infix);
+		while(index>=0){
+			indices.add(index);
+			index=input.lastIndexOf(this.infix, index - 1);
+		}
+		return indices;
+	}
 }
-	return indices;
-}}
 

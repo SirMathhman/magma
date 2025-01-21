@@ -10,24 +10,25 @@ public final struct CompileError implements Error {
 	private final Context context;
 	private final List<CompileError> children;
 	public CompileError(String message, Context context, List<CompileError> children){
-	this.message =message;
-	this.context =context;
-	this.children = new ArrayList<>(children);
-}
+		this.message =message;
+		this.context =context;
+		this.children = new ArrayList<>(children);
+	}
 	public CompileError(String message, Context context){
-	this(message, context, Collections.emptyList());
-}
+		this(message, context, Collections.emptyList());
+	}
 	@Override
 public String display(){
-	return format(0);
-}
+		return format(0);
+	}
 	public int maxDepth(){
-	return 1+this.children.stream().mapToInt(CompileError::maxDepth).max().orElse(0);
-}
+		return 1+this.children.stream().mapToInt(CompileError::maxDepth).max().orElse(0);
+	}
 	private String format(int depth){
-	this.children.sort(Comparator.comparingInt(CompileError::maxDepth));
-	final var joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
+		this.children.sort(Comparator.comparingInt(CompileError::maxDepth));
+		final var joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
                 .collect(Collectors.joining());
-	return this.message + ": " + this.context.display() + joinedChildren;
-}}
+		return this.message + ": " + this.context.display() + joinedChildren;
+	}
+}
 

@@ -3,5 +3,6 @@ import magma.app.Node;
 import magma.app.error.CompileError;
 public struct Rule {
 	Result<Node, CompileError> parse(String input);
-	Result<String, CompileError> generate(Node node);}
+	Result<String, CompileError> generate(Node node);
+}
 
