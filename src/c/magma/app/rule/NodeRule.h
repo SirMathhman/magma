@@ -7,7 +7,9 @@ import magma.app.error.context.NodeContext;
 struct NodeRule(String propertyKey, Rule childRule) implements Rule {
 	@Override
 Result<Node, CompileError> parse(String input){
-		return this.childRule.parse(input).mapValue(node -> new MapNode().withNode(this.propertyKey, node));
+		return auto temp(){
+			return new MapNode().withNode(this.propertyKey, node));
+		};
 	}
 	@Override
 Result<String, CompileError> generate(Node node){

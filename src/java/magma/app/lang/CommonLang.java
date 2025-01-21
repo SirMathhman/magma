@@ -202,6 +202,7 @@ public class CommonLang {
     private static Rule createValueRule(Rule statement, Rule function) {
         final var value = new LazyRule();
         value.set(new OrRule(List.of(
+                createLambdaRule(statement, value),
                 function,
                 createConstructionRule(value),
                 createInvocationRule(value),
@@ -217,8 +218,7 @@ public class CommonLang {
                 createOperatorRule("add", "+", value),
                 createCharRule(),
                 createStringRule(),
-                createTernaryRule(value),
-                createLambdaRule(statement, value)
+                createTernaryRule(value)
         )));
 
         return value;

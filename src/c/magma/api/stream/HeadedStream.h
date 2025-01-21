@@ -13,7 +13,9 @@ Optional<T> foldLeft(BiFunction<T, T, T> folder){
 		auto current=initial;
 		while(true){
 			R finalCurrent=current;
-			 auto maybeNext=this.head.next().map(next -> folder.apply(finalCurrent, next));
+			 auto maybeNext=auto temp(){
+				return folder.apply(finalCurrent, next));
+			};
 			if(maybeNext.isPresent()){
 				current=maybeNext.get();
 			}
@@ -24,12 +26,16 @@ Optional<T> foldLeft(BiFunction<T, T, T> folder){
 	}
 	@Override
 <R>Stream<R> map(Function<T, R> mapper){
-		return new HeadedStream<>(auto temp(){
-			return this;
-		}.head.next().map(mapper));
+		return auto temp(){
+			return this.head.next().map(mapper));
+		};
 	}
 	@Override
 <R, X>Result<R, X> foldLeftToResult(R initial, BiFunction<R, T, Result<R, X>> folder){
-		return this.<Result<R, X>>foldLeft(new Ok<>(initial), (rxResult, t) -> rxResult.flatMapValue(inner -> folder.apply(inner, t)));
+		return auto temp(){
+			return auto temp(){
+				return folder.apply(inner, t)));
+			};
+		};
 	}
 }

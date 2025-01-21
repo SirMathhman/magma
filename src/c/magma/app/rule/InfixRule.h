@@ -19,10 +19,10 @@ struct InfixRule implements Rule {
 	@Override
 Result<String, CompileError> generate(Node node){
 		auto temp(){
-			return this;
-		}.rightRule.generate(node)).mapValue(Tuple.merge(auto temp(){
-			return left;
-		}+this.locator.unwrap() + right));
+			return this.rightRule.generate(node)).mapValue;
+		}(auto temp(){
+			return left+this.locator.unwrap() + right);
+		});
 	}
 	@Override
 Result<Node, CompileError> parse(String input){
@@ -33,9 +33,9 @@ Result<Node, CompileError> parse(String input){
 			int index=indices.get(i);
 			 auto left=input.substring(0, index);
 			 auto right=input.substring(index+this.locator.length());
-			 auto result=this.leftRule.parse(left).and(auto temp(){
-				return this;
-			}.rightRule.parse(right)).mapValue(Tuple.merge(Node.merge));
+			 auto result=auto temp(){
+				return this.rightRule.parse(right)).mapValue(Tuple.merge(Node.merge));
+			};
 			if(result.isOk()){
 				return result;
 			}

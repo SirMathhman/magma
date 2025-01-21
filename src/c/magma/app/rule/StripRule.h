@@ -16,8 +16,8 @@ Result<String, CompileError> generate(Node node){
 		 auto before=node.findString(this.before).orElse("");
 		 auto after=node.findString(this.after).orElse("");
 		return this.childRule.generate(node).mapValue(auto temp(){
-			return before;
-		}+content+after);
+			return before+content+after;
+		});
 	}
 }
 

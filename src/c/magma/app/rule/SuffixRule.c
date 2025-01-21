@@ -26,7 +26,7 @@ Result<Node, CompileError> parse(String input){
 	@Override
 Result<String, CompileError> generate(Node node){
 		return childRule.generate(node).mapValue(auto temp(){
-			return inner;
-		}+suffix);
+			return inner+suffix;
+		});
 	}
 }

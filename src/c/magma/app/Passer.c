@@ -15,9 +15,13 @@ import static magma.app.lang.CommonLang.METHOD_TYPE;
 import static magma.app.lang.CommonLang.STRUCT_AFTER_CHILDREN;
 struct Passer {
 	 Result<Tuple<State, Node>, CompileError> pass(State state, Node root){
-		return beforePass(state, root).orElse(new Ok<>(new Tuple<>(state, root))).flatMapValue(passedBefore -> passNodes(passedBefore.left(), passedBefore.right()))
-                .flatMapValue(passedNodes -> passNodeLists(passedNodes.left(), passedNodes.right()))
-                .flatMapValue(passedNodeLists -> afterPass(passedNodeLists.left(), passedNodeLists.right()).orElse(new Ok<>(new Tuple<>(passedNodeLists.left(), passedNodeLists.right()))));
+		return auto temp(){
+			return auto temp(){
+				return auto temp(){
+					return afterPass(passedNodeLists.left(), passedNodeLists.right()).orElse(new Ok<>(new Tuple<>(passedNodeLists.left(), passedNodeLists.right()))));
+				};
+			};
+		};
 	}
 	 Optional<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node){
 		return removePackageStatements(state, node).or(() -> renameToStruct(state, node))
@@ -63,12 +67,13 @@ struct Passer {
 	}
 	 List<Node> replaceFinalWithConst(List<Node> modifiers){
 		auto temp(){
-			return child;
-		}.findString("value"))
-                .flatMap(Optional.stream).map(auto temp(){
-			return modifier;
-		}.equals("final") ? "const" : modifier).map(value -> new MapNode("modifier").withString("value", value))
-                .toList();
+			return auto temp(){
+				return auto temp(){
+					return new MapNode("modifier").withString("value", value))
+                .toList;
+				};
+			};
+		}();
 	}
 	 Node replaceVarWithAuto(Node type){
 		if(!type.is("symbol"))return type;
@@ -78,12 +83,14 @@ struct Passer {
 	}
 	 Node pruneModifiers(Node node){
 		 auto modifiers=node.findNodeList("modifiers").orElse(Collections.emptyList());
-		 auto newModifiers=modifiers.stream().map(auto temp(){
-			return modifier;
-		}.findString("value")).flatMap(Optional.stream).filter(auto temp(){
-			return !modifier;
-		}.equals("public") && !modifier.equals("private")).map(modifier -> new MapNode("modifier").withString("value", modifier))
+		 auto newModifiers=auto temp(){
+			return auto temp(){
+				return auto temp(){
+					return new MapNode("modifier").withString("value", modifier))
                 .toList();
+				};
+			};
+		};
 		Node newNode;
 		if(newModifiers.isEmpty()){
 			newNode=node.removeNodeList("modifiers");
@@ -109,13 +116,13 @@ struct Passer {
 		if(!node.is("root")){
 			return Optional.empty();
 		}
-		 auto node1=node.mapNodeList("children", auto temp(){
+		 auto node1=auto temp(){
 			return auto temp(){
-				return !child;
-			};
-		}.is("package"))
+				return !child.is("package"))
                     .toList();
         });
+			};
+		};
 		return Optional.of(new Ok<>(new Tuple<>(state, node1)));
 	}
 	 Result<Tuple<State, Node>, CompileError> passNodeLists(State state, Node previous){
@@ -125,7 +132,11 @@ struct Passer {
 	 Result<Tuple<State, Node>, CompileError> passNodeList(State state, Node root, Tuple<String, List<Node>> pair){
 		 auto propertyKey=pair.left();
 		 auto propertyValues=pair.right();
-		return passNodeListInStream(state, propertyValues).mapValue(list -> list.mapRight(right -> root.withNodeList(propertyKey, right)));
+		return auto temp(){
+			return auto temp(){
+				return root.withNodeList(propertyKey, right)));
+			};
+		};
 	}
 	 Result<Tuple<State, List<Node>>, CompileError> passNodeListInStream(State state, List<Node> elements){
 		return Streams.from(elements).foldLeftToResult(new Tuple<>(state, new ArrayList<>()), (current, currentElement) -> {
@@ -148,10 +159,13 @@ struct Passer {
 	}
 	 Optional<Result<Tuple<State, Node>, CompileError>> formatRoot(State state, Node node){
 		if(node.is("root")){
-			 auto newNode=node.mapNodeList("children", children -> {
-                return children.stream().map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
+			 auto newNode=auto temp(){
+				return auto temp(){
+					return child.withString(CONTENT_AFTER_CHILD, "\n"))
                         .toList();
             });
+				};
+			};
 			return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
 		}
 		return Optional.empty();
@@ -169,13 +183,13 @@ struct Passer {
 		return Optional.empty();
 	}
 	 Node formatContent(State state, Node node){
-		return node.withString(BLOCK_AFTER_CHILDREN, "\n"+"\t".repeat(state.depth())).mapNodeList("children", auto temp(){
+		return auto temp(){
 			return auto temp(){
-				return child;
-			};
-		}.withString(CONTENT_BEFORE_CHILD, "\n"+"\t".repeat(state.depth() + 1)))
+				return child.withString(CONTENT_BEFORE_CHILD, "\n" + "\t".repeat(state.depth() + 1)))
                     .toList();
         });
+			};
+		};
 	}
 	 Result<Tuple<State, Node>, CompileError> passNodes(State state, Node root){
 		return root.streamNodes().foldLeftToResult(new Tuple<>(state, root), Passer.foldNode);
@@ -185,6 +199,10 @@ struct Passer {
 		 auto currentRoot=current.right();
 		 auto pairKey=tuple.left();
 		 auto pairNode=tuple.right();
-		return pass(currentState, pairNode).mapValue(passed -> passed.mapRight(right -> currentRoot.withNode(pairKey, right)));
+		return auto temp(){
+			return auto temp(){
+				return currentRoot.withNode(pairKey, right)));
+			};
+		};
 	}
 }

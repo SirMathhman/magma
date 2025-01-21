@@ -35,18 +35,21 @@ String toString(){
 	@Override
 String format(int depth){
 		 auto typeString=this.type.map(auto temp(){
-			return inner;
-		}+" ").orElse("");
+			return inner+" ";
+		}).orElse("");
 		auto builder=new StringBuilder().append(typeString).append("{");
 		 auto joiner=new StringJoiner(",");
 		this.strings.entrySet().stream().map(entry -> createEntry(entry.getKey(), "\"" + entry.getValue() + "\"", depth + 1))
                 .forEach(joiner.add);
 		this.nodes.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().format(depth + 1), depth + 1))
                 .forEach(joiner.add);
-		this.nodeLists.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().stream().map(auto temp(){
-			return node;
-		}.format(depth+1)).collect(Collectors.joining(",\n", "[", "]")), depth + 1))
-                .forEach(joiner.add);
+		auto temp(){
+			return auto temp(){
+				return node.format(depth + 1))
+                        .collect(Collectors.joining(",\n", "[", "]")), depth + 1))
+                .forEach;
+			};
+		}(joiner.add);
 		builder.append(joiner);
 		return builder.append("\n").append("\t".repeat(depth)).append("}").toString();
 	}
@@ -60,15 +63,15 @@ Node mapString(String propertyKey, Function<String, String> mapper){
 	}
 	@Override
 Node merge(Node other){
-		 auto withStrings=stream(this.strings).foldLeft(other, auto temp(){
-			return node;
-		}.withString(tuple.left(), tuple.right()));
-		 auto withNodes=streamNodes().foldLeft(withStrings, auto temp(){
-			return node;
-		}.withNode(tuple.left(), tuple.right()));
-		return streamNodeLists().foldLeft(withNodes, auto temp(){
-			return node;
-		}.withNodeList(tuple.left(), tuple.right()));
+		 auto withStrings=auto temp(){
+			return node.withString(tuple.left(), tuple.right()));
+		};
+		 auto withNodes=auto temp(){
+			return node.withNode(tuple.left(), tuple.right()));
+		};
+		return auto temp(){
+			return node.withNodeList(tuple.left(), tuple.right()));
+		};
 	}
 	@Override
 Stream<Tuple<String, List<Node>>> streamNodeLists(){
@@ -79,9 +82,9 @@ Stream<Tuple<String, Node>> streamNodes(){
 		return stream(this.nodes);
 	}
 	<K, V>Stream<Tuple<K, V>> stream(Map<K, V> map){
-		return Streams.from(map.entrySet()).map(auto temp(){
-			return new Tuple<>(entry.getKey();
-		}, entry.getValue()));
+		return auto temp(){
+			return new Tuple<>(entry.getKey(), entry.getValue()));
+		};
 	}
 	@Override
 String display(){

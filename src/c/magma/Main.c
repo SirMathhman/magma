@@ -24,15 +24,16 @@ struct Main {
 	 Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
 	 void main(&[String] args){
 		collect().mapErr(JavaError.new).mapErr(ApplicationError.new).mapValue(Main.runWithSources).match(Function.identity(), Optional.of).ifPresent(auto temp(){
-			return System;
-		}.err.println(error.display()));
+			return System.err.println(error.display());
+		});
 	}
 	 Result<Set<Path>, IOException> collect(){
-		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(auto temp(){
-			return paths;
-		}.stream().filter(Files.isRegularFile).filter(auto temp(){
-			return path;
-		}.toString().endsWith(".java")).collect(Collectors.toSet()));
+		return auto temp(){
+			return auto temp(){
+				return path.toString().endsWith(".java"))
+                .collect(Collectors.toSet()));
+			};
+		};
 	}
 	 Optional<ApplicationError> runWithSources(Set<Path> sources){
 		return sources.stream().map(Main.runWithSource).flatMap(Optional.stream).findFirst();
@@ -55,25 +56,25 @@ struct Main {
 			if(directoriesError.isPresent())return directoriesError.map(JavaError.new).map(ApplicationError.new);
 		}
 		auto temp(){
-			return compile;
-		}(input).mapErr(ApplicationError::new))
-                .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional.of);
+			return compile(input).mapErr(ApplicationError::new))
+                .mapValue(output -> writeOutput(output, targetParent, name)).match;
+		}(Function.identity(), Optional.of);
 	}
 	 Result<String, CompileError> compile(String input){
 		auto temp(){
-			return Passer;
-		}.pass(new State(), root1).mapValue(Tuple::right))
-                .flatMapValue(auto temp(){
-			return CLang;
-		}.createCRootRule().generate(root));
+			return Passer.pass(new State(), root1).mapValue(Tuple::right))
+                .flatMapValue;
+		}(auto temp(){
+			return CLang.createCRootRule().generate(root);
+		});
 	}
 	 Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
 		 auto target=targetParent.resolve(name+".c");
 		 auto header=targetParent.resolve(name+".h");
 		auto temp(){
-			return JavaFiles;
-		}.writeStringWrapped(header, output))
-                .map(JavaError.new).map(ApplicationError.new);
+			return JavaFiles.writeStringWrapped(header, output))
+                .map(JavaError.new).map;
+		}(ApplicationError.new);
 	}
 }
 
