@@ -11,7 +11,7 @@ struct LazyRule implements Rule {
 	Optional<Rule> childRule=Optional.empty();
 	@Override
 Result<Node, CompileError> parse(String input){
-		return findChild(new StringContext(input)).flatMapValue(auto _lambda31_(auto rule){
+		return findChild(new StringContext(input)).flatMapValue(auto _lambda32_(auto rule){
 			return rule.parse(input);
 		});
 	}
@@ -25,7 +25,7 @@ Result<Node, CompileError> parse(String input){
 	}
 	@Override
 Result<String, CompileError> generate(Node node){
-		return findChild(new NodeContext(node)).flatMapValue(auto _lambda32_(auto rule){
+		return findChild(new NodeContext(node)).flatMapValue(auto _lambda33_(auto rule){
 			return rule.generate(node);
 		});
 	}

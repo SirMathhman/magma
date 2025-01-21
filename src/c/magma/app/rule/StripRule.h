@@ -15,7 +15,7 @@ Result<Node, CompileError> parse(String input){
 Result<String, CompileError> generate(Node node){
 		 auto before=node.findString(this.before).orElse("");
 		 auto after=node.findString(this.after).orElse("");
-		return this.childRule.generate(node).mapValue(auto _lambda35_(auto content){
+		return this.childRule.generate(node).mapValue(auto _lambda36_(auto content){
 			return before+content+after;
 		});
 	}

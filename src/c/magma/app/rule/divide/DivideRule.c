@@ -35,12 +35,12 @@ Result<Node, CompileError> parse(String input){
 	}
 	@Override
 Result<String, CompileError> generate(Node node){
-		return node.findNodeList(this.propertyKey).flatMap(auto _lambda27_(auto list){
+		return node.findNodeList(this.propertyKey).flatMap(auto _lambda28_(auto list){
 			return list.isEmpty() ? Optional.empty() : Optional.of(list);
 		}).map(list -> compileAll(list, this.childRule::generate))
-                .map(auto _lambda28_(auto result){
+                .map(auto _lambda29_(auto result){
 			return result.mapValue(this.merge);
-		}).orElseGet(auto _lambda29_(){
+		}).orElseGet(auto _lambda30_(){
 			return new Err<>(new CompileError("Node list '"+this.propertyKey + "' not present", new NodeContext(node)));
 		});
 	}

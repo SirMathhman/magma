@@ -34,7 +34,7 @@ String toString(){
 	}
 	@Override
 String format(int depth){
-		 auto typeString=this.type.map(auto _lambda19_(auto inner){
+		 auto typeString=this.type.map(auto _lambda20_(auto inner){
 			return inner+" ";
 		}).orElse("");
 		auto builder=new StringBuilder().append(typeString).append("{");
@@ -43,7 +43,7 @@ String format(int depth){
                 .forEach(joiner.add);
 		this.nodes.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().format(depth + 1), depth + 1))
                 .forEach(joiner.add);
-		this.nodeLists.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().stream().map(auto _lambda20_(auto node){
+		this.nodeLists.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().stream().map(auto _lambda21_(auto node){
 			return node.format(depth+1);
 		}).collect(Collectors.joining(",\n", "[", "]")), depth + 1))
                 .forEach(joiner.add);
@@ -73,7 +73,7 @@ Stream<Tuple<String, Node>> streamNodes(){
 		return stream(this.nodes);
 	}
 	<K, V>Stream<Tuple<K, V>> stream(Map<K, V> map){
-		return Streams.from(map.entrySet()).map(auto _lambda21_(auto entry){
+		return Streams.from(map.entrySet()).map(auto _lambda22_(auto entry){
 			return new Tuple<>(entry.getKey();
 		}, entry.getValue()));
 	}

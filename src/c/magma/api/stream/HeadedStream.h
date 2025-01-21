@@ -24,7 +24,7 @@ Optional<T> foldLeft(BiFunction<T, T, T> folder){
 	}
 	@Override
 <R>Stream<R> map(Function<T, R> mapper){
-		return new HeadedStream<>(auto _lambda30_(){
+		return new HeadedStream<>(auto _lambda31_(){
 			return this.head.next().map(mapper);
 		});
 	}

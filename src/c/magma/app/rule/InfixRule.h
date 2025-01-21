@@ -18,7 +18,7 @@ struct InfixRule implements Rule {
 	}
 	@Override
 Result<String, CompileError> generate(Node node){
-		return this.leftRule.generate(node).and(auto _lambda25_(){
+		return this.leftRule.generate(node).and(auto _lambda26_(){
 			return this.rightRule.generate(node);
 		}).mapValue(Tuple.merge(
                 (left, right) -> left + this.locator.unwrap() + right));
@@ -32,7 +32,7 @@ Result<Node, CompileError> parse(String input){
 			int index=indices.get(i);
 			 auto left=input.substring(0, index);
 			 auto right=input.substring(index+this.locator.length());
-			 auto result=this.leftRule.parse(left).and(auto _lambda26_(){
+			 auto result=this.leftRule.parse(left).and(auto _lambda27_(){
 				return this.rightRule.parse(right);
 			}).mapValue(Tuple.merge(Node.merge));
 			if(result.isOk()){

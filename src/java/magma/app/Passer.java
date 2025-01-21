@@ -38,40 +38,53 @@ public class Passer {
     }
 
     private static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameLambdaToMethod(State state, Node node) {
-        if (node.is("lambda")) {
-            final var args = node.findNode("arg")
-                    .flatMap(child -> child.findString("value"))
-                    .map(Collections::singletonList)
-                    .or(() -> node.findNodeList("args").map(list -> list.stream()
-                            .map(child -> child.findString("value"))
-                            .flatMap(Optional::stream)
-                            .toList()))
-                    .orElse(new ArrayList<>())
-                    .stream()
-                    .map(name -> new MapNode("definition")
-                            .withString("name", name)
-                            .withNode("type", createAutoType()))
-                    .toList();
+        if (!node.is("lambda")) return Optional.empty();
 
-            final var value = node.findNode("child").orElse(new MapNode());
+        final var args = findArgumentValue(node)
+                .or(() -> findArgumentValues(node))
+                .orElse(new ArrayList<>())
+                .stream()
+                .map(Passer::wrapUsingAutoType)
+                .toList();
 
-            final var propertyValue = value.is("block") ? value : new MapNode("block").withNodeList("children", List.of(
-                    new MapNode("return").withNode("value", value)
-            ));
+        final var value = node.findNode("child").orElse(new MapNode());
 
-            final var retyped = node.retype(METHOD_TYPE);
-            final var params = args.isEmpty() ? retyped : retyped.withNodeList("params", args);
+        final var propertyValue = value.is("block") ? value : new MapNode("block").withNodeList("children", List.of(
+                new MapNode("return").withNode("value", value)
+        ));
 
-            final var method = params
-                    .withNode(METHOD_CHILD, propertyValue)
-                    .withNode("definition", new MapNode("definition")
-                            .withString("name", createUniqueName())
-                            .withNode("type", createAutoType()));
+        final var retyped = node.retype(METHOD_TYPE);
+        final var params = args.isEmpty() ? retyped : retyped.withNodeList("params", args);
 
-            return Optional.of(new Ok<>(new Tuple<>(state, method)));
-        }
+        final var definition = new MapNode("definition")
+                .withString("name", createUniqueName())
+                .withNode("type", createAutoType());
 
-        return Optional.empty();
+        final var method = params
+                .withNode(METHOD_CHILD, propertyValue)
+                .withNode("definition", definition);
+
+        return Optional.of(new Ok<>(new Tuple<>(state, method)));
+
+    }
+
+    private static Node wrapUsingAutoType(String name) {
+        return new MapNode("definition")
+                .withString("name", name)
+                .withNode("type", createAutoType());
+    }
+
+    private static Optional<List<String>> findArgumentValue(Node node) {
+        return node.findNode("arg")
+                .flatMap(child -> child.findString("value"))
+                .map(Collections::singletonList);
+    }
+
+    private static Optional<List<String>> findArgumentValues(Node node) {
+        return node.findNodeList("args").map(list -> list.stream()
+                .map(child -> child.findString("value"))
+                .flatMap(Optional::stream)
+                .toList());
     }
 
     private static String createUniqueName() {
@@ -85,32 +98,28 @@ public class Passer {
     }
 
     private static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameToDataAccess(State state, Node node) {
-        if (node.is("method-access")) {
-            return Optional.of(new Ok<>(new Tuple<>(state, node.retype("data-access"))));
-        }
-        return Optional.empty();
+        if (!node.is("method-access")) return Optional.empty();
+
+        return Optional.of(new Ok<>(new Tuple<>(state, node.retype("data-access"))));
     }
 
     private static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameToSlice(State state, Node node) {
-        if (node.is("array")) {
-            final var child = node.findNode("child").orElse(new MapNode());
-            return Optional.of(new Ok<>(new Tuple<>(state, new MapNode("slice")
-                    .withNode("child", child))));
-        }
+        if (!node.is("array")) return Optional.empty();
 
-        return Optional.empty();
+        final var child = node.findNode("child").orElse(new MapNode());
+        final var slice = new MapNode("slice").withNode("child", child);
+
+        return Optional.of(new Ok<>(new Tuple<>(state, slice)));
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> removeAccessModifiersFromDefinitions(State state, Node node) {
-        if (node.is("definition")) {
-            final var newNode = pruneModifiers(node)
-                    .mapNodeList("modifiers", Passer::replaceFinalWithConst)
-                    .mapNode("type", Passer::replaceVarWithAuto);
+        if (!node.is("definition")) return Optional.empty();
 
-            return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
-        }
+        final var newNode = pruneModifiers(node)
+                .mapNodeList("modifiers", Passer::replaceFinalWithConst)
+                .mapNode("type", Passer::replaceVarWithAuto);
 
-        return Optional.empty();
+        return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
     }
 
     private static List<Node> replaceFinalWithConst(List<Node> modifiers) {
@@ -139,30 +148,26 @@ public class Passer {
                 .map(modifier -> new MapNode("modifier").withString("value", modifier))
                 .toList();
 
-        Node newNode;
         if (newModifiers.isEmpty()) {
-            newNode = node.removeNodeList("modifiers");
+            return node.removeNodeList("modifiers");
         } else {
-            newNode = node.withNodeList("modifiers", newModifiers);
+            return node.withNodeList("modifiers", newModifiers);
         }
-        return newNode;
     }
 
     private static Optional<? extends Result<Tuple<State, Node>, CompileError>> enterBlock(State state, Node node) {
-        if (node.is("block")) {
-            return Optional.of(new Ok<>(new Tuple<>(state.enter(), node)));
-        }
-        return Optional.empty();
+        if (!node.is("block")) return Optional.empty();
+
+        return Optional.of(new Ok<>(new Tuple<>(state.enter(), node)));
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> renameToStruct(State state, Node node) {
-        if (node.is("class") || node.is("interface") || node.is("record")) {
-            return Optional.of(new Ok<>(new Tuple<>(state, node
-                    .retype("struct")
-                    .withString(STRUCT_AFTER_CHILDREN, "\n"))));
-        }
+        if (!node.is("class") && !node.is("interface") && !node.is("record")) return Optional.empty();
 
-        return Optional.empty();
+        return Optional.of(new Ok<>(new Tuple<>(state, node
+                .retype("struct")
+                .withString(STRUCT_AFTER_CHILDREN, "\n"))));
+
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> removePackageStatements(State state, Node node) {
@@ -170,13 +175,14 @@ public class Passer {
             return Optional.empty();
         }
 
-        final var node1 = node.mapNodeList("children", children -> {
-            return children.stream()
-                    .filter(child -> !child.is("package"))
-                    .toList();
-        });
-
+        final var node1 = node.mapNodeList("children", Passer::removePackages);
         return Optional.of(new Ok<>(new Tuple<>(state, node1)));
+    }
+
+    private static List<Node> removePackages(List<Node> children) {
+        return children.stream()
+                .filter(child -> !child.is("package"))
+                .toList();
     }
 
     public static Result<Tuple<State, Node>, CompileError> passNodeLists(State state, Node previous) {
@@ -200,13 +206,20 @@ public class Passer {
         return Streams.from(elements).foldLeftToResult(new Tuple<>(state, new ArrayList<>()), (current, currentElement) -> {
             final var currentState = current.left();
             final var currentElements = current.right();
+            return passAndFoldElementIntoList(currentElements, currentState, currentElement);
+        });
+    }
 
-            return pass(currentState, currentElement).mapValue(passingResult -> {
-                return passingResult.mapRight(passedElement -> {
-                    final var copy = new ArrayList<>(currentElements);
-                    copy.add(passedElement);
-                    return copy;
-                });
+    private static Result<Tuple<State, List<Node>>, CompileError> passAndFoldElementIntoList(
+            List<Node> elements,
+            State currentState,
+            Node currentElement
+    ) {
+        return pass(currentState, currentElement).mapValue(passingResult -> {
+            return passingResult.mapRight(passedElement -> {
+                final var copy = new ArrayList<>(elements);
+                copy.add(passedElement);
+                return copy;
             });
         });
     }
@@ -219,29 +232,28 @@ public class Passer {
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> formatRoot(State state, Node node) {
-        if (node.is("root")) {
-            final var newNode = node.mapNodeList("children", children -> {
-                return children.stream()
-                        .map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
-                        .toList();
-            });
-            return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
-        }
-        return Optional.empty();
+        if (!node.is("root")) return Optional.empty();
+
+        final var newNode = node.mapNodeList("children", Passer::indentRootChildren);
+        return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
+    }
+
+    private static List<Node> indentRootChildren(List<Node> children) {
+        return children.stream()
+                .map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
+                .toList();
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> formatBlock(State state, Node node) {
-        if (node.is("block")) {
-            return Optional.of(new Ok<>(new Tuple<>(state.exit(), formatContent(state, node))));
-        }
-        return Optional.empty();
+        if (!node.is("block")) return Optional.empty();
+
+        return Optional.of(new Ok<>(new Tuple<>(state.exit(), formatContent(state, node))));
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> pruneAndFormatStruct(State state, Node node) {
-        if (node.is("struct")) {
-            return Optional.of(new Ok<>(new Tuple<>(state, formatContent(state, pruneModifiers(node)))));
-        }
-        return Optional.empty();
+        if (!node.is("struct")) return Optional.empty();
+
+        return Optional.of(new Ok<>(new Tuple<>(state, formatContent(state, pruneModifiers(node)))));
     }
 
     private static Node formatContent(State state, Node node) {
