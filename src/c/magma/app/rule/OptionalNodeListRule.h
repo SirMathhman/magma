@@ -3,10 +3,10 @@ import magma.app.Node;
 import magma.app.error.CompileError;
 import java.util.List;
 final struct OptionalNodeListRule implements Rule {
-	final String propertyKey;
-	final Rule ifPresent;
-	final Rule ifEmpty;
-	final OrRule rule;
+	const String propertyKey;
+	const Rule ifPresent;
+	const Rule ifEmpty;
+	const OrRule rule;
 	public OptionalNodeListRule(String propertyKey, Rule ifPresent, Rule ifEmpty){
 		this.propertyKey =propertyKey;
 		this.ifPresent =ifPresent;

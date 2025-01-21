@@ -13,8 +13,8 @@ Result<Node, CompileError> parse(String input){
 	}
 	@Override
 Result<String, CompileError> generate(Node node){
-		final var before=node.findString(this.before).orElse("");
-		final var after=node.findString(this.after).orElse("");
+		const var before=node.findString(this.before).orElse("");
+		const var after=node.findString(this.after).orElse("");
 		return this.childRule.generate(node).mapValue(content ->before+content+after);
 	}
 }

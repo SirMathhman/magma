@@ -8,9 +8,9 @@ import magma.app.rule.locate.Locator;
 import java.util.ArrayList;
 import java.util.Optional;
 final struct InfixRule implements Rule {
-	final Rule leftRule;
-	final Locator locator;
-	final Rule rightRule;
+	const Rule leftRule;
+	const Locator locator;
+	const Rule rightRule;
 	public InfixRule(Rule leftRule, Locator locator, Rule rightRule){
 		this.leftRule =leftRule;
 		this.locator =locator;
@@ -24,14 +24,14 @@ Result<String, CompileError> generate(Node node){
 	}
 	@Override
 Result<Node, CompileError> parse(String input){
-		final var indices=this.locator.locate(input).foldLeft(new ArrayList<>(), InfixRule::add);
-		final var errors=new ArrayList<CompileError>();
+		const var indices=this.locator.locate(input).foldLeft(new ArrayList<>(), InfixRule::add);
+		const var errors=new ArrayList<CompileError>();
 		int i=0;
 		while(i<indices.size()){
 			int index=indices.get(i);
-			final var left=input.substring(0, index);
-			final var right=input.substring(index+this.locator.length());
-			final var result=this.leftRule.parse(left).and(() ->this.rightRule.parse(right)).mapValue(Tuple.merge(Node::merge));
+			const var left=input.substring(0, index);
+			const var right=input.substring(index+this.locator.length());
+			const var result=this.leftRule.parse(left).and(() ->this.rightRule.parse(right)).mapValue(Tuple.merge(Node::merge));
 			if(result.isOk()){
 				return result;
 			}

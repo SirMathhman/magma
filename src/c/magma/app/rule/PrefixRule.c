@@ -5,8 +5,8 @@ import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.StringContext;
 struct PrefixRule implements Rule {
-	final String prefix;
-	final Rule childRule;
+	const String prefix;
+	const Rule childRule;
 	public PrefixRule(String prefix, Rule childRule){
 		this.prefix =prefix;
 		this.childRule =childRule;

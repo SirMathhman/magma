@@ -13,7 +13,7 @@ Optional<T> foldLeft(BiFunction<T, T, T> folder){
 		var current=initial;
 		while(true){
 			R finalCurrent=current;
-			final var maybeNext=this.head.next().map(next -> folder.apply(finalCurrent, next));
+			const var maybeNext=this.head.next().map(next -> folder.apply(finalCurrent, next));
 			if(maybeNext.isPresent()){
 				current=maybeNext.get();
 			}

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 struct StatementDivider implements Divider {
-	static final Divider STATEMENT_DIVIDER=new StatementDivider();
+	static const Divider STATEMENT_DIVIDER=new StatementDivider();
 	private StatementDivider(){
 	}
 	@Override
@@ -19,15 +19,15 @@ String merge(String current, String value){
 	}
 	@Override
 Result<List<String>, CompileError> divide(String input){
-		final var segments=new ArrayList<String>();
+		const var segments=new ArrayList<String>();
 		var buffer=new StringBuilder();
 		var depth=0;
-		final var queue=IntStream.range(0, input.length()).mapToObj(input::charAt).collect(Collectors.toCollection(LinkedList::new));
+		const var queue=IntStream.range(0, input.length()).mapToObj(input::charAt).collect(Collectors.toCollection(LinkedList::new));
 		while(!queue.isEmpty()){
-			final var c=queue.pop();
+			const var c=queue.pop();
 			buffer.append(c);
 			if(c=='\''){
-				final var c1=queue.pop();
+				const var c1=queue.pop();
 				buffer.append(c1);
 				if(c1=='\\'){
 					buffer.append(queue.pop());
@@ -37,7 +37,7 @@ Result<List<String>, CompileError> divide(String input){
 			}
 			if(c=='"'){
 				while(!queue.isEmpty()){
-					final var c1=queue.pop();
+					const var c1=queue.pop();
 					buffer.append(c1);
 					if(c1=='"')break;
 					if(c1=='\\'){

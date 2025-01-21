@@ -4,7 +4,7 @@ import magma.app.error.CompileError;
 import java.util.Arrays;
 import java.util.List;
 struct SimpleDivider implements Divider {
-	final String delimiter;
+	const String delimiter;
 	public SimpleDivider(String delimiter){
 		this.delimiter =delimiter;
 	}

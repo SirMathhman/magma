@@ -20,8 +20,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 struct Main {
-	static final Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
-	static final Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
+	static const Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
+	static const Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
 	static void main(&[String] args){
 		collect().mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(Main::runWithSources).match(Function.identity(), Optional::of).ifPresent(error ->System.err.println(error.display()));
 	}
@@ -32,20 +32,20 @@ struct Main {
 		return sources.stream().map(Main::runWithSource).flatMap(Optional::stream).findFirst();
 	}
 	static Optional<ApplicationError> runWithSource(Path source){
-		final var relative=SOURCE_DIRECTORY.relativize(source);
-		final var parent=relative.getParent();
-		final var namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent::getName).map(Path::toString).toList();
+		const var relative=SOURCE_DIRECTORY.relativize(source);
+		const var parent=relative.getParent();
+		const var namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent::getName).map(Path::toString).toList();
 		if(namespace.size() >= 2 && namespace.subList(0, 2).equals(List.of("magma", "java"))){
 			return Optional.empty();
 		}
-		final var nameWithExt=relative.getFileName().toString();
-		final var name=nameWithExt.substring(0, nameWithExt.indexOf('.''));
-		final var copy=new ArrayList<>(namespace);
+		const var nameWithExt=relative.getFileName().toString();
+		const var name=nameWithExt.substring(0, nameWithExt.indexOf('.''));
+		const var copy=new ArrayList<>(namespace);
 		copy.add(name);
 		System.out.println("Compiling source: "+String.join(".", copy));
-		final var targetParent=TARGET_DIRECTORY.resolve(parent);
+		const var targetParent=TARGET_DIRECTORY.resolve(parent);
 		if(!Files.exists(targetParent)){
-			final var directoriesError=JavaFiles.createDirectoriesWrapped(targetParent);
+			const var directoriesError=JavaFiles.createDirectoriesWrapped(targetParent);
 			if(directoriesError.isPresent())return directoriesError.map(JavaError::new).map(ApplicationError::new);
 		}
 		return JavaFiles.readStringWrapped(source)
@@ -60,8 +60,8 @@ struct Main {
                 .flatMapValue(root ->CLang.createCRootRule().generate(root));
 	}
 	static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
-		final var target=targetParent.resolve(name+".c");
-		final var header=targetParent.resolve(name+".h");
+		const var target=targetParent.resolve(name+".c");
+		const var header=targetParent.resolve(name+".h");
 		return JavaFiles.writeStringWrapped(target, output)
                 .or(() ->JavaFiles.writeStringWrapped(header, output))
                 .map(JavaError::new).map(ApplicationError::new);

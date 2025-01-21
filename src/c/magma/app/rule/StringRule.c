@@ -6,7 +6,7 @@ import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
 struct StringRule implements Rule {
-	final String propertyKey;
+	const String propertyKey;
 	public StringRule(String propertyKey){
 		this.propertyKey =propertyKey;
 	}

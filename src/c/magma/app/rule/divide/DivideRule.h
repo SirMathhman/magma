@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 struct DivideRule implements Rule {
-	final String propertyKey;
-	final Divider divider;
-	final Rule childRule;
+	const String propertyKey;
+	const Divider divider;
+	const Rule childRule;
 	public DivideRule(String propertyKey, Divider divider, Rule childRule){
 		this.divider =divider;
 		this.childRule =childRule;

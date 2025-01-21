@@ -5,8 +5,8 @@ import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.StringContext;
 struct SuffixRule implements Rule {
-	final String suffix;
-	final Rule childRule;
+	const String suffix;
+	const Rule childRule;
 	public SuffixRule(Rule childRule, String suffix){
 		this.suffix =suffix;
 		this.childRule =childRule;

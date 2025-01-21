@@ -17,7 +17,7 @@ Result<Node, CompileError> parse(String value){
 	}
 	<R>Result<R, CompileError> process(Context context, Function<Rule, Result<R, CompileError>> mapper){
 		return Streams.from(this.rules).map(rule ->mapper.apply(rule).mapErr(Collections::singletonList)).foldLeft((first, second) ->first.or(() ->second).mapErr(tuple ->{
-			final var left=new ArrayList<>(tuple.left());
+			const var left=new ArrayList<>(tuple.left());
 			left.addAll(tuple.right());
 			return left;
 		})).orElseGet(() ->new Err<>(Collections.singletonList(new CompileError("No rules set", context)))).mapErr(errors -> new CompileError("No valid rule", context, errors));

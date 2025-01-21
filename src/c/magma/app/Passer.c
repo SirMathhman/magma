@@ -19,12 +19,12 @@ struct Passer {
 	}
 	static Optional<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node){
 		return removePackageStatements(state, node).or(() -> renameToStruct(state, node))
-                .or(()-> renameToSlice(state, node))
+                .or(() -> renameToSlice(state, node))
                 .or(() -> enterBlock(state, node));
 	}
 	static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameToSlice(State state, Node node){
 		if(node.is("array")){
-			final var child=node.findNode("child").orElse(new MapNode());
+			const var child=node.findNode("child").orElse(new MapNode());
 			return Optional.of(new Ok<>(new Tuple<>(state, new MapNode("slice")
                     .withNode("child", child))));
 		}
@@ -32,14 +32,19 @@ struct Passer {
 	}
 	static Optional<Result<Tuple<State, Node>, CompileError>> removeAccessModifiersFromDefinitions(State state, Node node){
 		if(node.is("definition")){
-			final var newNode=pruneModifiers(node);
+			const var newNode=pruneModifiers(node).mapNodeList("modifiers", modifiers -> {
+                return modifiers.stream()
+                        .map(child ->child.findString("value"))
+                        .flatMap(Optional::stream).map(modifier ->modifier.equals("final") ? "const" : modifier).map(value -> new MapNode("modifier").withString("value", value))
+                        .toList();
+            });
 			return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
 		}
 		return Optional.empty();
 	}
 	static Node pruneModifiers(Node node){
-		final var modifiers=node.findNodeList("modifiers").orElse(Collections.emptyList());
-		final var newModifiers=modifiers.stream().map(modifier ->modifier.findString("value")).flatMap(Optional::stream).filter(modifier ->!modifier.equals("public") && !modifier.equals("private")).map(modifier -> new MapNode("modifier").withString("value", modifier))
+		const var modifiers=node.findNodeList("modifiers").orElse(Collections.emptyList());
+		const var newModifiers=modifiers.stream().map(modifier ->modifier.findString("value")).flatMap(Optional::stream).filter(modifier ->!modifier.equals("public") && !modifier.equals("private")).map(modifier -> new MapNode("modifier").withString("value", modifier))
                 .toList();
 		Node newNode;
 		if(newModifiers.isEmpty()){
@@ -66,7 +71,7 @@ struct Passer {
 		if(!node.is("root")){
 			return Optional.empty();
 		}
-		final var node1=node.mapNodeList("children",  children -> {
+		const var node1=node.mapNodeList("children",  children -> {
             return children.stream()
                     .filter(child ->!child.is("package"))
                     .toList();
@@ -78,8 +83,8 @@ struct Passer {
                         (current, tuple) -> passNodeList(current.left(), current.right(), tuple));
 	}
 	static Result<Tuple<State, Node>, CompileError> passNodeList(State state, Node root, Tuple<String, List<Node>> pair){
-		final var propertyKey=pair.left();
-		final var propertyValues=pair.right();
+		const var propertyKey=pair.left();
+		const var propertyValues=pair.right();
 		return passNodeListInStream(state, propertyValues).mapValue(list -> list.mapRight(right -> root.withNodeList(propertyKey, right)));
 	}
 	static Result<Tuple<State, List<Node>>, CompileError> passNodeListInStream(State state, List<Node> elements){
@@ -103,7 +108,7 @@ struct Passer {
 	}
 	static Optional<Result<Tuple<State, Node>, CompileError>> formatRoot(State state, Node node){
 		if(node.is("root")){
-			final var newNode=node.mapNodeList("children", children -> {
+			const var newNode=node.mapNodeList("children", children -> {
                 return children.stream().map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
                         .toList();
             });
@@ -134,10 +139,10 @@ struct Passer {
 		return root.streamNodes().foldLeftToResult(new Tuple<>(state, root), Passer::foldNode);
 	}
 	static Result<Tuple<State, Node>, CompileError> foldNode(Tuple<State, Node> current, Tuple<String, Node> tuple){
-		final var currentState=current.left();
-		final var currentRoot=current.right();
-		final var pairKey=tuple.left();
-		final var pairNode=tuple.right();
+		const var currentState=current.left();
+		const var currentRoot=current.right();
+		const var pairKey=tuple.left();
+		const var pairNode=tuple.right();
 		return pass(currentState, pairNode).mapValue(passed -> passed.mapRight(right -> currentRoot.withNode(pairKey, right)));
 	}
 }
