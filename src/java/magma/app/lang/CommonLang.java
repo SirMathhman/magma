@@ -66,11 +66,12 @@ public class CommonLang {
     }
 
     public static Rule createCompoundRule(String type, String infix, Rule segmentRule) {
-        final var modifiers = new SuffixRule(createModifiersRule(), " ");
-        final var infixRule = new InfixRule(modifiers, new FirstLocator(infix),
-                new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
-                        new SuffixRule(new StripRule(createContentRule(segmentRule), "", STRUCT_AFTER_CHILDREN), "}")
-                )));
+        final var modifiers = createModifiersRule();
+        final var maybeModifiers = new OrRule(List.of(new SuffixRule(modifiers, " "), new ExactRule("")));
+        final var nameAndContent = new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
+                new SuffixRule(new StripRule(createContentRule(segmentRule), "", STRUCT_AFTER_CHILDREN), "}")
+        ));
+        final var infixRule = new InfixRule(maybeModifiers, new FirstLocator(infix), nameAndContent);
         return new TypeRule(type, infixRule);
     }
 
@@ -281,6 +282,7 @@ public class CommonLang {
         final var typeAndName = new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
 
         final var modifiers = createModifiersRule();
+        final var maybeModifiers = new OrRule(List.of(modifiers, new ExactRule("")));
 
         final var typeParams = new StringRule("type-params");
         final var maybeTypeParams = new OrRule(List.of(
@@ -288,10 +290,10 @@ public class CommonLang {
                 new ContextRule("Without type params", typeAndName)
         ));
 
-        final var withModifiers = new OrRule(List.of(
-                new ContextRule("With modifiers", new StripRule(new InfixRule(modifiers, new BackwardsLocator(" "), maybeTypeParams))),
+        final var withModifiers = new OptionalNodeListRule("modifiers",
+                new ContextRule("With modifiers", new StripRule(new InfixRule(maybeModifiers, new BackwardsLocator(" "), maybeTypeParams))),
                 new ContextRule("Without modifiers", maybeTypeParams)
-        ));
+        );
 
         final var annotation = new TypeRule("annotation", new StripRule(new PrefixRule("@", new StringRule(INITIALIZATION_VALUE))));
         final var annotations = new DivideRule(DEFINITION_ANNOTATIONS, new SimpleDivider("\n"), annotation);
@@ -301,12 +303,9 @@ public class CommonLang {
         )));
     }
 
-    private static Rule createModifiersRule() {
+    private static DivideRule createModifiersRule() {
         final var modifierRule = new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(INITIALIZATION_VALUE))));
-        return new OrRule(List.of(
-                new DivideRule("modifiers", new SimpleDivider(" "), modifierRule),
-                new ExactRule("")
-        ));
+        return new DivideRule("modifiers", new SimpleDivider(" "), modifierRule);
     }
 
     private static Rule createTypeRule() {

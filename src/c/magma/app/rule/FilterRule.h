@@ -4,10 +4,10 @@ import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.StringContext;
 import java.util.function.Predicate;
- struct FilterRule(Predicate<String> filter,
+struct FilterRule(Predicate<String> filter,
                          Rule childRule) implements Rule {
 	@Override
- Result<Node, CompileError> parse( String input){
+Result<Node, CompileError> parse(String input){
 		if(this.filter.test(input)){
 			return this.childRule.parse(input);
 		}
@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 		}
 	}
 	@Override
- Result<String, CompileError> generate( Node node){
+Result<String, CompileError> generate(Node node){
 		return this.childRule.generate(node);
 	}
 }

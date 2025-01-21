@@ -7,13 +7,13 @@ import magma.app.error.context.Context;
 import magma.app.error.context.NodeContext;
 import magma.app.error.context.StringContext;
 import java.util.Optional;
- struct LazyRule implements Rule {
-	 Optional<Rule> childRule=Optional.empty();
+struct LazyRule implements Rule {
+	Optional<Rule> childRule=Optional.empty();
 	@Override
- Result<Node, CompileError> parse( String input){
+Result<Node, CompileError> parse(String input){
 		return findChild(new StringContext(input)).flatMapValue(rule ->rule.parse(input));
 	}
-	 Result<Rule, CompileError> findChild( Context context){
+	Result<Rule, CompileError> findChild(Context context){
 		if(this.childRule.isPresent()){
 			return new Ok<>(this.childRule.get());
 		}
@@ -22,10 +22,10 @@ import java.util.Optional;
 		}
 	}
 	@Override
- Result<String, CompileError> generate( Node node){
+Result<String, CompileError> generate(Node node){
 		return findChild(new NodeContext(node)).flatMapValue(rule ->rule.generate(node));
 	}
-	 void set( Rule childRule){
+	void set(Rule childRule){
 		this.childRule = Optional.of(childRule);
 	}
 }

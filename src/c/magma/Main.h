@@ -19,19 +19,19 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
- struct Main {
+struct Main {
 	static final Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
 	static final Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
-	static void main( String[] args){
+	static void main(String[] args){
 		collect().mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(Main::runWithSources).match(Function.identity(), Optional::of).ifPresent(error ->System.err.println(error.display()));
 	}
 	static Result<Set<Path>, IOException> collect(){
 		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(paths ->paths.stream().filter(Files::isRegularFile).filter(path ->path.toString().endsWith(".java")).collect(Collectors.toSet()));
 	}
-	static Optional<ApplicationError> runWithSources( Set<Path> sources){
+	static Optional<ApplicationError> runWithSources(Set<Path> sources){
 		return sources.stream().map(Main::runWithSource).flatMap(Optional::stream).findFirst();
 	}
-	static Optional<ApplicationError> runWithSource( Path source){
+	static Optional<ApplicationError> runWithSource(Path source){
 		final var relative=SOURCE_DIRECTORY.relativize(source);
 		final var parent=relative.getParent();
 		final var namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent::getName).map(Path::toString).toList();
@@ -54,12 +54,12 @@ import java.util.stream.IntStream;
                 .flatMapValue(input ->compile(input).mapErr(ApplicationError::new))
                 .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
 	}
-	static Result<String, CompileError> compile( String input){
+	static Result<String, CompileError> compile(String input){
 		return JavaLang.createJavaRootRule().parse(input)
                 .flatMapValue(root1 ->Passer.pass(new State(), root1).mapValue(Tuple::right))
                 .flatMapValue(root ->CLang.createCRootRule().generate(root));
 	}
-	static Optional<ApplicationError> writeOutput( String output,  Path targetParent,  String name){
+	static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
 		final var target=targetParent.resolve(name+".c");
 		final var header=targetParent.resolve(name+".h");
 		return JavaFiles.writeStringWrapped(target, output)

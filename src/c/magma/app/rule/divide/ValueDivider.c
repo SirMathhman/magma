@@ -9,19 +9,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
- struct ValueDivider implements Divider {
+struct ValueDivider implements Divider {
 	static final Divider VALUE_DIVIDER=new ValueDivider();
-	 private ValueDivider(){
+	private ValueDivider(){
 	}
 	@Override
- String merge( String current,  String value){
+String merge(String current, String value){
 		return current+", "+value;
 	}
 	@Override
- Result<List<String>, CompileError> divide( String input){
+Result<List<String>, CompileError> divide(String input){
 		final var segments=new ArrayList<String>();
-		 var buffer=new StringBuilder();
-		 var depth=0;
+		var buffer=new StringBuilder();
+		var depth=0;
 		final var queue=IntStream.range(0, input.length()).mapToObj(input::charAt).collect(Collectors.toCollection(LinkedList::new));
 		while(!queue.isEmpty()){
 			final var c=queue.pop();

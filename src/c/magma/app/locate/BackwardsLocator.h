@@ -3,31 +3,31 @@ import magma.api.stream.Streams;
 import magma.app.rule.locate.Locator;
 import java.util.ArrayList;
 import java.util.List;
- struct BackwardsLocator implements Locator {
+struct BackwardsLocator implements Locator {
 	final String infix;
-	 public BackwardsLocator( String infix){
+	public BackwardsLocator(String infix){
 		this.infix =infix;
 	}
 	@Override
- String unwrap(){
+String unwrap(){
 		return this.infix;
 	}
 	@Override
- int length(){
+int length(){
 		return this.infix.length();
 	}
 	@Override
- Stream<Integer> locate( String input){
+Stream<Integer> locate(String input){
 		return Streams.from(searchForIndices(input));
 	}
-	 List<Integer> searchForIndices( String input){
-		 List<Integer> indices=new ArrayList<>();
-		 int index=input.lastIndexOf(this.infix);
+	List<Integer> searchForIndices(String input){
+		List<Integer> indices=new ArrayList<>();
+		int index=input.lastIndexOf(this.infix);
 		while(index>=0){
 			indices.add(index);
 			index=input.lastIndexOf(this.infix, index - 1);
 		}
-		 return indices;
+		return indices;
 	}
 }
 

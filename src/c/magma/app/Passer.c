@@ -11,49 +11,49 @@ import static magma.app.lang.CommonLang.BLOCK_AFTER_CHILDREN;
 import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILD;
 import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;
 import static magma.app.lang.CommonLang.STRUCT_AFTER_CHILDREN;
- struct Passer {
-	static Result<Tuple<State, Node>, CompileError> pass( State state,  Node root){
+struct Passer {
+	static Result<Tuple<State, Node>, CompileError> pass(State state, Node root){
 		return beforePass(state, root).orElse(new Ok<>(new Tuple<>(state, root))).flatMapValue(passedBefore -> passNodes(passedBefore.left(), passedBefore.right()))
                 .flatMapValue(passedNodes -> passNodeLists(passedNodes.left(), passedNodes.right()))
                 .flatMapValue(passedNodeLists -> afterPass(passedNodeLists.left(), passedNodeLists.right()).orElse(new Ok<>(new Tuple<>(passedNodeLists.left(), passedNodeLists.right()))));
 	}
-	static Optional<Result<Tuple<State, Node>, CompileError>> beforePass( State state,  Node node){
+	static Optional<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node){
 		return removePackageStatements(state, node).or(() -> renameToStruct(state, node))
                 .or(() -> enterBlocks(state, node));
 	}
-	static Optional<Result<Tuple<State, Node>, CompileError>> removeAccessModifiersFromDefinitions( State state,  Node node){
+	static Optional<Result<Tuple<State, Node>, CompileError>> removeAccessModifiersFromDefinitions(State state, Node node){
 		if(node.is("definition")){
 			final var newNode=pruneModifiers(node);
 			return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
 		}
 		return Optional.empty();
 	}
-	static Node pruneModifiers( Node node){
+	static Node pruneModifiers(Node node){
 		final var modifiers=node.findNodeList("modifiers").orElse(Collections.emptyList());
 		final var newModifiers=modifiers.stream().map(modifier ->modifier.findString("value")).flatMap(Optional::stream).filter(modifier ->!modifier.equals("public") && !modifier.equals("private")).map(modifier -> new MapNode("modifier").withString("value", modifier))
                 .toList();
-		 Node newNode;
+		Node newNode;
 		if(newModifiers.isEmpty()){
 			newNode=node.removeNodeList("modifiers");
 		}
 		else {
 			newNode=node.withNodeList("modifiers", newModifiers);
 		}
-		 return newNode;
+		return newNode;
 	}
-	static Optional<? extends Result<Tuple<State, Node>, CompileError>> enterBlocks( State state,  Node node){
+	static Optional<? extends Result<Tuple<State, Node>, CompileError>> enterBlocks(State state, Node node){
 		if(node.is("block")){
 			return Optional.of(new Ok<>(new Tuple<>(state.enter(), node)));
 		}
 		return Optional.empty();
 	}
-	static Optional<Result<Tuple<State, Node>, CompileError>> renameToStruct( State state,  Node node){
+	static Optional<Result<Tuple<State, Node>, CompileError>> renameToStruct(State state, Node node){
 		if(node.is("class") || node.is("interface") || node.is("record")){
 			return Optional.of(new Ok<>(new Tuple<>(state, node.retype("struct").withString(STRUCT_AFTER_CHILDREN, "\n"))));
 		}
 		return Optional.empty();
 	}
-	static Optional<Result<Tuple<State, Node>, CompileError>> removePackageStatements( State state,  Node node){
+	static Optional<Result<Tuple<State, Node>, CompileError>> removePackageStatements(State state, Node node){
 		if(!node.is("root")){
 			return Optional.empty();
 		}
@@ -64,16 +64,16 @@ import static magma.app.lang.CommonLang.STRUCT_AFTER_CHILDREN;
         });
 		return Optional.of(new Ok<>(new Tuple<>(state, node1)));
 	}
-	static Result<Tuple<State, Node>, CompileError> passNodeLists( State state,  Node previous){
+	static Result<Tuple<State, Node>, CompileError> passNodeLists(State state, Node previous){
 		return previous.streamNodeLists().foldLeftToResult(new Tuple<>(state, previous),
                         (current, tuple) -> passNodeList(current.left(), current.right(), tuple));
 	}
-	static Result<Tuple<State, Node>, CompileError> passNodeList( State state,  Node root,  Tuple<String, List<Node>> pair){
+	static Result<Tuple<State, Node>, CompileError> passNodeList(State state, Node root, Tuple<String, List<Node>> pair){
 		final var propertyKey=pair.left();
 		final var propertyValues=pair.right();
 		return passNodeListInStream(state, propertyValues).mapValue(list -> list.mapRight(right -> root.withNodeList(propertyKey, right)));
 	}
-	static Result<Tuple<State, List<Node>>, CompileError> passNodeListInStream( State state,  List<Node> elements){
+	static Result<Tuple<State, List<Node>>, CompileError> passNodeListInStream(State state, List<Node> elements){
 		return Streams.from(elements).foldLeftToResult(new Tuple<>(state, new ArrayList<>()), (current, currentElement) -> {
             final var currentState = current.left();
             final var currentElements = current.right();
@@ -87,12 +87,12 @@ import static magma.app.lang.CommonLang.STRUCT_AFTER_CHILDREN;
             });
         });
 	}
-	static Optional<Result<Tuple<State, Node>, CompileError>> afterPass( State state,  Node node){
+	static Optional<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node){
 		return removeAccessModifiersFromDefinitions(state, node).or(() -> formatRoot(state, node))
                 .or(() -> formatBlock(state, node))
                 .or(() -> pruneAndFormatStruct(state, node));
 	}
-	static Optional<Result<Tuple<State, Node>, CompileError>> formatRoot( State state,  Node node){
+	static Optional<Result<Tuple<State, Node>, CompileError>> formatRoot(State state, Node node){
 		if(node.is("root")){
 			final var newNode=node.mapNodeList("children", children -> {
                 return children.stream().map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
@@ -102,29 +102,29 @@ import static magma.app.lang.CommonLang.STRUCT_AFTER_CHILDREN;
 		}
 		return Optional.empty();
 	}
-	static Optional<Result<Tuple<State, Node>, CompileError>> formatBlock( State state,  Node node){
+	static Optional<Result<Tuple<State, Node>, CompileError>> formatBlock(State state, Node node){
 		if(node.is("block")){
 			return Optional.of(new Ok<>(new Tuple<>(state.exit(), formatContent(state, node))));
 		}
 		return Optional.empty();
 	}
-	static Optional<Result<Tuple<State, Node>, CompileError>> pruneAndFormatStruct( State state,  Node node){
+	static Optional<Result<Tuple<State, Node>, CompileError>> pruneAndFormatStruct(State state, Node node){
 		if(node.is("struct")){
 			return Optional.of(new Ok<>(new Tuple<>(state, formatContent(state, pruneModifiers(node)))));
 		}
 		return Optional.empty();
 	}
-	static Node formatContent( State state,  Node node){
+	static Node formatContent(State state, Node node){
 		return node.withString(BLOCK_AFTER_CHILDREN, "\n"+"\t".repeat(state.depth())).mapNodeList("children",  children -> {
             return children.stream()
                     .map(child ->child.withString(CONTENT_BEFORE_CHILD, "\n"+"\t".repeat(state.depth() + 1)))
                     .toList();
         });
 	}
-	static Result<Tuple<State, Node>, CompileError> passNodes( State state,  Node root){
+	static Result<Tuple<State, Node>, CompileError> passNodes(State state, Node root){
 		return root.streamNodes().foldLeftToResult(new Tuple<>(state, root), Passer::foldNode);
 	}
-	static Result<Tuple<State, Node>, CompileError> foldNode( Tuple<State, Node> current,  Tuple<String, Node> tuple){
+	static Result<Tuple<State, Node>, CompileError> foldNode(Tuple<State, Node> current, Tuple<String, Node> tuple){
 		final var currentState=current.left();
 		final var currentRoot=current.right();
 		final var pairKey=tuple.left();
