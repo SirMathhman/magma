@@ -8,7 +8,7 @@ public struct Result<T, X> {
 	<R>(([Capture, ((Capture, X) => R)]) => Result<T, R>) mapErr;
 	<R>(([Capture, ((Capture, T) => R)], [Capture, ((Capture, X) => R)]) => R) match;
 	<R>(([Capture, ((Capture) => Result<R, X>)]) => Result<[T, R], X>) and;
-	<R>(([Capture, ((Capture) => Result<T, R>)]) => Result<T, [X, R]>) or;
+	<R>(([Capture, ((Capture) => Result<T, R>)]) => Result<T, [X, Box<R>]>) or;
 	(() => boolean) isOk;
 	(() => Option<X>) findError;
 }
