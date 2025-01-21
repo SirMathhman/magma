@@ -14,14 +14,11 @@ import static magma.app.lang.CommonLang.METHOD_CHILD;
 import static magma.app.lang.CommonLang.METHOD_TYPE;
 import static magma.app.lang.CommonLang.STRUCT_AFTER_CHILDREN;
 struct Passer {
+	 int counter=0;
 	 Result<Tuple<State, Node>, CompileError> pass(State state, Node root){
-		return auto temp(){
-			return auto temp(){
-				return auto temp(){
-					return afterPass(passedNodeLists.left(), passedNodeLists.right()).orElse(new Ok<>(new Tuple<>(passedNodeLists.left(), passedNodeLists.right()))));
-				};
-			};
-		};
+		return beforePass(state, root).orElse(new Ok<>(new Tuple<>(state, root))).flatMapValue(passedBefore -> passNodes(passedBefore.left(), passedBefore.right()))
+                .flatMapValue(passedNodes -> passNodeLists(passedNodes.left(), passedNodes.right()))
+                .flatMapValue(passedNodeLists -> afterPass(passedNodeLists.left(), passedNodeLists.right()).orElse(new Ok<>(new Tuple<>(passedNodeLists.left(), passedNodeLists.right()))));
 	}
 	 Optional<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node){
 		return removePackageStatements(state, node).or(() -> renameToStruct(state, node))
@@ -32,14 +29,30 @@ struct Passer {
 	}
 	 Optional<? extends Result<Tuple<State, Node>, CompileError>> renameLambdaToMethod(State state, Node node){
 		if(node.is("lambda")){
+			 auto args=node.findNode("arg").flatMap(auto _lambda8_(auto child){
+				return child.findString("value");
+			}).map(Collections.singletonList).or(auto _lambda9_(){
+				return node.findNodeList("args").map(auto _lambda10_(auto list){
+					return list.stream().map(auto _lambda11_(auto child){
+						return child.findString("value");
+					}).flatMap(Optional.stream).toList();
+				});
+			}).orElse(new ArrayList<>()).stream().map(name -> new MapNode("definition").withString("name", name).withNode("type", createAutoType()))
+                    .toList();
 			 auto value=node.findNode("child").orElse(new MapNode());
 			 auto propertyValue=value.is("block") ? value : new MapNode("block").withNodeList("children", List.of(new MapNode("return").withNode("value", value)));
-			 auto method=node.retype(METHOD_TYPE).withNode(METHOD_CHILD, propertyValue).withNode("definition", new MapNode("definition")
-                            .withString("name", "temp")
-                            .withNode("type", createAutoType()));
+			 auto retyped=node.retype(METHOD_TYPE);
+			 auto params=args.isEmpty() ? retyped : retyped.withNodeList("params", args);
+			 auto method=params.withNode(METHOD_CHILD, propertyValue).withNode("definition", new MapNode("definition")
+                            .withString("name", createUniqueName()).withNode("type", createAutoType()));
 			return Optional.of(new Ok<>(new Tuple<>(state, method)));
 		}
 		return Optional.empty();
+	}
+	 String createUniqueName(){
+		 auto name="_lambda"+counter+"_";
+		counter++;
+		return name;
 	}
 	 Node createAutoType(){
 		return new MapNode("symbol").withString("value", "auto");
@@ -66,14 +79,12 @@ struct Passer {
 		return Optional.empty();
 	}
 	 List<Node> replaceFinalWithConst(List<Node> modifiers){
-		auto temp(){
-			return auto temp(){
-				return auto temp(){
-					return new MapNode("modifier").withString("value", value))
-                .toList;
-				};
-			};
-		}();
+		return modifiers.stream().map(auto _lambda12_(auto child){
+			return child.findString("value");
+		}).flatMap(Optional.stream).map(auto _lambda13_(auto modifier){
+			return modifier.equals("final") ? "const" : modifier;
+		}).map(value -> new MapNode("modifier").withString("value", value))
+                .toList();
 	}
 	 Node replaceVarWithAuto(Node type){
 		if(!type.is("symbol"))return type;
@@ -83,14 +94,12 @@ struct Passer {
 	}
 	 Node pruneModifiers(Node node){
 		 auto modifiers=node.findNodeList("modifiers").orElse(Collections.emptyList());
-		 auto newModifiers=auto temp(){
-			return auto temp(){
-				return auto temp(){
-					return new MapNode("modifier").withString("value", modifier))
+		 auto newModifiers=modifiers.stream().map(auto _lambda14_(auto modifier){
+			return modifier.findString("value");
+		}).flatMap(Optional.stream).filter(auto _lambda15_(auto modifier){
+			return !modifier.equals("public") && !modifier.equals("private");
+		}).map(modifier -> new MapNode("modifier").withString("value", modifier))
                 .toList();
-				};
-			};
-		};
 		Node newNode;
 		if(newModifiers.isEmpty()){
 			newNode=node.removeNodeList("modifiers");
@@ -116,13 +125,11 @@ struct Passer {
 		if(!node.is("root")){
 			return Optional.empty();
 		}
-		 auto node1=auto temp(){
-			return auto temp(){
-				return !child.is("package"))
-                    .toList();
-        });
-			};
-		};
+		 auto node1=node.mapNodeList("children", auto _lambda16_(auto children){
+			return children.stream().filter(auto _lambda17_(auto child){
+				return !child.is("package");
+			}).toList();
+		});
 		return Optional.of(new Ok<>(new Tuple<>(state, node1)));
 	}
 	 Result<Tuple<State, Node>, CompileError> passNodeLists(State state, Node previous){
@@ -132,11 +139,7 @@ struct Passer {
 	 Result<Tuple<State, Node>, CompileError> passNodeList(State state, Node root, Tuple<String, List<Node>> pair){
 		 auto propertyKey=pair.left();
 		 auto propertyValues=pair.right();
-		return auto temp(){
-			return auto temp(){
-				return root.withNodeList(propertyKey, right)));
-			};
-		};
+		return passNodeListInStream(state, propertyValues).mapValue(list -> list.mapRight(right -> root.withNodeList(propertyKey, right)));
 	}
 	 Result<Tuple<State, List<Node>>, CompileError> passNodeListInStream(State state, List<Node> elements){
 		return Streams.from(elements).foldLeftToResult(new Tuple<>(state, new ArrayList<>()), (current, currentElement) -> {
@@ -159,13 +162,10 @@ struct Passer {
 	}
 	 Optional<Result<Tuple<State, Node>, CompileError>> formatRoot(State state, Node node){
 		if(node.is("root")){
-			 auto newNode=auto temp(){
-				return auto temp(){
-					return child.withString(CONTENT_AFTER_CHILD, "\n"))
+			 auto newNode=node.mapNodeList("children", children -> {
+                return children.stream().map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
                         .toList();
             });
-				};
-			};
 			return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
 		}
 		return Optional.empty();
@@ -183,13 +183,11 @@ struct Passer {
 		return Optional.empty();
 	}
 	 Node formatContent(State state, Node node){
-		return auto temp(){
-			return auto temp(){
-				return child.withString(CONTENT_BEFORE_CHILD, "\n" + "\t".repeat(state.depth() + 1)))
-                    .toList();
+		return node.withString(BLOCK_AFTER_CHILDREN, "\n"+"\t".repeat(state.depth())).mapNodeList("children", children -> {
+            return children.stream().map(auto _lambda18_(auto child){
+			return child.withString(CONTENT_BEFORE_CHILD;
+		}, "\n"+"\t".repeat(state.depth() + 1))).toList();
         });
-			};
-		};
 	}
 	 Result<Tuple<State, Node>, CompileError> passNodes(State state, Node root){
 		return root.streamNodes().foldLeftToResult(new Tuple<>(state, root), Passer.foldNode);
@@ -199,10 +197,6 @@ struct Passer {
 		 auto currentRoot=current.right();
 		 auto pairKey=tuple.left();
 		 auto pairNode=tuple.right();
-		return auto temp(){
-			return auto temp(){
-				return currentRoot.withNode(pairKey, right)));
-			};
-		};
+		return pass(currentState, pairNode).mapValue(passed -> passed.mapRight(right -> currentRoot.withNode(pairKey, right)));
 	}
 }

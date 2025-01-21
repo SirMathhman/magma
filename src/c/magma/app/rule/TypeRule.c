@@ -8,18 +8,14 @@ import java.util.List;
 struct TypeRule(String type, Rule rule) implements Rule {
 	@Override
 Result<Node, CompileError> parse(String input){
-		return auto temp(){
-			return auto temp(){
-				return new CompileError("Failed to parse type '"+this.type + "'", new StringContext(input), List.of(err)));
-			};
-		};
+		return this.rule.parse(input).mapValue(auto _lambda1_(auto node){
+			return node.retype(this.type);
+		}).mapErr(err -> new CompileError("Failed to parse type '" + this.type + "'", new StringContext(input), List.of(err)));
 	}
 	@Override
 Result<String, CompileError> generate(Node node){
 		if(node.is(this.type)){
-			return auto temp(){
-				return new CompileError("Failed to generate type '"+this.type + "'", new NodeContext(node), List.of(err)));
-			};
+			return this.rule.generate(node).mapErr(err -> new CompileError("Failed to generate type '" + this.type + "'", new NodeContext(node), List.of(err)));
 		}
 		else {
 			return new Err<>(new CompileError("Node was not of type '"+this.type + "'", new NodeContext(node)));

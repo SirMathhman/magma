@@ -8,8 +8,8 @@ import magma.app.rule.FilterRule;
 import magma.app.rule.InfixRule;
 import magma.app.rule.LazyRule;
 import magma.app.rule.NodeRule;
-import magma.app.rule.OptionalNodeRule;
 import magma.app.rule.OptionalNodeListRule;
+import magma.app.rule.OptionalNodeRule;
 import magma.app.rule.OrRule;
 import magma.app.rule.PrefixRule;
 import magma.app.rule.Rule;
@@ -225,7 +225,13 @@ public class CommonLang {
     }
 
     private static TypeRule createLambdaRule(Rule statement, LazyRule value) {
-        return new TypeRule("lambda", new InfixRule(new StringRule("args"), new FirstLocator("->"), new OrRule(List.of(
+        final var args = new StripRule(new OrRule(List.of(
+                new ExactRule("()"),
+                new NodeRule("arg", createSymbolRule()),
+                new DivideRule("args", new SimpleDivider(","), createSymbolRule())
+        )));
+
+        return new TypeRule("lambda", new InfixRule(args, new FirstLocator("->"), new OrRule(List.of(
                 new NodeRule(METHOD_CHILD, createBlockRule(statement)),
                 new NodeRule(METHOD_CHILD, value)
         ))));

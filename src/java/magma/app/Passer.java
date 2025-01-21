@@ -19,6 +19,8 @@ import static magma.app.lang.CommonLang.METHOD_TYPE;
 import static magma.app.lang.CommonLang.STRUCT_AFTER_CHILDREN;
 
 public class Passer {
+    private static int counter = 0;
+
     public static Result<Tuple<State, Node>, CompileError> pass(State state, Node root) {
         return beforePass(state, root).orElse(new Ok<>(new Tuple<>(state, root)))
                 .flatMapValue(passedBefore -> passNodes(passedBefore.left(), passedBefore.right()))
@@ -37,22 +39,45 @@ public class Passer {
 
     private static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameLambdaToMethod(State state, Node node) {
         if (node.is("lambda")) {
+            final var args = node.findNode("arg")
+                    .flatMap(child -> child.findString("value"))
+                    .map(Collections::singletonList)
+                    .or(() -> node.findNodeList("args").map(list -> list.stream()
+                            .map(child -> child.findString("value"))
+                            .flatMap(Optional::stream)
+                            .toList()))
+                    .orElse(new ArrayList<>())
+                    .stream()
+                    .map(name -> new MapNode("definition")
+                            .withString("name", name)
+                            .withNode("type", createAutoType()))
+                    .toList();
+
             final var value = node.findNode("child").orElse(new MapNode());
 
             final var propertyValue = value.is("block") ? value : new MapNode("block").withNodeList("children", List.of(
                     new MapNode("return").withNode("value", value)
             ));
 
-            final var method = node.retype(METHOD_TYPE)
+            final var retyped = node.retype(METHOD_TYPE);
+            final var params = args.isEmpty() ? retyped : retyped.withNodeList("params", args);
+
+            final var method = params
                     .withNode(METHOD_CHILD, propertyValue)
                     .withNode("definition", new MapNode("definition")
-                            .withString("name", "temp")
+                            .withString("name", createUniqueName())
                             .withNode("type", createAutoType()));
 
             return Optional.of(new Ok<>(new Tuple<>(state, method)));
         }
 
         return Optional.empty();
+    }
+
+    private static String createUniqueName() {
+        final var name = "_lambda" + counter + "_";
+        counter++;
+        return name;
     }
 
     private static Node createAutoType() {

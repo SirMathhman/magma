@@ -17,10 +17,8 @@ int length(){
 	@Override
 Stream<Integer> locate(String input){
 		auto depth=0;
-		 auto queue=auto temp(){
-			return new Tuple<>(index, input.charAt(index)))
+		 auto queue=IntStream.range(0, input.length()).mapToObj(index -> new Tuple<>(index, input.charAt(index)))
                 .collect(Collectors.toCollection(LinkedList.new));
-		};
 		while(!queue.isEmpty()){
 			 auto tuple=queue.pop();
 			 auto i=tuple.left();

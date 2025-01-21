@@ -7,15 +7,11 @@ import java.util.List;
 struct ContextRule(String message, Rule childRule) implements Rule {
 	@Override
 Result<Node, CompileError> parse(String input){
-		return auto temp(){
-			return new CompileError(this.message, new StringContext(input), List.of(err)));
-		};
+		return this.childRule.parse(input).mapErr(err -> new CompileError(this.message, new StringContext(input), List.of(err)));
 	}
 	@Override
 Result<String, CompileError> generate(Node node){
-		return auto temp(){
-			return new CompileError(this.message, new NodeContext(node), List.of(err)));
-		};
+		return this.childRule.generate(node).mapErr(err -> new CompileError(this.message, new NodeContext(node), List.of(err)));
 	}
 }
 

@@ -21,8 +21,8 @@ Result<Node, CompileError> parse(String input){
 	}
 	@Override
 Result<String, CompileError> generate(Node node){
-		return auto temp(){
-			return this.prefix + inner);
-		};
+		return this.childRule.generate(node).mapValue(auto _lambda22_(auto inner){
+			return this.prefix + inner;
+		});
 	}
 }

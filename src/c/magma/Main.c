@@ -23,17 +23,16 @@ struct Main {
 	 Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
 	 Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
 	 void main(&[String] args){
-		collect().mapErr(JavaError.new).mapErr(ApplicationError.new).mapValue(Main.runWithSources).match(Function.identity(), Optional.of).ifPresent(auto temp(){
+		collect().mapErr(JavaError.new).mapErr(ApplicationError.new).mapValue(Main.runWithSources).match(Function.identity(), Optional.of).ifPresent(auto _lambda36_(auto error){
 			return System.err.println(error.display());
 		});
 	}
 	 Result<Set<Path>, IOException> collect(){
-		return auto temp(){
-			return auto temp(){
-				return path.toString().endsWith(".java"))
-                .collect(Collectors.toSet()));
-			};
-		};
+		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(auto _lambda37_(auto paths){
+			return paths.stream().filter(Files.isRegularFile).filter(auto _lambda38_(auto path){
+				return path.toString().endsWith(".java");
+			}).collect(Collectors.toSet());
+		});
 	}
 	 Optional<ApplicationError> runWithSources(Set<Path> sources){
 		return sources.stream().map(Main.runWithSource).flatMap(Optional.stream).findFirst();
@@ -55,26 +54,21 @@ struct Main {
 			 auto directoriesError=JavaFiles.createDirectoriesWrapped(targetParent);
 			if(directoriesError.isPresent())return directoriesError.map(JavaError.new).map(ApplicationError.new);
 		}
-		auto temp(){
-			return compile(input).mapErr(ApplicationError::new))
-                .mapValue(output -> writeOutput(output, targetParent, name)).match;
-		}(Function.identity(), Optional.of);
+		return JavaFiles.readStringWrapped(source).mapErr(JavaError.new).mapErr(ApplicationError.new).flatMapValue(auto _lambda39_(auto input){
+			return compile(input).mapErr(ApplicationError.new);
+		}).mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional.of);
 	}
 	 Result<String, CompileError> compile(String input){
-		auto temp(){
-			return Passer.pass(new State(), root1).mapValue(Tuple::right))
-                .flatMapValue;
-		}(auto temp(){
+		return JavaLang.createJavaRootRule().parse(input).flatMapValue(root1 -> Passer.pass(new State(), root1).mapValue(Tuple::right))
+                .flatMapValue(auto _lambda40_(auto root){
 			return CLang.createCRootRule().generate(root);
 		});
 	}
 	 Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
 		 auto target=targetParent.resolve(name+".c");
 		 auto header=targetParent.resolve(name+".h");
-		auto temp(){
-			return JavaFiles.writeStringWrapped(header, output))
-                .map(JavaError.new).map;
-		}(ApplicationError.new);
+		return JavaFiles.writeStringWrapped(target, output).or(() -> JavaFiles.writeStringWrapped(header, output))
+                .map(JavaError.new).map(ApplicationError.new);
 	}
 }
 

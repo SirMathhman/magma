@@ -13,9 +13,7 @@ struct Streams {
 		return from(new ArrayList<>(entries));
 	}
 	 Stream<Integer> reverse(String value){
-		return auto temp(){
-			return value.length() - index - 1);
-		};
+		return new HeadedStream<>(new RangeHead(value.length())).map(index -> value.length() - index - 1);
 	}
 	 <T>Stream<T> empty(){
 		return new HeadedStream<>(new EmptyHead<>());
