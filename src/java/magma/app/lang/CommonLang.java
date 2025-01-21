@@ -18,7 +18,6 @@ import magma.app.rule.SuffixRule;
 import magma.app.rule.TypeRule;
 import magma.app.rule.divide.DivideRule;
 import magma.app.rule.divide.SimpleDivider;
-import magma.app.rule.divide.StatementDivider;
 import magma.app.rule.filter.NumberFilter;
 import magma.app.rule.filter.SymbolFilter;
 import magma.app.rule.locate.FirstLocator;
@@ -27,11 +26,12 @@ import magma.app.rule.locate.ParenthesesMatcher;
 
 import java.util.List;
 
+import static magma.app.rule.divide.StatementDivider.STATEMENT_DIVIDER;
 import static magma.app.rule.divide.ValueDivider.VALUE_DIVIDER;
 
 public class CommonLang {
-    public static final String IMPORT_BEFORE = "before";
-    public static final String IMPORT_AFTER = "after";
+    public static final String NAMESPACED_BEFORE = "before";
+    public static final String NAMESPACED_AFTER = "after";
     public static final String ROOT_TYPE = "root";
     public static final String RECORD_TYPE = "record";
     public static final String CLASS_TYPE = "class";
@@ -57,9 +57,12 @@ public class CommonLang {
     public static final String DEFINITION_TYPE = "definition";
     public static final String TUPLE_TYPE = "tuple";
     public static final String TUPLE_CHILDREN = "children";
+    public static final String CONTENT_AFTER_CHILD = "after-child";
 
     public static Rule createNamespacedRule(String type, String prefix) {
-        return new TypeRule(type, new StripRule(new PrefixRule(prefix, new SuffixRule(new StringRule("namespace"), ";")), IMPORT_BEFORE, IMPORT_AFTER));
+        final var namespace = new StringRule("namespace");
+        final var childRule = new PrefixRule(prefix, new SuffixRule(namespace, ";"));
+        return new TypeRule(type, new StripRule(childRule));
     }
 
     public static Rule createCompoundRule(String type, String infix, Rule segmentRule) {
@@ -113,7 +116,7 @@ public class CommonLang {
     }
 
     public static Rule createContentRule(Rule rule) {
-        return new DivideRule(GENERIC_CHILDREN, StatementDivider.STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, ""));
+        return new DivideRule(GENERIC_CHILDREN, STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD));
     }
 
     private static Rule createStatementRule(Rule function) {

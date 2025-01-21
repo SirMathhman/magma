@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static magma.app.lang.CommonLang.BLOCK_AFTER_CHILDREN;
+import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILD;
+import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;
+
 public class Passer {
     public static Result<Node, CompileError> pass(Node root) {
         return beforePass(root).orElse(new Ok<>(root))
@@ -55,6 +59,21 @@ public class Passer {
     }
 
     public static Optional<Result<Node, CompileError>> afterPass(Node node) {
+        if(node.is("root")) {
+            return Optional.of(new Ok<>(node.mapNodeList("children", children -> {
+                return children.stream()
+                        .map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
+                        .toList();
+            })));
+        }
+
+        if (node.is("block")) {
+            return Optional.of(new Ok<>(node.withString(BLOCK_AFTER_CHILDREN, "\n").mapNodeList("children", children -> {
+                return children.stream()
+                        .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n\t"))
+                        .toList();
+            })));
+        }
         return Optional.empty();
     }
 

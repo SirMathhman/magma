@@ -1,1 +1,3 @@
-import java.util.Optional;public struct Head<T> {Optional<T> next();}
+import java.util.Optional;
+public struct Head<T> {Optional<T> next();}
+
