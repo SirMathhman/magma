@@ -186,7 +186,7 @@ import static magma.app.rule.divide.ValueDivider.VALUE_DIVIDER;
 	}
 	static Rule createModifiersRule(){
 		final var modifierRule=new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(INITIALIZATION_VALUE))));
-		return new OrRule(List.of(new DivideRule(DEFINITION_MODIFIERS, new SimpleDivider(" "), modifierRule), new ExactRule("")));
+		return new OrRule(List.of(new DivideRule("modifiers", new SimpleDivider(" "), modifierRule), new ExactRule("")));
 	}
 	static Rule createTypeRule(){
 		final var type=new LazyRule();

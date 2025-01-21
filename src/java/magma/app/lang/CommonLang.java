@@ -304,7 +304,7 @@ public class CommonLang {
     private static Rule createModifiersRule() {
         final var modifierRule = new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(INITIALIZATION_VALUE))));
         return new OrRule(List.of(
-                new DivideRule(DEFINITION_MODIFIERS, new SimpleDivider(" "), modifierRule),
+                new DivideRule("modifiers", new SimpleDivider(" "), modifierRule),
                 new ExactRule("")
         ));
     }
