@@ -5,13 +5,13 @@ import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
 import magma.app.error.context.StringContext;
 import java.util.List;
-public struct TypeRule(String type, Rule rule) implements Rule {
+ struct TypeRule(String type, Rule rule) implements Rule {
 	@Override
-public Result<Node, CompileError> parse(String input){
+ Result<Node, CompileError> parse( String input){
 		return this.rule.parse(input).mapValue(node ->node.retype(this.type)).mapErr(err -> new CompileError("Failed to parse type '" + this.type + "'", new StringContext(input), List.of(err)));
 	}
 	@Override
-public Result<String, CompileError> generate(Node node){
+ Result<String, CompileError> generate( Node node){
 		if(node.is(this.type)){
 			return this.rule.generate(node).mapErr(err -> new CompileError("Failed to generate type '" + this.type + "'", new NodeContext(node), List.of(err)));
 		}

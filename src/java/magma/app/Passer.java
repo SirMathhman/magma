@@ -7,6 +7,7 @@ import magma.api.stream.Streams;
 import magma.app.error.CompileError;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,42 @@ public class Passer {
 
     public static Optional<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
         return removePackageStatements(state, node)
-                .or(() -> renameToStruct(state, node));
+                .or(() -> renameToStruct(state, node))
+                .or(() -> enterBlocks(state, node));
+    }
+
+    private static Optional<Result<Tuple<State, Node>, CompileError>> removeAccessModifiersFromDefinitions(State state, Node node) {
+        if (node.is("definition")) {
+            final var newNode = pruneModifiers(node);
+            return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
+        }
+
+        return Optional.empty();
+    }
+
+    private static Node pruneModifiers(Node node) {
+        final var modifiers = node.findNodeList("modifiers").orElse(Collections.emptyList());
+        final var newModifiers = modifiers.stream()
+                .map(modifier -> modifier.findString("value"))
+                .flatMap(Optional::stream)
+                .filter(modifier -> !modifier.equals("public") && !modifier.equals("private"))
+                .map(modifier -> new MapNode("modifier").withString("value", modifier))
+                .toList();
+
+        Node newNode;
+        if (newModifiers.isEmpty()) {
+            newNode = node.removeNodeList("modifiers");
+        } else {
+            newNode = node.withNodeList("modifiers", newModifiers);
+        }
+        return newNode;
+    }
+
+    private static Optional<? extends Result<Tuple<State, Node>, CompileError>> enterBlocks(State state, Node node) {
+        if (node.is("block")) {
+            return Optional.of(new Ok<>(new Tuple<>(state.enter(), node)));
+        }
+        return Optional.empty();
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> renameToStruct(State state, Node node) {
@@ -33,10 +69,6 @@ public class Passer {
             return Optional.of(new Ok<>(new Tuple<>(state, node
                     .retype("struct")
                     .withString(STRUCT_AFTER_CHILDREN, "\n"))));
-        }
-
-        if (node.is("block")) {
-            return Optional.of(new Ok<>(new Tuple<>(state.enter(), node)));
         }
 
         return Optional.empty();
@@ -89,6 +121,13 @@ public class Passer {
     }
 
     public static Optional<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
+        return removeAccessModifiersFromDefinitions(state, node)
+                .or(() -> formatRoot(state, node))
+                .or(() -> formatBlock(state, node))
+                .or(() -> pruneAndFormatStruct(state, node));
+    }
+
+    private static Optional<Result<Tuple<State, Node>, CompileError>> formatRoot(State state, Node node) {
         if (node.is("root")) {
             final var newNode = node.mapNodeList("children", children -> {
                 return children.stream()
@@ -97,19 +136,24 @@ public class Passer {
             });
             return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
         }
-
-        if (node.is("block")) {
-            return Optional.of(new Ok<>(new Tuple<>(state.exit(), getChildren(state, node))));
-        }
-
-        if (node.is("struct")) {
-            return Optional.of(new Ok<>(new Tuple<>(state, getChildren(state, node))));
-        }
-
         return Optional.empty();
     }
 
-    private static Node getChildren(State state, Node node) {
+    private static Optional<Result<Tuple<State, Node>, CompileError>> formatBlock(State state, Node node) {
+        if (node.is("block")) {
+            return Optional.of(new Ok<>(new Tuple<>(state.exit(), formatContent(state, node))));
+        }
+        return Optional.empty();
+    }
+
+    private static Optional<Result<Tuple<State, Node>, CompileError>> pruneAndFormatStruct(State state, Node node) {
+        if (node.is("struct")) {
+            return Optional.of(new Ok<>(new Tuple<>(state, formatContent(state, pruneModifiers(node)))));
+        }
+        return Optional.empty();
+    }
+
+    private static Node formatContent(State state, Node node) {
         return node.withString(BLOCK_AFTER_CHILDREN, "\n" + "\t".repeat(state.depth())).mapNodeList("children", children -> {
             return children.stream()
                     .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n" + "\t".repeat(state.depth() + 1)))

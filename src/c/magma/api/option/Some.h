@@ -1,12 +1,12 @@
 import java.util.function.Function;
 import java.util.function.Supplier;
-public struct Some<T>(T value) implements Option<T> {
+ struct Some<T>(T value) implements Option<T> {
 	@Override
-public <R>Option<R> map(Function<T, R> mapper){
+ <R>Option<R> map( Function<T, R> mapper){
 		return new Some<>(mapper.apply(this.value));
 	}
 	@Override
-public T orElseGet(Supplier<T> other){
+ T orElseGet( Supplier<T> other){
 		return this.value;
 	}
 }

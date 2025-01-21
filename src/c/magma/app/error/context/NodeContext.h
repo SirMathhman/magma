@@ -1,7 +1,7 @@
 import magma.app.Node;
-public struct NodeContext(Node node) implements Context {
+ struct NodeContext(Node node) implements Context {
 	@Override
-public String display(){
+ String display(){
 		return node.display();
 	}
 }

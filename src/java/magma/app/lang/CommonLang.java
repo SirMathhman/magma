@@ -66,7 +66,8 @@ public class CommonLang {
     }
 
     public static Rule createCompoundRule(String type, String infix, Rule segmentRule) {
-        final var infixRule = new InfixRule(new StringRule(DEFINITION_MODIFIERS), new FirstLocator(infix),
+        final var modifiers = new SuffixRule(createModifiersRule(), " ");
+        final var infixRule = new InfixRule(modifiers, new FirstLocator(infix),
                 new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
                         new SuffixRule(new StripRule(createContentRule(segmentRule), "", STRUCT_AFTER_CHILDREN), "}")
                 )));
@@ -279,8 +280,7 @@ public class CommonLang {
         final var typeProperty = new NodeRule("type", createTypeRule());
         final var typeAndName = new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
 
-        final var modifierRule = new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(INITIALIZATION_VALUE))));
-        final var modifiers = new DivideRule(DEFINITION_MODIFIERS, new SimpleDivider(" "), modifierRule);
+        final var modifiers = createModifiersRule();
 
         final var typeParams = new StringRule("type-params");
         final var maybeTypeParams = new OrRule(List.of(
@@ -299,6 +299,14 @@ public class CommonLang {
                 new ContextRule("With annotations", new InfixRule(annotations, new LastLocator("\n"), withModifiers)),
                 new ContextRule("Without annotations", withModifiers)
         )));
+    }
+
+    private static Rule createModifiersRule() {
+        final var modifierRule = new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(INITIALIZATION_VALUE))));
+        return new OrRule(List.of(
+                new DivideRule(DEFINITION_MODIFIERS, new SimpleDivider(" "), modifierRule),
+                new ExactRule("")
+        ));
     }
 
     private static Rule createTypeRule() {
