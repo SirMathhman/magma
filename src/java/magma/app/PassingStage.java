@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;
+
 public class PassingStage {
     public static Result<PassUnit<Node>, CompileError> pass(PassUnit<Node> unit) {
         return beforePass(unit)
@@ -25,7 +27,14 @@ public class PassingStage {
         return new Ok<>(unit.filterAndMapToValue(by("root"), PassingStage::removePackageStatements)
                 .or(() -> unit.filterAndMapToValue(by("class").or(by("record")).or(by("interface")), PassingStage::retypeToStruct))
                 .or(() -> unit.filterAndMapToValue(by("definition"), PassingStage::pruneDefinition))
+                .or(() -> unit.filterAndMapToValue(by("block"), PassingStage::formatBlock))
                 .orElse(unit));
+    }
+
+    private static Node formatBlock(Node block) {
+        return block.mapNodeList("children", children -> children.stream()
+                .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n"))
+                .toList());
     }
 
     private static Node pruneDefinition(Node definition) {
