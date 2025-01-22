@@ -1,6 +1,7 @@
 package magma.app;
 
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public record InlinePassUnit<T>(State state, T value) implements PassUnit<T> {
@@ -18,5 +19,12 @@ public record InlinePassUnit<T>(State state, T value) implements PassUnit<T> {
     @Override
     public PassUnit<T> enter() {
         return new InlinePassUnit<>(this.state.enter(), this.value);
+    }
+
+    @Override
+    public <R> PassUnit<R> mapValue(Function<T, R> mapper) {
+        final var value1 = value();
+        final var apply = mapper.apply(value1);
+        return new InlinePassUnit<>(state(), apply);
     }
 }

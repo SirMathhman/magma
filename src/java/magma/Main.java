@@ -2,6 +2,7 @@ package magma;
 
 import magma.api.Tuple;
 import magma.api.result.Result;
+import magma.app.InlinePassUnit;
 import magma.app.Passer;
 import magma.app.State;
 import magma.app.error.ApplicationError;
@@ -83,7 +84,7 @@ public class Main {
 
     private static Result<String, CompileError> compile(String input) {
         return JavaLang.createJavaRootRule().parse(input)
-                .flatMapValue(root1 -> Passer.pass(new State(), root1).mapValue(Tuple::right))
+                .flatMapValue(root1 -> final State state = new State();Passer.pass(new InlinePassUnit<>(state, root1)).mapValue(Tuple::right))
                 .flatMapValue(root -> CLang.createCRootRule().generate(root));
     }
 

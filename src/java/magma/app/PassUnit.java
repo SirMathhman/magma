@@ -1,9 +1,13 @@
 package magma.app;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface PassUnit<T> {
+    <R> PassUnit<R> mapValue(Function<T, R> mapper);
+
     Optional<PassUnit<T>> filter(Predicate<T> predicate);
 
     <R> PassUnit<R> withValue(R value);
@@ -15,4 +19,10 @@ public interface PassUnit<T> {
 
     @Deprecated
     T value();
+
+    <R> Optional<PassUnit<R>> filterAndMapValue(Predicate<T> predicate, Function<T, R> mapper);
+
+    <R> PassUnit<R> flattenNode(BiFunction<State, T, R> mapper);
+
+    PassUnit<T> exit();
 }
