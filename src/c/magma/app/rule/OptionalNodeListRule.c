@@ -10,7 +10,7 @@ import magma.api.result.Result;import magma.app.Node;import magma.app.error.Comp
 		this.rule = new OrRule(List.of(ifPresent, ifEmpty));
 	}
 	public OptionalNodeListRule(String propertyKey, DivideRule ifPresent){
-		this(propertyKey, ifPresent, new ExactRule(""));
+		this(propertyKey, ifPresent, ExactRule.new());
 	}
 	Result<Node, CompileError> parse(String input){
 		return this.rule.parse(input);

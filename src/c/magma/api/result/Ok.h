@@ -3,19 +3,19 @@ import magma.api.Tuple;import magma.api.option.None;import magma.api.option.Opti
 		return mapper.apply(this.value);
 	}
 	<R>Result<R, X> mapValue(((T) => R) mapper){
-		return new Ok<>(mapper.apply(this.value));
+		return Ok<>.new();
 	}
 	<R>Result<T, R> mapErr(((X) => R) mapper){
-		return new Ok<>(this.value);
+		return Ok<>.new();
 	}
 	<R>R match(((T) => R) onOk, ((X) => R) onErr){
 		return onOk.apply(this.value);
 	}
 	<R>Result<Tuple<T, R>, X> and((() => Result<R, X>) other){
-		return other.get().mapValue(()->new Tuple<>(this.value, otherValue));
+		return other.get().mapValue(()->Tuple<>.new());
 	}
 	<R>Result<T, Tuple<X, R>> or((() => Result<T, R>) other){
-		return new Ok<>(this.value);
+		return Ok<>.new();
 	}
 	boolean isOk(){
 		return true;

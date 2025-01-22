@@ -5,7 +5,7 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node
 			return this.childRule.parse(input);
 		}
 		else{
-			return new Err<>(new CompileError("Filter did not apply", new StringContext(input)));
+			return Err<>.new();
 		}
 	}
 	Result<String, CompileError> generate(Node node){

@@ -19,7 +19,7 @@ import magma.api.result.Result;import magma.app.InlinePassUnit;import magma.app.
 		}
 		var nameWithExt=relative.getFileName().toString();
 		var name=nameWithExt.substring(0, nameWithExt.indexOf('.''));
-		var copy=new ArrayList<>(namespace);
+		var copy=ArrayList<>.new();
 		copy.add(name);
 		System.out.println("Compiling source: "+String.join(".", copy));
 		var targetParent=TARGET_DIRECTORY.resolve(parent);
@@ -30,7 +30,7 @@ import magma.api.result.Result;import magma.app.InlinePassUnit;import magma.app.
 		return JavaFiles.readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).flatMapValue(()->compile(input).mapErr(ApplicationError::new)).mapValue(()->writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
 	}
 	Result<String, CompileError> compile(String input){
-		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->PassingStage.pass(new InlinePassUnit<>(root1)).mapValue(PassUnit::value)).flatMapValue(()->CLang.createCRootRule().generate(root));
+		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->PassingStage.pass(InlinePassUnit<>.new()).mapValue(PassUnit::value)).flatMapValue(()->CLang.createCRootRule().generate(root));
 	}
 	Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
 		var target=targetParent.resolve(name+".c");

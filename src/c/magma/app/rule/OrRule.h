@@ -1,6 +1,6 @@
 import magma.api.result.Err;import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.Node;import magma.app.error.CompileError;import magma.app.error.context.Context;import magma.app.error.context.NodeContext;import magma.app.error.context.StringContext;import java.util.ArrayList;import java.util.Collections;import java.util.List;struct OrRule(List<Rule> rules) implements Rule{
 	Result<Node, CompileError> parse(String value){
-		return process(new StringContext(value), ()->rule.parse(value));
+		return process(StringContext.new(), ()->rule.parse(value));
 	}
 	<R>Result<R, CompileError> process(Context context, ((Rule) => Result<R, CompileError>) mapper){
 		return Streams.from(this.rules).map(()->mapper.apply(rule).mapErr(Collections::singletonList)).foldLeft((first, second) -> first.or(()->second).mapErr(tuple -> {
@@ -8,9 +8,9 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.api.stre
                     left.addAll(tuple.right());
                     return left;
                 }))
-                .orElseGet(()->new Err<>(Collections.singletonList(new CompileError("No rules set", context)))).mapErr(()->new CompileError("No valid rule", context, errors));
+                .orElseGet(()->Err<>.new()).mapErr(()->CompileError.new());
 	}
 	Result<String, CompileError> generate(Node node){
-		return process(new NodeContext(node), ()->rule.generate(node));
+		return process(NodeContext.new(), ()->rule.generate(node));
 	}
 }

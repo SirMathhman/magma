@@ -3,9 +3,9 @@ struct State(int depth){
 		this(0);
 	}
 	State exit(){
-		return new State(this.depth - 1);
+		return State.new();
 	}
 	State enter(){
-		return new State(this.depth + 1);
+		return State.new();
 	}
 }

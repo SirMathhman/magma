@@ -7,7 +7,7 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	}
 	Stream<Integer> locate(String input){
 		var depth=0;
-		var queue=IntStream.range(0, input.length()).mapToObj(()->new Tuple<>(index, input.charAt(index))).collect(Collectors.toCollection(LinkedList::new));
+		var queue=IntStream.range(0, input.length()).mapToObj(()->Tuple<>.new()).collect(Collectors.toCollection(LinkedList::new));
 		while(!queue.isEmpty()){
 			var tuple=queue.pop();
 			var i=tuple.left();

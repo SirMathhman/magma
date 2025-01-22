@@ -6,8 +6,8 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 		this.childRule =childRule;
 	}
 	Result<String, CompileError> truncateLeft(String input, String slice){
-		if(input.startsWith(slice))return new Ok<>(input.substring(slice.length()));
-		return new Err<>(new CompileError("Prefix '"+slice+"' not present", new StringContext(input)));
+		if(input.startsWith(slice))return Ok<>.new();
+		return Err<>.new();
 	}
 	Result<Node, CompileError> parse(String input){
 		return truncateLeft(input, this.prefix).flatMapValue(this.childRule::parse);

@@ -3,19 +3,23 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.api.strea
 		return beforePass(unit).flatMapValue(PassingStage::passNodes).flatMapValue(PassingStage::passNodeLists).flatMapValue(PassingStage::afterPass);
 	}
 	Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit){
-		return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(()->inner.mapValue(PassingStage::removeWhitespace)).or(()->unit.filterAndMapToValue(by(GENERIC_TYPE), ()->{
-			var parent=generic.findString(GENERIC_PARENT).orElse("");
-			var children=generic.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
-			if(parent.equals("Supplier")){
-				return new MapNode("functional").withNode("return", children.get(0));
-			}
-			if(parent.equals("Function")){
-				return new MapNode("functional")
-                                .withNodeList("params", List.of(children.get(0)))
-                                .withNode("return", children.get(1));
-			}
-			return generic;
-		})).orElse(unit));
+		return Ok<>.new();
+	}
+	Node replaceWithInvocation(Node node){
+		var type=node.findString("type").orElse("");
+		var symbol=MapNode.new();
+		return node.retype("invocation").withNode("caller", MapNode.new().withString("property", "new"));
+	}
+	Node replaceWithFunctional(Node generic){
+		var parent=generic.findString(GENERIC_PARENT).orElse("");
+		var children=generic.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
+		if(parent.equals("Supplier")){
+			return MapNode.new();
+		}
+		if(parent.equals("Function")){
+			return MapNode.new();
+		}
+		return generic;
 	}
 	Node removeWhitespace(Node block){
 		return block.mapNodeList(CONTENT_CHILDREN, ()->{
@@ -23,11 +27,11 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.api.strea
 		});
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
-		return new Ok<>(unit.filterAndMapToValue(by("root"), PassingStage::removePackageStatements).or(()->unit.filterAndMapToValue(by("class").or(by("record")).or(by("interface")), PassingStage::retypeToStruct)).or(()->unit.filterAndMapToValue(by("definition"), PassingStage::pruneDefinition)).or(()->unit.filter(by("block")).map(PassingStage::formatBlock)).orElse(unit));
+		return Ok<>.new();
 	}
 	PassUnit<Node> formatBlock(PassUnit<Node> inner){
 		return inner.exit().flattenNode((State state, Node block) -> {
-            if (block.findNodeList(CONTENT_CHILDREN).orElse(new ArrayList<>()).isEmpty()) {
+            if (block.findNodeList(CONTENT_CHILDREN).orElse(ArrayList<>.new()).isEmpty()) {
                 return block.removeNodeList(CONTENT_CHILDREN);
             }
 
@@ -59,14 +63,14 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.api.strea
 		return unit.value().streamNodeLists().foldLeftToResult(unit, (current, tuple) -> {
             final var propertyKey = tuple.left();
             final var propertyValues = tuple.right();
-            return Streams.from(propertyValues).foldLeftToResult(current.withValue(new ArrayList<>()), PassingStage::passAndAdd).mapValue(unit1 -> unit1.mapValue(node -> current.value().withNodeList(propertyKey, node)));
+            return Streams.from(propertyValues).foldLeftToResult(current.withValue(ArrayList<>.new()), PassingStage::passAndAdd).mapValue(unit1 -> unit1.mapValue(node -> current.value().withNodeList(propertyKey, node)));
         });
 	}
 	Result<PassUnit<List<Node>>, CompileError> passAndAdd(PassUnit<List<Node>> unit, Node element){
 		return pass(unit.withValue(element)).mapValue(()->result.mapValue(()->add(unit, value)));
 	}
 	List<Node> add(PassUnit<List<Node>> unit2, Node value){
-		var copy=new ArrayList<>(unit2.value());
+		var copy=ArrayList<>.new();
 		copy.add(value);
 		return copy;
 	}

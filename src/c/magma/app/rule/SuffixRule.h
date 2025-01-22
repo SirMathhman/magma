@@ -7,10 +7,10 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	}
 	Result<String, CompileError> truncateRight(String input, String slice){
 		if(input.endsWith(slice)){
-			return new Ok<>(input.substring(0, input.length() - slice.length()));
+			return Ok<>.new();
 		}
 		else{
-			return new Err<>(new CompileError("Suffix '"+slice+"' not present", new StringContext(input)));
+			return Err<>.new();
 		}
 	}
 	Result<Node, CompileError> parse(String input){

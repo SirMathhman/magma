@@ -27,21 +27,33 @@ public class PassingStage {
 
     private static Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
         return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(inner -> inner.mapValue(PassingStage::removeWhitespace))
-                .or(() -> unit.filterAndMapToValue(by(GENERIC_TYPE), generic -> {
-                    final var parent = generic.findString(GENERIC_PARENT).orElse("");
-                    final var children = generic.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
-
-                    if (parent.equals("Supplier")) {
-                        return new MapNode("functional").withNode("return", children.get(0));
-                    }
-                    if (parent.equals("Function")) {
-                        return new MapNode("functional")
-                                .withNodeList("params", List.of(children.get(0)))
-                                .withNode("return", children.get(1));
-                    }
-                    return generic;
-                }))
+                .or(() -> unit.filterAndMapToValue(by(GENERIC_TYPE), PassingStage::replaceWithFunctional))
+                .or(() -> unit.filterAndMapToValue(by("construction"), PassingStage::replaceWithInvocation))
                 .orElse(unit));
+    }
+
+    private static Node replaceWithInvocation(Node node) {
+        final var type = node.findString("type").orElse("");
+        final var symbol = new MapNode("symbol").withString("value", type);
+        return node.retype("invocation")
+                .withNode("caller", new MapNode("data-access")
+                        .withNode("ref", symbol)
+                        .withString("property", "new"));
+    }
+
+    private static Node replaceWithFunctional(Node generic) {
+        final var parent = generic.findString(GENERIC_PARENT).orElse("");
+        final var children = generic.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
+
+        if (parent.equals("Supplier")) {
+            return new MapNode("functional").withNode("return", children.get(0));
+        }
+        if (parent.equals("Function")) {
+            return new MapNode("functional")
+                    .withNodeList("params", List.of(children.get(0)))
+                    .withNode("return", children.get(1));
+        }
+        return generic;
     }
 
     private static Node removeWhitespace(Node block) {

@@ -1,12 +1,12 @@
 import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import magma.app.error.context.StringContext;import magma.app.rule.Splitter;import java.util.ArrayList;import java.util.LinkedList;import java.util.List;import java.util.stream.Collectors;import java.util.stream.IntStream;struct ValueDivider implements Divider{
-	Divider VALUE_DIVIDER=new ValueDivider();
+	Divider VALUE_DIVIDER=ValueDivider.new();
 	private ValueDivider(){}
 	String merge(String current, String value){
 		return current+", "+value;
 	}
 	Result<List<String>, CompileError> divide(String input){
-		var segments=new ArrayList<String>();
-		var buffer=new StringBuilder();
+		var segments=ArrayList<String>.new();
+		var buffer=StringBuilder.new();
 		var depth=0;
 		var queue=IntStream.range(0, input.length()).mapToObj(input::charAt).collect(Collectors.toCollection(LinkedList::new));
 		while(!queue.isEmpty()){
@@ -14,7 +14,7 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 			if(c=='\''){
 				buffer.append(c);
 				if(queue.isEmpty()){
-					return new Err<>(new CompileError("Malformed chars", new StringContext(input)));
+					return Err<>.new();
 				}
 				var c1=queue.pop();
 				buffer.append(c1);
@@ -42,7 +42,7 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 			}
 			if(c==','&&depth==0){
 				Splitter.advance(buffer, segments);
-				buffer=new StringBuilder();
+				buffer=StringBuilder.new();
 			}
 			else{
 				buffer.append(c);
@@ -51,6 +51,6 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 			}
 		}
 		Splitter.advance(buffer, segments);
-		return new Ok<List<String>, CompileError>(segments);
+		return Ok<List<String>, CompileError>.new();
 	}
 }

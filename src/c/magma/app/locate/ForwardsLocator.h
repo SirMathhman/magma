@@ -13,7 +13,7 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.
 		return Streams.from(searchForIndices(input));
 	}
 	List<Integer> searchForIndices(String input){
-		List<Integer> indices=new ArrayList<>();
+		List<Integer> indices=ArrayList<>.new();
 		int index=input.indexOf(this.infix);
 		while(index>=0){
 			indices.add(index);
