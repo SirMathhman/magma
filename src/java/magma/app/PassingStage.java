@@ -31,10 +31,10 @@ public class PassingStage {
                     final var parent = generic.findString(GENERIC_PARENT).orElse("");
                     final var children = generic.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
 
-                    if(parent.equals("Supplier")) {
+                    if (parent.equals("Supplier")) {
                         return new MapNode("functional").withNode("return", children.get(0));
                     }
-                    if(parent.equals("Function")) {
+                    if (parent.equals("Function")) {
                         return new MapNode("functional")
                                 .withNodeList("params", List.of(children.get(0)))
                                 .withNode("return", children.get(1));
@@ -67,11 +67,15 @@ public class PassingStage {
             }
 
             return block
-                    .withString(CONTENT_AFTER_CHILDREN, "\n")
+                    .withString(CONTENT_AFTER_CHILDREN, formatIndent(state.depth()))
                     .mapNodeList(CONTENT_CHILDREN, children -> children.stream()
-                            .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n" + "\t".repeat(state.depth() + 1)))
+                            .map(child -> child.withString(CONTENT_BEFORE_CHILD, formatIndent(state.depth() + 1)))
                             .toList());
         });
+    }
+
+    private static String formatIndent(int state) {
+        return "\n" + "\t".repeat(state);
     }
 
     private static Node pruneDefinition(Node definition) {

@@ -70,7 +70,7 @@ public class CommonLang {
                 new SuffixRule(modifiers, " ")
         );
 
-        final var nameAndContent = wrapUsingBlock(new StripRule(new StringRule("name")), segmentRule);
+        final var nameAndContent = wrapUsingBlock("value", new StripRule(new StringRule("name")), segmentRule);
 
         final var infixRule = new InfixRule(maybeModifiers, new FirstLocator(infix), nameAndContent);
         return new TypeRule(type, infixRule);
@@ -103,15 +103,15 @@ public class CommonLang {
         final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new StripRule(new SuffixRule(params, ")")));
 
         final var orRule = new OptionalNodeRule(METHOD_CHILD,
-                new ContextRule("With block", wrapUsingBlock(infixRule, statement)),
+                new ContextRule("With block", wrapUsingBlock(METHOD_CHILD, infixRule, statement)),
                 new ContextRule("With statement", new StripRule(new SuffixRule(infixRule, ";")))
         );
 
         return new TypeRule(METHOD_TYPE, orRule);
     }
 
-    private static Rule wrapUsingBlock(Rule beforeBlock, Rule statement) {
-        final var withEnd = new NodeRule("value", new TypeRule("block", createContentRule(statement)));
+    private static Rule wrapUsingBlock(String propertyKey, Rule beforeBlock, Rule statement) {
+        final var withEnd = new NodeRule(propertyKey, new TypeRule("block", createContentRule(statement)));
         return new StripRule(new InfixRule(beforeBlock, new FirstLocator("{"), new SuffixRule(withEnd, "}")));
     }
 
@@ -148,7 +148,7 @@ public class CommonLang {
 
     private static TypeRule createElseRule(LazyRule statement) {
         return new TypeRule("else", new OrRule(List.of(
-                wrapUsingBlock(new StripRule(new ExactRule("else")), statement),
+                wrapUsingBlock("value", new StripRule(new ExactRule("else")), statement),
                 new PrefixRule("else ", new NodeRule("value", statement))
         )));
     }
@@ -157,7 +157,7 @@ public class CommonLang {
         final var condition = new NodeRule("condition", value);
 
         return new TypeRule(type, new StripRule(new PrefixRule(type, new OrRule(List.of(
-                new ContextRule("With block", wrapUsingBlock(new StripRule(new PrefixRule("(", new SuffixRule(condition, ")"))), statement)),
+                new ContextRule("With block", wrapUsingBlock("value", new StripRule(new PrefixRule("(", new SuffixRule(condition, ")"))), statement)),
                 new ContextRule("With statement", new StripRule(new PrefixRule("(", new InfixRule(condition, new ParenthesesMatcher(), new NodeRule("value", statement)))))
         )))));
     }
@@ -228,7 +228,7 @@ public class CommonLang {
         )));
 
         final var rightRule = new OrRule(List.of(
-                new NodeRule("value", wrapUsingBlock(new StripRule(new SuffixRule(args, "->")), statement)),
+                new NodeRule("value", wrapUsingBlock("value", new StripRule(new SuffixRule(args, "->")), statement)),
                 new InfixRule(args, new FirstLocator("->"), new NodeRule("value", value))
         ));
 
