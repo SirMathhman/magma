@@ -3,8 +3,7 @@ package magma;
 import magma.api.result.Result;
 import magma.app.InlinePassUnit;
 import magma.app.PassUnit;
-import magma.app.Passer;
-import magma.app.State;
+import magma.app.PassingStage;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
@@ -84,7 +83,7 @@ public class Main {
 
     private static Result<String, CompileError> compile(String input) {
         return JavaLang.createJavaRootRule().parse(input)
-                .flatMapValue(root1 -> Passer.pass(new InlinePassUnit<>(root1)).mapValue(PassUnit::value)).flatMapValue(root -> CLang.createCRootRule().generate(root));
+                .flatMapValue(root1 -> PassingStage.pass(new InlinePassUnit<>(root1)).mapValue(PassUnit::value)).flatMapValue(root -> CLang.createCRootRule().generate(root));
     }
 
     private static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name) {

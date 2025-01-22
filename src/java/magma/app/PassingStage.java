@@ -19,22 +19,20 @@ import static magma.app.lang.CommonLang.METHOD_CHILD;
 import static magma.app.lang.CommonLang.METHOD_TYPE;
 import static magma.app.lang.CommonLang.STRUCT_AFTER_CHILDREN;
 
-public class Passer {
-    private static int counter = 0;
-
+public class PassingStage {
     public static Result<PassUnit<Node>, CompileError> pass(PassUnit<Node> unit) {
         return beforePass(unit)
-                .flatMapValue(Passer::passNodes)
-                .flatMapValue(Passer::passNodeLists)
-                .flatMapValue(Passer::afterPass);
+                .flatMapValue(PassingStage::passNodes)
+                .flatMapValue(PassingStage::passNodeLists)
+                .flatMapValue(PassingStage::afterPass);
     }
 
     private static Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
-        return unit.filterAndMapToValue(by("root"), Passer::removePackageStatements).<Result<PassUnit<Node>, CompileError>>map(Ok::new)
-                .or(() -> unit.filterAndMapToValue(by("class").or(by("interface").or(by("record"))), Passer::renameToStruct).map(Ok::new))
-                .or(() -> unit.filterAndMapToValue(by("array"), Passer::renameToSlice).map(Ok::new))
-                .or(() -> unit.filterAndMapToValue(by("method-access"), Passer::renameToDataAccess).map(Ok::new))
-                .or(() -> unit.filterAndMapToValue(by("lambda"), Passer::renameLambdaToMethod).map(Ok::new))
+        return unit.filterAndMapToValue(by("root"), PassingStage::removePackageStatements).<Result<PassUnit<Node>, CompileError>>map(Ok::new)
+                .or(() -> unit.filterAndMapToValue(by("class").or(by("interface").or(by("record"))), PassingStage::renameToStruct).map(Ok::new))
+                .or(() -> unit.filterAndMapToValue(by("array"), PassingStage::renameToSlice).map(Ok::new))
+                .or(() -> unit.filterAndMapToValue(by("method-access"), PassingStage::renameToDataAccess).map(Ok::new))
+                .or(() -> unit.filterAndMapToValue(by("lambda"), PassingStage::renameLambdaToMethod).map(Ok::new))
                 .or(() -> enterBlock(unit))
                 .orElse(new Ok<>(unit));
     }
@@ -54,7 +52,7 @@ public class Passer {
                 .or(() -> findArgumentValues(root))
                 .orElse(new ArrayList<>())
                 .stream()
-                .map(Passer::wrapUsingAutoType)
+                .map(PassingStage::wrapUsingAutoType)
                 .toList();
 
         final var value = root.findNode("child").orElse(new MapNode());
@@ -67,7 +65,7 @@ public class Passer {
         final var params = args.isEmpty() ? retyped : retyped.withNodeList("params", args);
 
         final var definition = new MapNode("definition")
-                .withString("name", createUniqueName())
+                .withString("name", Namer.createUniqueName())
                 .withNode("type", createAutoType());
 
         return params.withNode(METHOD_CHILD, propertyValue).withNode("definition", definition);
@@ -88,15 +86,15 @@ public class Passer {
     }
 
     private static Node removePackageStatements(Node node) {
-        return node.mapNodeList("children", Passer::removePackages);
+        return node.mapNodeList("children", PassingStage::removePackages);
     }
 
     private static Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
-        return unit.filterAndMapToValue(by("definition"), Passer::cleanupDefinition).<Result<PassUnit<Node>, CompileError>>map(Ok::new)
-                .or(() -> unit.filterAndMapToValue(by("root"), Passer::formatRoot).map(Ok::new))
+        return unit.filterAndMapToValue(by("definition"), PassingStage::cleanupDefinition).<Result<PassUnit<Node>, CompileError>>map(Ok::new)
+                .or(() -> unit.filterAndMapToValue(by("root"), PassingStage::formatRoot).map(Ok::new))
                 .or(() -> formatBlock(unit))
                 .or(() -> pruneAndFormatStruct(unit))
-                .or(() -> unit.filterAndMapToValue(by("method"), Passer::pruneFunction).map(Ok::new))
+                .or(() -> unit.filterAndMapToValue(by("method"), PassingStage::pruneFunction).map(Ok::new))
                 .orElse(new Ok<>(unit));
     }
 
@@ -105,8 +103,8 @@ public class Passer {
     }
 
     private static Optional<Result<PassUnit<Node>, CompileError>> pruneAndFormatStruct(PassUnit<Node> unit) {
-        return unit.filterAndMapToCached(by("struct"), Passer::pruneStruct)
-                .map(pruned -> pruned.flattenNode(Passer::formatContent))
+        return unit.filterAndMapToCached(by("struct"), PassingStage::pruneStruct)
+                .map(pruned -> pruned.flattenNode(PassingStage::formatContent))
                 .map(Ok::new);
     }
 
@@ -148,19 +146,19 @@ public class Passer {
 
     private static Optional<Result<PassUnit<Node>, CompileError>> formatBlock(PassUnit<Node> unit) {
         return unit.filter(by("block"))
-                .map(inner -> inner.flattenNode(Passer::formatContent))
+                .map(inner -> inner.flattenNode(PassingStage::formatContent))
                 .map(PassUnit::exit)
                 .map(Ok::new);
     }
 
     private static Node formatRoot(Node node) {
-        return node.mapNode("definition", definition -> definition.mapNodeList("children", Passer::indentRootChildren));
+        return node.mapNode("definition", definition -> definition.mapNodeList("children", PassingStage::indentRootChildren));
     }
 
     private static Node cleanupDefinition(Node node) {
         return pruneModifiers(node)
-                .mapNodeList("modifiers", Passer::replaceFinalWithConst)
-                .mapNode("type", Passer::replaceVarWithAuto);
+                .mapNodeList("modifiers", PassingStage::replaceFinalWithConst)
+                .mapNode("type", PassingStage::replaceVarWithAuto);
     }
 
     private static Result<PassUnit<Node>, CompileError> passNodeLists(PassUnit<Node> unit) {
@@ -168,7 +166,7 @@ public class Passer {
             final var propertyKey = tuple.left();
             final var propertyValues = tuple.right();
             return Streams.from(propertyValues)
-                    .foldLeftToResult(current.withValue(new ArrayList<>()), Passer::passAndAdd)
+                    .foldLeftToResult(current.withValue(new ArrayList<>()), PassingStage::passAndAdd)
                     .mapValue(unit1 -> unit1.mapValue(node -> current.value().withNodeList(propertyKey, node)));
         });
     }
@@ -213,12 +211,6 @@ public class Passer {
                 .map(child -> child.findString("value"))
                 .flatMap(Optional::stream)
                 .toList());
-    }
-
-    private static String createUniqueName() {
-        final var name = "_lambda" + counter + "_";
-        counter++;
-        return name;
     }
 
     private static Node createAutoType() {
