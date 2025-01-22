@@ -2,4 +2,5 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	Divider STATEMENT_DIVIDER=new StatementDivider();
 	private StatementDivider();
 	String merge(String current, String value);
-	Result<List<String>, CompileError> divide(String input);}
+	Result<List<String>, CompileError> divide(String input);
+}

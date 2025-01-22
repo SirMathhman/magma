@@ -6,4 +6,5 @@ import magma.api.result.Result;import magma.app.InlinePassUnit;import magma.app.
 	Optional<ApplicationError> runWithSources(Set<Path> sources);
 	Optional<ApplicationError> runWithSource(Path source);
 	Result<String, CompileError> compile(String input);
-	Optional<ApplicationError> writeOutput(String output, Path targetParent, String name);}
+	Optional<ApplicationError> writeOutput(String output, Path targetParent, String name);
+}

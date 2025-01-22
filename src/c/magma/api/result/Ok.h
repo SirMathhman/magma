@@ -7,4 +7,5 @@ import magma.api.Tuple;import magma.api.option.None;import magma.api.option.Opti
 	<R>Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other);
 	boolean isOk();
 	Optional<X> findError0();
-	Option<X> findError();}
+	Option<X> findError();
+}

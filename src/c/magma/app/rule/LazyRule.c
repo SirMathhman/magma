@@ -3,4 +3,5 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	Result<Node, CompileError> parse(String input);
 	Result<Rule, CompileError> findChild(Context context);
 	Result<String, CompileError> generate(Node node);
-	void set(Rule childRule);}
+	void set(Rule childRule);
+}

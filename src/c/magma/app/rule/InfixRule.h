@@ -5,4 +5,5 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node
 	public InfixRule(Rule leftRule, Locator locator, Rule rightRule);
 	ArrayList<Integer> add(ArrayList<Integer> integers, Integer integer);
 	Result<String, CompileError> generate(Node node);
-	Result<Node, CompileError> parse(String input);}
+	Result<Node, CompileError> parse(String input);
+}

@@ -12,4 +12,5 @@ import magma.api.Tuple;import java.util.ArrayList;import java.util.List;import j
 	Optional<PassUnit<T>> filterAndMapToCached(Predicate<T> predicate, Function<T, Tuple<List<Node>, T>> mapper);
 	<R>PassUnit<R> flattenNode(BiFunction<State, T, R> mapper);
 	PassUnit<T> exit();
-	<R>PassUnit<R> mapValue(Function<T, R> mapper);}
+	<R>PassUnit<R> mapValue(Function<T, R> mapper);
+}

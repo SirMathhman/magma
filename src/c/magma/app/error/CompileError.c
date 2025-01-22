@@ -6,4 +6,5 @@ import magma.app.error.context.Context;import java.util.ArrayList;import java.ut
 	public CompileError(String message, Context context);
 	String display();
 	int maxDepth();
-	String format(int depth);}
+	String format(int depth);
+}

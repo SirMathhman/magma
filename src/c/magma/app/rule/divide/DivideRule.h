@@ -7,4 +7,5 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	Result<Node, CompileError> validateNode(String text, Node result);
 	Result<Node, CompileError> parse(String input);
 	Result<String, CompileError> generate(Node node);
-	String merge(List<String> elements);}
+	String merge(List<String> elements);
+}

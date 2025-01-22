@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILDREN;
 import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;
 import static magma.app.lang.CommonLang.CONTENT_CHILDREN;
 
@@ -46,7 +47,9 @@ public class PassingStage {
                 return block.removeNodeList(CONTENT_CHILDREN);
             }
 
-            return block.mapNodeList(CONTENT_CHILDREN, children -> children.stream()
+            return block
+                    .withString(CONTENT_AFTER_CHILDREN, "\n")
+                    .mapNodeList(CONTENT_CHILDREN, children -> children.stream()
                     .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n" + "\t".repeat(state.depth() + 1)))
                     .toList());
         });

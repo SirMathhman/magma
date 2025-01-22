@@ -4,4 +4,5 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.
 	String unwrap();
 	int length();
 	Stream<Integer> locate(String input);
-	List<Integer> searchForIndices(String input);}
+	List<Integer> searchForIndices(String input);
+}

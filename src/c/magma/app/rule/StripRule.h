@@ -3,4 +3,5 @@ import magma.api.result.Result;import magma.app.Node;import magma.app.error.Comp
 ) implements Rule{
 	public StripRule(Rule childRule);
 	Result<Node, CompileError> parse(String input);
-	Result<String, CompileError> generate(Node node);}
+	Result<String, CompileError> generate(Node node);
+}

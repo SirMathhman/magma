@@ -55,6 +55,7 @@ public class CommonLang {
     public static final String CONTENT_AFTER_CHILD = "after-child";
     public static final String CONTENT_CHILDREN = "content-children";
     public static final String INVOCATION_CHILDREN = "invocation-children";
+    public static final String CONTENT_AFTER_CHILDREN = "content-after-children";
 
     public static Rule createNamespacedRule(String type, String prefix) {
         final var namespace = new StringRule("namespace");
@@ -114,9 +115,9 @@ public class CommonLang {
     }
 
     public static Rule createContentRule(Rule rule) {
-        return new OptionalNodeListRule(CONTENT_CHILDREN,
+        return new StripRule(new OptionalNodeListRule(CONTENT_CHILDREN,
                 new DivideRule(CONTENT_CHILDREN, STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD))
-        );
+        ), "", CONTENT_AFTER_CHILDREN);
     }
 
     static Rule createStatementRule(Rule function) {

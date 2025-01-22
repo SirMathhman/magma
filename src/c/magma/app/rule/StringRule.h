@@ -3,4 +3,5 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	public StringRule(String propertyKey);
 	Result<String, CompileError> parse(Node node);
 	Result<Node, CompileError> parse(String input);
-	Result<String, CompileError> generate(Node node);}
+	Result<String, CompileError> generate(Node node);
+}

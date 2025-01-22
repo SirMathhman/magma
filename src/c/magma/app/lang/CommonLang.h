@@ -23,6 +23,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	String CONTENT_AFTER_CHILD="after-child";
 	String CONTENT_CHILDREN="content-children";
 	String INVOCATION_CHILDREN="invocation-children";
+	String CONTENT_AFTER_CHILDREN="content-after-children";
 	Rule createNamespacedRule(String type, String prefix);
 	Rule createCompoundRule(String type, String infix, Rule segmentRule);
 	StripRule createStructSegmentRule(LazyRule function, Rule statement);
@@ -60,4 +61,5 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	TypeRule createFunctionalRule(Rule type);
 	TypeRule createArrayRule(LazyRule type);
 	TypeRule createVarArgsRule(LazyRule type);
-	TypeRule createGenericRule(LazyRule type);}
+	TypeRule createGenericRule(LazyRule type);
+}

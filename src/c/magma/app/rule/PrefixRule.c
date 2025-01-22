@@ -4,4 +4,5 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	public PrefixRule(String prefix, Rule childRule);
 	Result<String, CompileError> truncateLeft(String input, String slice);
 	Result<Node, CompileError> parse(String input);
-	Result<String, CompileError> generate(Node node);}
+	Result<String, CompileError> generate(Node node);
+}
