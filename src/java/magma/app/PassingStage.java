@@ -87,22 +87,25 @@ public class PassingStage {
     }
 
     private static Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
-        return unit.filterAndMapToValue(by("definition"), PassingStage::cleanupDefinition).<Result<PassUnit<Node>, CompileError>>map(Ok::new)
-                .or(() -> unit.filterAndMapToValue(by("root"), PassingStage::formatRoot).map(Ok::new))
+        return new Ok<>(afterPass0(unit));
+    }
+
+    private static PassUnit<Node> afterPass0(PassUnit<Node> unit) {
+        return unit.filterAndMapToValue(by("definition"), PassingStage::cleanupDefinition)
+                .or(() -> unit.filterAndMapToValue(by("root"), PassingStage::formatRoot))
                 .or(() -> formatBlock(unit))
                 .or(() -> pruneAndFormatStruct(unit))
-                .or(() -> unit.filterAndMapToValue(by("method"), PassingStage::pruneFunction).map(Ok::new))
-                .orElse(new Ok<>(unit));
+                .or(() -> unit.filterAndMapToValue(by("method"), PassingStage::pruneFunction))
+                .orElse(unit);
     }
 
     private static Node pruneFunction(Node node) {
         return node.mapNode("definition", definition -> definition.removeNodeList("annotations"));
     }
 
-    private static Optional<Result<PassUnit<Node>, CompileError>> pruneAndFormatStruct(PassUnit<Node> unit) {
+    private static Optional<PassUnit<Node>> pruneAndFormatStruct(PassUnit<Node> unit) {
         return unit.filterAndMapToCached(by("struct"), PassingStage::pruneStruct)
-                .map(pruned -> pruned.flattenNode(PassingStage::formatContent))
-                .map(Ok::new);
+                .map(pruned -> pruned.flattenNode(PassingStage::formatContent));
     }
 
     private static Tuple<List<Node>, Node> pruneStruct(Node value1) {
@@ -141,11 +144,10 @@ public class PassingStage {
         return "\n" + "\t".repeat(depth);
     }
 
-    private static Optional<Result<PassUnit<Node>, CompileError>> formatBlock(PassUnit<Node> unit) {
+    private static Optional<PassUnit<Node>> formatBlock(PassUnit<Node> unit) {
         return unit.filter(by("block"))
                 .map(inner -> inner.flattenNode(PassingStage::formatContent))
-                .map(PassUnit::exit)
-                .map(Ok::new);
+                .map(PassUnit::exit);
     }
 
     private static Node formatRoot(Node node) {

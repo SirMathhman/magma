@@ -66,6 +66,16 @@ public class ValueDivider implements Divider {
                 continue;
             }
 
+            if(c == '-') {
+                buffer.append(c);
+
+                if(!queue.isEmpty() && queue.peek() == '>') {
+                    buffer.append(queue.pop());
+                }
+
+                continue;
+            }
+
             if (c == ',' && depth == 0) {
                 Splitter.advance(buffer, segments);
                 buffer = new StringBuilder();

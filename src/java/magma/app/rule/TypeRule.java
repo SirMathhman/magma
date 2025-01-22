@@ -2,6 +2,7 @@ package magma.app.rule;
 
 import magma.api.result.Err;
 import magma.api.result.Result;
+import magma.app.MapNode;
 import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
@@ -14,6 +15,16 @@ public record TypeRule(String type, Rule rule) implements Rule {
     public Result<Node, CompileError> parse(String input) {
         return this.rule.parse(input)
                 .mapValue(node -> node.retype(this.type))
+                .mapValue(node -> {
+                    if(type.equals("method")) {
+                        System.out.println("\t" + node.findNode("definition")
+                                .orElse(new MapNode())
+                                .findString("name")
+                                .orElse(""));
+                    }
+
+                    return node;
+                })
                 .mapErr(err -> new CompileError("Failed to parse type '" + this.type + "'", new StringContext(input), List.of(err)));
     }
 
