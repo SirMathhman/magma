@@ -28,19 +28,16 @@ public class PassingStage {
     }
 
     private static Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
-        return unit.filterAndMapToValue(by("root"), PassingStage::removePackageStatements).<Result<PassUnit<Node>, CompileError>>map(Ok::new)
-                .or(() -> unit.filterAndMapToValue(by("class").or(by("interface").or(by("record"))), PassingStage::renameToStruct).map(Ok::new))
-                .or(() -> unit.filterAndMapToValue(by("array"), PassingStage::renameToSlice).map(Ok::new))
-                .or(() -> unit.filterAndMapToValue(by("method-access"), PassingStage::renameToDataAccess).map(Ok::new))
-                .or(() -> unit.filterAndMapToValue(by("lambda"), PassingStage::renameLambdaToMethod).map(Ok::new))
-                .or(() -> enterBlock(unit))
-                .orElse(new Ok<>(unit));
+        return new Ok<>(beforePassWithoutError(unit).orElse(unit));
     }
 
-    private static Optional<Result<PassUnit<Node>, CompileError>> enterBlock(PassUnit<Node> unit) {
-        return unit.filter(by("block"))
-                .map(PassUnit::enter)
-                .map(Ok::new);
+    private static Optional<PassUnit<Node>> beforePassWithoutError(PassUnit<Node> unit) {
+        return unit.filterAndMapToValue(by("root"), PassingStage::removePackageStatements)
+                .or(() -> unit.filterAndMapToValue(by("class").or(by("interface").or(by("record"))), PassingStage::renameToStruct))
+                .or(() -> unit.filterAndMapToValue(by("array"), PassingStage::renameToSlice))
+                .or(() -> unit.filterAndMapToValue(by("method-access"), PassingStage::renameToDataAccess))
+                .or(() -> unit.filterAndMapToValue(by("lambda"), PassingStage::renameLambdaToMethod))
+                .or(() -> unit.filter(by("block")).map(PassUnit::enter));
     }
 
     private static Predicate<Node> by(String type) {
