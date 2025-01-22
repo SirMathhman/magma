@@ -1,5 +1,8 @@
 package magma.app;
 
+import magma.api.Tuple;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -17,7 +20,9 @@ public interface PassUnit<T> {
     @Deprecated
     T value();
 
-    <R> Optional<PassUnit<R>> filterAndMapValue(Predicate<T> predicate, Function<T, R> mapper);
+    <R> Optional<PassUnit<R>> filterAndMapToValue(Predicate<T> predicate, Function<T, R> mapper);
+
+    Optional<PassUnit<T>> filterAndMapToCached(Predicate<T> predicate, Function<T, Tuple<List<Node>, T>> mapper);
 
     <R> PassUnit<R> flattenNode(BiFunction<State, T, R> mapper);
 

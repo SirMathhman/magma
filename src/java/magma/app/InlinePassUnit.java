@@ -1,13 +1,22 @@
 package magma.app;
 
+import magma.api.Tuple;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
-public record InlinePassUnit<T>(State state, T value) implements PassUnit<T> {
+public record InlinePassUnit<T>(
+        State state,
+        List<Node> cache,
+        T value
+) implements PassUnit<T> {
     public InlinePassUnit(T value) {
-        this(new State(), value);
+        this(new State(), new ArrayList<>(), value);
     }
 
     @Override
@@ -18,35 +27,49 @@ public record InlinePassUnit<T>(State state, T value) implements PassUnit<T> {
 
     @Override
     public <R> PassUnit<R> withValue(R value) {
-        return new InlinePassUnit<>(this.state, value);
+        return new InlinePassUnit<>(this.state, this.cache, value);
     }
 
     @Override
     public PassUnit<T> enter() {
-        return new InlinePassUnit<>(this.state.enter(), this.value);
+        return new InlinePassUnit<>(this.state.enter(), this.cache, this.value);
     }
 
     @Override
-    public <R> Optional<PassUnit<R>> filterAndMapValue(Predicate<T> predicate, Function<T, R> mapper) {
+    public <R> Optional<PassUnit<R>> filterAndMapToValue(Predicate<T> predicate, Function<T, R> mapper) {
+        return filterAndSupply(predicate, () -> new InlinePassUnit<>(this.state, this.cache, mapper.apply(this.value)));
+    }
+
+    private <R> Optional<PassUnit<R>> filterAndSupply(Predicate<T> predicate, Supplier<PassUnit<R>> supplier) {
         return predicate.test(this.value)
-                ? Optional.of(new InlinePassUnit<>(this.state, mapper.apply(this.value)))
+                ? Optional.of(supplier.get())
                 : Optional.empty();
     }
 
     @Override
+    public Optional<PassUnit<T>> filterAndMapToCached(Predicate<T> predicate, Function<T, Tuple<List<Node>, T>> mapper) {
+        return filterAndSupply(predicate, () -> {
+            final var mapped = mapper.apply(this.value);
+            final var cached = new ArrayList<>(this.cache);
+            cached.addAll(mapped.left());
+            final var right = mapped.right();
+            return new InlinePassUnit<>(this.state, cached, right);
+        });
+    }
+
+    @Override
     public <R> PassUnit<R> flattenNode(BiFunction<State, T, R> mapper) {
-        return new InlinePassUnit<>(this.state, mapper.apply(this.state, this.value));
+        return new InlinePassUnit<>(this.state, this.cache, mapper.apply(this.state, this.value));
     }
 
     @Override
     public PassUnit<T> exit() {
-        return new InlinePassUnit<>(this.state.exit(), this.value);
+        return new InlinePassUnit<>(this.state.exit(), this.cache, this.value);
     }
 
     @Override
     public <R> PassUnit<R> mapValue(Function<T, R> mapper) {
-        final var value1 = value();
-        final var apply = mapper.apply(value1);
-        return new InlinePassUnit<>(this.state, apply);
+        final var apply = mapper.apply(this.value);
+        return new InlinePassUnit<>(this.state, this.cache, apply);
     }
 }

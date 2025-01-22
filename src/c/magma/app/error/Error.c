@@ -1,5 +1,2 @@
-
-String display();
 struct Error {
 }
-

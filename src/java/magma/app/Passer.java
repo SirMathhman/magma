@@ -1,5 +1,6 @@
 package magma.app;
 
+import magma.api.Tuple;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.api.stream.Streams;
@@ -29,11 +30,11 @@ public class Passer {
     }
 
     private static Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
-        return unit.filterAndMapValue(by("root"), Passer::removePackageStatements).<Result<PassUnit<Node>, CompileError>>map(Ok::new)
-                .or(() -> unit.filterAndMapValue(by("class").or(by("interface").or(by("record"))), Passer::renameToStruct).map(Ok::new))
-                .or(() -> unit.filterAndMapValue(by("array"), Passer::renameToSlice).map(Ok::new))
-                .or(() -> unit.filterAndMapValue(by("method-access"), Passer::renameToDataAccess).map(Ok::new))
-                .or(() -> unit.filterAndMapValue(by("lambda"), Passer::renameLambdaToMethod).map(Ok::new))
+        return unit.filterAndMapToValue(by("root"), Passer::removePackageStatements).<Result<PassUnit<Node>, CompileError>>map(Ok::new)
+                .or(() -> unit.filterAndMapToValue(by("class").or(by("interface").or(by("record"))), Passer::renameToStruct).map(Ok::new))
+                .or(() -> unit.filterAndMapToValue(by("array"), Passer::renameToSlice).map(Ok::new))
+                .or(() -> unit.filterAndMapToValue(by("method-access"), Passer::renameToDataAccess).map(Ok::new))
+                .or(() -> unit.filterAndMapToValue(by("lambda"), Passer::renameLambdaToMethod).map(Ok::new))
                 .or(() -> enterBlock(unit))
                 .orElse(new Ok<>(unit));
     }
@@ -91,11 +92,11 @@ public class Passer {
     }
 
     private static Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
-        return unit.filterAndMapValue(by("definition"), Passer::cleanupDefinition).<Result<PassUnit<Node>, CompileError>>map(Ok::new)
-                .or(() -> unit.filterAndMapValue(by("root"), Passer::formatRoot).map(Ok::new))
+        return unit.filterAndMapToValue(by("definition"), Passer::cleanupDefinition).<Result<PassUnit<Node>, CompileError>>map(Ok::new)
+                .or(() -> unit.filterAndMapToValue(by("root"), Passer::formatRoot).map(Ok::new))
                 .or(() -> formatBlock(unit))
                 .or(() -> pruneAndFormatStruct(unit))
-                .or(() -> unit.filterAndMapValue(by("method"), Passer::pruneFunction).map(Ok::new))
+                .or(() -> unit.filterAndMapToValue(by("method"), Passer::pruneFunction).map(Ok::new))
                 .orElse(new Ok<>(unit));
     }
 
@@ -104,9 +105,29 @@ public class Passer {
     }
 
     private static Optional<Result<PassUnit<Node>, CompileError>> pruneAndFormatStruct(PassUnit<Node> unit) {
-        return unit.filterAndMapValue(by("struct"), Passer::pruneStruct)
+        return unit.filterAndMapToCached(by("struct"), Passer::pruneStruct)
                 .map(pruned -> pruned.flattenNode(Passer::formatContent))
                 .map(Ok::new);
+    }
+
+    private static Tuple<List<Node>, Node> pruneStruct(Node value1) {
+        final var pruned = pruneModifiers(value1);
+        final var children = pruned.findNodeList("children").orElse(new ArrayList<>());
+        final var methods = new ArrayList<Node>();
+        final var newChildren = new ArrayList<Node>();
+        children.forEach(child -> {
+            if (child.is("method")) {
+                methods.add(child);
+            } else {
+                newChildren.add(child);
+            }
+        });
+
+        final var newFunction = newChildren.isEmpty()
+                ? pruned.removeNodeList("children")
+                : pruned.withNodeList("children", newChildren);
+
+        return new Tuple<>(methods, newFunction);
     }
 
     private static Node formatContent(State state, Node value) {
@@ -123,28 +144,6 @@ public class Passer {
 
     private static String formatIndent(int depth) {
         return "\n" + "\t".repeat(depth);
-    }
-
-    private static Node pruneStruct(Node value1) {
-        final var pruned = pruneModifiers(value1);
-        final var children = pruned.findNodeList("children").orElse(new ArrayList<>());
-        final var methods = new ArrayList<Node>();
-        final var newChildren = new ArrayList<Node>();
-        children.forEach(child -> {
-            if (child.is("method")) {
-                methods.add(child);
-            } else {
-                newChildren.add(child);
-            }
-        });
-
-        final var withNewChildren = newChildren.isEmpty()
-                ? pruned.removeNodeList("children")
-                : pruned.withNodeList("children", newChildren);
-
-        return new MapNode("wrap")
-                .withNodeList("children", methods)
-                .withNode("value", withNewChildren);
     }
 
     private static Optional<Result<PassUnit<Node>, CompileError>> formatBlock(PassUnit<Node> unit) {
