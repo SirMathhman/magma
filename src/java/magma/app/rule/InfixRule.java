@@ -1,6 +1,5 @@
 package magma.app.rule;
 
-import magma.api.Tuple;
 import magma.api.result.Err;
 import magma.api.result.Result;
 import magma.app.Node;
@@ -22,11 +21,15 @@ public final class InfixRule implements Rule {
         this.rightRule = rightRule;
     }
 
+    private static ArrayList<Integer> add(ArrayList<Integer> integers, Integer integer) {
+        integers.add(integer);
+        return integers;
+    }
+
     @Override
     public Result<String, CompileError> generate(Node node) {
         return this.leftRule.generate(node).and(
-                () -> this.rightRule.generate(node)).mapValue(Tuple.merge(
-                (left, right) -> left + this.locator.unwrap() + right));
+                () -> this.rightRule.generate(node)).mapValue(tuple -> tuple.left() + this.locator.unwrap() + tuple.right());
     }
 
     @Override
@@ -39,7 +42,7 @@ public final class InfixRule implements Rule {
             int index = indices.get(i);
             final var left = input.substring(0, index);
             final var right = input.substring(index + this.locator.length());
-            final var result = this.leftRule.parse(left).and(() -> this.rightRule.parse(right)).mapValue(Tuple.merge(Node::merge));
+            final var result = this.leftRule.parse(left).and(() -> this.rightRule.parse(right)).mapValue(tuple -> tuple.left().merge(tuple.right()));
             if (result.isOk()) {
                 return result;
             } else {
@@ -49,10 +52,5 @@ public final class InfixRule implements Rule {
         }
 
         return new Err<>(new CompileError("Infix '" + this.locator.unwrap() + "' not present", new StringContext(input), errors));
-    }
-
-    private static ArrayList<Integer> add(ArrayList<Integer> integers, Integer integer) {
-        integers.add(integer);
-        return integers;
     }
 }

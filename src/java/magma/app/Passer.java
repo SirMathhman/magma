@@ -201,7 +201,7 @@ public class Passer {
         final var propertyKey = pair.left();
         final var propertyValues = pair.right();
         return passNodeListInStream(state, propertyValues)
-                .mapValue(list -> list.mapRight(right -> root.withNodeList(propertyKey, right)));
+                .mapValue(list -> new Tuple<>(list.left(), root.withNodeList(propertyKey, list.right())));
     }
 
     private static Result<Tuple<State, List<Node>>, CompileError> passNodeListInStream(State state, List<Node> elements) {
@@ -218,11 +218,9 @@ public class Passer {
             Node currentElement
     ) {
         return pass(currentState, currentElement).mapValue(passingResult -> {
-            return passingResult.mapRight(passedElement -> {
-                final var copy = new ArrayList<>(elements);
-                copy.add(passedElement);
-                return copy;
-            });
+            final var copy = new ArrayList<>(elements);
+            copy.add(passingResult.right());
+            return new Tuple<>(passingResult.left(), copy);
         });
     }
 
@@ -327,6 +325,6 @@ public class Passer {
         final var pairKey = tuple.left();
         final var pairNode = tuple.right();
 
-        return pass(currentState, pairNode).mapValue(passed -> passed.mapRight(right -> currentRoot.withNode(pairKey, right)));
+        return pass(currentState, pairNode).mapValue(passed -> new Tuple<>(passed.left(), currentRoot.withNode(pairKey, passed.right())));
     }
 }
