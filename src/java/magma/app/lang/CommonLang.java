@@ -282,7 +282,6 @@ public class CommonLang {
         final var typeAndName = new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
 
         final var modifiers = createModifiersRule();
-        final var maybeModifiers = new OptionalNodeRule("modifiers", modifiers);
 
         final var typeParams = new StringRule("type-params");
         final var maybeTypeParams = new OrRule(List.of(
@@ -291,7 +290,7 @@ public class CommonLang {
         ));
 
         final var withModifiers = new OptionalNodeListRule("modifiers",
-                new ContextRule("With modifiers", new StripRule(new InfixRule(maybeModifiers, new BackwardsLocator(" "), maybeTypeParams))),
+                new ContextRule("With modifiers", new StripRule(new InfixRule(modifiers, new BackwardsLocator(" "), maybeTypeParams))),
                 new ContextRule("Without modifiers", maybeTypeParams)
         );
 

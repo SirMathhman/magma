@@ -17,6 +17,6 @@ String merge(String current, String value){
 Result<List<String>, CompileError> divide(String input){
 	return new Ok<>(Arrays.stream(input.split(delimiter)).toList());
 }
-struct SimpleDivider implements Divider { String delimiter;
+struct SimpleDivider implements Divider {const String delimiter;
 }
 

@@ -20,18 +20,18 @@ String merge(String current, String value){
 
 @Override
 Result<List<String>, CompileError> divide(String input){
-	 auto segments=new ArrayList<String>();
+	const auto segments=new ArrayList<String>();
 	auto buffer=new StringBuilder();
 	auto depth=0;
-	 auto queue=IntStream.range(0, input.length()).mapToObj(input.charAt).collect(Collectors.toCollection(LinkedList.new));
+	const auto queue=IntStream.range(0, input.length()).mapToObj(input.charAt).collect(Collectors.toCollection(LinkedList.new));
 	while(!queue.isEmpty()){
-		 auto c=queue.pop();
+		const auto c=queue.pop();
 		if(c=='\''){
 			buffer.append(c);
 			if(queue.isEmpty()){
 				return new Err<>(new CompileError("Malformed chars", new StringContext(input)));
 			}
-			 auto c1=queue.pop();
+			const auto c1=queue.pop();
 			buffer.append(c1);
 			if(c1=='\\'){
 				buffer.append(queue.pop());
@@ -41,7 +41,7 @@ Result<List<String>, CompileError> divide(String input){
 		if(c=='\"'){
 			buffer.append(c);
 			while(!queue.isEmpty()){
-				 auto next=queue.pop();
+				const auto next=queue.pop();
 				buffer.append(next);
 				if(next=='\\')buffer.append(queue.pop());
 				if(next=='\"')break;
@@ -61,5 +61,5 @@ Result<List<String>, CompileError> divide(String input){
 	Splitter.advance(buffer, segments);
 	return new Ok<List<String>, CompileError>(segments);
 }
-struct ValueDivider implements Divider { Divider VALUE_DIVIDER=new ValueDivider();
+struct ValueDivider implements Divider {static const Divider VALUE_DIVIDER=new ValueDivider();
 }

@@ -27,10 +27,10 @@ int maxDepth(){
 
 String format(int depth){
 	this.children.sort(Comparator.comparingInt(CompileError.maxDepth));
-	 auto joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
+	const auto joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
                 .collect(Collectors.joining());
 	return this.message + ": " + this.context.display() + joinedChildren;
 }
-struct CompileError implements Error { String message; Context context; List<CompileError> children;
+struct CompileError implements Error {const String message;const Context context;const List<CompileError> children;
 }
 

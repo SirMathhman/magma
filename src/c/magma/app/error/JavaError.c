@@ -3,7 +3,7 @@ import java.io.StringWriter;
 
 @Override
 String display(){
-	 auto writer=new StringWriter();
+	const auto writer=new StringWriter();
 	this.e.printStackTrace(new PrintWriter(writer));
 	return writer.toString();
 }

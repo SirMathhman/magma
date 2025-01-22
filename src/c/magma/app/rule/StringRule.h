@@ -11,7 +11,7 @@ public StringRule(String propertyKey){
 }
 
 Result<String, CompileError> parse(Node node){
-	return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok.new).orElseGet(auto _lambda26_(){
+	return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok.new).orElseGet(auto _lambda25_(){
 		return new Err<>(new CompileError("String '"+this.propertyKey + "' not present", new NodeContext(node)));
 	});
 }
@@ -23,10 +23,10 @@ Result<Node, CompileError> parse(String input){
 
 @Override
 Result<String, CompileError> generate(Node node){
-	return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok.new).orElseGet(auto _lambda27_(){
+	return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok.new).orElseGet(auto _lambda26_(){
 		return new Err<>(new CompileError("String '"+this.propertyKey + "' not present", new NodeContext(node)));
 	});
 }
-struct StringRule implements Rule { String propertyKey;
+struct StringRule implements Rule {const String propertyKey;
 }
 

@@ -10,7 +10,7 @@ public PrefixRule(String prefix, Rule childRule){
 	this.childRule =childRule;
 }
 
- Result<String, CompileError> truncateLeft(String input, String slice){
+static Result<String, CompileError> truncateLeft(String input, String slice){
 	if(input.startsWith(slice))return new Ok<>(input.substring(slice.length()));
 	return new Err<>(new CompileError("Prefix '"+slice+"' not present", new StringContext(input)));
 }
@@ -22,9 +22,9 @@ Result<Node, CompileError> parse(String input){
 
 @Override
 Result<String, CompileError> generate(Node node){
-	return this.childRule.generate(node).mapValue(auto _lambda25_(auto inner){
+	return this.childRule.generate(node).mapValue(auto _lambda24_(auto inner){
 		return this.prefix + inner;
 	});
 }
-struct PrefixRule implements Rule { String prefix; Rule childRule;
+struct PrefixRule implements Rule {const String prefix;const Rule childRule;
 }

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 @Override
 Stream<Integer> locate(String input){
-	 auto index=input.lastIndexOf(infix());
+	const auto index=input.lastIndexOf(infix());
 	return index==-1?Streams.empty():Streams.of(index);
 }
 

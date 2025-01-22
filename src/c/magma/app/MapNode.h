@@ -24,7 +24,7 @@ public MapNode(String type){
 	this(Optional.of(type), new HashMap<>(), new HashMap<>(), new HashMap<>());
 }
 
- StringBuilder createEntry(String name, String content, int depth){
+static StringBuilder createEntry(String name, String content, int depth){
 	return new StringBuilder().append("\n"+"\t".repeat(depth)).append(name).append(" : ").append(content);
 }
 
@@ -35,16 +35,16 @@ String toString(){
 
 @Override
 String format(int depth){
-	 auto typeString=this.type.map(auto _lambda22_(auto inner){
+	const auto typeString=this.type.map(auto _lambda21_(auto inner){
 		return inner+" ";
 	}).orElse("");
 	auto builder=new StringBuilder().append(typeString).append("{");
-	 auto joiner=new StringJoiner(",");
+	const auto joiner=new StringJoiner(",");
 	this.strings.entrySet().stream().map(entry -> createEntry(entry.getKey(), "\"" + entry.getValue() + "\"", depth + 1))
                 .forEach(joiner.add);
 	this.nodes.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().format(depth + 1), depth + 1))
                 .forEach(joiner.add);
-	this.nodeLists.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().stream().map(auto _lambda23_(auto node){
+	this.nodeLists.entrySet().stream().map(entry -> createEntry(entry.getKey(), entry.getValue().stream().map(auto _lambda22_(auto node){
 		return node.format(depth+1);
 	}).collect(Collectors.joining(",\n", "[", "]")), depth + 1))
                 .forEach(joiner.add);
@@ -64,8 +64,8 @@ Node mapString(String propertyKey, Function<String, String> mapper){
 
 @Override
 Node merge(Node other){
-	 auto withStrings=stream(this.strings).foldLeft(other, (node, tuple) -> node.withString(tuple.left(), tuple.right()));
-	 auto withNodes=streamNodes().foldLeft(withStrings, (node, tuple) -> node.withNode(tuple.left(), tuple.right()));
+	const auto withStrings=stream(this.strings).foldLeft(other, (node, tuple) -> node.withString(tuple.left(), tuple.right()));
+	const auto withNodes=streamNodes().foldLeft(withStrings, (node, tuple) -> node.withNode(tuple.left(), tuple.right()));
 	return streamNodeLists().foldLeft(withNodes, (node, tuple) -> node.withNodeList(tuple.left(), tuple.right()));
 }
 
@@ -80,7 +80,7 @@ Stream<Tuple<String, Node>> streamNodes(){
 }
 
 <K, V>Stream<Tuple<K, V>> stream(Map<K, V> map){
-	return Streams.from(map.entrySet()).map(auto _lambda24_(auto entry){
+	return Streams.from(map.entrySet()).map(auto _lambda23_(auto entry){
 		return new Tuple<>(entry.getKey();
 	}, entry.getValue()));
 }
@@ -113,7 +113,7 @@ boolean hasNodeList(String propertyKey){
 
 @Override
 Node removeNodeList(String propertyKey){
-	 auto copy=new HashMap<>(this.nodeLists);
+	const auto copy=new HashMap<>(this.nodeLists);
 	copy.remove(propertyKey);
 	return new MapNode(this.type, this.strings, this.nodes, copy);
 }
@@ -131,14 +131,14 @@ boolean hasNode(String propertyKey){
 
 @Override
 Node withNode(String propertyKey, Node propertyValue){
-	 auto copy=new HashMap<>(this.nodes);
+	const auto copy=new HashMap<>(this.nodes);
 	copy.put(propertyKey, propertyValue);
 	return new MapNode(this.type, this.strings, copy, this.nodeLists);
 }
 
 @Override
 Node withNodeList(String propertyKey, List<Node> propertyValues){
-	 auto copy=new HashMap<>(this.nodeLists);
+	const auto copy=new HashMap<>(this.nodeLists);
 	copy.put(propertyKey, propertyValues);
 	return new MapNode(this.type, this.strings, this.nodes, copy);
 }
@@ -150,7 +150,7 @@ Optional<List<Node>> findNodeList(String propertyKey){
 
 @Override
 Node withString(String propertyKey, String propertyValues){
-	 auto copy=new HashMap<>(this.strings);
+	const auto copy=new HashMap<>(this.strings);
 	copy.put(propertyKey, propertyValues);
 	return new MapNode(this.type, copy, this.nodes, this.nodeLists);
 }
@@ -159,6 +159,6 @@ Node withString(String propertyKey, String propertyValues){
 Optional<String> findString(String propertyKey){
 	return Optional.ofNullable(this.strings.get(propertyKey));
 }
-struct MapNode implements Node { Map<String, String> strings; Map<String, List<Node>> nodeLists; Map<String, Node> nodes; Optional<String> type;
+struct MapNode implements Node {const Map<String, String> strings;const Map<String, List<Node>> nodeLists;const Map<String, Node> nodes;const Optional<String> type;
 }
 

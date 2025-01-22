@@ -17,7 +17,7 @@ public DivideRule(String propertyKey, Divider divider, Rule childRule){
 	this.propertyKey =propertyKey;
 }
 
- <T, R>Result<List<R>, CompileError> compileAll(List<T> segments, Function<T, Result<R, CompileError>> mapper){
+static <T, R>Result<List<R>, CompileError> compileAll(List<T> segments, Function<T, Result<R, CompileError>> mapper){
 	return Streams.from(segments).foldLeftToResult(new ArrayList<>(), (rs, t) -> mapper.apply(t).mapValue(inner -> {
             rs.add(inner);
             return rs;
@@ -35,12 +35,12 @@ Result<Node, CompileError> parse(String input){
 
 @Override
 Result<String, CompileError> generate(Node node){
-	return node.findNodeList(this.propertyKey).flatMap(auto _lambda30_(auto list){
+	return node.findNodeList(this.propertyKey).flatMap(auto _lambda29_(auto list){
 		return list.isEmpty() ? Optional.empty() : Optional.of(list);
 	}).map(list -> compileAll(list, this.childRule::generate))
-                .map(auto _lambda31_(auto result){
+                .map(auto _lambda30_(auto result){
 		return result.mapValue(this.merge);
-	}).orElseGet(auto _lambda32_(){
+	}).orElseGet(auto _lambda31_(){
 		return new Err<>(new CompileError("Node list '"+this.propertyKey + "' not present", new NodeContext(node)));
 	});
 }
@@ -48,6 +48,6 @@ Result<String, CompileError> generate(Node node){
 String merge(List<String> elements){
 	return Streams.from(elements).foldLeft(this.divider::merge).orElse("");
 }
-struct DivideRule implements Rule { String propertyKey; Divider divider; Rule childRule;
+struct DivideRule implements Rule {const String propertyKey;const Divider divider;const Rule childRule;
 }
 

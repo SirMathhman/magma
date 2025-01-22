@@ -16,7 +16,7 @@ public InfixRule(Rule leftRule, Locator locator, Rule rightRule){
 
 @Override
 Result<String, CompileError> generate(Node node){
-	return this.leftRule.generate(node).and(auto _lambda28_(){
+	return this.leftRule.generate(node).and(auto _lambda27_(){
 		return this.rightRule.generate(node);
 	}).mapValue(Tuple.merge(
                 (left, right) -> left + this.locator.unwrap() + right));
@@ -24,14 +24,14 @@ Result<String, CompileError> generate(Node node){
 
 @Override
 Result<Node, CompileError> parse(String input){
-	 auto indices=this.locator.locate(input).foldLeft(new ArrayList<>(), InfixRule.add);
-	 auto errors=new ArrayList<CompileError>();
+	const auto indices=this.locator.locate(input).foldLeft(new ArrayList<>(), InfixRule.add);
+	const auto errors=new ArrayList<CompileError>();
 	int i=0;
 	while(i<indices.size()){
 		int index=indices.get(i);
-		 auto left=input.substring(0, index);
-		 auto right=input.substring(index+this.locator.length());
-		 auto result=this.leftRule.parse(left).and(auto _lambda29_(){
+		const auto left=input.substring(0, index);
+		const auto right=input.substring(index+this.locator.length());
+		const auto result=this.leftRule.parse(left).and(auto _lambda28_(){
 			return this.rightRule.parse(right);
 		}).mapValue(Tuple.merge(Node.merge));
 		if(result.isOk()){
@@ -45,9 +45,9 @@ Result<Node, CompileError> parse(String input){
 	return new Err<>(new CompileError("Infix '"+this.locator.unwrap() + "' not present", new StringContext(input), errors));
 }
 
- ArrayList<Integer> add(ArrayList<Integer> integers, Integer integer){
+static ArrayList<Integer> add(ArrayList<Integer> integers, Integer integer){
 	integers.add(integer);
 	return integers;
 }
-struct InfixRule implements Rule { Rule leftRule; Locator locator; Rule rightRule;
+struct InfixRule implements Rule {const Rule leftRule;const Locator locator;const Rule rightRule;
 }

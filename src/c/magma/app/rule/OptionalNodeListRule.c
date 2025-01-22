@@ -29,6 +29,6 @@ Result<String, CompileError> generate(Node node){
 		return this.ifEmpty.generate(node);
 	}
 }
-struct OptionalNodeListRule implements Rule { String propertyKey; Rule ifPresent; Rule ifEmpty; OrRule rule;
+struct OptionalNodeListRule implements Rule {const String propertyKey;const Rule ifPresent;const Rule ifEmpty;const OrRule rule;
 }
 

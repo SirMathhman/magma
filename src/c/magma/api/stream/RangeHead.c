@@ -7,10 +7,10 @@ public RangeHead(int extent){
 @Override
 Optional<Integer> next(){
 	if(this.counter >= this.extent)return Optional.empty();
-	 auto value=this.counter;
+	const auto value=this.counter;
 	this.counter++;
 	return Optional.of(value);
 }
-struct RangeHead implements Head<Integer> { int extent;int counter=0;
+struct RangeHead implements Head<Integer> {const int extent;int counter=0;
 }
 

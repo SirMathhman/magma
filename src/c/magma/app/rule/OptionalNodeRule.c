@@ -28,6 +28,6 @@ Result<String, CompileError> generate(Node node){
 		return this.ifEmpty.generate(node);
 	}
 }
-struct OptionalNodeRule implements Rule { String propertyKey; Rule ifPresent; Rule ifEmpty; OrRule rule;
+struct OptionalNodeRule implements Rule {const String propertyKey;const Rule ifPresent;const Rule ifEmpty;const OrRule rule;
 }
 

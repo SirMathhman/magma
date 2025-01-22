@@ -1,7 +1,7 @@
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
- <A, B, C>Function<Tuple<A, B>, C> merge(BiFunction<A, B, C> merger){
+static <A, B, C>Function<Tuple<A, B>, C> merge(BiFunction<A, B, C> merger){
 	return auto _lambda7_(auto tuple){
 		return merger.apply(tuple.left, tuple.right);
 	};

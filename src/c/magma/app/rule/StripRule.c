@@ -13,9 +13,9 @@ Result<Node, CompileError> parse(String input){
 
 @Override
 Result<String, CompileError> generate(Node node){
-	 auto before=node.findString(this.before).orElse("");
-	 auto after=node.findString(this.after).orElse("");
-	return this.childRule.generate(node).mapValue(auto _lambda38_(auto content){
+	const auto before=node.findString(this.before).orElse("");
+	const auto after=node.findString(this.after).orElse("");
+	return this.childRule.generate(node).mapValue(auto _lambda37_(auto content){
 		return before+content+after;
 	});
 }

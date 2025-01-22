@@ -32,6 +32,6 @@ List<Integer> searchForIndices(String input){
 	}
 	return indices;
 }
-struct ForwardsLocator implements Locator { String infix;
+struct ForwardsLocator implements Locator {const String infix;
 }
 

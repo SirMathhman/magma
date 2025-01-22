@@ -20,15 +20,15 @@ String merge(String current, String value){
 
 @Override
 Result<List<String>, CompileError> divide(String input){
-	 auto segments=new ArrayList<String>();
+	const auto segments=new ArrayList<String>();
 	auto buffer=new StringBuilder();
 	auto depth=0;
-	 auto queue=IntStream.range(0, input.length()).mapToObj(input.charAt).collect(Collectors.toCollection(LinkedList.new));
+	const auto queue=IntStream.range(0, input.length()).mapToObj(input.charAt).collect(Collectors.toCollection(LinkedList.new));
 	while(!queue.isEmpty()){
-		 auto c=queue.pop();
+		const auto c=queue.pop();
 		buffer.append(c);
 		if(c=='\''){
-			 auto c1=queue.pop();
+			const auto c1=queue.pop();
 			buffer.append(c1);
 			if(c1=='\\'){
 				buffer.append(queue.pop());
@@ -38,7 +38,7 @@ Result<List<String>, CompileError> divide(String input){
 		}
 		if(c=='"'){
 			while(!queue.isEmpty()){
-				 auto c1=queue.pop();
+				const auto c1=queue.pop();
 				buffer.append(c1);
 				if(c1=='"')break;
 				if(c1=='\\'){
@@ -69,5 +69,5 @@ Result<List<String>, CompileError> divide(String input){
 		return new Err<>(new CompileError("Invalid depth '"+depth+"'", new StringContext(input)));
 	}
 }
-struct StatementDivider implements Divider { Divider STATEMENT_DIVIDER=new StatementDivider();
+struct StatementDivider implements Divider {static const Divider STATEMENT_DIVIDER=new StatementDivider();
 }

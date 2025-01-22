@@ -10,7 +10,7 @@ public SuffixRule(Rule childRule, String suffix){
 	this.childRule =childRule;
 }
 
- Result<String, CompileError> truncateRight(String input, String slice){
+static Result<String, CompileError> truncateRight(String input, String slice){
 	if(input.endsWith(slice)){
 		return new Ok<>(input.substring(0, input.length() - slice.length()));
 	}
@@ -26,9 +26,9 @@ Result<Node, CompileError> parse(String input){
 
 @Override
 Result<String, CompileError> generate(Node node){
-	return childRule.generate(node).mapValue(auto _lambda36_(auto inner){
+	return childRule.generate(node).mapValue(auto _lambda35_(auto inner){
 		return inner+suffix;
 	});
 }
-struct SuffixRule implements Rule { String suffix; Rule childRule;
+struct SuffixRule implements Rule {const String suffix;const Rule childRule;
 }

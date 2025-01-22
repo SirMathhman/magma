@@ -9,7 +9,7 @@ import magma.app.error.context.StringContext;
 @Override
 Result<Node, CompileError> parse(String input){
 	if(input.equals(this.slice))return new Ok<>(new MapNode());
-	 auto context=new StringContext(input);
+	const auto context=new StringContext(input);
 	return new Err<>(new CompileError("Exact string '"+this.slice + "' was not present", context));
 }
 

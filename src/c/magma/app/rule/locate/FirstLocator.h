@@ -14,7 +14,7 @@ int length(){
 
 @Override
 Stream<Integer> locate(String input){
-	 auto index=input.indexOf(this.infix);
+	const auto index=input.indexOf(this.infix);
 	return index==-1?Streams.empty():Streams.of(index);
 }
 struct FirstLocator(String infix) implements Locator {
