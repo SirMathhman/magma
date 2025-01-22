@@ -235,10 +235,15 @@ public class Passer {
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> pruneFunction(State state, Node node) {
-        return getTupleCompileErrorResult(state, node, "method", node1 -> node1.mapNode("definition", definition -> definition.removeNodeList("annotations")));
+        return filter(state, node, "method", node1 -> node1.mapNode("definition", definition -> definition.removeNodeList("annotations")));
     }
 
-    private static Optional<Result<Tuple<State, Node>, CompileError>> getTupleCompileErrorResult(State state, Node node, String type, Function<Node, Node> mapper) {
+    private static Optional<Result<Tuple<State, Node>, CompileError>> filter(
+            State state,
+            Node node,
+            String type,
+            Function<Node, Node> mapper
+    ) {
         if (!node.is(type)) return Optional.empty();
 
         final var node1 = mapper.apply(node);
@@ -246,7 +251,7 @@ public class Passer {
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> formatRoot(State state, Node node) {
-        return getTupleCompileErrorResult(state, node, "root", node1 -> node1.mapNode("definition", definition -> definition.mapNodeList("children", Passer::indentRootChildren)));
+        return filter(state, node, "root", node1 -> node1.mapNode("definition", definition -> definition.mapNodeList("children", Passer::indentRootChildren)));
     }
 
     private static List<Node> indentRootChildren(List<Node> rootChildren) {
