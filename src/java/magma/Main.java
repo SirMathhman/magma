@@ -1,16 +1,16 @@
 package magma;
 
-import magma.api.Tuple;
 import magma.api.result.Result;
 import magma.app.InlinePassUnit;
+import magma.app.PassUnit;
 import magma.app.Passer;
 import magma.app.State;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
-import magma.java.JavaFiles;
 import magma.app.lang.CLang;
 import magma.app.lang.JavaLang;
+import magma.java.JavaFiles;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -84,8 +84,7 @@ public class Main {
 
     private static Result<String, CompileError> compile(String input) {
         return JavaLang.createJavaRootRule().parse(input)
-                .flatMapValue(root1 -> final State state = new State();Passer.pass(new InlinePassUnit<>(state, root1)).mapValue(Tuple::right))
-                .flatMapValue(root -> CLang.createCRootRule().generate(root));
+                .flatMapValue(root1 -> Passer.pass(new InlinePassUnit<>(root1)).mapValue(PassUnit::value)).flatMapValue(root -> CLang.createCRootRule().generate(root));
     }
 
     private static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name) {

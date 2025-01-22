@@ -15,9 +15,6 @@ public interface PassUnit<T> {
     PassUnit<T> enter();
 
     @Deprecated
-    State state();
-
-    @Deprecated
     T value();
 
     <R> Optional<PassUnit<R>> filterAndMapValue(Predicate<T> predicate, Function<T, R> mapper);
