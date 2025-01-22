@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static magma.app.lang.CommonLang.BLOCK_AFTER_CHILDREN;
 import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILD;
@@ -254,19 +253,8 @@ public class Passer {
 
     private static List<Node> indentRootChildren(List<Node> rootChildren) {
         return rootChildren.stream()
-                .flatMap(Passer::flattenWrap)
                 .map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
                 .toList();
-    }
-
-    private static Stream<Node> flattenWrap(Node child) {
-        if (!child.is("wrap")) return Stream.of(child);
-
-        final var groupChildren = child.findNodeList("children").orElse(new ArrayList<>());
-        final var value = child.findNode("value").orElse(new MapNode());
-        final var copy = new ArrayList<>(groupChildren);
-        copy.add(value);
-        return copy.stream();
     }
 
     private static Optional<Result<PassUnit<Node>, CompileError>> formatBlock(State state, Node node) {
