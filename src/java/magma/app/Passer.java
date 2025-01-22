@@ -23,22 +23,31 @@ public class Passer {
     private static int counter = 0;
 
     public static Result<PassUnit<Node>, CompileError> pass(State state, Node root) {
-        return beforePass(state, root).orElse(new Ok<>(new PassUnit<>(state, root)))
-                .flatMapValue(passedBefore -> passNodes(passedBefore.left(), passedBefore.right()))
-                .flatMapValue(passedNodes -> passNodeLists(passedNodes.left(), passedNodes.right()))
-                .flatMapValue(passedNodeLists -> afterPass(passedNodeLists.left(), passedNodeLists.right()).orElse(new Ok<>(new PassUnit<>(passedNodeLists.left(), passedNodeLists.right()))));
+        return beforePass(new PassUnit<>(state, root))
+                .flatMapValue(Passer::passNodes)
+                .flatMapValue(Passer::passNodeLists)
+                .flatMapValue(Passer::afterPass);
     }
 
-    public static Optional<Result<PassUnit<Node>, CompileError>> beforePass(State state, Node node) {
-        return removePackageStatements(state, node)
-                .or(() -> renameToStruct(state, node))
-                .or(() -> renameToSlice(state, node))
-                .or(() -> renameToDataAccess(state, node))
-                .or(() -> renameLambdaToMethod(state, node))
-                .or(() -> enterBlock(state, node));
+    private static Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
+        return removePackageStatements(unit)
+                .or(() -> renameToStruct(unit))
+                .or(() -> renameToSlice(unit))
+                .or(() -> renameToDataAccess(unit))
+                .or(() -> renameLambdaToMethod(unit))
+                .or(() -> enterBlock(unit))
+                .orElse(new Ok<>(unit));
     }
 
-    private static Optional<? extends Result<PassUnit<Node>, CompileError>> renameLambdaToMethod(State state, Node node) {
+    private static Optional<? extends Result<PassUnit<Node>, CompileError>> enterBlock(PassUnit<Node> unit) {
+        Node node = unit.right();
+        if (!node.is("block")) return Optional.empty();
+
+        return Optional.of(new Ok<>(new PassUnit<>(unit.left().enter(), node)));
+    }
+
+    private static Optional<? extends Result<PassUnit<Node>, CompileError>> renameLambdaToMethod(PassUnit<Node> unit) {
+        Node node = unit.right();
         if (!node.is("lambda")) return Optional.empty();
 
         final var args = findArgumentValue(node)
@@ -65,8 +74,117 @@ public class Passer {
                 .withNode(METHOD_CHILD, propertyValue)
                 .withNode("definition", definition);
 
-        return Optional.of(new Ok<>(new PassUnit<>(state, method)));
+        return Optional.of(new Ok<>(new PassUnit<>(unit.left(), method)));
+    }
 
+    private static Optional<? extends Result<PassUnit<Node>, CompileError>> renameToDataAccess(PassUnit<Node> unit) {
+        Node node = unit.right();
+        if (!node.is("method-access")) return Optional.empty();
+
+        return Optional.of(new Ok<>(new PassUnit<>(unit.left(), node.retype("data-access"))));
+    }
+
+    private static Optional<? extends Result<PassUnit<Node>, CompileError>> renameToSlice(PassUnit<Node> unit) {
+        Node node = unit.right();
+        if (!node.is("array")) return Optional.empty();
+
+        final var child = node.findNode("child").orElse(new MapNode());
+        final var slice = new MapNode("slice").withNode("child", child);
+
+        return Optional.of(new Ok<>(new PassUnit<>(unit.left(), slice)));
+    }
+
+    private static Optional<Result<PassUnit<Node>, CompileError>> renameToStruct(PassUnit<Node> unit) {
+        Node node = unit.right();
+        if (!node.is("class") && !node.is("interface") && !node.is("record")) return Optional.empty();
+
+        return Optional.of(new Ok<>(new PassUnit<>(unit.left(), node
+                .retype("struct")
+                .withString(STRUCT_AFTER_CHILDREN, "\n"))));
+
+    }
+
+    private static Optional<Result<PassUnit<Node>, CompileError>> removePackageStatements(PassUnit<Node> unit) {
+        Node node = unit.right();
+        if (!node.is("root")) {
+            return Optional.empty();
+        }
+
+        final var node1 = node.mapNodeList("children", Passer::removePackages);
+        return Optional.of(new Ok<>(new PassUnit<>(unit.left(), node1)));
+    }
+
+    private static Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
+        return removeAccessModifiersFromDefinitions(unit)
+                .or(() -> formatRoot(unit))
+                .or(() -> formatBlock(unit))
+                .or(() -> pruneAndFormatStruct(unit))
+                .or(() -> pruneFunction(unit))
+                .orElse(new Ok<>(unit));
+    }
+
+    private static Optional<Result<PassUnit<Node>, CompileError>> pruneFunction(PassUnit<Node> unit) {
+        return filter(unit.left(), unit.right(), "method", node1 -> node1.mapNode("definition", definition -> definition.removeNodeList("annotations")));
+    }
+
+    private static Optional<Result<PassUnit<Node>, CompileError>> pruneAndFormatStruct(PassUnit<Node> unit) {
+        State state = unit.left();
+        Node node = unit.right();
+        if (!node.is("struct")) return Optional.empty();
+
+        final var pruned = pruneModifiers(node);
+        final var children = pruned.findNodeList("children").orElse(new ArrayList<>());
+        final var methods = new ArrayList<Node>();
+        final var newChildren = new ArrayList<Node>();
+        children.forEach(child -> {
+            if (child.is("method")) {
+                methods.add(child);
+            } else {
+                newChildren.add(child);
+            }
+        });
+
+        final var withNewChildren = newChildren.isEmpty()
+                ? pruned.removeNodeList("children")
+                : pruned.withNodeList("children", newChildren);
+
+        final var wrapped = new MapNode("wrap")
+                .withNodeList("children", methods)
+                .withNode("value", withNewChildren);
+
+        return Optional.of(new Ok<>(new PassUnit<>(state, formatContent(state, wrapped))));
+    }
+
+    private static Optional<Result<PassUnit<Node>, CompileError>> formatBlock(PassUnit<Node> unit) {
+        State state = unit.left();
+        Node node = unit.right();
+        if (!node.is("block")) return Optional.empty();
+
+        return Optional.of(new Ok<>(new PassUnit<>(state.exit(), formatContent(state, node))));
+    }
+
+    private static Optional<Result<PassUnit<Node>, CompileError>> formatRoot(PassUnit<Node> unit) {
+        return filter(unit.left(), unit.right(), "root", node1 -> node1.mapNode("definition", definition -> definition.mapNodeList("children", Passer::indentRootChildren)));
+    }
+
+    private static Optional<Result<PassUnit<Node>, CompileError>> removeAccessModifiersFromDefinitions(PassUnit<Node> unit) {
+        Node node = unit.right();
+        if (!node.is("definition")) return Optional.empty();
+
+        final var newNode = pruneModifiers(node)
+                .mapNodeList("modifiers", Passer::replaceFinalWithConst)
+                .mapNode("type", Passer::replaceVarWithAuto);
+
+        return Optional.of(new Ok<>(new PassUnit<>(unit.left(), newNode)));
+    }
+
+    private static Result<PassUnit<Node>, CompileError> passNodeLists(PassUnit<Node> passedNodes) {
+        return passNodeLists(passedNodes.left(), passedNodes.right());
+    }
+
+    private static Result<PassUnit<Node>, CompileError> passNodes(PassUnit<Node> passedBefore) {
+        Node root = passedBefore.right();
+        return root.streamNodes().foldLeftToResult(passedBefore, Passer::foldNode);
     }
 
     private static Node wrapUsingAutoType(String name) {
@@ -96,31 +214,6 @@ public class Passer {
 
     private static Node createAutoType() {
         return new MapNode("symbol").withString("value", "auto");
-    }
-
-    private static Optional<? extends Result<PassUnit<Node>, CompileError>> renameToDataAccess(State state, Node node) {
-        if (!node.is("method-access")) return Optional.empty();
-
-        return Optional.of(new Ok<>(new PassUnit<>(state, node.retype("data-access"))));
-    }
-
-    private static Optional<? extends Result<PassUnit<Node>, CompileError>> renameToSlice(State state, Node node) {
-        if (!node.is("array")) return Optional.empty();
-
-        final var child = node.findNode("child").orElse(new MapNode());
-        final var slice = new MapNode("slice").withNode("child", child);
-
-        return Optional.of(new Ok<>(new PassUnit<>(state, slice)));
-    }
-
-    private static Optional<Result<PassUnit<Node>, CompileError>> removeAccessModifiersFromDefinitions(State state, Node node) {
-        if (!node.is("definition")) return Optional.empty();
-
-        final var newNode = pruneModifiers(node)
-                .mapNodeList("modifiers", Passer::replaceFinalWithConst)
-                .mapNode("type", Passer::replaceVarWithAuto);
-
-        return Optional.of(new Ok<>(new PassUnit<>(state, newNode)));
     }
 
     private static List<Node> replaceFinalWithConst(List<Node> modifiers) {
@@ -154,30 +247,6 @@ public class Passer {
         } else {
             return node.withNodeList("modifiers", newModifiers);
         }
-    }
-
-    private static Optional<? extends Result<PassUnit<Node>, CompileError>> enterBlock(State state, Node node) {
-        if (!node.is("block")) return Optional.empty();
-
-        return Optional.of(new Ok<>(new PassUnit<>(state.enter(), node)));
-    }
-
-    private static Optional<Result<PassUnit<Node>, CompileError>> renameToStruct(State state, Node node) {
-        if (!node.is("class") && !node.is("interface") && !node.is("record")) return Optional.empty();
-
-        return Optional.of(new Ok<>(new PassUnit<>(state, node
-                .retype("struct")
-                .withString(STRUCT_AFTER_CHILDREN, "\n"))));
-
-    }
-
-    private static Optional<Result<PassUnit<Node>, CompileError>> removePackageStatements(State state, Node node) {
-        if (!node.is("root")) {
-            return Optional.empty();
-        }
-
-        final var node1 = node.mapNodeList("children", Passer::removePackages);
-        return Optional.of(new Ok<>(new PassUnit<>(state, node1)));
     }
 
     private static List<Node> removePackages(List<Node> children) {
@@ -223,18 +292,6 @@ public class Passer {
         });
     }
 
-    public static Optional<Result<PassUnit<Node>, CompileError>> afterPass(State state, Node node) {
-        return removeAccessModifiersFromDefinitions(state, node)
-                .or(() -> formatRoot(state, node))
-                .or(() -> formatBlock(state, node))
-                .or(() -> pruneAndFormatStruct(state, node))
-                .or(() -> pruneFunction(state, node));
-    }
-
-    private static Optional<Result<PassUnit<Node>, CompileError>> pruneFunction(State state, Node node) {
-        return filter(state, node, "method", node1 -> node1.mapNode("definition", definition -> definition.removeNodeList("annotations")));
-    }
-
     private static Optional<Result<PassUnit<Node>, CompileError>> filter(
             State state,
             Node node,
@@ -247,59 +304,16 @@ public class Passer {
         return Optional.of(new Ok<>(new PassUnit<>(state, node1)));
     }
 
-    private static Optional<Result<PassUnit<Node>, CompileError>> formatRoot(State state, Node node) {
-        return filter(state, node, "root", node1 -> node1.mapNode("definition", definition -> definition.mapNodeList("children", Passer::indentRootChildren)));
-    }
-
     private static List<Node> indentRootChildren(List<Node> rootChildren) {
         return rootChildren.stream()
                 .map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
                 .toList();
     }
 
-    private static Optional<Result<PassUnit<Node>, CompileError>> formatBlock(State state, Node node) {
-        if (!node.is("block")) return Optional.empty();
-
-        return Optional.of(new Ok<>(new PassUnit<>(state.exit(), formatContent(state, node))));
-    }
-
-    private static Optional<Result<PassUnit<Node>, CompileError>> pruneAndFormatStruct(State state, Node node) {
-        if (!node.is("struct")) return Optional.empty();
-
-        final var pruned = pruneModifiers(node);
-        final var children = pruned.findNodeList("children").orElse(new ArrayList<>());
-        final var methods = new ArrayList<Node>();
-        final var newChildren = new ArrayList<Node>();
-        children.forEach(child -> {
-            if (child.is("method")) {
-                methods.add(child);
-            } else {
-                newChildren.add(child);
-            }
-        });
-
-        final Node withNewChildren;
-        if (newChildren.isEmpty()) {
-            withNewChildren = pruned.removeNodeList("children");
-        } else {
-            withNewChildren = pruned.withNodeList("children", newChildren);
-        }
-
-        final var wrapped = new MapNode("wrap")
-                .withNodeList("children", methods)
-                .withNode("value", withNewChildren);
-
-        return Optional.of(new Ok<>(new PassUnit<>(state, formatContent(state, wrapped))));
-    }
-
     private static Node formatContent(State state, Node node) {
         return node.withString(BLOCK_AFTER_CHILDREN, "\n" + "\t".repeat(Math.max(state.depth() - 1, 0))).mapNodeList("children", children -> children.stream()
                 .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n" + "\t".repeat(state.depth())))
                 .toList());
-    }
-
-    public static Result<PassUnit<Node>, CompileError> passNodes(State state, Node root) {
-        return root.streamNodes().foldLeftToResult(new PassUnit<>(state, root), Passer::foldNode);
     }
 
     private static Result<PassUnit<Node>, CompileError> foldNode(
