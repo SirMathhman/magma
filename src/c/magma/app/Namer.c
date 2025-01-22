@@ -1,4 +1,3 @@
 struct Namer{
-int counter=0;
-String createUniqueName();
-}
+	int counter=0;
+	String createUniqueName();}

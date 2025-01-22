@@ -1,3 +1,2 @@
 struct State(int depth){
-boolean isShallow();
-}
+	boolean isShallow();}

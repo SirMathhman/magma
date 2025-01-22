@@ -45,4 +45,6 @@ public interface Node {
     Node mapNode(String propertyKey, Function<Node, Node> mapper);
 
     boolean hasNode(String propertyKey);
+
+    boolean hasType();
 }

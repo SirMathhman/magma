@@ -1,3 +1,2 @@
 struct Context{
-String display();
-}
+	String display();}

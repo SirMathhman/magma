@@ -38,14 +38,11 @@ public class CommonLang {
     public static final String BEFORE_STRUCT_SEGMENT = "before-struct-segment";
     public static final String STRUCT_TYPE = "struct";
     public static final String WHITESPACE_TYPE = "whitespace";
-    public static final String STRUCT_AFTER_CHILDREN = "struct-after-children";
-    public static final String BLOCK_AFTER_CHILDREN = "block-after-children";
-    public static final String BLOCK = "block";
-    public static final String CONTENT_BEFORE_CHILD = "before-child";
+    public static final String CONTENT_BEFORE_CHILD = "content-before-child";
     public static final String PARENT = "caller";
-    public static final String GENERIC_CHILDREN = "children";
+    public static final String GENERIC_CHILDREN = "generic-children";
     public static final String FUNCTIONAL_TYPE = "functional";
-    public static final String METHOD_CHILD = "child";
+    public static final String METHOD_CHILD = "method-child";
     public static final String DEFINITION_ANNOTATIONS = "annotations";
     public static final String METHOD_TYPE = "method";
     public static final String INITIALIZATION_TYPE = "initialization";
@@ -54,8 +51,10 @@ public class CommonLang {
     public static final String INITIALIZATION_DEFINITION = "definition";
     public static final String DEFINITION_TYPE = "definition";
     public static final String TUPLE_TYPE = "tuple";
-    public static final String TUPLE_CHILDREN = "children";
+    public static final String TUPLE_CHILDREN = "tuple-children";
     public static final String CONTENT_AFTER_CHILD = "after-child";
+    public static final String CONTENT_CHILDREN = "content-children";
+    public static final String INVOCATION_CHILDREN = "invocation-children";
 
     public static Rule createNamespacedRule(String type, String prefix) {
         final var namespace = new StringRule("namespace");
@@ -69,7 +68,7 @@ public class CommonLang {
                 new SuffixRule(modifiers, " ")
         );
 
-        final var nameAndContent = wrapUsingBlock(new StripRule(new StringRule("name")), createContentRule(segmentRule));
+        final var nameAndContent = wrapUsingBlock(new StripRule(new StringRule("name")), segmentRule);
 
         final var infixRule = new InfixRule(maybeModifiers, new FirstLocator(infix), nameAndContent);
         return new TypeRule(type, infixRule);
@@ -115,8 +114,8 @@ public class CommonLang {
     }
 
     public static Rule createContentRule(Rule rule) {
-        return new OptionalNodeListRule("children",
-                new DivideRule("children", STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD))
+        return new OptionalNodeListRule(CONTENT_CHILDREN,
+                new DivideRule(CONTENT_CHILDREN, STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD))
         );
     }
 
@@ -181,8 +180,8 @@ public class CommonLang {
 
     private static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
-        final var children = new OptionalNodeListRule("children",
-                new DivideRule("children", VALUE_DIVIDER, value)
+        final var children = new OptionalNodeListRule(INVOCATION_CHILDREN,
+                new DivideRule(INVOCATION_CHILDREN, VALUE_DIVIDER, value)
         );
 
         final var suffixRule = new StripRule(new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")")

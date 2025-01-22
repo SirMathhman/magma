@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;
+import static magma.app.lang.CommonLang.CONTENT_CHILDREN;
 
 public class PassingStage {
     public static Result<PassUnit<Node>, CompileError> pass(PassUnit<Node> unit) {
@@ -20,21 +21,35 @@ public class PassingStage {
     }
 
     private static Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
-        return new Ok<>(unit);
+        return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(inner -> inner.mapValue(block -> {
+                    return block.mapNodeList(CONTENT_CHILDREN, children -> {
+                        return children.stream()
+                                .filter(child -> !child.is("whitespace"))
+                                .toList();
+                    });
+                }))
+                .orElse(unit));
     }
 
     private static Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
         return new Ok<>(unit.filterAndMapToValue(by("root"), PassingStage::removePackageStatements)
                 .or(() -> unit.filterAndMapToValue(by("class").or(by("record")).or(by("interface")), PassingStage::retypeToStruct))
                 .or(() -> unit.filterAndMapToValue(by("definition"), PassingStage::pruneDefinition))
-                .or(() -> unit.filterAndMapToValue(by("block"), PassingStage::formatBlock))
+                .or(() -> unit.filter(by("block"))
+                        .map(PassingStage::formatBlock))
                 .orElse(unit));
     }
 
-    private static Node formatBlock(Node block) {
-        return block.mapNodeList("children", children -> children.stream()
-                .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n"))
-                .toList());
+    private static PassUnit<Node> formatBlock(PassUnit<Node> inner) {
+        return inner.exit().flattenNode((State state, Node block) -> {
+            if(block.findNodeList(CONTENT_CHILDREN).orElse(new ArrayList<>()).isEmpty()) {
+                return block.removeNodeList(CONTENT_CHILDREN);
+            }
+
+            return block.mapNodeList(CONTENT_CHILDREN, children -> children.stream()
+                    .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n" + "\t".repeat(state.depth() + 1)))
+                    .toList());
+        });
     }
 
     private static Node pruneDefinition(Node definition) {
@@ -48,7 +63,7 @@ public class PassingStage {
     }
 
     private static Node removePackageStatements(Node root) {
-        return root.mapNodeList("children", children -> children.stream()
+        return root.mapNodeList(CONTENT_CHILDREN, children -> children.stream()
                 .filter(child -> !child.is("package"))
                 .filter(PassingStage::filterImport)
                 .toList());
