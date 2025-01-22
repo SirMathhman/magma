@@ -15,14 +15,12 @@ static Result<String, CompileError> truncateLeft(String input, String slice){
 	return new Err<>(new CompileError("Prefix '"+slice+"' not present", new StringContext(input)));
 }
 
-@Override
 Result<Node, CompileError> parse(String input){
 	return truncateLeft(input, this.prefix).flatMapValue(this.childRule::parse);
 }
 
-@Override
 Result<String, CompileError> generate(Node node){
-	return this.childRule.generate(node).mapValue(auto _lambda24_(auto inner){
+	return this.childRule.generate(node).mapValue(auto _lambda25_(auto inner){
 		return this.prefix + inner;
 	});
 }

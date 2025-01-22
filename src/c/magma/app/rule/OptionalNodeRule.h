@@ -14,12 +14,10 @@ public OptionalNodeRule(String modifiers, Rule ifPresent){
 	this(modifiers, ifPresent, new ExactRule(""));
 }
 
-@Override
 Result<Node, CompileError> parse(String input){
 	return this.rule.parse(input);
 }
 
-@Override
 Result<String, CompileError> generate(Node node){
 	if(node.hasNode(this.propertyKey)){
 		return this.ifPresent.generate(node);

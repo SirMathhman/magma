@@ -15,12 +15,10 @@ public OptionalNodeListRule(String propertyKey, DivideRule ifPresent){
 	this(propertyKey, ifPresent, new ExactRule(""));
 }
 
-@Override
 Result<Node, CompileError> parse(String input){
 	return this.rule.parse(input);
 }
 
-@Override
 Result<String, CompileError> generate(Node node){
 	if(node.hasNodeList(this.propertyKey)){
 		return this.ifPresent.generate(node);

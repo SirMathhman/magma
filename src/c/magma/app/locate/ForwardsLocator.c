@@ -8,17 +8,14 @@ public ForwardsLocator(String infix){
 	this.infix =infix;
 }
 
-@Override
 String unwrap(){
 	return this.infix;
 }
 
-@Override
 int length(){
 	return this.infix.length();
 }
 
-@Override
 Stream<Integer> locate(String input){
 	return Streams.from(searchForIndices(input));
 }

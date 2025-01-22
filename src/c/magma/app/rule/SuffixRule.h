@@ -19,14 +19,12 @@ static Result<String, CompileError> truncateRight(String input, String slice){
 	}
 }
 
-@Override
 Result<Node, CompileError> parse(String input){
 	return truncateRight(input, this.suffix).flatMapValue(this.childRule::parse);
 }
 
-@Override
 Result<String, CompileError> generate(Node node){
-	return childRule.generate(node).mapValue(auto _lambda35_(auto inner){
+	return childRule.generate(node).mapValue(auto _lambda36_(auto inner){
 		return inner+suffix;
 	});
 }

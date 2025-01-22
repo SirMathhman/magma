@@ -14,15 +14,13 @@ public InfixRule(Rule leftRule, Locator locator, Rule rightRule){
 	this.rightRule =rightRule;
 }
 
-@Override
 Result<String, CompileError> generate(Node node){
-	return this.leftRule.generate(node).and(auto _lambda27_(){
+	return this.leftRule.generate(node).and(auto _lambda28_(){
 		return this.rightRule.generate(node);
 	}).mapValue(Tuple.merge(
                 (left, right) -> left + this.locator.unwrap() + right));
 }
 
-@Override
 Result<Node, CompileError> parse(String input){
 	const auto indices=this.locator.locate(input).foldLeft(new ArrayList<>(), InfixRule.add);
 	const auto errors=new ArrayList<CompileError>();
@@ -31,7 +29,7 @@ Result<Node, CompileError> parse(String input){
 		int index=indices.get(i);
 		const auto left=input.substring(0, index);
 		const auto right=input.substring(index+this.locator.length());
-		const auto result=this.leftRule.parse(left).and(auto _lambda28_(){
+		const auto result=this.leftRule.parse(left).and(auto _lambda29_(){
 			return this.rightRule.parse(right);
 		}).mapValue(Tuple.merge(Node.merge));
 		if(result.isOk()){

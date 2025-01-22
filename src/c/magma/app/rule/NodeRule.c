@@ -5,12 +5,10 @@ import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
 
-@Override
 Result<Node, CompileError> parse(String input){
 	return this.childRule.parse(input).mapValue(node -> new MapNode().withNode(this.propertyKey, node));
 }
 
-@Override
 Result<String, CompileError> generate(Node node){
 	return node.findNode(this.propertyKey).map(this.childRule::generate).orElseGet(auto _lambda0_(){
 		return new Err<>(new CompileError("Node '"+this.propertyKey + "' was not present", new NodeContext(node)));

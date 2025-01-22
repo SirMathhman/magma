@@ -6,14 +6,12 @@ import magma.app.error.context.NodeContext;
 import magma.app.error.context.StringContext;
 import java.util.List;
 
-@Override
 Result<Node, CompileError> parse(String input){
 	return this.rule.parse(input).mapValue(auto _lambda1_(auto node){
 		return node.retype(this.type);
 	}).mapErr(err -> new CompileError("Failed to parse type '" + this.type + "'", new StringContext(input), List.of(err)));
 }
 
-@Override
 Result<String, CompileError> generate(Node node){
 	if(node.is(this.type)){
 		return this.rule.generate(node).mapErr(err -> new CompileError("Failed to generate type '" + this.type + "'", new NodeContext(node), List.of(err)));

@@ -3,17 +3,14 @@ import magma.api.stream.Streams;
 import magma.app.rule.locate.Locator;
 import java.util.Optional;
 
-@Override
 String unwrap(){
 	return "(";
 }
 
-@Override
 int length(){
 	return 1;
 }
 
-@Override
 Stream<Integer> locate(String input){
 	auto depth=0;
 	int i=input.length() - 1;

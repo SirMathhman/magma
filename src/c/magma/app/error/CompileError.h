@@ -16,7 +16,6 @@ public CompileError(String message, Context context){
 	this(message, context, Collections.emptyList());
 }
 
-@Override
 String display(){
 	return format(0);
 }

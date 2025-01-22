@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-@Override
 Result<Node, CompileError> parse(String value){
 	return process(new StringContext(value), auto _lambda2_(auto rule){
 		return rule.parse(value);
@@ -33,7 +32,6 @@ Result<Node, CompileError> parse(String value){
 	}).mapErr(errors -> new CompileError("No valid rule", context, errors));
 }
 
-@Override
 Result<String, CompileError> generate(Node node){
 	return process(new NodeContext(node), auto _lambda6_(auto rule){
 		return rule.generate(node);

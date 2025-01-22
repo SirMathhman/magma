@@ -1,5 +1,4 @@
 
-@Override
 String display(){
 	return this.value;
 }

@@ -4,7 +4,6 @@ public RangeHead(int extent){
 	this.extent =extent;
 }
 
-@Override
 Optional<Integer> next(){
 	if(this.counter >= this.extent)return Optional.empty();
 	const auto value=this.counter;

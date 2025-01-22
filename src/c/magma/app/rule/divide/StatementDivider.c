@@ -13,12 +13,10 @@ import java.util.stream.IntStream;
 private StatementDivider(){
 }
 
-@Override
 String merge(String current, String value){
 	return current+value;
 }
 
-@Override
 Result<List<String>, CompileError> divide(String input){
 	const auto segments=new ArrayList<String>();
 	auto buffer=new StringBuilder();

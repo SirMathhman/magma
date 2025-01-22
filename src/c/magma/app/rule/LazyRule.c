@@ -8,9 +8,8 @@ import magma.app.error.context.NodeContext;
 import magma.app.error.context.StringContext;
 import java.util.Optional;
 
-@Override
 Result<Node, CompileError> parse(String input){
-	return findChild(new StringContext(input)).flatMapValue(auto _lambda33_(auto rule){
+	return findChild(new StringContext(input)).flatMapValue(auto _lambda34_(auto rule){
 		return rule.parse(input);
 	});
 }
@@ -24,9 +23,8 @@ Result<Rule, CompileError> findChild(Context context){
 	}
 }
 
-@Override
 Result<String, CompileError> generate(Node node){
-	return findChild(new NodeContext(node)).flatMapValue(auto _lambda34_(auto rule){
+	return findChild(new NodeContext(node)).flatMapValue(auto _lambda35_(auto rule){
 		return rule.generate(node);
 	});
 }

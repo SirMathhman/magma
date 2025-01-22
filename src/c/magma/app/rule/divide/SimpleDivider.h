@@ -8,12 +8,10 @@ public SimpleDivider(String delimiter){
 	this.delimiter =delimiter;
 }
 
-@Override
 String merge(String current, String value){
 	return current+delimiter+value;
 }
 
-@Override
 Result<List<String>, CompileError> divide(String input){
 	return new Ok<>(Arrays.stream(input.split(delimiter)).toList());
 }

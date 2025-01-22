@@ -1,6 +1,5 @@
 import magma.app.Node;
 
-@Override
 String display(){
 	return node.display();
 }

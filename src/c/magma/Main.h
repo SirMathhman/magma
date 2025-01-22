@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 static void main(&[String] args){
-	collect().mapErr(JavaError.new).mapErr(ApplicationError.new).mapValue(Main.runWithSources).match(Function.identity(), Optional.of).ifPresent(auto _lambda38_(auto error){
+	collect().mapErr(JavaError.new).mapErr(ApplicationError.new).mapValue(Main.runWithSources).match(Function.identity(), Optional.of).ifPresent(auto _lambda39_(auto error){
 		return System.err.println(error.display());
 	});
 }
 
 static Result<Set<Path>, IOException> collect(){
-	return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(auto _lambda39_(auto paths){
-		return paths.stream().filter(Files.isRegularFile).filter(auto _lambda40_(auto path){
+	return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(auto _lambda40_(auto paths){
+		return paths.stream().filter(Files.isRegularFile).filter(auto _lambda41_(auto path){
 			return path.toString().endsWith(".java");
 		}).collect(Collectors.toSet());
 	});
@@ -55,14 +55,14 @@ static Optional<ApplicationError> runWithSource(Path source){
 		const auto directoriesError=JavaFiles.createDirectoriesWrapped(targetParent);
 		if(directoriesError.isPresent())return directoriesError.map(JavaError.new).map(ApplicationError.new);
 	}
-	return JavaFiles.readStringWrapped(source).mapErr(JavaError.new).mapErr(ApplicationError.new).flatMapValue(auto _lambda41_(auto input){
+	return JavaFiles.readStringWrapped(source).mapErr(JavaError.new).mapErr(ApplicationError.new).flatMapValue(auto _lambda42_(auto input){
 		return compile(input).mapErr(ApplicationError.new);
 	}).mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional.of);
 }
 
 static Result<String, CompileError> compile(String input){
 	return JavaLang.createJavaRootRule().parse(input).flatMapValue(root1 -> Passer.pass(new State(), root1).mapValue(Tuple::right))
-                .flatMapValue(auto _lambda42_(auto root){
+                .flatMapValue(auto _lambda43_(auto root){
 		return CLang.createCRootRule().generate(root);
 	});
 }

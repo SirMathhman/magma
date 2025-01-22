@@ -6,17 +6,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Override
 String unwrap(){
 	return ")";
 }
 
-@Override
 int length(){
 	return 1;
 }
 
-@Override
 Stream<Integer> locate(String input){
 	auto depth=0;
 	const auto queue=IntStream.range(0, input.length()).mapToObj(index -> new Tuple<>(index, input.charAt(index)))

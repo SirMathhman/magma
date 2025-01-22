@@ -229,7 +229,19 @@ public class Passer {
         return removeAccessModifiersFromDefinitions(state, node)
                 .or(() -> formatRoot(state, node))
                 .or(() -> formatBlock(state, node))
-                .or(() -> pruneAndFormatStruct(state, node));
+                .or(() -> pruneAndFormatStruct(state, node))
+                .or(() -> pruneFunction(state, node));
+    }
+
+    private static Optional<Result<Tuple<State, Node>, CompileError>> pruneFunction(State state, Node node) {
+        if(node.is("method")) {
+            final var node1 = node.mapNode("definition", definition -> {
+                return definition.removeNodeList("annotations");
+            });
+            return Optional.of(new Ok<>(new Tuple<>(state, node1)));
+        }
+
+        return Optional.empty();
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> formatRoot(State state, Node node) {

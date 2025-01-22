@@ -24,7 +24,6 @@ static <T, R>Result<List<R>, CompileError> compileAll(List<T> segments, Function
         }));
 }
 
-@Override
 Result<Node, CompileError> parse(String input){
 	return this.divider.divide(input).flatMapValue(segments -> compileAll(segments, this.childRule::parse))
                 .mapValue(segments -> {
@@ -33,14 +32,13 @@ Result<Node, CompileError> parse(String input){
                 });
 }
 
-@Override
 Result<String, CompileError> generate(Node node){
-	return node.findNodeList(this.propertyKey).flatMap(auto _lambda29_(auto list){
+	return node.findNodeList(this.propertyKey).flatMap(auto _lambda30_(auto list){
 		return list.isEmpty() ? Optional.empty() : Optional.of(list);
 	}).map(list -> compileAll(list, this.childRule::generate))
-                .map(auto _lambda30_(auto result){
+                .map(auto _lambda31_(auto result){
 		return result.mapValue(this.merge);
-	}).orElseGet(auto _lambda31_(){
+	}).orElseGet(auto _lambda32_(){
 		return new Err<>(new CompileError("Node list '"+this.propertyKey + "' not present", new NodeContext(node)));
 	});
 }

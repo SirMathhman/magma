@@ -4,12 +4,10 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-@Override
 Optional<T> foldLeft(BiFunction<T, T, T> folder){
 	return this.head.next().map(initial -> foldLeft(initial, folder));
 }
 
-@Override
 <R>R foldLeft(R initial, BiFunction<R, T, R> folder){
 	auto current=initial;
 	while(true){
@@ -24,14 +22,12 @@ Optional<T> foldLeft(BiFunction<T, T, T> folder){
 	}
 }
 
-@Override
 <R>Stream<R> map(Function<T, R> mapper){
-	return new HeadedStream<>(auto _lambda32_(){
+	return new HeadedStream<>(auto _lambda33_(){
 		return this.head.next().map(mapper);
 	});
 }
 
-@Override
 <R, X>Result<R, X> foldLeftToResult(R initial, BiFunction<R, T, Result<R, X>> folder){
 	return this.<Result<R, X>>foldLeft(new Ok<>(initial), (rxResult, t) -> rxResult.flatMapValue(inner -> folder.apply(inner, t)));
 }

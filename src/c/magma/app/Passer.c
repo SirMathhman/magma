@@ -179,7 +179,18 @@ static Result<Tuple<State, List<Node>>, CompileError> passAndFoldElementIntoList
 static Optional<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node){
 	return removeAccessModifiersFromDefinitions(state, node).or(() -> formatRoot(state, node))
                 .or(() -> formatBlock(state, node))
-                .or(() -> pruneAndFormatStruct(state, node));
+                .or(() -> pruneAndFormatStruct(state, node))
+                .or(() -> pruneFunction(state, node));
+}
+
+static Optional<Result<Tuple<State, Node>, CompileError>> pruneFunction(State state, Node node){
+	if(node.is("method")){
+		const auto node1=node.mapNode("definition", auto _lambda19_(auto definition){
+			return definition.removeNodeList("annotations");
+		});
+		return Optional.of(new Ok<>(new Tuple<>(state, node1)));
+	}
+	return Optional.empty();
 }
 
 static Optional<Result<Tuple<State, Node>, CompileError>> formatRoot(State state, Node node){
@@ -213,7 +224,7 @@ static Optional<Result<Tuple<State, Node>, CompileError>> pruneAndFormatStruct(S
 	const auto children=pruned.findNodeList("children").orElse(new ArrayList<>());
 	const auto methods=new ArrayList<Node>();
 	const auto newChildren=new ArrayList<Node>();
-	children.forEach(auto _lambda19_(auto child){
+	children.forEach(auto _lambda20_(auto child){
 		if(child.is("method")){
 			methods.add(child);
 		}
@@ -235,7 +246,7 @@ static Optional<Result<Tuple<State, Node>, CompileError>> pruneAndFormatStruct(S
 
 static Node formatContent(State state, Node node){
 	return node.withString(BLOCK_AFTER_CHILDREN, "\n"+"\t".repeat(Math.max(state.depth() - 1, 0))).mapNodeList("children", children -> {
-            return children.stream().map(auto _lambda20_(auto child){
+            return children.stream().map(auto _lambda21_(auto child){
 		return child.withString(CONTENT_BEFORE_CHILD;
 	}, "\n"+"\t".repeat(state.depth()))).toList();
         });
