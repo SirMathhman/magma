@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static magma.app.lang.CommonLang.BLOCK_AFTER_CHILDREN;
@@ -234,21 +235,18 @@ public class Passer {
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> pruneFunction(State state, Node node) {
-        if(node.is("method")) {
-            final var node1 = node.mapNode("definition", definition -> {
-                return definition.removeNodeList("annotations");
-            });
-            return Optional.of(new Ok<>(new Tuple<>(state, node1)));
-        }
+        return getTupleCompileErrorResult(state, node, "method", node1 -> node1.mapNode("definition", definition -> definition.removeNodeList("annotations")));
+    }
 
-        return Optional.empty();
+    private static Optional<Result<Tuple<State, Node>, CompileError>> getTupleCompileErrorResult(State state, Node node, String type, Function<Node, Node> mapper) {
+        if (!node.is(type)) return Optional.empty();
+
+        final var node1 = mapper.apply(node);
+        return Optional.of(new Ok<>(new Tuple<>(state, node1)));
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> formatRoot(State state, Node node) {
-        if (!node.is("root")) return Optional.empty();
-
-        final var newNode = node.mapNodeList("children", Passer::indentRootChildren);
-        return Optional.of(new Ok<>(new Tuple<>(state, newNode)));
+        return getTupleCompileErrorResult(state, node, "root", node1 -> node1.mapNode("definition", definition -> definition.mapNodeList("children", Passer::indentRootChildren)));
     }
 
     private static List<Node> indentRootChildren(List<Node> rootChildren) {
