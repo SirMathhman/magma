@@ -3,7 +3,7 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	Divider divider;
 	Rule childRule;
 	public DivideRule(String propertyKey, Divider divider, Rule childRule);
-	<T, R>Result<List<R>, CompileError> compileAll(List<T> segments, Function<T, Result<R, CompileError>> mapper, BiFunction<T, R, Result<R, CompileError>> validator);
+	<T, R>Result<List<R>, CompileError> compileAll(List<T> segments, ((T) => Result<R, CompileError>) mapper, BiFunction<T, R, Result<R, CompileError>> validator);
 	Result<Node, CompileError> validateNode(String text, Node result);
 	Result<Node, CompileError> parse(String input);
 	Result<String, CompileError> generate(Node node);

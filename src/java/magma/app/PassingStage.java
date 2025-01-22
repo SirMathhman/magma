@@ -6,12 +6,16 @@ import magma.api.stream.Streams;
 import magma.app.error.CompileError;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
 import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILDREN;
 import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;
 import static magma.app.lang.CommonLang.CONTENT_CHILDREN;
+import static magma.app.lang.CommonLang.GENERIC_CHILDREN;
+import static magma.app.lang.CommonLang.GENERIC_PARENT;
+import static magma.app.lang.CommonLang.GENERIC_TYPE;
 
 public class PassingStage {
     public static Result<PassUnit<Node>, CompileError> pass(PassUnit<Node> unit) {
@@ -22,36 +26,51 @@ public class PassingStage {
     }
 
     private static Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
-        return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(inner -> inner.mapValue(block -> {
-                    return block.mapNodeList(CONTENT_CHILDREN, children -> {
-                        return children.stream()
-                                .filter(child -> !child.is("whitespace"))
-                                .toList();
-                    });
+        return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(inner -> inner.mapValue(PassingStage::removeWhitespace))
+                .or(() -> unit.filterAndMapToValue(by(GENERIC_TYPE), generic -> {
+                    final var parent = generic.findString(GENERIC_PARENT).orElse("");
+                    final var children = generic.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
+
+                    if(parent.equals("Supplier")) {
+                        return new MapNode("functional").withNode("return", children.get(0));
+                    }
+                    if(parent.equals("Function")) {
+                        return new MapNode("functional")
+                                .withNodeList("params", List.of(children.get(0)))
+                                .withNode("return", children.get(1));
+                    }
+                    return generic;
                 }))
                 .orElse(unit));
+    }
+
+    private static Node removeWhitespace(Node block) {
+        return block.mapNodeList(CONTENT_CHILDREN, children -> {
+            return children.stream()
+                    .filter(child -> !child.is("whitespace"))
+                    .toList();
+        });
     }
 
     private static Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
         return new Ok<>(unit.filterAndMapToValue(by("root"), PassingStage::removePackageStatements)
                 .or(() -> unit.filterAndMapToValue(by("class").or(by("record")).or(by("interface")), PassingStage::retypeToStruct))
                 .or(() -> unit.filterAndMapToValue(by("definition"), PassingStage::pruneDefinition))
-                .or(() -> unit.filter(by("block"))
-                        .map(PassingStage::formatBlock))
+                .or(() -> unit.filter(by("block")).map(PassingStage::formatBlock))
                 .orElse(unit));
     }
 
     private static PassUnit<Node> formatBlock(PassUnit<Node> inner) {
         return inner.exit().flattenNode((State state, Node block) -> {
-            if(block.findNodeList(CONTENT_CHILDREN).orElse(new ArrayList<>()).isEmpty()) {
+            if (block.findNodeList(CONTENT_CHILDREN).orElse(new ArrayList<>()).isEmpty()) {
                 return block.removeNodeList(CONTENT_CHILDREN);
             }
 
             return block
                     .withString(CONTENT_AFTER_CHILDREN, "\n")
                     .mapNodeList(CONTENT_CHILDREN, children -> children.stream()
-                    .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n" + "\t".repeat(state.depth() + 1)))
-                    .toList());
+                            .map(child -> child.withString(CONTENT_BEFORE_CHILD, "\n" + "\t".repeat(state.depth() + 1)))
+                            .toList());
         });
     }
 

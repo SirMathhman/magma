@@ -1,6 +1,7 @@
-import magma.api.result.Ok;import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.List;import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILDREN;import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;struct PassingStage{
+import magma.api.result.Ok;import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.Collections;import java.util.List;import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILDREN;import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_PARENT;import static magma.app.lang.CommonLang.GENERIC_TYPE;struct PassingStage{
 	Result<PassUnit<Node>, CompileError> pass(PassUnit<Node> unit);
 	Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit);
+	Node removeWhitespace(Node block);
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit);
 	PassUnit<Node> formatBlock(PassUnit<Node> inner);
 	Node pruneDefinition(Node definition);

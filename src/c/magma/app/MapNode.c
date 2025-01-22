@@ -10,7 +10,7 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	String toString();
 	String format(int depth);
 	Optional<Node> findNode(String propertyKey);
-	Node mapString(String propertyKey, Function<String, String> mapper);
+	Node mapString(String propertyKey, ((String) => String) mapper);
 	Node merge(Node other);
 	Stream<Tuple<String, List<Node>>> streamNodeLists();
 	Stream<Tuple<String, Node>> streamNodes();
@@ -18,10 +18,10 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	String display();
 	Node retype(String type);
 	boolean is(String type);
-	Node mapNodeList(String propertyKey, Function<List<Node>, List<Node>> mapper);
+	Node mapNodeList(String propertyKey, ((List<Node>) => List<Node>) mapper);
 	boolean hasNodeList(String propertyKey);
 	Node removeNodeList(String propertyKey);
-	Node mapNode(String propertyKey, Function<Node, Node> mapper);
+	Node mapNode(String propertyKey, ((Node) => Node) mapper);
 	boolean hasNode(String propertyKey);
 	boolean hasType();
 	Node withNode(String propertyKey, Node propertyValue);

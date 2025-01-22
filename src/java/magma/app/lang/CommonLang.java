@@ -39,7 +39,7 @@ public class CommonLang {
     public static final String STRUCT_TYPE = "struct";
     public static final String WHITESPACE_TYPE = "whitespace";
     public static final String CONTENT_BEFORE_CHILD = "content-before-child";
-    public static final String PARENT = "caller";
+    public static final String GENERIC_PARENT = "caller";
     public static final String GENERIC_CHILDREN = "generic-children";
     public static final String FUNCTIONAL_TYPE = "functional";
     public static final String METHOD_CHILD = "method-child";
@@ -56,6 +56,7 @@ public class CommonLang {
     public static final String CONTENT_CHILDREN = "content-children";
     public static final String INVOCATION_CHILDREN = "invocation-children";
     public static final String CONTENT_AFTER_CHILDREN = "content-after-children";
+    public static final String GENERIC_TYPE = "generic";
 
     public static Rule createNamespacedRule(String type, String prefix) {
         final var namespace = new StringRule("namespace");
@@ -347,7 +348,9 @@ public class CommonLang {
     }
 
     private static TypeRule createGenericRule(LazyRule type) {
-        return new TypeRule("generic", new InfixRule(new StripRule(new StringRule(PARENT)), new FirstLocator("<"), new SuffixRule(new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, type), ">")));
+        final var parent = new StringRule(GENERIC_PARENT);
+        final var children = new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, type);
+        return new TypeRule(GENERIC_TYPE, new InfixRule(new StripRule(parent), new FirstLocator("<"), new SuffixRule(children, ">")));
     }
 
 }

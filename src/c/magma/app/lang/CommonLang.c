@@ -7,7 +7,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	String STRUCT_TYPE="struct";
 	String WHITESPACE_TYPE="whitespace";
 	String CONTENT_BEFORE_CHILD="content-before-child";
-	String PARENT="caller";
+	String GENERIC_PARENT="caller";
 	String GENERIC_CHILDREN="generic-children";
 	String FUNCTIONAL_TYPE="functional";
 	String METHOD_CHILD="method-child";
@@ -24,6 +24,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	String CONTENT_CHILDREN="content-children";
 	String INVOCATION_CHILDREN="invocation-children";
 	String CONTENT_AFTER_CHILDREN="content-after-children";
+	String GENERIC_TYPE="generic";
 	Rule createNamespacedRule(String type, String prefix);
 	Rule createCompoundRule(String type, String infix, Rule segmentRule);
 	StripRule createStructSegmentRule(LazyRule function, Rule statement);
