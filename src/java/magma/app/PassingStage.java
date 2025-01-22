@@ -35,6 +35,12 @@ public class PassingStage {
         return root.mapNodeList("children", children -> {
             return children.stream()
                     .filter(child -> !child.is("package"))
+                    .filter(child -> {
+                        if (!child.is("import")) return true;
+
+                        final var namespace = child.findString("namespace").orElse("");
+                        return !namespace.startsWith("java.util.function");
+                    })
                     .toList();
         });
     }
