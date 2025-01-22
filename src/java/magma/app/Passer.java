@@ -23,22 +23,20 @@ import static magma.app.lang.CommonLang.STRUCT_AFTER_CHILDREN;
 public class Passer {
     private static int counter = 0;
 
-    public static Result<Tuple<State, Tuple<List<Node>, Node>>, CompileError> pass(State state, Node root) {
-        return beforePass(state, root).orElse(new Ok<>(new Tuple<>(state, new Tuple<>(new ArrayList<>(), root))))
+    public static Result<Tuple<State, Node>, CompileError> pass(State state, Node root) {
+        return beforePass(state, root).orElse(new Ok<>(new Tuple<>(state, root)))
                 .flatMapValue(passedBefore -> passNodes(passedBefore.left(), passedBefore.right()))
                 .flatMapValue(passedNodes -> passNodeLists(passedNodes.left(), passedNodes.right()))
-                .flatMapValue(passedNodeLists -> afterPass(passedNodeLists.left(), passedNodeLists.right())
-                        .orElse(new Ok<>(passedNodeLists)));
+                .flatMapValue(passedNodeLists -> afterPass(passedNodeLists.left(), passedNodeLists.right()).orElse(new Ok<>(new Tuple<>(passedNodeLists.left(), passedNodeLists.right()))));
     }
 
-    public static Optional<Result<Tuple<State, Tuple<List<Node>, Node>>, CompileError>> beforePass(State state, Node node) {
+    public static Optional<Result<Tuple<State, Node>, CompileError>> beforePass(State state, Node node) {
         return removePackageStatements(state, node)
                 .or(() -> renameToStruct(state, node))
                 .or(() -> renameToSlice(state, node))
                 .or(() -> renameToDataAccess(state, node))
                 .or(() -> renameLambdaToMethod(state, node))
-                .or(() -> enterBlock(state, node))
-                .map(result -> result.mapValue(tuple -> tuple.mapRight(child -> new Tuple<>(new ArrayList<>(), child))));
+                .or(() -> enterBlock(state, node));
     }
 
     private static Optional<? extends Result<Tuple<State, Node>, CompileError>> renameLambdaToMethod(State state, Node node) {
@@ -189,68 +187,51 @@ public class Passer {
                 .toList();
     }
 
-    public static Result<Tuple<State, Tuple<List<Node>, Node>>, CompileError> passNodeLists(State state, Tuple<List<Node>, Node> previous) {
-        return previous.right().streamNodeLists().foldLeftToResult(new Tuple<>(state, previous), (current, entry) -> {
+    public static Result<Tuple<State, Node>, CompileError> passNodeLists(State state, Node previous) {
+        return previous.streamNodeLists()
+                .foldLeftToResult(new Tuple<>(state, previous),
+                        (current, tuple) -> passNodeList(current.left(), current.right(), tuple));
+    }
+
+    public static Result<Tuple<State, Node>, CompileError> passNodeList(
+            State state,
+            Node root,
+            Tuple<String, List<Node>> pair
+    ) {
+        final var propertyKey = pair.left();
+        final var propertyValues = pair.right();
+        return passNodeListInStream(state, propertyValues)
+                .mapValue(list -> list.mapRight(right -> root.withNodeList(propertyKey, right)));
+    }
+
+    private static Result<Tuple<State, List<Node>>, CompileError> passNodeListInStream(State state, List<Node> elements) {
+        return Streams.from(elements).foldLeftToResult(new Tuple<>(state, new ArrayList<>()), (current, currentElement) -> {
             final var currentState = current.left();
-            final var currentTuple = current.right();
-            final var currentCache = currentTuple.left();
-            final var currentRoot = currentTuple.right();
-            return passNodeList(currentState, currentRoot, entry).mapValue(passed -> {
-                return passed.mapRight(oldNodes -> oldNodes.mapLeft(left -> {
-                    final var newCache = new ArrayList<>(currentCache);
-                    newCache.addAll(left);
-                    return newCache;
-                }));
-            });
+            final var currentElements = current.right();
+            return passAndFoldElementIntoList(currentElements, currentState, currentElement);
         });
     }
 
-    public static Result<Tuple<State, Tuple<List<Node>, Node>>, CompileError> passNodeList(
-            State state,
-            Node root,
-            Tuple<String, List<Node>> entry
-    ) {
-        final var propertyKey = entry.left();
-        final var propertyValues = entry.right();
-        return passNodeListInStream(state, propertyValues)
-                .mapValue(list -> list.mapRight(right -> right.mapRight(right0 -> {
-                    return root.withNodeList(propertyKey, right0);
-                })));
-    }
-
-    private static Result<Tuple<State, Tuple<List<Node>, List<Node>>>, CompileError> passNodeListInStream(State state, List<Node> oldNodes) {
-        return Streams.from(oldNodes).foldLeftToResult(
-                new Tuple<>(state, new Tuple<>(new ArrayList<>(), new ArrayList<>())), (current, oldNode) -> {
-                    final var currentState = current.left();
-                    final var currentElements = current.right();
-                    return passAndFoldElementIntoList(currentElements, currentState, oldNode);
-                });
-    }
-
-    private static Result<Tuple<State, Tuple<List<Node>, List<Node>>>, CompileError> passAndFoldElementIntoList(
-            Tuple<List<Node>, List<Node>> elements,
+    private static Result<Tuple<State, List<Node>>, CompileError> passAndFoldElementIntoList(
+            List<Node> elements,
             State currentState,
             Node currentElement
     ) {
         return pass(currentState, currentElement).mapValue(passingResult -> {
             return passingResult.mapRight(passedElement -> {
-                final var leftCopy = new ArrayList<>(elements.left());
-                final var rightCopy = new ArrayList<>(elements.right());
-
-                leftCopy.addAll(passedElement.left());
-                rightCopy.add(passedElement.right());
-                return new Tuple<>(leftCopy, rightCopy);
+                final var copy = new ArrayList<>(elements);
+                copy.add(passedElement);
+                return copy;
             });
         });
     }
 
-    public static Optional<Result<Tuple<State, Tuple<List<Node>, Node>>, CompileError>> afterPass(State state, Tuple<List<Node>, Node> node) {
-        return removeAccessModifiersFromDefinitions(state, node.right())
-                .or(() -> formatRoot(state, node.right()))
-                .or(() -> formatBlock(state, node.right()))
-                .or(() -> pruneAndFormatStruct(state, node.right()))
-                .or(() -> pruneFunction(state, node.right()))
-                .map(result -> result.mapValue(tuple -> tuple.mapRight(right -> new Tuple<>(new ArrayList<>(), right))));
+    public static Optional<Result<Tuple<State, Node>, CompileError>> afterPass(State state, Node node) {
+        return removeAccessModifiersFromDefinitions(state, node)
+                .or(() -> formatRoot(state, node))
+                .or(() -> formatBlock(state, node))
+                .or(() -> pruneAndFormatStruct(state, node))
+                .or(() -> pruneFunction(state, node));
     }
 
     private static Optional<Result<Tuple<State, Node>, CompileError>> pruneFunction(State state, Node node) {
@@ -333,28 +314,19 @@ public class Passer {
         });
     }
 
-    public static Result<Tuple<State, Tuple<List<Node>, Node>>, CompileError> passNodes(State state, Tuple<List<Node>, Node> root) {
-        return root.right().streamNodes().foldLeftToResult(new Tuple<>(state, root), Passer::foldNode);
+    public static Result<Tuple<State, Node>, CompileError> passNodes(State state, Node root) {
+        return root.streamNodes().foldLeftToResult(new Tuple<>(state, root), Passer::foldNode);
     }
 
-    private static Result<Tuple<State, Tuple<List<Node>, Node>>, CompileError> foldNode(
-            Tuple<State, Tuple<List<Node>, Node>> current,
+    private static Result<Tuple<State, Node>, CompileError> foldNode(
+            Tuple<State, Node> current,
             Tuple<String, Node> tuple
     ) {
         final var currentState = current.left();
-        final var pair = current.right();
-
-        final var currentCache = pair.left();
-        final var currentRoot = pair.right();
+        final var currentRoot = current.right();
         final var pairKey = tuple.left();
         final var pairNode = tuple.right();
 
-        return pass(currentState, pairNode).mapValue(passed -> passed.mapRight(result -> {
-            final var newCache = new ArrayList<>(currentCache);
-            newCache.addAll(result.left());
-
-            final var newRoot = currentRoot.withNode(pairKey, result.right());
-            return new Tuple<>(newCache, newRoot);
-        }));
+        return pass(currentState, pairNode).mapValue(passed -> passed.mapRight(right -> currentRoot.withNode(pairKey, right)));
     }
 }

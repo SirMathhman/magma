@@ -11,8 +11,4 @@ public record Tuple<A, B>(A left, B right) {
     public <R> Tuple<A, R> mapRight(Function<B, R> mapper) {
         return new Tuple<>(this.left, mapper.apply(this.right));
     }
-
-    public <R> Tuple<R, B> mapLeft(Function<A, R> mapper) {
-        return new Tuple<>(mapper.apply(this.left), this.right);
-    }
 }
