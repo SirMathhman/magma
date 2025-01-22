@@ -69,9 +69,8 @@ public class CommonLang {
                 new SuffixRule(modifiers, " ")
         );
 
-        final var nameAndContent = new InfixRule(new StringRule("name"), new FirstLocator("{"), new StripRule(
-                new SuffixRule(new StripRule(createContentRule(segmentRule), "", STRUCT_AFTER_CHILDREN), "}")
-        ));
+        final var nameAndContent = wrapUsingBlock(new StripRule(new StringRule("name")), createContentRule(segmentRule));
+
         final var infixRule = new InfixRule(maybeModifiers, new FirstLocator(infix), nameAndContent);
         return new TypeRule(type, infixRule);
     }
@@ -97,21 +96,22 @@ public class CommonLang {
     }
 
     static Rule createMethodRule(Rule statement) {
-        final var orRule = new OptionalNodeRule(METHOD_CHILD,
-                new NodeRule(METHOD_CHILD, createBlockRule(statement)),
-                new ExactRule(";")
-        );
-
         final var definition = createDefinitionRule();
         final var definitionProperty = new NodeRule(METHOD_DEFINITION, definition);
         final var params = new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, definition));
+        final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new StripRule(new SuffixRule(params, ")")));
 
-        final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new InfixRule(params, new FirstLocator(")"), orRule));
-        return new TypeRule(METHOD_TYPE, infixRule);
+        final var orRule = new OptionalNodeRule(METHOD_CHILD,
+                new ContextRule("With block", wrapUsingBlock(infixRule, statement)),
+                new ContextRule("With statement", new StripRule(new SuffixRule(infixRule, ";")))
+        );
+
+        return new TypeRule(METHOD_TYPE, orRule);
     }
 
-    private static TypeRule createBlockRule(Rule statement) {
-        return new TypeRule(BLOCK, new StripRule(new PrefixRule("{", new SuffixRule(new StripRule(createContentRule(statement), "", BLOCK_AFTER_CHILDREN), "}"))));
+    private static Rule wrapUsingBlock(Rule beforeBlock, Rule statement) {
+        final var withEnd = new NodeRule("value", new TypeRule("block", createContentRule(statement)));
+        return new StripRule(new InfixRule(beforeBlock, new FirstLocator("{"), new SuffixRule(withEnd, "}")));
     }
 
     public static Rule createContentRule(Rule rule) {
@@ -146,20 +146,19 @@ public class CommonLang {
     }
 
     private static TypeRule createElseRule(LazyRule statement) {
-        return new TypeRule("else", new StripRule(new PrefixRule("else ", new OrRule(List.of(
-                new NodeRule(METHOD_CHILD, createBlockRule(statement)),
-                new NodeRule(INITIALIZATION_VALUE, statement)
-        )))));
+        return new TypeRule("else", new OrRule(List.of(
+                wrapUsingBlock(new StripRule(new ExactRule("else")), statement),
+                new PrefixRule("else ", new NodeRule("value", statement))
+        )));
     }
 
     private static TypeRule createConditionalRule(LazyRule statement, String type, Rule value) {
-        final var leftRule = new StripRule(new PrefixRule("(", new NodeRule("condition", value)));
-        final var blockRule = new OrRule(List.of(
-                new NodeRule(METHOD_CHILD, createBlockRule(statement)),
-                new NodeRule(METHOD_CHILD, statement)
-        ));
+        final var condition = new NodeRule("condition", value);
 
-        return new TypeRule(type, new PrefixRule(type, new InfixRule(leftRule, new ParenthesesMatcher(), blockRule)));
+        return new TypeRule(type, new StripRule(new PrefixRule(type, new OrRule(List.of(
+                new ContextRule("With block", wrapUsingBlock(new StripRule(new PrefixRule("(", new SuffixRule(condition, ")"))), statement)),
+                new ContextRule("With statement", new StripRule(new PrefixRule("(", new InfixRule(condition, new ParenthesesMatcher(), new NodeRule("value", statement)))))
+        )))));
     }
 
     public static TypeRule createWhitespaceRule() {
@@ -227,10 +226,12 @@ public class CommonLang {
                 new DivideRule("args", new SimpleDivider(","), createSymbolRule())
         )));
 
-        return new TypeRule("lambda", new InfixRule(args, new FirstLocator("->"), new OrRule(List.of(
-                new NodeRule(METHOD_CHILD, createBlockRule(statement)),
-                new NodeRule(METHOD_CHILD, value)
-        ))));
+        final var rightRule = new OrRule(List.of(
+                new NodeRule("value", wrapUsingBlock(new StripRule(new SuffixRule(args, "->")), statement)),
+                new InfixRule(args, new FirstLocator("->"), new NodeRule("value", value))
+        ));
+
+        return new TypeRule("lambda", rightRule);
     }
 
     private static TypeRule createStringRule() {

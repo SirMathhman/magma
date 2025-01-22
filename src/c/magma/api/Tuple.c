@@ -1,1 +1,2 @@
-struct Tuple<A, B>(A left, B right) {}
+struct Tuple<A, B>(A left, B right){
+}

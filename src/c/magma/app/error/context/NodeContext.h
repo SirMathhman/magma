@@ -1,2 +1,3 @@
-import magma.app.Node;struct NodeContext(Node node) implements Context {String display(){
-	return node.display();}}
+import magma.app.Node;struct NodeContext(Node node) implements Context{
+String display();
+}

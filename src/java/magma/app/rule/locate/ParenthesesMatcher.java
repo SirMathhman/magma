@@ -42,7 +42,7 @@ public class ParenthesesMatcher implements Locator {
                 queue.pop();
             }
 
-            if (c == ')' && depth == 1) return Streams.of(i);
+            if (c == ')' && depth == 0) return Streams.of(i);
             if (c == '(') depth++;
             if (c == ')') depth--;
         }
