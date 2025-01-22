@@ -1,0 +1,2 @@
+import magma.api.Tuple;import java.util.List;import java.util.Optional;import java.util.function.BiFunction;import java.util.function.Function;import java.util.function.Predicate;struct PassUnit<T> {
+}
