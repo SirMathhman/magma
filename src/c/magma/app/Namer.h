@@ -1,1 +1,1 @@
-struct Namer {private static int counter=0;static String createUniqueName(){final var name="_lambda"+counter+"_";counter++;return name;}}
+struct Namer {int counter=0;String createUniqueName(){var name="_lambda"+counter+"_";counter++;return name;}}

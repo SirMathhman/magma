@@ -24,7 +24,14 @@ public class PassingStage {
     private static Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
         return new Ok<>(unit.filterAndMapToValue(by("root"), PassingStage::removePackageStatements)
                 .or(() -> unit.filterAndMapToValue(by("class").or(by("record")).or(by("interface")), PassingStage::retypeToStruct))
+                .or(() -> unit.filterAndMapToValue(by("definition"), PassingStage::pruneDefinition))
                 .orElse(unit));
+    }
+
+    private static Node pruneDefinition(Node definition) {
+        return definition
+                .removeNodeList("annotations")
+                .removeNodeList("modifiers");
     }
 
     private static Node retypeToStruct(Node node) {
@@ -32,17 +39,17 @@ public class PassingStage {
     }
 
     private static Node removePackageStatements(Node root) {
-        return root.mapNodeList("children", children -> {
-            return children.stream()
-                    .filter(child -> !child.is("package"))
-                    .filter(child -> {
-                        if (!child.is("import")) return true;
+        return root.mapNodeList("children", children -> children.stream()
+                .filter(child -> !child.is("package"))
+                .filter(PassingStage::filterImport)
+                .toList());
+    }
 
-                        final var namespace = child.findString("namespace").orElse("");
-                        return !namespace.startsWith("java.util.function");
-                    })
-                    .toList();
-        });
+    private static boolean filterImport(Node child) {
+        if (!child.is("import")) return true;
+
+        final var namespace = child.findString("namespace").orElse("");
+        return !namespace.startsWith("java.util.function");
     }
 
     private static Predicate<Node> by(String type) {
