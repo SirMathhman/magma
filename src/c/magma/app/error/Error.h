@@ -1,2 +1,1 @@
-struct Error {
-}
+struct Error {String display();}

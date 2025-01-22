@@ -21,12 +21,26 @@ public class PassingStage {
         return new Ok<>(unit);
     }
 
-    private static Predicate<Node> by(String type) {
-        return node -> node.is(type);
+    private static Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
+        return new Ok<>(unit.filterAndMapToValue(by("root"), PassingStage::removePackageStatements)
+                .or(() -> unit.filterAndMapToValue(by("class").or(by("record")).or(by("interface")), PassingStage::retypeToStruct))
+                .orElse(unit));
     }
 
-    private static Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
-        return new Ok<>(unit);
+    private static Node retypeToStruct(Node node) {
+        return node.retype("struct");
+    }
+
+    private static Node removePackageStatements(Node root) {
+        return root.mapNodeList("children", children -> {
+            return children.stream()
+                    .filter(child -> !child.is("package"))
+                    .toList();
+        });
+    }
+
+    private static Predicate<Node> by(String type) {
+        return node -> node.is(type);
     }
 
     private static Result<PassUnit<Node>, CompileError> passNodeLists(PassUnit<Node> unit) {
@@ -46,7 +60,7 @@ public class PassingStage {
         return pass(unit.withValue(element)).mapValue(result -> result.mapValue(value -> add(unit, value)));
     }
 
-    private static ArrayList<Node> add(PassUnit<List<Node>> unit2, Node value) {
+    private static List<Node> add(PassUnit<List<Node>> unit2, Node value) {
         final var copy = new ArrayList<>(unit2.value());
         copy.add(value);
         return copy;

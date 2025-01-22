@@ -1,2 +1,1 @@
-import java.util.ArrayList;struct Splitter {
-}
+import java.util.ArrayList;struct Splitter {public static void advance(StringBuilder buffer, ArrayList<String> segments){if(!buffer.isEmpty())segments.add(buffer.toString());}}
