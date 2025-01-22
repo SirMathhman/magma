@@ -1,15 +1,18 @@
 package magma.app;
 
-public record PassUnit<T>(State state, T value) {
-    public State left() {
-        return this.state;
-    }
+import java.util.Optional;
+import java.util.function.Predicate;
 
-    public T right() {
-        return this.value;
-    }
+public interface PassUnit<T> {
+    Optional<PassUnit<T>> filter(Predicate<T> predicate);
 
-    public <R> PassUnit<R> withValue(R value) {
-        return new PassUnit<>(this.state, value);
-    }
+    <R> PassUnit<R> withValue(R value);
+
+    PassUnit<T> enter();
+
+    @Deprecated
+    State state();
+
+    @Deprecated
+    T value();
 }
