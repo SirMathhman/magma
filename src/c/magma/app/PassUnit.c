@@ -9,8 +9,10 @@ import java.util.Optional;struct PassUnit<T>{
 		<R>((BiFunction<State, T, R>) => PassUnit<R>) flattenNode;
 		(() => PassUnit<T>) exit;
 	}
+	struct VTable vtable;
 	struct PassUnit new(struct VTable table){
 		struct PassUnit this;
+		this.table=table;
 		return this;
 	}
 }

@@ -25,7 +25,7 @@ import static magma.app.lang.CommonLang.METHOD_VALUE;
 public class RootPasser implements Passer {
     static Node replaceWithInvocation(Node node) {
         final var type = node.findString("type").orElse("");
-        final var symbol = new MapNode("symbol").withString("value", type);
+        final var symbol = createSymbol(type);
         return node.retype("invocation")
                 .withNode("caller", new MapNode("data-access")
                         .withNode("ref", symbol)
@@ -52,27 +52,7 @@ public class RootPasser implements Passer {
         final var name = node.findString("name").orElse("");
         return node.retype("struct").mapNode("value", value -> {
             return value.mapNodeList(CONTENT_CHILDREN, children -> {
-                final var thisType = new MapNode("struct")
-                        .withString("value", name);
-
-                final var thisRef = new MapNode("symbol").withString("value", "this");
-                final var thisDef = new MapNode("definition")
-                        .withNode("type", thisType)
-                        .withString("name", "this");
-
-                final var thisReturn = new MapNode("return").withNode("value", thisRef);
-                final var propertyValue = new MapNode("block").withNodeList(CONTENT_CHILDREN, List.of(
-                        thisDef,
-                        thisReturn));
-
-                final var propertyValue1 = new MapNode("definition")
-                        .withString("name", "new")
-                        .withNode("type", thisType);
-
-
-                final var method = new MapNode(METHOD_TYPE)
-                        .withNode(METHOD_DEFINITION, propertyValue1)
-                        .withNode(METHOD_VALUE, propertyValue);
+                final var method = createConstructor(parameters, name);
 
                 final Node withParameters;
                 if (parameters.isEmpty()) {
@@ -86,6 +66,50 @@ public class RootPasser implements Passer {
                 return children1;
             });
         });
+    }
+
+    private static Node createConstructor(List<Node> parameters, String name) {
+        final var thisType = new MapNode("struct")
+                .withString("value", name);
+
+        final var thisRef = createSymbol("this");
+        final var thisDef = new MapNode("definition")
+                .withNode("type", thisType)
+                .withString("name", "this");
+
+        final var thisReturn = new MapNode("return").withNode("value", thisRef);
+
+        final var constructorChildren = new ArrayList<Node>();
+        constructorChildren.add(thisDef);
+        constructorChildren.addAll(parameters.stream()
+                .map(RootPasser::createAssignment)
+                .toList());
+        constructorChildren.add(thisReturn);
+
+        final var propertyValue = new MapNode("block").withNodeList(CONTENT_CHILDREN, constructorChildren);
+
+        final var propertyValue1 = new MapNode("definition")
+                .withString("name", "new")
+                .withNode("type", thisType);
+
+        return new MapNode(METHOD_TYPE)
+                .withNode(METHOD_DEFINITION, propertyValue1)
+                .withNode(METHOD_VALUE, propertyValue);
+    }
+
+    private static Node createAssignment(Node parameter) {
+        final var paramName = parameter.findString("name").orElse("");
+        final var propertyValue = new MapNode("data-access")
+                .withNode("ref", createSymbol("this"))
+                .withString("property", paramName);
+
+        return new MapNode("assignment")
+                .withNode("destination", propertyValue)
+                .withNode("source", createSymbol(paramName));
+    }
+
+    private static Node createSymbol(String value) {
+        return new MapNode("symbol").withString("value", value);
     }
 
     static Predicate<Node> by(String type) {
@@ -117,17 +141,28 @@ public class RootPasser implements Passer {
         return node;
     }
 
-    private static Node getNode(Node node) {
+    private static Node passInterface(Node node) {
+        final var tableType = new MapNode("struct").withString("value", "VTable");
+
         final var node1 = node.mapNode("value", value -> {
             return value.mapNodeList(CONTENT_CHILDREN, children -> {
-                return List.of(new MapNode("struct")
+                final var table = new MapNode("struct")
                         .withString("name", "VTable")
-                        .withNode("value", new MapNode("block").withNodeList(CONTENT_CHILDREN, children)));
+                        .withNode("value", new MapNode("block").withNodeList(CONTENT_CHILDREN, children));
+
+                final var definition = new MapNode("definition")
+                        .withNode("type", tableType)
+                        .withString("name", "vtable");
+
+                return List.of(
+                        table,
+                        definition
+                );
             });
         });
 
         return retypeToStruct(node1, List.of(new MapNode("definition")
-                .withNode("type", new MapNode("struct").withString("value", "VTable"))
+                .withNode("type", tableType)
                 .withString("name", "table")));
     }
 
@@ -135,7 +170,7 @@ public class RootPasser implements Passer {
     public Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
         return new Ok<>(unit.filterAndMapToValue(by("root"), Formatter::cleanupNamespaced)
                 .or(() -> unit.filterAndMapToValue(by("class").or(by("record")), (Node node) -> retypeToStruct(node, Collections.emptyList())))
-                .or(() -> unit.filterAndMapToValue(by("interface"), RootPasser::getNode))
+                .or(() -> unit.filterAndMapToValue(by("interface"), RootPasser::passInterface))
                 .orElse(unit));
     }
 
