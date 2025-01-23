@@ -4,7 +4,7 @@ import magma.api.stream.Stream;struct Locator{
 		(() => int) length;
 		((String) => Stream<Integer>) locate;
 	}
-	struct Locator new(){
+	struct Locator new(struct VTable table){
 		struct Locator this;
 		return this;
 	}

@@ -5,7 +5,7 @@ import magma.api.result.Result;import java.util.Optional;struct Stream<T>{
 		<R>((((T) => R)) => Stream<R>) map;
 		<R, X>((R, BiFunction<R, T, Result<R, X>>) => Result<R, X>) foldLeftToResult;
 	}
-	struct Stream new(){
+	struct Stream new(struct VTable table){
 		struct Stream this;
 		return this;
 	}

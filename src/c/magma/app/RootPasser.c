@@ -15,14 +15,26 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 		}
 		return generic;
 	}
-	Node retypeToStruct(Node node){
+	Node retypeToStruct(Node node, List<Node> parameters){
 		var name=node.findString("name").orElse("");
 		return node.retype("struct").mapNode("value", ()->{
 			return value.mapNodeList(CommonLang.CONTENT_CHILDREN, ()->{
 				var thisType=MapNode.new();
+				var thisRef=MapNode.new();
+				var thisDef=MapNode.new().withString("name", "this");
+				var thisReturn=MapNode.new();
+				var propertyValue=MapNode.new().withNodeList(CommonLang.CONTENT_CHILDREN, List.of(thisDef, thisReturn));
+				var propertyValue1=MapNode.new();
+				var method=MapNode.new().withNode(METHOD_DEFINITION, propertyValue1).withNode(METHOD_VALUE, propertyValue);
+				Node withParameters;
+				if(parameters.isEmpty()){
+					withParameters=method;
+				}
+				else{
+					withParameters=method.withNodeList("params", parameters);
+				}
 				var children1=ArrayList<Node>.new();
-				var propertyValue=MapNode.new().withNodeList(CommonLang.CONTENT_CHILDREN, List.of(MapNode.new().withString("name", "this"), MapNode.new()));
-				children1.add(MapNode.new());
+				children1.add(withParameters);
 				return children1;
 			});
 		});
@@ -52,7 +64,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 				return List.of(MapNode.new());
 			});
 		});
-		return retypeToStruct(node1);
+		return retypeToStruct(node1, List.of(MapNode.new()));
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
 		return Ok<>.new();

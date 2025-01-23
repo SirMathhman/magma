@@ -9,7 +9,7 @@ import magma.api.Tuple;import magma.api.option.Option;struct Result<T, X>{
 		(() => boolean) isOk;
 		(() => Option<X>) findError;
 	}
-	struct Result new(){
+	struct Result new(struct VTable table){
 		struct Result this;
 		return this;
 	}
