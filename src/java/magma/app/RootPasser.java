@@ -195,7 +195,7 @@ public class RootPasser implements Passer {
     }
 
     private static Node createAnyType() {
-        return createSymbol("Any");
+        return createSymbol("void*");
     }
 
     @Override
