@@ -2,10 +2,12 @@ struct Error{
 	struct VTable{
 		((Any) => String) display;
 	}
+	Box<Any> ref;
 	struct VTable vtable;
-	struct Error new(struct VTable table){
+	struct Error new(Box<Any> ref, struct VTable vtable){
 		struct Error this;
-		this.table=table;
+		this.ref=ref;
+		this.vtable=vtable;
 		return this;
 	}
 }

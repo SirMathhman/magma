@@ -21,10 +21,12 @@ import magma.api.Tuple;import magma.api.stream.Stream;import java.util.List;impo
 		((Any, String) => boolean) hasNode;
 		((Any) => boolean) hasType;
 	}
+	Box<Any> ref;
 	struct VTable vtable;
-	struct Node new(struct VTable table){
+	struct Node new(Box<Any> ref, struct VTable vtable){
 		struct Node this;
-		this.table=table;
+		this.ref=ref;
+		this.vtable=vtable;
 		return this;
 	}
 }

@@ -3,10 +3,12 @@ import magma.api.result.Result;import magma.app.error.CompileError;import java.u
 		((Any, String, String) => String) merge;
 		((Any, String) => Result<List<String>, CompileError>) divide;
 	}
+	Box<Any> ref;
 	struct VTable vtable;
-	struct Divider new(struct VTable table){
+	struct Divider new(Box<Any> ref, struct VTable vtable){
 		struct Divider this;
-		this.table=table;
+		this.ref=ref;
+		this.vtable=vtable;
 		return this;
 	}
 }

@@ -17,7 +17,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 		}
 		if(parent.equals("Function")){
 			var params=ArrayList<Node>.new();
-			params.add(createSymbol("Any"));
+			params.add(createAnyType());
 			params.add(children.get(0));
 			return Optional.of(MapNode.new().withNode("return", children.get(1)));
 		}
@@ -69,7 +69,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 		var value=node.findNode(METHOD_VALUE);
 		if(value.isEmpty()){
 			var params=ArrayList<Node>.new();
-			params.add(createSymbol("Any"));
+			params.add(createAnyType());
 			params.addAll(node.findNodeList(METHOD_PARAMS).orElse(ArrayList<>.new()).stream().map(()->param.findNode("type")).flatMap(Optional::stream).toList());
 			return node.findNode(METHOD_DEFINITION).orElse(MapNode.new()).mapNode("type", ()->{
 				var withType=MapNode.new().withNode(FUNCTIONAL_RETURN, type);
@@ -85,14 +85,19 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 	}
 	Node passInterface(Node node){
 		var tableType=MapNode.new();
+		var tableDefinition=MapNode.new().withString("name", "vtable");
+		var refType=MapNode.new().withString(GENERIC_PARENT, "Box").withNodeList(GENERIC_CHILDREN, List.of(createAnyType()));
+		var refDefinition=MapNode.new();
 		var node1=node.mapNode("value", ()->{
 			return value.mapNodeList(CONTENT_CHILDREN, ()->{
 				var table=MapNode.new();
-				var definition=MapNode.new().withString("name", "vtable");
-				return List.of(table, definition);
+				return List.of(table, refDefinition, tableDefinition);
 			});
 		});
-		return retypeToStruct(node1, List.of(MapNode.new().withString("name", "table")));
+		return retypeToStruct(node1, List.of(refDefinition, tableDefinition));
+	}
+	Node createAnyType(){
+		return createSymbol("Any");
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
 		return Ok<>.new();

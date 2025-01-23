@@ -4,10 +4,12 @@ import magma.api.stream.Stream;struct Locator{
 		((Any) => int) length;
 		((Any, String) => Stream<Integer>) locate;
 	}
+	Box<Any> ref;
 	struct VTable vtable;
-	struct Locator new(struct VTable table){
+	struct Locator new(Box<Any> ref, struct VTable vtable){
 		struct Locator this;
-		this.table=table;
+		this.ref=ref;
+		this.vtable=vtable;
 		return this;
 	}
 }

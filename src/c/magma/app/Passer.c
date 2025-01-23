@@ -3,10 +3,12 @@ import magma.api.result.Result;import magma.app.error.CompileError;struct Passer
 		((Any, PassUnit<Node>) => Result<PassUnit<Node>, CompileError>) afterPass;
 		((Any, PassUnit<Node>) => Result<PassUnit<Node>, CompileError>) beforePass;
 	}
+	Box<Any> ref;
 	struct VTable vtable;
-	struct Passer new(struct VTable table){
+	struct Passer new(Box<Any> ref, struct VTable vtable){
 		struct Passer this;
-		this.table=table;
+		this.ref=ref;
+		this.vtable=vtable;
 		return this;
 	}
 }

@@ -57,7 +57,7 @@ public class RootPasser implements Passer {
 
         if (parent.equals("Function")) {
             final var params = new ArrayList<Node>();
-            params.add(createSymbol("Any"));
+            params.add(createAnyType());
             params.add(children.get(0));
 
             return Optional.of(new MapNode("functional")
@@ -140,7 +140,7 @@ public class RootPasser implements Passer {
         final var value = node.findNode(METHOD_VALUE);
         if (value.isEmpty()) {
             final var params = new ArrayList<Node>();
-            params.add(createSymbol("Any"));
+            params.add(createAnyType());
             params.addAll(node.findNodeList(METHOD_PARAMS)
                     .orElse(new ArrayList<>())
                     .stream()
@@ -165,6 +165,16 @@ public class RootPasser implements Passer {
 
     private static Node passInterface(Node node) {
         final var tableType = new MapNode("struct").withString("value", "VTable");
+        final var tableDefinition = new MapNode("definition")
+                .withNode("type", tableType)
+                .withString("name", "vtable");
+
+        final var refType = new MapNode("generic")
+                .withString(GENERIC_PARENT, "Box")
+                .withNodeList(GENERIC_CHILDREN, List.of(createAnyType()));
+        final var refDefinition = new MapNode("definition")
+                .withString("name", "ref")
+                .withNode("type", refType);
 
         final var node1 = node.mapNode("value", value -> {
             return value.mapNodeList(CONTENT_CHILDREN, children -> {
@@ -172,20 +182,20 @@ public class RootPasser implements Passer {
                         .withString("name", "VTable")
                         .withNode("value", new MapNode("block").withNodeList(CONTENT_CHILDREN, children));
 
-                final var definition = new MapNode("definition")
-                        .withNode("type", tableType)
-                        .withString("name", "vtable");
-
                 return List.of(
                         table,
-                        definition
+                        refDefinition,
+                        tableDefinition
                 );
             });
         });
 
-        return retypeToStruct(node1, List.of(new MapNode("definition")
-                .withNode("type", tableType)
-                .withString("name", "table")));
+
+        return retypeToStruct(node1, List.of(refDefinition, tableDefinition));
+    }
+
+    private static Node createAnyType() {
+        return createSymbol("Any");
     }
 
     @Override

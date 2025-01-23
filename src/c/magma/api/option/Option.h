@@ -3,10 +3,12 @@ struct Option<T>{
 		<R>((Any, [Any, ((Any, T) => R)]) => Option<R>) map;
 		((Any, [Any, ((Any) => T)]) => T) orElseGet;
 	}
+	Box<Any> ref;
 	struct VTable vtable;
-	struct Option new(struct VTable table){
+	struct Option new(Box<Any> ref, struct VTable vtable){
 		struct Option this;
-		this.table=table;
+		this.ref=ref;
+		this.vtable=vtable;
 		return this;
 	}
 }
