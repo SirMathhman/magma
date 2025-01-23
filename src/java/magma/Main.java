@@ -83,7 +83,7 @@ public class Main {
 
     private static Result<String, CompileError> compile(String input) {
         return JavaLang.createJavaRootRule().parse(input)
-                .flatMapValue(root1 -> PassingStage.pass(new InlinePassUnit<>(root1)).mapValue(PassUnit::value)).flatMapValue(root -> CLang.createCRootRule().generate(root));
+                .flatMapValue(root1 -> new PassingStage().pass(new InlinePassUnit<>(root1)).mapValue(PassUnit::value)).flatMapValue(root -> CLang.createCRootRule().generate(root));
     }
 
     private static Optional<ApplicationError> writeOutput(String output, Path targetParent, String name) {
