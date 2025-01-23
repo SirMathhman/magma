@@ -1,4 +1,4 @@
-import java.util.Optional;struct Head<T>{
+import java.util.Optional;struct Head<Capture, T>{
 	struct VTable{
 		(() => Optional<T>) next;
 	}

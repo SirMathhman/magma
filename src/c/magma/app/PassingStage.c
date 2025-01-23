@@ -1,4 +1,4 @@
-import magma.api.result.Result;import magma.app.error.CompileError;struct PassingStage{
+import magma.api.result.Result;import magma.app.error.CompileError;struct PassingStage<Capture>{
 	struct VTable{
 		((PassUnit<Node>) => Result<PassUnit<Node>, CompileError>) pass;
 	}

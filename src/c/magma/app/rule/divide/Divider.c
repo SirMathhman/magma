@@ -1,4 +1,4 @@
-import magma.api.result.Result;import magma.app.error.CompileError;import java.util.List;struct Divider{
+import magma.api.result.Result;import magma.app.error.CompileError;import java.util.List;struct Divider<Capture>{
 	struct VTable{
 		((String, String) => String) merge;
 		((String) => Result<List<String>, CompileError>) divide;

@@ -1,4 +1,4 @@
-struct Error{
+struct Error<Capture>{
 	struct VTable{
 		(() => String) display;
 	}

@@ -33,6 +33,12 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 			});
 		});
 	}
+	Node addCaptureTypeParam(Node node){
+		var oldTypeParams=node.findNodeList("type-params").orElse(Collections.emptyList());
+		var newTypeParams=ArrayList<Node>.new();
+		newTypeParams.addAll(oldTypeParams);
+		return node.withNodeList("type-params", newTypeParams);
+	}
 	Node createConstructor(List<Node> parameters, String name){
 		var thisType=MapNode.new();
 		var thisRef=createSymbol("this");
@@ -82,7 +88,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 				return List.of(table, definition);
 			});
 		});
-		return retypeToStruct(node1, List.of(MapNode.new().withString("name", "table")));
+		return retypeToStruct(addCaptureTypeParam(node1), List.of(MapNode.new().withString("name", "table")));
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
 		return Ok<>.new();

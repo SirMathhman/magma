@@ -1,4 +1,4 @@
-import magma.api.result.Result;import java.util.Optional;struct Stream<T>{
+import magma.api.result.Result;import java.util.Optional;struct Stream<Capture, T>{
 	struct VTable{
 		((BiFunction<T, T, T>) => Optional<T>) foldLeft;
 		<R>((R, BiFunction<R, T, R>) => R) foldLeft;

@@ -1,4 +1,4 @@
-struct Context{
+struct Context<Capture>{
 	struct VTable{
 		(() => String) display;
 	}

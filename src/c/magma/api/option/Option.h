@@ -1,4 +1,4 @@
-struct Option<T>{
+struct Option<Capture, T>{
 	struct VTable{
 		<R>((((T) => R)) => Option<R>) map;
 		(((() => T)) => T) orElseGet;

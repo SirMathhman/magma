@@ -68,6 +68,13 @@ public class RootPasser implements Passer {
         });
     }
 
+    private static Node addCaptureTypeParam(Node node) {
+        final var oldTypeParams = node.findNodeList("type-params").orElse(Collections.emptyList());
+        final var newTypeParams = new ArrayList<Node>(List.of(createSymbol("Capture")));
+        newTypeParams.addAll(oldTypeParams);
+        return node.withNodeList("type-params", newTypeParams);
+    }
+
     private static Node createConstructor(List<Node> parameters, String name) {
         final var thisType = new MapNode("struct")
                 .withString("value", name);
@@ -161,7 +168,7 @@ public class RootPasser implements Passer {
             });
         });
 
-        return retypeToStruct(node1, List.of(new MapNode("definition")
+        return retypeToStruct(addCaptureTypeParam(node1), List.of(new MapNode("definition")
                 .withNode("type", tableType)
                 .withString("name", "table")));
     }

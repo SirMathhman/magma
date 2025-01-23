@@ -1,4 +1,4 @@
-import magma.api.Tuple;import magma.api.stream.Stream;import java.util.List;import java.util.Optional;struct Node{
+import magma.api.Tuple;import magma.api.stream.Stream;import java.util.List;import java.util.Optional;struct Node<Capture>{
 	struct VTable{
 		((String, List<Node>) => Node) withNodeList;
 		((String) => Optional<List<Node>>) findNodeList;

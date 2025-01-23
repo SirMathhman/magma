@@ -1,4 +1,4 @@
-import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;struct Rule{
+import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;struct Rule<Capture>{
 	struct VTable{
 		((String) => Result<Node, CompileError>) parse;
 		((Node) => Result<String, CompileError>) generate;

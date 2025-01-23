@@ -1,4 +1,4 @@
-import java.util.Optional;struct PassUnit<T>{
+import java.util.Optional;struct PassUnit<Capture, T>{
 	struct VTable{
 		<R>((((T) => R)) => PassUnit<R>) mapValue;
 		((Predicate<T>) => Optional<PassUnit<T>>) filter;

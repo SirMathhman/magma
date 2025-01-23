@@ -1,4 +1,4 @@
-import magma.api.Tuple;import magma.api.option.Option;struct Result<T, X>{
+import magma.api.Tuple;import magma.api.option.Option;struct Result<Capture, T, X>{
 	struct VTable{
 		<R>((((T) => Result<R, X>)) => Result<R, X>) flatMapValue;
 		<R>((((T) => R)) => Result<R, X>) mapValue;
