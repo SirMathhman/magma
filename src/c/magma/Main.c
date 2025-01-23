@@ -36,5 +36,5 @@ import magma.api.result.Result;import magma.app.InlinePassUnit;import magma.app.
 		var target=targetParent.resolve(name+".c");
 		var header=targetParent.resolve(name+".h");
 		return JavaFiles.writeStringWrapped(target, output).or(()->JavaFiles.writeStringWrapped(header, output)).map(JavaError::new).map(ApplicationError::new);
-	}
+	}struct Main new(){struct Main this;return this;}
 }

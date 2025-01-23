@@ -1,4 +1,4 @@
-import magma.api.result.Ok;import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.Collections;import java.util.List;import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILDREN;import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_PARENT;import static magma.app.lang.CommonLang.GENERIC_TYPE;struct PassingStage{
+import magma.api.result.Ok;import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.Collections;import java.util.List;import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILDREN;import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_PARENT;import static magma.app.lang.CommonLang.GENERIC_TYPE;import static magma.app.lang.CommonLang.METHOD_DEFINITION;import static magma.app.lang.CommonLang.METHOD_TYPE;import static magma.app.lang.CommonLang.METHOD_VALUE;struct PassingStage{
 	Result<PassUnit<Node>, CompileError> pass(PassUnit<Node> unit){
 		return beforePass(unit).flatMapValue(PassingStage::passNodes).flatMapValue(PassingStage::passNodeLists).flatMapValue(PassingStage::afterPass);
 	}
@@ -46,7 +46,16 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.api.strea
 		return definition.removeNodeList("annotations").removeNodeList("modifiers");
 	}
 	Node retypeToStruct(Node node){
-		return node.retype("struct");
+		var name=node.findString("name").orElse("");
+		return node.retype("struct").mapNode("value", ()->{
+			return value.mapNodeList(CONTENT_CHILDREN, ()->{
+				var thisType=MapNode.new();
+				var children1=ArrayList<>.new();
+				var propertyValue=MapNode.new().withNodeList(CONTENT_CHILDREN, List.of(MapNode.new().withString("name", "this"), MapNode.new()));
+				children1.add(MapNode.new().withNode(METHOD_DEFINITION, MapNode.new()).withNode(METHOD_VALUE, propertyValue));
+				return children1;
+			});
+		});
 	}
 	Node removePackageStatements(Node root){
 		return root.mapNodeList(CONTENT_CHILDREN, ()->children.stream().filter(()->!child.is("package")).filter(PassingStage::filterImport).toList());
@@ -81,5 +90,5 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.api.strea
 
             return pass(current.withValue(pairNode)).mapValue(passed -> passed.mapValue(value -> current.value().withNode(pairKey, value)));
         });
-	}
+	}struct PassingStage new(){struct PassingStage this;return this;}
 }

@@ -12,5 +12,5 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.api.stre
 	}
 	Result<String, CompileError> generate(Node node){
 		return process(NodeContext.new(), ()->rule.generate(node));
-	}
+	}struct OrRule(List<Rule> rules) implements Rule new(){struct OrRule(List<Rule> rules) implements Rule this;return this;}
 }

@@ -4,5 +4,5 @@ struct Namer{
 		var name="_lambda"+counter+"_";
 		counter++;
 		return name;
-	}
+	}struct Namer new(){struct Namer this;return this;}
 }

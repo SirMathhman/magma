@@ -5,5 +5,5 @@ import java.util.stream.IntStream;struct SymbolFilter implements Predicate<Strin
 			var c=input.charAt(index);
 			return Character.isLetter(c) || c == '_'' || (index != 0 && Character.isDigit(c));
 		});
-	}
+	}struct SymbolFilter implements Predicate<String> new(){struct SymbolFilter implements Predicate<String> this;return this;}
 }

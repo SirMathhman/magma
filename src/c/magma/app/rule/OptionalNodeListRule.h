@@ -22,5 +22,5 @@ import magma.api.result.Result;import magma.app.Node;import magma.app.error.Comp
 		else{
 			return this.ifEmpty.generate(node);
 		}
-	}
+	}struct OptionalNodeListRule implements Rule new(){struct OptionalNodeListRule implements Rule this;return this;}
 }

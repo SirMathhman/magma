@@ -42,7 +42,7 @@ public class CommonLang {
     public static final String GENERIC_PARENT = "caller";
     public static final String GENERIC_CHILDREN = "generic-children";
     public static final String FUNCTIONAL_TYPE = "functional";
-    public static final String METHOD_CHILD = "method-child";
+    public static final String METHOD_VALUE = "method-child";
     public static final String DEFINITION_ANNOTATIONS = "annotations";
     public static final String METHOD_TYPE = "method";
     public static final String INITIALIZATION_TYPE = "initialization";
@@ -102,8 +102,8 @@ public class CommonLang {
         final var params = new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, definition));
         final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new StripRule(new SuffixRule(params, ")")));
 
-        final var orRule = new OptionalNodeRule(METHOD_CHILD,
-                new ContextRule("With block", wrapUsingBlock(METHOD_CHILD, infixRule, statement)),
+        final var orRule = new OptionalNodeRule(METHOD_VALUE,
+                new ContextRule("With block", wrapUsingBlock(METHOD_VALUE, infixRule, statement)),
                 new ContextRule("With statement", new StripRule(new SuffixRule(infixRule, ";")))
         );
 
@@ -318,10 +318,15 @@ public class CommonLang {
                 createArrayRule(type),
                 createFunctionalRule(type),
                 createTupleRule(type),
-                createSliceRule(type)
+                createSliceRule(type),
+                createStructRule()
         )));
 
         return type;
+    }
+
+    private static TypeRule createStructRule() {
+        return new TypeRule("struct", new PrefixRule("struct ", new StringRule("value")));
     }
 
     private static TypeRule createSliceRule(LazyRule type) {
@@ -340,11 +345,11 @@ public class CommonLang {
     }
 
     private static TypeRule createArrayRule(LazyRule type) {
-        return new TypeRule("array", new SuffixRule(new NodeRule(METHOD_CHILD, type), "[]"));
+        return new TypeRule("array", new SuffixRule(new NodeRule(METHOD_VALUE, type), "[]"));
     }
 
     private static TypeRule createVarArgsRule(LazyRule type) {
-        return new TypeRule("var-args", new SuffixRule(new NodeRule(METHOD_CHILD, type), "..."));
+        return new TypeRule("var-args", new SuffixRule(new NodeRule(METHOD_VALUE, type), "..."));
     }
 
     private static TypeRule createGenericRule(LazyRule type) {

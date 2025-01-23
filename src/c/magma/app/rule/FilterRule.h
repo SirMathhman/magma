@@ -10,5 +10,7 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node
 	}
 	Result<String, CompileError> generate(Node node){
 		return this.childRule.generate(node);
-	}
+	}struct FilterRule(Predicate<String> filter,
+                         Rule childRule) implements Rule new(){struct FilterRule(Predicate<String> filter,
+                         Rule childRule) implements Rule this;return this;}
 }

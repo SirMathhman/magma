@@ -16,6 +16,9 @@ import static magma.app.lang.CommonLang.CONTENT_CHILDREN;
 import static magma.app.lang.CommonLang.GENERIC_CHILDREN;
 import static magma.app.lang.CommonLang.GENERIC_PARENT;
 import static magma.app.lang.CommonLang.GENERIC_TYPE;
+import static magma.app.lang.CommonLang.METHOD_DEFINITION;
+import static magma.app.lang.CommonLang.METHOD_TYPE;
+import static magma.app.lang.CommonLang.METHOD_VALUE;
 
 public class PassingStage {
     public static Result<PassUnit<Node>, CompileError> pass(PassUnit<Node> unit) {
@@ -97,7 +100,25 @@ public class PassingStage {
     }
 
     private static Node retypeToStruct(Node node) {
-        return node.retype("struct");
+        final var name = node.findString("name").orElse("");
+        return node.retype("struct").mapNode("value", value -> {
+            return value.mapNodeList(CONTENT_CHILDREN, children -> {
+                final var thisType = new MapNode("struct")
+                        .withString("value", name);
+                final var children1 = new ArrayList<>(children);
+                final var propertyValue = new MapNode("block").withNodeList(CONTENT_CHILDREN, List.of(
+                        new MapNode("definition")
+                                .withNode("type", thisType)
+                                .withString("name", "this"),
+                new MapNode("return").withNode("value", new MapNode("symbol").withString("value", "this"))));
+                children1.add(new MapNode(METHOD_TYPE)
+                        .withNode(METHOD_DEFINITION, new MapNode("definition")
+                                .withString("name", "new")
+                                .withNode("type", thisType))
+                        .withNode(METHOD_VALUE, propertyValue));
+                return children1;
+            });
+        });
     }
 
     private static Node removePackageStatements(Node root) {

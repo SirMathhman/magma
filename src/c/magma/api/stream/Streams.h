@@ -13,5 +13,5 @@ import java.util.ArrayList;import java.util.List;import java.util.Set;struct Str
 	}
 	<T>Stream<T> empty(){
 		return HeadedStream<>.new();
-	}
+	}struct Streams new(){struct Streams this;return this;}
 }

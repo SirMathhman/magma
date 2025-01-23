@@ -10,7 +10,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	String GENERIC_PARENT="caller";
 	String GENERIC_CHILDREN="generic-children";
 	String FUNCTIONAL_TYPE="functional";
-	String METHOD_CHILD="method-child";
+	String METHOD_VALUE="method-child";
 	String DEFINITION_ANNOTATIONS="annotations";
 	String METHOD_TYPE="method";
 	String INITIALIZATION_TYPE="initialization";
@@ -166,6 +166,9 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 		type.set(OrRule.new());
 		return type;
 	}
+	TypeRule createStructRule(){
+		return TypeRule.new();
+	}
 	TypeRule createSliceRule(LazyRule type){
 		return TypeRule.new();
 	}
@@ -188,5 +191,5 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 		var parent=StringRule.new();
 		var children=DivideRule.new();
 		return TypeRule.new();
-	}
+	}struct CommonLang new(){struct CommonLang this;return this;}
 }

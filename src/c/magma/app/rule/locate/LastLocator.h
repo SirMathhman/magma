@@ -8,5 +8,5 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import java.util.
 	}
 	int length(){
 		return this.infix.length();
-	}
+	}struct LastLocator(String infix) implements Locator new(){struct LastLocator(String infix) implements Locator this;return this;}
 }

@@ -6,5 +6,5 @@ import magma.api.Tuple;import magma.api.option.Option;struct Result<T, X>{
 	<R>Result<Tuple<T, R>, X> and((() => Result<R, X>) other);
 	<R>Result<T, Tuple<X, R>> or((() => Result<T, R>) other);
 	boolean isOk();
-	Option<X> findError();
+	Option<X> findError();struct Result<T, X> new(){struct Result<T, X> this;return this;}
 }

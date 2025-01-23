@@ -8,5 +8,5 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 	}
 	Result<List<String>, CompileError> divide(String input){
 		return Ok<>.new();
-	}
+	}struct SimpleDivider implements Divider new(){struct SimpleDivider implements Divider this;return this;}
 }

@@ -4,5 +4,5 @@ struct None<T> implements Option<T>{
 	}
 	T orElseGet((() => T) other){
 		return other.get();
-	}
+	}struct None<T> implements Option<T> new(){struct None<T> implements Option<T> this;return this;}
 }

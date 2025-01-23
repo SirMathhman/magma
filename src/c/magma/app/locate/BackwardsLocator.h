@@ -20,5 +20,5 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.
 			index=input.lastIndexOf(this.infix, index - 1);
 		}
 		return indices;
-	}
+	}struct BackwardsLocator implements Locator new(){struct BackwardsLocator implements Locator this;return this;}
 }

@@ -5,5 +5,5 @@ import magma.app.rule.LazyRule;import magma.app.rule.OrRule;import magma.app.rul
 	OrRule createCRootSegmentRule(){
 		var function=LazyRule.new();
 		return OrRule.new();
-	}
+	}struct CLang new(){struct CLang this;return this;}
 }

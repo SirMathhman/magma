@@ -7,5 +7,5 @@ import magma.api.Tuple;import java.util.List;import java.util.Optional;struct Pa
 	<R>Optional<PassUnit<R>> filterAndMapToValue(Predicate<T> predicate, ((T) => R) mapper);
 	Optional<PassUnit<T>> filterAndMapToCached(Predicate<T> predicate, ((T) => Tuple<List<Node>, T>) mapper);
 	<R>PassUnit<R> flattenNode(BiFunction<State, T, R> mapper);
-	PassUnit<T> exit();
+	PassUnit<T> exit();struct PassUnit<T> new(){struct PassUnit<T> this;return this;}
 }

@@ -21,5 +21,5 @@ import magma.app.error.context.Context;import java.util.ArrayList;import java.ut
 		var joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
                 .collect(Collectors.joining());
 		return this.message + ": " + this.context.display() + joinedChildren;
-	}
+	}struct CompileError implements Error new(){struct CompileError implements Error this;return this;}
 }
