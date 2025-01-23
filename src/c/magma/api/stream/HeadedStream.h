@@ -20,5 +20,9 @@ import magma.api.result.Ok;import magma.api.result.Result;import java.util.Optio
 	}
 	<R, X>Result<R, X> foldLeftToResult(R initial, BiFunction<R, T, Result<R, X>> folder){
 		return this.<Result<R, X>>foldLeft(new Ok<>(initial), (rxResult, t) -> rxResult.flatMapValue(inner -> folder.apply(inner, t)));
-	}struct HeadedStream new(){struct HeadedStream this;return this;}
+	}
+	struct HeadedStream new(){
+		struct HeadedStream this;
+		return this;
+	}
 }

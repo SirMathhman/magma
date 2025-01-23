@@ -1,3 +1,7 @@
 struct Context{
-	String display();struct Context new(){struct Context this;return this;}
+	String display();
+	struct Context new(){
+		struct Context this;
+		return this;
+	}
 }

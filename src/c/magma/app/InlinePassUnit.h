@@ -1,4 +1,4 @@
-import magma.api.Tuple;import java.util.ArrayList;import java.util.List;import java.util.Optional;struct InlinePassUnit<T>(State state, List<Node> cache, T value) implements PassUnit<T>{
+import java.util.ArrayList;import java.util.List;import java.util.Optional;struct InlinePassUnit<T>(State state, List<Node> cache, T value) implements PassUnit<T>{
 	public InlinePassUnit(T value){
 		this(State.new(), ArrayList<>.new(), value);
 	}
@@ -20,15 +20,6 @@ import magma.api.Tuple;import java.util.ArrayList;import java.util.List;import j
                 ? Optional.of(supplier.get())
                 : Optional.empty();
 	}
-	Optional<PassUnit<T>> filterAndMapToCached(Predicate<T> predicate, ((T) => Tuple<List<Node>, T>) mapper){
-		return filterAndSupply(predicate, ()->{
-			var mapped=mapper.apply(this.value);
-			var cached=ArrayList<>.new();
-			cached.addAll(mapped.left());
-			var right=mapped.right();
-			return InlinePassUnit<>.new();
-		});
-	}
 	<R>PassUnit<R> flattenNode(BiFunction<State, T, R> mapper){
 		return InlinePassUnit<>.new();
 	}
@@ -38,5 +29,9 @@ import magma.api.Tuple;import java.util.ArrayList;import java.util.List;import j
 	<R>PassUnit<R> mapValue(((T) => R) mapper){
 		var apply=mapper.apply(this.value);
 		return InlinePassUnit<>.new();
-	}struct InlinePassUnit new(){struct InlinePassUnit this;return this;}
+	}
+	struct InlinePassUnit new(){
+		struct InlinePassUnit this;
+		return this;
+	}
 }

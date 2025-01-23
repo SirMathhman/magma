@@ -7,5 +7,9 @@ import java.util.stream.IntStream;struct NumberFilter implements Predicate<Strin
 			return allDigits(input.substring(1));
 		}
 		return allDigits(input);
-	}struct NumberFilter new(){struct NumberFilter this;return this;}
+	}
+	struct NumberFilter new(){
+		struct NumberFilter this;
+		return this;
+	}
 }

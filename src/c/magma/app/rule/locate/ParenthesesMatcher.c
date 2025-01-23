@@ -24,5 +24,9 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 			if(c==')')depth--;
 		}
 		return Streams.empty();
-	}struct ParenthesesMatcher new(){struct ParenthesesMatcher this;return this;}
+	}
+	struct ParenthesesMatcher new(){
+		struct ParenthesesMatcher this;
+		return this;
+	}
 }

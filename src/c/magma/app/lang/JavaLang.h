@@ -10,5 +10,9 @@ import magma.app.rule.LazyRule;import magma.app.rule.OrRule;import magma.app.rul
 		var statement=CommonLang.createStatementRule(function);
 		function.set(CommonLang.createMethodRule(statement));
 		return CommonLang.createCompoundRule(type, infix, CommonLang.createStructSegmentRule(function, statement));
-	}struct JavaLang new(){struct JavaLang this;return this;}
+	}
+	struct JavaLang new(){
+		struct JavaLang this;
+		return this;
+	}
 }

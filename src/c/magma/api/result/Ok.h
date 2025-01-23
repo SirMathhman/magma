@@ -25,5 +25,9 @@ import magma.api.Tuple;import magma.api.option.None;import magma.api.option.Opti
 	}
 	Option<X> findError(){
 		return findError0().<Option<X>>map(Some::new).orElseGet(None::new);
-	}struct Ok new(){struct Ok this;return this;}
+	}
+	struct Ok new(){
+		struct Ok this;
+		return this;
+	}
 }

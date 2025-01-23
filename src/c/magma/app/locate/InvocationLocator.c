@@ -16,5 +16,9 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.
 			i--;
 		}
 		return Streams.empty();
-	}struct InvocationLocator new(){struct InvocationLocator this;return this;}
+	}
+	struct InvocationLocator new(){
+		struct InvocationLocator this;
+		return this;
+	}
 }

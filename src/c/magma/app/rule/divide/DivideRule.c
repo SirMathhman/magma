@@ -35,5 +35,9 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	}
 	String merge(List<String> elements){
 		return Streams.from(elements).foldLeft(this.divider::merge).orElse("");
-	}struct DivideRule new(){struct DivideRule this;return this;}
+	}
+	struct DivideRule new(){
+		struct DivideRule this;
+		return this;
+	}
 }

@@ -6,5 +6,9 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	}
 	Result<String, CompileError> generate(Node node){
 		return Ok<>.new();
-	}struct ExactRule new(){struct ExactRule this;return this;}
+	}
+	struct ExactRule new(){
+		struct ExactRule this;
+		return this;
+	}
 }

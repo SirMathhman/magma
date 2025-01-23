@@ -18,5 +18,9 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	}
 	Result<String, CompileError> generate(Node node){
 		return childRule.generate(node).mapValue(()->inner+suffix);
-	}struct SuffixRule new(){struct SuffixRule this;return this;}
+	}
+	struct SuffixRule new(){
+		struct SuffixRule this;
+		return this;
+	}
 }

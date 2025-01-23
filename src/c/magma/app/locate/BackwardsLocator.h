@@ -20,5 +20,9 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.
 			index=input.lastIndexOf(this.infix, index - 1);
 		}
 		return indices;
-	}struct BackwardsLocator new(){struct BackwardsLocator this;return this;}
+	}
+	struct BackwardsLocator new(){
+		struct BackwardsLocator this;
+		return this;
+	}
 }

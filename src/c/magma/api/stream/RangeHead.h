@@ -9,5 +9,9 @@ import java.util.Optional;struct RangeHead implements Head<Integer>{
 		var value=this.counter;
 		this.counter++;
 		return Optional.of(value);
-	}struct RangeHead new(){struct RangeHead this;return this;}
+	}
+	struct RangeHead new(){
+		struct RangeHead this;
+		return this;
+	}
 }

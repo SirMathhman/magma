@@ -14,5 +14,9 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.MapN
 		else{
 			return Err<>.new();
 		}
-	}struct TypeRule new(){struct TypeRule this;return this;}
+	}
+	struct TypeRule new(){
+		struct TypeRule this;
+		return this;
+	}
 }

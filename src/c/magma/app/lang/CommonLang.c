@@ -198,5 +198,9 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 		var parent=StringRule.new();
 		var children=DivideRule.new();
 		return TypeRule.new();
-	}struct CommonLang new(){struct CommonLang this;return this;}
+	}
+	struct CommonLang new(){
+		struct CommonLang this;
+		return this;
+	}
 }

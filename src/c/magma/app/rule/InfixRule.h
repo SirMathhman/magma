@@ -32,5 +32,9 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node
 			i++;
 		}
 		return Err<>.new();
-	}struct InfixRule new(){struct InfixRule this;return this;}
+	}
+	struct InfixRule new(){
+		struct InfixRule this;
+		return this;
+	}
 }

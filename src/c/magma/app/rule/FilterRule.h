@@ -9,5 +9,9 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node
 	}
 	Result<String, CompileError> generate(Node node){
 		return this.childRule.generate(node);
-	}struct FilterRule new(){struct FilterRule this;return this;}
+	}
+	struct FilterRule new(){
+		struct FilterRule this;
+		return this;
+	}
 }

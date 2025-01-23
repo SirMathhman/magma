@@ -1,7 +1,5 @@
 package magma.app;
 
-import magma.api.Tuple;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,17 +42,6 @@ public record InlinePassUnit<T>(
         return predicate.test(this.value)
                 ? Optional.of(supplier.get())
                 : Optional.empty();
-    }
-
-    @Override
-    public Optional<PassUnit<T>> filterAndMapToCached(Predicate<T> predicate, Function<T, Tuple<List<Node>, T>> mapper) {
-        return filterAndSupply(predicate, () -> {
-            final var mapped = mapper.apply(this.value);
-            final var cached = new ArrayList<>(this.cache);
-            cached.addAll(mapped.left());
-            final var right = mapped.right();
-            return new InlinePassUnit<>(this.state, cached, right);
-        });
     }
 
     @Override

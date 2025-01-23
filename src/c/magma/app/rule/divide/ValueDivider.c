@@ -52,5 +52,9 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 		}
 		Splitter.advance(buffer, segments);
 		return Ok<List<String>, CompileError>.new();
-	}struct ValueDivider new(){struct ValueDivider this;return this;}
+	}
+	struct ValueDivider new(){
+		struct ValueDivider this;
+		return this;
+	}
 }
