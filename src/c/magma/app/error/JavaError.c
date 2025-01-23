@@ -3,5 +3,5 @@ import java.io.PrintWriter;import java.io.StringWriter;struct JavaError(Exceptio
 		var writer=StringWriter.new();
 		this.e.printStackTrace(PrintWriter.new());
 		return writer.toString();
-	}struct JavaError(Exception e) implements Error new(){struct JavaError(Exception e) implements Error this;return this;}
+	}struct JavaError new(){struct JavaError this;return this;}
 }

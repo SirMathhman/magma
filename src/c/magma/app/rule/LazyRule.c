@@ -16,5 +16,5 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	}
 	void set(Rule childRule){
 		this.childRule = Optional.of(childRule);
-	}struct LazyRule implements Rule new(){struct LazyRule implements Rule this;return this;}
+	}struct LazyRule new(){struct LazyRule this;return this;}
 }

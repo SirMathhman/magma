@@ -4,5 +4,5 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.MapN
 	}
 	Result<String, CompileError> generate(Node node){
 		return node.findNode(this.propertyKey).map(this.childRule::generate).orElseGet(()->Err<>.new());
-	}struct NodeRule(String propertyKey, Rule childRule) implements Rule new(){struct NodeRule(String propertyKey, Rule childRule) implements Rule this;return this;}
+	}struct NodeRule new(){struct NodeRule this;return this;}
 }

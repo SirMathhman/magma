@@ -4,5 +4,5 @@ struct Some<T>(T value) implements Option<T>{
 	}
 	T orElseGet((() => T) other){
 		return this.value;
-	}struct Some<T>(T value) implements Option<T> new(){struct Some<T>(T value) implements Option<T> this;return this;}
+	}struct Some new(){struct Some this;return this;}
 }

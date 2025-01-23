@@ -7,5 +7,5 @@ struct State(int depth){
 	}
 	State enter(){
 		return State.new();
-	}struct State(int depth) new(){struct State(int depth) this;return this;}
+	}struct State new(){struct State this;return this;}
 }

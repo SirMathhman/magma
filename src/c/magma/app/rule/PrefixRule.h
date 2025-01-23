@@ -14,5 +14,5 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	}
 	Result<String, CompileError> generate(Node node){
 		return this.childRule.generate(node).mapValue(()->this.prefix + inner);
-	}struct PrefixRule implements Rule new(){struct PrefixRule implements Rule this;return this;}
+	}struct PrefixRule new(){struct PrefixRule this;return this;}
 }

@@ -70,8 +70,26 @@ public class CommonLang {
                 new SuffixRule(modifiers, " ")
         );
 
-        final var nameAndContent = wrapUsingBlock("value", new StripRule(new StringRule("name")), segmentRule);
+        final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
+        final var typeParams = new DivideRule("type-params", VALUE_DIVIDER, createTypeRule());
+        final var maybeTypeParams = new OptionalNodeListRule("type-params",
+                new InfixRule(name, new FirstLocator("<"), new StripRule(new SuffixRule(typeParams, ">"))),
+                name
+        );
 
+        final var params = new DivideRule("params", VALUE_DIVIDER, createDefinitionRule());
+        final var maybeParams = new OptionalNodeListRule("params",
+                new InfixRule(maybeTypeParams, new FirstLocator("("), new StripRule(new SuffixRule(params, ")"))),
+                maybeTypeParams
+        );
+
+        final var supertype = new NodeRule("supertype", createTypeRule());
+        final var maybeImplements = new OptionalNodeRule("supertype",
+                new InfixRule(maybeParams, new FirstLocator(" implements "), supertype),
+                maybeParams
+        );
+
+        final var nameAndContent = wrapUsingBlock("value", maybeImplements, segmentRule);
         final var infixRule = new InfixRule(maybeModifiers, new FirstLocator(infix), nameAndContent);
         return new TypeRule(type, infixRule);
     }
@@ -355,7 +373,7 @@ public class CommonLang {
     private static TypeRule createGenericRule(LazyRule type) {
         final var parent = new StringRule(GENERIC_PARENT);
         final var children = new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, type);
-        return new TypeRule(GENERIC_TYPE, new InfixRule(new StripRule(parent), new FirstLocator("<"), new SuffixRule(children, ">")));
+        return new TypeRule(GENERIC_TYPE, new InfixRule(new StripRule(parent), new FirstLocator("<"), new StripRule(new SuffixRule(children, ">"))));
     }
 
 }

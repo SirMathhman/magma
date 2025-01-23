@@ -53,5 +53,5 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 		else{
 			return Err<>.new();
 		}
-	}struct StatementDivider implements Divider new(){struct StatementDivider implements Divider this;return this;}
+	}struct StatementDivider new(){struct StatementDivider this;return this;}
 }

@@ -33,7 +33,14 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	Rule createCompoundRule(String type, String infix, Rule segmentRule){
 		var modifiers=createModifiersRule();
 		var maybeModifiers=OptionalNodeRule.new();
-		var nameAndContent=wrapUsingBlock("value", StripRule.new(), segmentRule);
+		var name=StripRule.new();
+		var typeParams=DivideRule.new();
+		var maybeTypeParams=OptionalNodeListRule.new();
+		var params=DivideRule.new();
+		var maybeParams=OptionalNodeListRule.new();
+		var supertype=NodeRule.new();
+		var maybeImplements=OptionalNodeRule.new();
+		var nameAndContent=wrapUsingBlock("value", maybeImplements, segmentRule);
 		var infixRule=InfixRule.new();
 		return TypeRule.new();
 	}

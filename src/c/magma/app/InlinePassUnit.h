@@ -1,8 +1,4 @@
-import magma.api.Tuple;import java.util.ArrayList;import java.util.List;import java.util.Optional;struct InlinePassUnit<T>(
-        State state,
-        List<Node> cache,
-        T value
-) implements PassUnit<T>{
+import magma.api.Tuple;import java.util.ArrayList;import java.util.List;import java.util.Optional;struct InlinePassUnit<T>(State state, List<Node> cache, T value) implements PassUnit<T>{
 	public InlinePassUnit(T value){
 		this(State.new(), ArrayList<>.new(), value);
 	}
@@ -42,13 +38,5 @@ import magma.api.Tuple;import java.util.ArrayList;import java.util.List;import j
 	<R>PassUnit<R> mapValue(((T) => R) mapper){
 		var apply=mapper.apply(this.value);
 		return InlinePassUnit<>.new();
-	}struct InlinePassUnit<T>(
-        State state,
-        List<Node> cache,
-        T value
-) implements PassUnit<T> new(){struct InlinePassUnit<T>(
-        State state,
-        List<Node> cache,
-        T value
-) implements PassUnit<T> this;return this;}
+	}struct InlinePassUnit new(){struct InlinePassUnit this;return this;}
 }

@@ -100,5 +100,5 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	}
 	Optional<String> findString(String propertyKey){
 		return Optional.ofNullable(this.strings.get(propertyKey));
-	}struct MapNode implements Node new(){struct MapNode implements Node this;return this;}
+	}struct MapNode new(){struct MapNode this;return this;}
 }

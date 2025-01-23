@@ -1,6 +1,4 @@
-import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;struct StripRule(
-        Rule childRule, String before, String after
-) implements Rule{
+import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;struct StripRule(Rule childRule, String before, String after) implements Rule{
 	public StripRule(Rule childRule){
 		this(childRule, "", "");
 	}
@@ -11,9 +9,5 @@ import magma.api.result.Result;import magma.app.Node;import magma.app.error.Comp
 		var before=node.findString(this.before).orElse("");
 		var after=node.findString(this.after).orElse("");
 		return this.childRule.generate(node).mapValue(()->before+content+after);
-	}struct StripRule(
-        Rule childRule, String before, String after
-) implements Rule new(){struct StripRule(
-        Rule childRule, String before, String after
-) implements Rule this;return this;}
+	}struct StripRule new(){struct StripRule this;return this;}
 }

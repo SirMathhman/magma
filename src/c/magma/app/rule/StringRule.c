@@ -11,5 +11,5 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	}
 	Result<String, CompileError> generate(Node node){
 		return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok::new).orElseGet(()->Err<>.new());
-	}struct StringRule implements Rule new(){struct StringRule implements Rule this;return this;}
+	}struct StringRule new(){struct StringRule this;return this;}
 }
