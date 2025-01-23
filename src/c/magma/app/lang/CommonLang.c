@@ -47,7 +47,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 		var infixRule=InfixRule.new();
 		return TypeRule.new();
 	}
-	StripRule createStructSegmentRule(LazyRule function, Rule statement){
+	StripRule createStructSegmentRule(LazyRule function, Rule statement, LazyRule struct){
 		return StripRule.new();
 	}
 	SuffixRule createDefinitionStatementRule(){
@@ -74,7 +74,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	Rule createContentRule(Rule rule){
 		return StripRule.new();
 	}
-	Rule createStatementRule(Rule function){
+	Rule createStatementRule(Rule function, LazyRule struct){
 		var statement=LazyRule.new();
 		var valueRule=createValueRule(statement, function);
 		statement.set(OrRule.new());

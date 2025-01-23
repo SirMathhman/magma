@@ -97,12 +97,13 @@ public class CommonLang {
         return new TypeRule(type, infixRule);
     }
 
-    public static StripRule createStructSegmentRule(LazyRule function, Rule statement) {
+    public static StripRule createStructSegmentRule(LazyRule function, Rule statement, LazyRule struct) {
         return new StripRule(new OrRule(List.of(
                 function,
                 createInitializationRule(createValueRule(statement, function)),
                 createDefinitionStatementRule(),
-                createWhitespaceRule()
+                createWhitespaceRule(),
+                struct
         )), BEFORE_STRUCT_SEGMENT, "");
     }
 
@@ -142,7 +143,7 @@ public class CommonLang {
         ), "", CONTENT_AFTER_CHILDREN);
     }
 
-    static Rule createStatementRule(Rule function) {
+    static Rule createStatementRule(Rule function, LazyRule struct) {
         final var statement = new LazyRule();
         final var valueRule = createValueRule(statement, function);
         statement.set(new OrRule(List.of(

@@ -1,5 +1,7 @@
 struct Error{
-	(() => String) display;
+	struct VTable{
+		(() => String) display;
+	}
 	struct Error new(){
 		struct Error this;
 		return this;

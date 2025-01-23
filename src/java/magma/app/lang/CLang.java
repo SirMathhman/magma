@@ -14,9 +14,12 @@ public class CLang {
 
     private static OrRule createCRootSegmentRule() {
         final var function = new LazyRule();
+        final var struct = new LazyRule();
+        struct.set(JavaLang.createJavaCompoundRule(CommonLang.STRUCT_TYPE, "struct ", function, struct));
+
         return new OrRule(List.of(
                 CommonLang.createNamespacedRule("import", "import "),
-                JavaLang.createJavaCompoundRule(CommonLang.STRUCT_TYPE, "struct ", function),
+                struct,
                 function,
                 CommonLang.createWhitespaceRule()
         ));

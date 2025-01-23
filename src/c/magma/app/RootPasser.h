@@ -1,4 +1,4 @@
-import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import magma.app.lang.CommonLang;import java.util.ArrayList;import java.util.Collections;import java.util.List;import java.util.Optional;import static magma.app.lang.CommonLang.FUNCTIONAL_PARAMS;import static magma.app.lang.CommonLang.FUNCTIONAL_RETURN;import static magma.app.lang.CommonLang.FUNCTIONAL_TYPE;import static magma.app.lang.CommonLang.METHOD_DEFINITION;import static magma.app.lang.CommonLang.METHOD_PARAMS;import static magma.app.lang.CommonLang.METHOD_VALUE;struct RootPasser implements Passer{
+import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import magma.app.lang.CommonLang;import java.util.ArrayList;import java.util.Collections;import java.util.List;import java.util.Optional;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.FUNCTIONAL_PARAMS;import static magma.app.lang.CommonLang.FUNCTIONAL_RETURN;import static magma.app.lang.CommonLang.FUNCTIONAL_TYPE;import static magma.app.lang.CommonLang.METHOD_DEFINITION;import static magma.app.lang.CommonLang.METHOD_PARAMS;import static magma.app.lang.CommonLang.METHOD_TYPE;import static magma.app.lang.CommonLang.METHOD_VALUE;struct RootPasser implements Passer{
 	Node replaceWithInvocation(Node node){
 		var type=node.findString("type").orElse("");
 		var symbol=MapNode.new();
@@ -45,6 +45,14 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 			});
 		}
 		return node;
+	}
+	Node getNode(Node node){
+		var node1=node.mapNode("value", ()->{
+			return value.mapNodeList(CONTENT_CHILDREN, ()->{
+				return List.of(MapNode.new());
+			});
+		});
+		return retypeToStruct(node1);
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
 		return Ok<>.new();

@@ -11,11 +11,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static magma.app.lang.CommonLang.CONTENT_CHILDREN;
 import static magma.app.lang.CommonLang.FUNCTIONAL_PARAMS;
 import static magma.app.lang.CommonLang.FUNCTIONAL_RETURN;
 import static magma.app.lang.CommonLang.FUNCTIONAL_TYPE;
 import static magma.app.lang.CommonLang.METHOD_DEFINITION;
 import static magma.app.lang.CommonLang.METHOD_PARAMS;
+import static magma.app.lang.CommonLang.METHOD_TYPE;
 import static magma.app.lang.CommonLang.METHOD_VALUE;
 
 public class RootPasser implements Passer {
@@ -94,10 +96,22 @@ public class RootPasser implements Passer {
         return node;
     }
 
+    private static Node getNode(Node node) {
+        final var node1 = node.mapNode("value", value -> {
+            return value.mapNodeList(CONTENT_CHILDREN, children -> {
+                return List.of(new MapNode("struct")
+                        .withString("name", "VTable")
+                        .withNode("value", new MapNode("block").withNodeList(CONTENT_CHILDREN, children)));
+            });
+        });
+        return retypeToStruct(node1);
+    }
+
     @Override
     public Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
         return new Ok<>(unit.filterAndMapToValue(by("root"), Formatter::cleanupNamespaced)
-                .or(() -> unit.filterAndMapToValue(by("class").or(by("record")).or(by("interface")), RootPasser::retypeToStruct))
+                .or(() -> unit.filterAndMapToValue(by("class").or(by("record")), RootPasser::retypeToStruct))
+                .or(() -> unit.filterAndMapToValue(by("interface"), RootPasser::getNode))
                 .orElse(unit));
     }
 
@@ -105,7 +119,7 @@ public class RootPasser implements Passer {
     public Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
         return new Ok<>(unit.filterAndMapToValue(by(CommonLang.GENERIC_TYPE), RootPasser::replaceWithFunctional)
                 .or(() -> unit.filterAndMapToValue(by("construction"), RootPasser::replaceWithInvocation))
-                .or(() -> unit.filterAndMapToValue(by("method"), RootPasser::replaceWithDefinition))
+                .or(() -> unit.filterAndMapToValue(by(METHOD_TYPE), RootPasser::replaceWithDefinition))
                 .orElse(unit));
     }
 }

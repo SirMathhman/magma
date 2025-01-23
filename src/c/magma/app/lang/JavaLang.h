@@ -4,12 +4,14 @@ import magma.app.rule.LazyRule;import magma.app.rule.OrRule;import magma.app.rul
 	}
 	OrRule createJavaRootSegmentRule(){
 		var function=LazyRule.new();
+		var struct=LazyRule.new();
+		struct.set(OrRule.new());
 		return OrRule.new();
 	}
-	Rule createJavaCompoundRule(String type, String infix, LazyRule function){
-		var statement=CommonLang.createStatementRule(function);
+	Rule createJavaCompoundRule(String type, String infix, LazyRule function, LazyRule struct){
+		var statement=CommonLang.createStatementRule(function, struct);
 		function.set(CommonLang.createMethodRule(statement));
-		return CommonLang.createCompoundRule(type, infix, CommonLang.createStructSegmentRule(function, statement));
+		return CommonLang.createCompoundRule(type, infix, CommonLang.createStructSegmentRule(function, statement, struct));
 	}
 	struct JavaLang new(){
 		struct JavaLang this;

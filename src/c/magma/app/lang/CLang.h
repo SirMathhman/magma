@@ -4,6 +4,8 @@ import magma.app.rule.LazyRule;import magma.app.rule.OrRule;import magma.app.rul
 	}
 	OrRule createCRootSegmentRule(){
 		var function=LazyRule.new();
+		var struct=LazyRule.new();
+		struct.set(JavaLang.createJavaCompoundRule(CommonLang.STRUCT_TYPE, "struct ", function, struct));
 		return OrRule.new();
 	}
 	struct CLang new(){
