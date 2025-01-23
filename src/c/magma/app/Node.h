@@ -7,17 +7,17 @@ import magma.api.Tuple;import magma.api.stream.Stream;import java.util.List;impo
 		((void*, String, Node) => Node) withNode;
 		((void*, int) => String) format;
 		((void*, String) => Optional<Node>) findNode;
-		((void*, String, [Any, ((void*, String) => String)]) => Node) mapString;
+		((void*, String, [void*, ((void*, String) => String)]) => Node) mapString;
 		((void*, Node) => Node) merge;
 		((void*) => Stream<Tuple<String, List<Node>>>) streamNodeLists;
 		((void*) => Stream<Tuple<String, Node>>) streamNodes;
 		((void*) => String) display;
 		((void*, String) => Node) retype;
 		((void*, String) => boolean) is;
-		((void*, String, [Any, ((void*, List<Node>) => List<Node>)]) => Node) mapNodeList;
+		((void*, String, [void*, ((void*, List<Node>) => List<Node>)]) => Node) mapNodeList;
 		((void*, String) => boolean) hasNodeList;
 		((void*, String) => Node) removeNodeList;
-		((void*, String, [Any, ((void*, Node) => Node)]) => Node) mapNode;
+		((void*, String, [void*, ((void*, Node) => Node)]) => Node) mapNode;
 		((void*, String) => boolean) hasNode;
 		((void*) => boolean) hasType;
 	}

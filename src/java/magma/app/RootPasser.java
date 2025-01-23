@@ -38,7 +38,7 @@ public class RootPasser implements Passer {
         return tryReplaceWithFunctional(generic)
                 .map(functional -> {
                     return new MapNode(TUPLE_TYPE).withNodeList(TUPLE_CHILDREN, List.of(
-                            createSymbol("Any"),
+                            createAnyType(),
                             functional
                     ));
                 })
@@ -51,7 +51,7 @@ public class RootPasser implements Passer {
 
         if (parent.equals("Supplier")) {
             return Optional.of(new MapNode("functional")
-                    .withNodeList("params", List.of(createSymbol("Any")))
+                    .withNodeList("params", List.of(createAnyType()))
                     .withNode("return", children.get(0)));
         }
 

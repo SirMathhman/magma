@@ -34,7 +34,7 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	Optional<Node> findNode(String propertyKey){
 		return Optional.ofNullable(this.nodes.get(propertyKey));
 	}
-	Node mapString(String propertyKey, [Any, ((void*, String) => String)] mapper){
+	Node mapString(String propertyKey, [void*, ((void*, String) => String)] mapper){
 		return findString(propertyKey).map(mapper).map(()->withString(propertyKey, newString)).orElse(this);
 	}
 	Node merge(Node other){
@@ -60,7 +60,7 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	boolean is(String type){
 		return this.type.isPresent() && this.type.get().equals(type);
 	}
-	Node mapNodeList(String propertyKey, [Any, ((void*, List<Node>) => List<Node>)] mapper){
+	Node mapNodeList(String propertyKey, [void*, ((void*, List<Node>) => List<Node>)] mapper){
 		return findNodeList(propertyKey).map(mapper).map(()->withNodeList(propertyKey, list)).orElse(this);
 	}
 	boolean hasNodeList(String propertyKey){
@@ -71,7 +71,7 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 		copy.remove(propertyKey);
 		return MapNode.new();
 	}
-	Node mapNode(String propertyKey, [Any, ((void*, Node) => Node)] mapper){
+	Node mapNode(String propertyKey, [void*, ((void*, Node) => Node)] mapper){
 		return findNode(propertyKey).map(mapper).map(()->withNode(propertyKey, node)).orElse(this);
 	}
 	boolean hasNode(String propertyKey){

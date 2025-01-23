@@ -6,7 +6,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 	}
 	Node replaceWithFunctional(Node generic){
 		return tryReplaceWithFunctional(generic).map(()->{
-			return MapNode.new().withNodeList(TUPLE_CHILDREN, List.of(createSymbol("Any"), functional));
+			return MapNode.new().withNodeList(TUPLE_CHILDREN, List.of(createAnyType(), functional));
 		}).orElse(generic);
 	}
 	Optional<Node> tryReplaceWithFunctional(Node generic){

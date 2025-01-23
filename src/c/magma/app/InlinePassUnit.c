@@ -12,10 +12,10 @@ import java.util.ArrayList;import java.util.List;import java.util.Optional;struc
 	PassUnit<T> enter(){
 		return InlinePassUnit<>.new();
 	}
-	<R>Optional<PassUnit<R>> filterAndMapToValue(Predicate<T> predicate, [Any, ((void*, T) => R)] mapper){
+	<R>Optional<PassUnit<R>> filterAndMapToValue(Predicate<T> predicate, [void*, ((void*, T) => R)] mapper){
 		return filterAndSupply(predicate, ()->InlinePassUnit<>.new());
 	}
-	<R>Optional<PassUnit<R>> filterAndSupply(Predicate<T> predicate, [Any, ((Any) => PassUnit<R>)] supplier){
+	<R>Optional<PassUnit<R>> filterAndSupply(Predicate<T> predicate, [void*, ((void*) => PassUnit<R>)] supplier){
 		return predicate.test(this.value)
                 ? Optional.of(supplier.get())
                 : Optional.empty();
@@ -26,7 +26,7 @@ import java.util.ArrayList;import java.util.List;import java.util.Optional;struc
 	PassUnit<T> exit(){
 		return InlinePassUnit<>.new();
 	}
-	<R>PassUnit<R> mapValue([Any, ((void*, T) => R)] mapper){
+	<R>PassUnit<R> mapValue([void*, ((void*, T) => R)] mapper){
 		var apply=mapper.apply(this.value);
 		return InlinePassUnit<>.new();
 	}
