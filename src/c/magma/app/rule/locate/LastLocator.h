@@ -9,8 +9,4 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import java.util.
 	int length(){
 		return this.infix.length();
 	}
-	struct LastLocator new(){
-		struct LastLocator this;
-		return this;
-	}
 }

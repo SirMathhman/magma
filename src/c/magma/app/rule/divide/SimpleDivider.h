@@ -7,10 +7,6 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 		return current+delimiter+value;
 	}
 	Result<List<String>, CompileError> divide(String input){
-		return Ok<>.new();
-	}
-	struct SimpleDivider new(){
-		struct SimpleDivider this;
-		return this;
+		return new Ok<>(Arrays.stream(input.split(delimiter)).toList());
 	}
 }

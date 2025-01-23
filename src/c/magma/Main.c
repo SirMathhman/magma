@@ -19,7 +19,7 @@ import magma.api.result.Result;import magma.app.Formatter;import magma.app.Inlin
 		}
 		var nameWithExt=relative.getFileName().toString();
 		var name=nameWithExt.substring(0, nameWithExt.indexOf('.''));
-		var copy=ArrayList<>.new();
+		var copy=new ArrayList<>(namespace);
 		copy.add(name);
 		System.out.println("Compiling source: "+String.join(".", copy));
 		var targetParent=TARGET_DIRECTORY.resolve(parent);
@@ -30,15 +30,11 @@ import magma.api.result.Result;import magma.app.Formatter;import magma.app.Inlin
 		return JavaFiles.readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).flatMapValue(()->compile(input).mapErr(ApplicationError::new)).mapValue(()->writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
 	}
 	Result<String, CompileError> compile(String input){
-		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->TreePassingStage.new().pass(InlinePassUnit<>.new()).mapValue(PassUnit::value)).flatMapValue(()->TreePassingStage.new().pass(InlinePassUnit<>.new()).mapValue(PassUnit::value)).flatMapValue(()->CLang.createCRootRule().generate(root));
+		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->new TreePassingStage(new RootPasser()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value)).flatMapValue(()->new TreePassingStage(new Formatter()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value)).flatMapValue(()->CLang.createCRootRule().generate(root));
 	}
 	Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
 		var target=targetParent.resolve(name+".c");
 		var header=targetParent.resolve(name+".h");
 		return JavaFiles.writeStringWrapped(target, output).or(()->JavaFiles.writeStringWrapped(header, output)).map(JavaError::new).map(ApplicationError::new);
-	}
-	struct Main new(){
-		struct Main this;
-		return this;
 	}
 }

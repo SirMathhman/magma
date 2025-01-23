@@ -4,7 +4,7 @@ import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.
 		this.passer =passer;
 	}
 	List<Node> add(PassUnit<List<Node>> unit2, Node value){
-		var copy=ArrayList<>.new();
+		var copy=new ArrayList<>(unit2.value());
 		copy.add(value);
 		return copy;
 	}
@@ -15,7 +15,7 @@ import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.
 		return unit.value().streamNodeLists().foldLeftToResult(unit, (current, tuple) -> {
             final var propertyKey = tuple.left();
             final var propertyValues = tuple.right();
-            return Streams.from(propertyValues).foldLeftToResult(current.withValue(ArrayList<>.new()), this::passAndAdd).mapValue(unit1 -> unit1.mapValue(node -> current.value().withNodeList(propertyKey, node)));
+            return Streams.from(propertyValues).foldLeftToResult(current.withValue(new ArrayList<>()), this::passAndAdd).mapValue(unit1 -> unit1.mapValue(node -> current.value().withNodeList(propertyKey, node)));
         });
 	}
 	Result<PassUnit<Node>, CompileError> passNodes(PassUnit<Node> unit){
@@ -28,9 +28,5 @@ import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.
 	}
 	Result<PassUnit<Node>, CompileError> pass(PassUnit<Node> unit){
 		return this.passer.beforePass(unit).flatMapValue(this::passNodes).flatMapValue(this::passNodeLists).flatMapValue(this.passer::afterPass);
-	}
-	struct TreePassingStage new(){
-		struct TreePassingStage this;
-		return this;
 	}
 }

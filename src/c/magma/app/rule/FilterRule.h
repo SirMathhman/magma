@@ -4,14 +4,10 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node
 			return this.childRule.parse(input);
 		}
 		else{
-			return Err<>.new();
+			return new Err<>(new CompileError("Filter did not apply", new StringContext(input)));
 		}
 	}
 	Result<String, CompileError> generate(Node node){
 		return this.childRule.generate(node);
-	}
-	struct FilterRule new(){
-		struct FilterRule this;
-		return this;
 	}
 }

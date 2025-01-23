@@ -3,13 +3,9 @@ struct State(int depth){
 		this(0);
 	}
 	State exit(){
-		return State.new();
+		return new State(this.depth - 1);
 	}
 	State enter(){
-		return State.new();
-	}
-	struct State new(){
-		struct State this;
-		return this;
+		return new State(this.depth + 1);
 	}
 }

@@ -1,12 +1,12 @@
 import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import magma.app.error.context.StringContext;import magma.app.rule.Splitter;import java.util.ArrayList;import java.util.LinkedList;import java.util.List;import java.util.stream.Collectors;import java.util.stream.IntStream;struct StatementDivider implements Divider{
-	Divider STATEMENT_DIVIDER=StatementDivider.new();
+	Divider STATEMENT_DIVIDER=new StatementDivider();
 	private StatementDivider(){}
 	String merge(String current, String value){
 		return current+value;
 	}
 	Result<List<String>, CompileError> divide(String input){
-		var segments=ArrayList<String>.new();
-		var buffer=StringBuilder.new();
+		var segments=new ArrayList<String>();
+		var buffer=new StringBuilder();
 		var depth=0;
 		var queue=IntStream.range(0, input.length()).mapToObj(input::charAt).collect(Collectors.toCollection(LinkedList::new));
 		while(!queue.isEmpty()){
@@ -34,12 +34,12 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 			}
 			if(c==';'&&depth==0){
 				Splitter.advance(buffer, segments);
-				buffer=StringBuilder.new();
+				buffer=new StringBuilder();
 			}
 			else if(c=='}'&&depth==1){
 				depth--;
 				Splitter.advance(buffer, segments);
-				buffer=StringBuilder.new();
+				buffer=new StringBuilder();
 			}
 			else{
 				if(c=='{' || c == '(')depth++;
@@ -48,14 +48,10 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 		}
 		Splitter.advance(buffer, segments);
 		if(depth==0){
-			return Ok<>.new();
+			return new Ok<>(segments);
 		}
 		else{
-			return Err<>.new();
+			return new Err<>(new CompileError("Invalid depth '"+depth+"'", new StringContext(input)));
 		}
-	}
-	struct StatementDivider new(){
-		struct StatementDivider this;
-		return this;
 	}
 }

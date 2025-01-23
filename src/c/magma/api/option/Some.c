@@ -1,12 +1,8 @@
 struct Some<T>(T value) implements Option<T>{
-	<R>Option<R> map([void*, R (*)(void*, T)] mapper){
-		return Some<>.new();
+	<R>Option<R> map(Function<T, R> mapper){
+		return new Some<>(mapper.apply(this.value));
 	}
-	T orElseGet([void*, T (*)(void*)] other){
+	T orElseGet(Supplier<T> other){
 		return this.value;
-	}
-	struct Some new(){
-		struct Some this;
-		return this;
 	}
 }

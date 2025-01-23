@@ -5,8 +5,4 @@ struct Namer{
 		counter++;
 		return name;
 	}
-	struct Namer new(){
-		struct Namer this;
-		return this;
-	}
 }

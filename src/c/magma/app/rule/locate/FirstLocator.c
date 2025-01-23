@@ -9,8 +9,4 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import java.util.
 		var index=input.indexOf(this.infix);
 		return index==-1?Streams.empty():Streams.of(index);
 	}
-	struct FirstLocator new(){
-		struct FirstLocator this;
-		return this;
-	}
 }

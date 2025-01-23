@@ -7,10 +7,10 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	}
 	Result<String, CompileError> truncateRight(String input, String slice){
 		if(input.endsWith(slice)){
-			return Ok<>.new();
+			return new Ok<>(input.substring(0, input.length() - slice.length()));
 		}
 		else{
-			return Err<>.new();
+			return new Err<>(new CompileError("Suffix '"+slice+"' not present", new StringContext(input)));
 		}
 	}
 	Result<Node, CompileError> parse(String input){
@@ -18,9 +18,5 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	}
 	Result<String, CompileError> generate(Node node){
 		return childRule.generate(node).mapValue(()->inner+suffix);
-	}
-	struct SuffixRule new(){
-		struct SuffixRule this;
-		return this;
 	}
 }

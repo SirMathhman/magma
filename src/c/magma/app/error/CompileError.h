@@ -22,8 +22,4 @@ import magma.app.error.context.Context;import java.util.ArrayList;import java.ut
                 .collect(Collectors.joining());
 		return this.message + ": " + this.context.display() + joinedChildren;
 	}
-	struct CompileError new(){
-		struct CompileError this;
-		return this;
-	}
 }

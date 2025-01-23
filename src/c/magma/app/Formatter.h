@@ -1,4 +1,4 @@
-import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import magma.app.lang.CommonLang;import java.util.ArrayList;import java.util.List;import static magma.app.RootPasser.by;struct Formatter implements Passer{
+import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import magma.app.lang.CommonLang;import java.util.ArrayList;import java.util.List;import static magma.app.Passer.by;struct Formatter implements Passer{
 	Node removeWhitespace(Node block){
 		return block.mapNodeList(CommonLang.CONTENT_CHILDREN, ()->{
 			return children.stream().filter(()->!child.is("whitespace")).toList();
@@ -14,7 +14,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 	}
 	PassUnit<Node> formatBlock(PassUnit<Node> inner){
 		return inner.exit().flattenNode((State state, Node block) -> {
-            if (block.findNodeList(CommonLang.CONTENT_CHILDREN).orElse(ArrayList<Node>.new()).isEmpty()) {
+            if (block.findNodeList(CommonLang.CONTENT_CHILDREN).orElse(new ArrayList<Node>()).isEmpty()) {
                 return block.removeNodeList(CommonLang.CONTENT_CHILDREN);
             }
 
@@ -31,13 +31,9 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 		return definition.removeNodeList("annotations").removeNodeList("modifiers");
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
-		return Ok<>.new();
+		return new Ok<>(unit.filter(by("block")).map(Formatter::formatBlock).orElse(unit));
 	}
 	Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit){
-		return Ok<>.new();
-	}
-	struct Formatter new(){
-		struct Formatter this;
-		return this;
+		return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(()->inner.mapValue(Formatter::removeWhitespace)).or(()->unit.filterAndMapToValue(by("root"), Formatter::cleanupNamespaced)).or(()->unit.filterAndMapToValue(by("definition"), Formatter::cleanupDefinition)).orElse(unit));
 	}
 }

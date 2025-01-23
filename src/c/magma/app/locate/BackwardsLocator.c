@@ -13,16 +13,12 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.
 		return Streams.from(searchForIndices(input));
 	}
 	List<Integer> searchForIndices(String input){
-		List<Integer> indices=ArrayList<>.new();
+		List<Integer> indices=new ArrayList<>();
 		int index=input.lastIndexOf(this.infix);
 		while(index>=0){
 			indices.add(index);
 			index=input.lastIndexOf(this.infix, index - 1);
 		}
 		return indices;
-	}
-	struct BackwardsLocator new(){
-		struct BackwardsLocator this;
-		return this;
 	}
 }

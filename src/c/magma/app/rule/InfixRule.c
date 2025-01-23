@@ -15,8 +15,8 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node
 		return this.leftRule.generate(node).and(()->this.rightRule.generate(node)).mapValue(()->tuple.left() + this.locator.unwrap() + tuple.right());
 	}
 	Result<Node, CompileError> parse(String input){
-		var indices=this.locator.locate(input).foldLeft(ArrayList<>.new(), InfixRule::add);
-		var errors=ArrayList<CompileError>.new();
+		var indices=this.locator.locate(input).foldLeft(new ArrayList<>(), InfixRule::add);
+		var errors=new ArrayList<CompileError>();
 		int i=0;
 		while(i<indices.size()){
 			int index=indices.get(i);
@@ -31,10 +31,6 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node
 			}
 			i++;
 		}
-		return Err<>.new();
-	}
-	struct InfixRule new(){
-		struct InfixRule this;
-		return this;
+		return new Err<>(new CompileError("Infix '"+this.locator.unwrap() + "' not present", new StringContext(input), errors));
 	}
 }

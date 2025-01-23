@@ -4,16 +4,12 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 		this.propertyKey =propertyKey;
 	}
 	Result<String, CompileError> parse(Node node){
-		return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok::new).orElseGet(()->Err<>.new());
+		return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok::new).orElseGet(()->new Err<>(new CompileError("String '"+this.propertyKey + "' not present", new NodeContext(node))));
 	}
 	Result<Node, CompileError> parse(String input){
-		return Ok<>.new();
+		return new Ok<>(new MapNode().withString(this.propertyKey, input));
 	}
 	Result<String, CompileError> generate(Node node){
-		return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok::new).orElseGet(()->Err<>.new());
-	}
-	struct StringRule new(){
-		struct StringRule this;
-		return this;
+		return node.findString(this.propertyKey).<Result<String, CompileError>>map(Ok::new).orElseGet(()->new Err<>(new CompileError("String '"+this.propertyKey + "' not present", new NodeContext(node))));
 	}
 }

@@ -8,7 +8,7 @@ import magma.app.lang.CommonLang;
 import java.util.ArrayList;
 import java.util.List;
 
-import static magma.app.RootPasser.by;
+import static magma.app.Passer.by;
 
 public class Formatter implements Passer {
     static Node removeWhitespace(Node block) {

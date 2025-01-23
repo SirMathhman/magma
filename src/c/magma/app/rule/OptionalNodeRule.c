@@ -10,7 +10,7 @@ import magma.api.result.Result;import magma.app.Node;import magma.app.error.Comp
 		this.rule = new OrRule(List.of(ifPresent, ifEmpty));
 	}
 	public OptionalNodeRule(String modifiers, Rule ifPresent){
-		this(modifiers, ifPresent, ExactRule.new());
+		this(modifiers, ifPresent, new ExactRule(""));
 	}
 	Result<Node, CompileError> parse(String input){
 		return this.rule.parse(input);
@@ -22,9 +22,5 @@ import magma.api.result.Result;import magma.app.Node;import magma.app.error.Comp
 		else{
 			return this.ifEmpty.generate(node);
 		}
-	}
-	struct OptionalNodeRule new(){
-		struct OptionalNodeRule this;
-		return this;
 	}
 }
