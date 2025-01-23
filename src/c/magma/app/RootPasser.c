@@ -97,7 +97,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 		return retypeToStruct(node1, List.of(refDefinition, tableDefinition));
 	}
 	Node createAnyType(){
-		return createSymbol("Any");
+		return createSymbol("void*");
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
 		return Ok<>.new();

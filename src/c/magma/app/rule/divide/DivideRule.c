@@ -7,7 +7,7 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 		this.childRule =childRule;
 		this.propertyKey =propertyKey;
 	}
-	<T, R>Result<List<R>, CompileError> compileAll(List<T> segments, [Any, ((Any, T) => Result<R, CompileError>)] mapper, BiFunction<T, R, Result<R, CompileError>> validator){
+	<T, R>Result<List<R>, CompileError> compileAll(List<T> segments, [Any, ((void*, T) => Result<R, CompileError>)] mapper, BiFunction<T, R, Result<R, CompileError>> validator){
 		return Streams.from(segments).foldLeftToResult(new ArrayList<>(), (rs, t) -> {
             return mapper.apply(t).flatMapValue(()->validator.apply(t, inner)).mapValue(inner -> {
                         rs.add(inner);

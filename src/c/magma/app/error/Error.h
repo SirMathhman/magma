@@ -1,10 +1,10 @@
 struct Error{
 	struct VTable{
-		((Any) => String) display;
+		((void*) => String) display;
 	}
-	Box<Any> ref;
+	Box<void*> ref;
 	struct VTable vtable;
-	struct Error new(Box<Any> ref, struct VTable vtable){
+	struct Error new(Box<void*> ref, struct VTable vtable){
 		struct Error this;
 		this.ref=ref;
 		this.vtable=vtable;

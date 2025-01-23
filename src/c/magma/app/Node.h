@@ -1,29 +1,29 @@
 import magma.api.Tuple;import magma.api.stream.Stream;import java.util.List;import java.util.Optional;struct Node{
 	struct VTable{
-		((Any, String, List<Node>) => Node) withNodeList;
-		((Any, String) => Optional<List<Node>>) findNodeList;
-		((Any, String, String) => Node) withString;
-		((Any, String) => Optional<String>) findString;
-		((Any, String, Node) => Node) withNode;
-		((Any, int) => String) format;
-		((Any, String) => Optional<Node>) findNode;
-		((Any, String, [Any, ((Any, String) => String)]) => Node) mapString;
-		((Any, Node) => Node) merge;
-		((Any) => Stream<Tuple<String, List<Node>>>) streamNodeLists;
-		((Any) => Stream<Tuple<String, Node>>) streamNodes;
-		((Any) => String) display;
-		((Any, String) => Node) retype;
-		((Any, String) => boolean) is;
-		((Any, String, [Any, ((Any, List<Node>) => List<Node>)]) => Node) mapNodeList;
-		((Any, String) => boolean) hasNodeList;
-		((Any, String) => Node) removeNodeList;
-		((Any, String, [Any, ((Any, Node) => Node)]) => Node) mapNode;
-		((Any, String) => boolean) hasNode;
-		((Any) => boolean) hasType;
+		((void*, String, List<Node>) => Node) withNodeList;
+		((void*, String) => Optional<List<Node>>) findNodeList;
+		((void*, String, String) => Node) withString;
+		((void*, String) => Optional<String>) findString;
+		((void*, String, Node) => Node) withNode;
+		((void*, int) => String) format;
+		((void*, String) => Optional<Node>) findNode;
+		((void*, String, [Any, ((void*, String) => String)]) => Node) mapString;
+		((void*, Node) => Node) merge;
+		((void*) => Stream<Tuple<String, List<Node>>>) streamNodeLists;
+		((void*) => Stream<Tuple<String, Node>>) streamNodes;
+		((void*) => String) display;
+		((void*, String) => Node) retype;
+		((void*, String) => boolean) is;
+		((void*, String, [Any, ((void*, List<Node>) => List<Node>)]) => Node) mapNodeList;
+		((void*, String) => boolean) hasNodeList;
+		((void*, String) => Node) removeNodeList;
+		((void*, String, [Any, ((void*, Node) => Node)]) => Node) mapNode;
+		((void*, String) => boolean) hasNode;
+		((void*) => boolean) hasType;
 	}
-	Box<Any> ref;
+	Box<void*> ref;
 	struct VTable vtable;
-	struct Node new(Box<Any> ref, struct VTable vtable){
+	struct Node new(Box<void*> ref, struct VTable vtable){
 		struct Node this;
 		this.ref=ref;
 		this.vtable=vtable;

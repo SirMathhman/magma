@@ -1,14 +1,14 @@
 import magma.api.Tuple;import magma.api.option.None;import magma.api.option.Option;import magma.api.option.Some;import java.util.Optional;struct Err<T, X>(X error) implements Result<T, X>{
-	<R>Result<R, X> flatMapValue([Any, ((Any, T) => Result<R, X>)] mapper){
+	<R>Result<R, X> flatMapValue([Any, ((void*, T) => Result<R, X>)] mapper){
 		return Err<>.new();
 	}
-	<R>Result<R, X> mapValue([Any, ((Any, T) => R)] mapper){
+	<R>Result<R, X> mapValue([Any, ((void*, T) => R)] mapper){
 		return Err<>.new();
 	}
-	<R>Result<T, R> mapErr([Any, ((Any, X) => R)] mapper){
+	<R>Result<T, R> mapErr([Any, ((void*, X) => R)] mapper){
 		return Err<>.new();
 	}
-	<R>R match([Any, ((Any, T) => R)] onOk, [Any, ((Any, X) => R)] onErr){
+	<R>R match([Any, ((void*, T) => R)] onOk, [Any, ((void*, X) => R)] onErr){
 		return onErr.apply(this.error);
 	}
 	<R>Result<Tuple<T, R>, X> and([Any, ((Any) => Result<R, X>)] other){
