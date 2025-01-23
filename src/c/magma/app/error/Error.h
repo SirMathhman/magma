@@ -1,5 +1,5 @@
 struct Error{
-	String display();
+	(() => String) display;
 	struct Error new(){
 		struct Error this;
 		return this;

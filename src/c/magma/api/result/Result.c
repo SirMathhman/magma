@@ -1,12 +1,12 @@
 import magma.api.Tuple;import magma.api.option.Option;struct Result<T, X>{
-	<R>Result<R, X> flatMapValue(((T) => Result<R, X>) mapper);
-	<R>Result<R, X> mapValue(((T) => R) mapper);
-	<R>Result<T, R> mapErr(((X) => R) mapper);
-	<R>R match(((T) => R) onOk, ((X) => R) onErr);
-	<R>Result<Tuple<T, R>, X> and((() => Result<R, X>) other);
-	<R>Result<T, Tuple<X, R>> or((() => Result<T, R>) other);
-	boolean isOk();
-	Option<X> findError();
+	<R>((((T) => Result<R, X>)) => Result<R, X>) flatMapValue;
+	<R>((((T) => R)) => Result<R, X>) mapValue;
+	<R>((((X) => R)) => Result<T, R>) mapErr;
+	<R>((((T) => R), ((X) => R)) => R) match;
+	<R>(((() => Result<R, X>)) => Result<Tuple<T, R>, X>) and;
+	<R>(((() => Result<T, R>)) => Result<T, Tuple<X, R>>) or;
+	(() => boolean) isOk;
+	(() => Option<X>) findError;
 	struct Result new(){
 		struct Result this;
 		return this;

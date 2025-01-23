@@ -1,6 +1,6 @@
 struct Option<T>{
-	<R>Option<R> map(((T) => R) mapper);
-	T orElseGet((() => T) other);
+	<R>((((T) => R)) => Option<R>) map;
+	(((() => T)) => T) orElseGet;
 	struct Option new(){
 		struct Option this;
 		return this;

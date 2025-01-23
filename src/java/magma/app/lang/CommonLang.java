@@ -57,6 +57,9 @@ public class CommonLang {
     public static final String INVOCATION_CHILDREN = "invocation-children";
     public static final String CONTENT_AFTER_CHILDREN = "content-after-children";
     public static final String GENERIC_TYPE = "generic";
+    public static final String METHOD_PARAMS = "params";
+    public static final String FUNCTIONAL_PARAMS = "params";
+    public static final String FUNCTIONAL_RETURN = "return";
 
     public static Rule createNamespacedRule(String type, String prefix) {
         final var namespace = new StringRule("namespace");
@@ -117,7 +120,7 @@ public class CommonLang {
     static Rule createMethodRule(Rule statement) {
         final var definition = createDefinitionRule();
         final var definitionProperty = new NodeRule(METHOD_DEFINITION, definition);
-        final var params = new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, definition));
+        final var params = new OptionalNodeListRule(METHOD_PARAMS, new DivideRule(METHOD_PARAMS, VALUE_DIVIDER, definition));
         final var infixRule = new InfixRule(definitionProperty, new FirstLocator("("), new StripRule(new SuffixRule(params, ")")));
 
         final var orRule = new OptionalNodeRule(METHOD_VALUE,
@@ -356,9 +359,9 @@ public class CommonLang {
     }
 
     private static TypeRule createFunctionalRule(Rule type) {
-        final var params = new OptionalNodeListRule("params", new DivideRule("params", VALUE_DIVIDER, type));
+        final var params = new OptionalNodeListRule(FUNCTIONAL_PARAMS, new DivideRule(FUNCTIONAL_PARAMS, VALUE_DIVIDER, type));
         final var leftRule = new PrefixRule("(", new SuffixRule(params, ")"));
-        final var rule = new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule("return", type));
+        final var rule = new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule(FUNCTIONAL_RETURN, type));
         return new TypeRule(FUNCTIONAL_TYPE, new PrefixRule("(", new SuffixRule(rule, ")")));
     }
 

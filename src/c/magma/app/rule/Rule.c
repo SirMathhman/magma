@@ -1,6 +1,6 @@
 import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;struct Rule{
-	Result<Node, CompileError> parse(String input);
-	Result<String, CompileError> generate(Node node);
+	((String) => Result<Node, CompileError>) parse;
+	((Node) => Result<String, CompileError>) generate;
 	struct Rule new(){
 		struct Rule this;
 		return this;

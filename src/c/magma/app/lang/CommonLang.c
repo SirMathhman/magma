@@ -25,6 +25,9 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	String INVOCATION_CHILDREN="invocation-children";
 	String CONTENT_AFTER_CHILDREN="content-after-children";
 	String GENERIC_TYPE="generic";
+	String METHOD_PARAMS="params";
+	String FUNCTIONAL_PARAMS="params";
+	String FUNCTIONAL_RETURN="return";
 	Rule createNamespacedRule(String type, String prefix){
 		var namespace=StringRule.new();
 		var childRule=PrefixRule.new();

@@ -8,7 +8,15 @@ import magma.app.lang.CommonLang;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
+
+import static magma.app.lang.CommonLang.FUNCTIONAL_PARAMS;
+import static magma.app.lang.CommonLang.FUNCTIONAL_RETURN;
+import static magma.app.lang.CommonLang.FUNCTIONAL_TYPE;
+import static magma.app.lang.CommonLang.METHOD_DEFINITION;
+import static magma.app.lang.CommonLang.METHOD_PARAMS;
+import static magma.app.lang.CommonLang.METHOD_VALUE;
 
 public class RootPasser implements Passer {
     static Node replaceWithInvocation(Node node) {
@@ -51,7 +59,7 @@ public class RootPasser implements Passer {
                         .withNode(CommonLang.METHOD_DEFINITION, new MapNode("definition")
                                 .withString("name", "new")
                                 .withNode("type", thisType))
-                        .withNode(CommonLang.METHOD_VALUE, propertyValue));
+                        .withNode(METHOD_VALUE, propertyValue));
                 return children1;
             });
         });
@@ -59,6 +67,31 @@ public class RootPasser implements Passer {
 
     static Predicate<Node> by(String type) {
         return node -> node.is(type);
+    }
+
+    private static Node replaceWithDefinition(Node node) {
+        final var value = node.findNode(METHOD_VALUE);
+        if (value.isEmpty()) {
+            final var params = node.findNodeList(METHOD_PARAMS)
+                    .orElse(new ArrayList<>())
+                    .stream()
+                    .map(param -> param.findNode("type"))
+                    .flatMap(Optional::stream)
+                    .toList();
+
+            return node.findNode(METHOD_DEFINITION).orElse(new MapNode()).mapNode("type", type -> {
+                final var withType = new MapNode(FUNCTIONAL_TYPE)
+                        .withNode(FUNCTIONAL_RETURN, type);
+
+                if (params.isEmpty()) {
+                    return withType;
+                } else {
+                    return withType.withNodeList(FUNCTIONAL_PARAMS, params);
+                }
+            });
+        }
+
+        return node;
     }
 
     @Override
@@ -72,6 +105,7 @@ public class RootPasser implements Passer {
     public Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
         return new Ok<>(unit.filterAndMapToValue(by(CommonLang.GENERIC_TYPE), RootPasser::replaceWithFunctional)
                 .or(() -> unit.filterAndMapToValue(by("construction"), RootPasser::replaceWithInvocation))
+                .or(() -> unit.filterAndMapToValue(by("method"), RootPasser::replaceWithDefinition))
                 .orElse(unit));
     }
 }
