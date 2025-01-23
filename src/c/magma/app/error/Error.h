@@ -1,6 +1,6 @@
-struct Error<Capture>{
+struct Error{
 	struct VTable{
-		(() => String) display;
+		((Any) => String) display;
 	}
 	struct VTable vtable;
 	struct Error new(struct VTable table){

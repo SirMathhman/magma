@@ -1,6 +1,6 @@
-struct Context<Capture>{
+struct Context{
 	struct VTable{
-		(() => String) display;
+		((Any) => String) display;
 	}
 	struct VTable vtable;
 	struct Context new(struct VTable table){

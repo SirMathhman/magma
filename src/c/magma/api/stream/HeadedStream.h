@@ -15,7 +15,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import java.util.Optio
 			}
 		}
 	}
-	<R>Stream<R> map(((T) => R) mapper){
+	<R>Stream<R> map([Any, ((Any, T) => R)] mapper){
 		return HeadedStream<>.new();
 	}
 	<R, X>Result<R, X> foldLeftToResult(R initial, BiFunction<R, T, Result<R, X>> folder){

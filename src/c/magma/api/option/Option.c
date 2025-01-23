@@ -1,7 +1,7 @@
-struct Option<Capture, T>{
+struct Option<T>{
 	struct VTable{
-		<R>((((T) => R)) => Option<R>) map;
-		(((() => T)) => T) orElseGet;
+		<R>((Any, [Any, ((Any, T) => R)]) => Option<R>) map;
+		((Any, [Any, ((Any) => T)]) => T) orElseGet;
 	}
 	struct VTable vtable;
 	struct Option new(struct VTable table){

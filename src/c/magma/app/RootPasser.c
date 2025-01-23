@@ -1,19 +1,27 @@
-import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.Collections;import java.util.List;import java.util.Optional;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.FUNCTIONAL_PARAMS;import static magma.app.lang.CommonLang.FUNCTIONAL_RETURN;import static magma.app.lang.CommonLang.FUNCTIONAL_TYPE;import static magma.app.lang.CommonLang.GENERIC_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_PARENT;import static magma.app.lang.CommonLang.GENERIC_TYPE;import static magma.app.lang.CommonLang.METHOD_DEFINITION;import static magma.app.lang.CommonLang.METHOD_PARAMS;import static magma.app.lang.CommonLang.METHOD_TYPE;import static magma.app.lang.CommonLang.METHOD_VALUE;struct RootPasser implements Passer{
+import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.Collections;import java.util.List;import java.util.Optional;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.FUNCTIONAL_PARAMS;import static magma.app.lang.CommonLang.FUNCTIONAL_RETURN;import static magma.app.lang.CommonLang.FUNCTIONAL_TYPE;import static magma.app.lang.CommonLang.GENERIC_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_PARENT;import static magma.app.lang.CommonLang.GENERIC_TYPE;import static magma.app.lang.CommonLang.METHOD_DEFINITION;import static magma.app.lang.CommonLang.METHOD_PARAMS;import static magma.app.lang.CommonLang.METHOD_TYPE;import static magma.app.lang.CommonLang.METHOD_VALUE;import static magma.app.lang.CommonLang.TUPLE_CHILDREN;import static magma.app.lang.CommonLang.TUPLE_TYPE;struct RootPasser implements Passer{
 	Node replaceWithInvocation(Node node){
 		var type=node.findString("type").orElse("");
 		var symbol=createSymbol(type);
 		return node.retype("invocation").withNode("caller", MapNode.new().withString("property", "new"));
 	}
 	Node replaceWithFunctional(Node generic){
+		return tryReplaceWithFunctional(generic).map(()->{
+			return MapNode.new().withNodeList(TUPLE_CHILDREN, List.of(createSymbol("Any"), functional));
+		}).orElse(generic);
+	}
+	Optional<Node> tryReplaceWithFunctional(Node generic){
 		var parent=generic.findString(GENERIC_PARENT).orElse("");
 		var children=generic.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
 		if(parent.equals("Supplier")){
-			return MapNode.new();
+			return Optional.of(MapNode.new());
 		}
 		if(parent.equals("Function")){
-			return MapNode.new();
+			var params=ArrayList<Node>.new();
+			params.add(createSymbol("Any"));
+			params.add(children.get(0));
+			return Optional.of(MapNode.new().withNode("return", children.get(1)));
 		}
-		return generic;
+		return Optional.empty();
 	}
 	Node retypeToStruct(Node node, List<Node> parameters){
 		var name=node.findString("name").orElse("");
@@ -32,12 +40,6 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 				return children1;
 			});
 		});
-	}
-	Node addCaptureTypeParam(Node node){
-		var oldTypeParams=node.findNodeList("type-params").orElse(Collections.emptyList());
-		var newTypeParams=ArrayList<Node>.new();
-		newTypeParams.addAll(oldTypeParams);
-		return node.withNodeList("type-params", newTypeParams);
 	}
 	Node createConstructor(List<Node> parameters, String name){
 		var thisType=MapNode.new();
@@ -66,7 +68,9 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 	Node replaceWithDefinition(Node node){
 		var value=node.findNode(METHOD_VALUE);
 		if(value.isEmpty()){
-			var params=node.findNodeList(METHOD_PARAMS).orElse(ArrayList<>.new()).stream().map(()->param.findNode("type")).flatMap(Optional::stream).toList();
+			var params=ArrayList<Node>.new();
+			params.add(createSymbol("Any"));
+			params.addAll(node.findNodeList(METHOD_PARAMS).orElse(ArrayList<>.new()).stream().map(()->param.findNode("type")).flatMap(Optional::stream).toList());
 			return node.findNode(METHOD_DEFINITION).orElse(MapNode.new()).mapNode("type", ()->{
 				var withType=MapNode.new().withNode(FUNCTIONAL_RETURN, type);
 				if(params.isEmpty()){
@@ -88,7 +92,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 				return List.of(table, definition);
 			});
 		});
-		return retypeToStruct(addCaptureTypeParam(node1), List.of(MapNode.new().withString("name", "table")));
+		return retypeToStruct(node1, List.of(MapNode.new().withString("name", "table")));
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
 		return Ok<>.new();

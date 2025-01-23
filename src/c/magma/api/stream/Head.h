@@ -1,6 +1,6 @@
-import java.util.Optional;struct Head<Capture, T>{
+import java.util.Optional;struct Head<T>{
 	struct VTable{
-		(() => Optional<T>) next;
+		((Any) => Optional<T>) next;
 	}
 	struct VTable vtable;
 	struct Head new(struct VTable table){

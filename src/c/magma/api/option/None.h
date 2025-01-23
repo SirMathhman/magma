@@ -1,8 +1,8 @@
 struct None<T> implements Option<T>{
-	<R>Option<R> map(((T) => R) mapper){
+	<R>Option<R> map([Any, ((Any, T) => R)] mapper){
 		return None<>.new();
 	}
-	T orElseGet((() => T) other){
+	T orElseGet([Any, ((Any) => T)] other){
 		return other.get();
 	}
 	struct None new(){

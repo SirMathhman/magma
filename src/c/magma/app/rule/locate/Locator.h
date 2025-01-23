@@ -1,8 +1,8 @@
-import magma.api.stream.Stream;struct Locator<Capture>{
+import magma.api.stream.Stream;struct Locator{
 	struct VTable{
-		(() => String) unwrap;
-		(() => int) length;
-		((String) => Stream<Integer>) locate;
+		((Any) => String) unwrap;
+		((Any) => int) length;
+		((Any, String) => Stream<Integer>) locate;
 	}
 	struct VTable vtable;
 	struct Locator new(struct VTable table){

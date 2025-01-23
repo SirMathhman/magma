@@ -21,6 +21,8 @@ import static magma.app.lang.CommonLang.METHOD_DEFINITION;
 import static magma.app.lang.CommonLang.METHOD_PARAMS;
 import static magma.app.lang.CommonLang.METHOD_TYPE;
 import static magma.app.lang.CommonLang.METHOD_VALUE;
+import static magma.app.lang.CommonLang.TUPLE_CHILDREN;
+import static magma.app.lang.CommonLang.TUPLE_TYPE;
 
 public class RootPasser implements Passer {
     static Node replaceWithInvocation(Node node) {
@@ -33,19 +35,37 @@ public class RootPasser implements Passer {
     }
 
     static Node replaceWithFunctional(Node generic) {
+        return tryReplaceWithFunctional(generic)
+                .map(functional -> {
+                    return new MapNode(TUPLE_TYPE).withNodeList(TUPLE_CHILDREN, List.of(
+                            createSymbol("Any"),
+                            functional
+                    ));
+                })
+                .orElse(generic);
+    }
+
+    private static Optional<Node> tryReplaceWithFunctional(Node generic) {
         final var parent = generic.findString(GENERIC_PARENT).orElse("");
         final var children = generic.findNodeList(GENERIC_CHILDREN).orElse(Collections.emptyList());
 
         if (parent.equals("Supplier")) {
-            return new MapNode("functional").withNode("return", children.get(0));
+            return Optional.of(new MapNode("functional")
+                    .withNodeList("params", List.of(createSymbol("Any")))
+                    .withNode("return", children.get(0)));
         }
 
         if (parent.equals("Function")) {
-            return new MapNode("functional")
-                    .withNodeList("params", List.of(children.get(0)))
-                    .withNode("return", children.get(1));
+            final var params = new ArrayList<Node>();
+            params.add(createSymbol("Any"));
+            params.add(children.get(0));
+
+            return Optional.of(new MapNode("functional")
+                    .withNodeList("params", params)
+                    .withNode("return", children.get(1)));
         }
-        return generic;
+
+        return Optional.empty();
     }
 
     static Node retypeToStruct(Node node, List<Node> parameters) {
@@ -66,13 +86,6 @@ public class RootPasser implements Passer {
                 return children1;
             });
         });
-    }
-
-    private static Node addCaptureTypeParam(Node node) {
-        final var oldTypeParams = node.findNodeList("type-params").orElse(Collections.emptyList());
-        final var newTypeParams = new ArrayList<Node>(List.of(createSymbol("Capture")));
-        newTypeParams.addAll(oldTypeParams);
-        return node.withNodeList("type-params", newTypeParams);
     }
 
     private static Node createConstructor(List<Node> parameters, String name) {
@@ -126,12 +139,14 @@ public class RootPasser implements Passer {
     private static Node replaceWithDefinition(Node node) {
         final var value = node.findNode(METHOD_VALUE);
         if (value.isEmpty()) {
-            final var params = node.findNodeList(METHOD_PARAMS)
+            final var params = new ArrayList<Node>();
+            params.add(createSymbol("Any"));
+            params.addAll(node.findNodeList(METHOD_PARAMS)
                     .orElse(new ArrayList<>())
                     .stream()
                     .map(param -> param.findNode("type"))
                     .flatMap(Optional::stream)
-                    .toList();
+                    .toList());
 
             return node.findNode(METHOD_DEFINITION).orElse(new MapNode()).mapNode("type", type -> {
                 final var withType = new MapNode(FUNCTIONAL_TYPE)
@@ -168,7 +183,7 @@ public class RootPasser implements Passer {
             });
         });
 
-        return retypeToStruct(addCaptureTypeParam(node1), List.of(new MapNode("definition")
+        return retypeToStruct(node1, List.of(new MapNode("definition")
                 .withNode("type", tableType)
                 .withString("name", "table")));
     }

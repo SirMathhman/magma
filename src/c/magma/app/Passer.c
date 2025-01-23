@@ -1,7 +1,7 @@
-import magma.api.result.Result;import magma.app.error.CompileError;struct Passer<Capture>{
+import magma.api.result.Result;import magma.app.error.CompileError;struct Passer{
 	struct VTable{
-		((PassUnit<Node>) => Result<PassUnit<Node>, CompileError>) afterPass;
-		((PassUnit<Node>) => Result<PassUnit<Node>, CompileError>) beforePass;
+		((Any, PassUnit<Node>) => Result<PassUnit<Node>, CompileError>) afterPass;
+		((Any, PassUnit<Node>) => Result<PassUnit<Node>, CompileError>) beforePass;
 	}
 	struct VTable vtable;
 	struct Passer new(struct VTable table){
