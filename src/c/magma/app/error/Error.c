@@ -1,6 +1,6 @@
 struct Error{
 	struct VTable{
-		((void*) => String) display;
+		String (*)(void*) display;
 	}
 	Box<void*> ref;
 	struct VTable vtable;

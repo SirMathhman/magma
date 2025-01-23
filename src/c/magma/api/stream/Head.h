@@ -1,6 +1,6 @@
 import java.util.Optional;struct Head<T>{
 	struct VTable{
-		((void*) => Optional<T>) next;
+		Optional<T> (*)(void*) next;
 	}
 	Box<void*> ref;
 	struct VTable vtable;

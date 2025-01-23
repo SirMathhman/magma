@@ -1,7 +1,7 @@
 import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;struct Rule{
 	struct VTable{
-		((void*, String) => Result<Node, CompileError>) parse;
-		((void*, Node) => Result<String, CompileError>) generate;
+		Result<Node, CompileError> (*)(void*, String) parse;
+		Result<String, CompileError> (*)(void*, Node) generate;
 	}
 	Box<void*> ref;
 	struct VTable vtable;

@@ -1,7 +1,7 @@
 struct Option<T>{
 	struct VTable{
-		<R>((void*, [void*, ((void*, T) => R)]) => Option<R>) map;
-		((void*, [void*, ((void*) => T)]) => T) orElseGet;
+		<R>Option<R> (*)(void*, [void*, R (*)(void*, T)]) map;
+		T (*)(void*, [void*, T (*)(void*)]) orElseGet;
 	}
 	Box<void*> ref;
 	struct VTable vtable;

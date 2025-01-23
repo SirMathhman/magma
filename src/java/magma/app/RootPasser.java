@@ -65,6 +65,17 @@ public class RootPasser implements Passer {
                     .withNode("return", children.get(1)));
         }
 
+        if (parent.equals("BiFunction")) {
+            final var params = new ArrayList<Node>();
+            params.add(createAnyType());
+            params.add(children.get(0));
+            params.add(children.get(1));
+
+            return Optional.of(new MapNode("functional")
+                    .withNodeList("params", params)
+                    .withNode("return", children.get(2)));
+        }
+
         return Optional.empty();
     }
 

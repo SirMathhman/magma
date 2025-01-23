@@ -1,6 +1,6 @@
 import magma.api.result.Result;import magma.app.error.CompileError;struct PassingStage{
 	struct VTable{
-		((void*, PassUnit<Node>) => Result<PassUnit<Node>, CompileError>) pass;
+		Result<PassUnit<Node>, CompileError> (*)(void*, PassUnit<Node>) pass;
 	}
 	Box<void*> ref;
 	struct VTable vtable;

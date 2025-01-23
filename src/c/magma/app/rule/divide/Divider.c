@@ -1,7 +1,7 @@
 import magma.api.result.Result;import magma.app.error.CompileError;import java.util.List;struct Divider{
 	struct VTable{
-		((void*, String, String) => String) merge;
-		((void*, String) => Result<List<String>, CompileError>) divide;
+		String (*)(void*, String, String) merge;
+		Result<List<String>, CompileError> (*)(void*, String) divide;
 	}
 	Box<void*> ref;
 	struct VTable vtable;

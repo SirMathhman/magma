@@ -1,13 +1,13 @@
 import java.util.Optional;struct PassUnit<T>{
 	struct VTable{
-		<R>((void*, [void*, ((void*, T) => R)]) => PassUnit<R>) mapValue;
-		((void*, Predicate<T>) => Optional<PassUnit<T>>) filter;
-		<R>((void*, R) => PassUnit<R>) withValue;
-		((void*) => PassUnit<T>) enter;
-		((void*) => T) value;
-		<R>((void*, Predicate<T>, [void*, ((void*, T) => R)]) => Optional<PassUnit<R>>) filterAndMapToValue;
-		<R>((void*, BiFunction<State, T, R>) => PassUnit<R>) flattenNode;
-		((void*) => PassUnit<T>) exit;
+		<R>PassUnit<R> (*)(void*, [void*, R (*)(void*, T)]) mapValue;
+		Optional<PassUnit<T>> (*)(void*, Predicate<T>) filter;
+		<R>PassUnit<R> (*)(void*, R) withValue;
+		PassUnit<T> (*)(void*) enter;
+		T (*)(void*) value;
+		<R>Optional<PassUnit<R>> (*)(void*, Predicate<T>, [void*, R (*)(void*, T)]) filterAndMapToValue;
+		<R>PassUnit<R> (*)(void*, [void*, R (*)(void*, State, T)]) flattenNode;
+		PassUnit<T> (*)(void*) exit;
 	}
 	Box<void*> ref;
 	struct VTable vtable;

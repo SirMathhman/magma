@@ -21,6 +21,13 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 			params.add(children.get(0));
 			return Optional.of(MapNode.new().withNode("return", children.get(1)));
 		}
+		if(parent.equals("BiFunction")){
+			var params=ArrayList<Node>.new();
+			params.add(createAnyType());
+			params.add(children.get(0));
+			params.add(children.get(1));
+			return Optional.of(MapNode.new().withNode("return", children.get(2)));
+		}
 		return Optional.empty();
 	}
 	Node retypeToStruct(Node node, List<Node> parameters){

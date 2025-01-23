@@ -362,8 +362,8 @@ public class CommonLang {
     private static TypeRule createFunctionalRule(Rule type) {
         final var params = new OptionalNodeListRule(FUNCTIONAL_PARAMS, new DivideRule(FUNCTIONAL_PARAMS, VALUE_DIVIDER, type));
         final var leftRule = new PrefixRule("(", new SuffixRule(params, ")"));
-        final var rule = new InfixRule(leftRule, new FirstLocator(" => "), new NodeRule(FUNCTIONAL_RETURN, type));
-        return new TypeRule(FUNCTIONAL_TYPE, new PrefixRule("(", new SuffixRule(rule, ")")));
+        final var rule = new InfixRule(new NodeRule(FUNCTIONAL_RETURN, type), new FirstLocator(" (*)"), leftRule);
+        return new TypeRule(FUNCTIONAL_TYPE, rule);
     }
 
     private static TypeRule createArrayRule(LazyRule type) {

@@ -1,13 +1,13 @@
 import magma.api.Tuple;import magma.api.option.Option;struct Result<T, X>{
 	struct VTable{
-		<R>((void*, [void*, ((void*, T) => Result<R, X>)]) => Result<R, X>) flatMapValue;
-		<R>((void*, [void*, ((void*, T) => R)]) => Result<R, X>) mapValue;
-		<R>((void*, [void*, ((void*, X) => R)]) => Result<T, R>) mapErr;
-		<R>((void*, [void*, ((void*, T) => R)], [void*, ((void*, X) => R)]) => R) match;
-		<R>((void*, [void*, ((void*) => Result<R, X>)]) => Result<Tuple<T, R>, X>) and;
-		<R>((void*, [void*, ((void*) => Result<T, R>)]) => Result<T, Tuple<X, R>>) or;
-		((void*) => boolean) isOk;
-		((void*) => Option<X>) findError;
+		<R>Result<R, X> (*)(void*, [void*, Result<R, X> (*)(void*, T)]) flatMapValue;
+		<R>Result<R, X> (*)(void*, [void*, R (*)(void*, T)]) mapValue;
+		<R>Result<T, R> (*)(void*, [void*, R (*)(void*, X)]) mapErr;
+		<R>R (*)(void*, [void*, R (*)(void*, T)], [void*, R (*)(void*, X)]) match;
+		<R>Result<Tuple<T, R>, X> (*)(void*, [void*, Result<R, X> (*)(void*)]) and;
+		<R>Result<T, Tuple<X, R>> (*)(void*, [void*, Result<T, R> (*)(void*)]) or;
+		boolean (*)(void*) isOk;
+		Option<X> (*)(void*) findError;
 	}
 	Box<void*> ref;
 	struct VTable vtable;
