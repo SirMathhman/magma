@@ -1,4 +1,4 @@
-import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.MapNode;import magma.app.Node;import magma.app.error.CompileError;import magma.app.error.context.NodeContext;import magma.app.error.context.StringContext;import magma.app.rule.Rule;import java.util.ArrayList;import java.util.List;import java.util.Optional;struct DivideRule implements Rule{
+import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.MapNode;import magma.app.Node;import magma.app.error.CompileError;import magma.app.error.context.NodeContext;import magma.app.error.context.StringContext;import magma.app.rule.Rule;import java.util.ArrayList;import java.util.List;import java.util.Optional;struct DivideRule{
 	String propertyKey;
 	Divider divider;
 	Rule childRule;

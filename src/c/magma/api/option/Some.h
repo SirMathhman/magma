@@ -1,4 +1,4 @@
-struct Some<T>(T value) implements Option<T>{
+struct Some<T>(T value){
 	<R>Option<R> map(Function<T, R> mapper){
 		return new Some<>(mapper.apply(this.value));
 	}

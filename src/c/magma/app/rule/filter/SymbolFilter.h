@@ -1,4 +1,4 @@
-import java.util.stream.IntStream;struct SymbolFilter implements Predicate<String>{
+import java.util.stream.IntStream;struct SymbolFilter{
 	boolean test(String input){
 		if(input.isEmpty())return false;
 		return IntStream.range(0, input.length()).allMatch(()->{

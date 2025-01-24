@@ -56,7 +56,7 @@ public class RootPasser implements Passer {
             }
 
             return children;
-        }).removeNode("supertype"));
+        })).removeNode("supertype");
     }
 
     private static List<Node> attachConverter(List<Node> children, Node supertype) {

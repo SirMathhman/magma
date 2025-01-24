@@ -1,4 +1,4 @@
-import java.util.ArrayList;import java.util.List;import java.util.Optional;struct InlinePassUnit<T>(State state, List<Node> cache, T value) implements PassUnit<T>{
+import java.util.ArrayList;import java.util.List;import java.util.Optional;struct InlinePassUnit<T>(State state, List<Node> cache, T value){
 	public InlinePassUnit(T value){
 		this(new State(), new ArrayList<>(), value);
 	}

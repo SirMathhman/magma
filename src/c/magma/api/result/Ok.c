@@ -1,4 +1,4 @@
-import magma.api.Tuple;import magma.api.option.None;import magma.api.option.Option;import magma.api.option.Some;import java.util.Optional;struct Ok<T, X>(T value) implements Result<T, X>{
+import magma.api.Tuple;import magma.api.option.None;import magma.api.option.Option;import magma.api.option.Some;import java.util.Optional;struct Ok<T, X>(T value){
 	<R>Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper){
 		return mapper.apply(this.value);
 	}

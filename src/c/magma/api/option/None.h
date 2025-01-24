@@ -1,4 +1,4 @@
-struct None<T> implements Option<T>{
+struct None<T>{
 	<R>Option<R> map(Function<T, R> mapper){
 		return new None<>();
 	}

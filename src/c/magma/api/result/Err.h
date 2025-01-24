@@ -1,4 +1,4 @@
-import magma.api.Tuple;import magma.api.option.None;import magma.api.option.Option;import magma.api.option.Some;import java.util.Optional;struct Err<T, X>(X error) implements Result<T, X>{
+import magma.api.Tuple;import magma.api.option.None;import magma.api.option.Option;import magma.api.option.Some;import java.util.Optional;struct Err<T, X>(X error){
 	<R>Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper){
 		return new Err<>(this.error);
 	}

@@ -1,4 +1,4 @@
-import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.List;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_PARENT;import static magma.app.lang.CommonLang.METHOD_VALUE;struct RootPasser implements Passer{
+import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.List;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_PARENT;import static magma.app.lang.CommonLang.METHOD_VALUE;struct RootPasser{
 	Node getStruct(Node node){
 		return convertToStruct(node).mapNode("value", ()->{
 			return value.mapNodeList(CONTENT_CHILDREN, ()->{
@@ -29,7 +29,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 				return attachConverter(children, supertype);
 			}
 			return children;
-		}).removeNode("supertype"));
+		})).removeNode("supertype");
 	}
 	List<Node> attachConverter(List<Node> children, Node supertype){
 		var name=supertype.findString("name").or(()->supertype.findString(GENERIC_PARENT)).orElse("N/A");

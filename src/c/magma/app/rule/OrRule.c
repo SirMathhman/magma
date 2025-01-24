@@ -1,4 +1,4 @@
-import magma.api.result.Err;import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.Node;import magma.app.error.CompileError;import magma.app.error.context.Context;import magma.app.error.context.NodeContext;import magma.app.error.context.StringContext;import java.util.ArrayList;import java.util.Collections;import java.util.List;struct OrRule(List<Rule> rules) implements Rule{
+import magma.api.result.Err;import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.Node;import magma.app.error.CompileError;import magma.app.error.context.Context;import magma.app.error.context.NodeContext;import magma.app.error.context.StringContext;import java.util.ArrayList;import java.util.Collections;import java.util.List;struct OrRule(List<Rule> rules){
 	Result<Node, CompileError> parse(String value){
 		return process(new StringContext(value), ()->rule.parse(value));
 	}

@@ -1,4 +1,4 @@
-struct StringContext(String value) implements Context{
+struct StringContext(String value){
 	String display(){
 		return this.value;
 	}

@@ -1,4 +1,4 @@
-import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import java.util.Arrays;import java.util.List;struct SimpleDivider implements Divider{
+import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import java.util.Arrays;import java.util.List;struct SimpleDivider{
 	String delimiter;
 	public SimpleDivider(String delimiter){
 		this.delimiter =delimiter;

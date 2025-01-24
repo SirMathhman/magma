@@ -1,4 +1,4 @@
-import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import magma.app.lang.CommonLang;import java.util.ArrayList;import java.util.List;import static magma.app.Passer.by;struct Formatter implements Passer{
+import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import magma.app.lang.CommonLang;import java.util.ArrayList;import java.util.List;import static magma.app.Passer.by;struct Formatter{
 	Node removeWhitespace(Node block){
 		return block.mapNodeList(CommonLang.CONTENT_CHILDREN, ()->{
 			return children.stream().filter(()->!child.is("whitespace")).toList();
