@@ -62,6 +62,9 @@ public class CommonLang {
     public static final String FUNCTIONAL_RETURN = "return";
     public static final String SYMBOL_VALUE_TYPE = "symbol-value";
     public static final String SYMBOL_TYPE_TYPE = "symbol-type";
+    public static final String LAMBDA_TYPE = "lambda";
+    public static final String LAMBDA_VALUE = "value";
+    public static final String LAMBDA_PARAMETERS = "args";
 
     public static Rule createNamespacedRule(String type, String prefix, String delimiter, String suffix) {
         final var segment = new TypeRule("segment", new StringRule("value"));
@@ -254,16 +257,16 @@ public class CommonLang {
     private static TypeRule createLambdaRule(Rule statement, LazyRule value) {
         final var args = new StripRule(new OrRule(List.of(
                 new ExactRule("()"),
-                new NodeRule("arg", createSymbolRule(SYMBOL_VALUE_TYPE)),
-                new DivideRule("args", new SimpleDivider(","), createSymbolRule(SYMBOL_VALUE_TYPE))
+                new NodeRule(LAMBDA_PARAMETERS, createSymbolRule(SYMBOL_VALUE_TYPE)),
+                new DivideRule(LAMBDA_PARAMETERS, new SimpleDivider(","), createSymbolRule(SYMBOL_VALUE_TYPE))
         )));
 
         final var rightRule = new OrRule(List.of(
-                new NodeRule("value", wrapUsingBlock("value", new StripRule(new SuffixRule(args, "->")), statement)),
-                new InfixRule(args, new FirstLocator("->"), new NodeRule("value", value))
+                new NodeRule(LAMBDA_VALUE, wrapUsingBlock(LAMBDA_VALUE, new StripRule(new SuffixRule(args, "->")), statement)),
+                new InfixRule(args, new FirstLocator("->"), new NodeRule(LAMBDA_VALUE, value))
         ));
 
-        return new TypeRule("lambda", rightRule);
+        return new TypeRule(LAMBDA_TYPE, rightRule);
     }
 
     private static TypeRule createStringRule() {
