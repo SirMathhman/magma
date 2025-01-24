@@ -29,7 +29,12 @@ public class JavaLang {
         ));
     }
 
-    public static Rule createJavaCompoundRule(String type, String infix, LazyRule function, LazyRule struct) {
+    public static Rule createJavaCompoundRule(
+            String type,
+            String infix,
+            LazyRule function,
+            LazyRule struct
+    ) {
         final var statement = CommonLang.createStatementRule(function, struct);
         function.set(CommonLang.createMethodRule(statement));
 

@@ -1,3 +1,6 @@
 struct Context{
-	String display();
+	struct Table{
+		String display();
+	}
+	struct Impl{}
 }

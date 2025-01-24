@@ -1,3 +1,6 @@
 import java.util.Optional;struct Head<T>{
-	Optional<T> next();
+	struct Table{
+		Optional<T> next();
+	}
+	struct Impl{}
 }

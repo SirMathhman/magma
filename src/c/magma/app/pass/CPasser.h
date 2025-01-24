@@ -1,5 +1,28 @@
-import magma.api.result.Ok;import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;struct CPasser implements Passer{
-	Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit){
-		return new Ok<>(unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")).or(Passer.by("interface")), ()->node.retype("struct")).orElse(unit));
+import magma.api.result.Ok;import magma.api.result.Result;import magma.app.MapNode;import magma.app.Node;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.List;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;struct CPasser implements Passer{
+	struct Table{
+		Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit){
+			return new Ok<>(unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")).or(Passer.by("interface")), ()->{
+				return node.retype("struct").mapNode("value", ()->{
+					return value.mapNodeList("children", ()->{
+						var methods=new ArrayList<Node>();
+						var others=new ArrayList<Node>();
+						children.forEach(()->{
+							if(child.is("method")){
+								methods.add(child);
+							}
+							else{
+								others.add(child);
+							}
+						});
+						return List.of(new MapNode("struct")
+                                    .withString("name", "Table")
+                                    .withNode("value", new MapNode("block").withNodeList(CONTENT_CHILDREN, methods)), new MapNode("struct")
+                                    .withString("name", "Impl")
+                                    .withNode("value", new MapNode("block").withNodeList(CONTENT_CHILDREN, others)));
+					});
+				});
+			}).orElse(unit));
+		}
 	}
+	struct Impl{}
 }

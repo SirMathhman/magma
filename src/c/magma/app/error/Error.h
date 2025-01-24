@@ -1,3 +1,6 @@
 struct Error{
-	String display();
+	struct Table{
+		String display();
+	}
+	struct Impl{}
 }
