@@ -5,7 +5,7 @@ struct State(Stack<List<Node>> frames){
 		this.frames.push(new ArrayList<>());
 	}
 	Optional<Node> findInFrame(String value, List<Node> frame){
-		return frame.stream().filter(()->definition.findString("name").orElse("").equals(value)).findFirst();
+		return frame.stream().filter(definition->definition.findString("name").orElse("").equals(value)).findFirst();
 	}
 	State exit(){
 		this.frames.pop();
@@ -23,6 +23,6 @@ struct State(Stack<List<Node>> frames){
 		return this.frames.size()-1;
 	}
 	Option<Node> find(String value){
-		return JavaOptions.fromNative(this.frames.stream().map(()->findInFrame(value, frame)).flatMap(Optional::stream).findFirst());
+		return JavaOptions.fromNative(this.frames.stream().map(frame->findInFrame(value, frame)).flatMap(Optional::stream).findFirst());
 	}
 }

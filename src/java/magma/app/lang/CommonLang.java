@@ -256,10 +256,10 @@ public class CommonLang {
     }
 
     private static TypeRule createLambdaRule(Rule statement, LazyRule value) {
+        final var childRule = new DivideRule(LAMBDA_PARAMETERS, new SimpleDivider(","), createSymbolRule(SYMBOL_VALUE_TYPE));
         final var args = new StripRule(new OrRule(List.of(
-                new ExactRule("()"),
                 new NodeRule(LAMBDA_PARAMETERS, createSymbolRule(SYMBOL_VALUE_TYPE)),
-                new DivideRule(LAMBDA_PARAMETERS, new SimpleDivider(","), createSymbolRule(SYMBOL_VALUE_TYPE))
+                new StripRule(new PrefixRule("(", new SuffixRule(new OptionalNodeListRule(LAMBDA_PARAMETERS, childRule), ")")))
         )));
 
         final var rightRule = new OrRule(List.of(

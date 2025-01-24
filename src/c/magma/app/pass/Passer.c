@@ -1,7 +1,7 @@
 #include "./Passer.h"
 struct Passer{
 	Predicate<Node> by(String type){
-		return ()->value.is(type);
+		return value->value.is(type);
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
 		return new Ok<>(unit);

@@ -6,10 +6,10 @@ struct OrRule(List<Rule> rules) implements Rule{
 		return left;
 	}
 	Result<Node, CompileError> parse(String value){
-		return process(new StringContext(value), ()->rule.parse(value));
+		return process(new StringContext(value), rule->rule.parse(value));
 	}
 	<R>Result<R, CompileError> process(Context context, Function<Rule, Result<R, CompileError>> mapper){
-		return Streams.fromNativeList(this.rules).map(()->wrapResultInList(mapper, rule)).foldLeft(OrRule::join).orElseGet(()->createError(context)).mapErr(()->new CompileError("No valid rule", context, errors));
+		return Streams.fromNativeList(this.rules).map(rule->wrapResultInList(mapper, rule)).foldLeft(OrRule::join).orElseGet(()->createError(context)).mapErr(errors->new CompileError("No valid rule", context, errors));
 	}
 	<R>Result<R, List<CompileError>> join(Result<R, List<CompileError>> first, Result<R, List<CompileError>> second){
 		return first.or(()->second).mapErr(OrRule::join);
@@ -21,6 +21,6 @@ struct OrRule(List<Rule> rules) implements Rule{
 		return new Err<>(Collections.singletonList(new CompileError("No rules set", context)));
 	}
 	Result<String, CompileError> generate(Node node){
-		return process(new NodeContext(node), ()->rule.generate(node));
+		return process(new NodeContext(node), rule->rule.generate(node));
 	}
 }
