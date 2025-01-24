@@ -216,12 +216,17 @@ public class CommonLang {
 
     private static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
+        final var typeArguments = new DivideRule("type-arguments", VALUE_DIVIDER, createTypeRule());
+        final var beforeArguments = new OptionalNodeListRule("type-arguments",
+                new StripRule(new PrefixRule("<", new InfixRule(typeArguments, new FirstLocator(">"), caller))),
+                caller
+        );
+
         final var children = new OptionalNodeListRule(INVOCATION_CHILDREN,
                 new DivideRule(INVOCATION_CHILDREN, VALUE_DIVIDER, value)
         );
 
-        final var suffixRule = new StripRule(new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")")
-        );
+        final var suffixRule = new StripRule(new SuffixRule(new InfixRule(beforeArguments, new InvocationLocator(), children), ")"));
         return new TypeRule("invocation", suffixRule);
     }
 
