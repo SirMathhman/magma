@@ -1,3 +1,4 @@
+#include "./StatementDivider.h"
 struct StatementDivider implements Divider{
 	Divider STATEMENT_DIVIDER=new StatementDivider();
 	private StatementDivider(){}

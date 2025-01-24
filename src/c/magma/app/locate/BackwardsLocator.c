@@ -1,3 +1,4 @@
+#include "./BackwardsLocator.h"
 struct BackwardsLocator implements Locator{
 	String infix;
 	public BackwardsLocator(String infix){

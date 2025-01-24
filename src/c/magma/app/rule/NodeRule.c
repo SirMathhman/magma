@@ -1,3 +1,4 @@
+#include "./NodeRule.h"
 struct NodeRule(String propertyKey, Rule childRule) implements Rule{
 	Result<Node, CompileError> parse(String input){
 		return this.childRule.parse(input).mapValue(()->new MapNode().withNode(this.propertyKey, node));

@@ -1,3 +1,4 @@
+#include "./ExactRule.h"
 struct ExactRule(String slice) implements Rule{
 	Result<Node, CompileError> parse(String input){
 		if(input.equals(this.slice))return new Ok<>(new MapNode());

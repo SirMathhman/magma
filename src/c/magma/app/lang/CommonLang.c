@@ -1,3 +1,4 @@
+#include "./CommonLang.h"
 struct CommonLang{
 	String ROOT_TYPE="root";
 	String RECORD_TYPE="record";

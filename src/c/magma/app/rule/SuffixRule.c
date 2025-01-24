@@ -1,3 +1,4 @@
+#include "./SuffixRule.h"
 struct SuffixRule implements Rule{
 	String suffix;
 	Rule childRule;

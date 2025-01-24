@@ -1,3 +1,4 @@
+#include "./Result.h"
 struct Result<T, X>{
 	<R>Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper);
 	<R>Result<R, X> mapValue(Function<T, R> mapper);

@@ -24,27 +24,8 @@ public class CFormatter implements Passer {
         });
     }
 
-    static Node cleanupNamespaced(Node root) {
-        final var oldChildren = root.findNodeList(CommonLang.CONTENT_CHILDREN).orElse(Collections.emptyList());
-        final var newChildren = oldChildren.stream()
-                .filter(child -> !child.is("package"))
-                .filter(CFormatter::filterImport)
-                .map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
-                .toList();
-
-        final var headerElements = new ArrayList<Node>();
-        final var sourceElements = new ArrayList<Node>();
-        newChildren.forEach(child -> {
-            if (child.is("include")) {
-                headerElements.add(child);
-            } else {
-                sourceElements.add(child);
-            }
-        });
-
-        return new MapNode()
-                .withNode("header", createRoot(headerElements))
-                .withNode("source", createRoot(sourceElements));
+    private static Node createSegment(String value) {
+        return new MapNode("segment").withString("value", value);
     }
 
     private static Node createRoot(List<Node> elements) {
@@ -86,10 +67,50 @@ public class CFormatter implements Passer {
         return definition.removeNodeList("annotations").removeNodeList("modifiers");
     }
 
+    private static PassUnit<Node> cleanupNamespaced(PassUnit<Node> unit) {
+        final var namespace = unit.findNamespace();
+        final var name = unit.findName();
+
+        final var oldChildren = unit.value().findNodeList(CommonLang.CONTENT_CHILDREN).orElse(Collections.emptyList());
+        final var newChildren = oldChildren.stream()
+                .filter(child -> !child.is("package"))
+                .filter(CFormatter::filterImport)
+                .map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
+                .toList();
+
+        final var joined = String.join("_", namespace) + "_" + name;
+        final var headerElements = new ArrayList<>(List.of(
+                new MapNode("if-not-defined").withString(CONTENT_AFTER_CHILD, "\n").withString("value", joined),
+                new MapNode("define").withString(CONTENT_AFTER_CHILD, "\n").withString("value", joined)
+        ));
+
+        final var sourceImport = new MapNode("include")
+                .withString(CONTENT_AFTER_CHILD, "\n")
+                .withNodeList("namespace", List.of(
+                        createSegment("."),
+                        createSegment(name)
+                ));
+
+        final var sourceElements = new ArrayList<>(List.of(sourceImport));
+        newChildren.forEach(child -> {
+            if (child.is("include")) {
+                headerElements.add(child);
+            } else {
+                sourceElements.add(child);
+            }
+        });
+
+        headerElements.add(new MapNode("endif").withString(CONTENT_AFTER_CHILD, "\n"));
+
+        return unit.withValue(new MapNode()
+                .withNode("header", createRoot(headerElements))
+                .withNode("source", createRoot(sourceElements)));
+    }
+
     @Override
     public Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
         return new Ok<>(unit.filter(by("block")).map(CFormatter::formatBlock)
-                .or(() -> unit.filterAndMapToValue(by("root"), CFormatter::cleanupNamespaced))
+                .or(() -> unit.filter(by("root")).map(CFormatter::cleanupNamespaced))
                 .orElse(unit));
     }
 

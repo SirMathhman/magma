@@ -1,3 +1,4 @@
+#include "./FirstLocator.h"
 struct FirstLocator(String infix) implements Locator{
 	String unwrap(){
 		return this.infix;

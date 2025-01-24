@@ -1,3 +1,4 @@
+#include "./Namer.h"
 struct Namer{
 	int counter=0;
 	String createUniqueName(){

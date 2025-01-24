@@ -1,0 +1,3 @@
+#ifndef magma_app_error_context_StringContext
+#define magma_app_error_context_StringContext
+#endif

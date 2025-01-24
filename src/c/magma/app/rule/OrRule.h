@@ -1,3 +1,5 @@
+#ifndef magma_app_rule_OrRule
+#define magma_app_rule_OrRule
 #include "../../../magma/api/result/Err.h"
 #include "../../../magma/api/result/Result.h"
 #include "../../../magma/api/stream/Streams.h"
@@ -9,3 +11,4 @@
 #include "../../../java/util/ArrayList.h"
 #include "../../../java/util/Collections.h"
 #include "../../../java/util/List.h"
+#endif

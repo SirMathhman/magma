@@ -1,3 +1,4 @@
+#include "./Err.h"
 struct Err<T, X>(X error) implements Result<T, X>{
 	<R>Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper){
 		return new Err<>(this.error);

@@ -1,3 +1,4 @@
+#include "./FilterRule.h"
 struct FilterRule(Predicate<String> filter, Rule childRule) implements Rule{
 	Result<Node, CompileError> parse(String input){
 		if(this.filter.test(input)){

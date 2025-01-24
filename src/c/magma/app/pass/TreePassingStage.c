@@ -1,3 +1,4 @@
+#include "./TreePassingStage.h"
 struct TreePassingStage implements PassingStage{
 	Passer passer;
 	public TreePassingStage(Passer passer){

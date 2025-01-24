@@ -1,3 +1,5 @@
+#ifndef magma_Main
+#define magma_Main
 #include "../magma/api/Tuple.h"
 #include "../magma/api/io/Path.h"
 #include "../magma/api/option/None.h"
@@ -26,3 +28,4 @@
 #include "../java/io/IOException.h"
 #include "../java/util/HashMap.h"
 #include "../java/util/Map.h"
+#endif

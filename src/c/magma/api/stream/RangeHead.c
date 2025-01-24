@@ -1,3 +1,4 @@
+#include "./RangeHead.h"
 struct RangeHead implements Head<Integer>{
 	int extent;
 	int counter=0;

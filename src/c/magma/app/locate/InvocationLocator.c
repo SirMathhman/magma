@@ -1,3 +1,4 @@
+#include "./InvocationLocator.h"
 struct InvocationLocator implements Locator{
 	String unwrap(){
 		return "(";

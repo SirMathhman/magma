@@ -1,3 +1,4 @@
+#include "./None.h"
 struct None<T> implements Option<T>{
 	<R>Option<R> map(Function<T, R> mapper){
 		return new None<>();

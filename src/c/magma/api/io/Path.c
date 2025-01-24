@@ -1,3 +1,4 @@
+#include "./Path.h"
 struct Path{
 	boolean isExists();
 	Stream<Path> stream();

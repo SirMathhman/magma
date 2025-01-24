@@ -1,3 +1,4 @@
+#include "./State.h"
 struct State(int depth){
 	public State(){
 		this(0);

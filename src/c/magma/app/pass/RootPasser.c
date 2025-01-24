@@ -1,3 +1,4 @@
+#include "./RootPasser.h"
 struct RootPasser implements Passer{
 	PassUnit<Node> resolveImport(PassUnit<Node> unit){
 		var fileNamespace=unit.findNamespace();

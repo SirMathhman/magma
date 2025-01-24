@@ -1,3 +1,4 @@
+#include "./StringRule.h"
 struct StringRule implements Rule{
 	String propertyKey;
 	public StringRule(String propertyKey){

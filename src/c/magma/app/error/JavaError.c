@@ -1,3 +1,4 @@
+#include "./JavaError.h"
 struct JavaError(Exception e) implements Error{
 	String display(){
 		var writer=new StringWriter();

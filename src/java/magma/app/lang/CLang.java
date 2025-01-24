@@ -1,8 +1,11 @@
 package magma.app.lang;
 
+import magma.app.rule.ExactRule;
 import magma.app.rule.LazyRule;
 import magma.app.rule.OrRule;
+import magma.app.rule.PrefixRule;
 import magma.app.rule.Rule;
+import magma.app.rule.StringRule;
 import magma.app.rule.TypeRule;
 
 import java.util.List;
@@ -19,6 +22,9 @@ public class CLang {
 
         return new OrRule(List.of(
                 CommonLang.createNamespacedRule("include", "#include \"", "/", ".h\""),
+                new TypeRule("if-not-defined", new PrefixRule("#ifndef ", new StringRule("value"))),
+                new TypeRule("define", new PrefixRule("#define ", new StringRule("value"))),
+                new TypeRule("endif", new ExactRule("#endif")),
                 struct,
                 function,
                 CommonLang.createWhitespaceRule()

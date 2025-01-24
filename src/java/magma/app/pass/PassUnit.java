@@ -24,4 +24,6 @@ public interface PassUnit<T> {
     PassUnit<T> exit();
 
     List<String> findNamespace();
+
+    String findName();
 }

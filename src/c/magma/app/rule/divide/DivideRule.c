@@ -1,3 +1,4 @@
+#include "./DivideRule.h"
 struct DivideRule implements Rule{
 	String propertyKey;
 	Divider divider;

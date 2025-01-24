@@ -1,3 +1,4 @@
+#include "./StripRule.h"
 struct StripRule(Rule childRule, String before, String after) implements Rule{
 	public StripRule(Rule childRule){
 		this(childRule, "", "");

@@ -1,3 +1,4 @@
+#include "./SimpleDivider.h"
 struct SimpleDivider implements Divider{
 	String delimiter;
 	public SimpleDivider(String delimiter){

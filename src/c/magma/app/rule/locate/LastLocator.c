@@ -1,3 +1,4 @@
+#include "./LastLocator.h"
 struct LastLocator(String infix) implements Locator{
 	Stream<Integer> locate(String input){
 		var index=input.lastIndexOf(infix());

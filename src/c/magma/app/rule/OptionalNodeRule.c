@@ -1,3 +1,4 @@
+#include "./OptionalNodeRule.h"
 struct OptionalNodeRule implements Rule{
 	String propertyKey;
 	Rule ifPresent;

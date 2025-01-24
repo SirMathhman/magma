@@ -1,3 +1,5 @@
+#ifndef magma_app_pass_RootPasser
+#define magma_app_pass_RootPasser
 #include "../../../magma/api/result/Ok.h"
 #include "../../../magma/api/result/Result.h"
 #include "../../../magma/app/MapNode.h"
@@ -9,3 +11,4 @@
 #include "../../../java/util/Optional.h"
 #include "../../../java/util/stream/IntStream.h"
 #include "../../../java/util/stream/Stream.h"
+#endif

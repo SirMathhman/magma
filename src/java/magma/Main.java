@@ -96,7 +96,7 @@ public class Main {
         return source.readStrings()
                 .mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
-                .flatMapValue(input -> compile(input, namespace).mapErr(ApplicationError::new))
+                .flatMapValue(input -> compile(input, namespace, name).mapErr(ApplicationError::new))
                 .mapValue(output -> writeOutput(output, targetParent, name))
                 .match(Function.identity(), Some::new);
     }
@@ -107,15 +107,20 @@ public class Main {
                 .isPresent();
     }
 
-    private static Result<Map<String, String>, CompileError> compile(String input, JavaList<String> namespace) {
+    private static Result<Map<String, String>, CompileError> compile(String input, JavaList<String> namespace, String name) {
         return JavaLang.createJavaRootRule().parse(input)
-                .flatMapValue(root -> pass(new RootPasser(), namespace, root))
-                .flatMapValue(root -> pass(new CFormatter(), namespace, root))
-                .flatMapValue(root -> root.streamNodes().foldLeftToResult(new HashMap<String, String>(), Main::generateTarget));
+                .flatMapValue(root -> pass(new RootPasser(), namespace, name, root))
+                .flatMapValue(root -> pass(new CFormatter(), namespace, name, root))
+                .flatMapValue(root -> root.streamNodes().foldLeftToResult(new HashMap<>(), Main::generateTarget));
     }
 
-    private static Result<Node, CompileError> pass(Passer passer, JavaList<String> namespace, Node root) {
-        final var unit = new InlinePassUnit<>(root, namespace);
+    private static Result<Node, CompileError> pass(
+            Passer passer,
+            JavaList<String> namespace,
+            String name,
+            Node root
+    ) {
+        final var unit = new InlinePassUnit<>(root, namespace, name);
         return new TreePassingStage(passer).pass(unit).mapValue(PassUnit::value);
     }
 

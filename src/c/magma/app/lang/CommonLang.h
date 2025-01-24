@@ -1,3 +1,5 @@
+#ifndef magma_app_lang_CommonLang
+#define magma_app_lang_CommonLang
 #include "../../../magma/app/locate/BackwardsLocator.h"
 #include "../../../magma/app/locate/InvocationLocator.h"
 #include "../../../magma/app/rule/ContextRule.h"
@@ -25,3 +27,4 @@
 #include "../../../java/util/List.h"
 #include "../../../static magma/app/rule/divide/StatementDivider/STATEMENT_DIVIDER.h"
 #include "../../../static magma/app/rule/divide/ValueDivider/VALUE_DIVIDER.h"
+#endif

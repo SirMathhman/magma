@@ -1,3 +1,4 @@
+#include "./LazyRule.h"
 struct LazyRule implements Rule{
 	Optional<Rule> childRule=Optional.empty();
 	Result<Node, CompileError> parse(String input){

@@ -1,3 +1,4 @@
+#include "./ValueDivider.h"
 struct ValueDivider implements Divider{
 	Divider VALUE_DIVIDER=new ValueDivider();
 	private ValueDivider(){}

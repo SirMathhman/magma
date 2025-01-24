@@ -1,3 +1,4 @@
+#include "./PrefixRule.h"
 struct PrefixRule implements Rule{
 	String prefix;
 	Rule childRule;

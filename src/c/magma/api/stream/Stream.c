@@ -1,3 +1,4 @@
+#include "./Stream.h"
 struct Stream<T> extends Head<T>{
 	Option<T> foldLeft(BiFunction<T, T, T> folder);
 	<R>R foldLeft(R initial, BiFunction<R, T, R> folder);

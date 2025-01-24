@@ -1,3 +1,4 @@
+#include "./JavaLang.h"
 struct JavaLang{
 	Rule createJavaRootRule(){
 		return new TypeRule(CommonLang.ROOT_TYPE, CommonLang.createContentRule(createJavaRootSegmentRule()));

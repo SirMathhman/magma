@@ -1,3 +1,4 @@
+#include "./MapNode.h"
 struct MapNode implements Node{
 	Map<String, String> strings;
 	Map<String, List<Node>> nodeLists;

@@ -1,3 +1,4 @@
+#include "./OrRule.h"
 struct OrRule(List<Rule> rules) implements Rule{
 	Result<Node, CompileError> parse(String value){
 		return process(new StringContext(value), ()->rule.parse(value));

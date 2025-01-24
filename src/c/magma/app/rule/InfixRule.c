@@ -1,3 +1,4 @@
+#include "./InfixRule.h"
 struct InfixRule implements Rule{
 	Rule leftRule;
 	Locator locator;

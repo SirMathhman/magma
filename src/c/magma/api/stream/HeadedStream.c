@@ -1,3 +1,4 @@
+#include "./HeadedStream.h"
 struct HeadedStream<T>(Head<T> head) implements Stream<T>{
 	Option<T> foldLeft(BiFunction<T, T, T> folder){
 		return this.head.next().map(()->foldLeft(initial, folder));

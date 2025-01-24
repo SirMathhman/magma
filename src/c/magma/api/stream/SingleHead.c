@@ -1,3 +1,4 @@
+#include "./SingleHead.h"
 struct SingleHead<T> implements Head<T>{
 	T value;
 	boolean retrieved;

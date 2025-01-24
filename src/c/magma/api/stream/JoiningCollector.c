@@ -1,3 +1,4 @@
+#include "./JoiningCollector.h"
 struct JoiningCollector implements Collector<String, Option<String>>{
 	String slice;
 	public JoiningCollector(String slice){

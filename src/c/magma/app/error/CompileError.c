@@ -1,3 +1,4 @@
+#include "./CompileError.h"
 struct CompileError implements Error{
 	String message;
 	Context context;

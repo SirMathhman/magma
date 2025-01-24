@@ -1,3 +1,4 @@
+#include "./Passer.h"
 struct Passer{
 	Predicate<Node> by(String type){
 		return ()->value.is(type);

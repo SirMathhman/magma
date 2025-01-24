@@ -1,3 +1,4 @@
+#include "./PassUnit.h"
 struct PassUnit<T>{
 	<R>PassUnit<R> mapValue(Function<T, R> mapper);
 	Optional<PassUnit<T>> filter(Predicate<T> predicate);
@@ -8,4 +9,5 @@ struct PassUnit<T>{
 	<R>PassUnit<R> flattenNode(BiFunction<State, T, R> mapper);
 	PassUnit<T> exit();
 	List<String> findNamespace();
+	String findName();
 }

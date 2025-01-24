@@ -1,3 +1,4 @@
+#include "./Main.h"
 struct Main{
 	Path SOURCE_DIRECTORY=JavaPaths.get(".", "src", "java");
 	Path TARGET_DIRECTORY=JavaPaths.get(".", "src", "c");
@@ -29,16 +30,16 @@ struct Main{
 			var directoriesError=targetParent.createAsDirectories();
 			if(directoriesError.isPresent())return directoriesError.map(JavaError::new).map(ApplicationError::new);
 		}
-		return source.readStrings().mapErr(JavaError::new).mapErr(ApplicationError::new).flatMapValue(()->compile(input, namespace).mapErr(ApplicationError::new)).mapValue(()->writeOutput(output, targetParent, name)).match(Function.identity(), Some::new);
+		return source.readStrings().mapErr(JavaError::new).mapErr(ApplicationError::new).flatMapValue(()->compile(input, namespace, name).mapErr(ApplicationError::new)).mapValue(()->writeOutput(output, targetParent, name)).match(Function.identity(), Some::new);
 	}
 	boolean shouldSkip(JavaList<String> namespace){
 		return namespace.subList(0, 2).filter(()->slice.equals(JavaList.of("magma", "java"))).isPresent();
 	}
-	Result<Map<String, String>, CompileError> compile(String input, JavaList<String> namespace){
-		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->pass(new RootPasser(), namespace, root)).flatMapValue(()->pass(new CFormatter(), namespace, root)).flatMapValue(()->root.streamNodes().foldLeftToResult(new HashMap<String, String>(), Main::generateTarget));
+	Result<Map<String, String>, CompileError> compile(String input, JavaList<String> namespace, String name){
+		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->pass(new RootPasser(), namespace, name, root)).flatMapValue(()->pass(new CFormatter(), namespace, name, root)).flatMapValue(()->root.streamNodes().foldLeftToResult(new HashMap<>(), Main::generateTarget));
 	}
-	Result<Node, CompileError> pass(Passer passer, JavaList<String> namespace, Node root){
-		var unit=new InlinePassUnit<>(root, namespace);
+	Result<Node, CompileError> pass(Passer passer, JavaList<String> namespace, String name, Node root){
+		var unit=new InlinePassUnit<>(root, namespace, name);
 		return new TreePassingStage(passer).pass(unit).mapValue(PassUnit::value);
 	}
 	Result<Map<String, String>, CompileError> generateTarget(Map<String, String> map, Tuple<String, Node> tuple){

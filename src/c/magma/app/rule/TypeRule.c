@@ -1,3 +1,4 @@
+#include "./TypeRule.h"
 struct TypeRule(String type, Rule rule) implements Rule{
 	Result<Node, CompileError> parse(String input){
 		return this.rule.parse(input).mapValue(()->node.retype(this.type)).mapValue(()->{

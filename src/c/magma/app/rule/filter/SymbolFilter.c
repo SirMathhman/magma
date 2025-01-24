@@ -1,3 +1,4 @@
+#include "./SymbolFilter.h"
 struct SymbolFilter implements Predicate<String>{
 	boolean test(String input){
 		if(input.isEmpty())return false;
