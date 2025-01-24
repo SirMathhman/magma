@@ -7,4 +7,5 @@ import java.util.Optional;struct PassUnit<T>{
 	<R>Optional<PassUnit<R>> filterAndMapToValue(Predicate<T> predicate, Function<T, R> mapper);
 	<R>PassUnit<R> flattenNode(BiFunction<State, T, R> mapper);
 	PassUnit<T> exit();
+	struct Impl{}
 }
