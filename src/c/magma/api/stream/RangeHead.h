@@ -1,7 +1,7 @@
 import java.util.Optional;struct RangeHead{
 	int extent;
 	int counter=0;
-	public RangeHead(int extent){
+	public RangeHead(any* _ref_, int extent){
 		this.extent =extent;
 	}
 	Optional<Integer> next(){

@@ -1,8 +1,8 @@
 struct None<T>{
-	<R>Option<R> map(Tuple<any*, R (*)(any*, T)> mapper){
+	<R>Option<R> map(any* _ref_, Tuple<any*, R (*)(any*, T)> mapper){
 		return new None<>();
 	}
-	T orElseGet(Tuple<any*, T (*)(any*)> other){
+	T orElseGet(any* _ref_, Tuple<any*, T (*)(any*)> other){
 		return other.get();
 	}
 	Option<T> Option(){

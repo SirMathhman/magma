@@ -5,7 +5,7 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.
 	int length(){
 		return 1;
 	}
-	Stream<Integer> locate(String input){
+	Stream<Integer> locate(any* _ref_, String input){
 		var depth=0;
 		int i=input.length() - 1;
 		while(i>=0){

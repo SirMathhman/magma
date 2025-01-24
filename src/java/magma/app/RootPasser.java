@@ -137,7 +137,16 @@ public class RootPasser implements Passer {
 
     @Override
     public Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
-        return new Ok<>(unit);
+        return new Ok<>(unit.filterAndMapToValue(Passer.by("method"), node -> {
+            return node.mapNodeList("params", params -> {
+                final var copy = new ArrayList<Node>();
+                copy.add(new MapNode("definition")
+                        .withNode("type", createAnyRefType())
+                        .withString("name", "_ref_"));
+                copy.addAll(params);
+                return copy;
+            });
+        }).orElse(unit));
     }
 
     @Override

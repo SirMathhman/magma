@@ -8,7 +8,7 @@ import magma.app.rule.LazyRule;import magma.app.rule.OrRule;import magma.app.rul
 		struct.set(new OrRule(List.of(createJavaCompoundRule(CommonLang.CLASS_TYPE, "class ", function, struct), createJavaCompoundRule(CommonLang.RECORD_TYPE, "record ", function, struct), createJavaCompoundRule(CommonLang.INTERFACE_TYPE, "interface ", function, struct))));
 		return new OrRule(List.of(CommonLang.createNamespacedRule("package", "package "), CommonLang.createNamespacedRule("import", "import "), CommonLang.createWhitespaceRule(), struct));
 	}
-	Rule createJavaCompoundRule(String type, String infix, LazyRule function, LazyRule struct){
+	Rule createJavaCompoundRule(any* _ref_, String type, String infix, LazyRule function, LazyRule struct){
 		var statement=CommonLang.createStatementRule(function, struct);
 		function.set(CommonLang.createMethodRule(statement));
 		return CommonLang.createCompoundRule(type, infix, CommonLang.createStructSegmentRule(function, statement, struct));

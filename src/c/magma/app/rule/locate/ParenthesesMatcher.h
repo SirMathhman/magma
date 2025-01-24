@@ -5,7 +5,7 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	int length(){
 		return 1;
 	}
-	Stream<Integer> locate(String input){
+	Stream<Integer> locate(any* _ref_, String input){
 		var depth=0;
 		var queue=IntStream.range(0, input.length()).mapToObj(()->new Tuple<>(index, input.charAt(index))).collect(Collectors.toCollection(LinkedList::new));
 		while(!queue.isEmpty()){

@@ -1,5 +1,5 @@
 import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.List;import java.util.Optional;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_CONSTRUCTOR;import static magma.app.lang.CommonLang.METHOD_VALUE;struct RootPasser{
-	Node unwrapInterface(Node node){
+	Node unwrapInterface(any* _ref_, Node node){
 		return convertToStruct(node).mapNode("value", ()->value.mapNodeList(CONTENT_CHILDREN, ()->{
 			var copy=new ArrayList<>(children);
 			var impl=createConstructor();
@@ -22,7 +22,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
                 .withString("name", "Impl")
                 .withNode("value", block);
 	}
-	Node convertToStruct(Node node){
+	Node convertToStruct(any* _ref_, Node node){
 		return node.retype("struct").mapNode("value", ()->value.mapNodeList("children", ()->{
 			var maybeSupertype=node.findNode("supertype");
 			if(maybeSupertype.isPresent()){
@@ -35,7 +35,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 			return children;
 		})).removeNode("supertype");
 	}
-	Node createConverter(Node supertype){
+	Node createConverter(any* _ref_, Node supertype){
 		var name=supertype.findString("name").or(()->supertype.findString(GENERIC_CONSTRUCTOR)).orElse("N/A");
 		var converterDefinition=new MapNode("definition")
                 .withNode("type", supertype).withString("name", name);
@@ -49,7 +49,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 		return new MapNode("method")
                 .withNode("definition", converterDefinition).withNode("value", converterBody);
 	}
-	Optional<Node> mapToFunctional(Node node){
+	Optional<Node> mapToFunctional(any* _ref_, Node node){
 		var optional=node.findString(GENERIC_CONSTRUCTOR);
 		if(optional.isPresent()){
 			var constructor=optional.get();
@@ -78,17 +78,25 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 		}
 		return Optional.empty();
 	}
-	Node wrapFunctionalInTuple(Node child){
+	Node wrapFunctionalInTuple(any* _ref_, Node child){
 		return new MapNode("generic").withString(GENERIC_CONSTRUCTOR, "Tuple").withNodeList(GENERIC_CHILDREN, List.of(createAnyRefType(), child));
 	}
 	Node createAnyRefType(){
 		var anyType=new MapNode("symbol").withString("value", "any");
 		return new MapNode("ref").withNode("value", anyType);
 	}
-	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
-		return new Ok<>(unit);
+	Result<PassUnit<Node>, CompileError> afterPass(any* _ref_, PassUnit<Node> unit){
+		return new Ok<>(unit.filterAndMapToValue(Passer.by("method"), ()->{
+			return node.mapNodeList("params", ()->{
+				var copy=new ArrayList<Node>();
+				copy.add(new MapNode("definition")
+                        .withNode("type", createAnyRefType()).withString("name", "_ref_"));
+				copy.addAll(params);
+				return copy;
+			});
+		}).orElse(unit));
 	}
-	Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit){
+	Result<PassUnit<Node>, CompileError> beforePass(any* _ref_, PassUnit<Node> unit){
 		return new Ok<>(unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")), RootPasser::convertToStruct).or(()->unit.filterAndMapToValue(Passer.by("interface"), RootPasser::unwrapInterface)).or(()->unit.filterAndMapToValue(Passer.by("generic"), (Node node) -> mapToFunctional(node).map(RootPasser::wrapFunctionalInTuple).orElse(node))).orElse(unit));
 	}
 	Passer N/A(){

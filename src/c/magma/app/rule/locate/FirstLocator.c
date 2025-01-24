@@ -5,7 +5,7 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import java.util.
 	int length(){
 		return this.infix.length();
 	}
-	Stream<Integer> locate(String input){
+	Stream<Integer> locate(any* _ref_, String input){
 		var index=input.indexOf(this.infix);
 		return index==-1?Streams.empty():Streams.of(index);
 	}

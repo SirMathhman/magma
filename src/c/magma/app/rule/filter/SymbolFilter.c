@@ -1,5 +1,5 @@
 import java.util.stream.IntStream;struct SymbolFilter{
-	boolean test(String input){
+	boolean test(any* _ref_, String input){
 		if(input.isEmpty())return false;
 		return IntStream.range(0, input.length()).allMatch(()->{
 			var c=input.charAt(index);

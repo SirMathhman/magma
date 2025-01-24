@@ -2,12 +2,12 @@ import magma.app.error.context.Context;import java.util.ArrayList;import java.ut
 	String message;
 	Context context;
 	List<CompileError> children;
-	public CompileError(String message, Context context, List<CompileError> children){
+	public CompileError(any* _ref_, String message, Context context, List<CompileError> children){
 		this.message =message;
 		this.context =context;
 		this.children = new ArrayList<>(children);
 	}
-	public CompileError(String message, Context context){
+	public CompileError(any* _ref_, String message, Context context){
 		this(message, context, Collections.emptyList());
 	}
 	String display(){
@@ -16,7 +16,7 @@ import magma.app.error.context.Context;import java.util.ArrayList;import java.ut
 	int maxDepth(){
 		return 1+this.children.stream().mapToInt(CompileError::maxDepth).max().orElse(0);
 	}
-	String format(int depth){
+	String format(any* _ref_, int depth){
 		this.children.sort(Comparator.comparingInt(CompileError::maxDepth));
 		var joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
                 .collect(Collectors.joining());
