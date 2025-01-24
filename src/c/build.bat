@@ -1,0 +1,1 @@
+clang ./magma/Main.c
