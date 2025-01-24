@@ -7,7 +7,7 @@ import magma.app.error.CompileError;
 
 public class CPasser implements Passer {
     @Override
-    public Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
-        return new Ok<>(unit);
+    public Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
+        return new Ok<>(unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")).or(Passer.by("interface")), node -> node.retype("struct")).orElse(unit));
     }
 }
