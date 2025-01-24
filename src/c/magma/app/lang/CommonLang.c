@@ -7,7 +7,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	String STRUCT_TYPE="struct";
 	String WHITESPACE_TYPE="whitespace";
 	String CONTENT_BEFORE_CHILD="content-before-child";
-	String GENERIC_PARENT="caller";
+	String GENERIC_CONSTRUCTOR="caller";
 	String GENERIC_CHILDREN="generic-children";
 	String FUNCTIONAL_TYPE="functional";
 	String METHOD_VALUE="value";
@@ -201,7 +201,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 		return new TypeRule("var-args", new SuffixRule(new NodeRule(METHOD_VALUE, type), "..."));
 	}
 	TypeRule createGenericRule(LazyRule type){
-		var parent=new StringRule(GENERIC_PARENT);
+		var parent=new StringRule(GENERIC_CONSTRUCTOR);
 		var children=new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, type);
 		return new TypeRule(GENERIC_TYPE, new InfixRule(new StripRule(parent), new FirstLocator("<"), new StripRule(new SuffixRule(children, ">"))));
 	}

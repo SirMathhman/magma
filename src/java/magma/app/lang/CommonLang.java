@@ -39,7 +39,7 @@ public class CommonLang {
     public static final String STRUCT_TYPE = "struct";
     public static final String WHITESPACE_TYPE = "whitespace";
     public static final String CONTENT_BEFORE_CHILD = "content-before-child";
-    public static final String GENERIC_PARENT = "caller";
+    public static final String GENERIC_CONSTRUCTOR = "caller";
     public static final String GENERIC_CHILDREN = "generic-children";
     public static final String FUNCTIONAL_TYPE = "functional";
     public static final String METHOD_VALUE = "value";
@@ -375,7 +375,7 @@ public class CommonLang {
     }
 
     private static TypeRule createGenericRule(LazyRule type) {
-        final var parent = new StringRule(GENERIC_PARENT);
+        final var parent = new StringRule(GENERIC_CONSTRUCTOR);
         final var children = new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, type);
         return new TypeRule(GENERIC_TYPE, new InfixRule(new StripRule(parent), new FirstLocator("<"), new StripRule(new SuffixRule(children, ">"))));
     }

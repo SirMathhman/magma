@@ -1,8 +1,8 @@
 struct None<T>{
-	<R>Option<R> map(Function<T, R> mapper){
+	<R>Option<R> map(R (*)(T) mapper){
 		return new None<>();
 	}
-	T orElseGet(Supplier<T> other){
+	T orElseGet(T (*)() other){
 		return other.get();
 	}
 	Option<T> Option(){
