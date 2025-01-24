@@ -1,4 +1,10 @@
-import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.Node;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.List;struct TreePassingStage implements PassingStage{
+import magma.api.result.Result;
+import magma.api.stream.Streams;
+import magma.app.Node;
+import magma.app.error.CompileError;
+import java.util.ArrayList;
+import java.util.List;
+struct TreePassingStage implements PassingStage{
 	Passer passer;
 	public TreePassingStage(Passer passer){
 		this.passer =passer;

@@ -1,4 +1,7 @@
-import magma.api.stream.Stream;import magma.api.stream.Streams;import java.util.Optional;struct FirstLocator(String infix) implements Locator{
+import magma.api.stream.Stream;
+import magma.api.stream.Streams;
+import java.util.Optional;
+struct FirstLocator(String infix) implements Locator{
 	String unwrap(){
 		return this.infix;
 	}

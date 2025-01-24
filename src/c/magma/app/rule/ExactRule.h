@@ -1,4 +1,11 @@
-import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.app.MapNode;import magma.app.Node;import magma.app.error.CompileError;import magma.app.error.context.StringContext;struct ExactRule(String slice) implements Rule{
+import magma.api.result.Err;
+import magma.api.result.Ok;
+import magma.api.result.Result;
+import magma.app.MapNode;
+import magma.app.Node;
+import magma.app.error.CompileError;
+import magma.app.error.context.StringContext;
+struct ExactRule(String slice) implements Rule{
 	Result<Node, CompileError> parse(String input){
 		if(input.equals(this.slice))return new Ok<>(new MapNode());
 		var context=new StringContext(input);

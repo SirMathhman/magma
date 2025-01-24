@@ -1,4 +1,6 @@
-import java.util.function.Function;import java.util.function.Supplier;struct None<T> implements Option<T>{
+import java.util.function.Function;
+import java.util.function.Supplier;
+struct None<T> implements Option<T>{
 	<R>Option<R> map(Function<T, R> mapper){
 		return new None<>();
 	}

@@ -1,4 +1,31 @@
-import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocator;import magma.app.rule.ContextRule;import magma.app.rule.ExactRule;import magma.app.rule.FilterRule;import magma.app.rule.InfixRule;import magma.app.rule.LazyRule;import magma.app.rule.NodeRule;import magma.app.rule.OptionalNodeListRule;import magma.app.rule.OptionalNodeRule;import magma.app.rule.OrRule;import magma.app.rule.PrefixRule;import magma.app.rule.Rule;import magma.app.rule.StringRule;import magma.app.rule.StripRule;import magma.app.rule.SuffixRule;import magma.app.rule.TypeRule;import magma.app.rule.divide.DivideRule;import magma.app.rule.divide.SimpleDivider;import magma.app.rule.filter.NumberFilter;import magma.app.rule.filter.SymbolFilter;import magma.app.rule.locate.FirstLocator;import magma.app.rule.locate.LastLocator;import magma.app.rule.locate.ParenthesesMatcher;import java.util.List;import static magma.app.rule.divide.StatementDivider.STATEMENT_DIVIDER;import static magma.app.rule.divide.ValueDivider.VALUE_DIVIDER;struct CommonLang{
+import magma.app.locate.BackwardsLocator;
+import magma.app.locate.InvocationLocator;
+import magma.app.rule.ContextRule;
+import magma.app.rule.ExactRule;
+import magma.app.rule.FilterRule;
+import magma.app.rule.InfixRule;
+import magma.app.rule.LazyRule;
+import magma.app.rule.NodeRule;
+import magma.app.rule.OptionalNodeListRule;
+import magma.app.rule.OptionalNodeRule;
+import magma.app.rule.OrRule;
+import magma.app.rule.PrefixRule;
+import magma.app.rule.Rule;
+import magma.app.rule.StringRule;
+import magma.app.rule.StripRule;
+import magma.app.rule.SuffixRule;
+import magma.app.rule.TypeRule;
+import magma.app.rule.divide.DivideRule;
+import magma.app.rule.divide.SimpleDivider;
+import magma.app.rule.filter.NumberFilter;
+import magma.app.rule.filter.SymbolFilter;
+import magma.app.rule.locate.FirstLocator;
+import magma.app.rule.locate.LastLocator;
+import magma.app.rule.locate.ParenthesesMatcher;
+import java.util.List;
+import static magma.app.rule.divide.StatementDivider.STATEMENT_DIVIDER;
+import static magma.app.rule.divide.ValueDivider.VALUE_DIVIDER;
+struct CommonLang{
 	String ROOT_TYPE="root";
 	String RECORD_TYPE="record";
 	String CLASS_TYPE="class";

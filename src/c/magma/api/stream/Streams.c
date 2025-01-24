@@ -1,4 +1,7 @@
-import java.util.ArrayList;import java.util.List;import java.util.Set;struct Streams{
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+struct Streams{
 	<T>Stream<T> of(T... values){
 		return new HeadedStream<>(new RangeHead(values.length)).map(index -> values[index]);
 	}

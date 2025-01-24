@@ -1,4 +1,9 @@
-import magma.app.rule.LazyRule;import magma.app.rule.OrRule;import magma.app.rule.Rule;import magma.app.rule.TypeRule;import java.util.List;struct CLang{
+import magma.app.rule.LazyRule;
+import magma.app.rule.OrRule;
+import magma.app.rule.Rule;
+import magma.app.rule.TypeRule;
+import java.util.List;
+struct CLang{
 	Rule createCRootRule(){
 		return new TypeRule(CommonLang.ROOT_TYPE, CommonLang.createContentRule(createCRootSegmentRule()));
 	}

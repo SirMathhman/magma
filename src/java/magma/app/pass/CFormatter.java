@@ -9,9 +9,10 @@ import magma.app.lang.CommonLang;
 import java.util.ArrayList;
 import java.util.List;
 
+import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILD;
 import static magma.app.pass.Passer.by;
 
-public class Formatter implements Passer {
+public class CFormatter implements Passer {
     static Node removeWhitespace(Node block) {
         return block.mapNodeList(CommonLang.CONTENT_CHILDREN, children -> {
             return children.stream()
@@ -23,7 +24,8 @@ public class Formatter implements Passer {
     static Node cleanupNamespaced(Node root) {
         return root.mapNodeList(CommonLang.CONTENT_CHILDREN, children -> children.stream()
                 .filter(child -> !child.is("package"))
-                .filter(Formatter::filterImport)
+                .filter(CFormatter::filterImport)
+                .map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
                 .toList());
     }
 
@@ -61,14 +63,14 @@ public class Formatter implements Passer {
 
     @Override
     public Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
-        return new Ok<>(unit.filter(by("block")).map(Formatter::formatBlock).orElse(unit));
+        return new Ok<>(unit.filter(by("block")).map(CFormatter::formatBlock).orElse(unit));
     }
 
     @Override
     public Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
-        return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(inner -> inner.mapValue(Formatter::removeWhitespace))
-                .or(() -> unit.filterAndMapToValue(by("root"), Formatter::cleanupNamespaced))
-                .or(() -> unit.filterAndMapToValue(by("definition"), Formatter::cleanupDefinition))
+        return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(inner -> inner.mapValue(CFormatter::removeWhitespace))
+                .or(() -> unit.filterAndMapToValue(by("root"), CFormatter::cleanupNamespaced))
+                .or(() -> unit.filterAndMapToValue(by("definition"), CFormatter::cleanupDefinition))
                 .orElse(unit));
     }
 }

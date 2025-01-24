@@ -1,4 +1,8 @@
-import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;import java.util.List;struct OptionalNodeRule implements Rule{
+import magma.api.result.Result;
+import magma.app.Node;
+import magma.app.error.CompileError;
+import java.util.List;
+struct OptionalNodeRule implements Rule{
 	String propertyKey;
 	Rule ifPresent;
 	Rule ifEmpty;
