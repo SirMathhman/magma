@@ -1,13 +1,8 @@
 struct None<T> implements Option<T>{
-	struct Table{
-		<R>Option<R> map(Function<T, R> mapper){
-			return new None<>();
-		}
-		T orElseGet(Supplier<T> other){
-			return other.get();
-		}
+	<R>Option<R> map(Function<T, R> mapper){
+		return new None<>();
 	}
-	struct Impl{}
-	struct Table table;
-	struct Impl impl;
+	T orElseGet(Supplier<T> other){
+		return other.get();
+	}
 }

@@ -1,10 +1,5 @@
 import java.util.ArrayList;struct Splitter{
-	struct Table{
-		void advance(StringBuilder buffer, ArrayList<String> segments){
-			if(!buffer.isEmpty())segments.add(buffer.toString());
-		}
+	void advance(StringBuilder buffer, ArrayList<String> segments){
+		if(!buffer.isEmpty())segments.add(buffer.toString());
 	}
-	struct Impl{}
-	struct Table table;
-	struct Impl impl;
 }

@@ -1,26 +1,20 @@
 import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;import magma.app.error.context.Context;import magma.app.error.context.NodeContext;import magma.app.error.context.StringContext;import java.util.Optional;struct LazyRule implements Rule{
-	struct Table{
-		Result<Node, CompileError> parse(String input){
-			return findChild(new StringContext(input)).flatMapValue(()->rule.parse(input));
+	Optional<Rule> childRule=Optional.empty();
+	Result<Node, CompileError> parse(String input){
+		return findChild(new StringContext(input)).flatMapValue(()->rule.parse(input));
+	}
+	Result<Rule, CompileError> findChild(Context context){
+		if(this.childRule.isPresent()){
+			return new Ok<>(this.childRule.get());
 		}
-		Result<Rule, CompileError> findChild(Context context){
-			if(this.childRule.isPresent()){
-				return new Ok<>(this.childRule.get());
-			}
-			else{
-				return new Err<>(new CompileError("Child rule is not set.", context));
-			}
-		}
-		Result<String, CompileError> generate(Node node){
-			return findChild(new NodeContext(node)).flatMapValue(()->rule.generate(node));
-		}
-		void set(Rule childRule){
-			this.childRule = Optional.of(childRule);
+		else{
+			return new Err<>(new CompileError("Child rule is not set.", context));
 		}
 	}
-	struct Impl{
-		Optional<Rule> childRule=Optional.empty();
+	Result<String, CompileError> generate(Node node){
+		return findChild(new NodeContext(node)).flatMapValue(()->rule.generate(node));
 	}
-	struct Table table;
-	struct Impl impl;
+	void set(Rule childRule){
+		this.childRule = Optional.of(childRule);
+	}
 }
