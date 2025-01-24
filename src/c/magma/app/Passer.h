@@ -4,5 +4,10 @@ import magma.api.result.Result;import magma.app.error.CompileError;struct Passer
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit);
 	Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit);
-	struct Impl{}
+	struct Impl{
+		struct Impl new(){
+			struct Impl this;
+			return this;
+		}
+	}
 }

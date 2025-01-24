@@ -42,7 +42,7 @@ public class CommonLang {
     public static final String GENERIC_PARENT = "caller";
     public static final String GENERIC_CHILDREN = "generic-children";
     public static final String FUNCTIONAL_TYPE = "functional";
-    public static final String METHOD_VALUE = "method-child";
+    public static final String METHOD_VALUE = "value";
     public static final String DEFINITION_ANNOTATIONS = "annotations";
     public static final String METHOD_TYPE = "method";
     public static final String INITIALIZATION_TYPE = "initialization";
@@ -53,7 +53,7 @@ public class CommonLang {
     public static final String TUPLE_TYPE = "tuple";
     public static final String TUPLE_CHILDREN = "tuple-children";
     public static final String CONTENT_AFTER_CHILD = "after-child";
-    public static final String CONTENT_CHILDREN = "content-children";
+    public static final String CONTENT_CHILDREN = "children";
     public static final String INVOCATION_CHILDREN = "invocation-children";
     public static final String CONTENT_AFTER_CHILDREN = "content-after-children";
     public static final String GENERIC_TYPE = "generic";

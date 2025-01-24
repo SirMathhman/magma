@@ -10,7 +10,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	String GENERIC_PARENT="caller";
 	String GENERIC_CHILDREN="generic-children";
 	String FUNCTIONAL_TYPE="functional";
-	String METHOD_VALUE="method-child";
+	String METHOD_VALUE="value";
 	String DEFINITION_ANNOTATIONS="annotations";
 	String METHOD_TYPE="method";
 	String INITIALIZATION_TYPE="initialization";
@@ -21,7 +21,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	String TUPLE_TYPE="tuple";
 	String TUPLE_CHILDREN="tuple-children";
 	String CONTENT_AFTER_CHILD="after-child";
-	String CONTENT_CHILDREN="content-children";
+	String CONTENT_CHILDREN="children";
 	String INVOCATION_CHILDREN="invocation-children";
 	String CONTENT_AFTER_CHILDREN="content-after-children";
 	String GENERIC_TYPE="generic";

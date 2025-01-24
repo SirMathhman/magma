@@ -7,5 +7,10 @@ import magma.api.Tuple;import magma.api.option.Option;struct Result<T, X>{
 	<R>Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other);
 	boolean isOk();
 	Option<X> findError();
-	struct Impl{}
+	struct Impl{
+		struct Impl new(){
+			struct Impl this;
+			return this;
+		}
+	}
 }
