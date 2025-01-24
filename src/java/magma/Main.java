@@ -122,7 +122,7 @@ public class Main {
             String name,
             Node root
     ) {
-        final var unit = new InlinePassUnit<>(root, namespace, name);
+        final var unit = new InlinePassUnit<>(namespace, name, root);
         return new TreePassingStage(passer).pass(unit).mapValue(PassUnit::value);
     }
 

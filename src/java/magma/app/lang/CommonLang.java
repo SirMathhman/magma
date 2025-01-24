@@ -60,6 +60,8 @@ public class CommonLang {
     public static final String METHOD_PARAMS = "params";
     public static final String FUNCTIONAL_PARAMS = "params";
     public static final String FUNCTIONAL_RETURN = "return";
+    public static final String SYMBOL_VALUE_TYPE = "symbol-value";
+    public static final String SYMBOL_TYPE_TYPE = "symbol-type";
 
     public static Rule createNamespacedRule(String type, String prefix, String delimiter, String suffix) {
         final var segment = new TypeRule("segment", new StringRule("value"));
@@ -233,7 +235,7 @@ public class CommonLang {
                 createInvocationRule(value),
                 createAccessRule("data-access", ".", value),
                 createAccessRule("method-access", "::", value),
-                createSymbolRule(),
+                createSymbolRule(SYMBOL_VALUE_TYPE),
                 createNumberRule(),
                 createNotRule(value),
                 createOperatorRule("greater-equals", ">=", value),
@@ -252,8 +254,8 @@ public class CommonLang {
     private static TypeRule createLambdaRule(Rule statement, LazyRule value) {
         final var args = new StripRule(new OrRule(List.of(
                 new ExactRule("()"),
-                new NodeRule("arg", createSymbolRule()),
-                new DivideRule("args", new SimpleDivider(","), createSymbolRule())
+                new NodeRule("arg", createSymbolRule(SYMBOL_VALUE_TYPE)),
+                new DivideRule("args", new SimpleDivider(","), createSymbolRule(SYMBOL_VALUE_TYPE))
         )));
 
         final var rightRule = new OrRule(List.of(
@@ -298,8 +300,8 @@ public class CommonLang {
         return new TypeRule("construction", new StripRule(new PrefixRule("new ", childRule)));
     }
 
-    private static Rule createSymbolRule() {
-        return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
+    private static Rule createSymbolRule(String symbolType) {
+        return new TypeRule(symbolType, new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
     }
 
     private static Rule createAccessRule(String type, String infix, final Rule value) {
@@ -341,7 +343,7 @@ public class CommonLang {
     private static Rule createTypeRule() {
         final var type = new LazyRule();
         type.set(new OrRule(List.of(
-                createSymbolRule(),
+                createSymbolRule(SYMBOL_TYPE_TYPE),
                 createGenericRule(type),
                 createVarArgsRule(type),
                 createArrayRule(type),

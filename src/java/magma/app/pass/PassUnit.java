@@ -1,5 +1,7 @@
 package magma.app.pass;
 
+import magma.app.Node;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -26,4 +28,8 @@ public interface PassUnit<T> {
     List<String> findNamespace();
 
     String findName();
+
+    PassUnit<T> push(List<Node> definitions);
+
+    State state();
 }

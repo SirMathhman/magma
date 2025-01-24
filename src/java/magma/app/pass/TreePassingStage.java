@@ -4,6 +4,7 @@ import magma.api.result.Result;
 import magma.api.stream.Streams;
 import magma.app.Node;
 import magma.app.error.CompileError;
+import magma.app.error.context.NodeContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,13 +51,10 @@ public class TreePassingStage implements PassingStage {
 
     @Override
     public Result<PassUnit<Node>, CompileError> pass(PassUnit<Node> unit) {
-        final var passUnitCompileErrorResult = this.passer.beforePass(unit);
-        final var passUnitCompileErrorResult1 = passUnitCompileErrorResult
-                .flatMapValue(this::passNodes);
-        final var passUnitCompileErrorResult2 = passUnitCompileErrorResult1
-                .flatMapValue(this::passNodeLists);
-        final var passUnitCompileErrorResult3 = passUnitCompileErrorResult2
-                .flatMapValue(this.passer::afterPass);
-        return passUnitCompileErrorResult3;
+        return this.passer.beforePass(unit)
+                .flatMapValue(this::passNodes)
+                .flatMapValue(this::passNodeLists)
+                .flatMapValue(this.passer::afterPass)
+                .mapErr(err -> new CompileError("Failed to pass node", new NodeContext(unit.value()), List.of(err)));
     }
 }
