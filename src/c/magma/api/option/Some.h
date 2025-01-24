@@ -5,4 +5,7 @@ struct Some<T>(T value) implements Option<T>{
 	T orElseGet(Supplier<T> other){
 		return this.value;
 	}
+	Option<T> Option(){
+		return Option.new();
+	}
 }

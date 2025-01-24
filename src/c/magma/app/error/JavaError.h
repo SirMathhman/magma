@@ -4,4 +4,7 @@ import java.io.PrintWriter;import java.io.StringWriter;struct JavaError(Exceptio
 		this.e.printStackTrace(new PrintWriter(writer));
 		return writer.toString();
 	}
+	Error N/A(){
+		return N/A.new();
+	}
 }

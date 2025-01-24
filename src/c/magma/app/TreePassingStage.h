@@ -29,4 +29,7 @@ import magma.api.result.Result;import magma.api.stream.Streams;import magma.app.
 	Result<PassUnit<Node>, CompileError> pass(PassUnit<Node> unit){
 		return this.passer.beforePass(unit).flatMapValue(this::passNodes).flatMapValue(this::passNodeLists).flatMapValue(this.passer::afterPass);
 	}
+	PassingStage N/A(){
+		return N/A.new();
+	}
 }

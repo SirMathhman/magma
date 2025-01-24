@@ -22,4 +22,7 @@ import magma.app.error.context.Context;import java.util.ArrayList;import java.ut
                 .collect(Collectors.joining());
 		return this.message + ": " + this.context.display() + joinedChildren;
 	}
+	Error N/A(){
+		return N/A.new();
+	}
 }

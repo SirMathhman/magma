@@ -15,4 +15,7 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.MapN
 			return new Err<>(new CompileError("Node was not of type '"+this.type + "'", new NodeContext(node)));
 		}
 	}
+	Rule N/A(){
+		return N/A.new();
+	}
 }

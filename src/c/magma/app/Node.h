@@ -19,6 +19,7 @@ import magma.api.Tuple;import magma.api.stream.Stream;import java.util.List;impo
 	Node mapNode(String propertyKey, Function<Node, Node> mapper);
 	boolean hasNode(String propertyKey);
 	boolean hasType();
+	Node removeNode(String propertyKey);
 	struct Impl{
 		struct Impl new(){
 			struct Impl this;

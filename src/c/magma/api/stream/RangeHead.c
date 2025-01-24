@@ -10,4 +10,7 @@ import java.util.Optional;struct RangeHead implements Head<Integer>{
 		this.counter++;
 		return Optional.of(value);
 	}
+	Head<Integer> Head(){
+		return Head.new();
+	}
 }

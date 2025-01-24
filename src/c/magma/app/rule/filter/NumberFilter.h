@@ -8,4 +8,7 @@ import java.util.stream.IntStream;struct NumberFilter implements Predicate<Strin
 		}
 		return allDigits(input);
 	}
+	Predicate<String> Predicate(){
+		return Predicate.new();
+	}
 }

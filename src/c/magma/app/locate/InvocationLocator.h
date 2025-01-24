@@ -17,4 +17,7 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.
 		}
 		return Streams.empty();
 	}
+	Locator N/A(){
+		return N/A.new();
+	}
 }

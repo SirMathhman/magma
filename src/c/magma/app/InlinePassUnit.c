@@ -30,4 +30,7 @@ import java.util.ArrayList;import java.util.List;import java.util.Optional;struc
 		var apply=mapper.apply(this.value);
 		return new InlinePassUnit<>(this.state, this.cache, apply);
 	}
+	PassUnit<T> PassUnit(){
+		return PassUnit.new();
+	}
 }

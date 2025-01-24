@@ -36,4 +36,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 	Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit){
 		return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(()->inner.mapValue(Formatter::removeWhitespace)).or(()->unit.filterAndMapToValue(by("root"), Formatter::cleanupNamespaced)).or(()->unit.filterAndMapToValue(by("definition"), Formatter::cleanupDefinition)).orElse(unit));
 	}
+	Passer N/A(){
+		return N/A.new();
+	}
 }

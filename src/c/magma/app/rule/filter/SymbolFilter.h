@@ -6,4 +6,7 @@ import java.util.stream.IntStream;struct SymbolFilter implements Predicate<Strin
 			return Character.isLetter(c) || c == '_'' || (index != 0 && Character.isDigit(c));
 		});
 	}
+	Predicate<String> Predicate(){
+		return Predicate.new();
+	}
 }

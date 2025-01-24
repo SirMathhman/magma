@@ -162,6 +162,13 @@ public final class MapNode implements Node {
     }
 
     @Override
+    public Node removeNode(String propertyKey) {
+        final var copy = new HashMap<>(this.nodes);
+        copy.remove(propertyKey);
+        return new MapNode(this.type, this.strings, copy, this.nodeLists);
+    }
+
+    @Override
     public Node withNode(String propertyKey, Node propertyValue) {
         final var copy = new HashMap<>(this.nodes);
         copy.put(propertyKey, propertyValue);

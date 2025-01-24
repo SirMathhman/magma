@@ -54,4 +54,7 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 			return new Err<>(new CompileError("Invalid depth '"+depth+"'", new StringContext(input)));
 		}
 	}
+	Divider N/A(){
+		return N/A.new();
+	}
 }

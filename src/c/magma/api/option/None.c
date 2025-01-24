@@ -5,4 +5,7 @@ struct None<T> implements Option<T>{
 	T orElseGet(Supplier<T> other){
 		return other.get();
 	}
+	Option<T> Option(){
+		return Option.new();
+	}
 }

@@ -1,6 +1,6 @@
-import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.List;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.METHOD_VALUE;struct RootPasser implements Passer{
+import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.List;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_PARENT;import static magma.app.lang.CommonLang.METHOD_VALUE;struct RootPasser implements Passer{
 	Node getStruct(Node node){
-		return node.retype("struct").mapNode("value", ()->{
+		return convertToStruct(node).mapNode("value", ()->{
 			return value.mapNodeList(CONTENT_CHILDREN, ()->{
 				var copy=new ArrayList<Node>(children);
 				var thisType=new MapNode("struct").withString("value", "Impl");
@@ -21,10 +21,40 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 			});
 		});
 	}
+	Node convertToStruct(Node node){
+		return node.retype("struct").mapNode("value", ()->value.mapNodeList("children", ()->{
+			var maybeSupertype=node.findNode("supertype");
+			if(maybeSupertype.isPresent()){
+				var supertype=maybeSupertype.get();
+				return attachConverter(children, supertype);
+			}
+			return children;
+		}).removeNode("supertype"));
+	}
+	List<Node> attachConverter(List<Node> children, Node supertype){
+		var name=supertype.findString("name").or(()->supertype.findString(GENERIC_PARENT)).orElse("N/A");
+		var copy=new ArrayList<Node>(children);
+		var converterDefinition=new MapNode("definition")
+                .withNode("type", supertype).withString("name", name);
+		var supertypeRef=new MapNode("symbol")
+                .withString("value", name);
+		var caller=new MapNode("data-access")
+                .withNode("ref", supertypeRef).withString("property", "new");
+		var returnsValue=new MapNode("invocation").withNode("caller", caller);
+		var returns=new MapNode("return").withNode("value", returnsValue);
+		var converterBody=new MapNode("block").withNodeList("children", List.of(returns));
+		var converter=new MapNode("method")
+                .withNode("definition", converterDefinition).withNode("value", converterBody);
+		copy.add(converter);
+		return copy;
+	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
 		return new Ok<>(unit);
 	}
 	Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit){
-		return new Ok<>(unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")), ()->node.retype("struct")).or(()->unit.filterAndMapToValue(Passer.by("interface"), RootPasser::getStruct)).orElse(unit));
+		return new Ok<>(unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")), ()->convertToStruct(node)).or(()->unit.filterAndMapToValue(Passer.by("interface"), RootPasser::getStruct)).orElse(unit));
+	}
+	Passer N/A(){
+		return N/A.new();
 	}
 }

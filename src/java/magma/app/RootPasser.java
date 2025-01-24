@@ -8,11 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static magma.app.lang.CommonLang.CONTENT_CHILDREN;
+import static magma.app.lang.CommonLang.GENERIC_PARENT;
 import static magma.app.lang.CommonLang.METHOD_VALUE;
 
 public class RootPasser implements Passer {
     private static Node getStruct(Node node) {
-        return node.retype("struct").mapNode("value", value -> {
+        return convertToStruct(node).mapNode("value", value -> {
             return value.mapNodeList(CONTENT_CHILDREN, children -> {
                 final var copy = new ArrayList<Node>(children);
                 final var thisType = new MapNode("struct").withString("value", "Impl");
@@ -46,6 +47,48 @@ public class RootPasser implements Passer {
         });
     }
 
+    private static Node convertToStruct(Node node) {
+        return node.retype("struct").mapNode("value", value -> value.mapNodeList("children", children -> {
+            final var maybeSupertype = node.findNode("supertype");
+            if (maybeSupertype.isPresent()) {
+                final var supertype = maybeSupertype.get();
+                return attachConverter(children, supertype);
+            }
+
+            return children;
+        }).removeNode("supertype"));
+    }
+
+    private static List<Node> attachConverter(List<Node> children, Node supertype) {
+        final var name = supertype.findString("name")
+                .or(() -> supertype.findString(GENERIC_PARENT))
+                .orElse("N/A");
+
+        final var copy = new ArrayList<Node>(children);
+        final var converterDefinition = new MapNode("definition")
+                .withNode("type", supertype)
+                .withString("name", name);
+
+        final var supertypeRef = new MapNode("symbol")
+                .withString("value", name);
+
+        final var caller = new MapNode("data-access")
+                .withNode("ref", supertypeRef)
+                .withString("property", "new");
+
+        final var returnsValue = new MapNode("invocation").withNode("caller", caller);
+        final var returns = new MapNode("return").withNode("value", returnsValue);
+
+        final var converterBody = new MapNode("block").withNodeList("children", List.of(returns));
+
+        final var converter = new MapNode("method")
+                .withNode("definition", converterDefinition)
+                .withNode("value", converterBody);
+
+        copy.add(converter);
+        return copy;
+    }
+
     @Override
     public Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
         return new Ok<>(unit);
@@ -54,7 +97,7 @@ public class RootPasser implements Passer {
     @Override
     public Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
         return new Ok<>(
-                unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")), node -> node.retype("struct"))
+                unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")), node -> convertToStruct(node))
                         .or(() -> unit.filterAndMapToValue(Passer.by("interface"), RootPasser::getStruct)).orElse(unit));
     }
 }

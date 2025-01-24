@@ -19,4 +19,7 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	Result<String, CompileError> generate(Node node){
 		return childRule.generate(node).mapValue(()->inner+suffix);
 	}
+	Rule N/A(){
+		return N/A.new();
+	}
 }

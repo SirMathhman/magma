@@ -36,4 +36,7 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	String merge(List<String> elements){
 		return Streams.from(elements).foldLeft(this.divider::merge).orElse("");
 	}
+	Rule N/A(){
+		return N/A.new();
+	}
 }

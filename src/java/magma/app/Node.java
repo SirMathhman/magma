@@ -47,4 +47,6 @@ public interface Node {
     boolean hasNode(String propertyKey);
 
     boolean hasType();
+
+    Node removeNode(String propertyKey);
 }

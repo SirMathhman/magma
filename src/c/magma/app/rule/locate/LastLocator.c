@@ -9,4 +9,7 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import java.util.
 	int length(){
 		return this.infix.length();
 	}
+	Locator N/A(){
+		return N/A.new();
+	}
 }

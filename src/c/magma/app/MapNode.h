@@ -80,6 +80,11 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	boolean hasType(){
 		return this.type.isPresent();
 	}
+	Node removeNode(String propertyKey){
+		var copy=new HashMap<>(this.nodes);
+		copy.remove(propertyKey);
+		return new MapNode(this.type, this.strings, copy, this.nodeLists);
+	}
 	Node withNode(String propertyKey, Node propertyValue){
 		var copy=new HashMap<>(this.nodes);
 		copy.put(propertyKey, propertyValue);
@@ -100,5 +105,8 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	}
 	Optional<String> findString(String propertyKey){
 		return Optional.ofNullable(this.strings.get(propertyKey));
+	}
+	Node N/A(){
+		return N/A.new();
 	}
 }
