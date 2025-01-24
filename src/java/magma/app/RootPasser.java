@@ -112,7 +112,7 @@ public class RootPasser implements Passer {
                         .withNode("return", returns));
             }
 
-            if (constructor.equals("Function")) {
+            if (constructor.equals("BiFunction")) {
                 final var param = children.get(0);
                 final var param2 = children.get(1);
                 final var returns = children.get(2);

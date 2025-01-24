@@ -20,7 +20,7 @@ import java.util.ArrayList;import java.util.List;import java.util.Optional;struc
                 ? Optional.of(supplier.get())
                 : Optional.empty();
 	}
-	<R>PassUnit<R> flattenNode(BiFunction<State, T, R> mapper){
+	<R>PassUnit<R> flattenNode(Tuple<any*, R (*)(any*, State, T)> mapper){
 		return new InlinePassUnit<>(this.state, this.cache, mapper.apply(this.state, this.value));
 	}
 	PassUnit<T> exit(){

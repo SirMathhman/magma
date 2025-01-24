@@ -67,7 +67,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
                         .withNodeList("params", List.of(createAnyRefType(), param))
                         .withNode("return", returns));
 			}
-			if(constructor.equals("Function")){
+			if(constructor.equals("BiFunction")){
 				var param=children.get(0);
 				var param2=children.get(1);
 				var returns=children.get(2);
