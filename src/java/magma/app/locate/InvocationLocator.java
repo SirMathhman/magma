@@ -4,8 +4,6 @@ import magma.api.stream.Stream;
 import magma.api.stream.Streams;
 import magma.app.rule.locate.Locator;
 
-import java.util.Optional;
-
 public class InvocationLocator implements Locator {
     @Override
     public String unwrap() {

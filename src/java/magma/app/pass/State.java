@@ -13,6 +13,7 @@ import java.util.Stack;
 public record State(Stack<List<Node>> frames) {
     public State() {
         this(new Stack<>());
+        this.frames.push(new ArrayList<>());
     }
 
     private static Optional<Node> findInFrame(String value, List<Node> frame) {
@@ -37,7 +38,7 @@ public record State(Stack<List<Node>> frames) {
     }
 
     public int depth() {
-        return this.frames.size();
+        return this.frames.size() - 1;
     }
 
     public Option<Node> find(String value) {
