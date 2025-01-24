@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static java.lang.System.out;
+
 public class Main {
     public static final Path SOURCE_DIRECTORY = JavaPaths.get(".", "src", "java");
     public static final Path TARGET_DIRECTORY = JavaPaths.get(".", "src", "c");
@@ -85,7 +87,7 @@ public class Main {
                 .collect(new JoiningCollector("."))
                 .orElse("");
 
-        System.out.println("Compiling source: " + joined);
+        out.println("Compiling source: " + joined);
 
         final var targetParent = TARGET_DIRECTORY.resolvePath(parent);
         if (!targetParent.isExists()) {

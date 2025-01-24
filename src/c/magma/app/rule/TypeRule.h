@@ -8,4 +8,5 @@
 #include "../../../magma/app/error/context/NodeContext.h"
 #include "../../../magma/app/error/context/StringContext.h"
 #include "../../../java/util/List.h"
+#include "../../../static java/lang/System/out.h"
 #endif

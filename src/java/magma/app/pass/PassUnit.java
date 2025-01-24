@@ -29,7 +29,7 @@ public interface PassUnit<T> {
 
     String findName();
 
-    PassUnit<T> push(List<Node> definitions);
+    PassUnit<T> define(List<Node> definitions);
 
     State state();
 }

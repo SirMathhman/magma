@@ -1,12 +1,13 @@
 #include "./TypeRule.h"
 struct TypeRule(String type, Rule rule) implements Rule{
 	Result<Node, CompileError> parse(String input){
-		return this.rule.parse(input).mapValue(()->node.retype(this.type)).mapValue(()->{
-			if(type.equals("method")){
-				System.out.println("\t"+node.findNode("definition").orElse(new MapNode()).findString("name").orElse(""));
-			}
-			return node;
-		}).mapErr(()->new CompileError("Failed to parse type '"+this.type + "'", new StringContext(input), List.of(err)));
+		return this.rule.parse(input).mapValue(()->node.retype(this.type)).mapValue(this::postProcess).mapErr(()->new CompileError("Failed to parse type '"+this.type + "'", new StringContext(input), List.of(err)));
+	}
+	Node postProcess(Node node){
+		if(this.type.equals("method")){
+			out.println("\t"+node.findNode("definition").orElse(new MapNode()).findString("name").orElse(""));
+		}
+		return node;
 	}
 	Result<String, CompileError> generate(Node node){
 		if(node.is(this.type)){

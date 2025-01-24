@@ -25,7 +25,7 @@ public record InlinePassUnit<T>(
     }
 
     @Override
-    public PassUnit<T> push(List<Node> definitions) {
+    public PassUnit<T> define(List<Node> definitions) {
         return new InlinePassUnit<>(this.cache, this.state.pushAll(definitions), this.namespace, this.name, this.value);
     }
 

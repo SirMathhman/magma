@@ -8,8 +8,10 @@ import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static magma.app.lang.CommonLang.LAMBDA_PARAMETERS;
 import static magma.app.lang.CommonLang.SYMBOL_VALUE_TYPE;
@@ -25,6 +27,11 @@ public class JavaParser implements Passer {
         if (node.is("method")) {
             return new Ok<>(unit.exit());
         }
+
+        if (node.is("class") || node.is("record") || node.is("interface")) {
+            return new Ok<>(unit.exit());
+        }
+
         return new Ok<>(unit);
     }
 
@@ -37,12 +44,24 @@ public class JavaParser implements Passer {
                     .findString("value")
                     .orElse("");
 
-            return new Ok<>(unit.enter().push(List.of(createDefinition(parameter))));
+            return new Ok<>(unit.enter().define(List.of(createDefinition(parameter))));
+        }
+
+        if (node.is("class") || node.is("record") || node.is("interface")) {
+            final var value = node.findNode("value").orElse(new MapNode());
+            final var children = value.findNodeList("children").orElse(new ArrayList<>());
+            final var methodDefinitions = children.stream()
+                    .filter(child -> child.is("method"))
+                    .map(method -> method.findNode("definition"))
+                    .flatMap(Optional::stream)
+                    .toList();
+
+            return new Ok<>(unit.enter().define(methodDefinitions));
         }
 
         if (node.is("method")) {
             final var params = node.findNodeList("params").orElse(Collections.emptyList());
-            return new Ok<>(unit.enter().push(params));
+            return new Ok<>(unit.enter().define(params));
         }
 
         if (node.is("import")) {
@@ -52,11 +71,11 @@ public class JavaParser implements Passer {
                     .findString("value")
                     .orElse("");
 
-            return new Ok<>(unit.push(List.of(createDefinition(value))));
+            return new Ok<>(unit.define(List.of(createDefinition(value))));
         }
 
         if (node.is("definition")) {
-            return new Ok<>(unit.push(List.of(node)));
+            return new Ok<>(unit.define(List.of(node)));
         }
 
         if (node.is(SYMBOL_VALUE_TYPE)) {

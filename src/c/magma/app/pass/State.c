@@ -1,12 +1,28 @@
 #include "./State.h"
-struct State(int depth){
+struct State(Stack<List<Node>> frames){
 	public State(){
-		this(0);
+		this(new Stack<>());
+		this.frames.push(new ArrayList<>());
+	}
+	Optional<Node> findInFrame(String value, List<Node> frame){
+		return frame.stream().filter(()->definition.findString("name").orElse("").equals(value)).findFirst();
 	}
 	State exit(){
-		return new State(this.depth - 1);
+		this.frames.pop();
+		return this;
 	}
 	State enter(){
-		return new State(this.depth + 1);
+		this.frames.push(new ArrayList<>());
+		return this;
+	}
+	State pushAll(List<Node> definitions){
+		this.frames.peek().addAll(definitions);
+		return this;
+	}
+	int depth(){
+		return this.frames.size() - 1;
+	}
+	Option<Node> find(String value){
+		return this.frames.stream().map(()->findInFrame(value, frame)).flatMap(Optional::stream).findFirst().<Option<Node>>map(Some::new).orElseGet(None::new);
 	}
 }

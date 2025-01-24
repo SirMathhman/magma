@@ -10,22 +10,26 @@ import magma.app.error.context.StringContext;
 
 import java.util.List;
 
+import static java.lang.System.out;
+
 public record TypeRule(String type, Rule rule) implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
         return this.rule.parse(input)
                 .mapValue(node -> node.retype(this.type))
-                .mapValue(node -> {
-                    if(type.equals("method")) {
-                        System.out.println("\t" + node.findNode("definition")
-                                .orElse(new MapNode())
-                                .findString("name")
-                                .orElse(""));
-                    }
-
-                    return node;
-                })
+                .mapValue(this::postProcess)
                 .mapErr(err -> new CompileError("Failed to parse type '" + this.type + "'", new StringContext(input), List.of(err)));
+    }
+
+    private Node postProcess(Node node) {
+        if (this.type.equals("method")) {
+            out.println("\t" + node.findNode("definition")
+                    .orElse(new MapNode())
+                    .findString("name")
+                    .orElse(""));
+        }
+
+        return node;
     }
 
     @Override
