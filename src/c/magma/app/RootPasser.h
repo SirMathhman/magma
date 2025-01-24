@@ -56,22 +56,34 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 			var children=node.findNodeList(GENERIC_CHILDREN).orElse(new ArrayList<>());
 			if(constructor.equals("Supplier")){
 				var returns=children.get(0);
-				return Optional.of(new MapNode("functional").withNode("return", returns));
+				return Optional.of(new MapNode("functional")
+                        .withNodeList("params", List.of(createAnyRefType()))
+                        .withNode("return", returns));
 			}
 			if(constructor.equals("Function")){
 				var param=children.get(0);
 				var returns=children.get(1);
 				return Optional.of(new MapNode("functional")
-                        .withNodeList("params", List.of(param))
+                        .withNodeList("params", List.of(createAnyRefType(), param))
+                        .withNode("return", returns));
+			}
+			if(constructor.equals("Function")){
+				var param=children.get(0);
+				var param2=children.get(1);
+				var returns=children.get(2);
+				return Optional.of(new MapNode("functional")
+                        .withNodeList("params", List.of(createAnyRefType(), param, param2))
                         .withNode("return", returns));
 			}
 		}
 		return Optional.empty();
 	}
 	Node wrapFunctionalInTuple(Node child){
+		return new MapNode("generic").withString(GENERIC_CONSTRUCTOR, "Tuple").withNodeList(GENERIC_CHILDREN, List.of(createAnyRefType(), child));
+	}
+	Node createAnyRefType(){
 		var anyType=new MapNode("symbol").withString("value", "any");
-		var refType=new MapNode("ref").withNode("value", anyType);
-		return new MapNode("generic").withString(GENERIC_CONSTRUCTOR, "Tuple").withNodeList(GENERIC_CHILDREN, List.of(refType, child));
+		return new MapNode("ref").withNode("value", anyType);
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
 		return new Ok<>(unit);

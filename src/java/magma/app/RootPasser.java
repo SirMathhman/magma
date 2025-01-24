@@ -99,14 +99,25 @@ public class RootPasser implements Passer {
 
             if (constructor.equals("Supplier")) {
                 final var returns = children.get(0);
-                return Optional.of(new MapNode("functional").withNode("return", returns));
+                return Optional.of(new MapNode("functional")
+                        .withNodeList("params", List.of(createAnyRefType()))
+                        .withNode("return", returns));
             }
 
             if (constructor.equals("Function")) {
                 final var param = children.get(0);
                 final var returns = children.get(1);
                 return Optional.of(new MapNode("functional")
-                        .withNodeList("params", List.of(param))
+                        .withNodeList("params", List.of(createAnyRefType(), param))
+                        .withNode("return", returns));
+            }
+
+            if (constructor.equals("Function")) {
+                final var param = children.get(0);
+                final var param2 = children.get(1);
+                final var returns = children.get(2);
+                return Optional.of(new MapNode("functional")
+                        .withNodeList("params", List.of(createAnyRefType(), param, param2))
                         .withNode("return", returns));
             }
         }
@@ -114,12 +125,14 @@ public class RootPasser implements Passer {
     }
 
     private static Node wrapFunctionalInTuple(Node child) {
-        final var anyType = new MapNode("symbol").withString("value", "any");
-        final var refType = new MapNode("ref").withNode("value", anyType);
-
         return new MapNode("generic")
                 .withString(GENERIC_CONSTRUCTOR, "Tuple")
-                .withNodeList(GENERIC_CHILDREN, List.of(refType, child));
+                .withNodeList(GENERIC_CHILDREN, List.of(createAnyRefType(), child));
+    }
+
+    private static Node createAnyRefType() {
+        final var anyType = new MapNode("symbol").withString("value", "any");
+        return new MapNode("ref").withNode("value", anyType);
     }
 
     @Override

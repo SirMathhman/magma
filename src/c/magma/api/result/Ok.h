@@ -1,20 +1,20 @@
 import magma.api.Tuple;import magma.api.option.None;import magma.api.option.Option;import magma.api.option.Some;import java.util.Optional;struct Ok<T, X>(T value){
-	<R>Result<R, X> flatMapValue(Tuple<any*, Result<R, X> (*)(T)> mapper){
+	<R>Result<R, X> flatMapValue(Tuple<any*, Result<R, X> (*)(any*, T)> mapper){
 		return mapper.apply(this.value);
 	}
-	<R>Result<R, X> mapValue(Tuple<any*, R (*)(T)> mapper){
+	<R>Result<R, X> mapValue(Tuple<any*, R (*)(any*, T)> mapper){
 		return new Ok<>(mapper.apply(this.value));
 	}
-	<R>Result<T, R> mapErr(Tuple<any*, R (*)(X)> mapper){
+	<R>Result<T, R> mapErr(Tuple<any*, R (*)(any*, X)> mapper){
 		return new Ok<>(this.value);
 	}
-	<R>R match(Tuple<any*, R (*)(T)> onOk, Tuple<any*, R (*)(X)> onErr){
+	<R>R match(Tuple<any*, R (*)(any*, T)> onOk, Tuple<any*, R (*)(any*, X)> onErr){
 		return onOk.apply(this.value);
 	}
-	<R>Result<Tuple<T, R>, X> and(Tuple<any*, Result<R, X> (*)()> other){
+	<R>Result<Tuple<T, R>, X> and(Tuple<any*, Result<R, X> (*)(any*)> other){
 		return other.get().mapValue(()->new Tuple<>(this.value, otherValue));
 	}
-	<R>Result<T, Tuple<X, R>> or(Tuple<any*, Result<T, R> (*)()> other){
+	<R>Result<T, Tuple<X, R>> or(Tuple<any*, Result<T, R> (*)(any*)> other){
 		return new Ok<>(this.value);
 	}
 	boolean isOk(){
