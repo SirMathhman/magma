@@ -1,11 +1,12 @@
 package magma;
 
 import magma.api.result.Result;
-import magma.app.Formatter;
-import magma.app.InlinePassUnit;
-import magma.app.PassUnit;
-import magma.app.RootPasser;
-import magma.app.TreePassingStage;
+import magma.app.pass.CPasser;
+import magma.app.pass.Formatter;
+import magma.app.pass.InlinePassUnit;
+import magma.app.pass.PassUnit;
+import magma.app.pass.RootPasser;
+import magma.app.pass.TreePassingStage;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
@@ -86,6 +87,7 @@ public class Main {
     private static Result<String, CompileError> compile(String input) {
         return JavaLang.createJavaRootRule().parse(input)
                 .flatMapValue(root -> new TreePassingStage(new RootPasser()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value))
+                .flatMapValue(root -> new TreePassingStage(new CPasser()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value))
                 .flatMapValue(root -> new TreePassingStage(new Formatter()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value))
                 .flatMapValue(root -> CLang.createCRootRule().generate(root));
     }

@@ -10,7 +10,7 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node
 	Result<String, CompileError> generate(any* _ref_, Node node){
 		return this.childRule.generate(node);
 	}
-	Rule N/A(){
+	Rule N/A(any* _ref_){
 		return N/A.new();
 	}
 }

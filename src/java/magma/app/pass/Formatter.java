@@ -1,14 +1,15 @@
-package magma.app;
+package magma.app.pass;
 
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.lang.CommonLang;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static magma.app.Passer.by;
+import static magma.app.pass.Passer.by;
 
 public class Formatter implements Passer {
     static Node removeWhitespace(Node block) {

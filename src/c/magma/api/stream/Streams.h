@@ -11,7 +11,7 @@ import java.util.ArrayList;import java.util.List;import java.util.Set;struct Str
 	Stream<Integer> reverse(any* _ref_, String value){
 		return new HeadedStream<>(new RangeHead(value.length())).map(index -> value.length() - index - 1);
 	}
-	<T>Stream<T> empty(){
+	<T>Stream<T> empty(any* _ref_){
 		return new HeadedStream<>(new EmptyHead<>());
 	}
 }

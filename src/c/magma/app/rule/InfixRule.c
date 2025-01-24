@@ -33,7 +33,7 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node
 		}
 		return new Err<>(new CompileError("Infix '"+this.locator.unwrap() + "' not present", new StringContext(input), errors));
 	}
-	Rule N/A(){
+	Rule N/A(any* _ref_){
 		return N/A.new();
 	}
 }

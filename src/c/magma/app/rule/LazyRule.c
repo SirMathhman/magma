@@ -17,7 +17,7 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	void set(any* _ref_, Rule childRule){
 		this.childRule = Optional.of(childRule);
 	}
-	Rule N/A(){
+	Rule N/A(any* _ref_){
 		return N/A.new();
 	}
 }

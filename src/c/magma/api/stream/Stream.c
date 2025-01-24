@@ -4,7 +4,7 @@ import magma.api.result.Result;import java.util.Optional;struct Stream<T>{
 	<R>Stream<R> map(any* _ref_, Tuple<any*, R (*)(any*, T)> mapper);
 	<R, X>Result<R, X> foldLeftToResult(any* _ref_, R initial, Tuple<any*, Result<R, X> (*)(any*, R, T)> folder);
 	struct Impl{
-		struct Impl new(){
+		struct Impl new(any* _ref_){
 			struct Impl this;
 			return this;
 		}

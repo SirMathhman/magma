@@ -1,8 +1,8 @@
 struct StringContext(String value){
-	String display(){
+	String display(any* _ref_){
 		return this.value;
 	}
-	Context N/A(){
+	Context N/A(any* _ref_){
 		return N/A.new();
 	}
 }

@@ -1,4 +1,4 @@
-package magma.app;
+package magma.app.pass;
 
 import java.util.Optional;
 import java.util.function.BiFunction;

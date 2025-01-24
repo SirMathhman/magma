@@ -1,8 +1,8 @@
 import magma.app.rule.LazyRule;import magma.app.rule.OrRule;import magma.app.rule.Rule;import magma.app.rule.TypeRule;import java.util.List;struct CLang{
-	Rule createCRootRule(){
+	Rule createCRootRule(any* _ref_){
 		return new TypeRule(CommonLang.ROOT_TYPE, CommonLang.createContentRule(createCRootSegmentRule()));
 	}
-	OrRule createCRootSegmentRule(){
+	OrRule createCRootSegmentRule(any* _ref_){
 		var function=new LazyRule();
 		var struct=new LazyRule();
 		struct.set(JavaLang.createJavaCompoundRule(CommonLang.STRUCT_TYPE, "struct ", function, struct));

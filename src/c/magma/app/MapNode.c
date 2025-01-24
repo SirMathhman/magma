@@ -3,7 +3,7 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	Map<String, List<Node>> nodeLists;
 	Map<String, Node> nodes;
 	Optional<String> type;
-	public MapNode(){
+	public MapNode(any* _ref_){
 		this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>());
 	}
 	public MapNode(any* _ref_, Optional<String> type, Map<String, String> strings, Map<String, Node> nodes, Map<String, List<Node>> nodeLists){
@@ -18,7 +18,7 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	StringBuilder createEntry(any* _ref_, String name, String content, int depth){
 		return new StringBuilder().append("\n"+"\t".repeat(depth)).append(name).append(" : ").append(content);
 	}
-	String toString(){
+	String toString(any* _ref_){
 		return format(0);
 	}
 	String format(any* _ref_, int depth){
@@ -42,16 +42,16 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 		var withNodes=streamNodes().foldLeft(withStrings, (node, tuple) -> node.withNode(tuple.left(), tuple.right()));
 		return streamNodeLists().foldLeft(withNodes, (node, tuple) -> node.withNodeList(tuple.left(), tuple.right()));
 	}
-	Stream<Tuple<String, List<Node>>> streamNodeLists(){
+	Stream<Tuple<String, List<Node>>> streamNodeLists(any* _ref_){
 		return stream(this.nodeLists);
 	}
-	Stream<Tuple<String, Node>> streamNodes(){
+	Stream<Tuple<String, Node>> streamNodes(any* _ref_){
 		return stream(this.nodes);
 	}
 	<K, V>Stream<Tuple<K, V>> stream(any* _ref_, Map<K, V> map){
 		return Streams.from(map.entrySet()).map(()->new Tuple<>(entry.getKey(), entry.getValue()));
 	}
-	String display(){
+	String display(any* _ref_){
 		return toString();
 	}
 	Node retype(any* _ref_, String type){
@@ -77,7 +77,7 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	boolean hasNode(any* _ref_, String propertyKey){
 		return this.nodes.containsKey(propertyKey);
 	}
-	boolean hasType(){
+	boolean hasType(any* _ref_){
 		return this.type.isPresent();
 	}
 	Node removeNode(any* _ref_, String propertyKey){
@@ -106,7 +106,7 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 	Optional<String> findString(any* _ref_, String propertyKey){
 		return Optional.ofNullable(this.strings.get(propertyKey));
 	}
-	Node N/A(){
+	Node N/A(any* _ref_){
 		return N/A.new();
 	}
 }

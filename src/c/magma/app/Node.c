@@ -8,9 +8,9 @@ import magma.api.Tuple;import magma.api.stream.Stream;import java.util.List;impo
 	Optional<Node> findNode(any* _ref_, String propertyKey);
 	Node mapString(any* _ref_, String propertyKey, Tuple<any*, String (*)(any*, String)> mapper);
 	Node merge(any* _ref_, Node other);
-	Stream<Tuple<String, List<Node>>> streamNodeLists();
-	Stream<Tuple<String, Node>> streamNodes();
-	String display();
+	Stream<Tuple<String, List<Node>>> streamNodeLists(any* _ref_);
+	Stream<Tuple<String, Node>> streamNodes(any* _ref_);
+	String display(any* _ref_);
 	Node retype(any* _ref_, String type);
 	boolean is(any* _ref_, String type);
 	Node mapNodeList(any* _ref_, String propertyKey, Tuple<any*, List<Node> (*)(any*, List<Node>)> mapper);
@@ -18,10 +18,10 @@ import magma.api.Tuple;import magma.api.stream.Stream;import java.util.List;impo
 	Node removeNodeList(any* _ref_, String propertyKey);
 	Node mapNode(any* _ref_, String propertyKey, Tuple<any*, Node (*)(any*, Node)> mapper);
 	boolean hasNode(any* _ref_, String propertyKey);
-	boolean hasType();
+	boolean hasType(any* _ref_);
 	Node removeNode(any* _ref_, String propertyKey);
 	struct Impl{
-		struct Impl new(){
+		struct Impl new(any* _ref_){
 			struct Impl this;
 			return this;
 		}

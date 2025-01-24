@@ -1,6 +1,6 @@
 import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import magma.app.error.context.StringContext;import magma.app.rule.Splitter;import java.util.ArrayList;import java.util.LinkedList;import java.util.List;import java.util.stream.Collectors;import java.util.stream.IntStream;struct ValueDivider{
 	Divider VALUE_DIVIDER=new ValueDivider();
-	private ValueDivider(){}
+	private ValueDivider(any* _ref_){}
 	String merge(any* _ref_, String current, String value){
 		return current+", "+value;
 	}
@@ -53,7 +53,7 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 		Splitter.advance(buffer, segments);
 		return new Ok<List<String>, CompileError>(segments);
 	}
-	Divider N/A(){
+	Divider N/A(any* _ref_){
 		return N/A.new();
 	}
 }

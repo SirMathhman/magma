@@ -1,8 +1,8 @@
 import magma.app.rule.LazyRule;import magma.app.rule.OrRule;import magma.app.rule.Rule;import magma.app.rule.TypeRule;import java.util.List;struct JavaLang{
-	Rule createJavaRootRule(){
+	Rule createJavaRootRule(any* _ref_){
 		return new TypeRule(CommonLang.ROOT_TYPE, CommonLang.createContentRule(createJavaRootSegmentRule()));
 	}
-	OrRule createJavaRootSegmentRule(){
+	OrRule createJavaRootSegmentRule(any* _ref_){
 		var function=new LazyRule();
 		var struct=new LazyRule();
 		struct.set(new OrRule(List.of(createJavaCompoundRule(CommonLang.CLASS_TYPE, "class ", function, struct), createJavaCompoundRule(CommonLang.RECORD_TYPE, "record ", function, struct), createJavaCompoundRule(CommonLang.INTERFACE_TYPE, "interface ", function, struct))));

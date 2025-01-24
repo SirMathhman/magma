@@ -10,7 +10,7 @@ import magma.api.result.Result;import magma.app.Node;import magma.app.error.Comp
 		var after=node.findString(this.after).orElse("");
 		return this.childRule.generate(node).mapValue(()->before+content+after);
 	}
-	Rule N/A(){
+	Rule N/A(any* _ref_){
 		return N/A.new();
 	}
 }

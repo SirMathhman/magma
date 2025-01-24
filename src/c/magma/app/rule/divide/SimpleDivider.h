@@ -9,7 +9,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 	Result<List<String>, CompileError> divide(any* _ref_, String input){
 		return new Ok<>(Arrays.stream(input.split(delimiter)).toList());
 	}
-	Divider N/A(){
+	Divider N/A(any* _ref_){
 		return N/A.new();
 	}
 }

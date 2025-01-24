@@ -3,13 +3,13 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import java.util.
 		var index=input.lastIndexOf(infix());
 		return index==-1?Streams.empty():Streams.of(index);
 	}
-	String unwrap(){
+	String unwrap(any* _ref_){
 		return this.infix;
 	}
-	int length(){
+	int length(any* _ref_){
 		return this.infix.length();
 	}
-	Locator N/A(){
+	Locator N/A(any* _ref_){
 		return N/A.new();
 	}
 }

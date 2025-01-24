@@ -23,7 +23,7 @@ import magma.api.result.Result;import magma.app.Node;import magma.app.error.Comp
 			return this.ifEmpty.generate(node);
 		}
 	}
-	Rule N/A(){
+	Rule N/A(any* _ref_){
 		return N/A.new();
 	}
 }

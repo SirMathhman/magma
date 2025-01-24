@@ -1,8 +1,8 @@
 import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.Streams;import java.util.LinkedList;import java.util.Optional;import java.util.stream.Collectors;import java.util.stream.IntStream;struct ParenthesesMatcher{
-	String unwrap(){
+	String unwrap(any* _ref_){
 		return ")";
 	}
-	int length(){
+	int length(any* _ref_){
 		return 1;
 	}
 	Stream<Integer> locate(any* _ref_, String input){
@@ -25,7 +25,7 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 		}
 		return Streams.empty();
 	}
-	Locator N/A(){
+	Locator N/A(any* _ref_){
 		return N/A.new();
 	}
 }

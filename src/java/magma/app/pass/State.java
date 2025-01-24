@@ -1,4 +1,4 @@
-package magma.app;
+package magma.app.pass;
 
 public record State(int depth) {
     public State() {

@@ -21,7 +21,7 @@ import magma.api.result.Ok;import magma.api.result.Result;import java.util.Optio
 	<R, X>Result<R, X> foldLeftToResult(any* _ref_, R initial, Tuple<any*, Result<R, X> (*)(any*, R, T)> folder){
 		return this.<Result<R, X>>foldLeft(new Ok<>(initial), (rxResult, t) -> rxResult.flatMapValue(inner -> folder.apply(inner, t)));
 	}
-	Stream<T> Stream(){
+	Stream<T> Stream(any* _ref_){
 		return Stream.new();
 	}
 }

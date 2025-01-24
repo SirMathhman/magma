@@ -3,10 +3,10 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.
 	public BackwardsLocator(any* _ref_, String infix){
 		this.infix =infix;
 	}
-	String unwrap(){
+	String unwrap(any* _ref_){
 		return this.infix;
 	}
-	int length(){
+	int length(any* _ref_){
 		return this.infix.length();
 	}
 	Stream<Integer> locate(any* _ref_, String input){
@@ -21,7 +21,7 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.
 		}
 		return indices;
 	}
-	Locator N/A(){
+	Locator N/A(any* _ref_){
 		return N/A.new();
 	}
 }

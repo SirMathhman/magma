@@ -1,10 +1,10 @@
-import magma.api.result.Result;import magma.app.Formatter;import magma.app.InlinePassUnit;import magma.app.PassUnit;import magma.app.RootPasser;import magma.app.TreePassingStage;import magma.app.error.ApplicationError;import magma.app.error.CompileError;import magma.app.error.JavaError;import magma.app.lang.CLang;import magma.app.lang.JavaLang;import magma.java.JavaFiles;import java.io.IOException;import java.nio.file.Files;import java.nio.file.Path;import java.nio.file.Paths;import java.util.ArrayList;import java.util.List;import java.util.Optional;import java.util.Set;import java.util.stream.Collectors;import java.util.stream.IntStream;struct Main{
+import magma.api.result.Result;import magma.app.pass.CPasser;import magma.app.pass.Formatter;import magma.app.pass.InlinePassUnit;import magma.app.pass.PassUnit;import magma.app.pass.RootPasser;import magma.app.pass.TreePassingStage;import magma.app.error.ApplicationError;import magma.app.error.CompileError;import magma.app.error.JavaError;import magma.app.lang.CLang;import magma.app.lang.JavaLang;import magma.java.JavaFiles;import java.io.IOException;import java.nio.file.Files;import java.nio.file.Path;import java.nio.file.Paths;import java.util.ArrayList;import java.util.List;import java.util.Optional;import java.util.Set;import java.util.stream.Collectors;import java.util.stream.IntStream;struct Main{
 	Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
 	Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
 	void main(any* _ref_, String[] args){
 		collect().mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(Main::runWithSources).match(Function.identity(), Optional::of).ifPresent(()->System.err.println(error.display()));
 	}
-	Result<Set<Path>, IOException> collect(){
+	Result<Set<Path>, IOException> collect(any* _ref_){
 		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(()->paths.stream().filter(Files::isRegularFile).filter(()->path.toString().endsWith(".java")).collect(Collectors.toSet()));
 	}
 	Optional<ApplicationError> runWithSources(any* _ref_, Set<Path> sources){
@@ -30,7 +30,7 @@ import magma.api.result.Result;import magma.app.Formatter;import magma.app.Inlin
 		return JavaFiles.readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).flatMapValue(()->compile(input).mapErr(ApplicationError::new)).mapValue(()->writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
 	}
 	Result<String, CompileError> compile(any* _ref_, String input){
-		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->new TreePassingStage(new RootPasser()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value)).flatMapValue(()->new TreePassingStage(new Formatter()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value)).flatMapValue(()->CLang.createCRootRule().generate(root));
+		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->new TreePassingStage(new RootPasser()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value)).flatMapValue(()->new TreePassingStage(new CPasser()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value)).flatMapValue(()->new TreePassingStage(new Formatter()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value)).flatMapValue(()->CLang.createCRootRule().generate(root));
 	}
 	Optional<ApplicationError> writeOutput(any* _ref_, String output, Path targetParent, String name){
 		var target=targetParent.resolve(name+".c");

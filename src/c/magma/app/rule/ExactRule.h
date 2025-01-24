@@ -7,7 +7,7 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	Result<String, CompileError> generate(any* _ref_, Node node){
 		return new Ok<>(this.slice);
 	}
-	Rule N/A(){
+	Rule N/A(any* _ref_){
 		return N/A.new();
 	}
 }

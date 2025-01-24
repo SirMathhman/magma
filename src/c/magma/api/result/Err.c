@@ -17,16 +17,16 @@ import magma.api.Tuple;import magma.api.option.None;import magma.api.option.Opti
 	<R>Result<T, Tuple<X, R>> or(any* _ref_, Tuple<any*, Result<T, R> (*)(any*)> other){
 		return other.get().mapErr(()->new Tuple<>(this.error, otherErr));
 	}
-	boolean isOk(){
+	boolean isOk(any* _ref_){
 		return false;
 	}
-	Optional<X> findError0(){
+	Optional<X> findError0(any* _ref_){
 		return Optional.of(this.error);
 	}
-	Option<X> findError(){
+	Option<X> findError(any* _ref_){
 		return findError0().<Option<X>>map(Some::new).orElseGet(None::new);
 	}
-	Result<T, X> Result(){
+	Result<T, X> Result(any* _ref_){
 		return Result.new();
 	}
 }

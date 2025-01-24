@@ -10,10 +10,10 @@ import magma.app.error.context.Context;import java.util.ArrayList;import java.ut
 	public CompileError(any* _ref_, String message, Context context){
 		this(message, context, Collections.emptyList());
 	}
-	String display(){
+	String display(any* _ref_){
 		return format(0);
 	}
-	int maxDepth(){
+	int maxDepth(any* _ref_){
 		return 1+this.children.stream().mapToInt(CompileError::maxDepth).max().orElse(0);
 	}
 	String format(any* _ref_, int depth){
@@ -22,7 +22,7 @@ import magma.app.error.context.Context;import java.util.ArrayList;import java.ut
                 .collect(Collectors.joining());
 		return this.message + ": " + this.context.display() + joinedChildren;
 	}
-	Error N/A(){
+	Error N/A(any* _ref_){
 		return N/A.new();
 	}
 }

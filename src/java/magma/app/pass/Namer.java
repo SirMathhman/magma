@@ -1,4 +1,4 @@
-package magma.app;
+package magma.app.pass;
 
 public class Namer {
     private static int counter = 0;

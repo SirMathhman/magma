@@ -1,4 +1,6 @@
-package magma.app;
+package magma.app.pass;
+
+import magma.app.Node;
 
 import java.util.ArrayList;
 import java.util.List;

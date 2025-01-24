@@ -13,7 +13,7 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.api.stre
 	Result<String, CompileError> generate(any* _ref_, Node node){
 		return process(new NodeContext(node), ()->rule.generate(node));
 	}
-	Rule N/A(){
+	Rule N/A(any* _ref_){
 		return N/A.new();
 	}
 }

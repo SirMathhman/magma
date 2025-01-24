@@ -36,7 +36,7 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 	String merge(any* _ref_, List<String> elements){
 		return Streams.from(elements).foldLeft(this.divider::merge).orElse("");
 	}
-	Rule N/A(){
+	Rule N/A(any* _ref_){
 		return N/A.new();
 	}
 }

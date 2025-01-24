@@ -8,7 +8,7 @@ import java.util.stream.IntStream;struct NumberFilter{
 		}
 		return allDigits(input);
 	}
-	Predicate<String> Predicate(){
+	Predicate<String> Predicate(any* _ref_){
 		return Predicate.new();
 	}
 }

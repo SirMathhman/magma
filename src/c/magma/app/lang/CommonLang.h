@@ -50,7 +50,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	StripRule createStructSegmentRule(any* _ref_, LazyRule function, Rule statement, LazyRule struct){
 		return new StripRule(new OrRule(List.of(function, createInitializationRule(createValueRule(statement, function)), createDefinitionStatementRule(), createWhitespaceRule(), struct)), BEFORE_STRUCT_SEGMENT, "");
 	}
-	SuffixRule createDefinitionStatementRule(){
+	SuffixRule createDefinitionStatementRule(any* _ref_){
 		return new SuffixRule(createDefinitionRule(), ";");
 	}
 	Rule createInitializationRule(any* _ref_, Rule value){
@@ -93,7 +93,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
                 new ContextRule("With statement", new StripRule(new PrefixRule("(", new InfixRule(condition, new ParenthesesMatcher(), new NodeRule("value", statement)))))
         )))));
 	}
-	TypeRule createWhitespaceRule(){
+	TypeRule createWhitespaceRule(any* _ref_){
 		return new TypeRule(WHITESPACE_TYPE, new StripRule(new ExactRule("")));
 	}
 	Rule createPostfixRule(any* _ref_, String type, String operator, Rule value){
@@ -126,17 +126,17 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 		var rightRule=new OrRule(List.of(new NodeRule("value", wrapUsingBlock("value", new StripRule(new SuffixRule(args, "->")), statement)), new InfixRule(args, new FirstLocator("->"), new NodeRule("value", value))));
 		return new TypeRule("lambda", rightRule);
 	}
-	TypeRule createStringRule(){
+	TypeRule createStringRule(any* _ref_){
 		var value=new PrefixRule("\"", new SuffixRule(new StringRule(INITIALIZATION_VALUE), "\""));
 		return new TypeRule("string", new StripRule(value));
 	}
 	TypeRule createTernaryRule(any* _ref_, LazyRule value){
 		return new TypeRule("ternary", new InfixRule(new NodeRule("condition", value), new FirstLocator("?"), new InfixRule(new NodeRule("ifTrue", value), new FirstLocator(":"), new NodeRule("ifElse", value))));
 	}
-	TypeRule createCharRule(){
+	TypeRule createCharRule(any* _ref_){
 		return new TypeRule("char", new StripRule(new PrefixRule("'", new SuffixRule(new StringRule(INITIALIZATION_VALUE), "'"))));
 	}
-	TypeRule createNumberRule(){
+	TypeRule createNumberRule(any* _ref_){
 		return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule(INITIALIZATION_VALUE))));
 	}
 	TypeRule createOperatorRule(any* _ref_, String type, String operator, LazyRule value){
@@ -151,14 +151,14 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 		var childRule=new InfixRule(type, new FirstLocator("("), new StripRule(new SuffixRule(arguments, ")")));
 		return new TypeRule("construction", new StripRule(new PrefixRule("new ", childRule)));
 	}
-	Rule createSymbolRule(){
+	Rule createSymbolRule(any* _ref_){
 		return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
 	}
 	Rule createAccessRule(any* _ref_, String type, String infix, Rule value){
 		var rule=new InfixRule(new NodeRule("ref", value), new LastLocator(infix), new StringRule("property"));
 		return new TypeRule(type, rule);
 	}
-	Rule createDefinitionRule(){
+	Rule createDefinitionRule(any* _ref_){
 		var name=new FilterRule(new SymbolFilter(), new StringRule("name"));
 		var typeProperty=new NodeRule("type", createTypeRule());
 		var typeAndName=new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
@@ -170,16 +170,16 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 		var annotations=new DivideRule(DEFINITION_ANNOTATIONS, new SimpleDivider("\n"), annotation);
 		return new TypeRule(DEFINITION_TYPE, new OrRule(List.of(new ContextRule("With annotations", new InfixRule(annotations, new LastLocator("\n"), withModifiers)), new ContextRule("Without annotations", withModifiers))));
 	}
-	DivideRule createModifiersRule(){
+	DivideRule createModifiersRule(any* _ref_){
 		var modifierRule=new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(INITIALIZATION_VALUE))));
 		return new DivideRule("modifiers", new SimpleDivider(" "), modifierRule);
 	}
-	Rule createTypeRule(){
+	Rule createTypeRule(any* _ref_){
 		var type=new LazyRule();
 		type.set(new OrRule(List.of(createSymbolRule(), createGenericRule(type), createVarArgsRule(type), createArrayRule(type), createFunctionalRule(type), createTupleRule(type), createSliceRule(type), createStructRule(), new TypeRule("ref", new SuffixRule(new NodeRule("value", type), "*")))));
 		return type;
 	}
-	TypeRule createStructRule(){
+	TypeRule createStructRule(any* _ref_){
 		return new TypeRule("struct", new PrefixRule("struct ", new StringRule("value")));
 	}
 	TypeRule createSliceRule(any* _ref_, LazyRule type){

@@ -1,7 +1,9 @@
-package magma.app;
+package magma.app.pass;
 
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.app.MapNode;
+import magma.app.Node;
 import magma.app.error.CompileError;
 
 import java.util.ArrayList;
@@ -130,23 +132,9 @@ public class RootPasser implements Passer {
                 .withNodeList(GENERIC_CHILDREN, List.of(createAnyRefType(), child));
     }
 
-    private static Node createAnyRefType() {
+    public static Node createAnyRefType() {
         final var anyType = new MapNode("symbol").withString("value", "any");
         return new MapNode("ref").withNode("value", anyType);
-    }
-
-    @Override
-    public Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
-        return new Ok<>(unit.filterAndMapToValue(Passer.by("method"), node -> {
-            return node.mapNodeList("params", params -> {
-                final var copy = new ArrayList<Node>();
-                copy.add(new MapNode("definition")
-                        .withNode("type", createAnyRefType())
-                        .withString("name", "_ref_"));
-                copy.addAll(params);
-                return copy;
-            });
-        }).orElse(unit));
     }
 
     @Override
