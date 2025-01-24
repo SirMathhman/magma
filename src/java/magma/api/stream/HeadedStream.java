@@ -44,9 +44,10 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
 
     @Override
     public <R> Stream<R> flatMap(Function<T, Stream<R>> mapper) {
-        return map(mapper)
-                .foldLeft(Stream::concat)
-                .orElse(new HeadedStream<>(new EmptyHead<>()));
+        return new HeadedStream<>(this.head.next()
+                .map(mapper)
+                .<Head<R>>map(inner -> new FlatMapHead<>(this.head, inner, mapper))
+                .orElse(new EmptyHead<>()));
     }
 
     @Override
@@ -59,11 +60,6 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
         return flatMap(value -> new HeadedStream<>(predicate.test(value)
                 ? new SingleHead<>(value)
                 : new EmptyHead<>()));
-    }
-
-    @Override
-    public Stream<T> concat(Stream<T> other) {
-        return new HeadedStream<>(() -> this.head.next().or(other::next));
     }
 
     @Override

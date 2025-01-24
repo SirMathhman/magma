@@ -50,9 +50,13 @@ public class TreePassingStage implements PassingStage {
 
     @Override
     public Result<PassUnit<Node>, CompileError> pass(PassUnit<Node> unit) {
-        return this.passer.beforePass(unit)
-                .flatMapValue(this::passNodes)
-                .flatMapValue(this::passNodeLists)
+        final var passUnitCompileErrorResult = this.passer.beforePass(unit);
+        final var passUnitCompileErrorResult1 = passUnitCompileErrorResult
+                .flatMapValue(this::passNodes);
+        final var passUnitCompileErrorResult2 = passUnitCompileErrorResult1
+                .flatMapValue(this::passNodeLists);
+        final var passUnitCompileErrorResult3 = passUnitCompileErrorResult2
                 .flatMapValue(this.passer::afterPass);
+        return passUnitCompileErrorResult3;
     }
 }

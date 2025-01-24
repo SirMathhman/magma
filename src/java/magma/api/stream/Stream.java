@@ -21,6 +21,4 @@ public interface Stream<T> extends Head<T> {
     <C> C collect(Collector<T, C> collector);
 
     Stream<T> filter(Predicate<T> predicate);
-
-    Stream<T> concat(Stream<T> other);
 }

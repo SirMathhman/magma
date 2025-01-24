@@ -16,6 +16,7 @@ import magma.app.lang.CLang;
 import magma.app.lang.JavaLang;
 import magma.app.pass.CFormatter;
 import magma.app.pass.InlinePassUnit;
+import magma.app.pass.JavaParser;
 import magma.app.pass.PassUnit;
 import magma.app.pass.Passer;
 import magma.app.pass.RootPasser;
@@ -108,7 +109,8 @@ public class Main {
     }
 
     private static Result<Map<String, String>, CompileError> compile(String input, JavaList<String> namespace, String name) {
-        return JavaLang.createJavaRootRule().parse(input)
+        final var parsed = JavaLang.createJavaRootRule().parse(input);
+        return parsed.flatMapValue(root1 -> pass(new JavaParser(), namespace, name, root1))
                 .flatMapValue(root -> pass(new RootPasser(), namespace, name, root))
                 .flatMapValue(root -> pass(new CFormatter(), namespace, name, root))
                 .flatMapValue(root -> root.streamNodes().foldLeftToResult(new HashMap<>(), Main::generateTarget));
