@@ -1,14 +1,3 @@
-#include "../../../../magma/api/result/Err.h"
-#include "../../../../magma/api/result/Ok.h"
-#include "../../../../magma/api/result/Result.h"
-#include "../../../../magma/app/error/CompileError.h"
-#include "../../../../magma/app/error/context/StringContext.h"
-#include "../../../../magma/app/rule/Splitter.h"
-#include "../../../../java/util/ArrayList.h"
-#include "../../../../java/util/LinkedList.h"
-#include "../../../../java/util/List.h"
-#include "../../../../java/util/stream/Collectors.h"
-#include "../../../../java/util/stream/IntStream.h"
 struct ValueDivider implements Divider{
 	Divider VALUE_DIVIDER=new ValueDivider();
 	private ValueDivider(){}

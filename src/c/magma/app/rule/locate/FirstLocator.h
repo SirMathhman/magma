@@ -1,15 +1,3 @@
 #include "../../../../magma/api/stream/Stream.h"
 #include "../../../../magma/api/stream/Streams.h"
 #include "../../../../java/util/Optional.h"
-struct FirstLocator(String infix) implements Locator{
-	String unwrap(){
-		return this.infix;
-	}
-	int length(){
-		return this.infix.length();
-	}
-	Stream<Integer> locate(String input){
-		var index=input.indexOf(this.infix);
-		return index==-1?Streams.empty():Streams.of(index);
-	}
-}

@@ -1,6 +1,3 @@
-#include "../../../magma/api/option/None.h"
-#include "../../../magma/api/option/Option.h"
-#include "../../../magma/api/option/Some.h"
 struct JoiningCollector implements Collector<String, Option<String>>{
 	String slice;
 	public JoiningCollector(String slice){

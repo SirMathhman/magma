@@ -2,14 +2,17 @@ package magma.app.pass;
 
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.app.MapNode;
 import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.lang.CommonLang;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILD;
+import static magma.app.lang.CommonLang.CONTENT_CHILDREN;
 import static magma.app.pass.Passer.by;
 
 public class CFormatter implements Passer {
@@ -22,11 +25,33 @@ public class CFormatter implements Passer {
     }
 
     static Node cleanupNamespaced(Node root) {
-        return root.mapNodeList(CommonLang.CONTENT_CHILDREN, children -> children.stream()
+        final var oldChildren = root.findNodeList(CommonLang.CONTENT_CHILDREN).orElse(Collections.emptyList());
+        final var newChildren = oldChildren.stream()
                 .filter(child -> !child.is("package"))
                 .filter(CFormatter::filterImport)
                 .map(child -> child.withString(CONTENT_AFTER_CHILD, "\n"))
-                .toList());
+                .toList();
+
+        final var headerElements = new ArrayList<Node>();
+        final var sourceElements = new ArrayList<Node>();
+        newChildren.forEach(child -> {
+            if (child.is("include")) {
+                headerElements.add(child);
+            } else {
+                sourceElements.add(child);
+            }
+        });
+
+        return new MapNode()
+                .withNode("header", createRoot(headerElements))
+                .withNode("source", createRoot(sourceElements));
+    }
+
+    private static Node createRoot(List<Node> elements) {
+        final var node = new MapNode("root");
+        return elements.isEmpty()
+                ? node
+                : node.withNodeList(CONTENT_CHILDREN, elements);
     }
 
     static boolean filterImport(Node child) {
@@ -63,13 +88,14 @@ public class CFormatter implements Passer {
 
     @Override
     public Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
-        return new Ok<>(unit.filter(by("block")).map(CFormatter::formatBlock).orElse(unit));
+        return new Ok<>(unit.filter(by("block")).map(CFormatter::formatBlock)
+                .or(() -> unit.filterAndMapToValue(by("root"), CFormatter::cleanupNamespaced))
+                .orElse(unit));
     }
 
     @Override
     public Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
         return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(inner -> inner.mapValue(CFormatter::removeWhitespace))
-                .or(() -> unit.filterAndMapToValue(by("root"), CFormatter::cleanupNamespaced))
                 .or(() -> unit.filterAndMapToValue(by("definition"), CFormatter::cleanupDefinition))
                 .orElse(unit));
     }

@@ -1,26 +1,3 @@
-#include "../magma/api/io/Path.h"
-#include "../magma/api/option/None.h"
-#include "../magma/api/option/Option.h"
-#include "../magma/api/option/Some.h"
-#include "../magma/api/result/Result.h"
-#include "../magma/api/stream/JoiningCollector.h"
-#include "../magma/api/stream/Streams.h"
-#include "../magma/app/error/ApplicationError.h"
-#include "../magma/app/error/CompileError.h"
-#include "../magma/app/error/JavaError.h"
-#include "../magma/app/lang/CLang.h"
-#include "../magma/app/lang/JavaLang.h"
-#include "../magma/app/pass/CFormatter.h"
-#include "../magma/app/pass/InlinePassUnit.h"
-#include "../magma/app/pass/PassUnit.h"
-#include "../magma/app/pass/RootPasser.h"
-#include "../magma/app/pass/TreePassingStage.h"
-#include "../magma/java/JavaFiles.h"
-#include "../magma/java/JavaList.h"
-#include "../magma/java/JavaListCollector.h"
-#include "../magma/java/JavaPaths.h"
-#include "../magma/java/JavaSet.h"
-#include "../java/io/IOException.h"
 struct Main{
 	Path SOURCE_DIRECTORY=JavaPaths.get(".", "src", "java");
 	Path TARGET_DIRECTORY=JavaPaths.get(".", "src", "c");
@@ -57,12 +34,24 @@ struct Main{
 	boolean shouldSkip(JavaList<String> namespace){
 		return namespace.subList(0, 2).filter(()->slice.equals(JavaList.of("magma", "java"))).isPresent();
 	}
-	Result<String, CompileError> compile(String input, JavaList<String> namespace){
-		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->new TreePassingStage(new RootPasser()).pass(new InlinePassUnit<>(root, namespace)).mapValue(PassUnit::value)).flatMapValue(()->new TreePassingStage(new CFormatter()).pass(new InlinePassUnit<>(root, namespace)).mapValue(PassUnit::value)).flatMapValue(()->CLang.createCRootRule().generate(root));
+	Result<Map<String, String>, CompileError> compile(String input, JavaList<String> namespace){
+		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->pass(new RootPasser(), namespace, root)).flatMapValue(()->pass(new CFormatter(), namespace, root)).flatMapValue(()->root.streamNodes().foldLeftToResult(new HashMap<String, String>(), Main::generateTarget));
 	}
-	Option<ApplicationError> writeOutput(String output, Path targetParent, String name){
+	Result<Node, CompileError> pass(Passer passer, JavaList<String> namespace, Node root){
+		var unit=new InlinePassUnit<>(root, namespace);
+		return new TreePassingStage(passer).pass(unit).mapValue(PassUnit::value);
+	}
+	Result<Map<String, String>, CompileError> generateTarget(Map<String, String> map, Tuple<String, Node> tuple){
+		var key=tuple.left();
+		var root=tuple.right();
+		return CLang.createCRootRule().generate(root).mapValue(()->{
+			map.put(key, generated);
+			return map;
+		});
+	}
+	Option<ApplicationError> writeOutput(Map<String, String> output, Path targetParent, String name){
 		var target=targetParent.resolveChild(name+".c");
 		var header=targetParent.resolveChild(name+".h");
-		return target.writeString(output).or(()->header.writeString(output)).map(JavaError::new).map(ApplicationError::new);
+		return target.writeString(output.get("source")).or(()->header.writeString(output.get("header"))).map(JavaError::new).map(ApplicationError::new);
 	}
 }

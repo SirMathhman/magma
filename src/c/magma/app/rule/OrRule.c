@@ -1,14 +1,3 @@
-#include "../../../magma/api/result/Err.h"
-#include "../../../magma/api/result/Result.h"
-#include "../../../magma/api/stream/Streams.h"
-#include "../../../magma/app/Node.h"
-#include "../../../magma/app/error/CompileError.h"
-#include "../../../magma/app/error/context/Context.h"
-#include "../../../magma/app/error/context/NodeContext.h"
-#include "../../../magma/app/error/context/StringContext.h"
-#include "../../../java/util/ArrayList.h"
-#include "../../../java/util/Collections.h"
-#include "../../../java/util/List.h"
 struct OrRule(List<Rule> rules) implements Rule{
 	Result<Node, CompileError> parse(String value){
 		return process(new StringContext(value), ()->rule.parse(value));

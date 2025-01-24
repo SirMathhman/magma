@@ -1,12 +1,3 @@
-#include "../../../magma/api/result/Ok.h"
-#include "../../../magma/api/result/Result.h"
-#include "../../../magma/app/Node.h"
-#include "../../../magma/app/error/CompileError.h"
-#include "../../../magma/app/lang/CommonLang.h"
-#include "../../../java/util/ArrayList.h"
-#include "../../../java/util/List.h"
-#include "../../../static magma/app/lang/CommonLang/CONTENT_AFTER_CHILD.h"
-#include "../../../static magma/app/pass/Passer/by.h"
 struct CFormatter implements Passer{
 	Node removeWhitespace(Node block){
 		return block.mapNodeList(CommonLang.CONTENT_CHILDREN, ()->{
@@ -14,7 +5,25 @@ struct CFormatter implements Passer{
 		});
 	}
 	Node cleanupNamespaced(Node root){
-		return root.mapNodeList(CommonLang.CONTENT_CHILDREN, ()->children.stream().filter(()->!child.is("package")).filter(CFormatter::filterImport).map(()->child.withString(CONTENT_AFTER_CHILD, "\n")).toList());
+		var oldChildren=root.findNodeList(CommonLang.CONTENT_CHILDREN).orElse(Collections.emptyList());
+		var newChildren=oldChildren.stream().filter(()->!child.is("package")).filter(CFormatter::filterImport).map(()->child.withString(CONTENT_AFTER_CHILD, "\n")).toList();
+		var headerElements=new ArrayList<Node>();
+		var sourceElements=new ArrayList<Node>();
+		newChildren.forEach(()->{
+			if(child.is("include")){
+				headerElements.add(child);
+			}
+			else{
+				sourceElements.add(child);
+			}
+		});
+		return new MapNode().withNode("header", createRoot(headerElements)).withNode("source", createRoot(sourceElements));
+	}
+	Node createRoot(List<Node> elements){
+		var node=new MapNode("root");
+		return elements.isEmpty()
+                ? node
+                : node.withNodeList(CONTENT_CHILDREN, elements);
 	}
 	boolean filterImport(Node child){
 		if(!child.is("import"))return true;
@@ -40,9 +49,9 @@ struct CFormatter implements Passer{
 		return definition.removeNodeList("annotations").removeNodeList("modifiers");
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
-		return new Ok<>(unit.filter(by("block")).map(CFormatter::formatBlock).orElse(unit));
+		return new Ok<>(unit.filter(by("block")).map(CFormatter::formatBlock).or(()->unit.filterAndMapToValue(by("root"), CFormatter::cleanupNamespaced)).orElse(unit));
 	}
 	Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit){
-		return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(()->inner.mapValue(CFormatter::removeWhitespace)).or(()->unit.filterAndMapToValue(by("root"), CFormatter::cleanupNamespaced)).or(()->unit.filterAndMapToValue(by("definition"), CFormatter::cleanupDefinition)).orElse(unit));
+		return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(()->inner.mapValue(CFormatter::removeWhitespace)).or(()->unit.filterAndMapToValue(by("definition"), CFormatter::cleanupDefinition)).orElse(unit));
 	}
 }

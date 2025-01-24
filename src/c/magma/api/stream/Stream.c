@@ -1,7 +1,3 @@
-#include "../../../magma/api/option/Option.h"
-#include "../../../magma/api/result/Result.h"
-#include "../../../java/util/function/BiFunction.h"
-#include "../../../java/util/function/Predicate.h"
 struct Stream<T> extends Head<T>{
 	Option<T> foldLeft(BiFunction<T, T, T> folder);
 	<R>R foldLeft(R initial, BiFunction<R, T, R> folder);

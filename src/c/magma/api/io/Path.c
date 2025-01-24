@@ -1,8 +1,3 @@
-#include "../../../magma/api/option/Option.h"
-#include "../../../magma/api/result/Result.h"
-#include "../../../magma/api/stream/Stream.h"
-#include "../../../magma/java/JavaSet.h"
-#include "../../../java/io/IOException.h"
 struct Path{
 	boolean isExists();
 	Stream<Path> stream();

@@ -1,5 +1,6 @@
 package magma;
 
+import magma.api.Tuple;
 import magma.api.io.Path;
 import magma.api.option.None;
 import magma.api.option.Option;
@@ -7,6 +8,7 @@ import magma.api.option.Some;
 import magma.api.result.Result;
 import magma.api.stream.JoiningCollector;
 import magma.api.stream.Streams;
+import magma.app.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;
@@ -15,6 +17,7 @@ import magma.app.lang.JavaLang;
 import magma.app.pass.CFormatter;
 import magma.app.pass.InlinePassUnit;
 import magma.app.pass.PassUnit;
+import magma.app.pass.Passer;
 import magma.app.pass.RootPasser;
 import magma.app.pass.TreePassingStage;
 import magma.java.JavaFiles;
@@ -24,6 +27,8 @@ import magma.java.JavaPaths;
 import magma.java.JavaSet;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 public class Main {
@@ -102,18 +107,33 @@ public class Main {
                 .isPresent();
     }
 
-    private static Result<String, CompileError> compile(String input, JavaList<String> namespace) {
+    private static Result<Map<String, String>, CompileError> compile(String input, JavaList<String> namespace) {
         return JavaLang.createJavaRootRule().parse(input)
-                .flatMapValue(root -> new TreePassingStage(new RootPasser()).pass(new InlinePassUnit<>(root, namespace)).mapValue(PassUnit::value))
-                .flatMapValue(root -> new TreePassingStage(new CFormatter()).pass(new InlinePassUnit<>(root, namespace)).mapValue(PassUnit::value))
-                .flatMapValue(root -> CLang.createCRootRule().generate(root));
+                .flatMapValue(root -> pass(new RootPasser(), namespace, root))
+                .flatMapValue(root -> pass(new CFormatter(), namespace, root))
+                .flatMapValue(root -> root.streamNodes().foldLeftToResult(new HashMap<String, String>(), Main::generateTarget));
     }
 
-    private static Option<ApplicationError> writeOutput(String output, Path targetParent, String name) {
+    private static Result<Node, CompileError> pass(Passer passer, JavaList<String> namespace, Node root) {
+        final var unit = new InlinePassUnit<>(root, namespace);
+        return new TreePassingStage(passer).pass(unit).mapValue(PassUnit::value);
+    }
+
+    private static Result<Map<String, String>, CompileError> generateTarget(Map<String, String> map, Tuple<String, Node> tuple) {
+        final var key = tuple.left();
+        final var root = tuple.right();
+
+        return CLang.createCRootRule().generate(root).mapValue(generated -> {
+            map.put(key, generated);
+            return map;
+        });
+    }
+
+    private static Option<ApplicationError> writeOutput(Map<String, String> output, Path targetParent, String name) {
         final var target = targetParent.resolveChild(name + ".c");
         final var header = targetParent.resolveChild(name + ".h");
-        return target.writeString(output)
-                .or(() -> header.writeString(output))
+        return target.writeString(output.get("source"))
+                .or(() -> header.writeString(output.get("header")))
                 .map(JavaError::new)
                 .map(ApplicationError::new);
     }

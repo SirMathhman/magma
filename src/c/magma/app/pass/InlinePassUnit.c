@@ -1,11 +1,3 @@
-#include "../../../magma/app/Node.h"
-#include "../../../magma/java/JavaList.h"
-#include "../../../java/util/ArrayList.h"
-#include "../../../java/util/List.h"
-#include "../../../java/util/Optional.h"
-#include "../../../java/util/function/BiFunction.h"
-#include "../../../java/util/function/Predicate.h"
-#include "../../../java/util/function/Supplier.h"
 struct InlinePassUnit<T>(State state, List<Node> cache, T value, List<String> namespace) implements PassUnit<T>{
 	public InlinePassUnit(T value, JavaList<String> namespace){
 		this(new State(), new ArrayList<>(), value, namespace.unwrap());

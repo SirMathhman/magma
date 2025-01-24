@@ -1,6 +1,3 @@
-#include "../../../magma/api/result/Result.h"
-#include "../../../magma/app/Node.h"
-#include "../../../magma/app/error/CompileError.h"
 struct StripRule(Rule childRule, String before, String after) implements Rule{
 	public StripRule(Rule childRule){
 		this(childRule, "", "");

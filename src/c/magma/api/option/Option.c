@@ -1,7 +1,3 @@
-#include "../../../magma/api/Tuple.h"
-#include "../../../java/util/function/Consumer.h"
-#include "../../../java/util/function/Predicate.h"
-#include "../../../java/util/function/Supplier.h"
 struct Option<T>{
 	<R>Option<R> map(Function<T, R> mapper);
 	T orElseGet(Supplier<T> other);

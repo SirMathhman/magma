@@ -1,7 +1,3 @@
-#include "../../../magma/api/option/Option.h"
-#include "../../../java/util/ArrayList.h"
-#include "../../../java/util/List.h"
-#include "../../../java/util/Set.h"
 struct Streams{
 	<T>Stream<T> of(T... values){
 		return new HeadedStream<>(new RangeHead(values.length)).map(index -> values[index]);
