@@ -1,11 +1,11 @@
-import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.Streams;import java.util.LinkedList;import java.util.Optional;import java.util.stream.Collectors;import java.util.stream.IntStream;struct ParenthesesMatcher{
-	String unwrap(any* _ref_){
+import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.Streams;import java.util.LinkedList;import java.util.Optional;import java.util.stream.Collectors;import java.util.stream.IntStream;struct ParenthesesMatcher implements Locator{
+	String unwrap(){
 		return ")";
 	}
-	int length(any* _ref_){
+	int length(){
 		return 1;
 	}
-	Stream<Integer> locate(any* _ref_, String input){
+	Stream<Integer> locate(String input){
 		var depth=0;
 		var queue=IntStream.range(0, input.length()).mapToObj(()->new Tuple<>(index, input.charAt(index))).collect(Collectors.toCollection(LinkedList::new));
 		while(!queue.isEmpty()){
@@ -24,8 +24,5 @@ import magma.api.Tuple;import magma.api.stream.Stream;import magma.api.stream.St
 			if(c==')')depth--;
 		}
 		return Streams.empty();
-	}
-	Locator N/A(any* _ref_){
-		return N/A.new();
 	}
 }

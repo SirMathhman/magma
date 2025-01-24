@@ -1,16 +1,10 @@
 import magma.api.Tuple;import magma.api.option.Option;struct Result<T, X>{
-	<R>Result<R, X> flatMapValue(any* _ref_, Tuple<any*, Result<R, X> (*)(any*, T)> mapper);
-	<R>Result<R, X> mapValue(any* _ref_, Tuple<any*, R (*)(any*, T)> mapper);
-	<R>Result<T, R> mapErr(any* _ref_, Tuple<any*, R (*)(any*, X)> mapper);
-	<R>R match(any* _ref_, Tuple<any*, R (*)(any*, T)> onOk, Tuple<any*, R (*)(any*, X)> onErr);
-	<R>Result<Tuple<T, R>, X> and(any* _ref_, Tuple<any*, Result<R, X> (*)(any*)> other);
-	<R>Result<T, Tuple<X, R>> or(any* _ref_, Tuple<any*, Result<T, R> (*)(any*)> other);
-	boolean isOk(any* _ref_);
-	Option<X> findError(any* _ref_);
-	struct Impl{
-		struct Impl new(any* _ref_){
-			struct Impl this;
-			return this;
-		}
-	}
+	<R>Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper);
+	<R>Result<R, X> mapValue(Function<T, R> mapper);
+	<R>Result<T, R> mapErr(Function<X, R> mapper);
+	<R>R match(Function<T, R> onOk, Function<X, R> onErr);
+	<R>Result<Tuple<T, R>, X> and(Supplier<Result<R, X>> other);
+	<R>Result<T, Tuple<X, R>> or(Supplier<Result<T, R>> other);
+	boolean isOk();
+	Option<X> findError();
 }

@@ -1,29 +1,26 @@
-import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;import magma.app.rule.divide.DivideRule;import java.util.List;struct OptionalNodeListRule{
+import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;import magma.app.rule.divide.DivideRule;import java.util.List;struct OptionalNodeListRule implements Rule{
 	String propertyKey;
 	Rule ifPresent;
 	Rule ifEmpty;
 	OrRule rule;
-	public OptionalNodeListRule(any* _ref_, String propertyKey, Rule ifPresent, Rule ifEmpty){
+	public OptionalNodeListRule(String propertyKey, Rule ifPresent, Rule ifEmpty){
 		this.propertyKey =propertyKey;
 		this.ifPresent =ifPresent;
 		this.ifEmpty =ifEmpty;
 		this.rule = new OrRule(List.of(ifPresent, ifEmpty));
 	}
-	public OptionalNodeListRule(any* _ref_, String propertyKey, DivideRule ifPresent){
+	public OptionalNodeListRule(String propertyKey, DivideRule ifPresent){
 		this(propertyKey, ifPresent, new ExactRule(""));
 	}
-	Result<Node, CompileError> parse(any* _ref_, String input){
+	Result<Node, CompileError> parse(String input){
 		return this.rule.parse(input);
 	}
-	Result<String, CompileError> generate(any* _ref_, Node node){
+	Result<String, CompileError> generate(Node node){
 		if(node.hasNodeList(this.propertyKey)){
 			return this.ifPresent.generate(node);
 		}
 		else{
 			return this.ifEmpty.generate(node);
 		}
-	}
-	Rule N/A(any* _ref_){
-		return N/A.new();
 	}
 }

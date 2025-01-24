@@ -1,8 +1,5 @@
-import java.util.Optional;struct EmptyHead<T>{
-	Optional<T> next(any* _ref_){
+import java.util.Optional;struct EmptyHead<T> implements Head<T>{
+	Optional<T> next(){
 		return Optional.empty();
-	}
-	Head<T> Head(any* _ref_){
-		return Head.new();
 	}
 }

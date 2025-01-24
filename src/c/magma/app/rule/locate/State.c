@@ -1,5 +1,5 @@
 struct State(int depth){
-	boolean isShallow(any* _ref_){
+	boolean isShallow(){
 		return depth==1;
 	}
 }

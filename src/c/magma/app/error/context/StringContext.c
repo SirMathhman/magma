@@ -1,8 +1,5 @@
-struct StringContext(String value){
-	String display(any* _ref_){
+struct StringContext(String value) implements Context{
+	String display(){
 		return this.value;
-	}
-	Context N/A(any* _ref_){
-		return N/A.new();
 	}
 }

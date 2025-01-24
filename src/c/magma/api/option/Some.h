@@ -1,11 +1,8 @@
-struct Some<T>(T value){
-	<R>Option<R> map(any* _ref_, Tuple<any*, R (*)(any*, T)> mapper){
+struct Some<T>(T value) implements Option<T>{
+	<R>Option<R> map(Function<T, R> mapper){
 		return new Some<>(mapper.apply(this.value));
 	}
-	T orElseGet(any* _ref_, Tuple<any*, T (*)(any*)> other){
+	T orElseGet(Supplier<T> other){
 		return this.value;
-	}
-	Option<T> Option(any* _ref_){
-		return Option.new();
 	}
 }

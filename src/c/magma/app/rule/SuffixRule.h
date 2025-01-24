@@ -1,11 +1,11 @@
-import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;import magma.app.error.context.StringContext;struct SuffixRule{
+import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;import magma.app.error.context.StringContext;struct SuffixRule implements Rule{
 	String suffix;
 	Rule childRule;
-	public SuffixRule(any* _ref_, Rule childRule, String suffix){
+	public SuffixRule(Rule childRule, String suffix){
 		this.suffix =suffix;
 		this.childRule =childRule;
 	}
-	Result<String, CompileError> truncateRight(any* _ref_, String input, String slice){
+	Result<String, CompileError> truncateRight(String input, String slice){
 		if(input.endsWith(slice)){
 			return new Ok<>(input.substring(0, input.length() - slice.length()));
 		}
@@ -13,13 +13,10 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 			return new Err<>(new CompileError("Suffix '"+slice+"' not present", new StringContext(input)));
 		}
 	}
-	Result<Node, CompileError> parse(any* _ref_, String input){
+	Result<Node, CompileError> parse(String input){
 		return truncateRight(input, this.suffix).flatMapValue(this.childRule::parse);
 	}
-	Result<String, CompileError> generate(any* _ref_, Node node){
+	Result<String, CompileError> generate(Node node){
 		return childRule.generate(node).mapValue(()->inner+suffix);
-	}
-	Rule N/A(any* _ref_){
-		return N/A.new();
 	}
 }

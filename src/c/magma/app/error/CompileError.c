@@ -1,28 +1,25 @@
-import magma.app.error.context.Context;import java.util.ArrayList;import java.util.Collections;import java.util.Comparator;import java.util.List;import java.util.stream.Collectors;import java.util.stream.IntStream;struct CompileError{
+import magma.app.error.context.Context;import java.util.ArrayList;import java.util.Collections;import java.util.Comparator;import java.util.List;import java.util.stream.Collectors;import java.util.stream.IntStream;struct CompileError implements Error{
 	String message;
 	Context context;
 	List<CompileError> children;
-	public CompileError(any* _ref_, String message, Context context, List<CompileError> children){
+	public CompileError(String message, Context context, List<CompileError> children){
 		this.message =message;
 		this.context =context;
 		this.children = new ArrayList<>(children);
 	}
-	public CompileError(any* _ref_, String message, Context context){
+	public CompileError(String message, Context context){
 		this(message, context, Collections.emptyList());
 	}
-	String display(any* _ref_){
+	String display(){
 		return format(0);
 	}
-	int maxDepth(any* _ref_){
+	int maxDepth(){
 		return 1+this.children.stream().mapToInt(CompileError::maxDepth).max().orElse(0);
 	}
-	String format(any* _ref_, int depth){
+	String format(int depth){
 		this.children.sort(Comparator.comparingInt(CompileError::maxDepth));
 		var joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
                 .collect(Collectors.joining());
 		return this.message + ": " + this.context.display() + joinedChildren;
-	}
-	Error N/A(any* _ref_){
-		return N/A.new();
 	}
 }

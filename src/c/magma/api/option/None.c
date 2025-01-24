@@ -1,11 +1,8 @@
-struct None<T>{
-	<R>Option<R> map(any* _ref_, Tuple<any*, R (*)(any*, T)> mapper){
+struct None<T> implements Option<T>{
+	<R>Option<R> map(Function<T, R> mapper){
 		return new None<>();
 	}
-	T orElseGet(any* _ref_, Tuple<any*, T (*)(any*)> other){
+	T orElseGet(Supplier<T> other){
 		return other.get();
-	}
-	Option<T> Option(any* _ref_){
-		return Option.new();
 	}
 }

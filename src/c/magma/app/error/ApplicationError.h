@@ -1,8 +1,5 @@
-struct ApplicationError(Error cause){
-	String display(any* _ref_){
+struct ApplicationError(Error cause) implements Error{
+	String display(){
 		return this.cause.display();
-	}
-	Error N/A(any* _ref_){
-		return N/A.new();
 	}
 }

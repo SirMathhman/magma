@@ -1,10 +1,10 @@
-import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import magma.app.error.context.StringContext;import magma.app.rule.Splitter;import java.util.ArrayList;import java.util.LinkedList;import java.util.List;import java.util.stream.Collectors;import java.util.stream.IntStream;struct ValueDivider{
+import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import magma.app.error.context.StringContext;import magma.app.rule.Splitter;import java.util.ArrayList;import java.util.LinkedList;import java.util.List;import java.util.stream.Collectors;import java.util.stream.IntStream;struct ValueDivider implements Divider{
 	Divider VALUE_DIVIDER=new ValueDivider();
-	private ValueDivider(any* _ref_){}
-	String merge(any* _ref_, String current, String value){
+	private ValueDivider(){}
+	String merge(String current, String value){
 		return current+", "+value;
 	}
-	Result<List<String>, CompileError> divide(any* _ref_, String input){
+	Result<List<String>, CompileError> divide(String input){
 		var segments=new ArrayList<String>();
 		var buffer=new StringBuilder();
 		var depth=0;
@@ -52,8 +52,5 @@ import magma.api.result.Err;import magma.api.result.Ok;import magma.api.result.R
 		}
 		Splitter.advance(buffer, segments);
 		return new Ok<List<String>, CompileError>(segments);
-	}
-	Divider N/A(any* _ref_){
-		return N/A.new();
 	}
 }

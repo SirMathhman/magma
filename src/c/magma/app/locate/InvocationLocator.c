@@ -1,11 +1,11 @@
-import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.rule.locate.Locator;import java.util.Optional;struct InvocationLocator{
-	String unwrap(any* _ref_){
+import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.rule.locate.Locator;import java.util.Optional;struct InvocationLocator implements Locator{
+	String unwrap(){
 		return "(";
 	}
-	int length(any* _ref_){
+	int length(){
 		return 1;
 	}
-	Stream<Integer> locate(any* _ref_, String input){
+	Stream<Integer> locate(String input){
 		var depth=0;
 		int i=input.length() - 1;
 		while(i>=0){
@@ -16,8 +16,5 @@ import magma.api.stream.Stream;import magma.api.stream.Streams;import magma.app.
 			i--;
 		}
 		return Streams.empty();
-	}
-	Locator N/A(any* _ref_){
-		return N/A.new();
 	}
 }

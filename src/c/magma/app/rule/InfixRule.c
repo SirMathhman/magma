@@ -1,20 +1,20 @@
-import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;import magma.app.error.context.StringContext;import magma.app.rule.locate.Locator;import java.util.ArrayList;import java.util.Optional;struct InfixRule{
+import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;import magma.app.error.context.StringContext;import magma.app.rule.locate.Locator;import java.util.ArrayList;import java.util.Optional;struct InfixRule implements Rule{
 	Rule leftRule;
 	Locator locator;
 	Rule rightRule;
-	public InfixRule(any* _ref_, Rule leftRule, Locator locator, Rule rightRule){
+	public InfixRule(Rule leftRule, Locator locator, Rule rightRule){
 		this.leftRule =leftRule;
 		this.locator =locator;
 		this.rightRule =rightRule;
 	}
-	ArrayList<Integer> add(any* _ref_, ArrayList<Integer> integers, Integer integer){
+	ArrayList<Integer> add(ArrayList<Integer> integers, Integer integer){
 		integers.add(integer);
 		return integers;
 	}
-	Result<String, CompileError> generate(any* _ref_, Node node){
+	Result<String, CompileError> generate(Node node){
 		return this.leftRule.generate(node).and(()->this.rightRule.generate(node)).mapValue(()->tuple.left() + this.locator.unwrap() + tuple.right());
 	}
-	Result<Node, CompileError> parse(any* _ref_, String input){
+	Result<Node, CompileError> parse(String input){
 		var indices=this.locator.locate(input).foldLeft(new ArrayList<>(), InfixRule::add);
 		var errors=new ArrayList<CompileError>();
 		int i=0;
@@ -32,8 +32,5 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.app.Node
 			i++;
 		}
 		return new Err<>(new CompileError("Infix '"+this.locator.unwrap() + "' not present", new StringContext(input), errors));
-	}
-	Rule N/A(any* _ref_){
-		return N/A.new();
 	}
 }

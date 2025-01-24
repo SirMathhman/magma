@@ -1,16 +1,16 @@
 import magma.api.result.Result;import magma.app.pass.CPasser;import magma.app.pass.Formatter;import magma.app.pass.InlinePassUnit;import magma.app.pass.PassUnit;import magma.app.pass.RootPasser;import magma.app.pass.TreePassingStage;import magma.app.error.ApplicationError;import magma.app.error.CompileError;import magma.app.error.JavaError;import magma.app.lang.CLang;import magma.app.lang.JavaLang;import magma.java.JavaFiles;import java.io.IOException;import java.nio.file.Files;import java.nio.file.Path;import java.nio.file.Paths;import java.util.ArrayList;import java.util.List;import java.util.Optional;import java.util.Set;import java.util.stream.Collectors;import java.util.stream.IntStream;struct Main{
 	Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
 	Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
-	void main(any* _ref_, String[] args){
+	void main(String[] args){
 		collect().mapErr(JavaError::new).mapErr(ApplicationError::new).mapValue(Main::runWithSources).match(Function.identity(), Optional::of).ifPresent(()->System.err.println(error.display()));
 	}
-	Result<Set<Path>, IOException> collect(any* _ref_){
+	Result<Set<Path>, IOException> collect(){
 		return JavaFiles.walkWrapped(SOURCE_DIRECTORY).mapValue(()->paths.stream().filter(Files::isRegularFile).filter(()->path.toString().endsWith(".java")).collect(Collectors.toSet()));
 	}
-	Optional<ApplicationError> runWithSources(any* _ref_, Set<Path> sources){
+	Optional<ApplicationError> runWithSources(Set<Path> sources){
 		return sources.stream().map(Main::runWithSource).flatMap(Optional::stream).findFirst();
 	}
-	Optional<ApplicationError> runWithSource(any* _ref_, Path source){
+	Optional<ApplicationError> runWithSource(Path source){
 		var relative=SOURCE_DIRECTORY.relativize(source);
 		var parent=relative.getParent();
 		var namespace=IntStream.range(0, parent.getNameCount()).mapToObj(parent::getName).map(Path::toString).toList();
@@ -29,10 +29,10 @@ import magma.api.result.Result;import magma.app.pass.CPasser;import magma.app.pa
 		}
 		return JavaFiles.readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).flatMapValue(()->compile(input).mapErr(ApplicationError::new)).mapValue(()->writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
 	}
-	Result<String, CompileError> compile(any* _ref_, String input){
+	Result<String, CompileError> compile(String input){
 		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->new TreePassingStage(new RootPasser()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value)).flatMapValue(()->new TreePassingStage(new CPasser()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value)).flatMapValue(()->new TreePassingStage(new Formatter()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value)).flatMapValue(()->CLang.createCRootRule().generate(root));
 	}
-	Optional<ApplicationError> writeOutput(any* _ref_, String output, Path targetParent, String name){
+	Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
 		var target=targetParent.resolve(name+".c");
 		var header=targetParent.resolve(name+".h");
 		return JavaFiles.writeStringWrapped(target, output).or(()->JavaFiles.writeStringWrapped(header, output)).map(JavaError::new).map(ApplicationError::new);

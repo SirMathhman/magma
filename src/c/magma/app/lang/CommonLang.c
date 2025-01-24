@@ -28,12 +28,12 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	String METHOD_PARAMS="params";
 	String FUNCTIONAL_PARAMS="params";
 	String FUNCTIONAL_RETURN="return";
-	Rule createNamespacedRule(any* _ref_, String type, String prefix){
+	Rule createNamespacedRule(String type, String prefix){
 		var namespace=new StringRule("namespace");
 		var childRule=new PrefixRule(prefix, new SuffixRule(namespace, ";"));
 		return new TypeRule(type, new StripRule(childRule));
 	}
-	Rule createCompoundRule(any* _ref_, String type, String infix, Rule segmentRule){
+	Rule createCompoundRule(String type, String infix, Rule segmentRule){
 		var modifiers=createModifiersRule();
 		var maybeModifiers=new OptionalNodeRule("modifiers", new SuffixRule(modifiers, " "));
 		var name=new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
@@ -47,19 +47,19 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 		var infixRule=new InfixRule(maybeModifiers, new FirstLocator(infix), nameAndContent);
 		return new TypeRule(type, infixRule);
 	}
-	StripRule createStructSegmentRule(any* _ref_, LazyRule function, Rule statement, LazyRule struct){
+	StripRule createStructSegmentRule(LazyRule function, Rule statement, LazyRule struct){
 		return new StripRule(new OrRule(List.of(function, createInitializationRule(createValueRule(statement, function)), createDefinitionStatementRule(), createWhitespaceRule(), struct)), BEFORE_STRUCT_SEGMENT, "");
 	}
-	SuffixRule createDefinitionStatementRule(any* _ref_){
+	SuffixRule createDefinitionStatementRule(){
 		return new SuffixRule(createDefinitionRule(), ";");
 	}
-	Rule createInitializationRule(any* _ref_, Rule value){
+	Rule createInitializationRule(Rule value){
 		var definition=new NodeRule(INITIALIZATION_DEFINITION, createDefinitionRule());
 		var valueRule=new NodeRule(INITIALIZATION_VALUE, value);
 		var infixRule=new InfixRule(definition, new FirstLocator("="), new StripRule(new SuffixRule(valueRule, ";")));
 		return new TypeRule(INITIALIZATION_TYPE, infixRule);
 	}
-	Rule createMethodRule(any* _ref_, Rule statement){
+	Rule createMethodRule(Rule statement){
 		var definition=createDefinitionRule();
 		var definitionProperty=new NodeRule(METHOD_DEFINITION, definition);
 		var params=new OptionalNodeListRule(METHOD_PARAMS, new DivideRule(METHOD_PARAMS, VALUE_DIVIDER, definition));
@@ -67,98 +67,98 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 		var orRule=new OptionalNodeRule(METHOD_VALUE, new ContextRule("With block", wrapUsingBlock(METHOD_VALUE, infixRule, statement)), new ContextRule("With statement", new StripRule(new SuffixRule(infixRule, ";"))));
 		return new TypeRule(METHOD_TYPE, orRule);
 	}
-	Rule wrapUsingBlock(any* _ref_, String propertyKey, Rule beforeBlock, Rule statement){
+	Rule wrapUsingBlock(String propertyKey, Rule beforeBlock, Rule statement){
 		var withEnd=new NodeRule(propertyKey, new TypeRule("block", createContentRule(statement)));
 		return new StripRule(new InfixRule(beforeBlock, new FirstLocator("{"), new SuffixRule(withEnd, "}")));
 	}
-	Rule createContentRule(any* _ref_, Rule rule){
+	Rule createContentRule(Rule rule){
 		return new StripRule(new OptionalNodeListRule(CONTENT_CHILDREN, new DivideRule(CONTENT_CHILDREN, STATEMENT_DIVIDER, new StripRule(rule, CONTENT_BEFORE_CHILD, CONTENT_AFTER_CHILD))), "", CONTENT_AFTER_CHILDREN);
 	}
-	Rule createStatementRule(any* _ref_, Rule function, LazyRule struct){
+	Rule createStatementRule(Rule function, LazyRule struct){
 		var statement=new LazyRule();
 		var valueRule=createValueRule(statement, function);
 		statement.set(new OrRule(List.of(createKeywordRule("continue"), createKeywordRule("break"), createInitializationRule(createValueRule(statement, function)), createDefinitionStatementRule(), createConditionalRule(statement, "if", createValueRule(statement, function)), createConditionalRule(statement, "while", createValueRule(statement, function)), createElseRule(statement), createInvocationStatementRule(valueRule), createReturnRule(valueRule), createAssignmentRule(valueRule), createPostfixRule("post-increment", "++", valueRule), createPostfixRule("post-decrement", "--", valueRule), createWhitespaceRule())));
 		return statement;
 	}
-	TypeRule createKeywordRule(any* _ref_, String keyword){
+	TypeRule createKeywordRule(String keyword){
 		return new TypeRule(keyword, new StripRule(new ExactRule(keyword+";")));
 	}
-	TypeRule createElseRule(any* _ref_, LazyRule statement){
+	TypeRule createElseRule(LazyRule statement){
 		return new TypeRule("else", new OrRule(List.of(wrapUsingBlock("value", new StripRule(new ExactRule("else")), statement), new PrefixRule("else ", new NodeRule("value", statement)))));
 	}
-	TypeRule createConditionalRule(any* _ref_, LazyRule statement, String type, Rule value){
+	TypeRule createConditionalRule(LazyRule statement, String type, Rule value){
 		var condition=new NodeRule("condition", value);
 		return new TypeRule(type, new StripRule(new PrefixRule(type, new OrRule(List.of(
                 new ContextRule("With block", wrapUsingBlock("value", new StripRule(new PrefixRule("(", new SuffixRule(condition, ")"))), statement)),
                 new ContextRule("With statement", new StripRule(new PrefixRule("(", new InfixRule(condition, new ParenthesesMatcher(), new NodeRule("value", statement)))))
         )))));
 	}
-	TypeRule createWhitespaceRule(any* _ref_){
+	TypeRule createWhitespaceRule(){
 		return new TypeRule(WHITESPACE_TYPE, new StripRule(new ExactRule("")));
 	}
-	Rule createPostfixRule(any* _ref_, String type, String operator, Rule value){
+	Rule createPostfixRule(String type, String operator, Rule value){
 		return new TypeRule(type, new SuffixRule(new NodeRule(INITIALIZATION_VALUE, value), operator+";"));
 	}
-	Rule createAssignmentRule(any* _ref_, Rule value){
+	Rule createAssignmentRule(Rule value){
 		var destination=new NodeRule("destination", value);
 		var source=new NodeRule("source", value);
 		return new TypeRule("assignment", new SuffixRule(new InfixRule(destination, new FirstLocator("="), source), ";"));
 	}
-	Rule createInvocationStatementRule(any* _ref_, Rule value){
+	Rule createInvocationStatementRule(Rule value){
 		return new SuffixRule(createInvocationRule(value), ";");
 	}
-	TypeRule createInvocationRule(any* _ref_, Rule value){
+	TypeRule createInvocationRule(Rule value){
 		var caller=new NodeRule("caller", value);
 		var children=new OptionalNodeListRule(INVOCATION_CHILDREN, new DivideRule(INVOCATION_CHILDREN, VALUE_DIVIDER, value));
 		var suffixRule=new StripRule(new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")"));
 		return new TypeRule("invocation", suffixRule);
 	}
-	Rule createReturnRule(any* _ref_, Rule value){
+	Rule createReturnRule(Rule value){
 		return new TypeRule("return", new StripRule(new PrefixRule("return ", new SuffixRule(new NodeRule(INITIALIZATION_VALUE, value), ";"))));
 	}
-	Rule createValueRule(any* _ref_, Rule statement, Rule function){
+	Rule createValueRule(Rule statement, Rule function){
 		var value=new LazyRule();
 		value.set(new OrRule(List.of(createLambdaRule(statement, value), function, createConstructionRule(value), createInvocationRule(value), createAccessRule("data-access", ".", value), createAccessRule("method-access", "::", value), createSymbolRule(), createNumberRule(), createNotRule(value), createOperatorRule("greater-equals", ">=", value), createOperatorRule("less", "<", value), createOperatorRule("equals", "==", value), createOperatorRule("and", "&&", value), createOperatorRule("add", "+", value), createCharRule(), createStringRule(), createTernaryRule(value))));
 		return value;
 	}
-	TypeRule createLambdaRule(any* _ref_, Rule statement, LazyRule value){
+	TypeRule createLambdaRule(Rule statement, LazyRule value){
 		var args=new StripRule(new OrRule(List.of(new ExactRule("()"), new NodeRule("arg", createSymbolRule()), new DivideRule("args", new SimpleDivider(","), createSymbolRule()))));
 		var rightRule=new OrRule(List.of(new NodeRule("value", wrapUsingBlock("value", new StripRule(new SuffixRule(args, "->")), statement)), new InfixRule(args, new FirstLocator("->"), new NodeRule("value", value))));
 		return new TypeRule("lambda", rightRule);
 	}
-	TypeRule createStringRule(any* _ref_){
+	TypeRule createStringRule(){
 		var value=new PrefixRule("\"", new SuffixRule(new StringRule(INITIALIZATION_VALUE), "\""));
 		return new TypeRule("string", new StripRule(value));
 	}
-	TypeRule createTernaryRule(any* _ref_, LazyRule value){
+	TypeRule createTernaryRule(LazyRule value){
 		return new TypeRule("ternary", new InfixRule(new NodeRule("condition", value), new FirstLocator("?"), new InfixRule(new NodeRule("ifTrue", value), new FirstLocator(":"), new NodeRule("ifElse", value))));
 	}
-	TypeRule createCharRule(any* _ref_){
+	TypeRule createCharRule(){
 		return new TypeRule("char", new StripRule(new PrefixRule("'", new SuffixRule(new StringRule(INITIALIZATION_VALUE), "'"))));
 	}
-	TypeRule createNumberRule(any* _ref_){
+	TypeRule createNumberRule(){
 		return new TypeRule("number", new StripRule(new FilterRule(new NumberFilter(), new StringRule(INITIALIZATION_VALUE))));
 	}
-	TypeRule createOperatorRule(any* _ref_, String type, String operator, LazyRule value){
+	TypeRule createOperatorRule(String type, String operator, LazyRule value){
 		return new TypeRule(type, new InfixRule(new NodeRule("left", value), new FirstLocator(operator), new NodeRule("right", value)));
 	}
-	TypeRule createNotRule(any* _ref_, LazyRule value){
+	TypeRule createNotRule(LazyRule value){
 		return new TypeRule("not", new StripRule(new PrefixRule("!", new NodeRule(INITIALIZATION_VALUE, value))));
 	}
-	TypeRule createConstructionRule(any* _ref_, LazyRule value){
+	TypeRule createConstructionRule(LazyRule value){
 		var type=new StringRule("type");
 		var arguments=new OptionalNodeListRule("arguments", new DivideRule("arguments", VALUE_DIVIDER, value));
 		var childRule=new InfixRule(type, new FirstLocator("("), new StripRule(new SuffixRule(arguments, ")")));
 		return new TypeRule("construction", new StripRule(new PrefixRule("new ", childRule)));
 	}
-	Rule createSymbolRule(any* _ref_){
+	Rule createSymbolRule(){
 		return new TypeRule("symbol", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
 	}
-	Rule createAccessRule(any* _ref_, String type, String infix, Rule value){
+	Rule createAccessRule(String type, String infix, Rule value){
 		var rule=new InfixRule(new NodeRule("ref", value), new LastLocator(infix), new StringRule("property"));
 		return new TypeRule(type, rule);
 	}
-	Rule createDefinitionRule(any* _ref_){
+	Rule createDefinitionRule(){
 		var name=new FilterRule(new SymbolFilter(), new StringRule("name"));
 		var typeProperty=new NodeRule("type", createTypeRule());
 		var typeAndName=new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
@@ -170,37 +170,37 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 		var annotations=new DivideRule(DEFINITION_ANNOTATIONS, new SimpleDivider("\n"), annotation);
 		return new TypeRule(DEFINITION_TYPE, new OrRule(List.of(new ContextRule("With annotations", new InfixRule(annotations, new LastLocator("\n"), withModifiers)), new ContextRule("Without annotations", withModifiers))));
 	}
-	DivideRule createModifiersRule(any* _ref_){
+	DivideRule createModifiersRule(){
 		var modifierRule=new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(INITIALIZATION_VALUE))));
 		return new DivideRule("modifiers", new SimpleDivider(" "), modifierRule);
 	}
-	Rule createTypeRule(any* _ref_){
+	Rule createTypeRule(){
 		var type=new LazyRule();
 		type.set(new OrRule(List.of(createSymbolRule(), createGenericRule(type), createVarArgsRule(type), createArrayRule(type), createFunctionalRule(type), createTupleRule(type), createSliceRule(type), createStructRule(), new TypeRule("ref", new SuffixRule(new NodeRule("value", type), "*")))));
 		return type;
 	}
-	TypeRule createStructRule(any* _ref_){
+	TypeRule createStructRule(){
 		return new TypeRule("struct", new PrefixRule("struct ", new StringRule("value")));
 	}
-	TypeRule createSliceRule(any* _ref_, LazyRule type){
+	TypeRule createSliceRule(LazyRule type){
 		return new TypeRule("slice", new PrefixRule("&[", new SuffixRule(new NodeRule("child", type), "]")));
 	}
-	TypeRule createTupleRule(any* _ref_, LazyRule type){
+	TypeRule createTupleRule(LazyRule type){
 		return new TypeRule(TUPLE_TYPE, new PrefixRule("[", new SuffixRule(new DivideRule(TUPLE_CHILDREN, VALUE_DIVIDER, type), "]")));
 	}
-	TypeRule createFunctionalRule(any* _ref_, Rule type){
+	TypeRule createFunctionalRule(Rule type){
 		var params=new OptionalNodeListRule(FUNCTIONAL_PARAMS, new DivideRule(FUNCTIONAL_PARAMS, VALUE_DIVIDER, type));
 		var leftRule=new PrefixRule("(", new SuffixRule(params, ")"));
 		var rule=new InfixRule(new NodeRule(FUNCTIONAL_RETURN, type), new FirstLocator(" (*)"), leftRule);
 		return new TypeRule(FUNCTIONAL_TYPE, rule);
 	}
-	TypeRule createArrayRule(any* _ref_, LazyRule type){
+	TypeRule createArrayRule(LazyRule type){
 		return new TypeRule("array", new SuffixRule(new NodeRule(METHOD_VALUE, type), "[]"));
 	}
-	TypeRule createVarArgsRule(any* _ref_, LazyRule type){
+	TypeRule createVarArgsRule(LazyRule type){
 		return new TypeRule("var-args", new SuffixRule(new NodeRule(METHOD_VALUE, type), "..."));
 	}
-	TypeRule createGenericRule(any* _ref_, LazyRule type){
+	TypeRule createGenericRule(LazyRule type){
 		var parent=new StringRule(GENERIC_CONSTRUCTOR);
 		var children=new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, type);
 		return new TypeRule(GENERIC_TYPE, new InfixRule(new StripRule(parent), new FirstLocator("<"), new StripRule(new SuffixRule(children, ">"))));
