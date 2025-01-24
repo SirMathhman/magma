@@ -176,7 +176,7 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	}
 	Rule createTypeRule(){
 		var type=new LazyRule();
-		type.set(new OrRule(List.of(createSymbolRule(), createGenericRule(type), createVarArgsRule(type), createArrayRule(type), createFunctionalRule(type), createTupleRule(type), createSliceRule(type), createStructRule())));
+		type.set(new OrRule(List.of(createSymbolRule(), createGenericRule(type), createVarArgsRule(type), createArrayRule(type), createFunctionalRule(type), createTupleRule(type), createSliceRule(type), createStructRule(), new TypeRule("ref", new SuffixRule(new NodeRule("value", type), "*")))));
 		return type;
 	}
 	TypeRule createStructRule(){

@@ -2,7 +2,7 @@ import magma.api.result.Err;import magma.api.result.Result;import magma.api.stre
 	Result<Node, CompileError> parse(String value){
 		return process(new StringContext(value), ()->rule.parse(value));
 	}
-	<R>Result<R, CompileError> process(Context context, Result<R, CompileError> (*)(Rule) mapper){
+	<R>Result<R, CompileError> process(Context context, Tuple<any*, Result<R, CompileError> (*)(Rule)> mapper){
 		return Streams.from(this.rules).map(()->mapper.apply(rule).mapErr(Collections::singletonList)).foldLeft((first, second) -> first.or(()->second).mapErr(tuple -> {
                     final var left = new ArrayList<>(tuple.left());
                     left.addAll(tuple.right());

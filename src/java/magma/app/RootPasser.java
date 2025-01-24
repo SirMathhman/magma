@@ -6,6 +6,7 @@ import magma.app.error.CompileError;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static magma.app.lang.CommonLang.CONTENT_CHILDREN;
 import static magma.app.lang.CommonLang.GENERIC_CHILDREN;
@@ -90,7 +91,7 @@ public class RootPasser implements Passer {
                 .withNode("value", converterBody);
     }
 
-    private static Node mapToFunctional(Node node) {
+    private static Optional<Node> mapToFunctional(Node node) {
         final var optional = node.findString(GENERIC_CONSTRUCTOR);
         if (optional.isPresent()) {
             final var constructor = optional.get();
@@ -98,18 +99,27 @@ public class RootPasser implements Passer {
 
             if (constructor.equals("Supplier")) {
                 final var returns = children.get(0);
-                return new MapNode("functional").withNode("return", returns);
+                return Optional.of(new MapNode("functional").withNode("return", returns));
             }
 
             if (constructor.equals("Function")) {
                 final var param = children.get(0);
                 final var returns = children.get(1);
-                return new MapNode("functional")
+                return Optional.of(new MapNode("functional")
                         .withNodeList("params", List.of(param))
-                        .withNode("return", returns);
+                        .withNode("return", returns));
             }
         }
-        return node;
+        return Optional.empty();
+    }
+
+    private static Node wrapFunctionalInTuple(Node child) {
+        final var anyType = new MapNode("symbol").withString("value", "any");
+        final var refType = new MapNode("ref").withNode("value", anyType);
+
+        return new MapNode("generic")
+                .withString(GENERIC_CONSTRUCTOR, "Tuple")
+                .withNodeList(GENERIC_CHILDREN, List.of(refType, child));
     }
 
     @Override
@@ -121,7 +131,9 @@ public class RootPasser implements Passer {
     public Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
         return new Ok<>(unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")), RootPasser::convertToStruct)
                 .or(() -> unit.filterAndMapToValue(Passer.by("interface"), RootPasser::unwrapInterface))
-                .or(() -> unit.filterAndMapToValue(Passer.by("generic"), RootPasser::mapToFunctional))
+                .or(() -> unit.filterAndMapToValue(Passer.by("generic"), (Node node) -> mapToFunctional(node)
+                        .map(RootPasser::wrapFunctionalInTuple)
+                        .orElse(node)))
                 .orElse(unit));
     }
 }

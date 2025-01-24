@@ -1,4 +1,4 @@
-import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.List;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_CONSTRUCTOR;import static magma.app.lang.CommonLang.METHOD_VALUE;struct RootPasser{
+import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error.CompileError;import java.util.ArrayList;import java.util.List;import java.util.Optional;import static magma.app.lang.CommonLang.CONTENT_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_CHILDREN;import static magma.app.lang.CommonLang.GENERIC_CONSTRUCTOR;import static magma.app.lang.CommonLang.METHOD_VALUE;struct RootPasser{
 	Node unwrapInterface(Node node){
 		return convertToStruct(node).mapNode("value", ()->value.mapNodeList(CONTENT_CHILDREN, ()->{
 			var copy=new ArrayList<>(children);
@@ -49,30 +49,35 @@ import magma.api.result.Ok;import magma.api.result.Result;import magma.app.error
 		return new MapNode("method")
                 .withNode("definition", converterDefinition).withNode("value", converterBody);
 	}
-	Node mapToFunctional(Node node){
+	Optional<Node> mapToFunctional(Node node){
 		var optional=node.findString(GENERIC_CONSTRUCTOR);
 		if(optional.isPresent()){
 			var constructor=optional.get();
 			var children=node.findNodeList(GENERIC_CHILDREN).orElse(new ArrayList<>());
 			if(constructor.equals("Supplier")){
 				var returns=children.get(0);
-				return new MapNode("functional").withNode("return", returns);
+				return Optional.of(new MapNode("functional").withNode("return", returns));
 			}
 			if(constructor.equals("Function")){
 				var param=children.get(0);
 				var returns=children.get(1);
-				return new MapNode("functional")
+				return Optional.of(new MapNode("functional")
                         .withNodeList("params", List.of(param))
-                        .withNode("return", returns);
+                        .withNode("return", returns));
 			}
 		}
-		return node;
+		return Optional.empty();
+	}
+	Node wrapFunctionalInTuple(Node child){
+		var anyType=new MapNode("symbol").withString("value", "any");
+		var refType=new MapNode("ref").withNode("value", anyType);
+		return new MapNode("generic").withString(GENERIC_CONSTRUCTOR, "Tuple").withNodeList(GENERIC_CHILDREN, List.of(refType, child));
 	}
 	Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit){
 		return new Ok<>(unit);
 	}
 	Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit){
-		return new Ok<>(unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")), RootPasser::convertToStruct).or(()->unit.filterAndMapToValue(Passer.by("interface"), RootPasser::unwrapInterface)).or(()->unit.filterAndMapToValue(Passer.by("generic"), RootPasser::mapToFunctional)).orElse(unit));
+		return new Ok<>(unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")), RootPasser::convertToStruct).or(()->unit.filterAndMapToValue(Passer.by("interface"), RootPasser::unwrapInterface)).or(()->unit.filterAndMapToValue(Passer.by("generic"), (Node node) -> mapToFunctional(node).map(RootPasser::wrapFunctionalInTuple).orElse(node))).orElse(unit));
 	}
 	Passer N/A(){
 		return N/A.new();

@@ -341,7 +341,8 @@ public class CommonLang {
                 createFunctionalRule(type),
                 createTupleRule(type),
                 createSliceRule(type),
-                createStructRule()
+                createStructRule(),
+                new TypeRule("ref", new SuffixRule(new NodeRule("value", type), "*"))
         )));
 
         return type;
