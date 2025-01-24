@@ -1,9 +1,9 @@
-import magma.api.result.Err;
-import magma.api.result.Ok;
-import magma.api.result.Result;
-import magma.app.Node;
-import magma.app.error.CompileError;
-import magma.app.error.context.StringContext;
+#include "magma/api/result/Err.h"
+#include "magma/api/result/Ok.h"
+#include "magma/api/result/Result.h"
+#include "magma/app/Node.h"
+#include "magma/app/error/CompileError.h"
+#include "magma/app/error/context/StringContext.h"
 struct PrefixRule implements Rule{
 	String prefix;
 	Rule childRule;

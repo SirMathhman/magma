@@ -1,8 +1,8 @@
-import magma.api.result.Result;
-import magma.app.Node;
-import magma.app.error.CompileError;
-import magma.app.rule.divide.DivideRule;
-import java.util.List;
+#include "magma/api/result/Result.h"
+#include "magma/app/Node.h"
+#include "magma/app/error/CompileError.h"
+#include "magma/app/rule/divide/DivideRule.h"
+#include "java/util/List.h"
 struct OptionalNodeListRule implements Rule{
 	String propertyKey;
 	Rule ifPresent;

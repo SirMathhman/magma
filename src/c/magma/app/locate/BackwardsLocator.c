@@ -1,8 +1,8 @@
-import magma.api.stream.Stream;
-import magma.api.stream.Streams;
-import magma.app.rule.locate.Locator;
-import java.util.ArrayList;
-import java.util.List;
+#include "magma/api/stream/Stream.h"
+#include "magma/api/stream/Streams.h"
+#include "magma/app/rule/locate/Locator.h"
+#include "java/util/ArrayList.h"
+#include "java/util/List.h"
 struct BackwardsLocator implements Locator{
 	String infix;
 	public BackwardsLocator(String infix){

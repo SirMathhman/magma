@@ -1,14 +1,14 @@
-import magma.api.result.Err;
-import magma.api.result.Ok;
-import magma.api.result.Result;
-import magma.app.error.CompileError;
-import magma.app.error.context.StringContext;
-import magma.app.rule.Splitter;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+#include "magma/api/result/Err.h"
+#include "magma/api/result/Ok.h"
+#include "magma/api/result/Result.h"
+#include "magma/app/error/CompileError.h"
+#include "magma/app/error/context/StringContext.h"
+#include "magma/app/rule/Splitter.h"
+#include "java/util/ArrayList.h"
+#include "java/util/LinkedList.h"
+#include "java/util/List.h"
+#include "java/util/stream/Collectors.h"
+#include "java/util/stream/IntStream.h"
 struct StatementDivider implements Divider{
 	Divider STATEMENT_DIVIDER=new StatementDivider();
 	private StatementDivider(){}

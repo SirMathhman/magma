@@ -1,9 +1,9 @@
-import magma.api.result.Err;
-import magma.api.result.Result;
-import magma.app.Node;
-import magma.app.error.CompileError;
-import magma.app.error.context.StringContext;
-import java.util.function.Predicate;
+#include "magma/api/result/Err.h"
+#include "magma/api/result/Result.h"
+#include "magma/app/Node.h"
+#include "magma/app/error/CompileError.h"
+#include "magma/app/error/context/StringContext.h"
+#include "java/util/function/Predicate.h"
 struct FilterRule(Predicate<String> filter, Rule childRule) implements Rule{
 	Result<Node, CompileError> parse(String input){
 		if(this.filter.test(input)){

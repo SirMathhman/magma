@@ -1,4 +1,4 @@
-import java.util.Optional;
+#include "java/util/Optional.h"
 struct RangeHead implements Head<Integer>{
 	int extent;
 	int counter=0;

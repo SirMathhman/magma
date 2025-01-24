@@ -1,5 +1,5 @@
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
+#include "java/util/function/Predicate.h"
+#include "java/util/stream/IntStream.h"
 struct SymbolFilter implements Predicate<String>{
 	boolean test(String input){
 		if(input.isEmpty())return false;

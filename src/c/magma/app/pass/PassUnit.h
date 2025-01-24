@@ -1,7 +1,7 @@
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
+#include "java/util/Optional.h"
+#include "java/util/function/BiFunction.h"
+#include "java/util/function/Function.h"
+#include "java/util/function/Predicate.h"
 struct PassUnit<T>{
 	<R>PassUnit<R> mapValue(Function<T, R> mapper);
 	Optional<PassUnit<T>> filter(Predicate<T> predicate);

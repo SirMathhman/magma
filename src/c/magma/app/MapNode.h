@@ -1,13 +1,13 @@
-import magma.api.Tuple;
-import magma.api.stream.Stream;
-import magma.api.stream.Streams;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.StringJoiner;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+#include "magma/api/Tuple.h"
+#include "magma/api/stream/Stream.h"
+#include "magma/api/stream/Streams.h"
+#include "java/util/HashMap.h"
+#include "java/util/List.h"
+#include "java/util/Map.h"
+#include "java/util/Optional.h"
+#include "java/util/StringJoiner.h"
+#include "java/util/function/Function.h"
+#include "java/util/stream/Collectors.h"
 struct MapNode implements Node{
 	Map<String, String> strings;
 	Map<String, List<Node>> nodeLists;

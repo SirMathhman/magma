@@ -1,8 +1,8 @@
-import magma.api.result.Ok;
-import magma.api.result.Result;
-import magma.app.Node;
-import magma.app.error.CompileError;
-import java.util.function.Predicate;
+#include "magma/api/result/Ok.h"
+#include "magma/api/result/Result.h"
+#include "magma/app/Node.h"
+#include "magma/app/error/CompileError.h"
+#include "java/util/function/Predicate.h"
 struct Passer{
 	Predicate<Node> by(String type){
 		return ()->value.is(type);

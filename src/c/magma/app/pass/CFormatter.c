@@ -1,12 +1,12 @@
-import magma.api.result.Ok;
-import magma.api.result.Result;
-import magma.app.Node;
-import magma.app.error.CompileError;
-import magma.app.lang.CommonLang;
-import java.util.ArrayList;
-import java.util.List;
-import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILD;
-import static magma.app.pass.Passer.by;
+#include "magma/api/result/Ok.h"
+#include "magma/api/result/Result.h"
+#include "magma/app/Node.h"
+#include "magma/app/error/CompileError.h"
+#include "magma/app/lang/CommonLang.h"
+#include "java/util/ArrayList.h"
+#include "java/util/List.h"
+#include "static magma/app/lang/CommonLang/CONTENT_AFTER_CHILD.h"
+#include "static magma/app/pass/Passer/by.h"
 struct CFormatter implements Passer{
 	Node removeWhitespace(Node block){
 		return block.mapNodeList(CommonLang.CONTENT_CHILDREN, ()->{

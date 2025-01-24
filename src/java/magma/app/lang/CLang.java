@@ -18,7 +18,7 @@ public class CLang {
         struct.set(JavaLang.createJavaCompoundRule(CommonLang.STRUCT_TYPE, "struct ", function, struct));
 
         return new OrRule(List.of(
-                CommonLang.createNamespacedRule("import", "import "),
+                CommonLang.createNamespacedRule("include", "#include \"", "/", ".h\""),
                 struct,
                 function,
                 CommonLang.createWhitespaceRule()

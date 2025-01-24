@@ -61,10 +61,10 @@ public class CommonLang {
     public static final String FUNCTIONAL_PARAMS = "params";
     public static final String FUNCTIONAL_RETURN = "return";
 
-    public static Rule createNamespacedRule(String type, String prefix) {
+    public static Rule createNamespacedRule(String type, String prefix, String delimiter, String suffix) {
         final var segment = new TypeRule("segment", new StringRule("value"));
-        final var namespace = new DivideRule("namespace", new SimpleDivider("."), segment);
-        final var childRule = new PrefixRule(prefix, new SuffixRule(namespace, ";"));
+        final var namespace = new DivideRule("namespace", new SimpleDivider(delimiter), segment);
+        final var childRule = new PrefixRule(prefix, new SuffixRule(namespace, suffix));
         return new TypeRule(type, new StripRule(childRule));
     }
 

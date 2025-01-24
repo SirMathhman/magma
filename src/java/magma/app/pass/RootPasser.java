@@ -9,6 +9,7 @@ public class RootPasser implements Passer {
     @Override
     public Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
         return new Ok<>(unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")).or(Passer.by("interface")), node -> node.retype("struct"))
+                .or(() -> unit.filterAndMapToValue(Passer.by("import"), node -> node.retype("include")))
                 .orElse(unit));
     }
 }

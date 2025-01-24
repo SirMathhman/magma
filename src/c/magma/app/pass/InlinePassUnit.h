@@ -1,11 +1,11 @@
-import magma.app.Node;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+#include "magma/app/Node.h"
+#include "java/util/ArrayList.h"
+#include "java/util/List.h"
+#include "java/util/Optional.h"
+#include "java/util/function/BiFunction.h"
+#include "java/util/function/Function.h"
+#include "java/util/function/Predicate.h"
+#include "java/util/function/Supplier.h"
 struct InlinePassUnit<T>(State state, List<Node> cache, T value) implements PassUnit<T>{
 	public InlinePassUnit(T value){
 		this(new State(), new ArrayList<>(), value);

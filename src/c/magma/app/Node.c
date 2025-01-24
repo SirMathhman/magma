@@ -1,8 +1,8 @@
-import magma.api.Tuple;
-import magma.api.stream.Stream;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
+#include "magma/api/Tuple.h"
+#include "magma/api/stream/Stream.h"
+#include "java/util/List.h"
+#include "java/util/Optional.h"
+#include "java/util/function/Function.h"
 struct Node{
 	Node withNodeList(String propertyKey, List<Node> propertyValues);
 	Optional<List<Node>> findNodeList(String propertyKey);

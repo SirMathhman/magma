@@ -1,11 +1,11 @@
-import magma.api.result.Err;
-import magma.api.result.Result;
-import magma.app.MapNode;
-import magma.app.Node;
-import magma.app.error.CompileError;
-import magma.app.error.context.NodeContext;
-import magma.app.error.context.StringContext;
-import java.util.List;
+#include "magma/api/result/Err.h"
+#include "magma/api/result/Result.h"
+#include "magma/app/MapNode.h"
+#include "magma/app/Node.h"
+#include "magma/app/error/CompileError.h"
+#include "magma/app/error/context/NodeContext.h"
+#include "magma/app/error/context/StringContext.h"
+#include "java/util/List.h"
 struct TypeRule(String type, Rule rule) implements Rule{
 	Result<Node, CompileError> parse(String input){
 		return this.rule.parse(input).mapValue(()->node.retype(this.type)).mapValue(()->{

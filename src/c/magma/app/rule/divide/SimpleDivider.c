@@ -1,9 +1,9 @@
-import magma.api.result.Ok;
-import magma.api.result.Result;
-import magma.app.error.CompileError;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
+#include "magma/api/result/Ok.h"
+#include "magma/api/result/Result.h"
+#include "magma/app/error/CompileError.h"
+#include "java/util/Arrays.h"
+#include "java/util/List.h"
+#include "java/util/regex/Pattern.h"
 struct SimpleDivider implements Divider{
 	String delimiter;
 	public SimpleDivider(String delimiter){

@@ -1,10 +1,10 @@
-import magma.app.error.context.Context;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+#include "magma/app/error/context/Context.h"
+#include "java/util/ArrayList.h"
+#include "java/util/Collections.h"
+#include "java/util/Comparator.h"
+#include "java/util/List.h"
+#include "java/util/stream/Collectors.h"
+#include "java/util/stream/IntStream.h"
 struct CompileError implements Error{
 	String message;
 	Context context;

@@ -1,11 +1,11 @@
-import magma.api.result.Err;
-import magma.api.result.Result;
-import magma.app.Node;
-import magma.app.error.CompileError;
-import magma.app.error.context.StringContext;
-import magma.app.rule.locate.Locator;
-import java.util.ArrayList;
-import java.util.Optional;
+#include "magma/api/result/Err.h"
+#include "magma/api/result/Result.h"
+#include "magma/app/Node.h"
+#include "magma/app/error/CompileError.h"
+#include "magma/app/error/context/StringContext.h"
+#include "magma/app/rule/locate/Locator.h"
+#include "java/util/ArrayList.h"
+#include "java/util/Optional.h"
 struct InfixRule implements Rule{
 	Rule leftRule;
 	Locator locator;

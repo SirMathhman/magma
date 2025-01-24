@@ -1,7 +1,7 @@
-import magma.api.result.Result;
-import magma.app.Node;
-import magma.app.error.CompileError;
-import java.util.List;
+#include "magma/api/result/Result.h"
+#include "magma/app/Node.h"
+#include "magma/app/error/CompileError.h"
+#include "java/util/List.h"
 struct OptionalNodeRule implements Rule{
 	String propertyKey;
 	Rule ifPresent;

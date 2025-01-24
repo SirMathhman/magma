@@ -22,8 +22,8 @@ public class JavaLang {
         )));
 
         return new OrRule(List.of(
-                CommonLang.createNamespacedRule("package", "package "),
-                CommonLang.createNamespacedRule("import", "import "),
+                CommonLang.createNamespacedRule("package", "package ", ".", ";"),
+                CommonLang.createNamespacedRule("import", "import ", ".", ";"),
                 CommonLang.createWhitespaceRule(),
                 struct
         ));

@@ -1,30 +1,30 @@
-import magma.app.locate.BackwardsLocator;
-import magma.app.locate.InvocationLocator;
-import magma.app.rule.ContextRule;
-import magma.app.rule.ExactRule;
-import magma.app.rule.FilterRule;
-import magma.app.rule.InfixRule;
-import magma.app.rule.LazyRule;
-import magma.app.rule.NodeRule;
-import magma.app.rule.OptionalNodeListRule;
-import magma.app.rule.OptionalNodeRule;
-import magma.app.rule.OrRule;
-import magma.app.rule.PrefixRule;
-import magma.app.rule.Rule;
-import magma.app.rule.StringRule;
-import magma.app.rule.StripRule;
-import magma.app.rule.SuffixRule;
-import magma.app.rule.TypeRule;
-import magma.app.rule.divide.DivideRule;
-import magma.app.rule.divide.SimpleDivider;
-import magma.app.rule.filter.NumberFilter;
-import magma.app.rule.filter.SymbolFilter;
-import magma.app.rule.locate.FirstLocator;
-import magma.app.rule.locate.LastLocator;
-import magma.app.rule.locate.ParenthesesMatcher;
-import java.util.List;
-import static magma.app.rule.divide.StatementDivider.STATEMENT_DIVIDER;
-import static magma.app.rule.divide.ValueDivider.VALUE_DIVIDER;
+#include "magma/app/locate/BackwardsLocator.h"
+#include "magma/app/locate/InvocationLocator.h"
+#include "magma/app/rule/ContextRule.h"
+#include "magma/app/rule/ExactRule.h"
+#include "magma/app/rule/FilterRule.h"
+#include "magma/app/rule/InfixRule.h"
+#include "magma/app/rule/LazyRule.h"
+#include "magma/app/rule/NodeRule.h"
+#include "magma/app/rule/OptionalNodeListRule.h"
+#include "magma/app/rule/OptionalNodeRule.h"
+#include "magma/app/rule/OrRule.h"
+#include "magma/app/rule/PrefixRule.h"
+#include "magma/app/rule/Rule.h"
+#include "magma/app/rule/StringRule.h"
+#include "magma/app/rule/StripRule.h"
+#include "magma/app/rule/SuffixRule.h"
+#include "magma/app/rule/TypeRule.h"
+#include "magma/app/rule/divide/DivideRule.h"
+#include "magma/app/rule/divide/SimpleDivider.h"
+#include "magma/app/rule/filter/NumberFilter.h"
+#include "magma/app/rule/filter/SymbolFilter.h"
+#include "magma/app/rule/locate/FirstLocator.h"
+#include "magma/app/rule/locate/LastLocator.h"
+#include "magma/app/rule/locate/ParenthesesMatcher.h"
+#include "java/util/List.h"
+#include "static magma/app/rule/divide/StatementDivider/STATEMENT_DIVIDER.h"
+#include "static magma/app/rule/divide/ValueDivider/VALUE_DIVIDER.h"
 struct CommonLang{
 	String ROOT_TYPE="root";
 	String RECORD_TYPE="record";
@@ -55,10 +55,10 @@ struct CommonLang{
 	String METHOD_PARAMS="params";
 	String FUNCTIONAL_PARAMS="params";
 	String FUNCTIONAL_RETURN="return";
-	Rule createNamespacedRule(String type, String prefix){
+	Rule createNamespacedRule(String type, String prefix, String delimiter, String suffix){
 		var segment=new TypeRule("segment", new StringRule("value"));
-		var namespace=new DivideRule("namespace", new SimpleDivider("."), segment);
-		var childRule=new PrefixRule(prefix, new SuffixRule(namespace, ";"));
+		var namespace=new DivideRule("namespace", new SimpleDivider(delimiter), segment);
+		var childRule=new PrefixRule(prefix, new SuffixRule(namespace, suffix));
 		return new TypeRule(type, new StripRule(childRule));
 	}
 	Rule createCompoundRule(String type, String infix, Rule segmentRule){
