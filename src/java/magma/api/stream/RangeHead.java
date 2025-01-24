@@ -1,6 +1,8 @@
 package magma.api.stream;
 
-import java.util.Optional;
+import magma.api.option.None;
+import magma.api.option.Option;
+import magma.api.option.Some;
 
 public final class RangeHead implements Head<Integer> {
     private final int extent;
@@ -11,11 +13,11 @@ public final class RangeHead implements Head<Integer> {
     }
 
     @Override
-    public Optional<Integer> next() {
-        if (this.counter >= this.extent) return Optional.empty();
+    public Option<Integer> next() {
+        if (this.counter >= this.extent) return new None<>();
 
         final var value = this.counter;
         this.counter++;
-        return Optional.of(value);
+        return new Some<>(value);
     }
 }

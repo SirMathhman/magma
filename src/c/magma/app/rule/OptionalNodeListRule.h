@@ -9,9 +9,9 @@ struct OptionalNodeListRule implements Rule{
 	Rule ifEmpty;
 	OrRule rule;
 	public OptionalNodeListRule(String propertyKey, Rule ifPresent, Rule ifEmpty){
-		this.propertyKey =propertyKey;
-		this.ifPresent =ifPresent;
-		this.ifEmpty =ifEmpty;
+		this.propertyKey = propertyKey;
+		this.ifPresent = ifPresent;
+		this.ifEmpty = ifEmpty;
 		this.rule = new OrRule(List.of(ifPresent, ifEmpty));
 	}
 	public OptionalNodeListRule(String propertyKey, DivideRule ifPresent){

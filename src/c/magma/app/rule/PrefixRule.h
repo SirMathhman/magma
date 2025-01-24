@@ -8,8 +8,8 @@ struct PrefixRule implements Rule{
 	String prefix;
 	Rule childRule;
 	public PrefixRule(String prefix, Rule childRule){
-		this.prefix =prefix;
-		this.childRule =childRule;
+		this.prefix = prefix;
+		this.childRule = childRule;
 	}
 	Result<String, CompileError> truncateLeft(String input, String slice){
 		if(input.startsWith(slice))return new Ok<>(input.substring(slice.length()));

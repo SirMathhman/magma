@@ -11,9 +11,9 @@ struct InfixRule implements Rule{
 	Locator locator;
 	Rule rightRule;
 	public InfixRule(Rule leftRule, Locator locator, Rule rightRule){
-		this.leftRule =leftRule;
-		this.locator =locator;
-		this.rightRule =rightRule;
+		this.leftRule = leftRule;
+		this.locator = locator;
+		this.rightRule = rightRule;
 	}
 	ArrayList<Integer> add(ArrayList<Integer> integers, Integer integer){
 		integers.add(integer);

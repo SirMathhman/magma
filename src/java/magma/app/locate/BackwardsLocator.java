@@ -26,7 +26,7 @@ public class BackwardsLocator implements Locator {
 
     @Override
     public Stream<Integer> locate(String input) {
-        return Streams.from(searchForIndices(input));
+        return Streams.fromNativeList(searchForIndices(input));
     }
 
     private List<Integer> searchForIndices(String input) {

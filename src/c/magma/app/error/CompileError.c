@@ -10,8 +10,8 @@ struct CompileError implements Error{
 	Context context;
 	List<CompileError> children;
 	public CompileError(String message, Context context, List<CompileError> children){
-		this.message =message;
-		this.context =context;
+		this.message = message;
+		this.context = context;
 		this.children = new ArrayList<>(children);
 	}
 	public CompileError(String message, Context context){
@@ -27,6 +27,6 @@ struct CompileError implements Error{
 		this.children.sort(Comparator.comparingInt(CompileError::maxDepth));
 		var joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
                 .collect(Collectors.joining());
-		return this.message + ": " + this.context.display() + joinedChildren;
+		this.message + ": " + this.context.display() + joinedChildren;
 	}
 }

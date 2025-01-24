@@ -8,7 +8,6 @@ import magma.app.MapNode;
 import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
-import magma.app.error.context.StringContext;
 import magma.app.rule.Rule;
 
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class DivideRule implements Rule {
             Function<T, Result<R, CompileError>> mapper,
             BiFunction<T, R, Result<R, CompileError>> validator
     ) {
-        return Streams.from(segments).foldLeftToResult(new ArrayList<>(), (rs, t) -> {
+        return Streams.fromNativeList(segments).foldLeftToResult(new ArrayList<>(), (rs, t) -> {
             return mapper.apply(t)
                     .flatMapValue(inner -> validator.apply(t, inner))
                     .mapValue(inner -> {
@@ -71,7 +70,7 @@ public class DivideRule implements Rule {
     }
 
     private String merge(List<String> elements) {
-        return Streams.from(elements)
+        return Streams.fromNativeList(elements)
                 .foldLeft(this.divider::merge)
                 .orElse("");
     }

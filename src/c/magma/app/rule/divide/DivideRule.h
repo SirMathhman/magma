@@ -6,7 +6,6 @@
 #include "../../../../magma/app/Node.h"
 #include "../../../../magma/app/error/CompileError.h"
 #include "../../../../magma/app/error/context/NodeContext.h"
-#include "../../../../magma/app/error/context/StringContext.h"
 #include "../../../../magma/app/rule/Rule.h"
 #include "../../../../java/util/ArrayList.h"
 #include "../../../../java/util/List.h"
@@ -18,12 +17,12 @@ struct DivideRule implements Rule{
 	Divider divider;
 	Rule childRule;
 	public DivideRule(String propertyKey, Divider divider, Rule childRule){
-		this.divider =divider;
-		this.childRule =childRule;
-		this.propertyKey =propertyKey;
+		this.divider = divider;
+		this.childRule = childRule;
+		this.propertyKey = propertyKey;
 	}
 	<T, R>Result<List<R>, CompileError> compileAll(List<T> segments, Function<T, Result<R, CompileError>> mapper, BiFunction<T, R, Result<R, CompileError>> validator){
-		return Streams.from(segments).foldLeftToResult(new ArrayList<>(), (rs, t) -> {
+		return Streams.fromNativeList(segments).foldLeftToResult(new ArrayList<>(), (rs, t) -> {
             return mapper.apply(t).flatMapValue(()->validator.apply(t, inner)).mapValue(inner -> {
                         rs.add(inner);
                         return rs;
@@ -49,6 +48,6 @@ struct DivideRule implements Rule{
                 .map(()->result.mapValue(this::merge)).orElseGet(()->new Err<>(new CompileError("Node list '"+this.propertyKey + "' not present", new NodeContext(node))));
 	}
 	String merge(List<String> elements){
-		return Streams.from(elements).foldLeft(this.divider::merge).orElse("");
+		return Streams.fromNativeList(elements).foldLeft(this.divider::merge).orElse("");
 	}
 }

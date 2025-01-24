@@ -1,4 +1,4 @@
-#include "../../../java/util/Optional.h"
+#include "../../../magma/api/option/Option.h"
 struct Head<T>{
-	Optional<T> next();
+	Option<T> next();
 }

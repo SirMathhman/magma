@@ -17,10 +17,10 @@ struct MapNode implements Node{
 		this(Optional.empty(), new HashMap<>(), new HashMap<>(), new HashMap<>());
 	}
 	public MapNode(Optional<String> type, Map<String, String> strings, Map<String, Node> nodes, Map<String, List<Node>> nodeLists){
-		this.type =type;
-		this.strings =strings;
-		this.nodes =nodes;
-		this.nodeLists =nodeLists;
+		this.type = type;
+		this.strings = strings;
+		this.nodes = nodes;
+		this.nodeLists = nodeLists;
 	}
 	public MapNode(String type){
 		this(Optional.of(type), new HashMap<>(), new HashMap<>(), new HashMap<>());

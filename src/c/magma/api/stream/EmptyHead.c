@@ -1,6 +1,7 @@
-#include "../../../java/util/Optional.h"
+#include "../../../magma/api/option/None.h"
+#include "../../../magma/api/option/Option.h"
 struct EmptyHead<T> implements Head<T>{
-	Optional<T> next(){
-		return Optional.empty();
+	Option<T> next(){
+		return new None<>();
 	}
 }

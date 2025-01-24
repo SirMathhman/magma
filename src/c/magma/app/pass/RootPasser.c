@@ -9,15 +9,15 @@
 struct RootPasser implements Passer{
 	PassUnit<Node> resolveImport(PassUnit<Node> unit){
 		var fileNamespace=unit.findNamespace();
-		return unit.withValue(unit.value().retype("include").mapNodeList("namespace", ()->{
-			var oldNamespace=namespaceNodes.stream().map(()->node.findString("value")).flatMap(Optional::stream).toList();
-			var newNamespace=new ArrayList<String>();
-			IntStream.range(0, fileNamespace.size()).forEach(()->{
-				newNamespace.add("..");
-			});
-			newNamespace.addAll(oldNamespace);
-			return newNamespace.stream().map(()->new MapNode("segment").withString("value", value)).toList();
-		}));
+		unit.withValue(unit.value().retype("include").mapNodeList("namespace", namespaceNodes -> {
+            var oldNamespace=namespaceNodes.stream().map(()->node.findString("value")).flatMap(Optional::stream).toList();
+            final var newNamespace = new ArrayList<String>();
+            IntStream.range(0, fileNamespace.size()).forEach(_ -> {
+                newNamespace.add("..");
+            });
+            newNamespace.addAll(oldNamespace);
+            return newNamespace.stream().map(()->new MapNode("segment").withString("value", value)).toList();
+        }));
 	}
 	Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit){
 		return new Ok<>(unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")).or(Passer.by("interface")), ()->node.retype("struct")).or(()->unit.filter(Passer.by("import")).map(RootPasser::resolveImport)).orElse(unit));

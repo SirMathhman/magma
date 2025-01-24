@@ -32,7 +32,7 @@ public class TreePassingStage implements PassingStage {
         return unit.value().streamNodeLists().foldLeftToResult(unit, (current, tuple) -> {
             final var propertyKey = tuple.left();
             final var propertyValues = tuple.right();
-            return Streams.from(propertyValues)
+            return Streams.fromNativeList(propertyValues)
                     .foldLeftToResult(current.withValue(new ArrayList<>()), this::passAndAdd)
                     .mapValue(unit1 -> unit1.mapValue(node -> current.value().withNodeList(propertyKey, node)));
         });

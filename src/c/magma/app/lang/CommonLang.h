@@ -71,7 +71,9 @@ struct CommonLang{
 		var maybeParams=new OptionalNodeListRule("params", new InfixRule(maybeTypeParams, new FirstLocator("("), new StripRule(new SuffixRule(params, ")"))), maybeTypeParams);
 		var supertype=new NodeRule("supertype", createTypeRule());
 		var maybeImplements=new OptionalNodeRule("supertype", new InfixRule(maybeParams, new FirstLocator(" implements "), supertype), maybeParams);
-		var nameAndContent=wrapUsingBlock("value", maybeImplements, segmentRule);
+		var parentType=new NodeRule("parent-type", createTypeRule());
+		var maybeExtends=new OptionalNodeRule("parent-type", new InfixRule(maybeImplements, new FirstLocator(" extends "), parentType), maybeImplements);
+		var nameAndContent=wrapUsingBlock("value", maybeExtends, segmentRule);
 		var infixRule=new InfixRule(maybeModifiers, new FirstLocator(infix), nameAndContent);
 		return new TypeRule(type, infixRule);
 	}
@@ -204,8 +206,14 @@ struct CommonLang{
 	}
 	Rule createTypeRule(){
 		var type=new LazyRule();
-		type.set(new OrRule(List.of(createSymbolRule(), createGenericRule(type), createVarArgsRule(type), createArrayRule(type), createFunctionalRule(type), createTupleRule(type), createSliceRule(type), createStructRule(), new TypeRule("ref", new SuffixRule(new NodeRule("value", type), "*")))));
+		type.set(new OrRule(List.of(createSymbolRule(), createGenericRule(type), createVarArgsRule(type), createArrayRule(type), createFunctionalRule(type), createTupleRule(type), createSliceRule(type), createStructRule(), createRefRule(type), createQualifiedRule(type))));
 		return type;
+	}
+	Rule createQualifiedRule(LazyRule type){
+		return new TypeRule("qualified", new InfixRule(new NodeRule("parent", type), new LastLocator("."), new StringRule("child")));
+	}
+	TypeRule createRefRule(LazyRule type){
+		return new TypeRule("ref", new SuffixRule(new NodeRule("value", type), "*"));
 	}
 	TypeRule createStructRule(){
 		return new TypeRule("struct", new PrefixRule("struct ", new StringRule("value")));

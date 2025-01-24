@@ -1,6 +1,7 @@
 package magma.app.pass;
 
 import magma.app.Node;
+import magma.java.JavaList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,8 @@ public record InlinePassUnit<T>(
         List<Node> cache,
         T value,
         List<String> namespace) implements PassUnit<T> {
-    public InlinePassUnit(T value, List<String> namespace) {
-        this(new State(), new ArrayList<>(), value, namespace);
+    public InlinePassUnit(T value, JavaList<String> namespace) {
+        this(new State(), new ArrayList<>(), value, namespace.unwrap());
     }
 
     @Override

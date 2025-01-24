@@ -1,5 +1,7 @@
 package magma.api.stream;
 
+import magma.api.option.Option;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -11,13 +13,13 @@ public class Streams {
                 .map(index -> values[index]);
     }
 
-    public static <T> Stream<T> from(List<T> list) {
+    public static <T> Stream<T> fromNativeList(List<T> list) {
         return new HeadedStream<>(new RangeHead(list.size()))
                 .map(list::get);
     }
 
     public static <T> Stream<T> from(Set<T> entries) {
-        return from(new ArrayList<>(entries));
+        return fromNativeList(new ArrayList<>(entries));
     }
 
     public static Stream<Integer> reverse(String value) {
@@ -27,5 +29,11 @@ public class Streams {
 
     public static <T> Stream<T> empty() {
         return new HeadedStream<>(new EmptyHead<>());
+    }
+
+    public static <T> Stream<T> fromOption(Option<T> option) {
+        return new HeadedStream<>(option
+                .<Head<T>>map(SingleHead::new)
+                .orElseGet(EmptyHead::new));
     }
 }

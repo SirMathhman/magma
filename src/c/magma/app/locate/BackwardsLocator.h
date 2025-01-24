@@ -6,7 +6,7 @@
 struct BackwardsLocator implements Locator{
 	String infix;
 	public BackwardsLocator(String infix){
-		this.infix =infix;
+		this.infix = infix;
 	}
 	String unwrap(){
 		return this.infix;
@@ -15,7 +15,7 @@ struct BackwardsLocator implements Locator{
 		return this.infix.length();
 	}
 	Stream<Integer> locate(String input){
-		return Streams.from(searchForIndices(input));
+		return Streams.fromNativeList(searchForIndices(input));
 	}
 	List<Integer> searchForIndices(String input){
 		List<Integer> indices=new ArrayList<>();

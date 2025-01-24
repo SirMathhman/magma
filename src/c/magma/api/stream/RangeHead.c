@@ -1,14 +1,16 @@
-#include "../../../java/util/Optional.h"
+#include "../../../magma/api/option/None.h"
+#include "../../../magma/api/option/Option.h"
+#include "../../../magma/api/option/Some.h"
 struct RangeHead implements Head<Integer>{
 	int extent;
 	int counter=0;
 	public RangeHead(int extent){
-		this.extent =extent;
+		this.extent = extent;
 	}
-	Optional<Integer> next(){
-		if(this.counter >= this.extent)return Optional.empty();
+	Option<Integer> next(){
+		if(this.counter >= this.extent)return new None<>();
 		var value=this.counter;
 		this.counter++;
-		return Optional.of(value);
+		return new Some<>(value);
 	}
 }

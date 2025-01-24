@@ -7,7 +7,7 @@
 struct SimpleDivider implements Divider{
 	String delimiter;
 	public SimpleDivider(String delimiter){
-		this.delimiter =delimiter;
+		this.delimiter = delimiter;
 	}
 	String merge(String current, String value){
 		return current+this.delimiter + value;

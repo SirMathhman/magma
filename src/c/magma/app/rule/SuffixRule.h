@@ -8,8 +8,8 @@ struct SuffixRule implements Rule{
 	String suffix;
 	Rule childRule;
 	public SuffixRule(Rule childRule, String suffix){
-		this.suffix =suffix;
-		this.childRule =childRule;
+		this.suffix = suffix;
+		this.childRule = childRule;
 	}
 	Result<String, CompileError> truncateRight(String input, String slice){
 		if(input.endsWith(slice)){

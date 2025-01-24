@@ -93,7 +93,13 @@ public class CommonLang {
                 maybeParams
         );
 
-        final var nameAndContent = wrapUsingBlock("value", maybeImplements, segmentRule);
+        final var parentType = new NodeRule("parent-type", createTypeRule());
+        final var maybeExtends = new OptionalNodeRule("parent-type",
+                new InfixRule(maybeImplements, new FirstLocator(" extends "), parentType),
+                maybeImplements
+        );
+
+        final var nameAndContent = wrapUsingBlock("value", maybeExtends, segmentRule);
         final var infixRule = new InfixRule(maybeModifiers, new FirstLocator(infix), nameAndContent);
         return new TypeRule(type, infixRule);
     }
@@ -343,10 +349,19 @@ public class CommonLang {
                 createTupleRule(type),
                 createSliceRule(type),
                 createStructRule(),
-                new TypeRule("ref", new SuffixRule(new NodeRule("value", type), "*"))
+                createRefRule(type),
+                createQualifiedRule(type)
         )));
 
         return type;
+    }
+
+    private static Rule createQualifiedRule(LazyRule type) {
+        return new TypeRule("qualified", new InfixRule(new NodeRule("parent", type), new LastLocator("."), new StringRule("child")));
+    }
+
+    private static TypeRule createRefRule(LazyRule type) {
+        return new TypeRule("ref", new SuffixRule(new NodeRule("value", type), "*"));
     }
 
     private static TypeRule createStructRule() {
