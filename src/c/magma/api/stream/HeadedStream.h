@@ -1,4 +1,4 @@
-import magma.api.result.Ok;import magma.api.result.Result;import java.util.Optional;struct HeadedStream<T>(Head<T> head) implements Stream<T>{
+import magma.api.result.Ok;import magma.api.result.Result;import java.util.Optional;import java.util.function.BiFunction;import java.util.function.Function;struct HeadedStream<T>(Head<T> head) implements Stream<T>{
 	Optional<T> foldLeft(BiFunction<T, T, T> folder){
 		return this.head.next().map(()->foldLeft(initial, folder));
 	}

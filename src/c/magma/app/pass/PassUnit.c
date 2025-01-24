@@ -1,4 +1,4 @@
-import java.util.Optional;struct PassUnit<T>{
+import java.util.Optional;import java.util.function.BiFunction;import java.util.function.Function;import java.util.function.Predicate;struct PassUnit<T>{
 	<R>PassUnit<R> mapValue(Function<T, R> mapper);
 	Optional<PassUnit<T>> filter(Predicate<T> predicate);
 	<R>PassUnit<R> withValue(R value);

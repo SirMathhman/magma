@@ -62,7 +62,8 @@ public class CommonLang {
     public static final String FUNCTIONAL_RETURN = "return";
 
     public static Rule createNamespacedRule(String type, String prefix) {
-        final var namespace = new StringRule("namespace");
+        final var segment = new TypeRule("segment", new StringRule("value"));
+        final var namespace = new DivideRule("namespace", new SimpleDivider("."), segment);
         final var childRule = new PrefixRule(prefix, new SuffixRule(namespace, ";"));
         return new TypeRule(type, new StripRule(childRule));
     }

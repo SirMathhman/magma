@@ -1,4 +1,4 @@
-import magma.api.result.Ok;import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;struct Passer{
+import magma.api.result.Ok;import magma.api.result.Result;import magma.app.Node;import magma.app.error.CompileError;import java.util.function.Predicate;struct Passer{
 	Predicate<Node> by(String type){
 		return ()->value.is(type);
 	}

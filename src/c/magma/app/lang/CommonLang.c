@@ -29,7 +29,8 @@ import magma.app.locate.BackwardsLocator;import magma.app.locate.InvocationLocat
 	String FUNCTIONAL_PARAMS="params";
 	String FUNCTIONAL_RETURN="return";
 	Rule createNamespacedRule(String type, String prefix){
-		var namespace=new StringRule("namespace");
+		var segment=new TypeRule("segment", new StringRule("value"));
+		var namespace=new DivideRule("namespace", new SimpleDivider("."), segment);
 		var childRule=new PrefixRule(prefix, new SuffixRule(namespace, ";"));
 		return new TypeRule(type, new StripRule(childRule));
 	}

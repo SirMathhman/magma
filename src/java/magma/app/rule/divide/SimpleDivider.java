@@ -6,6 +6,7 @@ import magma.app.error.CompileError;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class SimpleDivider implements Divider {
 
@@ -17,11 +18,11 @@ public class SimpleDivider implements Divider {
 
     @Override
     public String merge(String current, String value) {
-        return current + delimiter + value;
+        return current + this.delimiter + value;
     }
 
     @Override
     public Result<List<String>, CompileError> divide(String input) {
-        return new Ok<>(Arrays.stream(input.split(delimiter)).toList());
+        return new Ok<>(Arrays.stream(input.split(Pattern.quote(this.delimiter))).toList());
     }
 }
