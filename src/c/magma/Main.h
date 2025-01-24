@@ -1,26 +1,26 @@
-#include "magma/api/result/Result.h"
-#include "magma/app/pass/CFormatter.h"
-#include "magma/app/pass/InlinePassUnit.h"
-#include "magma/app/pass/PassUnit.h"
-#include "magma/app/pass/RootPasser.h"
-#include "magma/app/pass/TreePassingStage.h"
-#include "magma/app/error/ApplicationError.h"
-#include "magma/app/error/CompileError.h"
-#include "magma/app/error/JavaError.h"
-#include "magma/app/lang/CLang.h"
-#include "magma/app/lang/JavaLang.h"
-#include "magma/java/JavaFiles.h"
-#include "java/io/IOException.h"
-#include "java/nio/file/Files.h"
-#include "java/nio/file/Path.h"
-#include "java/nio/file/Paths.h"
-#include "java/util/ArrayList.h"
-#include "java/util/List.h"
-#include "java/util/Optional.h"
-#include "java/util/Set.h"
-#include "java/util/function/Function.h"
-#include "java/util/stream/Collectors.h"
-#include "java/util/stream/IntStream.h"
+#include "../magma/api/result/Result.h"
+#include "../magma/app/pass/CFormatter.h"
+#include "../magma/app/pass/InlinePassUnit.h"
+#include "../magma/app/pass/PassUnit.h"
+#include "../magma/app/pass/RootPasser.h"
+#include "../magma/app/pass/TreePassingStage.h"
+#include "../magma/app/error/ApplicationError.h"
+#include "../magma/app/error/CompileError.h"
+#include "../magma/app/error/JavaError.h"
+#include "../magma/app/lang/CLang.h"
+#include "../magma/app/lang/JavaLang.h"
+#include "../magma/java/JavaFiles.h"
+#include "../java/io/IOException.h"
+#include "../java/nio/file/Files.h"
+#include "../java/nio/file/Path.h"
+#include "../java/nio/file/Paths.h"
+#include "../java/util/ArrayList.h"
+#include "../java/util/List.h"
+#include "../java/util/Optional.h"
+#include "../java/util/Set.h"
+#include "../java/util/function/Function.h"
+#include "../java/util/stream/Collectors.h"
+#include "../java/util/stream/IntStream.h"
 struct Main{
 	Path SOURCE_DIRECTORY=Paths.get(".", "src", "java");
 	Path TARGET_DIRECTORY=Paths.get(".", "src", "c");
@@ -50,10 +50,10 @@ struct Main{
 			var directoriesError=JavaFiles.createDirectoriesWrapped(targetParent);
 			if(directoriesError.isPresent())return directoriesError.map(JavaError::new).map(ApplicationError::new);
 		}
-		return JavaFiles.readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).flatMapValue(()->compile(input).mapErr(ApplicationError::new)).mapValue(()->writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
+		return JavaFiles.readStringWrapped(source).mapErr(JavaError::new).mapErr(ApplicationError::new).flatMapValue(()->compile(input, namespace).mapErr(ApplicationError::new)).mapValue(()->writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
 	}
-	Result<String, CompileError> compile(String input){
-		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->new TreePassingStage(new RootPasser()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value)).flatMapValue(()->new TreePassingStage(new CFormatter()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value)).flatMapValue(()->CLang.createCRootRule().generate(root));
+	Result<String, CompileError> compile(String input, List<String> namespace){
+		return JavaLang.createJavaRootRule().parse(input).flatMapValue(()->new TreePassingStage(new RootPasser()).pass(new InlinePassUnit<>(root, namespace)).mapValue(PassUnit::value)).flatMapValue(()->new TreePassingStage(new CFormatter()).pass(new InlinePassUnit<>(root, namespace)).mapValue(PassUnit::value)).flatMapValue(()->CLang.createCRootRule().generate(root));
 	}
 	Optional<ApplicationError> writeOutput(String output, Path targetParent, String name){
 		var target=targetParent.resolve(name+".c");

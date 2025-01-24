@@ -79,14 +79,14 @@ public class Main {
         return JavaFiles.readStringWrapped(source)
                 .mapErr(JavaError::new)
                 .mapErr(ApplicationError::new)
-                .flatMapValue(input -> compile(input).mapErr(ApplicationError::new))
+                .flatMapValue(input -> compile(input, namespace).mapErr(ApplicationError::new))
                 .mapValue(output -> writeOutput(output, targetParent, name)).match(Function.identity(), Optional::of);
     }
 
-    private static Result<String, CompileError> compile(String input) {
+    private static Result<String, CompileError> compile(String input, List<String> namespace) {
         return JavaLang.createJavaRootRule().parse(input)
-                .flatMapValue(root -> new TreePassingStage(new RootPasser()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value))
-                .flatMapValue(root -> new TreePassingStage(new CFormatter()).pass(new InlinePassUnit<>(root)).mapValue(PassUnit::value))
+                .flatMapValue(root -> new TreePassingStage(new RootPasser()).pass(new InlinePassUnit<>(root, namespace)).mapValue(PassUnit::value))
+                .flatMapValue(root -> new TreePassingStage(new CFormatter()).pass(new InlinePassUnit<>(root, namespace)).mapValue(PassUnit::value))
                 .flatMapValue(root -> CLang.createCRootRule().generate(root));
     }
 

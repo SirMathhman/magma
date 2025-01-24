@@ -1,7 +1,7 @@
-#include "magma/api/Tuple.h"
-#include "magma/api/option/Option.h"
-#include "java/util/function/Function.h"
-#include "java/util/function/Supplier.h"
+#include "../../../magma/api/Tuple.h"
+#include "../../../magma/api/option/Option.h"
+#include "../../../java/util/function/Function.h"
+#include "../../../java/util/function/Supplier.h"
 struct Result<T, X>{
 	<R>Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper);
 	<R>Result<R, X> mapValue(Function<T, R> mapper);

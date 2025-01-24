@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "result.h": "c",
+        "cformatter.h": "c",
+        "applicationerror.h": "c",
+        "inlinepassunit.h": "c",
+        "rootpasser.h": "c",
+        "treepassingstage.h": "c",
+        "compileerror.h": "c"
+    }
+}

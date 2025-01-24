@@ -1,12 +1,12 @@
-#include "magma/api/result/Ok.h"
-#include "magma/api/result/Result.h"
-#include "magma/app/Node.h"
-#include "magma/app/error/CompileError.h"
-#include "magma/app/lang/CommonLang.h"
-#include "java/util/ArrayList.h"
-#include "java/util/List.h"
-#include "static magma/app/lang/CommonLang/CONTENT_AFTER_CHILD.h"
-#include "static magma/app/pass/Passer/by.h"
+#include "../../../magma/api/result/Ok.h"
+#include "../../../magma/api/result/Result.h"
+#include "../../../magma/app/Node.h"
+#include "../../../magma/app/error/CompileError.h"
+#include "../../../magma/app/lang/CommonLang.h"
+#include "../../../java/util/ArrayList.h"
+#include "../../../java/util/List.h"
+#include "../../../static magma/app/lang/CommonLang/CONTENT_AFTER_CHILD.h"
+#include "../../../static magma/app/pass/Passer/by.h"
 struct CFormatter implements Passer{
 	Node removeWhitespace(Node block){
 		return block.mapNodeList(CommonLang.CONTENT_CHILDREN, ()->{

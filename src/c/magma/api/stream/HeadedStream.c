@@ -1,8 +1,8 @@
-#include "magma/api/result/Ok.h"
-#include "magma/api/result/Result.h"
-#include "java/util/Optional.h"
-#include "java/util/function/BiFunction.h"
-#include "java/util/function/Function.h"
+#include "../../../magma/api/result/Ok.h"
+#include "../../../magma/api/result/Result.h"
+#include "../../../java/util/Optional.h"
+#include "../../../java/util/function/BiFunction.h"
+#include "../../../java/util/function/Function.h"
 struct HeadedStream<T>(Head<T> head) implements Stream<T>{
 	Optional<T> foldLeft(BiFunction<T, T, T> folder){
 		return this.head.next().map(()->foldLeft(initial, folder));

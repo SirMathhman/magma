@@ -1,8 +1,8 @@
-#include "magma/api/result/Result.h"
-#include "magma/app/Node.h"
-#include "magma/app/error/CompileError.h"
-#include "magma/app/rule/divide/DivideRule.h"
-#include "java/util/List.h"
+#include "../../../magma/api/result/Result.h"
+#include "../../../magma/app/Node.h"
+#include "../../../magma/app/error/CompileError.h"
+#include "../../../magma/app/rule/divide/DivideRule.h"
+#include "../../../java/util/List.h"
 struct OptionalNodeListRule implements Rule{
 	String propertyKey;
 	Rule ifPresent;

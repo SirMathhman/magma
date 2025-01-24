@@ -1,10 +1,10 @@
-#include "magma/api/Tuple.h"
-#include "magma/api/stream/Stream.h"
-#include "magma/api/stream/Streams.h"
-#include "java/util/LinkedList.h"
-#include "java/util/Optional.h"
-#include "java/util/stream/Collectors.h"
-#include "java/util/stream/IntStream.h"
+#include "../../../../magma/api/Tuple.h"
+#include "../../../../magma/api/stream/Stream.h"
+#include "../../../../magma/api/stream/Streams.h"
+#include "../../../../java/util/LinkedList.h"
+#include "../../../../java/util/Optional.h"
+#include "../../../../java/util/stream/Collectors.h"
+#include "../../../../java/util/stream/IntStream.h"
 struct ParenthesesMatcher implements Locator{
 	String unwrap(){
 		return ")";

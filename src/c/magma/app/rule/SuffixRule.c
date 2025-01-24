@@ -1,9 +1,9 @@
-#include "magma/api/result/Err.h"
-#include "magma/api/result/Ok.h"
-#include "magma/api/result/Result.h"
-#include "magma/app/Node.h"
-#include "magma/app/error/CompileError.h"
-#include "magma/app/error/context/StringContext.h"
+#include "../../../magma/api/result/Err.h"
+#include "../../../magma/api/result/Ok.h"
+#include "../../../magma/api/result/Result.h"
+#include "../../../magma/app/Node.h"
+#include "../../../magma/app/error/CompileError.h"
+#include "../../../magma/app/error/context/StringContext.h"
 struct SuffixRule implements Rule{
 	String suffix;
 	Rule childRule;

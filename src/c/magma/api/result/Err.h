@@ -1,10 +1,10 @@
-#include "magma/api/Tuple.h"
-#include "magma/api/option/None.h"
-#include "magma/api/option/Option.h"
-#include "magma/api/option/Some.h"
-#include "java/util/Optional.h"
-#include "java/util/function/Function.h"
-#include "java/util/function/Supplier.h"
+#include "../../../magma/api/Tuple.h"
+#include "../../../magma/api/option/None.h"
+#include "../../../magma/api/option/Option.h"
+#include "../../../magma/api/option/Some.h"
+#include "../../../java/util/Optional.h"
+#include "../../../java/util/function/Function.h"
+#include "../../../java/util/function/Supplier.h"
 struct Err<T, X>(X error) implements Result<T, X>{
 	<R>Result<R, X> flatMapValue(Function<T, Result<R, X>> mapper){
 		return new Err<>(this.error);

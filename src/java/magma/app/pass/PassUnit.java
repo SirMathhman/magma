@@ -1,5 +1,6 @@
 package magma.app.pass;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -14,7 +15,6 @@ public interface PassUnit<T> {
 
     PassUnit<T> enter();
 
-    @Deprecated
     T value();
 
     <R> Optional<PassUnit<R>> filterAndMapToValue(Predicate<T> predicate, Function<T, R> mapper);
@@ -22,4 +22,6 @@ public interface PassUnit<T> {
     <R> PassUnit<R> flattenNode(BiFunction<State, T, R> mapper);
 
     PassUnit<T> exit();
+
+    List<String> findNamespace();
 }

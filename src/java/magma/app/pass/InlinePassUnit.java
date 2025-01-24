@@ -13,10 +13,10 @@ import java.util.function.Supplier;
 public record InlinePassUnit<T>(
         State state,
         List<Node> cache,
-        T value
-) implements PassUnit<T> {
-    public InlinePassUnit(T value) {
-        this(new State(), new ArrayList<>(), value);
+        T value,
+        List<String> namespace) implements PassUnit<T> {
+    public InlinePassUnit(T value, List<String> namespace) {
+        this(new State(), new ArrayList<>(), value, namespace);
     }
 
     @Override
@@ -27,17 +27,17 @@ public record InlinePassUnit<T>(
 
     @Override
     public <R> PassUnit<R> withValue(R value) {
-        return new InlinePassUnit<>(this.state, this.cache, value);
+        return new InlinePassUnit<>(this.state, this.cache, value, this.namespace);
     }
 
     @Override
     public PassUnit<T> enter() {
-        return new InlinePassUnit<>(this.state.enter(), this.cache, this.value);
+        return new InlinePassUnit<>(this.state.enter(), this.cache, this.value, this.namespace);
     }
 
     @Override
     public <R> Optional<PassUnit<R>> filterAndMapToValue(Predicate<T> predicate, Function<T, R> mapper) {
-        return filterAndSupply(predicate, () -> new InlinePassUnit<>(this.state, this.cache, mapper.apply(this.value)));
+        return filterAndSupply(predicate, () -> new InlinePassUnit<>(this.state, this.cache, mapper.apply(this.value), this.namespace));
     }
 
     private <R> Optional<PassUnit<R>> filterAndSupply(Predicate<T> predicate, Supplier<PassUnit<R>> supplier) {
@@ -48,17 +48,22 @@ public record InlinePassUnit<T>(
 
     @Override
     public <R> PassUnit<R> flattenNode(BiFunction<State, T, R> mapper) {
-        return new InlinePassUnit<>(this.state, this.cache, mapper.apply(this.state, this.value));
+        return new InlinePassUnit<>(this.state, this.cache, mapper.apply(this.state, this.value), this.namespace);
     }
 
     @Override
     public PassUnit<T> exit() {
-        return new InlinePassUnit<>(this.state.exit(), this.cache, this.value);
+        return new InlinePassUnit<>(this.state.exit(), this.cache, this.value, this.namespace);
+    }
+
+    @Override
+    public List<String> findNamespace() {
+        return this.namespace;
     }
 
     @Override
     public <R> PassUnit<R> mapValue(Function<T, R> mapper) {
         final var apply = mapper.apply(this.value);
-        return new InlinePassUnit<>(this.state, this.cache, apply);
+        return new InlinePassUnit<>(this.state, this.cache, apply, this.namespace);
     }
 }
