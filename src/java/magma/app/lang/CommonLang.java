@@ -246,6 +246,7 @@ public class CommonLang {
                 createOperatorRule("equals", "==", value),
                 createOperatorRule("and", "&&", value),
                 createOperatorRule("add", "+", value),
+                createOperatorRule("subtract", "-", value),
                 createCharRule(),
                 createStringRule(),
                 createTernaryRule(value)
@@ -308,7 +309,8 @@ public class CommonLang {
     }
 
     private static Rule createAccessRule(String type, String infix, final Rule value) {
-        final var rule = new InfixRule(new NodeRule("ref", value), new LastLocator(infix), new StringRule("property"));
+        final var property = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("property")));
+        final var rule = new InfixRule(new NodeRule("ref", value), new LastLocator(infix), property);
         return new TypeRule(type, rule);
     }
 

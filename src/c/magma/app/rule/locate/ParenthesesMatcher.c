@@ -15,7 +15,7 @@ struct ParenthesesMatcher implements Locator{
 			var c=tuple.right();
 			if(c=='\''){
 				var tuple1=queue.pop();
-				if(tuple1.right() == '\\'){
+				if(tuple1.right()=='\\'){
 					queue.pop();
 				}
 				queue.pop();

@@ -1,8 +1,7 @@
 package magma.app.pass;
 
-import magma.api.option.None;
 import magma.api.option.Option;
-import magma.api.option.Some;
+import magma.java.JavaOptions;
 import magma.app.Node;
 
 import java.util.ArrayList;
@@ -42,11 +41,9 @@ public record State(Stack<List<Node>> frames) {
     }
 
     public Option<Node> find(String value) {
-        return this.frames.stream()
-                .map(frame -> findInFrame(value, frame))
-                .flatMap(Optional::stream)
-                .findFirst()
-                .<Option<Node>>map(Some::new)
-                .orElseGet(None::new);
+        return JavaOptions.fromNative(this.frames.stream()
+                        .map(frame -> findInFrame(value, frame))
+                        .flatMap(Optional::stream)
+                        .findFirst());
     }
 }

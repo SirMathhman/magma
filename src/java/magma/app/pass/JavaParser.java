@@ -7,6 +7,7 @@ import magma.app.MapNode;
 import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
+import magma.java.JavaLang;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,15 +49,19 @@ public class JavaParser implements Passer {
         }
 
         if (node.is("class") || node.is("record") || node.is("interface")) {
+            final var name = node.findString("name").orElse("");
             final var value = node.findNode("value").orElse(new MapNode());
             final var children = value.findNodeList("children").orElse(new ArrayList<>());
+
             final var methodDefinitions = children.stream()
                     .filter(child -> child.is("method"))
                     .map(method -> method.findNode("definition"))
                     .flatMap(Optional::stream)
                     .toList();
 
-            return new Ok<>(unit.enter().define(methodDefinitions));
+            return new Ok<>(unit.enter()
+                    .define(List.of(createDefinition(name)))
+                    .define(methodDefinitions));
         }
 
         if (node.is("method")) {
@@ -80,7 +85,7 @@ public class JavaParser implements Passer {
 
         if (node.is(SYMBOL_VALUE_TYPE)) {
             final var value = node.findString("value").orElse("");
-            if (!value.equals("this") && !unit.state().find(value).isPresent()) {
+            if (!value.equals("this") && !unit.state().find(value).isPresent() && !JavaLang.isDefaultJavaValue(value)) {
                 return new Err<>(new CompileError("Symbol not defined", new NodeContext(node)));
             }
         }

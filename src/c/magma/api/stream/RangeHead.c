@@ -6,7 +6,7 @@ struct RangeHead implements Head<Integer>{
 		this.extent = extent;
 	}
 	Option<Integer> next(){
-		if(this.counter >= this.extent)return new None<>();
+		if(this.counter>=this.extent)return new None<>();
 		var value=this.counter;
 		this.counter++;
 		return new Some<>(value);

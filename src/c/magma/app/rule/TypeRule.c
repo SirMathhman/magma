@@ -1,7 +1,7 @@
 #include "./TypeRule.h"
 struct TypeRule(String type, Rule rule) implements Rule{
 	Result<Node, CompileError> parse(String input){
-		return this.rule.parse(input).mapValue(()->node.retype(this.type)).mapValue(this::postProcess).mapErr(()->new CompileError("Failed to parse type '"+this.type + "'", new StringContext(input), List.of(err)));
+		return this.rule.parse(input).mapValue(()->node.retype(this.type)).mapValue(this::postProcess).mapErr(()->new CompileError("Failed to parse type '"+this.type+"'", new StringContext(input), List.of(err)));
 	}
 	Node postProcess(Node node){
 		if(this.type.equals("method")){
@@ -11,10 +11,10 @@ struct TypeRule(String type, Rule rule) implements Rule{
 	}
 	Result<String, CompileError> generate(Node node){
 		if(node.is(this.type)){
-			return this.rule.generate(node).mapErr(()->new CompileError("Failed to generate type '"+this.type + "'", new NodeContext(node), List.of(err)));
+			return this.rule.generate(node).mapErr(()->new CompileError("Failed to generate type '"+this.type+"'", new NodeContext(node), List.of(err)));
 		}
 		else{
-			return new Err<>(new CompileError("Node was not of type '"+this.type + "'", new NodeContext(node)));
+			return new Err<>(new CompileError("Node was not of type '"+this.type+"'", new NodeContext(node)));
 		}
 	}
 }

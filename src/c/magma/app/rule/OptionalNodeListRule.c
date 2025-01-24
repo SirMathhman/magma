@@ -8,7 +8,7 @@ struct OptionalNodeListRule implements Rule{
 		this.propertyKey = propertyKey;
 		this.ifPresent = ifPresent;
 		this.ifEmpty = ifEmpty;
-		this.rule = new OrRule(List.of(ifPresent, ifEmpty));
+		this.rule=new OrRule(List.of(ifPresent, ifEmpty));
 	}
 	public OptionalNodeListRule(String propertyKey, DivideRule ifPresent){
 		this(propertyKey, ifPresent, new ExactRule(""));

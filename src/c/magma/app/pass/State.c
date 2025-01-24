@@ -20,9 +20,9 @@ struct State(Stack<List<Node>> frames){
 		return this;
 	}
 	int depth(){
-		return this.frames.size() - 1;
+		return this.frames.size()-1;
 	}
 	Option<Node> find(String value){
-		return this.frames.stream().map(()->findInFrame(value, frame)).flatMap(Optional::stream).findFirst().<Option<Node>>map(Some::new).orElseGet(None::new);
+		return JavaOptions.fromNative(this.frames.stream().map(()->findInFrame(value, frame)).flatMap(Optional::stream).findFirst());
 	}
 }
