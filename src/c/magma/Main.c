@@ -21,7 +21,6 @@
 #include "../magma/java/JavaPaths.h"
 #include "../magma/java/JavaSet.h"
 #include "../java/io/IOException.h"
-#include "../java/util/function/Function.h"
 struct Main{
 	Path SOURCE_DIRECTORY=JavaPaths.get(".", "src", "java");
 	Path TARGET_DIRECTORY=JavaPaths.get(".", "src", "c");

@@ -9,7 +9,6 @@
 #include "../../../java/util/ArrayList.h"
 #include "../../../java/util/Collections.h"
 #include "../../../java/util/List.h"
-#include "../../../java/util/function/Function.h"
 struct OrRule(List<Rule> rules) implements Rule{
 	Result<Node, CompileError> parse(String value){
 		return process(new StringContext(value), ()->rule.parse(value));

@@ -6,7 +6,6 @@
 #include "../../java/util/Map.h"
 #include "../../java/util/Optional.h"
 #include "../../java/util/StringJoiner.h"
-#include "../../java/util/function/Function.h"
 #include "../../java/util/stream/Collectors.h"
 struct MapNode implements Node{
 	Map<String, String> strings;
