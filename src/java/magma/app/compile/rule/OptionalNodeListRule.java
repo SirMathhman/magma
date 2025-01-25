@@ -31,7 +31,7 @@ public final class OptionalNodeListRule implements Rule {
 
     @Override
     public Result<String, CompileError> generate(Node node) {
-        if (node.hasNodeList(this.propertyKey)) {
+        if (node.nodeLists().has(this.propertyKey)) {
             return this.ifPresent.generate(node);
         } else {
             return this.ifEmpty.generate(node);

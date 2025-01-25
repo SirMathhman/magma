@@ -2,11 +2,13 @@ package magma.app.compile.rule;
 
 import magma.api.result.Err;
 import magma.api.result.Result;
+import magma.app.compile.Input;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
 import magma.app.error.context.StringContext;
+import magma.java.JavaOptions;
 
 import java.util.List;
 
@@ -23,9 +25,9 @@ public record TypeRule(String type, Rule rule) implements Rule {
 
     private Node postProcess(Node node) {
         if (this.type.equals("method")) {
-            out.println("\t" + node.findNode("definition")
-                    .orElse(new MapNode())
-                    .findString("name")
+            Node node1 = JavaOptions.toNative(node.nodes().find("definition"))
+                    .orElse(new MapNode());
+            out.println("\t" + JavaOptions.toNative(node1.inputs().find("name").map(Input::unwrap))
                     .orElse(""));
         }
 

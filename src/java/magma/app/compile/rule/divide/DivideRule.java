@@ -9,6 +9,8 @@ import magma.app.compile.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
 import magma.app.compile.rule.Rule;
+import magma.java.JavaList;
+import magma.java.JavaOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,13 +58,13 @@ public class DivideRule implements Rule {
                 .flatMapValue(segments -> compileAll(segments, this.childRule::parse, DivideRule::validateNode))
                 .mapValue(segments -> {
                     final var node = new MapNode();
-                    return segments.isEmpty() ? node : node.withNodeList(this.propertyKey, segments);
+                    return segments.isEmpty() ? node : node.nodeLists().with(this.propertyKey, new JavaList<>(segments));
                 });
     }
 
     @Override
     public Result<String, CompileError> generate(Node node) {
-        return node.findNodeList(this.propertyKey)
+        return JavaOptions.toNative(node.nodeLists().find(this.propertyKey).map(JavaList::list))
                 .flatMap(list -> list.isEmpty() ? Optional.empty() : Optional.of(list))
                 .map(list -> compileAll(list, this.childRule::generate, (_, result) -> new Ok<>(result)))
                 .map(result -> result.mapValue(this::merge))

@@ -2,23 +2,29 @@ package magma.app.compile.pass;
 
 import magma.api.result.Ok;
 import magma.api.result.Result;
+import magma.app.compile.Input;
 import magma.app.compile.MapNode;
 import magma.app.compile.Node;
+import magma.app.compile.StringInput;
 import magma.app.error.CompileError;
+import magma.java.JavaList;
+import magma.java.JavaOptions;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class RootPasser implements Passer {
     private static PassUnit<Node> resolveImport(PassUnit<Node> unit) {
         final var fileNamespace = unit.findNamespace();
-        return unit.withValue(unit.value().retype("include").mapNodeList("namespace", namespaceNodes -> {
+        Node node1 = unit.value().retype("include");
+        return unit.withValue(node1.nodeLists().map("namespace", list -> new JavaList<>(((Function<List<Node>, List<Node>>) namespaceNodes -> {
             var oldNamespace = namespaceNodes.stream()
-                    .map(node -> node.findString("value"))
+                    .map(node -> JavaOptions.toNative(node.inputs().find("value").map(Input::unwrap)))
                     .flatMap(Optional::stream)
                     .toList();
             final var newNamespace = new ArrayList<String>();
@@ -27,9 +33,12 @@ public class RootPasser implements Passer {
             });
             newNamespace.addAll(oldNamespace);
             return newNamespace.stream()
-                    .map(value -> new MapNode("segment").withString("value", value))
+                    .map(value -> {
+                        Node node = new MapNode("segment");
+                        return node.inputs().with("value", new StringInput("value"));
+                    })
                     .toList();
-        }));
+        }).apply(list.unwrap()))).orElse(node1));
     }
 
     private static List<Node> removeFunctionalImports(List<Node> children) {
@@ -40,10 +49,10 @@ public class RootPasser implements Passer {
 
     private static Stream<Node> removeFunctionalImport(Node child) {
         if (!child.is("import")) return Stream.of(child);
-        final var namespace = child.findNodeList("namespace")
+        final var namespace = JavaOptions.toNative(child.nodeLists().find("namespace").map(JavaList::list))
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(node -> node.findString("value"))
+                .map(node -> JavaOptions.toNative(node.inputs().find("value").map(Input::unwrap)))
                 .flatMap(Optional::stream)
                 .toList();
 
@@ -56,7 +65,7 @@ public class RootPasser implements Passer {
         return new Ok<>(unit.filterAndMapToValue(Passer.by("class").or(Passer.by("record")).or(Passer.by("interface")), node -> node.retype("struct"))
                 .or(() -> unit.filter(Passer.by("import")).map(RootPasser::resolveImport))
                 .or(() -> unit.filterAndMapToValue(Passer.by("root"), node -> {
-                    return node.mapNodeList("children", RootPasser::removeFunctionalImports);
+                    return node.nodeLists().map("children", list -> new JavaList<>(((Function<List<Node>, List<Node>>) RootPasser::removeFunctionalImports).apply(list.unwrap()))).orElse(node);
                 }))
                 .orElse(unit));
     }

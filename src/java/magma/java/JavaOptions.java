@@ -9,10 +9,14 @@ import java.util.Optional;
 
 public class JavaOptions {
     public static Option<Node> fromNative(Optional<Node> optional) {
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             return new Some<>(optional.get());
         } else {
             return new None<>();
         }
+    }
+
+    public static <T> Optional<T> toNative(Option<T> option) {
+        return option.map(Optional::of).orElseGet(Optional::empty);
     }
 }

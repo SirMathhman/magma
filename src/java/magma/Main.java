@@ -115,7 +115,7 @@ public class Main {
         return parsed.flatMapValue(root1 -> pass(new JavaParser(), namespace, name, root1))
                 .flatMapValue(root -> pass(new RootPasser(), namespace, name, root))
                 .flatMapValue(root -> pass(new CFormatter(), namespace, name, root))
-                .flatMapValue(root -> root.streamNodes().foldLeftToResult(new HashMap<>(), Main::generateTarget));
+                .flatMapValue(root -> root.nodes().stream().foldLeftToResult(new HashMap<>(), Main::generateTarget));
     }
 
     private static Result<Node, CompileError> pass(

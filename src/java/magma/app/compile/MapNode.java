@@ -3,13 +3,13 @@ package magma.app.compile;
 import magma.api.Tuple;
 import magma.api.stream.Stream;
 import magma.api.stream.Streams;
+import magma.java.JavaList;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class MapNode implements Node {
@@ -78,25 +78,13 @@ public final class MapNode implements Node {
     }
 
     @Override
-    public Optional<Node> findNode(String propertyKey) {
-        return Optional.ofNullable(this.nodes.get(propertyKey));
-    }
-
-    @Override
     public Node merge(Node other) {
-        final var withStrings = stream(this.strings).foldLeft(other, (node, tuple) -> node.withString(tuple.left(), tuple.right()));
-        final var withNodes = streamNodes().foldLeft(withStrings, (node, tuple) -> node.withNode(tuple.left(), tuple.right()));
-        return streamNodeLists().foldLeft(withNodes, (node, tuple) -> node.withNodeList(tuple.left(), tuple.right()));
-    }
-
-    @Override
-    public Stream<Tuple<String, List<Node>>> streamNodeLists() {
-        return stream(this.nodeLists);
-    }
-
-    @Override
-    public Stream<Tuple<String, Node>> streamNodes() {
-        return stream(this.nodes);
+        final var withStrings = stream(this.strings).foldLeft(other, (node, tuple) -> {
+            String propertyKey = tuple.left();
+            return node.inputs().with(propertyKey, new StringInput(propertyKey));
+        });
+        final var withNodes = nodes().stream().foldLeft(withStrings, (node, tuple) -> node.nodes().with(tuple.left(), tuple.right()));
+        return nodeLists().stream().map(tuple1 -> new Tuple<>(tuple1.left(), tuple1.right().unwrap())).foldLeft(withNodes, (node, tuple) -> node.nodeLists().with(tuple.left(), new JavaList<>(tuple.right())));
     }
 
     private <K, V> Stream<Tuple<K, V>> stream(Map<K, V> map) {
@@ -119,63 +107,22 @@ public final class MapNode implements Node {
     }
 
     @Override
-    public Node mapNodeList(String propertyKey, Function<List<Node>, List<Node>> mapper) {
-        return findNodeList(propertyKey)
-                .map(mapper)
-                .map(list -> withNodeList(propertyKey, list))
-                .orElse(this);
-    }
-
-    @Override
-    public boolean hasNodeList(String propertyKey) {
-        return this.nodeLists.containsKey(propertyKey);
-    }
-
-    @Override
-    public Node removeNodeList(String propertyKey) {
-        final var copy = new HashMap<>(this.nodeLists);
-        copy.remove(propertyKey);
-        return new MapNode(this.type, this.strings, this.nodes, copy);
-    }
-
-    @Override
-    public boolean hasNode(String propertyKey) {
-        return this.nodes.containsKey(propertyKey);
-    }
-
-    @Override
     public boolean hasType() {
         return this.type.isPresent();
     }
 
     @Override
-    public Node withNode(String propertyKey, Node propertyValue) {
-        final var copy = new HashMap<>(this.nodes);
-        copy.put(propertyKey, propertyValue);
-        return new MapNode(this.type, this.strings, copy, this.nodeLists);
+    public NodeProperties<Input> inputs() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Node withNodeList(String propertyKey, List<Node> propertyValues) {
-        final var copy = new HashMap<>(this.nodeLists);
-        copy.put(propertyKey, propertyValues);
-        return new MapNode(this.type, this.strings, this.nodes, copy);
+    public NodeProperties<Node> nodes() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Optional<List<Node>> findNodeList(String propertyKey) {
-        return Optional.ofNullable(this.nodeLists.get(propertyKey));
-    }
-
-    @Override
-    public Node withString(String propertyKey, String propertyValues) {
-        final var copy = new HashMap<>(this.strings);
-        copy.put(propertyKey, propertyValues);
-        return new MapNode(this.type, copy, this.nodes, this.nodeLists);
-    }
-
-    @Override
-    public Optional<String> findString(String propertyKey) {
-        return Optional.ofNullable(this.strings.get(propertyKey));
+    public NodeProperties<JavaList<Node>> nodeLists() {
+        throw new UnsupportedOperationException();
     }
 }

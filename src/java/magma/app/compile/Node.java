@@ -1,46 +1,23 @@
 package magma.app.compile;
 
-import magma.api.Tuple;
-import magma.api.stream.Stream;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
+import magma.java.JavaList;
 
 public interface Node {
-    Node withNodeList(String propertyKey, List<Node> propertyValues);
+    NodeProperties<Input> inputs();
 
-    Optional<List<Node>> findNodeList(String propertyKey);
+    NodeProperties<Node> nodes();
 
-    Node withString(String propertyKey, String propertyValue);
-
-    Optional<String> findString(String propertyKey);
-
-    Node withNode(String propertyKey, Node propertyValue);
+    NodeProperties<JavaList<Node>> nodeLists();
 
     String format(int depth);
 
-    Optional<Node> findNode(String propertyKey);
-
     Node merge(Node other);
-
-    Stream<Tuple<String, List<Node>>> streamNodeLists();
-
-    Stream<Tuple<String, Node>> streamNodes();
 
     String display();
 
     Node retype(String type);
 
     boolean is(String type);
-
-    Node mapNodeList(String propertyKey, Function<List<Node>, List<Node>> mapper);
-
-    boolean hasNodeList(String propertyKey);
-
-    Node removeNodeList(String propertyKey);
-
-    boolean hasNode(String propertyKey);
 
     boolean hasType();
 }

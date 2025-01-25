@@ -30,7 +30,7 @@ public final class OptionalNodeRule implements Rule {
 
     @Override
     public Result<String, CompileError> generate(Node node) {
-        if (node.hasNode(this.propertyKey)) {
+        if (node.nodes().has(this.propertyKey)) {
             return this.ifPresent.generate(node);
         } else {
             return this.ifEmpty.generate(node);

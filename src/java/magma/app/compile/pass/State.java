@@ -1,6 +1,7 @@
 package magma.app.compile.pass;
 
 import magma.api.option.Option;
+import magma.app.compile.Input;
 import magma.java.JavaOptions;
 import magma.app.compile.Node;
 
@@ -17,7 +18,7 @@ public record State(Stack<List<Node>> frames) {
 
     private static Optional<Node> findInFrame(String value, List<Node> frame) {
         return frame.stream()
-                .filter(definition -> definition.findString("name").orElse("").equals(value))
+                .filter(definition -> JavaOptions.toNative(definition.inputs().find("name").map(Input::unwrap)).orElse("").equals(value))
                 .findFirst();
     }
 
