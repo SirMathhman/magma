@@ -6,7 +6,7 @@ struct CompileError implements Error{
 	public CompileError(String message, Context context, List<CompileError> children){
 		this.message = message;
 		this.context = context;
-		this.children = new ArrayList<>(children);
+		this.children=new ArrayList<>(children);
 	}
 	public CompileError(String message, Context context){
 		this(message, context, Collections.emptyList());
@@ -19,8 +19,12 @@ struct CompileError implements Error{
 	}
 	String format(int depth){
 		this.children.sort(Comparator.comparingInt(CompileError::maxDepth));
-		var joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
-                .collect(Collectors.joining());
+		var joinedChildren=IntStream.range(0, this.children.size()).mapToObj(index->addIndentation(depth, index)).collect(Collectors.joining());
 		this.message + ": " + this.context.display() + joinedChildren;
+	}
+	String addIndentation(int depth, int index){
+		var indentation="\n"+"\t".repeat(depth);
+		var formattedChild=this.children.get(index).format(depth+1);
+		return indentation+index+") "+formattedChild;
 	}
 }

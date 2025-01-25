@@ -7,5 +7,4 @@ struct Stream<T> extends Head<T>{
 	<R>Stream<R> flatMap(Function<T, Stream<R>> mapper);
 	<C>C collect(Collector<T, C> collector);
 	Stream<T> filter(Predicate<T> predicate);
-	Stream<T> concat(Stream<T> other);
 }

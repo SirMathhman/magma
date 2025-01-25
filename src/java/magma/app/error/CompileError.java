@@ -40,9 +40,15 @@ public final class CompileError implements Error {
         this.children.sort(Comparator.comparingInt(CompileError::maxDepth));
 
         final var joinedChildren = IntStream.range(0, this.children.size())
-                .mapToObj(index -> "\n" + "\t".repeat(depth) + index + ") " + this.children.get(index).format(depth + 1))
+                .mapToObj(index -> addIndentation(depth, index))
                 .collect(Collectors.joining());
 
         return this.message + ": " + this.context.display() + joinedChildren;
+    }
+
+    private String addIndentation(int depth, int index) {
+        final var indentation = "\n" + "\t".repeat(depth);
+        final var formattedChild = this.children.get(index).format(depth + 1);
+        return indentation + index + ") " + formattedChild;
     }
 }
