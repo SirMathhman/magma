@@ -2,6 +2,7 @@ package magma.app.lang;
 
 import magma.app.locate.BackwardsLocator;
 import magma.app.locate.InvocationLocator;
+import magma.app.locate.InvocationTypeMatcher;
 import magma.app.rule.ContextRule;
 import magma.app.rule.ExactRule;
 import magma.app.rule.FilterRule;
@@ -190,10 +191,15 @@ public class CommonLang {
     private static TypeRule createConditionalRule(LazyRule statement, String type, Rule value) {
         final var condition = new NodeRule("condition", value);
 
-        return new TypeRule(type, new StripRule(new PrefixRule(type, new OrRule(List.of(
-                new ContextRule("With block", wrapUsingBlock("value", new StripRule(new PrefixRule("(", new SuffixRule(condition, ")"))), statement)),
-                new ContextRule("With statement", new StripRule(new PrefixRule("(", new InfixRule(condition, new ParenthesesMatcher(), new NodeRule("value", statement)))))
-        )))));
+        final var beforeBlock = new StripRule(new PrefixRule("(", new SuffixRule(condition, ")")));
+        final var child = new NodeRule("value", statement);
+
+        final var withBlock = new ContextRule("With block", wrapUsingBlock("value", beforeBlock, statement));
+
+        final var withStart = new PrefixRule("(", new InfixRule(condition, new ParenthesesMatcher(), child));
+        final var withStatement = new ContextRule("With statement", new StripRule(withStart));
+
+        return new TypeRule(type, new StripRule(new PrefixRule(type, new OrRule(List.of(withBlock, withStatement)))));
     }
 
     public static TypeRule createWhitespaceRule() {
@@ -216,17 +222,12 @@ public class CommonLang {
 
     private static TypeRule createInvocationRule(Rule value) {
         final var caller = new NodeRule("caller", value);
-        final var typeArguments = new DivideRule("type-arguments", VALUE_DIVIDER, createTypeRule());
-        final var beforeArguments = new OptionalNodeListRule("type-arguments",
-                new StripRule(new PrefixRule("<", new InfixRule(typeArguments, new FirstLocator(">"), caller))),
-                caller
-        );
 
         final var children = new OptionalNodeListRule(INVOCATION_CHILDREN,
                 new DivideRule(INVOCATION_CHILDREN, VALUE_DIVIDER, value)
         );
 
-        final var suffixRule = new StripRule(new SuffixRule(new InfixRule(beforeArguments, new InvocationLocator(), children), ")"));
+        final var suffixRule = new StripRule(new SuffixRule(new InfixRule(caller, new InvocationLocator(), children), ")"));
         return new TypeRule("invocation", suffixRule);
     }
 
@@ -314,13 +315,18 @@ public class CommonLang {
     }
 
     private static Rule createAccessRule(String type, String infix, final Rule value) {
+        final var typeArguments = new DivideRule("type-arguments", VALUE_DIVIDER, createTypeRule());
         final var property = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("property")));
-        final var rule = new InfixRule(new NodeRule("ref", value), new LastLocator(infix), property);
+
+        final var rule = new InfixRule(new NodeRule("ref", value), new LastLocator(infix), new OptionalNodeListRule("type-arguments",
+                new StripRule(new PrefixRule("<", new InfixRule(typeArguments, new InvocationTypeMatcher(), property))),
+                property
+        ));
         return new TypeRule(type, rule);
     }
 
     private static Rule createDefinitionRule() {
-        final var name = new FilterRule(new SymbolFilter(), new StringRule("name"));
+        final var name = new StripRule(new FilterRule(new SymbolFilter(), new StringRule("name")));
         final var typeProperty = new NodeRule("type", createTypeRule());
         final var typeAndName = new StripRule(new InfixRule(typeProperty, new LastLocator(" "), name));
 
@@ -345,9 +351,9 @@ public class CommonLang {
         )));
     }
 
-    private static DivideRule createModifiersRule() {
-        final var modifierRule = new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule(INITIALIZATION_VALUE))));
-        return new DivideRule("modifiers", new SimpleDivider(" "), modifierRule);
+    private static Rule createModifiersRule() {
+        final var modifierRule = new TypeRule("modifier", new StripRule(new FilterRule(new SymbolFilter(), new StringRule("value"))));
+        return new StripRule(new DivideRule("modifiers", new SimpleDivider(" "), modifierRule));
     }
 
     private static Rule createTypeRule() {
@@ -408,5 +414,4 @@ public class CommonLang {
         final var children = new DivideRule(GENERIC_CHILDREN, VALUE_DIVIDER, type);
         return new TypeRule(GENERIC_TYPE, new InfixRule(new StripRule(parent), new FirstLocator("<"), new StripRule(new SuffixRule(children, ">"))));
     }
-
 }

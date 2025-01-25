@@ -2,6 +2,7 @@
 #define magma_app_lang_CommonLang
 #include "../../../magma/app/locate/BackwardsLocator.h"
 #include "../../../magma/app/locate/InvocationLocator.h"
+#include "../../../magma/app/locate/InvocationTypeMatcher.h"
 #include "../../../magma/app/rule/ContextRule.h"
 #include "../../../magma/app/rule/ExactRule.h"
 #include "../../../magma/app/rule/FilterRule.h"

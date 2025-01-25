@@ -9,6 +9,6 @@ struct JoiningCollector implements Collector<String, Option<String>>{
 	}
 	Option<String> fold(Option<String> current, String element){
 		if(current.isEmpty())return new Some<>(element);
-		return current.map(()->inner+this.slice + element);
+		return current.map(inner->inner+this.slice+element);
 	}
 }
