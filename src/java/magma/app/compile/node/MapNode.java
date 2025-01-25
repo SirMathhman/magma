@@ -15,7 +15,12 @@ public final class MapNode implements Node {
     private final NodeProperties<JavaList<Node>> nodeLists;
     private final Option<String> type;
 
-    public MapNode(Option<String> type, NodeProperties<Input> inputs, NodeProperties<Node> nodes, NodeProperties<JavaList<Node>> nodeLists) {
+    public MapNode(
+            Option<String> type,
+            NodeProperties<Input> inputs,
+            NodeProperties<Node> nodes,
+            NodeProperties<JavaList<Node>> nodeLists
+    ) {
         this.inputs = inputs;
         this.nodes = nodes;
         this.nodeLists = nodeLists;
@@ -65,11 +70,6 @@ public final class MapNode implements Node {
     }
 
     @Override
-    public String toString() {
-        return format(0);
-    }
-
-    @Override
     public String format(int depth) {
         final var typeString = this.type.map(inner -> inner + " ").orElse("");
         return typeString + "{" + joinProperties(depth) + createIndent(depth) + "}";
@@ -107,8 +107,13 @@ public final class MapNode implements Node {
     }
 
     @Override
+    public String toString() {
+        return display();
+    }
+
+    @Override
     public String display() {
-        return toString();
+        return format(0);
     }
 
     @Override
