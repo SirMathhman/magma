@@ -14,6 +14,6 @@ struct PrefixRule implements Rule{
 		return truncateLeft(input, this.prefix).flatMapValue(this.childRule::parse);
 	}
 	Result<String, CompileError> generate(Node node){
-		return this.childRule.generate(node).mapValue(()->this.prefix + inner);
+		return this.childRule.generate(node).mapValue(inner->this.prefix+inner);
 	}
 }

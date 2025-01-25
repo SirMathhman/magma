@@ -23,12 +23,12 @@ struct MapNode implements Node{
 		return format(0);
 	}
 	String format(int depth){
-		var typeString=this.type.map(()->inner+" ").orElse("");
+		var typeString=this.type.map(inner->inner+" ").orElse("");
 		var builder=new StringBuilder().append(typeString).append("{");
 		var joiner=new StringJoiner(",");
-		this.strings.entrySet().stream().map(()->createEntry(entry.getKey(), "\""+entry.getValue() + "\"", depth+1)).forEach(joiner::add);
-		this.nodes.entrySet().stream().map(()->createEntry(entry.getKey(), entry.getValue().format(depth+1), depth+1)).forEach(joiner::add);
-		this.nodeLists.entrySet().stream().map(()->createEntry(entry.getKey(), entry.getValue().stream().map(()->node.format(depth+1)).collect(Collectors.joining(",\n", "[", "]")), depth+1)).forEach(joiner::add);
+		this.strings.entrySet().stream().map(entry->createEntry(entry.getKey(), "\""+entry.getValue()+"\"", depth+1)).forEach(joiner::add);
+		this.nodes.entrySet().stream().map(entry->createEntry(entry.getKey(), entry.getValue().format(depth+1), depth+1)).forEach(joiner::add);
+		this.nodeLists.entrySet().stream().map(entry->createEntry(entry.getKey(), entry.getValue().stream().map(node->node.format(depth+1)).collect(Collectors.joining(",\n", "[", "]")), depth+1)).forEach(joiner::add);
 		builder.append(joiner);
 		return builder.append("\n").append("\t".repeat(depth)).append("}").toString();
 	}
@@ -36,12 +36,12 @@ struct MapNode implements Node{
 		return Optional.ofNullable(this.nodes.get(propertyKey));
 	}
 	Node mapString(String propertyKey, Function<String, String> mapper){
-		return findString(propertyKey).map(mapper).map(()->withString(propertyKey, newString)).orElse(this);
+		return findString(propertyKey).map(mapper).map(newString->withString(propertyKey, newString)).orElse(this);
 	}
 	Node merge(Node other){
-		var withStrings=stream(this.strings).foldLeft(other, (node, tuple) -> node.withString(tuple.left(), tuple.right()));
-		var withNodes=streamNodes().foldLeft(withStrings, (node, tuple) -> node.withNode(tuple.left(), tuple.right()));
-		return streamNodeLists().foldLeft(withNodes, (node, tuple) -> node.withNodeList(tuple.left(), tuple.right()));
+		var withStrings=stream(this.strings).foldLeft(other, (node,tuple)->node.withString(tuple.left(), tuple.right()));
+		var withNodes=streamNodes().foldLeft(withStrings, (node,tuple)->node.withNode(tuple.left(), tuple.right()));
+		return streamNodeLists().foldLeft(withNodes, (node,tuple)->node.withNodeList(tuple.left(), tuple.right()));
 	}
 	Stream<Tuple<String, List<Node>>> streamNodeLists(){
 		return stream(this.nodeLists);
@@ -50,7 +50,7 @@ struct MapNode implements Node{
 		return stream(this.nodes);
 	}
 	<K, V>Stream<Tuple<K, V>> stream(Map<K, V> map){
-		return Streams.from(map.entrySet()).map(()->new Tuple<>(entry.getKey(), entry.getValue()));
+		return Streams.from(map.entrySet()).map(entry->new Tuple<>(entry.getKey(), entry.getValue()));
 	}
 	String display(){
 		return toString();
@@ -59,10 +59,10 @@ struct MapNode implements Node{
 		return new MapNode(Optional.of(type), this.strings, this.nodes, this.nodeLists);
 	}
 	boolean is(String type){
-		return this.type.isPresent() && this.type.get().equals(type);
+		return this.type.isPresent()&&this.type.get().equals(type);
 	}
 	Node mapNodeList(String propertyKey, Function<List<Node>, List<Node>> mapper){
-		return findNodeList(propertyKey).map(mapper).map(()->withNodeList(propertyKey, list)).orElse(this);
+		return findNodeList(propertyKey).map(mapper).map(list->withNodeList(propertyKey, list)).orElse(this);
 	}
 	boolean hasNodeList(String propertyKey){
 		return this.nodeLists.containsKey(propertyKey);
@@ -73,7 +73,7 @@ struct MapNode implements Node{
 		return new MapNode(this.type, this.strings, this.nodes, copy);
 	}
 	Node mapNode(String propertyKey, Function<Node, Node> mapper){
-		return findNode(propertyKey).map(mapper).map(()->withNode(propertyKey, node)).orElse(this);
+		return findNode(propertyKey).map(mapper).map(node->withNode(propertyKey, node)).orElse(this);
 	}
 	boolean hasNode(String propertyKey){
 		return this.nodes.containsKey(propertyKey);

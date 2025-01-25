@@ -40,12 +40,28 @@ public class JavaParser implements Passer {
     public Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
         final var node = unit.value();
         if (node.is("lambda")) {
-            final var parameter = node.findNode(LAMBDA_PARAMETERS)
-                    .orElse(new MapNode())
-                    .findString("value")
-                    .orElse("");
+            final List<Node> definitions;
+            final var parameterNode = node.findNode(LAMBDA_PARAMETERS);
+            final var parameterNodeLists = node.findNodeList(LAMBDA_PARAMETERS);
+            if (parameterNode.isPresent()) {
+                final var parameter = parameterNode
+                        .orElse(new MapNode())
+                        .findString("value")
+                        .orElse("");
 
-            return new Ok<>(unit.enter().define(List.of(createDefinition(parameter))));
+                definitions = List.of(createDefinition(parameter));
+            } else if (parameterNodeLists.isPresent()) {
+                definitions = parameterNodeLists.orElse(new ArrayList<>())
+                        .stream()
+                        .map(child -> child.findString("value"))
+                        .flatMap(Optional::stream)
+                        .map(JavaParser::createDefinition)
+                        .toList();
+            } else {
+                definitions = Collections.emptyList();
+            }
+
+            return new Ok<>(unit.enter().define(definitions));
         }
 
         if (node.is("class") || node.is("record") || node.is("interface")) {
