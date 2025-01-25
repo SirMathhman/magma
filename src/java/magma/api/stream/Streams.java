@@ -18,7 +18,7 @@ public class Streams {
                 .map(list::get);
     }
 
-    public static <T> Stream<T> from(Set<T> entries) {
+    public static <T> Stream<T> fromNativeSet(Set<T> entries) {
         return fromNativeList(new ArrayList<>(entries));
     }
 

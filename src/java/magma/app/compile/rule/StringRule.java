@@ -3,10 +3,11 @@ package magma.app.compile.rule;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.app.compile.Input;
-import magma.app.compile.MapNode;
-import magma.app.compile.Node;
-import magma.app.compile.StringInput;
+import magma.app.compile.node.Input;
+import magma.app.compile.node.MapNode;
+import magma.app.compile.node.Node;
+import magma.app.compile.node.NodeProperties;
+import magma.app.compile.node.StringInput;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
 import magma.java.JavaOptions;
@@ -27,7 +28,9 @@ public class StringRule implements Rule {
     @Override
     public Result<Node, CompileError> parse(String input) {
         Node node = new MapNode();
-        return new Ok<>(node.inputs().with(this.propertyKey, new StringInput(this.propertyKey)));
+        NodeProperties<Input> inputNodeProperties = node.inputs();
+        Input propertyValue = new StringInput(this.propertyKey);
+        return new Ok<>(inputNodeProperties.with(this.propertyKey, propertyValue).orElse(new MapNode()));
     }
 
     @Override

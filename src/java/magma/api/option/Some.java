@@ -57,4 +57,9 @@ public record Some<T>(T value) implements Option<T> {
     public Tuple<Boolean, T> toTuple(T other) {
         return new Tuple<>(true, this.value);
     }
+
+    @Override
+    public <R> Option<Tuple<T, R>> and(Supplier<Option<R>> supplier) {
+        return supplier.get().map(otherValue -> new Tuple<>(this.value, otherValue));
+    }
 }

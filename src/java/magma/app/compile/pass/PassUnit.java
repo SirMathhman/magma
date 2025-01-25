@@ -1,6 +1,6 @@
 package magma.app.compile.pass;
 
-import magma.app.compile.Node;
+import magma.app.compile.node.Node;
 
 import java.util.List;
 import java.util.Optional;

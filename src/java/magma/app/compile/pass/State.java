@@ -1,9 +1,9 @@
 package magma.app.compile.pass;
 
 import magma.api.option.Option;
-import magma.app.compile.Input;
+import magma.app.compile.node.Input;
 import magma.java.JavaOptions;
-import magma.app.compile.Node;
+import magma.app.compile.node.Node;
 
 import java.util.ArrayList;
 import java.util.List;

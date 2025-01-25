@@ -63,6 +63,11 @@ public record HeadedStream<T>(Head<T> head) implements Stream<T> {
     }
 
     @Override
+    public Stream<T> concat(Stream<T> other) {
+        return new HeadedStream<>(() -> this.head.next().or(other::next));
+    }
+
+    @Override
     public Option<T> next() {
         return this.head.next();
     }

@@ -3,7 +3,9 @@ package magma.app.compile.pass;
 import magma.api.Tuple;
 import magma.api.result.Result;
 import magma.api.stream.Streams;
-import magma.app.compile.Node;
+import magma.app.compile.node.MapNode;
+import magma.app.compile.node.Node;
+import magma.app.compile.node.NodeProperties;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
 import magma.java.JavaList;
@@ -40,7 +42,8 @@ public class TreePassingStage implements PassingStage {
                     .foldLeftToResult(current.withValue(new ArrayList<>()), this::passAndAdd)
                     .mapValue(unit1 -> unit1.mapValue(node -> {
                         Node node1 = current.value();
-                        return node1.nodeLists().with(propertyKey, new JavaList<>(node));
+                        NodeProperties<JavaList<Node>> javaListNodeProperties = node1.nodeLists();
+                        return javaListNodeProperties.with(propertyKey, new JavaList<Node>(node)).orElse(new MapNode());
                     }));
         });
     }
@@ -54,7 +57,8 @@ public class TreePassingStage implements PassingStage {
             return pass(current.withValue(pairNode))
                     .mapValue(passed -> passed.mapValue(value -> {
                         Node node = current.value();
-                        return node.nodes().with(pairKey, value);
+                        NodeProperties<Node> nodeNodeProperties = node.nodes();
+                        return nodeNodeProperties.with(pairKey, value).orElse(new MapNode());
                     }));
         });
     }

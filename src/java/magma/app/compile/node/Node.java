@@ -1,8 +1,11 @@
-package magma.app.compile;
+package magma.app.compile.node;
 
+import magma.api.option.Option;
 import magma.java.JavaList;
 
 public interface Node {
+    Option<String> mergeType(Option<String> otherType, MergeStrategy strategy);
+
     NodeProperties<Input> inputs();
 
     NodeProperties<Node> nodes();
@@ -11,7 +14,7 @@ public interface Node {
 
     String format(int depth);
 
-    Node merge(Node other);
+    Node merge(Node other, MergeStrategy strategy);
 
     String display();
 

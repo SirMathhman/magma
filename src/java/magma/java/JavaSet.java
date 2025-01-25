@@ -23,6 +23,12 @@ public record JavaSet<T>(Set<T> set) {
     }
 
     public Stream<T> stream() {
-        return Streams.from(this.set);
+        return Streams.fromNativeSet(this.set);
+    }
+
+    public JavaSet<T> addAll(JavaSet<T> others) {
+        final var copy = new HashSet<T>(this.set);
+        copy.addAll(others.set);
+        return new JavaSet<>(copy);
     }
 }

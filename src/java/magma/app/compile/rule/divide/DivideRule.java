@@ -4,8 +4,9 @@ import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
 import magma.api.stream.Streams;
-import magma.app.compile.MapNode;
-import magma.app.compile.Node;
+import magma.app.compile.node.MapNode;
+import magma.app.compile.node.Node;
+import magma.app.compile.node.NodeProperties;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
 import magma.app.compile.rule.Rule;
@@ -58,7 +59,12 @@ public class DivideRule implements Rule {
                 .flatMapValue(segments -> compileAll(segments, this.childRule::parse, DivideRule::validateNode))
                 .mapValue(segments -> {
                     final var node = new MapNode();
-                    return segments.isEmpty() ? node : node.nodeLists().with(this.propertyKey, new JavaList<>(segments));
+                    if (segments.isEmpty()) {
+                        return node;
+                    } else {
+                        NodeProperties<JavaList<Node>> javaListNodeProperties = node.nodeLists();
+                        return javaListNodeProperties.with(this.propertyKey, new JavaList<Node>(segments)).orElse(new MapNode());
+                    }
                 });
     }
 

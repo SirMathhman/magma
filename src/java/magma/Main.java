@@ -8,7 +8,7 @@ import magma.api.option.Some;
 import magma.api.result.Result;
 import magma.api.stream.JoiningCollector;
 import magma.api.stream.Streams;
-import magma.app.compile.Node;
+import magma.app.compile.node.Node;
 import magma.app.error.ApplicationError;
 import magma.app.error.CompileError;
 import magma.app.error.JavaError;

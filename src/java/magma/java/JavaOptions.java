@@ -3,7 +3,7 @@ package magma.java;
 import magma.api.option.None;
 import magma.api.option.Option;
 import magma.api.option.Some;
-import magma.app.compile.Node;
+import magma.app.compile.node.Node;
 
 import java.util.Optional;
 

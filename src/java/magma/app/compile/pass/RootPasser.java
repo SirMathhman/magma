@@ -2,10 +2,11 @@ package magma.app.compile.pass;
 
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.app.compile.Input;
-import magma.app.compile.MapNode;
-import magma.app.compile.Node;
-import magma.app.compile.StringInput;
+import magma.app.compile.node.Input;
+import magma.app.compile.node.MapNode;
+import magma.app.compile.node.Node;
+import magma.app.compile.node.NodeProperties;
+import magma.app.compile.node.StringInput;
 import magma.app.error.CompileError;
 import magma.java.JavaList;
 import magma.java.JavaOptions;
@@ -35,7 +36,8 @@ public class RootPasser implements Passer {
             return newNamespace.stream()
                     .map(value -> {
                         Node node = new MapNode("segment");
-                        return node.inputs().with("value", new StringInput("value"));
+                        NodeProperties<Input> inputNodeProperties = node.inputs();
+                        return inputNodeProperties.with("value", new StringInput("value")).orElse(new MapNode());
                     })
                     .toList();
         }).apply(list.unwrap()))).orElse(node1));

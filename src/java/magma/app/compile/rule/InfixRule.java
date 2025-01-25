@@ -2,7 +2,8 @@ package magma.app.compile.rule;
 
 import magma.api.result.Err;
 import magma.api.result.Result;
-import magma.app.compile.Node;
+import magma.app.compile.node.Node;
+import magma.app.compile.node.PreserveLeft;
 import magma.app.error.CompileError;
 import magma.app.error.context.StringContext;
 import magma.app.compile.rule.locate.Locator;
@@ -42,7 +43,7 @@ public final class InfixRule implements Rule {
             int index = indices.get(i);
             final var left = input.substring(0, index);
             final var right = input.substring(index + this.locator.length());
-            final var result = this.leftRule.parse(left).and(() -> this.rightRule.parse(right)).mapValue(tuple -> tuple.left().merge(tuple.right()));
+            final var result = this.leftRule.parse(left).and(() -> this.rightRule.parse(right)).mapValue(tuple -> tuple.left().merge(tuple.right(), new PreserveLeft()));
             if (result.isOk()) {
                 return result;
             } else {

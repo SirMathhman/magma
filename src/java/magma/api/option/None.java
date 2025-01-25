@@ -56,4 +56,9 @@ public class None<T> implements Option<T> {
     public Tuple<Boolean, T> toTuple(T other) {
         return new Tuple<>(false, other);
     }
+
+    @Override
+    public <R> Option<Tuple<T, R>> and(Supplier<Option<R>> supplier) {
+        return new None<>();
+    }
 }

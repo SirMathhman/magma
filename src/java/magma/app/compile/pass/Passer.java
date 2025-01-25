@@ -2,7 +2,7 @@ package magma.app.compile.pass;
 
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.app.compile.Node;
+import magma.app.compile.node.Node;
 import magma.app.error.CompileError;
 
 import java.util.function.Predicate;

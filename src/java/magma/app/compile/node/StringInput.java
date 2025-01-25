@@ -1,4 +1,4 @@
-package magma.app.compile;
+package magma.app.compile.node;
 
 public record StringInput(String propertyKey) implements Input {
     @Override

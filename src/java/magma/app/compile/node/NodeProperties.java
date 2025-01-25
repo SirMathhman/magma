@@ -1,13 +1,14 @@
-package magma.app.compile;
+package magma.app.compile.node;
 
 import magma.api.Tuple;
 import magma.api.option.Option;
 import magma.api.stream.Stream;
+import magma.java.JavaSet;
 
 import java.util.function.Function;
 
 public interface NodeProperties<T> {
-    Node with(String propertyKey, T propertyValue);
+    Option<Node> with(String propertyKey, T propertyValue);
 
     Option<T> find(String propertyKey);
 
@@ -18,4 +19,8 @@ public interface NodeProperties<T> {
     boolean has(String propertyKey);
 
     Option<Node> remove(String propertyKey);
+
+    NodeProperties<T> merge(NodeProperties<T> other, MergeStrategy strategy);
+
+    Stream<String> streamKeys();
 }

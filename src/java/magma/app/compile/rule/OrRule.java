@@ -4,7 +4,7 @@ import magma.api.Tuple;
 import magma.api.result.Err;
 import magma.api.result.Result;
 import magma.api.stream.Streams;
-import magma.app.compile.Node;
+import magma.app.compile.node.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.Context;
 import magma.app.error.context.NodeContext;

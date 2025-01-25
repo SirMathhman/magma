@@ -3,10 +3,11 @@ package magma.app.compile.pass;
 import magma.api.result.Err;
 import magma.api.result.Ok;
 import magma.api.result.Result;
-import magma.app.compile.Input;
-import magma.app.compile.MapNode;
-import magma.app.compile.Node;
-import magma.app.compile.StringInput;
+import magma.app.compile.node.Input;
+import magma.app.compile.node.MapNode;
+import magma.app.compile.node.Node;
+import magma.app.compile.node.NodeProperties;
+import magma.app.compile.node.StringInput;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
 import magma.java.JavaList;
@@ -24,7 +25,8 @@ import static magma.java.JavaLang.isDefaultJavaValue;
 public class JavaParser implements Passer {
     private static Node createDefinition(String parameter) {
         Node node = new MapNode("definition");
-        return node.inputs().with("name", new StringInput("name"));
+        NodeProperties<Input> inputNodeProperties = node.inputs();
+        return inputNodeProperties.with("name", new StringInput("name")).orElse(new MapNode());
     }
 
     @Override
