@@ -129,7 +129,7 @@ struct CommonLang{
 	}
 	Rule createValueRule(Rule statement, Rule function){
 		var value=new LazyRule();
-		value.set(new OrRule(List.of(createLambdaRule(statement, value), function, createConstructionRule(value), createInvocationRule(value), createAccessRule("data-access", ".", value), createAccessRule("method-access", "::", value), createSymbolRule(SYMBOL_VALUE_TYPE), createNumberRule(), createNotRule(value), createOperatorRule("greater-equals", ">=", value), createOperatorRule("less", "<", value), createOperatorRule("equals", "==", value), createOperatorRule("and", "&&", value), createOperatorRule("add", "+", value), createOperatorRule("subtract", "-", value), createCharRule(), createStringRule(), createTernaryRule(value))));
+		value.set(new OrRule(List.of(createLambdaRule(statement, value), function, createConstructionRule(value), createInvocationRule(value), createAccessRule("data-access", ".", value), createAccessRule("method-access", "::", value), createSymbolRule(SYMBOL_VALUE_TYPE), createNumberRule(), createNotRule(value), createOperatorRule("greater-equals", ">=", value), createOperatorRule("less", "<", value), createOperatorRule("equals", "==", value), createOperatorRule("and", "&&", value), createOperatorRule("or", "||", value), createOperatorRule("add", "+", value), createOperatorRule("subtract", "-", value), createCharRule(), createStringRule(), createTernaryRule(value))));
 		return value;
 	}
 	TypeRule createLambdaRule(Rule statement, LazyRule value){

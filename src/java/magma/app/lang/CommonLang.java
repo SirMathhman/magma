@@ -251,6 +251,7 @@ public class CommonLang {
                 createOperatorRule("less", "<", value),
                 createOperatorRule("equals", "==", value),
                 createOperatorRule("and", "&&", value),
+                createOperatorRule("or", "||", value),
                 createOperatorRule("add", "+", value),
                 createOperatorRule("subtract", "-", value),
                 createCharRule(),
