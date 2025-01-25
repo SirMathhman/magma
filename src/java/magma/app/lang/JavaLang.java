@@ -7,24 +7,36 @@ import magma.app.rule.TypeRule;
 
 import java.util.List;
 
+import static magma.app.lang.CommonLang.CLASS_TYPE;
+import static magma.app.lang.CommonLang.INTERFACE_TYPE;
+import static magma.app.lang.CommonLang.RECORD_TYPE;
+import static magma.app.lang.CommonLang.ROOT_TYPE;
+import static magma.app.lang.CommonLang.createCompoundRule;
+import static magma.app.lang.CommonLang.createContentRule;
+import static magma.app.lang.CommonLang.createMethodRule;
+import static magma.app.lang.CommonLang.createNamespacedRule;
+import static magma.app.lang.CommonLang.createStatementRule;
+import static magma.app.lang.CommonLang.createStructSegmentRule;
+import static magma.app.lang.CommonLang.createWhitespaceRule;
+
 public class JavaLang {
     public static Rule createJavaRootRule() {
-        return new TypeRule(CommonLang.ROOT_TYPE, CommonLang.createContentRule(createJavaRootSegmentRule()));
+        return new TypeRule(ROOT_TYPE, createContentRule(createJavaRootSegmentRule()));
     }
 
     private static OrRule createJavaRootSegmentRule() {
         final var function = new LazyRule();
         final var struct = new LazyRule();
         struct.set(new OrRule(List.of(
-                createJavaCompoundRule(CommonLang.CLASS_TYPE, "class ", function, struct),
-                createJavaCompoundRule(CommonLang.RECORD_TYPE, "record ", function, struct),
-                createJavaCompoundRule(CommonLang.INTERFACE_TYPE, "interface ", function, struct)
+                createJavaCompoundRule(CLASS_TYPE, "class ", function, struct),
+                createJavaCompoundRule(RECORD_TYPE, "record ", function, struct),
+                createJavaCompoundRule(INTERFACE_TYPE, "interface ", function, struct)
         )));
 
         return new OrRule(List.of(
-                CommonLang.createNamespacedRule("package", "package ", ".", ";"),
-                CommonLang.createNamespacedRule("import", "import ", ".", ";"),
-                CommonLang.createWhitespaceRule(),
+                createNamespacedRule("package", "package ", ".", ";"),
+                createNamespacedRule("import", "import ", ".", ";"),
+                createWhitespaceRule(),
                 struct
         ));
     }
@@ -35,10 +47,10 @@ public class JavaLang {
             LazyRule function,
             LazyRule struct
     ) {
-        final var statement = CommonLang.createStatementRule(function, struct);
-        function.set(CommonLang.createMethodRule(statement));
+        final var statement = createStatementRule(function, struct);
+        function.set(createMethodRule(statement));
 
-        return CommonLang.createCompoundRule(type, infix, CommonLang.createStructSegmentRule(function, statement,
+        return createCompoundRule(type, infix, createStructSegmentRule(function, statement,
                 struct));
     }
 }

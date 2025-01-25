@@ -13,7 +13,7 @@ struct InfixRule implements Rule{
 		return integers;
 	}
 	Result<String, CompileError> generate(Node node){
-		return this.leftRule.generate(node).and(()->this.rightRule.generate(node)).mapValue(()->tuple.left() + this.locator.unwrap() + tuple.right());
+		return this.leftRule.generate(node).and(()->this.rightRule.generate(node)).mapValue(tuple->tuple.left()+this.locator.unwrap()+tuple.right());
 	}
 	Result<Node, CompileError> parse(String input){
 		var indices=this.locator.locate(input).foldLeft(new ArrayList<>(), InfixRule::add);
@@ -23,7 +23,7 @@ struct InfixRule implements Rule{
 			int index=indices.get(i);
 			var left=input.substring(0, index);
 			var right=input.substring(index+this.locator.length());
-			var result=this.leftRule.parse(left).and(()->this.rightRule.parse(right)).mapValue(()->tuple.left().merge(tuple.right()));
+			var result=this.leftRule.parse(left).and(()->this.rightRule.parse(right)).mapValue(tuple->tuple.left().merge(tuple.right()));
 			if(result.isOk()){
 				return result;
 			}
@@ -32,6 +32,6 @@ struct InfixRule implements Rule{
 			}
 			i++;
 		}
-		return new Err<>(new CompileError("Infix '"+this.locator.unwrap() + "' not present", new StringContext(input), errors));
+		return new Err<>(new CompileError("Infix '"+this.locator.unwrap()+"' not present", new StringContext(input), errors));
 	}
 }

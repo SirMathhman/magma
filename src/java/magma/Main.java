@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static java.lang.System.out;
+import static magma.app.lang.JavaLang.*;
 
 public class Main {
     public static final Path SOURCE_DIRECTORY = JavaPaths.get(".", "src", "java");
@@ -111,7 +112,7 @@ public class Main {
     }
 
     private static Result<Map<String, String>, CompileError> compile(String input, JavaList<String> namespace, String name) {
-        final var parsed = JavaLang.createJavaRootRule().parse(input);
+        final var parsed = createJavaRootRule().parse(input);
         return parsed.flatMapValue(root1 -> pass(new JavaParser(), namespace, name, root1))
                 .flatMapValue(root -> pass(new RootPasser(), namespace, name, root))
                 .flatMapValue(root -> pass(new CFormatter(), namespace, name, root))

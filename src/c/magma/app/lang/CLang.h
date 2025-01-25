@@ -8,4 +8,10 @@
 #include "../../../magma/app/rule/StringRule.h"
 #include "../../../magma/app/rule/TypeRule.h"
 #include "../../../java/util/List.h"
+#include "../../../static magma/app/lang/CommonLang/ROOT_TYPE.h"
+#include "../../../static magma/app/lang/CommonLang/STRUCT_TYPE.h"
+#include "../../../static magma/app/lang/CommonLang/createContentRule.h"
+#include "../../../static magma/app/lang/CommonLang/createNamespacedRule.h"
+#include "../../../static magma/app/lang/CommonLang/createWhitespaceRule.h"
+#include "../../../static magma/app/lang/JavaLang/createJavaCompoundRule.h"
 #endif

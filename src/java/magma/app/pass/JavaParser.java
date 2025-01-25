@@ -7,7 +7,6 @@ import magma.app.MapNode;
 import magma.app.Node;
 import magma.app.error.CompileError;
 import magma.app.error.context.NodeContext;
-import magma.java.JavaLang;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +15,7 @@ import java.util.Optional;
 
 import static magma.app.lang.CommonLang.LAMBDA_PARAMETERS;
 import static magma.app.lang.CommonLang.SYMBOL_VALUE_TYPE;
+import static magma.java.JavaLang.isDefaultJavaValue;
 
 public class JavaParser implements Passer {
     private static Node createDefinition(String parameter) {
@@ -101,8 +101,10 @@ public class JavaParser implements Passer {
 
         if (node.is(SYMBOL_VALUE_TYPE)) {
             final var value = node.findString("value").orElse("");
-            if (!value.equals("this") && !unit.state().find(value).isPresent() && !JavaLang.isDefaultJavaValue(value)) {
-                return new Err<>(new CompileError("Symbol not defined", new NodeContext(node)));
+            if (!value.equals("this") && !unit.state().find(value).isPresent() && !isDefaultJavaValue(value)) {
+
+                final var state = unit.state();
+                return new Err<>(new CompileError("Symbol not defined - " + state, new NodeContext(node)));
             }
         }
 
