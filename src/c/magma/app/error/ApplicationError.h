@@ -1,3 +1,0 @@
-#ifndef magma_app_error_ApplicationError
-#define magma_app_error_ApplicationError
-#endif

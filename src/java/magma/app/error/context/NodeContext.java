@@ -1,6 +1,6 @@
 package magma.app.error.context;
 
-import magma.app.Node;
+import magma.app.compile.Node;
 
 public record NodeContext(Node node) implements Context {
     @Override

@@ -1,9 +1,9 @@
 package magma.app.lang;
 
-import magma.app.rule.LazyRule;
-import magma.app.rule.OrRule;
-import magma.app.rule.Rule;
-import magma.app.rule.TypeRule;
+import magma.app.compile.rule.LazyRule;
+import magma.app.compile.rule.OrRule;
+import magma.app.compile.rule.Rule;
+import magma.app.compile.rule.TypeRule;
 
 import java.util.List;
 

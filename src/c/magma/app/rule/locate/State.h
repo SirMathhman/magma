@@ -1,3 +1,0 @@
-#ifndef magma_app_rule_locate_State
-#define magma_app_rule_locate_State
-#endif

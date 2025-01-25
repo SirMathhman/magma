@@ -1,35 +1,35 @@
 package magma.app.lang;
 
-import magma.app.locate.BackwardsLocator;
-import magma.app.locate.InvocationLocator;
-import magma.app.locate.InvocationTypeMatcher;
-import magma.app.rule.ContextRule;
-import magma.app.rule.ExactRule;
-import magma.app.rule.FilterRule;
-import magma.app.rule.InfixRule;
-import magma.app.rule.LazyRule;
-import magma.app.rule.NodeRule;
-import magma.app.rule.OptionalNodeListRule;
-import magma.app.rule.OptionalNodeRule;
-import magma.app.rule.OrRule;
-import magma.app.rule.PrefixRule;
-import magma.app.rule.Rule;
-import magma.app.rule.StringRule;
-import magma.app.rule.StripRule;
-import magma.app.rule.SuffixRule;
-import magma.app.rule.TypeRule;
-import magma.app.rule.divide.DivideRule;
-import magma.app.rule.divide.SimpleDivider;
-import magma.app.rule.filter.NumberFilter;
-import magma.app.rule.filter.SymbolFilter;
-import magma.app.rule.locate.FirstLocator;
-import magma.app.rule.locate.LastLocator;
-import magma.app.rule.locate.ParenthesesMatcher;
+import magma.app.compile.rule.locate.BackwardsLocator;
+import magma.app.compile.rule.locate.InvocationLocator;
+import magma.app.compile.rule.locate.InvocationTypeMatcher;
+import magma.app.compile.rule.ContextRule;
+import magma.app.compile.rule.ExactRule;
+import magma.app.compile.rule.FilterRule;
+import magma.app.compile.rule.InfixRule;
+import magma.app.compile.rule.LazyRule;
+import magma.app.compile.rule.NodeRule;
+import magma.app.compile.rule.OptionalNodeListRule;
+import magma.app.compile.rule.OptionalNodeRule;
+import magma.app.compile.rule.OrRule;
+import magma.app.compile.rule.PrefixRule;
+import magma.app.compile.rule.Rule;
+import magma.app.compile.rule.StringRule;
+import magma.app.compile.rule.StripRule;
+import magma.app.compile.rule.SuffixRule;
+import magma.app.compile.rule.TypeRule;
+import magma.app.compile.rule.divide.DivideRule;
+import magma.app.compile.rule.divide.SimpleDivider;
+import magma.app.compile.rule.filter.NumberFilter;
+import magma.app.compile.rule.filter.SymbolFilter;
+import magma.app.compile.rule.locate.FirstLocator;
+import magma.app.compile.rule.locate.LastLocator;
+import magma.app.compile.rule.locate.ParenthesesMatcher;
 
 import java.util.List;
 
-import static magma.app.rule.divide.StatementDivider.STATEMENT_DIVIDER;
-import static magma.app.rule.divide.ValueDivider.VALUE_DIVIDER;
+import static magma.app.compile.rule.divide.StatementDivider.STATEMENT_DIVIDER;
+import static magma.app.compile.rule.divide.ValueDivider.VALUE_DIVIDER;
 
 public class CommonLang {
     public static final String ROOT_TYPE = "root";
