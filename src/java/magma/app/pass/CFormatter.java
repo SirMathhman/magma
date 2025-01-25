@@ -5,23 +5,26 @@ import magma.api.result.Result;
 import magma.app.MapNode;
 import magma.app.Node;
 import magma.app.error.CompileError;
-import magma.app.lang.CommonLang;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILD;
+import static magma.app.lang.CommonLang.CONTENT_AFTER_CHILDREN;
+import static magma.app.lang.CommonLang.CONTENT_BEFORE_CHILD;
 import static magma.app.lang.CommonLang.CONTENT_CHILDREN;
 import static magma.app.pass.Passer.by;
 
 public class CFormatter implements Passer {
-    static Node removeWhitespace(Node block) {
-        return block.mapNodeList(CommonLang.CONTENT_CHILDREN, children -> {
-            return children.stream()
-                    .filter(child -> !child.is("whitespace"))
-                    .toList();
-        });
+    static Node removeWhitespaceInContent(Node block) {
+        return block.mapNodeList(CONTENT_CHILDREN, CFormatter::removeWhitespaceInContentChildren);
+    }
+
+    private static List<Node> removeWhitespaceInContentChildren(List<Node> children) {
+        return children.stream()
+                .filter(child -> !child.is("whitespace"))
+                .toList();
     }
 
     private static Node createSegment(String value) {
@@ -42,20 +45,22 @@ public class CFormatter implements Passer {
         return !namespace.startsWith("java.util.function");
     }
 
-    static PassUnit<Node> formatBlock(PassUnit<Node> inner) {
-        return inner.exit().flattenNode((State state, Node block) -> {
-            if (block.findNodeList(CommonLang.CONTENT_CHILDREN).orElse(new ArrayList<Node>()).isEmpty()) {
-                return block.removeNodeList(CommonLang.CONTENT_CHILDREN);
-            }
+    static PassUnit<Node> afterBlock(PassUnit<Node> inner) {
+        return inner.exit().flattenNode(CFormatter::formatBlock);
+    }
 
-            return block.withString(CommonLang.CONTENT_AFTER_CHILDREN, formatIndent(state.depth()))
-                    .mapNodeList(CommonLang.CONTENT_CHILDREN, children -> attachIndent(state, children));
-        });
+    private static Node formatBlock(State state, Node block) {
+        if (block.findNodeList(CONTENT_CHILDREN).orElse(new ArrayList<>()).isEmpty()) {
+            return block.removeNodeList(CONTENT_CHILDREN);
+        }
+
+        return block.withString(CONTENT_AFTER_CHILDREN, formatIndent(state.depth()))
+                .mapNodeList(CONTENT_CHILDREN, children -> attachIndent(state, children));
     }
 
     private static List<Node> attachIndent(State state, List<Node> children) {
         return children.stream()
-                .map(child -> child.withString(CommonLang.CONTENT_BEFORE_CHILD, formatIndent(state.depth() + 1)))
+                .map(child -> child.withString(CONTENT_BEFORE_CHILD, formatIndent(state.depth() + 1)))
                 .toList();
     }
 
@@ -71,7 +76,7 @@ public class CFormatter implements Passer {
         final var namespace = unit.findNamespace();
         final var name = unit.findName();
 
-        final var oldChildren = unit.value().findNodeList(CommonLang.CONTENT_CHILDREN).orElse(Collections.emptyList());
+        final var oldChildren = unit.value().findNodeList(CONTENT_CHILDREN).orElse(Collections.emptyList());
         final var newChildren = oldChildren.stream()
                 .filter(child -> !child.is("package"))
                 .filter(CFormatter::filterImport)
@@ -109,14 +114,14 @@ public class CFormatter implements Passer {
 
     @Override
     public Result<PassUnit<Node>, CompileError> afterPass(PassUnit<Node> unit) {
-        return new Ok<>(unit.filter(by("block")).map(CFormatter::formatBlock)
+        return new Ok<>(unit.filter(by("block")).map(CFormatter::afterBlock)
                 .or(() -> unit.filter(by("root")).map(CFormatter::cleanupNamespaced))
                 .orElse(unit));
     }
 
     @Override
     public Result<PassUnit<Node>, CompileError> beforePass(PassUnit<Node> unit) {
-        return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(inner -> inner.mapValue(CFormatter::removeWhitespace))
+        return new Ok<>(unit.filter(by("block")).map(PassUnit::enter).map(inner -> inner.mapValue(CFormatter::removeWhitespaceInContent))
                 .or(() -> unit.filterAndMapToValue(by("definition"), CFormatter::cleanupDefinition))
                 .orElse(unit));
     }
