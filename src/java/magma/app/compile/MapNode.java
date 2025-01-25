@@ -83,11 +83,6 @@ public final class MapNode implements Node {
     }
 
     @Override
-    public Node mapString(String propertyKey, Function<String, String> mapper) {
-        return findString(propertyKey).map(mapper).map(newString -> withString(propertyKey, newString)).orElse(this);
-    }
-
-    @Override
     public Node merge(Node other) {
         final var withStrings = stream(this.strings).foldLeft(other, (node, tuple) -> node.withString(tuple.left(), tuple.right()));
         final var withNodes = streamNodes().foldLeft(withStrings, (node, tuple) -> node.withNode(tuple.left(), tuple.right()));
@@ -144,14 +139,6 @@ public final class MapNode implements Node {
     }
 
     @Override
-    public Node mapNode(String propertyKey, Function<Node, Node> mapper) {
-        return findNode(propertyKey)
-                .map(mapper)
-                .map(node -> withNode(propertyKey, node))
-                .orElse(this);
-    }
-
-    @Override
     public boolean hasNode(String propertyKey) {
         return this.nodes.containsKey(propertyKey);
     }
@@ -159,13 +146,6 @@ public final class MapNode implements Node {
     @Override
     public boolean hasType() {
         return this.type.isPresent();
-    }
-
-    @Override
-    public Node removeNode(String propertyKey) {
-        final var copy = new HashMap<>(this.nodes);
-        copy.remove(propertyKey);
-        return new MapNode(this.type, this.strings, copy, this.nodeLists);
     }
 
     @Override

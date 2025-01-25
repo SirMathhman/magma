@@ -22,8 +22,6 @@ public interface Node {
 
     Optional<Node> findNode(String propertyKey);
 
-    Node mapString(String propertyKey, Function<String, String> mapper);
-
     Node merge(Node other);
 
     Stream<Tuple<String, List<Node>>> streamNodeLists();
@@ -42,11 +40,7 @@ public interface Node {
 
     Node removeNodeList(String propertyKey);
 
-    Node mapNode(String propertyKey, Function<Node, Node> mapper);
-
     boolean hasNode(String propertyKey);
 
     boolean hasType();
-
-    Node removeNode(String propertyKey);
 }
