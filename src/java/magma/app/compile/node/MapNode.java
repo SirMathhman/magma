@@ -143,18 +143,9 @@ public final class MapNode implements Node {
 
     @Override
     public Option<String> mergeType(Option<String> otherType, MergeStrategy strategy) {
-        if (otherType.isPresent()) {
-            if (this.type.isPresent()) {
-                return otherType.and(() -> this.type)
-                        .map(tuple -> strategy.merge(tuple.left(), tuple.right()));
-            }
-        }
-        if (otherType.isPresent()) {
-            return otherType;
-        }
-        if (this.type.isPresent()) {
-            return this.type;
-        }
-        return new None<>();
+        return this.type.and(() -> otherType)
+                .map(tuple -> strategy.merge(tuple.left(), tuple.right()))
+                .or(() -> this.type)
+                .or(() -> otherType);
     }
 }
